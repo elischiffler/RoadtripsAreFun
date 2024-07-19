@@ -7,11 +7,6 @@ from app.models.routing_models import MapBox, Route, Route_Step
 app = FastAPI()
 
 
-@app.get("/")
-async def root() -> str:
-    return "Hello world"
-
-
 @app.get("/get-route", response_model=Route)
 async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon: float) -> Any:
     # Creating the get request for matbox
@@ -47,6 +42,6 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
     except requests.exceptions.RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
     except ValidationError as exception:
-        raise (HTTPException(status_code=500, detail=f'Improper Mapbox response: {str(exception)}'))
+        raise (HTTPException(status_code=501, detail=f'Improper Mapbox response: {str(exception)}'))
     except (KeyError, ValueError) as exception:
-        raise HTTPException(status_code=500, detail=f"Error processing Mapbox response: {str(exception)}")
+        raise HTTPException(status_code=502, detail=f"Error processing Mapbox response: {str(exception)}")
