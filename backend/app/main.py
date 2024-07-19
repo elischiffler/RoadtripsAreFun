@@ -1,92 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from typing import Any
 import requests
-from pydantic import BaseModel, ValidationError
-
+from pydantic import ValidationError
+from models.routing_models import MapBox,Route,Route_Step
 app = FastAPI()
 
-
-class Route_Step(BaseModel):
-    distance: float
-    duration: float
-    instruction: str
-    location: list[float]
-
-
-class Route(BaseModel):
-    coordinates: list[list[float]]
-    distance: float
-    duration: float
-    route: list[Route_Step]
-
-
-class Mapbox_notification(BaseModel):
-    details: dict[str, str]
-    subtype: str
-    type: str
-    geometry_index_end: int
-    geometry_index_start: int
-
-
-class Mapbox_admin(BaseModel):
-    iso_3166_1_alpha3: str
-    iso_3166_1: str
-
-
-class Mapbox_geo(BaseModel):
-    coordinates: list[list[float]]
-    type: str
-
-
-class Mapbox_Maneuver(BaseModel):
-    type: str
-    instruction: str
-    modifier: str = None
-    bearing_after : int
-    bearing_before : int
-    location : list[float]
-
-
-
-class Mapbox_step(BaseModel):
-    intersections: list[Any]
-    exits: str = None
-    destinations: str = None
-    maneuver: dict
-    name: str
-    duration: float
-    distance: float
-    driving_side: str
-    weight: float
-    mode: str
-    geometry: Mapbox_geo
-
-
-class Mapbox_leg(BaseModel):
-    notifications: list[Mapbox_notification] = None
-    via_waypoints: list[Any]
-    admins: list[Mapbox_admin]
-    weight: float
-    duration: float
-    steps: list[Mapbox_step]
-    distance: float
-    summary: str
-
-
-class MapBox_Route(BaseModel):
-    weight_name: str
-    weight: float
-    duration: float
-    distance: float
-    legs: list[Mapbox_leg]
-    geometry: Mapbox_geo
-
-
-class MapBox(BaseModel):
-    routes: list[MapBox_Route]
-    waypoints: list[dict]
-    code: str
-    uuid: str
 
 
 
@@ -118,14 +36,14 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
             distance, duration = 0, 0
             steps = []
             for route in json_data['routes']:
-                distance, duration = route['distance'], route['duration']
+                distance, duration = route.distance, route.duration
                 for leg in route['legs']:
                     for step in leg['steps']:
                         # Each step has a distance, duration, instruction, and location for future use
-                        steps.append(Route_Step(distance=step['distance'],
-                                                duration=step['duration'],
-                                                instruction=step['maneuver']['instruction'],
-                                                location=step['maneuver']['location']))
+                        steps.append(Route_Step(distance=step.distance,
+                                                duration=step.duration,
+                                                instruction=step.maneuver.instruction,
+                                                location=step.maneuver.location))
             return Route(coordinates=[[start_lat,start_lon], [end_lat,end_lon]],
                          distance=distance,
                          duration=duration,
