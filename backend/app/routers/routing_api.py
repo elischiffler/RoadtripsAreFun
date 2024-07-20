@@ -3,8 +3,17 @@ from typing import Any
 import requests
 from pydantic import ValidationError
 from app.models.routing_models import MapBox, Route, Route_Step
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+
+#get mapbox API
+access_token = os.getenv('MAPBOX_API')
+
+#Initializing FastAPI
 app = FastAPI()
+
 
 
 @app.get("/get-route", response_model=Route)
@@ -17,7 +26,7 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
         'language': 'en',
         'overview': 'full',
         'steps': 'true',
-        'access_token': 'pk.eyJ1IjoiYWlkYW4xMzgiLCJhIjoiY2x5cDdzODVkMDFyYjJrcHd3Z3puY2o1eSJ9.FMN-O1YsLaTjFsL4VfnufA'
+        'access_token': access_token
     }
 
     try:
