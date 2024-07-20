@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from app.routers.routing_api import app
+from app.main import app
 
 
 client = TestClient(app)
