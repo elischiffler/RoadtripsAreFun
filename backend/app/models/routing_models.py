@@ -16,9 +16,7 @@ class Route(BaseModel):
     duration: float
     steps: list[Route_Step]
 
-
 # Mapbox Base Models
-
 class Mapbox_waypoint(BaseModel):
     name: str
     location: list[float]
@@ -187,7 +185,7 @@ class Trip_Advisor_Information(BaseModel):
         award_type: str
         year: int
 
-        class Trip_Advisor_Image:
+        class Trip_Advisor_Image(BaseModel):
             tiny: str
             small: str
             large: str
@@ -196,5 +194,3 @@ class Trip_Advisor_Information(BaseModel):
         display_name: str
     awards: list[Trip_Advisor_Award]
     error: Trip_Advisor_Error
-
-
