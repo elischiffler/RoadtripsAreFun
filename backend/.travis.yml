@@ -16,6 +16,9 @@ install:
 script:
   - pytest
 
+# Run builds only on PRs
+if: type = pull_request
+
 # Notifications (optional)
 notifications:
   email:
