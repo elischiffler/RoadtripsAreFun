@@ -1,7 +1,5 @@
 language: python
 python:
-  - "3.8"
-  - "3.9"
   - "3.10"
 
 # Cache pip dependencies
@@ -11,6 +9,9 @@ cache: pip
 install:
   - pip install -r requirements.txt
   - pip install pytest
+
+before_script:
+  - cd tests
 
 # Command to run tests
 script:
