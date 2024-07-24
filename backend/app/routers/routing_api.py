@@ -13,32 +13,31 @@ MapBox_route = MapBox.MapBox_Route
 load_dotenv()
 
 
-# Setup logging
+# Setup logging (for debugging)
 logging.basicConfig(level=logging.INFO)
 
 #Get APIs
 mapbox_access_token = os.getenv('MAPBOX_API')
 tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 
-#Initializing FastAPI
+#Initialize FastAPI
 app = FastAPI()
 
 
 
 @app.get("/get-route", response_model=Route)
-async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon: float) -> Any:
+async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon: float) -> Route:
     try:
         #Construct initial route without stops
-        route = await call_route(start_lat, start_lon, end_lat, end_lon)
+        route = await _call_route(start_lat, start_lon, end_lat, end_lon)
 
         #Use initial route to find stopping points
         num_stops = 5 #Initialize number of stops
-        stopping_points = await add_stop(route, num_stops)
-        logging.info(f'{stopping_points}')
+        stopping_points = await _add_stop(route, num_stops)
 
         # Construct waypoints string and make new route with stopping points
         waypoints = ';'.join([f"{lon},{lat}" for lat, lon in stopping_points])
-        route = await call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
+        route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
 
         distance, duration = route.distance, route.duration
         steps = []
@@ -62,7 +61,7 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
         raise HTTPException(status_code=502, detail=f"Error processing Mapbox response: {str(exception)}")
     
 #Will find a route based on parameters
-async def call_route(start_lat: float, start_lon: float, end_lat: float, end_lon: float, waypoints: str = None) -> MapBox_route:
+async def _call_route(start_lat: float, start_lon: float, end_lat: float, end_lon: float, waypoints: str = None) -> MapBox_route:
     url = f"https://api.mapbox.com/directions/v5/mapbox/driving/{start_lon},{start_lat}"
     if waypoints:
         url += f";{waypoints}"
@@ -83,22 +82,22 @@ async def call_route(start_lat: float, start_lon: float, end_lat: float, end_lon
     return route
 
 
-async def add_stop(route: MapBox_route, num_stops: int) -> list[list[float]]:
+async def _add_stop(route: MapBox_route, num_stops: int) -> list[list[float]]:
     #Conversion rate: 3600 seconds -> 1 hour
 
     #Create stopping point list
     stopping_points = []
-    count = 0
+    count = 1
     interval = route.duration / (num_stops + 1)
     current_time = 0
     steps = route.legs[0].steps
     coordinates = route.geometry.coordinates
     
     #Add stopping places until the trip is over
-    while count < num_stops:
+    while count <= num_stops:
         if current_time > interval * count:
-            current_lat, current_lon = find_position(coordinates, steps, current_time)
-            stopping_points.append(await find_stop('attractions',current_lat, current_lon, 30))
+            current_lat, current_lon = _find_position(coordinates, steps, current_time)
+            stopping_points.append(await _find_stop('attractions',current_lat, current_lon, 30))
             count += 1
 
         #Increment time
@@ -108,7 +107,7 @@ async def add_stop(route: MapBox_route, num_stops: int) -> list[list[float]]:
 
 
 #Function that will calculate the current postion of user
-def find_position(coordinates: list[list[float]], steps: list[Mapbox_step], elapsed_time: float) -> list[float]:
+def _find_position(coordinates: list[list[float]], steps: list[Mapbox_step], elapsed_time: float) -> list[float]:
     accumulated_time = 0
     for step in steps:
         step_duration = step.duration
@@ -123,7 +122,7 @@ def find_position(coordinates: list[list[float]], steps: list[Mapbox_step], elap
     return coordinates[-1]
 
 #Find a nearby stop and return its coordinates
-async def find_stop(category: str, lat: str, lon: str, radius: str) -> list:
+async def _find_stop(category: str, lat: str, lon: str, radius: str) -> list[float]:
     nearby_search_url = f"https://api.content.tripadvisor.com/api/v1/location/nearby_search?latLong={lat}%2C{lon}&key={tripadvisor_access_token}&category={category}&radius={radius}&radiusUnit=mi&language=en"
     headers = {"accept": "application/json"}
     try:
@@ -133,7 +132,7 @@ async def find_stop(category: str, lat: str, lon: str, radius: str) -> list:
         if len(locations.data) > 0:
             location = locations.data[0]  # Get the first location from the response
             location_id = location.location_id
-            coordinates = await get_details(location_id)
+            coordinates = await _get_details(location_id)
             if coordinates is not None:
                 return coordinates
             else:
@@ -143,11 +142,10 @@ async def find_stop(category: str, lat: str, lon: str, radius: str) -> list:
     except requests.exceptions.RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Tripadvisor request failed: {str(exception)}")
     except ValidationError as exception:
-        print(response)
         raise HTTPException(status_code=501, detail=f'Improper TripAdvisor response: {str(exception)}')
     
 #Grab details about the chosen location
-async def get_details(location_id:str) -> list[float]:
+async def _get_details(location_id:str) -> list[float]:
     location_details_url = f"https://api.content.tripadvisor.com/api/v1/location/{location_id}/details?key={tripadvisor_access_token}&language=en&currency=USD"
     headers = {"accept": "application/json"}
 
