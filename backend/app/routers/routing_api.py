@@ -26,13 +26,12 @@ app = FastAPI()
 
 
 @app.get("/get-route", response_model=Route)
-async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon: float) -> Route:
+async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon: float, num_stops: int = 5) -> Route:
     try:
         #Construct initial route without stops
         route = await _call_route(start_lat, start_lon, end_lat, end_lon)
 
         #Use initial route to find stopping points
-        num_stops = 5 #Initialize number of stops
         stopping_points = await _add_stop(route, num_stops)
 
         # Construct waypoints string and make new route with stopping points
