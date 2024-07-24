@@ -5,6 +5,13 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
+#Cooldown class
+class Cooldown:
+    def __init__(self, restaurant, geo, attraction, hotel):
+        self.restaurant = restaurant
+        self.geo = geo
+        self.attraction = attraction
+        self.hotel = hotel
 
 #Get APIs
 tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
@@ -72,7 +79,7 @@ def find_position(coordinates: list[list[float]], steps: list[Mapbox_step], elap
 @app.post('/add-stop')
 async def add_stop(steps: list[Mapbox_step], coordinates: list[list[float]], route_duration: float, departure_time: float = 36000) -> list[list[float]]:
     #Conversion rate: 3600 seconds -> 1 hour
-
+    cooldown = Cooldown(10800, 7200, 7200, 43200)
     current_time = 0
     total_time = route_duration
     real_time = departure_time #Keep track of the real world time
@@ -85,19 +92,24 @@ async def add_stop(steps: list[Mapbox_step], coordinates: list[list[float]], rou
 
         #Only find attractions and parks after 2 hours (Between 8am-8pm)
         if current_time > 7200 and (total_time - current_time) > 3600 and real_time > 28800 and real_time < 72000:
-            current_lat, current_lon = find_position(coordinates, steps, current_time)
-            stopping_points.append(await find_stop('attraction',current_lat, current_lon, 30))  #Can tweak radius depending on preferences
-            stopping_points.append(await find_stop('geo', current_lat, current_lon, 30))   #Can tweak radius depending on preferences
+            if cooldown.attraction <= 0:
+                current_lat, current_lon = find_position(coordinates, steps, current_time)
+                stopping_points.append(await find_stop('attraction',current_lat, current_lon, 30))  #Can tweak radius depending on preferences
+            if cooldown.geo <= 0:
+                current_lat, current_lon = find_position(coordinates, steps, current_time)
+                stopping_points.append(await find_stop('geo', current_lat, current_lon, 30))   #Can tweak radius depending on preferences
 
         #Find a hotel if after 9 pm
         if real_time > 75600:  #Can tweak this number depending on how early/late people want to drive
-            current_lat, current_lon = find_position(coordinates, steps, current_time)
-            stopping_points.append(await find_stop('hotel', current_lat, current_lon, 50))
+            if cooldown.hotel <= 0:
+                current_lat, current_lon = find_position(coordinates, steps, current_time)
+                stopping_points.append(await find_stop('hotel', current_lat, current_lon, 50))
 
         #Find food at alloted eating times
         if real_time > 28800 and real_time < 36000 or real_time > 46800 and real_time < 54000 or real_time > 64800 and real_time < 72000: #Can tweak all of these if user wants to eat at specific times
-            current_lat, current_lon = find_position(coordinates, steps, current_time)
-            stopping_points.append(await find_stop('restaurant', current_lat, current_lon, 10))
+            if cooldown.restaurant <= 0:
+                current_lat, current_lon = find_position(coordinates, steps, current_time)
+                stopping_points.append(await find_stop('restaurant', current_lat, current_lon, 10))
 
         #Increment time
         current_time += 900
@@ -105,5 +117,11 @@ async def add_stop(steps: list[Mapbox_step], coordinates: list[list[float]], rou
             real_time += 900
         else:
             real_time += 900 - 86400
+
+        #Increment cooldowns
+        cooldown.attraction -= 900
+        cooldown.geo -= 900
+        cooldown.hotel -= 900
+        cooldown.restaurant -= 900
 
     return stopping_points

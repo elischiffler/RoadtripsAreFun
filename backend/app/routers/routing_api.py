@@ -25,7 +25,7 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
         route = await call_route(start_lat, start_lon, end_lat, end_lon)
 
         #Use initial route to find stopping points
-        stopping_points = add_stop(route.legs[0].steps, route.geometry.coordinates, route.duration, start_lat, start_lon, end_lat, end_lon)
+        stopping_points = await add_stop(route.legs[0].steps, route.geometry.coordinates, route.duration, departure_time=36000)
 
         # Construct waypoints string and make new route with stopping points
         waypoints = ';'.join([f"{lon},{lat}" for lat, lon in stopping_points])
