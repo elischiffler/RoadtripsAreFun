@@ -1,3 +1,4 @@
+'''
 from fastapi import FastAPI, HTTPException
 from app.models.routing_models import MapBox, Trip_Advisor_Location_Search, Trip_Advisor_Information
 import requests
@@ -13,16 +14,10 @@ class Cooldown:
         self.attraction = attraction
         self.hotel = hotel
 
-#Get APIs
-tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
-
-#Initialize FastAPI
-app = FastAPI()
-
 #Initialize a mapbox_step class
 Mapbox_step = MapBox.MapBox_Route.Mapbox_leg.Mapbox_step
 
-#Function that will find a nearby response and resturn it
+#Function that will find a nearby stop and resturn it
 async def find_stop(category: str, lat: float, lon: float, radius: float) -> list:
     url = f"https://api.content.tripadvisor.com/api/v1/location/nearby_search?latLong={lat}%2C{lon}&key={tripadvisor_access_token}&category={category}&radius={radius}&radiusUnit=mi&language=en"
     headers = {"accept": "application/json"}
@@ -125,3 +120,4 @@ async def add_stop(steps: list[Mapbox_step], coordinates: list[list[float]], rou
         cooldown.restaurant -= 900
 
     return stopping_points
+'''
