@@ -1,0 +1,25 @@
+language: python
+python:
+  - "3.8"
+  - "3.9"
+  - "3.10"
+
+# Cache pip dependencies
+cache: pip
+
+# Install dependencies
+install:
+  - pip install -r requirements.txt
+  - pip install pytest
+
+# Command to run tests
+script:
+  - pytest
+
+# Notifications (optional)
+notifications:
+  email:
+    recipients:
+      - joeymarenin13@gmail.com
+    on_success: change
+    on_failure: always
