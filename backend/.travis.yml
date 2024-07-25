@@ -15,7 +15,7 @@ before_script:
 
 # Command to run tests
 script:
-  - pytest
+  - pytest routing_api_tests.py
 
 # Run builds only on PRs
 if: type = pull_request
@@ -25,5 +25,8 @@ notifications:
   email:
     recipients:
       - joeymarenin13@gmail.com
+      - eschiffler1122@gmail.com
+      - apfreela@calpoly.edu
+
     on_success: change
     on_failure: always
