@@ -187,7 +187,7 @@ class Trip_Advisor_Information(BaseModel):
         award_type: str
         year: int
 
-        class Trip_Advisor_Image:
+        class Trip_Advisor_Image(BaseModel):
             tiny: str
             small: str
             large: str
