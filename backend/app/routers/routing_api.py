@@ -122,10 +122,18 @@ def _find_position(coordinates: list[list[float]], steps: list[Mapbox_step], ela
 
 #Find a nearby stop and return its coordinates
 async def _find_stop(category: str, lat: str, lon: str, radius: str) -> list[float]:
-    nearby_search_url = f"https://api.content.tripadvisor.com/api/v1/location/nearby_search?latLong={lat}%2C{lon}&key={tripadvisor_access_token}&category={category}&radius={radius}&radiusUnit=mi&language=en"
-    headers = {"accept": "application/json"}
+    nearby_search_url = "https://api.content.tripadvisor.com/api/v1/location/nearby_search"
+    params = {
+        'latLong': f"{lat}%2C{lon}",
+        'key': tripadvisor_access_token,
+        'category': category,
+        'radius': radius,
+        'radiusUnit': 'mi',
+        'language': 'en'
+    }
+
     try:
-        response = requests.get(nearby_search_url, headers=headers)
+        response = requests.get(nearby_search_url, params=params)
         json_data = response.json()
         locations = Trip_Advisor_Location_Search.model_validate(json_data)
         if len(locations.data) > 0:
@@ -142,13 +150,15 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> list[flo
         raise HTTPException(status_code=500, detail=f"Tripadvisor request failed: {str(exception)}")
     except ValidationError as exception:
         raise HTTPException(status_code=501, detail=f'Improper TripAdvisor response: {str(exception)}')
-    
-#Grab details about the chosen location
-async def _get_details(location_id:str) -> list[float]:
-    location_details_url = f"https://api.content.tripadvisor.com/api/v1/location/{location_id}/details?key={tripadvisor_access_token}&language=en&currency=USD"
-    headers = {"accept": "application/json"}
 
-    response = requests.get(location_details_url, headers=headers)
+    location_details_url = f"https://api.content.tripadvisor.com/api/v1/location/{location_id}/details"
+    params = {
+        'key': tripadvisor_access_token,
+        'language': 'en',
+        'currency': 'USD'
+    }
+
+    response = requests.get(location_details_url, params=params)
     json_data = response.json()
     details = Trip_Advisor_Information.model_validate(json_data)
 
