@@ -16,9 +16,7 @@ class Route(BaseModel):
     duration: float
     steps: list[Route_Step]
 
-
 # Mapbox Base Models
-
 class Mapbox_waypoint(BaseModel):
     name: str
     location: list[float]
@@ -92,7 +90,6 @@ class MapBox(BaseModel):
 
 
 # Trip Advisor API Base Models
-
 class Trip_Advisor_Error(BaseModel):
     message: str
     type: str
@@ -100,13 +97,13 @@ class Trip_Advisor_Error(BaseModel):
 
 
 class Trip_Advisor_Address(BaseModel):
-    street1: str
-    street2: str
-    city: str
-    state: str
-    country: str
-    postal_code: str
-    address_string: str
+    street1: Optional[str] = None
+    street2: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
+    postal_code: Optional[str] = None
+    address_string: Optional[str] = None
 
 
 class Trip_Advisor_Location_Search(BaseModel):
@@ -115,73 +112,86 @@ class Trip_Advisor_Location_Search(BaseModel):
         name: str
         distance: str
         bearing: str
-        address_obj: Trip_Advisor_Address
+        address_obj: Optional[Trip_Advisor_Address] = None
 
     data: list[Trip_Advisor_Location]
-    error: Trip_Advisor_Error
+    error: Optional[Trip_Advisor_Error] = None
 
 class Trip_Advisor_Subcategory(BaseModel):
     name: str
     localized_name: str
 
 class Trip_Advisor_Information(BaseModel):
-    location_id: int
-    name: str
-    description: str
-    web_url: str
-    address_obj: Trip_Advisor_Address
-    ancestors: list[dict]
-    latitude: float
-    longitude: float
-    timezone: str
-    email: str
-    phone: str
-    website: str
-    write_review: str
-    ranking_data: dict
-    rating: float
-    rating_image_url: str
-    num_reviews: str
-    review_rating_count: dict[str, str]
-    subratings: dict[str, Any]
-    photo_count: int
-    see_all_photos: str
-    price_level: str  # A number of dollar signs 1-5 indicating price
+    class Trip_Advisor_Ancestors(BaseModel):
+        abbrv: Optional[str] = None
+        level: Optional[str] = None
+        name: Optional[str] = None
+        location_id: Optional[int] = None
+    
+    class Trip_Advisor_Ranking(BaseModel):
+        geo_location_id: Optional[int] = None
+        ranking_string: Optional[str] = None
+        geo_location_name: Optional[str] = None
+        ranking_out_of: Optional[int] = None
+        ranking: Optional[int] = None
+
+    location_id: Optional[int] = None
+    name: Optional[str] = None
+    description: Optional[str] = None
+    web_url: Optional[str] = None
+    address_obj: Optional[Trip_Advisor_Address] = None
+    ancestors: Optional[list[Trip_Advisor_Ancestors]] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    timezone: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    website: Optional[str] = None
+    write_review: Optional[str] = None
+    ranking_data: Optional[Trip_Advisor_Ranking] = None
+    rating: Optional[float] = None
+    rating_image_url: Optional[str] = None
+    num_reviews: Optional[str] = None
+    review_rating_count: Optional[dict[str, str]] = None
+    subratings: Optional[dict[str, Any]] = None
+    photo_count: Optional[int] = None
+    see_all_photos: Optional[str] = None
+    price_level: Optional[str] = None  # A number of dollar signs 1-5 indicating price
 
     class Trip_Advisor_Hours(BaseModel):
         class Trip_Advisor_Period(BaseModel):
             class Trip_Advisor_Time(BaseModel):
                 day: int
                 time: str
-
             open: Trip_Advisor_Time
             close: Trip_Advisor_Time
+        periods: Optional[list[Trip_Advisor_Period]] = None
+        weekday_text: Optional[list[str]] = None
 
-        periods: list[dict]
-        weekday_text: str
-
-    hours: list[Trip_Advisor_Hours]
-    amenities: list[str]
-    features: list[str]
-    cuisine: list[Trip_Advisor_Subcategory]
-    parent_brand: str
-    brand: str
-    category: Trip_Advisor_Subcategory
-    subcategory: list[Trip_Advisor_Subcategory]
+    hours: Optional[Trip_Advisor_Hours] = None
+    amenities: Optional[list[str]] = None
+    features: Optional[list[str]] = None
+    cuisine: Optional[list[Trip_Advisor_Subcategory]] = None
+    parent_brand: Optional[str] = None
+    brand: Optional[str] = None
+    category: Optional[Trip_Advisor_Subcategory] = None
+    subcategory: Optional[list[Trip_Advisor_Subcategory]] = None
 
     class Trip_Advisor_Group(BaseModel):
         name: str
         localized_name: str
         categories: list[Trip_Advisor_Subcategory]
-    groups: list[Trip_Advisor_Group]
-    styles: list[str]
-    neighborhood_info: list[Trip_Advisor_Subcategory] # List of nearby neighborhoods
+
+    groups: Optional[list[Trip_Advisor_Group]] = None
+    styles: Optional[list[str]] = None
+    neighborhood_info: Optional[list[Trip_Advisor_Subcategory]] = None # List of nearby neighborhoods
 
     class Trip_Advisor_TripType(BaseModel):
         name: str
         localized_name: str
         value: str
-    trip_types: list[Trip_Advisor_TripType]
+
+    trip_types: Optional[list[Trip_Advisor_TripType]] = None
 
     class Trip_Advisor_Award(BaseModel):
         award_type: str
@@ -194,7 +204,5 @@ class Trip_Advisor_Information(BaseModel):
         images: list[Trip_Advisor_Image]
         categories: list[str]
         display_name: str
-    awards: list[Trip_Advisor_Award]
-    error: Trip_Advisor_Error
-
-
+    awards: Optional[list[Trip_Advisor_Award]] = None
+    error: Optional[Trip_Advisor_Error] = None
