@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "vite",   
+    "start": "vite",
     "build": "vite build",
-    "preview": "vite preview"    
+    "preview": "vite preview"
   },
   "dependencies": {
     "acorn": "^8.12.1",
@@ -225,7 +225,9 @@
     "yallist": "^3.1.1",
     "yocto-queue": "^0.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1"
+  },
   "author": "",
   "license": "ISC",
   "description": ""
