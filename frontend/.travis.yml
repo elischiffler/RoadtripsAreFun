@@ -1,6 +1,8 @@
+dist: xenial
+
 language: node_js
 node_js:
-  - 18
+  - node
 install:
   - npm ci
 script:
