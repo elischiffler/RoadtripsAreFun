@@ -76,8 +76,14 @@ export default function HomePage() {
           <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
             Plan a trip in minutes!
           </Typography>
-          <Button variant="contained" color="secondary">
-            Get Started
+          <Button
+            variant="contained"
+            color="secondary"
+            component={Link}
+            to="/chat"
+            sx={{ marginRight: 2 }}
+          >
+            Get Started!
           </Button>
         </Box>
 
