@@ -9,6 +9,7 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 import LogoButton from "../components/LogoButton";
 import InfoIcon from "@mui/icons-material/Info";
 
@@ -56,10 +57,21 @@ export default function HomePage() {
           <LogoButton />
 
           <Box>
-            <Button variant="contained" color="primary" sx={{ marginRight: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              component={Link}
+              to="/login"
+              sx={{ marginRight: 2 }}
+            >
               Login
             </Button>
-            <Button variant="contained" color="secondary">
+            <Button
+              variant="contained"
+              color="secondary"
+              component={Link}
+              to="/signup"
+            >
               Signup
             </Button>
           </Box>
