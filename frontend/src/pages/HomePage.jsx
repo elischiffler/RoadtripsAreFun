@@ -4,34 +4,13 @@ import {
   Container,
   CssBaseline,
   ThemeProvider,
-  createTheme,
   Button,
   Typography,
-  TextField,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import LogoButton from "../components/LogoButton";
 import InfoIcon from "@mui/icons-material/Info";
-
-const customTheme = createTheme({
-  palette: {
-    primary: {
-      main: "#4464AD",
-    },
-    secondary: {
-      main: "#6DB1BF",
-    },
-    pink: {
-      main: "#E5D0E3",
-    },
-    purple: {
-      main: "#38023B",
-    },
-    dark: {
-      main: "#071108",
-    },
-  },
-});
+import customTheme from "../components/Theme";
 
 export default function HomePage() {
   return (
