@@ -6,7 +6,7 @@ import LoginPage, {
   Username,
   Password,
 } from "@react-login-page/page11";
-import MinorCrashIcon from "@mui/icons-material/MinorCrash";
+import LogoButton from "../components/LogoButton";
 import LoginBannerBgImg from "../assets/LoginBanner.jpg";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -23,10 +23,10 @@ const Demo = () => {
   return (
     <LoginPage style={{ height: "100vh" }}>
       <Logo>
-        <MinorCrashIcon />
+        <LogoButton />
       </Logo>
-      {/* hide default username field */}
-      <Username visible={false} />
+      <Username visible={true} />
+
       <div style={{ position: "relative", marginBottom: "20px" }}>
         <Password
           index={2}
@@ -37,7 +37,7 @@ const Demo = () => {
           style={{
             position: "absolute",
             right: "885px", // Adjust this value to position the icon properly
-            top: "51%",
+            top: "52.3%",
             transform: "translateY(-50%)",
             cursor: "pointer",
             zIndex: 1,
