@@ -10,7 +10,6 @@ import customTheme from "../components/Theme";
 import LogoButton from "../components/LogoButton";
 import ChatButton from "../components/ChatButton";
 import MapButton from "../components/MapButton";
-import { styled } from "@mui/system";
 
 const ItineraryPage = () => {
   const itinerary = [
@@ -90,6 +89,19 @@ const ItineraryPage = () => {
             marginTop: "3.9%", // Space for fixed top
             marginBottom: "3.9%", // Space for fixed bottom
             overflowY: "auto",
+            "&::-webkit-scrollbar": {
+              width: "12px",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "primary.main", // Use main background color
+            },
+            "&::-webkit-scrollbar-thumb": {
+              background: "#003366",
+              borderRadius: "10px",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              background: "#002244",
+            },
           }}
         >
           {itinerary.map((day, index) => (
@@ -167,7 +179,7 @@ const ItineraryPage = () => {
               mb: 1.8,
             }}
           >
-            <MapButton />
+            <ChatButton />
           </Box>
           <Box
             sx={{
@@ -178,7 +190,7 @@ const ItineraryPage = () => {
               mb: 1.8,
             }}
           >
-            <ChatButton />
+            <MapButton />
           </Box>
         </Box>
       </Container>

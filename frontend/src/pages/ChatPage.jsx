@@ -179,7 +179,6 @@ const ChatPage = () => {
             sx={{
               flex: 1,
               overflowY: "auto",
-              padding: 2,
               bgcolor: "primary.main",
               display: "flex",
               flexDirection: "column",
@@ -193,8 +192,22 @@ const ChatPage = () => {
                   display: "flex",
                   flexDirection: "column",
                   gap: 2,
+                  padding: 2,
                   maxHeight: "calc(100vh - 150px)", // Adjust to fit screen
                   overflowY: "auto",
+                  "&::-webkit-scrollbar": {
+                    width: "12px",
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    background: "primary.main", // Use main background color
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    background: "#003366",
+                    borderRadius: "10px",
+                  },
+                  "&::-webkit-scrollbar-thumb:hover": {
+                    background: "#002244",
+                  },
                   boxSizing: "border-box",
                 }}
               >
