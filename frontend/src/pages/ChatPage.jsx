@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   CssBaseline,
@@ -13,6 +13,7 @@ import ItineraryButton from "../components/ItineraryButton";
 import MapButton from "../components/MapButton";
 
 const ChatPage = () => {
+  // Initialize with the first chat
   const [selectedChat, setSelectedChat] = useState(null);
   const chatEndRef = useRef(null); // Ref to scroll to the end of the chat
 
@@ -51,12 +52,19 @@ const ChatPage = () => {
     },
   ];
 
+  // Set the first chat as the default selected chat
+  useEffect(() => {
+    if (chats.length > 0) {
+      setSelectedChat(chats[0]);
+    }
+  }, []);
+
   const handleChatClick = (chat) => {
     setSelectedChat(chat);
   };
 
   // Scroll to bottom when new messages are added
-  React.useEffect(() => {
+  useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
