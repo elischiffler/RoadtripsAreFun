@@ -8,8 +8,9 @@ import {
 } from "@mui/material";
 import customTheme from "../components/Theme";
 import LogoButton from "../components/LogoButton";
-import ReturnToChatButton from "../components/ChatButton";
+import ChatButton from "../components/ChatButton";
 import MapButton from "../components/MapButton";
+import { styled } from "@mui/system";
 
 const ItineraryPage = () => {
   const itinerary = [
@@ -177,7 +178,7 @@ const ItineraryPage = () => {
               mb: 1.8,
             }}
           >
-            <ReturnToChatButton />
+            <ChatButton />
           </Box>
         </Box>
       </Container>

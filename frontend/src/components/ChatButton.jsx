@@ -3,7 +3,7 @@ import { Button, Typography } from "@mui/material";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import { Link } from "react-router-dom";
 
-const ReturnToChatButton = () => {
+const ChatButton = () => {
   return (
     <Link
       to="/chat"
@@ -29,4 +29,4 @@ const ReturnToChatButton = () => {
   );
 };
 
-export default ReturnToChatButton;
+export default ChatButton;
