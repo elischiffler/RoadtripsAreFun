@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   CssBaseline,
@@ -7,11 +7,13 @@ import {
   Typography,
   ThemeProvider,
 } from "@mui/material";
-import { Link } from "react-router-dom";
 import customTheme from "../components/Theme";
 import LogoButton from "../components/LogoButton";
+import ItineraryButton from "../components/ItineraryButton";
+import MapButton from "../components/MapButton";
 
 const ChatPage = () => {
+  // Initialize with the first chat
   const [selectedChat, setSelectedChat] = useState(null);
   const chatEndRef = useRef(null); // Ref to scroll to the end of the chat
 
@@ -50,12 +52,19 @@ const ChatPage = () => {
     },
   ];
 
+  // Set the first chat as the default selected chat
+  useEffect(() => {
+    if (chats.length > 0) {
+      setSelectedChat(chats[0]);
+    }
+  }, []);
+
   const handleChatClick = (chat) => {
     setSelectedChat(chat);
   };
 
   // Scroll to bottom when new messages are added
-  React.useEffect(() => {
+  useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
@@ -137,27 +146,12 @@ const ChatPage = () => {
               bottom: 0,
             }}
           >
-            <Link to="/map" style={{ textDecoration: "none", width: "100%" }}>
-              <Button
-                variant="contained"
-                color="secondary"
-                sx={{ mb: 1, width: "100%" }}
-              >
-                See Map
-              </Button>
-            </Link>
-            <Link
-              to="/itinerary"
-              style={{ textDecoration: "none", width: "100%" }}
-            >
-              <Button
-                variant="contained"
-                color="secondary"
-                sx={{ mb: 1, width: "100%" }}
-              >
-                See Itinerary
-              </Button>
-            </Link>
+            <Box sx={{ mb: 2, width: "100%" }}>
+              <MapButton />
+            </Box>
+            <Box sx={{ mb: 2, width: "100%" }}>
+              <ItineraryButton />
+            </Box>
             <LogoButton />
           </Box>
         </Box>
@@ -193,7 +187,6 @@ const ChatPage = () => {
             sx={{
               flex: 1,
               overflowY: "auto",
-              padding: 2,
               bgcolor: "primary.main",
               display: "flex",
               flexDirection: "column",
@@ -207,8 +200,22 @@ const ChatPage = () => {
                   display: "flex",
                   flexDirection: "column",
                   gap: 2,
+                  padding: 2,
                   maxHeight: "calc(100vh - 150px)", // Adjust to fit screen
                   overflowY: "auto",
+                  "&::-webkit-scrollbar": {
+                    width: "12px",
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    background: "primary.main", // Use main background color
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    background: "#003366",
+                    borderRadius: "10px",
+                  },
+                  "&::-webkit-scrollbar-thumb:hover": {
+                    background: "#002244",
+                  },
                   boxSizing: "border-box",
                 }}
               >
@@ -248,16 +255,14 @@ const ChatPage = () => {
               bottom: 0,
               bgcolor: "primary.main",
               boxSizing: "border-box",
-              right: 0,
             }}
           >
             <TextField
               variant="outlined"
-              placeholder="Type a message..."
-              fullWidth
-              sx={{ marginRight: 1 }}
+              placeholder="Type a message"
+              sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
             />
-            <Button variant="contained" color="pink">
+            <Button variant="contained" color="secondary">
               Send
             </Button>
           </Box>
