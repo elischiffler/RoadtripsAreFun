@@ -4,6 +4,7 @@ import customTheme from "../components/Theme";
 import LogoButton from "../components/LogoButton";
 import ItineraryButton from "../components/ItineraryButton";
 import ChatButton from "../components/ChatButton";
+import Map from "../components/Map";
 
 const MapPage = () => {
   return (
@@ -76,6 +77,7 @@ const MapPage = () => {
           }}
         >
           {/* Add your main content here */}
+          <Map />
         </Box>
       </Box>
     </ThemeProvider>
