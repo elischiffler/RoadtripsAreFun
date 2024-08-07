@@ -10,18 +10,28 @@ import {
   InputAdornment,
   ThemeProvider,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import customTheme from "../components/Theme";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 import LogoButton from "../components/LogoButton";
 import SignupBannerBgImg from "../assets/LoginBanner.jpg";
+import { signUp, confirmSignUp } from "../services/authService";
 
-const SignupPage = () => {
+const SignUpPage = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [confirmationCode, setConfirmationCode] = useState("");
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [username, setUsername] = useState(""); // Add state for username
+
+  const navigate = useNavigate();
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -31,9 +41,45 @@ const SignupPage = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  const handleSubmit = (event) => {
+  // Password validation logic
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;"'<>,.?~`-]/.test(password);
+  const isLengthValid = password.length >= 8;
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle form submission
+    setIsSubmitting(true);
+
+    if (!isConfirmed) {
+      if (password !== confirmPassword) {
+        alert("Passwords do not match!");
+        setIsSubmitting(false);
+        return;
+      }
+      try {
+        const response = await signUp(email, password);
+        console.log("Sign up success: ", response);
+        alert("Please check your email for the confirmation code.");
+        setUsername(response.Username); // Use Username from signUp response
+        setIsConfirmed(true);
+      } catch (error) {
+        console.error("Error signing up: ", error);
+        alert("Error signing up. Please try again.");
+      }
+    } else {
+      try {
+        await confirmSignUp(username, confirmationCode); // Use stored username
+        alert("Account confirmed successfully!");
+        navigate("/login");
+      } catch (error) {
+        console.error("Error confirming sign up: ", error);
+        alert("Error confirming sign up. Please try again.");
+      }
+    }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -45,7 +91,6 @@ const SignupPage = () => {
           height: "100vh",
         }}
       >
-        {/* Form Container */}
         <Box
           sx={{
             flex: "1",
@@ -65,18 +110,11 @@ const SignupPage = () => {
               }}
             >
               <Typography variant="h4" gutterBottom>
-                Create Your Account
+                {isConfirmed ? "Confirm Your Account" : "Create Your Account"}
               </Typography>
               <LogoButton />
             </Box>
             <form onSubmit={handleSubmit}>
-              <TextField
-                label="Username"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                required
-              />
               <TextField
                 label="Email"
                 type="email"
@@ -84,6 +122,8 @@ const SignupPage = () => {
                 fullWidth
                 margin="normal"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <TextField
                 label="Password"
@@ -133,15 +173,40 @@ const SignupPage = () => {
                   ),
                 }}
               />
-              <Button
-                type="submit"
-                variant="contained"
-                color="secondary"
-                fullWidth
-                sx={{ mt: 2 }}
-              >
-                Sign Up
-              </Button>
+              {isConfirmed ? (
+                <>
+                  <TextField
+                    label="Confirmation Code"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    required
+                    value={confirmationCode}
+                    onChange={(e) => setConfirmationCode(e.target.value)}
+                  />
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    disabled={isSubmitting}
+                  >
+                    Confirm Account
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                  sx={{ mt: 2 }}
+                  disabled={isSubmitting}
+                >
+                  Sign Up
+                </Button>
+              )}
             </form>
             <Typography variant="body2" align="center" sx={{ mt: 2 }}>
               Already have an account?{" "}
@@ -149,10 +214,98 @@ const SignupPage = () => {
                 Sign in
               </Link>
             </Typography>
+            <Box sx={{ mt: 5 }}>
+              <Typography variant="body1">Password Requirements:</Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {hasUpperCase ? (
+                    <CheckIcon sx={{ color: "green" }} />
+                  ) : (
+                    <CloseIcon sx={{ color: "gray" }} />
+                  )}
+                  <Typography variant="body2">
+                    At least one uppercase letter
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {hasLowerCase ? (
+                    <CheckIcon sx={{ color: "green" }} />
+                  ) : (
+                    <CloseIcon sx={{ color: "gray" }} />
+                  )}
+                  <Typography variant="body2">
+                    At least one lowercase letter
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {hasNumber ? (
+                    <CheckIcon sx={{ color: "green" }} />
+                  ) : (
+                    <CloseIcon sx={{ color: "gray" }} />
+                  )}
+                  <Typography variant="body2">At least one number</Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {hasSpecialChar ? (
+                    <CheckIcon sx={{ color: "green" }} />
+                  ) : (
+                    <CloseIcon sx={{ color: "gray" }} />
+                  )}
+                  <Typography variant="body2">
+                    At least one special character
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {isLengthValid ? (
+                    <CheckIcon sx={{ color: "green" }} />
+                  ) : (
+                    <CloseIcon sx={{ color: "gray" }} />
+                  )}
+                  <Typography variant="body2">
+                    At least 8 characters long
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
           </Container>
         </Box>
 
-        {/* Banner Image */}
         <Box
           sx={{
             flex: "0 0 50%",
@@ -166,4 +319,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default SignUpPage;

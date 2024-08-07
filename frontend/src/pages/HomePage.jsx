@@ -6,13 +6,31 @@ import {
   ThemeProvider,
   Button,
   Typography,
+  IconButton,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LogoButton from "../components/LogoButton";
 import InfoIcon from "@mui/icons-material/Info";
 import customTheme from "../components/Theme";
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+
+const isAuthenticated = () => {
+  const accessToken = sessionStorage.getItem("accessToken");
+  return !!accessToken;
+};
 
 export default function HomePage() {
+  const navigate = useNavigate();
+  const authenticated = isAuthenticated();
+
+  const handleGetStartedClick = () => {
+    if (authenticated) {
+      navigate("/chat");
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
@@ -36,23 +54,29 @@ export default function HomePage() {
           <LogoButton />
 
           <Box>
-            <Button
-              variant="contained"
-              color="primary"
-              component={Link}
-              to="/login"
-              sx={{ marginRight: 2 }}
-            >
-              Login
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              component={Link}
-              to="/signup"
-            >
-              Signup
-            </Button>
+            {authenticated ? (
+              <VerifiedUserIcon />
+            ) : (
+              <>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component={Link}
+                  to="/login"
+                  sx={{ marginRight: 2 }}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  component={Link}
+                  to="/signup"
+                >
+                  Signup
+                </Button>
+              </>
+            )}
           </Box>
         </Box>
 
@@ -79,8 +103,7 @@ export default function HomePage() {
           <Button
             variant="contained"
             color="secondary"
-            component={Link}
-            to="/chat"
+            onClick={handleGetStartedClick} // Check where to route the user
             sx={{ marginRight: 2 }}
           >
             Get Started!
