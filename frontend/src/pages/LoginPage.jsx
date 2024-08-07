@@ -10,24 +10,39 @@ import {
   InputAdornment,
   ThemeProvider,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import customTheme from "../components/Theme";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LogoButton from "../components/LogoButton";
 import SignupBannerBgImg from "../assets/LoginBanner.jpg";
+import { signIn } from "../authService"; // Adjust the import path
 
 const LoginPage = () => {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle form submission
+    try {
+      const authResult = await signIn(username, password);
+      if (authResult) {
+        // Redirect to the home page or another page after successful login
+        navigate("/home"); // Adjust the path according to your routing
+      }
+    } catch (error) {
+      setError(
+        "Failed to sign in. Please check your credentials and try again."
+      );
+      console.error("Error signing in: ", error);
+    }
   };
 
   return (
@@ -70,6 +85,8 @@ const LoginPage = () => {
                 fullWidth
                 margin="normal"
                 required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
               <TextField
                 label="Password"
@@ -94,6 +111,11 @@ const LoginPage = () => {
                   ),
                 }}
               />
+              {error && (
+                <Typography color="error" variant="body2">
+                  {error}
+                </Typography>
+              )}
               <Button
                 type="submit"
                 variant="contained"

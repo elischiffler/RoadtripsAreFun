@@ -10,18 +10,24 @@ import {
   InputAdornment,
   ThemeProvider,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import customTheme from "../components/Theme";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LogoButton from "../components/LogoButton";
 import SignupBannerBgImg from "../assets/LoginBanner.jpg";
+import { signUp, confirmSignUp } from "../authService"; // Ensure correct path
 
-const SignupPage = () => {
+const SignUpPage = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [confirmationCode, setConfirmationCode] = useState("");
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add a loading state
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -31,9 +37,37 @@ const SignupPage = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle form submission
+    setIsSubmitting(true); // Set loading state to true
+
+    if (!isConfirmed) {
+      if (password !== confirmPassword) {
+        alert("Passwords do not match!");
+        setIsSubmitting(false); // Set loading state to false
+        return;
+      }
+      try {
+        const response = await signUp(email, password);
+        console.log("Sign up success: ", response);
+        alert("Please check your email for the confirmation code.");
+        setIsConfirmed(true); // Set to true to switch to confirmation step
+      } catch (error) {
+        console.error("Error signing up: ", error);
+        alert("Error signing up. Please try again.");
+      }
+    } else {
+      try {
+        await confirmSignUp(email, confirmationCode); // Adjust to use the username if needed
+        alert("Account confirmed successfully!");
+        navigate("/login"); // Redirect to login page or another page after confirmation
+      } catch (error) {
+        console.error("Error confirming sign up: ", error);
+        alert("Error confirming sign up. Please try again.");
+      }
+    }
+
+    setIsSubmitting(false); // Set loading state to false
   };
 
   return (
@@ -65,18 +99,11 @@ const SignupPage = () => {
               }}
             >
               <Typography variant="h4" gutterBottom>
-                Create Your Account
+                {isConfirmed ? "Confirm Your Account" : "Create Your Account"}
               </Typography>
               <LogoButton />
             </Box>
             <form onSubmit={handleSubmit}>
-              <TextField
-                label="Username"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                required
-              />
               <TextField
                 label="Email"
                 type="email"
@@ -84,6 +111,8 @@ const SignupPage = () => {
                 fullWidth
                 margin="normal"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <TextField
                 label="Password"
@@ -133,15 +162,40 @@ const SignupPage = () => {
                   ),
                 }}
               />
-              <Button
-                type="submit"
-                variant="contained"
-                color="secondary"
-                fullWidth
-                sx={{ mt: 2 }}
-              >
-                Sign Up
-              </Button>
+              {isConfirmed ? (
+                <>
+                  <TextField
+                    label="Confirmation Code"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    required
+                    value={confirmationCode}
+                    onChange={(e) => setConfirmationCode(e.target.value)}
+                  />
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    disabled={isSubmitting} // Disable button when submitting
+                  >
+                    Confirm Account
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                  sx={{ mt: 2 }}
+                  disabled={isSubmitting} // Disable button when submitting
+                >
+                  Sign Up
+                </Button>
+              )}
             </form>
             <Typography variant="body2" align="center" sx={{ mt: 2 }}>
               Already have an account?{" "}
@@ -166,4 +220,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default SignUpPage;
