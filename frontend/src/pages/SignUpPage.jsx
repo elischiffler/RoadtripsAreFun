@@ -14,6 +14,8 @@ import { Link, useNavigate } from "react-router-dom";
 import customTheme from "../components/Theme";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 import LogoButton from "../components/LogoButton";
 import SignupBannerBgImg from "../assets/LoginBanner.jpg";
 import { signUp, confirmSignUp } from "../services/authService";
@@ -28,6 +30,7 @@ const SignUpPage = () => {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [username, setUsername] = useState(""); // Add state for username
+
   const navigate = useNavigate();
 
   const handleTogglePasswordVisibility = () => {
@@ -38,10 +41,17 @@ const SignUpPage = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
+  // Password validation logic
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;"'<>,.?~`-]/.test(password);
+  const isLengthValid = password.length >= 8;
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
-  
+
     if (!isConfirmed) {
       if (password !== confirmPassword) {
         alert("Passwords do not match!");
@@ -68,10 +78,10 @@ const SignUpPage = () => {
         alert("Error confirming sign up. Please try again.");
       }
     }
-  
+
     setIsSubmitting(false);
   };
-  
+
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
@@ -204,6 +214,95 @@ const SignUpPage = () => {
                 Sign in
               </Link>
             </Typography>
+            <Box sx={{ mt: 5 }}>
+              <Typography variant="body1">Password Requirements:</Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {hasUpperCase ? (
+                    <CheckIcon sx={{ color: "green" }} />
+                  ) : (
+                    <CloseIcon sx={{ color: "gray" }} />
+                  )}
+                  <Typography variant="body2">
+                    At least one uppercase letter
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {hasLowerCase ? (
+                    <CheckIcon sx={{ color: "green" }} />
+                  ) : (
+                    <CloseIcon sx={{ color: "gray" }} />
+                  )}
+                  <Typography variant="body2">
+                    At least one lowercase letter
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {hasNumber ? (
+                    <CheckIcon sx={{ color: "green" }} />
+                  ) : (
+                    <CloseIcon sx={{ color: "gray" }} />
+                  )}
+                  <Typography variant="body2">At least one number</Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {hasSpecialChar ? (
+                    <CheckIcon sx={{ color: "green" }} />
+                  ) : (
+                    <CloseIcon sx={{ color: "gray" }} />
+                  )}
+                  <Typography variant="body2">
+                    At least one special character
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {isLengthValid ? (
+                    <CheckIcon sx={{ color: "green" }} />
+                  ) : (
+                    <CloseIcon sx={{ color: "gray" }} />
+                  )}
+                  <Typography variant="body2">
+                    At least 8 characters long
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
           </Container>
         </Box>
 
