@@ -16,7 +16,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LogoButton from "../components/LogoButton";
 import SignupBannerBgImg from "../assets/LoginBanner.jpg";
-import { signUp, confirmSignUp } from "../authService"; // Ensure correct path
+import { signUp, confirmSignUp } from "../services/authService";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
@@ -26,8 +26,9 @@ const SignUpPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState("");
   const [isConfirmed, setIsConfirmed] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false); // Add a loading state
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [username, setUsername] = useState(""); // Add state for username
+  const navigate = useNavigate();
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -39,37 +40,38 @@ const SignUpPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsSubmitting(true); // Set loading state to true
-
+    setIsSubmitting(true);
+  
     if (!isConfirmed) {
       if (password !== confirmPassword) {
         alert("Passwords do not match!");
-        setIsSubmitting(false); // Set loading state to false
+        setIsSubmitting(false);
         return;
       }
       try {
         const response = await signUp(email, password);
         console.log("Sign up success: ", response);
         alert("Please check your email for the confirmation code.");
-        setIsConfirmed(true); // Set to true to switch to confirmation step
+        setUsername(response.Username); // Use Username from signUp response
+        setIsConfirmed(true);
       } catch (error) {
         console.error("Error signing up: ", error);
         alert("Error signing up. Please try again.");
       }
     } else {
       try {
-        await confirmSignUp(email, confirmationCode); // Adjust to use the username if needed
+        await confirmSignUp(username, confirmationCode); // Use stored username
         alert("Account confirmed successfully!");
-        navigate("/login"); // Redirect to login page or another page after confirmation
+        navigate("/login");
       } catch (error) {
         console.error("Error confirming sign up: ", error);
         alert("Error confirming sign up. Please try again.");
       }
     }
-
-    setIsSubmitting(false); // Set loading state to false
+  
+    setIsSubmitting(false);
   };
-
+  
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
@@ -79,7 +81,6 @@ const SignUpPage = () => {
           height: "100vh",
         }}
       >
-        {/* Form Container */}
         <Box
           sx={{
             flex: "1",
@@ -179,7 +180,7 @@ const SignUpPage = () => {
                     color="secondary"
                     fullWidth
                     sx={{ mt: 2 }}
-                    disabled={isSubmitting} // Disable button when submitting
+                    disabled={isSubmitting}
                   >
                     Confirm Account
                   </Button>
@@ -191,7 +192,7 @@ const SignUpPage = () => {
                   color="secondary"
                   fullWidth
                   sx={{ mt: 2 }}
-                  disabled={isSubmitting} // Disable button when submitting
+                  disabled={isSubmitting}
                 >
                   Sign Up
                 </Button>
@@ -206,7 +207,6 @@ const SignUpPage = () => {
           </Container>
         </Box>
 
-        {/* Banner Image */}
         <Box
           sx={{
             flex: "0 0 50%",

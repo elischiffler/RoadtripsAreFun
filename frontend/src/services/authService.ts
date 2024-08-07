@@ -4,16 +4,16 @@ import {
   SignUpCommand,
   ConfirmSignUpCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
-import config from "../config.json";
-import { v4 as uuidv4 } from "uuid"; // Add this import to generate a unique username
+import config from "../../config";
+import { v4 as uuidv4 } from "uuid";
 
 export const cognitoClient = new CognitoIdentityProviderClient({
   region: config.region,
 });
 
-export const signIn = async (username: string, password: string) => {
+export const signIn = async (username, password) => {
   const params = {
-    AuthFlow: "USER_PASSWORD_AUTH" as const,
+    AuthFlow: "USER_PASSWORD_AUTH",
     ClientId: config.clientId,
     AuthParameters: {
       USERNAME: username,
@@ -41,7 +41,7 @@ export const signIn = async (username: string, password: string) => {
   }
 };
 
-export const signUp = async (email: string, password: string) => {
+export const signUp = async (email, password) => {
   const username = uuidv4(); // Generate a unique username
   const params = {
     ClientId: config.clientId,
@@ -58,7 +58,7 @@ export const signUp = async (email: string, password: string) => {
     const command = new SignUpCommand(params);
     const response = await cognitoClient.send(command);
     console.log("Sign up success: ", response);
-    return response;
+    return { Username: username, ...response }; // Return the generated username
   } catch (error) {
     console.error("Error signing up: ", error);
     throw error;

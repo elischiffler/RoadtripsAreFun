@@ -16,7 +16,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LogoButton from "../components/LogoButton";
 import SignupBannerBgImg from "../assets/LoginBanner.jpg";
-import { signIn } from "../authService"; // Adjust the import path
+import { signIn } from "../services/authService"; // Adjust the import path
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -34,8 +34,8 @@ const LoginPage = () => {
     try {
       const authResult = await signIn(username, password);
       if (authResult) {
-        // Redirect to the home page or another page after successful login
-        navigate("/home"); // Adjust the path according to your routing
+        // Redirect to the home page after successful login
+        navigate("/");
       }
     } catch (error) {
       setError(
