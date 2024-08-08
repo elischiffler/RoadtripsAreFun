@@ -12,7 +12,7 @@ import LogoButton from "../../components/LogoButton";
 import InfoIcon from "@mui/icons-material/Info";
 import customTheme from "../../components/Theme";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
-import "./HomePage.css"; // Import the CSS file
+import "./HomePage.css";
 
 const isAuthenticated = () => {
   const accessToken = sessionStorage.getItem("accessToken");

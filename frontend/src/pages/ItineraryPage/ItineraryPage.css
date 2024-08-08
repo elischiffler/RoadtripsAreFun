@@ -1,0 +1,115 @@
+/* ItineraryPage.css */
+
+/* Overall Container Styles */
+.itinerary-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full viewport height */
+}
+
+/* Fixed Top Box Styles */
+.fixed-top-box {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 7%;
+  background-color: var(--primary-main); /* Dark Blue */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 1000;
+}
+
+/* Fixed Top Box Typography Styles */
+.fixed-top-box .title {
+  flex-grow: 1;
+  text-align: center;
+  color: white;
+}
+
+/* Scrollable Main Content Box Styles */
+.scrollable-main-content {
+  flex: 1;
+  background-color: var(--primary-main); /* Light Blue */
+  color: #003366; /* Dark Blue text */
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  margin-top: 4%; /* Space for fixed top */
+  margin-bottom: 4%; /* Space for fixed bottom */
+  overflow-y: auto;
+}
+
+/* Scrollbar Styles */
+.scrollable-main-content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.scrollable-main-content::-webkit-scrollbar-track {
+  background: var(--primary-main); /* Use main background color */
+}
+
+.scrollable-main-content::-webkit-scrollbar-thumb {
+  background: #003366;
+  border-radius: 10px;
+}
+
+.scrollable-main-content::-webkit-scrollbar-thumb:hover {
+  background: #002244;
+}
+
+/* Day Box Styles */
+.day-box {
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Day Header Styles */
+.day-header {
+  background-color: #663399; /* Purple */
+  color: white;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 16px;
+}
+
+/* Activity Box Styles */
+.activity-box {
+  background-color: rgba(255, 192, 203, 0.6); /* Pink with 60% opacity */
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Activity Time Styles */
+.activity-time {
+  color: #555;
+}
+
+/* Fixed Bottom Button Container Styles */
+.fixed-bottom-buttons {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 7%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  background-color: var(--primary-main); /* Dark Blue */
+  z-index: 1000;
+}
+
+/* Button Container Styles */
+.fixed-bottom-buttons .button-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-bottom: 18px;
+}
