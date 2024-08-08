@@ -12,6 +12,7 @@ import ChatButton from "../components/ChatButton";
 import MapButton from "../components/MapButton";
 
 const ItineraryPage = () => {
+  // Sample itinerary data
   const itinerary = [
     {
       day: "June 19th",

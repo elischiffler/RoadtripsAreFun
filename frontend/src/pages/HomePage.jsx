@@ -6,7 +6,6 @@ import {
   ThemeProvider,
   Button,
   Typography,
-  IconButton,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import LogoButton from "../components/LogoButton";
@@ -14,6 +13,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import customTheme from "../components/Theme";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 
+// Check if the user is authenticated by verifying the presence of an access token in session storage
 const isAuthenticated = () => {
   const accessToken = sessionStorage.getItem("accessToken");
   return !!accessToken;
@@ -23,6 +23,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const authenticated = isAuthenticated();
 
+  // Handle the 'Get Started' button click based on authentication status
   const handleGetStartedClick = () => {
     if (authenticated) {
       navigate("/chat");

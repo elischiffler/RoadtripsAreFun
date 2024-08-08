@@ -30,14 +30,13 @@ const MapPage = () => {
             borderRight: `2px solid ${customTheme.palette.purple.main}`,
             boxSizing: "border-box",
             position: "relative",
+            alignItems: "center", // Center align the items
           }}
         >
           {/* Logo Button */}
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "center",
-              marginBottom: "auto",
+              mb: "auto",
             }}
           >
             <LogoButton />
@@ -46,9 +45,8 @@ const MapPage = () => {
           {/* Itinerary Button */}
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "center",
               mb: -1,
+              width: "100%", // Ensure buttons take full width
             }}
           >
             <ItineraryButton />
@@ -57,10 +55,7 @@ const MapPage = () => {
           {/* Chat Button */}
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "center",
-              mb: 2,
-              width: "100%",
+              width: "100%", // Ensure buttons take full width
             }}
           >
             <ChatButton />
@@ -76,7 +71,6 @@ const MapPage = () => {
             boxSizing: "border-box",
           }}
         >
-          {/* Add your main content here */}
           <Map />
         </Box>
       </Box>

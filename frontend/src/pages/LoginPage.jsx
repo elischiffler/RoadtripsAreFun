@@ -19,16 +19,19 @@ import SignupBannerBgImg from "../assets/LoginBanner.jpg";
 import { signIn } from "../services/authService"; // Adjust the import path
 
 const LoginPage = () => {
+  // State variables for form input and error handling
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Toggle password visibility
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -79,6 +82,7 @@ const LoginPage = () => {
               <LogoButton />
             </Box>
             <form onSubmit={handleSubmit}>
+              {/* Username or Email input */}
               <TextField
                 label="Username or Email"
                 variant="outlined"
@@ -88,6 +92,7 @@ const LoginPage = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
+              {/* Password input */}
               <TextField
                 label="Password"
                 type={showPassword ? "text" : "password"}
@@ -111,11 +116,13 @@ const LoginPage = () => {
                   ),
                 }}
               />
+              {/* Display error message if any */}
               {error && (
                 <Typography color="error" variant="body2">
                   {error}
                 </Typography>
               )}
+              {/* Submit button */}
               <Button
                 type="submit"
                 variant="contained"
@@ -126,6 +133,7 @@ const LoginPage = () => {
                 Log In
               </Button>
             </form>
+            {/* Link to sign-up page */}
             <Typography variant="body2" align="center" sx={{ mt: 2 }}>
               Don't have an account?{" "}
               <Link to="/signup" style={{ textDecoration: "underline" }}>

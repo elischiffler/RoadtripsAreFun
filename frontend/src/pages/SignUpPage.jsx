@@ -21,6 +21,7 @@ import SignupBannerBgImg from "../assets/LoginBanner.jpg";
 import { signUp, confirmSignUp } from "../services/authService";
 
 const SignUpPage = () => {
+  // State variables to manage form input and validation states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,10 +34,12 @@ const SignUpPage = () => {
 
   const navigate = useNavigate();
 
+  // Toggle password visibility
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  // Toggle confirm password visibility
   const handleToggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
@@ -48,11 +51,13 @@ const SignUpPage = () => {
   const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;"'<>,.?~`-]/.test(password);
   const isLengthValid = password.length >= 8;
 
+  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
 
     if (!isConfirmed) {
+      // If the user is not confirmed, perform sign-up
       if (password !== confirmPassword) {
         alert("Passwords do not match!");
         setIsSubmitting(false);
@@ -69,6 +74,7 @@ const SignUpPage = () => {
         alert("Error signing up. Please try again.");
       }
     } else {
+      // If the user is confirmed, perform confirmation
       try {
         await confirmSignUp(username, confirmationCode); // Use stored username
         alert("Account confirmed successfully!");
@@ -91,6 +97,7 @@ const SignUpPage = () => {
           height: "100vh",
         }}
       >
+        {/* Left section with form */}
         <Box
           sx={{
             flex: "1",
@@ -115,6 +122,7 @@ const SignUpPage = () => {
               <LogoButton />
             </Box>
             <form onSubmit={handleSubmit}>
+              {/* Email input */}
               <TextField
                 label="Email"
                 type="email"
@@ -125,6 +133,7 @@ const SignUpPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              {/* Password input */}
               <TextField
                 label="Password"
                 type={showPassword ? "text" : "password"}
@@ -148,6 +157,7 @@ const SignUpPage = () => {
                   ),
                 }}
               />
+              {/* Confirm password input */}
               <TextField
                 label="Confirm Password"
                 type={showConfirmPassword ? "text" : "password"}
@@ -174,6 +184,7 @@ const SignUpPage = () => {
                 }}
               />
               {isConfirmed ? (
+                // Confirmation code input for account confirmation
                 <>
                   <TextField
                     label="Confirmation Code"
@@ -196,6 +207,7 @@ const SignUpPage = () => {
                   </Button>
                 </>
               ) : (
+                // Sign-up button
                 <Button
                   type="submit"
                   variant="contained"
@@ -214,6 +226,7 @@ const SignUpPage = () => {
                 Sign in
               </Link>
             </Typography>
+            {/* Password requirements */}
             <Box sx={{ mt: 5 }}>
               <Typography variant="body1">Password Requirements:</Typography>
               <Box
@@ -306,6 +319,7 @@ const SignUpPage = () => {
           </Container>
         </Box>
 
+        {/* Right section with background image */}
         <Box
           sx={{
             flex: "0 0 50%",
