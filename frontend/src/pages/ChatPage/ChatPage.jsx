@@ -93,7 +93,8 @@ const ChatPage = () => {
                     selectedChat?.id === chat.id
                       ? customTheme.palette.purple.main
                       : "rgba(229, 208, 227, 0.5)",
-                  color: selectedChat?.id === chat.id ? "white" : "text.primary",
+                  color:
+                    selectedChat?.id === chat.id ? "white" : "text.primary",
                 }}
               >
                 <Typography variant="body2">{chat.title}</Typography>
@@ -121,7 +122,25 @@ const ChatPage = () => {
 
           <Box className="chat-box">
             {selectedChat ? (
-              <Box className="chat-messages">
+              <Box
+                className="chat-messages"
+                sx={{
+                  // Custom Scroll Wheel
+                  "&::-webkit-scrollbar": {
+                    width: "12px",
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    background: "primary.main", // Use main background color
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    background: "#003366",
+                    borderRadius: "10px",
+                  },
+                  "&::-webkit-scrollbar-thumb:hover": {
+                    background: "#002244",
+                  },
+                }}
+              >
                 {selectedChat.messages.map((message, index) => (
                   <Box
                     key={index}
