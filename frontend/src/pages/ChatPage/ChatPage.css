@@ -91,24 +91,6 @@
   box-sizing: border-box;
 }
 
-/* Scrollbar Styles */
-.chat-messages::-webkit-scrollbar {
-  width: 12px;
-}
-
-.chat-messages::-webkit-scrollbar-track {
-  background: var(--primary-main); /* Use main background color */
-}
-
-.chat-messages::-webkit-scrollbar-thumb {
-  background: #003366;
-  border-radius: 10px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb:hover {
-  background: #002244;
-}
-
 .message {
   background-color: var(--pink-main);
   padding: 16px;

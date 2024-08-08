@@ -54,7 +54,25 @@ const ItineraryPage = () => {
         </Box>
 
         {/* Scrollable Main Content Box */}
-        <Box className="scrollable-main-content">
+        <Box
+          className="scrollable-main-content"
+          sx={{
+            // Custom Scroll Wheel
+            "&::-webkit-scrollbar": {
+              width: "12px",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "primary.main", // Use main background color
+            },
+            "&::-webkit-scrollbar-thumb": {
+              background: "#003366",
+              borderRadius: "10px",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              background: "#002244",
+            },
+          }}
+        >
           {itinerary.map((day, index) => (
             <Box key={index} className="day-box">
               <Box className="day-header">

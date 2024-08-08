@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh; /* Full viewport height */
+  overflow: hidden; /* Prevent any overflow that could cause extra scrollbars */
 }
 
 /* Fixed Top Box Styles */
@@ -30,7 +31,6 @@
 
 /* Scrollable Main Content Box Styles */
 .scrollable-main-content {
-  flex: 1;
   background-color: var(--primary-main); /* Light Blue */
   color: #003366; /* Dark Blue text */
   padding: 16px;
@@ -38,27 +38,9 @@
   flex-direction: column;
   gap: 16px;
   position: relative;
-  margin-top: 4%; /* Space for fixed top */
-  margin-bottom: 4%; /* Space for fixed bottom */
   overflow-y: auto;
-}
-
-/* Scrollbar Styles */
-.scrollable-main-content::-webkit-scrollbar {
-  width: 12px;
-}
-
-.scrollable-main-content::-webkit-scrollbar-track {
-  background: var(--primary-main); /* Use main background color */
-}
-
-.scrollable-main-content::-webkit-scrollbar-thumb {
-  background: #003366;
-  border-radius: 10px;
-}
-
-.scrollable-main-content::-webkit-scrollbar-thumb:hover {
-  background: #002244;
+  height: calc(100vh - 13.8%);
+  margin-top: 4%; /* Space for fixed top */
 }
 
 /* Day Box Styles */
