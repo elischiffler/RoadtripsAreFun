@@ -1,10 +1,6 @@
 /* ChatPage.css */
 
-:root {
-  --pink-main: #f8bbd0;
-  --purple-main: #7b1fa2;
-  --primary-main: #4464ad;
-}
+
 
 .chat-container {
   display: flex;
