@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   Box,
   Container,
@@ -8,12 +8,12 @@ import {
   Typography,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import LogoButton from "../components/LogoButton";
+import LogoButton from "../../components/LogoButton";
 import InfoIcon from "@mui/icons-material/Info";
-import customTheme from "../components/Theme";
+import customTheme from "../../components/Theme";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import "./HomePage.css"; // Import the CSS file
 
-// Check if the user is authenticated by verifying the presence of an access token in session storage
 const isAuthenticated = () => {
   const accessToken = sessionStorage.getItem("accessToken");
   return !!accessToken;
@@ -23,7 +23,6 @@ export default function HomePage() {
   const navigate = useNavigate();
   const authenticated = isAuthenticated();
 
-  // Handle the 'Get Started' button click based on authentication status
   const handleGetStartedClick = () => {
     if (authenticated) {
       navigate("/chat");
@@ -35,25 +34,9 @@ export default function HomePage() {
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
-      <Container
-        maxWidth={false}
-        disableGutters
-        sx={{ width: "100vw", height: "100vh", overflowX: "hidden" }} // Prevent horizontal overflow
-      >
-        {/* Top Box */}
-        <Box
-          sx={{
-            width: "100%",
-            height: "10%",
-            bgcolor: "primary.main.light",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingX: 2,
-          }}
-        >
+      <Container className="home-page" maxWidth={false} disableGutters>
+        <Box className="top-box">
           <LogoButton />
-
           <Box>
             {authenticated ? (
               <VerifiedUserIcon />
@@ -64,7 +47,7 @@ export default function HomePage() {
                   color="primary"
                   component={Link}
                   to="/login"
-                  sx={{ marginRight: 2 }}
+                  className="login-button"
                 >
                   Login
                 </Button>
@@ -81,60 +64,25 @@ export default function HomePage() {
           </Box>
         </Box>
 
-        {/* Main Content Box */}
-        <Box
-          sx={{
-            bgcolor: "primary.main",
-            height: "45%", // Adjusted to leave space for the bottom section
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            color: "white",
-          }}
-        >
-          <Typography variant="h2" component="h1" sx={{ mb: 1 }}>
+        <Box className="main-content-box">
+          <Typography variant="h2" component="h1">
             Journey Genie
           </Typography>
-          <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
+          <Typography variant="h5" component="h2">
             Plan a trip in minutes!
           </Typography>
           <Button
             variant="contained"
             color="secondary"
-            onClick={handleGetStartedClick} // Check where to route the user
-            sx={{ marginRight: 2 }}
+            onClick={handleGetStartedClick}
+            className="get-started-button"
           >
             Get Started!
           </Button>
         </Box>
 
-        {/* Bottom Section */}
-        <Box
-          sx={{
-            width: "100%",
-            height: "50%", // Increased to extend further
-            bgcolor: "primary.main", // Same color as the main section
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 2,
-            position: "relative",
-          }}
-        >
-          <Box
-            sx={{
-              display: "grid",
-              gap: 2,
-              gridTemplateColumns: "repeat(3, 1fr)",
-              width: "100%",
-              maxWidth: "1200px", // Ensure it doesn't exceed viewport width
-              boxSizing: "border-box", // Include padding and border in the element's total width and height
-            }}
-          >
+        <Box className="bottom-section">
+          <Box className="info-container">
             {[
               {
                 title: "Personalized Itineraries",
@@ -167,35 +115,12 @@ export default function HomePage() {
                   "Our intuitive design ensures ease of use, allowing you to quickly and effortlessly plan your trips, make adjustments, and access valuable information on the go.",
               },
             ].map((item, index) => (
-              <Box
-                key={index}
-                sx={{
-                  bgcolor: "rgba(229, 208, 227, 0.75)", // Transparent pink
-                  borderRadius: 2,
-                  padding: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  position: "relative",
-                  paddingLeft: 4, // Increased padding to accommodate InfoIcon
-                  boxSizing: "border-box", // Ensure padding and border are included in width
-                }}
-              >
-                <InfoIcon
-                  sx={{
-                    position: "absolute",
-                    top: 8,
-                    left: 8,
-                    color: "primary.main",
-                  }}
-                />
-                <Typography
-                  variant="h6"
-                  sx={{ fontWeight: "bold", mb: 1, marginLeft: "20px" }} // Adjust margin for title
-                >
+              <Box key={index} className="info-item">
+                <InfoIcon className="info-icon" />
+                <Typography variant="h6" className="info-title">
                   {item.title}
                 </Typography>
-                <Typography variant="body2" sx={{ marginLeft: "20px" }}>
+                <Typography variant="body2" className="info-description">
                   {item.description}
                 </Typography>
               </Box>
