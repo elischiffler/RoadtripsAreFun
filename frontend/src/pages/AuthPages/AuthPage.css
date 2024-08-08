@@ -1,0 +1,61 @@
+/* AuthPage.css */
+
+.auth-container {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+}
+
+.form-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px;
+  background-color: var(--pink-main); /* Use your main color here */
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.form-header .MuiTypography-h4 {
+  margin: 0; /* Remove default margin for better alignment */
+}
+
+.form-header .logo-button {
+  display: flex;
+  align-items: center;
+}
+
+.password-requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.requirement {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Banner styling */
+.banner {
+  flex: 1; /* Occupies the remaining space */
+  background-image: url("../../assets/LoginBanner.jpg"); /* Update the image path if necessary */
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Full viewport height */
+  background-repeat: no-repeat; /* Ensure the image doesn't repeat */
+}
+
+/* Styles for Typography components */
+.form-container .link-text {
+  margin-top: 16px; /* Adjust margin for spacing */
+  text-align: center; /* Center align the text */
+  font-size: 0.875rem; /* Adjust font size if needed */
+}

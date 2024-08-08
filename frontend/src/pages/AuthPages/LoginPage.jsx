@@ -11,33 +11,29 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import customTheme from "../components/Theme";
+import customTheme from "../../components/Theme";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import LogoButton from "../components/LogoButton";
-import SignupBannerBgImg from "../assets/LoginBanner.jpg";
-import { signIn } from "../services/authService"; // Adjust the import path
+import LogoButton from "../../components/LogoButton";
+import { signIn } from "../../services/authService";
+import "./AuthPage.css"; // Import the updated CSS
 
 const LoginPage = () => {
-  // State variables for form input and error handling
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Toggle password visibility
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const authResult = await signIn(username, password);
       if (authResult) {
-        // Redirect to the home page after successful login
         navigate("/");
       }
     } catch (error) {
@@ -51,38 +47,17 @@ const LoginPage = () => {
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
-      <Box
-        sx={{
-          display: "flex",
-          height: "100vh",
-        }}
-      >
+      <Box className="page-container">
         {/* Form Container */}
-        <Box
-          sx={{
-            flex: "1",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            padding: 4,
-            bgcolor: "pink.main",
-          }}
-        >
+        <Box className="form-container">
           <Container maxWidth="sm">
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
+            <Box className="form-header">
               <Typography variant="h4" gutterBottom>
                 Log In
               </Typography>
               <LogoButton />
             </Box>
             <form onSubmit={handleSubmit}>
-              {/* Username or Email input */}
               <TextField
                 label="Username or Email"
                 variant="outlined"
@@ -91,8 +66,8 @@ const LoginPage = () => {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                className="text-field"
               />
-              {/* Password input */}
               <TextField
                 label="Password"
                 type={showPassword ? "text" : "password"}
@@ -115,26 +90,29 @@ const LoginPage = () => {
                     </InputAdornment>
                   ),
                 }}
+                className="text-field"
               />
-              {/* Display error message if any */}
               {error && (
-                <Typography color="error" variant="body2">
+                <Typography
+                  color="error"
+                  variant="body2"
+                  className="error-message"
+                >
                   {error}
                 </Typography>
               )}
-              {/* Submit button */}
               <Button
                 type="submit"
                 variant="contained"
                 color="secondary"
                 fullWidth
                 sx={{ mt: 2 }}
+                className="submit-button"
               >
                 Log In
               </Button>
             </form>
-            {/* Link to sign-up page */}
-            <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+            <Typography variant="body2" align="center" className="link-text">
               Don't have an account?{" "}
               <Link to="/signup" style={{ textDecoration: "underline" }}>
                 Sign up
@@ -142,16 +120,8 @@ const LoginPage = () => {
             </Typography>
           </Container>
         </Box>
-
         {/* Banner Image */}
-        <Box
-          sx={{
-            flex: "0 0 50%",
-            backgroundImage: `url(${SignupBannerBgImg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
+        <Box className="banner" />
       </Box>
     </ThemeProvider>
   );

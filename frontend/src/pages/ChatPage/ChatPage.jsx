@@ -72,7 +72,7 @@ const ChatPage = () => {
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
       <Box
-        className="chat-container"
+        className="page-container"
         sx={{
           "--pink-main": customTheme.palette.pink.main,
           "--purple-main": customTheme.palette.purple.main,

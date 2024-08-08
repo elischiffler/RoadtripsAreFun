@@ -11,17 +11,16 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import customTheme from "../components/Theme";
+import customTheme from "../../components/Theme";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-import LogoButton from "../components/LogoButton";
-import SignupBannerBgImg from "../assets/LoginBanner.jpg";
-import { signUp, confirmSignUp } from "../services/authService";
+import LogoButton from "../../components/LogoButton";
+import { signUp, confirmSignUp } from "../../services/authService";
+import "./AuthPage.css";
 
 const SignUpPage = () => {
-  // State variables to manage form input and validation states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,34 +29,29 @@ const SignUpPage = () => {
   const [confirmationCode, setConfirmationCode] = useState("");
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [username, setUsername] = useState(""); // Add state for username
+  const [username, setUsername] = useState("");
 
   const navigate = useNavigate();
 
-  // Toggle password visibility
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  // Toggle confirm password visibility
   const handleToggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  // Password validation logic
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
   const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;"'<>,.?~`-]/.test(password);
   const isLengthValid = password.length >= 8;
 
-  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
 
     if (!isConfirmed) {
-      // If the user is not confirmed, perform sign-up
       if (password !== confirmPassword) {
         alert("Passwords do not match!");
         setIsSubmitting(false);
@@ -65,22 +59,18 @@ const SignUpPage = () => {
       }
       try {
         const response = await signUp(email, password);
-        console.log("Sign up success: ", response);
         alert("Please check your email for the confirmation code.");
-        setUsername(response.Username); // Use Username from signUp response
+        setUsername(response.Username);
         setIsConfirmed(true);
       } catch (error) {
-        console.error("Error signing up: ", error);
         alert("Error signing up. Please try again.");
       }
     } else {
-      // If the user is confirmed, perform confirmation
       try {
-        await confirmSignUp(username, confirmationCode); // Use stored username
+        await confirmSignUp(username, confirmationCode);
         alert("Account confirmed successfully!");
         navigate("/login");
       } catch (error) {
-        console.error("Error confirming sign up: ", error);
         alert("Error confirming sign up. Please try again.");
       }
     }
@@ -91,38 +81,16 @@ const SignUpPage = () => {
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
-      <Box
-        sx={{
-          display: "flex",
-          height: "100vh",
-        }}
-      >
-        {/* Left section with form */}
-        <Box
-          sx={{
-            flex: "1",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            padding: 4,
-            bgcolor: "pink.main",
-          }}
-        >
+      <Box className="auth-container">
+        <Box className="form-container">
           <Container maxWidth="sm">
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
+            <Box className="form-header">
               <Typography variant="h4" gutterBottom>
                 {isConfirmed ? "Confirm Your Account" : "Create Your Account"}
               </Typography>
               <LogoButton />
             </Box>
             <form onSubmit={handleSubmit}>
-              {/* Email input */}
               <TextField
                 label="Email"
                 type="email"
@@ -133,7 +101,6 @@ const SignUpPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              {/* Password input */}
               <TextField
                 label="Password"
                 type={showPassword ? "text" : "password"}
@@ -157,7 +124,6 @@ const SignUpPage = () => {
                   ),
                 }}
               />
-              {/* Confirm password input */}
               <TextField
                 label="Confirm Password"
                 type={showConfirmPassword ? "text" : "password"}
@@ -184,7 +150,6 @@ const SignUpPage = () => {
                 }}
               />
               {isConfirmed ? (
-                // Confirmation code input for account confirmation
                 <>
                   <TextField
                     label="Confirmation Code"
@@ -207,7 +172,6 @@ const SignUpPage = () => {
                   </Button>
                 </>
               ) : (
-                // Sign-up button
                 <Button
                   type="submit"
                   variant="contained"
@@ -220,29 +184,17 @@ const SignUpPage = () => {
                 </Button>
               )}
             </form>
-            <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+            <Typography variant="body2" align="center" className="link-text">
               Already have an account?{" "}
               <Link to="/login" style={{ textDecoration: "underline" }}>
                 Sign in
               </Link>
             </Typography>
-            {/* Password requirements */}
+
             <Box sx={{ mt: 5 }}>
               <Typography variant="body1">Password Requirements:</Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 1,
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                  }}
-                >
+              <Box className="password-requirements">
+                <Box className="requirement">
                   {hasUpperCase ? (
                     <CheckIcon sx={{ color: "green" }} />
                   ) : (
@@ -252,13 +204,7 @@ const SignUpPage = () => {
                     At least one uppercase letter
                   </Typography>
                 </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                  }}
-                >
+                <Box className="requirement">
                   {hasLowerCase ? (
                     <CheckIcon sx={{ color: "green" }} />
                   ) : (
@@ -268,13 +214,7 @@ const SignUpPage = () => {
                     At least one lowercase letter
                   </Typography>
                 </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                  }}
-                >
+                <Box className="requirement">
                   {hasNumber ? (
                     <CheckIcon sx={{ color: "green" }} />
                   ) : (
@@ -282,13 +222,7 @@ const SignUpPage = () => {
                   )}
                   <Typography variant="body2">At least one number</Typography>
                 </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                  }}
-                >
+                <Box className="requirement">
                   {hasSpecialChar ? (
                     <CheckIcon sx={{ color: "green" }} />
                   ) : (
@@ -298,13 +232,7 @@ const SignUpPage = () => {
                     At least one special character
                   </Typography>
                 </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                  }}
-                >
+                <Box className="requirement">
                   {isLengthValid ? (
                     <CheckIcon sx={{ color: "green" }} />
                   ) : (
@@ -318,16 +246,7 @@ const SignUpPage = () => {
             </Box>
           </Container>
         </Box>
-
-        {/* Right section with background image */}
-        <Box
-          sx={{
-            flex: "0 0 50%",
-            backgroundImage: `url(${SignupBannerBgImg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
+        <Box className="banner" />
       </Box>
     </ThemeProvider>
   );

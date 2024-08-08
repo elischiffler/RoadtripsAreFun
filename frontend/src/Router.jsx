@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 import HomePage from "./pages/HomePage/HomePage";
 import ItineraryPage from "./pages/ItineraryPage/ItineraryPage";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/AuthPages/LoginPage";
 import ChatPage from "./pages/ChatPage/ChatPage";
 import MapPage from "./pages/MapPage/MapPage";
 import SettingsPage from "./pages/SettingsPage";
-import SignUpPage from "./pages/SignUpPage";
+import SignUpPage from "./pages/AuthPages/SignUpPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 const router = createBrowserRouter([
