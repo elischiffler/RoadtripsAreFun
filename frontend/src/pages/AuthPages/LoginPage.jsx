@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -16,7 +16,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LogoButton from "../../components/LogoButton";
 import { signIn } from "../../services/authService";
-import "./AuthPage.css"; // Import the updated CSS
+import "./AuthPage.css";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -44,10 +44,20 @@ const LoginPage = () => {
     }
   };
 
+  //Import colors
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--white-main", customTheme.palette.white.main);
+    root.style.setProperty("--white-light", customTheme.palette.white.light);
+    root.style.setProperty("--white-dark", customTheme.palette.white.dark);
+    root.style.setProperty("--white-black", customTheme.palette.white.black);
+    root.style.setProperty("--green-main", customTheme.palette.green.main);
+  }, []);
+
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
-      <Box className="page-container">
+      <Box className="auth-container">
         {/* Form Container */}
         <Box className="form-container">
           <Container maxWidth="sm">
@@ -104,9 +114,7 @@ const LoginPage = () => {
               <Button
                 type="submit"
                 variant="contained"
-                color="secondary"
                 fullWidth
-                sx={{ mt: 2 }}
                 className="submit-button"
               >
                 Log In

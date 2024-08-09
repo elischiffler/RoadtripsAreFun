@@ -11,13 +11,16 @@ const ItineraryButton = () => {
     >
       <Button
         variant="contained"
-        color="secondary"
+        color="green"
         sx={{ mb: 1, width: "100%", display: "flex", alignItems: "center" }}
       >
         <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-          <FormatListBulletedIcon sx={{ mr: 1 }} />{" "}
+          <FormatListBulletedIcon sx={{ mr: 1, color: "white.light" }} />{" "}
           {/* Adjust margin as needed */}
-          <Typography variant="body1" sx={{ flex: 1, textAlign: "center" }}>
+          <Typography
+            variant="body1"
+            sx={{ flex: 1, textAlign: "center", color: "white.light" }}
+          >
             Itinerary
           </Typography>
         </Box>

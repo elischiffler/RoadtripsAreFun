@@ -1,22 +1,27 @@
-import React from "react";
+import { React, useEffect } from "react";
 import { Box, CssBaseline, ThemeProvider } from "@mui/material";
 import customTheme from "../../components/Theme";
 import LogoButton from "../../components/LogoButton";
 import ItineraryButton from "../../components/ItineraryButton";
 import ChatButton from "../../components/ChatButton";
 import Map from "../../components/Map";
-import "./MapPage.css"; // Import the CSS file
+import "./MapPage.css";
 
 const MapPage = () => {
+  //Import colors
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--white-main", customTheme.palette.white.main);
+    root.style.setProperty("--white-light", customTheme.palette.white.light);
+    root.style.setProperty("--white-dark", customTheme.palette.white.dark);
+    root.style.setProperty("--white-black", customTheme.palette.white.black);
+    root.style.setProperty("--green-main", customTheme.palette.green.main);
+  }, []);
+
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
-      <Box
-       className="map-page-container"
-       sx={{
-        "--pink-main": customTheme.palette.pink.main,
-        "--purple-main": customTheme.palette.purple.main,
-      }}>
+      <Box className="map-page-container">
         {/* Left Sidebar */}
         <Box className="left-sidebar">
           {/* Logo Button */}

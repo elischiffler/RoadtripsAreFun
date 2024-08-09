@@ -1,7 +1,5 @@
 /* ChatPage.css */
 
-
-
 .page-container {
   display: flex;
   height: 100vh;
@@ -11,12 +9,12 @@
 
 .sidebar {
   width: 17%;
-  background-color: var(--pink-main);
+  background-color: var(--white-light);
   display: flex;
   flex-direction: column;
   padding: 16px;
   box-shadow: var(--mui-shadow-1);
-  border-right: 2px solid var(--purple-main);
+  border-right: 2px solid var(--white-dark);
   box-sizing: border-box;
 }
 
@@ -33,12 +31,11 @@
   border-radius: 8px;
   cursor: pointer;
   margin-bottom: 8px;
-  border: 2px solid var(--purple-main);
+  border: 2px solid var(--white-black);
 }
 
 .chat-item:hover {
-  background-color: var(--purple-main);
-  color: white;
+  background-color: var(--white-dark);
 }
 
 .sidebar-bottom {
@@ -48,8 +45,8 @@
   box-sizing: border-box;
   width: 100%;
   padding: 8px;
-  background-color: var(--pink-main);
-  border-top: 2px solid var(--purple-main);
+  background-color: var(--white-light);
+  border-top: 2px solid var(--white-black);
   position: sticky;
   bottom: 0;
 }
@@ -63,7 +60,7 @@
 
 .header {
   width: 100%;
-  background-color: var(--primary-main);
+  background-color: var(--white-main);
   padding: 16px;
   display: flex;
   align-items: center;
@@ -74,7 +71,7 @@
 .chat-box {
   flex: 1;
   overflow-y: auto;
-  background-color: var(--primary-main);
+  background-color: var(--white-main);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -86,13 +83,27 @@
   flex-direction: column;
   gap: 16px;
   padding: 16px;
-  max-height: calc(100vh - 150px);
+  max-height: calc(100vh - 153px);
   overflow-y: auto;
   box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #c9c8c7;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #949392;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #66615e;
+  }
 }
 
 .message {
-  background-color: var(--pink-main);
+  background-color: var(--white-light);
   padding: 16px;
   border-radius: 16px;
   max-width: 75%;
@@ -106,6 +117,7 @@
   box-shadow: var(--mui-shadow-1);
   position: fixed;
   bottom: 0;
-  background-color: var(--primary-main);
+  background-color: var(--white-main);
   box-sizing: border-box;
+  border-top: 2px solid var(--white-dark);
 }

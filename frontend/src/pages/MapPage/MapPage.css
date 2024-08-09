@@ -1,49 +1,43 @@
 /* MapPage.css */
 
-/* Define CSS variables for theme colors */
-:root {
-    --pink-main: #f8bbd0; /* Replace with the value of "pink.main" from your customTheme */
-    --purple-main: #9c27b0; /* Replace with the value of "purple.main" from your customTheme */
-    --box-shadow-1: 0px 1px 3px rgba(0, 0, 0, 0.2); /* Equivalent to Material UI boxShadow 1 */
-  }
-  
-  /* MapPage container styles */
-  .map-page-container {
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
-    box-sizing: border-box;
-  }
-  
-  .left-sidebar {
-    width: 17%;
-    background-color: var(--pink-main);
-    display: flex;
-    flex-direction: column;
-    padding: 16px;
-    box-shadow: var(--box-shadow-1);
-    border-right: 2px solid var(--purple-main);
-    box-sizing: border-box;
-    position: relative;
-    align-items: center;
-  }
-  
-  .logo-button-container {
-    margin-bottom: auto;
-  }
-  
-  .itinerary-button-container {
-    margin-bottom: -8px;
-    width: 100%;
-  }
-  
-  .chat-button-container {
-    width: 100%;
-  }
-  
-  .main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-  }
+/* MapPage container styles */
+.map-page-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.left-sidebar {
+  width: 17%;
+  background-color: var(--white-light);
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  box-shadow: var(--mui-shadow-1);
+  border-right: 2px solid var(--white-dark);
+  box-sizing: border-box;
+}
+
+.logo-button-container {
+  margin-bottom: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.itinerary-button-container {
+  margin-bottom: -8px;
+  width: 100%;
+}
+
+.chat-button-container {
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}

@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useEffect } from "react";
 import {
   Box,
   Container,
@@ -31,6 +31,16 @@ export default function HomePage() {
     }
   };
 
+  //Import colors
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--white-main", customTheme.palette.white.main);
+    root.style.setProperty("--white-light", customTheme.palette.white.light);
+    root.style.setProperty("--white-dark", customTheme.palette.white.dark);
+    root.style.setProperty("--white-black", customTheme.palette.white.black);
+    root.style.setProperty("--green-main", customTheme.palette.green.main);
+  }, []);
+
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
@@ -44,7 +54,6 @@ export default function HomePage() {
               <>
                 <Button
                   variant="contained"
-                  color="primary"
                   component={Link}
                   to="/login"
                   className="login-button"
@@ -53,9 +62,9 @@ export default function HomePage() {
                 </Button>
                 <Button
                   variant="contained"
-                  color="secondary"
                   component={Link}
                   to="/signup"
+                  className="signup-button"
                 >
                   Signup
                 </Button>
@@ -73,11 +82,10 @@ export default function HomePage() {
           </Typography>
           <Button
             variant="contained"
-            color="secondary"
             onClick={handleGetStartedClick}
             className="get-started-button"
           >
-            Get Started!
+            Get Started
           </Button>
         </Box>
 

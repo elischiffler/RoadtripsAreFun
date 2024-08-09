@@ -68,17 +68,20 @@ const ChatPage = () => {
     }
   }, [selectedChat]);
 
+  //Import colors
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--white-main", customTheme.palette.white.main);
+    root.style.setProperty("--white-light", customTheme.palette.white.light);
+    root.style.setProperty("--white-dark", customTheme.palette.white.dark);
+    root.style.setProperty("--white-black", customTheme.palette.white.black);
+    root.style.setProperty("--green-main", customTheme.palette.green.main);
+  }, []);
+
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
-      <Box
-        className="page-container"
-        sx={{
-          "--pink-main": customTheme.palette.pink.main,
-          "--purple-main": customTheme.palette.purple.main,
-          "--primary-main": customTheme.palette.primary.main,
-        }}
-      >
+      <Box className="page-container">
         <Box className="sidebar">
           <Box className="chat-logs">
             {chats.map((chat) => (
@@ -91,8 +94,8 @@ const ChatPage = () => {
                 sx={{
                   bgcolor:
                     selectedChat?.id === chat.id
-                      ? customTheme.palette.purple.main
-                      : "rgba(229, 208, 227, 0.5)",
+                      ? customTheme.palette.white.dark
+                      : customTheme.palette.white.main,
                   color:
                     selectedChat?.id === chat.id ? "white" : "text.primary",
                 }}
@@ -122,25 +125,7 @@ const ChatPage = () => {
 
           <Box className="chat-box">
             {selectedChat ? (
-              <Box
-                className="chat-messages"
-                sx={{
-                  // Custom Scroll Wheel
-                  "&::-webkit-scrollbar": {
-                    width: "12px",
-                  },
-                  "&::-webkit-scrollbar-track": {
-                    background: "primary.main", // Use main background color
-                  },
-                  "&::-webkit-scrollbar-thumb": {
-                    background: "#003366",
-                    borderRadius: "10px",
-                  },
-                  "&::-webkit-scrollbar-thumb:hover": {
-                    background: "#002244",
-                  },
-                }}
-              >
+              <Box className="chat-messages">
                 {selectedChat.messages.map((message, index) => (
                   <Box
                     key={index}
@@ -167,7 +152,11 @@ const ChatPage = () => {
               placeholder="Type a message"
               sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
             />
-            <Button variant="contained" color="secondary">
+            <Button
+              variant="contained"
+              color="green"
+              sx={{ color: "white.light" }}
+            >
               Send
             </Button>
           </Box>

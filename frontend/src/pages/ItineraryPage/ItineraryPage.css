@@ -14,7 +14,7 @@
   top: 0;
   width: 100%;
   height: 7%;
-  background-color: var(--primary-main); /* Dark Blue */
+  background-color: var(--white-main); /* Green */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -26,13 +26,13 @@
 .fixed-top-box .title {
   flex-grow: 1;
   text-align: center;
-  color: white;
+  color: var(--white-light); /* Light White */
 }
 
 /* Scrollable Main Content Box Styles */
 .scrollable-main-content {
-  background-color: var(--primary-main); /* Light Blue */
-  color: #003366; /* Dark Blue text */
+  background-color: var(--white-main); /* White */
+  color: var(--white-black); /* Dark Text */
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -41,11 +41,24 @@
   overflow-y: auto;
   height: calc(100vh - 13.8%);
   margin-top: 4%; /* Space for fixed top */
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #c9c8c7;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #949392;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #66615e;
+  }
 }
 
 /* Day Box Styles */
 .day-box {
-  background-color: white;
+  background-color: var(--white-light); /* Light White */
   border-radius: 8px;
   padding: 16px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -53,8 +66,8 @@
 
 /* Day Header Styles */
 .day-header {
-  background-color: #663399; /* Purple */
-  color: white;
+  background-color: var(--white-black); /* Green */
+  color: var(--white-light); /* White */
   border-radius: 8px;
   padding: 8px;
   margin-bottom: 16px;
@@ -62,7 +75,7 @@
 
 /* Activity Box Styles */
 .activity-box {
-  background-color: rgba(255, 192, 203, 0.6); /* Pink with 60% opacity */
+  background-color: var(--white-main);
   border-radius: 8px;
   padding: 8px;
   margin-bottom: 8px;
@@ -71,7 +84,7 @@
 
 /* Activity Time Styles */
 .activity-time {
-  color: #555;
+  color: var(--white-black); /* Dark Text */
 }
 
 /* Fixed Bottom Button Container Styles */
@@ -84,7 +97,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 16px;
-  background-color: var(--primary-main); /* Dark Blue */
+  background-color: var(--white-main);
   z-index: 1000;
 }
 

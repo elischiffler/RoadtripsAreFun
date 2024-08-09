@@ -1,19 +1,24 @@
 /* AuthPage.css */
 
+/* Container for the whole authentication page */
 .auth-container {
   display: flex;
-  height: 100vh; /* Full viewport height */
+  flex-direction: row;
+  min-height: 100vh;
+  background-color: var(--white-main); /* Background color for the page */
 }
 
+/* Form Container Styles */
 .form-container {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 16px;
-  background-color: var(--pink-main); /* Use your main color here */
+  background-color: var(--white-main);
 }
 
+/* Header Styles */
 .form-header {
   display: flex;
   align-items: center;
@@ -30,6 +35,23 @@
   align-items: center;
 }
 
+/* Submit Button Styles */
+.submit-button {
+  background-color: var(
+    --green-main
+  ) !important; /* Ensure green background for button */
+  color: var(--white-light);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  margin-top: 16px !important;
+}
+
+.submit-button:hover {
+  background-color: var(--green-main); /* Keep background color the same */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
+
+/* Password Requirements Section */
 .password-requirements {
   display: flex;
   flex-direction: column;
@@ -54,8 +76,8 @@
 }
 
 /* Styles for Typography components */
-.form-container .link-text {
-  margin-top: 16px; /* Adjust margin for spacing */
-  text-align: center; /* Center align the text */
+.link-text {
+  margin-top: 16px !important; /* Adjust margin for spacing */
+  text-align: center;
   font-size: 0.875rem; /* Adjust font size if needed */
 }

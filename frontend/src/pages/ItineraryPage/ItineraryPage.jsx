@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useEffect } from "react";
 import {
   Box,
   CssBaseline,
@@ -41,6 +41,16 @@ const ItineraryPage = () => {
     },
   ];
 
+  //Import colors
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--white-main", customTheme.palette.white.main);
+    root.style.setProperty("--white-light", customTheme.palette.white.light);
+    root.style.setProperty("--white-dark", customTheme.palette.white.dark);
+    root.style.setProperty("--white-black", customTheme.palette.white.black);
+    root.style.setProperty("--green-main", customTheme.palette.green.main);
+  }, []);
+
   return (
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
@@ -49,30 +59,14 @@ const ItineraryPage = () => {
         <Box className="fixed-top-box">
           <LogoButton />
           <Box className="title">
-            <Typography variant="h6">Trip Itinerary</Typography>
+            <Typography variant="h6" color="white.black">
+              Trip Itinerary
+            </Typography>
           </Box>
         </Box>
 
         {/* Scrollable Main Content Box */}
-        <Box
-          className="scrollable-main-content"
-          sx={{
-            // Custom Scroll Wheel
-            "&::-webkit-scrollbar": {
-              width: "12px",
-            },
-            "&::-webkit-scrollbar-track": {
-              background: "primary.main", // Use main background color
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: "#003366",
-              borderRadius: "10px",
-            },
-            "&::-webkit-scrollbar-thumb:hover": {
-              background: "#002244",
-            },
-          }}
-        >
+        <Box className="scrollable-main-content">
           {itinerary.map((day, index) => (
             <Box key={index} className="day-box">
               <Box className="day-header">
