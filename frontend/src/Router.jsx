@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+import AuthWrapper from "./components/AuthWrapper";
 import HomePage from "./pages/HomePage/HomePage";
 import ItineraryPage from "./pages/ItineraryPage/ItineraryPage";
 import LoginPage from "./pages/AuthPages/LoginPage";
@@ -15,7 +16,11 @@ const router = createBrowserRouter([
   },
   {
     path: "itinerary",
-    element: <ItineraryPage />,
+    element: (
+      <AuthWrapper>
+        <ItineraryPage />
+      </AuthWrapper>
+    ),
   },
   {
     path: "login",
@@ -23,15 +28,27 @@ const router = createBrowserRouter([
   },
   {
     path: "map",
-    element: <MapPage />,
+    element: (
+      <AuthWrapper>
+        <MapPage />
+      </AuthWrapper>
+    ),
   },
   {
     path: "settings",
-    element: <SettingsPage />,
+    element: (
+      <AuthWrapper>
+        <SettingsPage />
+      </AuthWrapper>
+    ),
   },
   {
     path: "chat",
-    element: <ChatPage />,
+    element: (
+      <AuthWrapper>
+        <ChatPage />
+      </AuthWrapper>
+    ),
   },
   {
     path: "signup",
