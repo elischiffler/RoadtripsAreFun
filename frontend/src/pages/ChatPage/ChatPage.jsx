@@ -1,11 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
-  CssBaseline,
   TextField,
   Button,
   Typography,
-  ThemeProvider,
 } from "@mui/material";
 import customTheme from "../../components/Theme";
 import LogoButton from "../../components/LogoButton";
@@ -68,101 +66,88 @@ const ChatPage = () => {
     }
   }, [selectedChat]);
 
-  //Import colors
-  useEffect(() => {
-    const root = document.documentElement;
-    root.style.setProperty("--white-main", customTheme.palette.white.main);
-    root.style.setProperty("--white-light", customTheme.palette.white.light);
-    root.style.setProperty("--white-dark", customTheme.palette.white.dark);
-    root.style.setProperty("--white-black", customTheme.palette.white.black);
-    root.style.setProperty("--green-main", customTheme.palette.green.main);
-  }, []);
-
   return (
-    <ThemeProvider theme={customTheme}>
-      <CssBaseline />
-      <Box className="page-container">
-        <Box className="sidebar">
-          <Box className="chat-logs">
-            {chats.map((chat) => (
-              <Box
-                key={chat.id}
-                className={`chat-item ${
-                  selectedChat?.id === chat.id ? "selected" : ""
-                }`}
-                onClick={() => handleChatClick(chat)}
-                sx={{
-                  bgcolor:
-                    selectedChat?.id === chat.id
-                      ? customTheme.palette.white.dark
-                      : customTheme.palette.white.main,
-                  color:
-                    selectedChat?.id === chat.id ? "white" : "text.primary",
-                }}
-              >
-                <Typography variant="body2">{chat.title}</Typography>
-              </Box>
-            ))}
-          </Box>
-
-          <Box className="sidebar-bottom">
-            <Box sx={{ mb: 2, width: "100%" }}>
-              <MapButton />
+    <Box className="page-container">
+      <Box className="sidebar">
+        <Box className="chat-logs">
+          {chats.map((chat) => (
+            <Box
+              key={chat.id}
+              className={`chat-item ${
+                selectedChat?.id === chat.id ? "selected" : ""
+              }`}
+              onClick={() => handleChatClick(chat)}
+              sx={{
+                bgcolor:
+                  selectedChat?.id === chat.id
+                    ? customTheme.palette.white.dark
+                    : customTheme.palette.white.main,
+                color:
+                  selectedChat?.id === chat.id ? "white" : "text.primary",
+              }}
+            >
+              <Typography variant="body2">{chat.title}</Typography>
             </Box>
-            <Box sx={{ mb: 2, width: "100%" }}>
-              <ItineraryButton />
-            </Box>
-            <LogoButton />
-          </Box>
+          ))}
         </Box>
 
-        <Box className="main-content">
-          <Box className="header">
-            <Typography variant="h6" color="white">
-              JourneyGenie
-            </Typography>
+        <Box className="sidebar-bottom">
+          <Box sx={{ mb: 2, width: "100%" }}>
+            <MapButton />
           </Box>
-
-          <Box className="chat-box">
-            {selectedChat ? (
-              <Box className="chat-messages">
-                {selectedChat.messages.map((message, index) => (
-                  <Box
-                    key={index}
-                    className="message"
-                    sx={{
-                      alignSelf: index % 2 === 0 ? "flex-start" : "flex-end",
-                    }}
-                  >
-                    <Typography variant="body1">{message}</Typography>
-                  </Box>
-                ))}
-                <div ref={chatEndRef} />
-              </Box>
-            ) : (
-              <Typography variant="body1" color="white">
-                Select a chat to view messages
-              </Typography>
-            )}
+          <Box sx={{ mb: 2, width: "100%" }}>
+            <ItineraryButton />
           </Box>
-
-          <Box className="input-area">
-            <TextField
-              variant="outlined"
-              placeholder="Type a message"
-              sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
-            />
-            <Button
-              variant="contained"
-              color="green"
-              sx={{ color: "white.light" }}
-            >
-              Send
-            </Button>
-          </Box>
+          <LogoButton />
         </Box>
       </Box>
-    </ThemeProvider>
+
+      <Box className="main-content">
+        <Box className="header">
+          <Typography variant="h6" color="white">
+            JourneyGenie
+          </Typography>
+        </Box>
+
+        <Box className="chat-box">
+          {selectedChat ? (
+            <Box className="chat-messages">
+              {selectedChat.messages.map((message, index) => (
+                <Box
+                  key={index}
+                  className="message"
+                  sx={{
+                    alignSelf: index % 2 === 0 ? "flex-start" : "flex-end",
+                  }}
+                >
+                  <Typography variant="body1">{message}</Typography>
+                </Box>
+              ))}
+              <div ref={chatEndRef} />
+            </Box>
+          ) : (
+            <Typography variant="body1" color="white">
+              Select a chat to view messages
+            </Typography>
+          )}
+        </Box>
+
+        <Box className="input-area">
+          <TextField
+            variant="outlined"
+            placeholder="Type a message"
+            sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
+          />
+          <Button
+            variant="contained"
+            color="green"
+            sx={{ color: "white.light" }}
+          >
+            Send
+          </Button>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

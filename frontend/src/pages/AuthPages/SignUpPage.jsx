@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Container,
-  CssBaseline,
   TextField,
   Button,
   Typography,
   IconButton,
   InputAdornment,
-  ThemeProvider,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import customTheme from "../../components/Theme";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LogoButton from "../../components/LogoButton";
@@ -77,158 +74,146 @@ const SignUpPage = () => {
     setIsSubmitting(false);
   };
 
-  //Import colors
-  useEffect(() => {
-    const root = document.documentElement;
-    root.style.setProperty("--white-main", customTheme.palette.white.main);
-    root.style.setProperty("--white-light", customTheme.palette.white.light);
-    root.style.setProperty("--white-dark", customTheme.palette.white.dark);
-    root.style.setProperty("--white-black", customTheme.palette.white.black);
-    root.style.setProperty("--green-main", customTheme.palette.green.main);
-  }, []);
 
   return (
-    <ThemeProvider theme={customTheme}>
-      <CssBaseline />
-      <Box className="auth-container">
-        <Box className="form-container">
-          <Container maxWidth="sm">
-            <Box className="form-header">
-              <Typography variant="h4" gutterBottom>
-                {isConfirmed ? "Confirm Your Account" : "Create Your Account"}
-              </Typography>
-              <LogoButton />
-            </Box>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                label="Email"
-                type="email"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <TextField
-                label="Password"
-                type={showPassword ? "text" : "password"}
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={handleTogglePasswordVisibility}>
-                        {showPassword ? (
-                          <VisibilityOffIcon />
-                        ) : (
-                          <VisibilityIcon />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                label="Confirm Password"
-                type={showConfirmPassword ? "text" : "password"}
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={handleToggleConfirmPasswordVisibility}
-                      >
-                        {showConfirmPassword ? (
-                          <VisibilityOffIcon />
-                        ) : (
-                          <VisibilityIcon />
-                        )}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              {isConfirmed ? (
-                <>
-                  <TextField
-                    label="Confirmation Code"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                    required
-                    value={confirmationCode}
-                    onChange={(e) => setConfirmationCode(e.target.value)}
-                  />
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    fullWidth
-                    className="submit-button"
-                    disabled={isSubmitting}
-                  >
-                    Confirm Account
-                  </Button>
-                </>
-              ) : (
+    <Box className="auth-container">
+      <Box className="form-container">
+        <Container maxWidth="sm">
+          <Box className="form-header">
+            <Typography variant="h4" gutterBottom>
+              {isConfirmed ? "Confirm Your Account" : "Create Your Account"}
+            </Typography>
+            <LogoButton />
+          </Box>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="Email"
+              type="email"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleTogglePasswordVisibility}>
+                      {showPassword ? (
+                        <VisibilityOffIcon />
+                      ) : (
+                        <VisibilityIcon />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              label="Confirm Password"
+              type={showConfirmPassword ? "text" : "password"}
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleToggleConfirmPasswordVisibility}
+                    >
+                      {showConfirmPassword ? (
+                        <VisibilityOffIcon />
+                      ) : (
+                        <VisibilityIcon />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            {isConfirmed ? (
+              <>
+                <TextField
+                  label="Confirmation Code"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  required
+                  value={confirmationCode}
+                  onChange={(e) => setConfirmationCode(e.target.value)}
+                />
                 <Button
                   type="submit"
                   variant="contained"
                   fullWidth
-                  sx={{ mt: 2 }}
-                  disabled={isSubmitting}
                   className="submit-button"
+                  disabled={isSubmitting}
                 >
-                  Sign Up
+                  Confirm Account
                 </Button>
-              )}
-            </form>
-            <Typography variant="body2" align="center" className="link-text">
-              Already have an account?{" "}
-              <Link to="/login" style={{ textDecoration: "underline" }}>
-                Sign in
-              </Link>
-            </Typography>
+              </>
+            ) : (
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                sx={{ mt: 2 }}
+                disabled={isSubmitting}
+                className="submit-button"
+              >
+                Sign Up
+              </Button>
+            )}
+          </form>
+          <Typography variant="body2" align="center" className="link-text">
+            Already have an account?{" "}
+            <Link to="/login" style={{ textDecoration: "underline" }}>
+              Sign in
+            </Link>
+          </Typography>
 
-            <Box sx={{ mt: 5 }}>
-              <Typography variant="body1">Password Requirements:</Typography>
-              <Box className="password-requirements">
-                <PasswordRequirement
-                  fulfilled={hasUpperCase}
-                  text="At least one uppercase letter"
-                />
-                <PasswordRequirement
-                  fulfilled={hasLowerCase}
-                  text="At least one lowercase letter"
-                />
-                <PasswordRequirement
-                  fulfilled={hasNumber}
-                  text="At least one number"
-                />
-                <PasswordRequirement
-                  fulfilled={hasSpecialChar}
-                  text="At least one special character"
-                />
-                <PasswordRequirement
-                  fulfilled={isLengthValid}
-                  text="At least 8 characters long"
-                />
-              </Box>
+          <Box sx={{ mt: 5 }}>
+            <Typography variant="body1">Password Requirements:</Typography>
+            <Box className="password-requirements">
+              <PasswordRequirement
+                fulfilled={hasUpperCase}
+                text="At least one uppercase letter"
+              />
+              <PasswordRequirement
+                fulfilled={hasLowerCase}
+                text="At least one lowercase letter"
+              />
+              <PasswordRequirement
+                fulfilled={hasNumber}
+                text="At least one number"
+              />
+              <PasswordRequirement
+                fulfilled={hasSpecialChar}
+                text="At least one special character"
+              />
+              <PasswordRequirement
+                fulfilled={isLengthValid}
+                text="At least 8 characters long"
+              />
             </Box>
-          </Container>
-        </Box>
-        <Box className="banner" />
+          </Box>
+        </Container>
       </Box>
-    </ThemeProvider>
+      <Box className="banner" />
+    </Box>
   );
 };
 
