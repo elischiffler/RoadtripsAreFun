@@ -5,15 +5,12 @@ import {
   TextField,
   Button,
   Typography,
-  IconButton,
-  InputAdornment,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LogoButton from "../../components/LogoButton";
 import { signIn } from "../../services/authService";
 import "./AuthPage.css";
+import PasswordField from "./PasswordField";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -63,28 +60,12 @@ const LoginPage = () => {
               onChange={(e) => setUsername(e.target.value)}
               className="text-field"
             />
-            <TextField
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              required
-              value={password}
+            <PasswordField 
+              label = "Password"
+              password= {password}
               onChange={(e) => setPassword(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={handleTogglePasswordVisibility}>
-                      {showPassword ? (
-                        <VisibilityOffIcon />
-                      ) : (
-                        <VisibilityIcon />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+              showPassword={showPassword}
+              onTogglePasswordVisibility={handleTogglePasswordVisibility}
               className="text-field"
             />
             {error && (

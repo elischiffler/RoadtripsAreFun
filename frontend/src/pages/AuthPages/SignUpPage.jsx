@@ -5,16 +5,13 @@ import {
   TextField,
   Button,
   Typography,
-  IconButton,
-  InputAdornment,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LogoButton from "../../components/LogoButton";
 import { signUp, confirmSignUp } from "../../services/authService";
 import PasswordRequirement from "./PasswordRequirement";
 import "./AuthPage.css";
+import PasswordField from "./PasswordField";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
@@ -96,53 +93,19 @@ const SignUpPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <TextField
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              required
-              value={password}
+            <PasswordField 
+              label = "Password"
+              password= {password}
               onChange={(e) => setPassword(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={handleTogglePasswordVisibility}>
-                      {showPassword ? (
-                        <VisibilityOffIcon />
-                      ) : (
-                        <VisibilityIcon />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+              showPassword={showPassword}
+              onTogglePasswordVisibility={handleTogglePasswordVisibility}
             />
-            <TextField
-              label="Confirm Password"
-              type={showConfirmPassword ? "text" : "password"}
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              required
-              value={confirmPassword}
+            <PasswordField
+              label = "Confirm Password"
+              password ={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleToggleConfirmPasswordVisibility}
-                    >
-                      {showConfirmPassword ? (
-                        <VisibilityOffIcon />
-                      ) : (
-                        <VisibilityIcon />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+              showPassword={showConfirmPassword}
+              onTogglePasswordVisibility={handleToggleConfirmPasswordVisibility}
             />
             {isConfirmed ? (
               <>
