@@ -62,13 +62,17 @@ const ChatPage = () => {
   };
 
   const handleNewChat = () => {
-    const newChatId = chats.length + 1;
+    // Finds the chat that contains the highest ID and stores the ID value
+    const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
+    // Increment ID be 1
+    const newChatId = maxId + 1;
+    // Generate a new chat go be stored in chats
     const newChat = {
       id: newChatId,
       title: `Chat ${newChatId}`,
       messages: [],
     };
-
+    // Adds this chat to chats along with all the previous chats
     setChats((prevChats) => [...prevChats, newChat]);
     setSelectedChat(newChat);
   };
