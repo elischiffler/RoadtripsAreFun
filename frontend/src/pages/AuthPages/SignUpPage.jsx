@@ -9,66 +9,39 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import LogoButton from "../../components/LogoButton";
 import { signUp, confirmSignUp } from "../../services/authService";
+import useSignUp from "../../components/useSignUp";
 import PasswordRequirement from "./PasswordRequirement";
 import "./AuthPage.css";
 import PasswordField from "./PasswordField";
 
 const SignUpPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [confirmationCode, setConfirmationCode] = useState("");
-  const [isConfirmed, setIsConfirmed] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [username, setUsername] = useState("");
+  const {
+    email,
+    password,
+    confirmPassword,
+    confirmationCode,
+    isConfirmed,
+    isSubmitting,
+    showPassword,
+    showConfirmPassword,
+    setEmail,
+    setPassword,
+    setConfirmPassword,
+    setConfirmationCode,
+    handleTogglePasswordVisibility,
+    handleToggleConfirmPasswordVisibility,
+    handleSubmit,
+    passwordValidation,
+  } = useSignUp();
 
   const navigate = useNavigate();
 
-  const handleTogglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleToggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
-
-  const hasUpperCase = /[A-Z]/.test(password);
-  const hasLowerCase = /[a-z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;"'<>,.?~`-]/.test(password);
-  const isLengthValid = password.length >= 8;
-
-  const handleSubmit = async (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
-    setIsSubmitting(true);
-
-    if (!isConfirmed) {
-      if (password !== confirmPassword) {
-        alert("Passwords do not match!");
-        setIsSubmitting(false);
-        return;
-      }
-      try {
-        const response = await signUp(email, password);
-        alert("Please check your email for the confirmation code.");
-        setUsername(response.Username);
-        setIsConfirmed(true);
-      } catch (error) {
-        alert("Error signing up. Please try again.");
-      }
-    } else {
-      try {
-        await confirmSignUp(username, confirmationCode);
-        alert("Account confirmed successfully!");
-        navigate("/login");
-      } catch (error) {
-        alert("Error confirming sign up. Please try again.");
-      }
+    const success = await handleSubmit();
+    if (success && isConfirmed) {
+      navigate("/login");
     }
-
-    setIsSubmitting(false);
   };
 
 
@@ -82,7 +55,7 @@ const SignUpPage = () => {
             </Typography>
             <LogoButton />
           </Box>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={onSubmit}>
             <TextField
               label="Email"
               type="email"
@@ -151,26 +124,13 @@ const SignUpPage = () => {
           <Box sx={{ mt: 5 }}>
             <Typography variant="body1">Password Requirements:</Typography>
             <Box className="password-requirements">
-              <PasswordRequirement
-                fulfilled={hasUpperCase}
-                text="At least one uppercase letter"
-              />
-              <PasswordRequirement
-                fulfilled={hasLowerCase}
-                text="At least one lowercase letter"
-              />
-              <PasswordRequirement
-                fulfilled={hasNumber}
-                text="At least one number"
-              />
-              <PasswordRequirement
-                fulfilled={hasSpecialChar}
-                text="At least one special character"
-              />
-              <PasswordRequirement
-                fulfilled={isLengthValid}
-                text="At least 8 characters long"
-              />
+              {passwordValidation.map(({ fulfilled, text }, index) => (
+                <PasswordRequirement
+                  key={index}
+                  fulfilled={fulfilled}
+                  text={text}
+                />
+              ))}
             </Box>
           </Box>
         </Container>
