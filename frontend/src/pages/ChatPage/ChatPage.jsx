@@ -131,10 +131,10 @@ const ChatPage = () => {
         </Box>
 
         <Box className="sidebar-bottom">
-          <Box sx={{ mb: 2, width: "100%" }}>
+          <Box sx={{ mb: -1, width: "100%" }}>
             <MapButton />
           </Box>
-          <Box sx={{ mb: 2, width: "100%" }}>
+          <Box sx={{ mb: -1, width: "100%" }}>
             <ItineraryButton />
           </Box>
           <LogoButton />

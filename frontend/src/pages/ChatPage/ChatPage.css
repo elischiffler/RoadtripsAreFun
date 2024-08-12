@@ -110,10 +110,8 @@
   align-items: center;
   box-sizing: border-box;
   width: 100%;
-  padding: 8px;
   padding-right: 16px;
   background-color: var(--white-light);
-  border-top: 2px solid var(--white-black);
   position: sticky;
   bottom: 0;
 }
