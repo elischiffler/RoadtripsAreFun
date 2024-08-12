@@ -43,15 +43,49 @@
 }
 
 .chat-item {
-  padding: 8px;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 5px;
   cursor: pointer;
+  position: relative;
   margin-bottom: 8px;
   border: 2px solid var(--white-black);
 }
 
 .chat-item:hover {
   background-color: var(--white-dark);
+}
+
+/* Circle around the icon */
+.close-icon-wrapper {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: background-color 0.3s, opacity 0.3s;
+}
+
+/* Icon styles */
+.close-icon {
+  font-size: 18px;
+  top: 8px;
+  color: var(--white-black);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Show icon and circle on hover */
+.chat-item:hover .close-icon-wrapper:hover {
+  background-color: #85827f;
+}
+
+.chat-item:hover .close-icon {
+  opacity: 1;
 }
 
 .sidebar-bottom {

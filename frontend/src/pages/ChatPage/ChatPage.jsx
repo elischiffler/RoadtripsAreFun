@@ -5,6 +5,7 @@ import LogoButton from "../../components/LogoButton";
 import ItineraryButton from "../../components/ItineraryButton";
 import MapButton from "../../components/MapButton";
 import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
 import "./ChatPage.css";
 
 const ChatPage = () => {
@@ -72,6 +73,13 @@ const ChatPage = () => {
     setSelectedChat(newChat);
   };
 
+  const handleDeleteChat = (chatId) => {
+    setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
+    if (selectedChat?.id === chatId) {
+      setSelectedChat(null);
+    }
+  };
+
   return (
     <Box className="page-container">
       <Box className="sidebar">
@@ -102,6 +110,15 @@ const ChatPage = () => {
               }}
             >
               <Typography variant="body2">{chat.title}</Typography>
+              <Box className="close-icon-wrapper">
+                <CloseIcon
+                  className="close-icon"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent triggering onClick on Box
+                    handleDeleteChat(chat.id);
+                  }}
+                />
+              </Box>
             </Box>
           ))}
         </Box>
