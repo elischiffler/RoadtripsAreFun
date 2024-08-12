@@ -12,30 +12,96 @@
   background-color: var(--white-light);
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding-left: 16px;
+  padding-bottom: 16px;
+  padding-top: 16px;
   box-shadow: var(--mui-shadow-1);
   border-right: 2px solid var(--white-dark);
   box-sizing: border-box;
 }
 
-.chat-logs {
-  flex: 1;
-  overflow-y: auto;
-  margin-bottom: 16px;
-  display: flex;
-  flex-direction: column;
-}
-
-.chat-item {
+.sidebar-top {
+  width: 210px;
   padding: 8px;
   border-radius: 8px;
   cursor: pointer;
   margin-bottom: 8px;
+  background-color: var(--white-main) !important;
+  border: 2px dashed var(--white-black) !important;
+  color: black !important;
+}
+
+.sidebar-top:hover {
+  background-color: var(--white-dark) !important;
+}
+
+.chat-logs {
+  flex: 1;
+  margin-top: 16px;
+  margin-right: 2px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f2f0ef;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #949392;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #66615e;
+  }
+}
+
+.chat-item {
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  margin-bottom: 8px;
+  margin-right: 4px;
   border: 2px solid var(--white-black);
 }
 
 .chat-item:hover {
   background-color: var(--white-dark);
+}
+
+/* Circle around the icon */
+.close-icon-wrapper {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: transparent;
+  transition: background-color 0.3s, opacity 0.3s;
+}
+
+/* Icon styles */
+.close-icon {
+  font-size: 18px;
+  top: 8px;
+  color: var(--white-black);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Show icon and circle on hover */
+.chat-item:hover .close-icon-wrapper:hover {
+  background-color: #85827f;
+}
+
+.chat-item:hover .close-icon {
+  opacity: 1;
 }
 
 .sidebar-bottom {
@@ -44,9 +110,8 @@
   align-items: center;
   box-sizing: border-box;
   width: 100%;
-  padding: 8px;
+  padding-right: 16px;
   background-color: var(--white-light);
-  border-top: 2px solid var(--white-black);
   position: sticky;
   bottom: 0;
 }
