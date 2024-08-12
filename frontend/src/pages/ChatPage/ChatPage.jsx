@@ -144,7 +144,7 @@ const ChatPage = () => {
       <Box className="main-content">
         <Box className="header">
           <Typography variant="h6" color="white">
-            JourneyGenie
+            Journey Genie
           </Typography>
         </Box>
 
