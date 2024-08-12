@@ -2,29 +2,18 @@ import React from "react";
 import { Button, Box, Typography } from "@mui/material";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import { Link } from "react-router-dom";
+import './ButtonStyles.css'; 
 
 const ChatButton = () => {
   return (
-    <Link
-      to="/chat"
-      style={{ textDecoration: "none", width: "100%", display: "block" }}
-    >
+    <Link to="/chat" className="link">
       <Button
         variant="contained"
-        color="green"
-        startIcon={<KeyboardReturnIcon sx={{ color: "white.light" }} />}
-        sx={{ mt: 2, width: "100%", display: "flex", alignItems: "center" }}
+        className="button"
       >
-        <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-          <Typography
-            variant="body1"
-            sx={{
-              ml: 1,
-              width: "100%",
-              textAlign: "center",
-              color: "white.light",
-            }}
-          >
+        <Box className="button-content">
+          <KeyboardReturnIcon className="button-icon" />
+          <Typography variant="body1" className="typography">
             Chat
           </Typography>
         </Box>

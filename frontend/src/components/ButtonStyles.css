@@ -1,0 +1,44 @@
+/* ButtonStyles.css */
+
+:root {
+  --green-main: #4caf50;
+  --white-light: #ffffff;
+}
+  .link {
+    text-decoration: none;
+    width: 100%;
+    display: block;
+  }
+
+  .link .button {
+    margin-top: 16px; 
+    margin-bottom: 8px; 
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: var(--green-main); 
+  }
+
+  .link .button:hover {
+    background-color: var(--green-main); /* Ensure hover color is the same as default */
+    box-shadow: none; 
+  }
+
+  .link .button .button-icon {
+    color: var(--white-light); 
+    margin-right: 8px; 
+  }
+
+  .link .button .button-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .link .button .typography {
+    margin-left: 8px;
+    width: 100%;
+    text-align: center;
+    color: var(--white-light); 
+    flex: 1;
+  }
