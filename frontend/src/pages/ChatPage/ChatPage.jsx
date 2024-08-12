@@ -4,21 +4,17 @@ import customTheme from "../../components/Theme";
 import LogoButton from "../../components/LogoButton";
 import ItineraryButton from "../../components/ItineraryButton";
 import MapButton from "../../components/MapButton";
+import AddIcon from "@mui/icons-material/Add";
 import "./ChatPage.css";
 
 const ChatPage = () => {
-  const [selectedChat, setSelectedChat] = useState(null);
-  const [currentMessage, setCurrentMessage] = useState(""); // State for the current input message
-  const chatEndRef = useRef(null);
-
-  const chats = [
+  const [chats, setChats] = useState([
     {
       id: 1,
       title: "Chat 1",
       messages: [
         "Hello! How can I help you?",
         "I'm looking for information on local attractions.",
-        // other messages...
       ],
     },
     {
@@ -27,16 +23,18 @@ const ChatPage = () => {
       messages: [
         "Hi! I need some information.",
         "Of course! What do you need help with?",
-        // other messages...
       ],
     },
-  ];
+  ]);
+  const [selectedChat, setSelectedChat] = useState(null);
+  const [currentMessage, setCurrentMessage] = useState("");
+  const chatEndRef = useRef(null);
 
   useEffect(() => {
     if (chats.length > 0) {
       setSelectedChat(chats[0]);
     }
-  }, []);
+  }, [chats]);
 
   const handleChatClick = (chat) => {
     setSelectedChat(chat);
@@ -54,18 +52,39 @@ const ChatPage = () => {
 
   const handleSendMessage = () => {
     if (currentMessage.trim() !== "" && selectedChat) {
-      // Update the selected chat's messages with the new message
       setSelectedChat((prevChat) => ({
         ...prevChat,
         messages: [...prevChat.messages, currentMessage],
       }));
-      setCurrentMessage(""); // Clear the input field
+      setCurrentMessage("");
     }
+  };
+
+  const handleNewChat = () => {
+    const newChatId = chats.length + 1;
+    const newChat = {
+      id: newChatId,
+      title: `Chat ${newChatId}`,
+      messages: [],
+    };
+
+    setChats((prevChats) => [...prevChats, newChat]);
+    setSelectedChat(newChat);
   };
 
   return (
     <Box className="page-container">
       <Box className="sidebar">
+        <Box>
+          <Button
+            className="sidebar-top"
+            variant="contained"
+            onClick={handleNewChat}
+            startIcon={<AddIcon />}
+          >
+            New Chat
+          </Button>
+        </Box>
         <Box className="chat-logs">
           {chats.map((chat) => (
             <Box

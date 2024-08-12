@@ -18,8 +18,24 @@
   box-sizing: border-box;
 }
 
+.sidebar-top {
+  width: 210px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  background-color: var(--white-main) !important;
+  border: 2px dashed var(--white-black) !important;
+  color: black !important;
+}
+
+.sidebar-top:hover {
+  background-color: var(--white-dark) !important;
+}
+
 .chat-logs {
   flex: 1;
+  margin-top: 16px;
   overflow-y: auto;
   margin-bottom: 16px;
   display: flex;
