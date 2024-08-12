@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Container,
@@ -8,13 +8,14 @@ import {
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import LogoButton from "../../components/LogoButton";
-import { signUp, confirmSignUp } from "../../services/authService";
 import useSignUp from "../../components/useSignUp";
 import PasswordRequirement from "./PasswordRequirement";
 import "./AuthPage.css";
 import PasswordField from "./PasswordField";
 
 const SignUpPage = () => {
+
+  // initialized constants where possible in the 
   const {
     email,
     password,
@@ -34,8 +35,10 @@ const SignUpPage = () => {
     passwordValidation,
   } = useSignUp();
 
+  // navigation helper function
   const navigate = useNavigate();
 
+  // handles the AWS interfacing and sign up navigation
   const onSubmit = async (event) => {
     event.preventDefault();
     const success = await handleSubmit();
@@ -55,6 +58,7 @@ const SignUpPage = () => {
             </Typography>
             <LogoButton />
           </Box>
+          {/* Form to handle the sign ups with state dependent fields */}
           <form onSubmit={onSubmit}>
             <TextField
               label="Email"
@@ -114,6 +118,8 @@ const SignUpPage = () => {
               </Button>
             )}
           </form>
+          
+          {/* The login redirection link */}
           <Typography variant="body2" align="center" className="link-text">
             Already have an account?{" "}
             <Link to="/login" style={{ textDecoration: "underline" }}>
@@ -121,6 +127,7 @@ const SignUpPage = () => {
             </Link>
           </Typography>
 
+          {/* Mapping all the password requirements with toggleable icons */}
           <Box sx={{ mt: 5 }}>
             <Typography variant="body1">Password Requirements:</Typography>
             <Box className="password-requirements">
