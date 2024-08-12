@@ -80,6 +80,13 @@ const ChatPage = () => {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevent the default Enter key behavior
+      handleSendMessage();
+    }
+  };
+
   return (
     <Box className="page-container">
       <Box className="sidebar">
@@ -149,7 +156,7 @@ const ChatPage = () => {
                   key={index}
                   className="message"
                   sx={{
-                    alignSelf: index % 2 === 0 ? "flex-start" : "flex-end",
+                    alignSelf: index % 2 === 1 ? "flex-start" : "flex-end",
                   }}
                 >
                   <Typography variant="body1">{message}</Typography>
@@ -170,6 +177,7 @@ const ChatPage = () => {
             placeholder="Type a message"
             value={currentMessage}
             onChange={handleInputChange}
+            onKeyDown={handleKeyDown} // Add this event handler
             sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
           />
           <Button
