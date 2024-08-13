@@ -1,4 +1,6 @@
 import React from "react";
+import { useState } from "react";
+import { signIn } from "../../services/authService";
 import {
   Box,
   Container,
@@ -8,25 +10,39 @@ import {
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import LogoButton from "../../components/LogoButton";
-import useLogin from "../../components/useLogin";
 import "./AuthPage.css";
 import PasswordField from "./PasswordField";
 
 const LoginPage = () => {
-  // initializes all logic related to the actual sign-in
-  const { username, password, setUsername, setPassword, error, setError, handleSubmit, showPassword, handleTogglePasswordVisibility, } = useLogin();
+
+  // initializes all login dynamic state variable
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+
+  // visibility toggle helper function
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
 
   // navigation helper function
   const navigate = useNavigate();
 
   // Attempt sign in to AWS and navigate or display errors
-  const onSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const success = await handleSubmit(username, password);
-    if (success) {
-      navigate("/");
-    } else {
-      setError("Failed to sign in. Please check your credentials and try again.");
+    try {
+      const authResult = await signIn(username, password);
+      if (authResult) {
+        navigate("/");
+      }
+    } catch (error) {
+      setError(
+        "Failed to sign in. Please check your credentials and try again."
+      );
+      console.error("Error signing in: ", error);
     }
   };
 
@@ -42,7 +58,7 @@ const LoginPage = () => {
             <LogoButton />
           </Box>
           {/* Actual form components design and functionality */}
-          <form onSubmit={onSubmit}>
+          <form onSubmit={handleSubmit}>
             <TextField
               label="Username or Email"
               variant="outlined"

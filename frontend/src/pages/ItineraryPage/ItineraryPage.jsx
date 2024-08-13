@@ -5,8 +5,8 @@ import {
   Container,
 } from "@mui/material";
 import LogoButton from "../../components/LogoButton";
-import ChatButton from "../../components/ChatButton";
-import MapButton from "../../components/MapButton";
+import ChatButton from "../../components/buttons/ChatButton";
+import MapButton from "../../components/buttons/MapButton";
 import "./ItineraryPage.css";
 
 const ItineraryPage = () => {

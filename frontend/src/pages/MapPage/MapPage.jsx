@@ -1,8 +1,8 @@
 import { React } from "react";
 import { Box } from "@mui/material";
 import LogoButton from "../../components/LogoButton";
-import ItineraryButton from "../../components/ItineraryButton";
-import ChatButton from "../../components/ChatButton";
+import ItineraryButton from "../../components/buttons/ItineraryButton";
+import ChatButton from "../../components/buttons/ChatButton";
 import Map from "../../components/Map";
 import "./MapPage.css";
 
