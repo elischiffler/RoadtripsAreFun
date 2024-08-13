@@ -3,23 +3,23 @@ import { Button, Box, Typography } from "@mui/material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { Link } from "react-router-dom";
 
+
 const ItineraryButton = () => {
   return (
     <Link
       to="/itinerary"
-      style={{ textDecoration: "none", width: "100%", display: "block" }}
+      className="link"
     >
       <Button
         variant="contained"
-        color="green"
-        sx={{ mb: 1, width: "100%", display: "flex", alignItems: "center" }}
+        className="button"
       >
-        <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-          <FormatListBulletedIcon sx={{ mr: 1, color: "white.light" }} />{" "}
+        <Box className="button-content">
+          <FormatListBulletedIcon className="button-icon" />{" "}
           {/* Adjust margin as needed */}
           <Typography
             variant="body1"
-            sx={{ flex: 1, textAlign: "center", color: "white.light" }}
+            className="typography"
           >
             Itinerary
           </Typography>

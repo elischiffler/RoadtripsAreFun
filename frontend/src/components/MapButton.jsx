@@ -7,23 +7,18 @@ const MapButton = () => {
   return (
     <Link
       to="/map"
-      style={{ textDecoration: "none", width: "100%", display: "block" }}
+      className="link"
     >
       <Button
         variant="contained"
         color="green"
-        startIcon={<MapIcon sx={{ color: "white.light" }} />}
-        sx={{ mt: 2, width: "100%", display: "flex", alignItems: "center" }}
+        startIcon={<MapIcon className="button-icon" />}
+        className="button"
       >
-        <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+        <Box className="button-content">
           <Typography
             variant="body1"
-            sx={{
-              ml: 1,
-              width: "100%",
-              textAlign: "center",
-              color: "white.light",
-            }}
+            className="typography"
           >
             Map
           </Typography>
