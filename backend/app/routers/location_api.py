@@ -5,12 +5,12 @@ from geopy.geocoders import Nominatim
 app = FastAPI()
 
 @app.get("/validate-location")
-def validate_location(address: str | None = None, coordinates: tuple | None = None) -> str:
+def validate_location(address: str | None = None, coordinates: str | None = None) -> str:
     try:
         # check if a valid query is being sent
-        if(address is None & coordinates is None):
+        if address is None and coordinates is None:
             raise ValueError("Must provide either address or coordinates")
-        if(address & coordinates):
+        if address and coordinates:
             raise ValueError("Address and coordinates cannot be both specified")
 
         # initialize an open street map geolocator
@@ -18,7 +18,6 @@ def validate_location(address: str | None = None, coordinates: tuple | None = No
 
         # geolocate by either a string describing a location or exact coordinates
         if address:
-            #
             location = geolocator.geocode(address)
         else:
             location = geolocator.reverse(coordinates)
@@ -29,5 +28,4 @@ def validate_location(address: str | None = None, coordinates: tuple | None = No
         return location.address
     except ValueError as exception:
         raise HTTPException(status_code=400, detail=f"Invalid input format: {str(exception)}")
-
 
