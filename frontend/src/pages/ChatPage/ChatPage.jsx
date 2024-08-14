@@ -15,8 +15,7 @@ const ChatPage = () => {
       id: 1,
       title: "Chat 1",
       messages: [
-        "Hello! How can I help you?",
-        "I'm looking for information on local attractions.",
+        "Hello this is journey genie! I would love to help you with your trip. Where will you be starting?",
       ],
     },
     {
@@ -35,6 +34,12 @@ const ChatPage = () => {
   // State to store the current message being typed by the user
   const [currentMessage, setCurrentMessage] = useState("");
 
+  // State to manage the visibility of the prompt box
+  const [showPrompt, setShowPrompt] = useState(true);
+
+  // State to track if the send button is disabled
+  const [sendButtonDisabled, setSendButtonDisabled] = useState(true);
+  
   // Ref to keep track of the end of the chat for scrolling
   const chatEndRef = useRef(null);
 
@@ -108,6 +113,13 @@ const ChatPage = () => {
     }
   };
 
+  // Function to handle the user's choice from the prompt box
+  const handleOptionClick = (option) => {
+    console.log(`User selected: ${option}`);
+    setSendButtonDisabled(false); // Re-enable send button after option is chosen
+    setShowPrompt(false); // Hide the prompt box
+  };
+
   return (
     <Box className="page-container">
       {/* Sidebar with chat logs and navigation buttons */}
@@ -179,7 +191,7 @@ const ChatPage = () => {
                   key={index}
                   className="message"
                   sx={{
-                    alignSelf: index % 2 === 1 ? "flex-start" : "flex-end",
+                    alignSelf: index % 2 === 0 ? "flex-start" : "flex-end",
                   }}
                 >
                   <Typography variant="body1">{message}</Typography>
@@ -194,20 +206,47 @@ const ChatPage = () => {
           )}
         </Box>
 
+        {/* Prompt Box */}
+        {showPrompt && (
+          <Box className="prompt-box">
+            <Typography variant="body1">Please choose an option:</Typography>
+            <Button
+              variant="contained"
+              onClick={() => handleOptionClick("city_name")}
+            >
+              City Name
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => handleOptionClick("address")}
+            >
+              Address
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => handleOptionClick("current_location")}
+            >
+              Use Current Location
+            </Button>
+          </Box>
+        )}
+
         <Box className="input-area">
           <TextField
             variant="outlined"
             placeholder="Type a message"
             value={currentMessage}
             onChange={handleInputChange}
-            onKeyDown={handleKeyDown} // Add this event handler
+            onKeyDown={handleKeyDown}
             sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
+            disabled={sendButtonDisabled} // Disable input if send button is disabled
           />
           <Button
             variant="contained"
             color="green"
             sx={{ color: "white.light" }}
             onClick={handleSendMessage}
+            disabled={sendButtonDisabled} // Disable send button until an option is chosen
           >
             Send
           </Button>

@@ -42,19 +42,23 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-track {
-    background: #f2f0ef;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #949392;
-    border-radius: 10px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: #66615e;
-  }
+}
+
+.chat-logs::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-logs::-webkit-scrollbar-track {
+  background: #f2f0ef;
+}
+
+.chat-logs::-webkit-scrollbar-thumb {
+  background: #949392;
+  border-radius: 10px;
+}
+
+.chat-logs::-webkit-scrollbar-thumb:hover {
+  background: #66615e;
 }
 
 .chat-item {
@@ -151,20 +155,23 @@
   max-height: calc(100vh - 153px);
   overflow-y: auto;
   box-sizing: border-box;
+}
 
-  &::-webkit-scrollbar {
-    width: 12px;
-  }
-  &::-webkit-scrollbar-track {
-    background: #c9c8c7;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #949392;
-    border-radius: 10px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: #66615e;
-  }
+.chat-messages::-webkit-scrollbar {
+  width: 12px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #c9c8c7;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #949392;
+  border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #66615e;
 }
 
 .message {
@@ -173,6 +180,38 @@
   border-radius: 16px;
   max-width: 75%;
   box-sizing: border-box;
+}
+
+/* Styles for the prompt box */
+.prompt-box {
+  padding: 16px;
+  background-color: var(--white-light);
+  box-shadow: var(--mui-shadow-1);
+  border: 2px solid var(--white-dark);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 300px;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.prompt-box button {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: var(--white-main);
+  border: 1px solid var(--white-dark);
+  color: black;
+}
+
+.prompt-box button:hover {
+  background-color: var(--white-dark);
 }
 
 .input-area {
