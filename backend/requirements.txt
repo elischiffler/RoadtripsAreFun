@@ -19,6 +19,7 @@ markdown-it-py
 MarkupSafe
 mdurl
 packaging
+pandas==2.2.2
 pluggy
 pydantic
 pydantic_core
