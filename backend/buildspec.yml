@@ -1,12 +1,5 @@
 version: 0.2
 
-eb_codebuild_settings:
-  artifacts:
-    files:
-      - "**/*"
-  commands:
-    - echo "Preparing the build for Elastic Beanstalk..."
-
 phases:
   install:
     runtime-versions:
