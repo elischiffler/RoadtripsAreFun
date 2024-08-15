@@ -66,7 +66,7 @@ const ChatPage = () => {
 
   const handleSendMessage = () => {
     if (selectedChat) {
-      let updatedStart = null;
+      let updatedStart = selectedChat.start ? selectedChat.start : null;
 
       if (selectedChat.userInputType === "city_name") {
         updatedStart = currentCity;
@@ -77,6 +77,7 @@ const ChatPage = () => {
       const updatedChat = {
         ...selectedChat,
         start: updatedStart,
+        messages: [...selectedChat.messages, updatedStart]
       };
 
       const updatedChats = chats.map((chat) =>
