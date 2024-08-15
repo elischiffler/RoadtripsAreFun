@@ -9,17 +9,19 @@ import CloseIcon from "@mui/icons-material/Close";
 import "./ChatPage.css";
 
 const ChatPage = () => {
-  // Initial message for new chats
   const initialMessage =
     "Hello, this is Journey Genie! I would love to help you with your trip. Where will you be starting?";
 
-  // State to store the list of chats, each with an intro message and prompt state
   const [chats, setChats] = useState([
     {
       id: 1,
       title: "Chat 1",
       messages: [initialMessage],
-      showPrompt: true, // Determines if the prompt box should be shown
+      showPrompt: true,
+      userInputType: null, // New state to determine what input to show
+      start: null, // state to hold the starting value
+      end: null, // state to hold the ending point value
+
     },
     {
       id: 2,
@@ -29,98 +31,119 @@ const ChatPage = () => {
         "Of course! What do you need help with?",
       ],
       showPrompt: false,
+      userInputType: null,
+      start: null,
+      end: null
     },
   ]);
 
-  // State to store the currently selected chat
   const [selectedChat, setSelectedChat] = useState(null);
-
-  // State to store the current message being typed by the user
   const [currentMessage, setCurrentMessage] = useState("");
-
-  // Ref to keep track of the end of the chat for scrolling
   const chatEndRef = useRef(null);
 
-  // Effect to set the first chat as the selected chat when the component loads
   useEffect(() => {
     if (chats.length > 0) {
       setSelectedChat(chats[0]);
     }
   }, [chats]);
 
-  // Function to handle selecting a chat from the sidebar
   const handleChatClick = (chat) => {
     setSelectedChat(chat);
   };
 
-  // Effect to scroll to the end of the chat when a new message is added
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [selectedChat]);
 
-  // Function to handle typing in the message input field
   const handleInputChange = (event) => {
     setCurrentMessage(event.target.value);
   };
 
-  // Function to handle sending a message
   const handleSendMessage = () => {
     if (currentMessage.trim() !== "" && selectedChat) {
-      // Add the new message to the selected chat's messages array
-      setSelectedChat((prevChat) => ({
-        ...prevChat,
-        messages: [...prevChat.messages, currentMessage],
-      }));
+      setSelectedChat((prevChat) => {
+        const updatedChat = {
+          ...prevChat,
+          messages: [...prevChat.messages, currentMessage],
+        };
+
+        const updatedChats = chats.map((chat) =>
+          chat.id === updatedChat.id ? updatedChat : chat
+        );
+
+        setChats(updatedChats);
+
+        return updatedChat;
+      });
+
       setCurrentMessage("");
     }
   };
 
   const handleNewChat = () => {
-    // Finds the chat that contains the highest ID and stores the ID value
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
-    // Increment ID by 1
     const newChatId = maxId + 1;
-    // Generate a new chat to be stored in chats
     const newChat = {
       id: newChatId,
       title: `Chat ${newChatId}`,
-      messages: [initialMessage], // Start with the initial message
-      showPrompt: true, // Start with the prompt box shown
+      messages: [initialMessage],
+      showPrompt: true,
+      userInputType: null,
     };
-    // Adds this chat to chats along with all the previous chats
     setChats((prevChats) => [...prevChats, newChat]);
     setSelectedChat(newChat);
   };
 
-  // Function to handle deleting a chat
   const handleDeleteChat = (chatId) => {
-    // Filter out the chat with the given ID
     setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
-    // If the deleted chat was selected, clear the selection
     if (selectedChat?.id === chatId) {
       setSelectedChat(null);
     }
   };
 
-  // Function to handle pressing Enter to send a message
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      event.preventDefault(); // Prevent the default Enter key behavior
+      event.preventDefault();
       handleSendMessage();
     }
   };
 
-  // Function to handle the user's choice from the prompt box
+  // const handleInput = (event) => {
+  //   if (event.key === "Enter"){
+  //     event.preventDefault();
+  //     handleSetInput;
+  //   }
+  // }
+
   const handleOptionClick = (option) => {
     if (selectedChat) {
       console.log(`User selected: ${option}`);
-      selectedChat.showPrompt = false;
-      setSelectedChat((prevChat) => ({
-        ...prevChat,
-        showPrompt: false, // Hide the prompt box for the current chat
-      }));
+      
+      // Determine the input type based on the user's selection
+      let inputType = null;
+      if (option === "city_name") {
+        inputType = "city_name";
+      } else if (option === "address") {
+        inputType = "address";
+      } else if (option === "current_location") {
+        inputType = "current_location";
+      }
+  
+      // Update the state with the new input type and hide the prompt
+      const updatedChat = {
+        ...selectedChat,
+        showPrompt: false,
+        userInputType: inputType,
+      };
+  
+      const updatedChats = chats.map((chat) =>
+        chat.id === updatedChat.id ? updatedChat : chat
+      );
+  
+      setChats(updatedChats);
+      setSelectedChat(updatedChat); // Update the selectedChat state
     }
   };
 
@@ -235,6 +258,37 @@ const ChatPage = () => {
           </Box>
         )}
 
+        {/* Input Field for City Name */}
+        {selectedChat && selectedChat.userInputType === "city_name" && (
+          <Box className="prompt-box">
+            <TextField
+              variant="outlined"
+              label="Input the name of the city you will be starting at"
+              value={currentMessage}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
+            />
+          </Box>
+        )}
+
+        {/* Input Field for an Address */}
+        {selectedChat && selectedChat.userInputType === "address" && (
+          <Box className="prompt-box">
+            <form>
+              <TextField
+                variant="outlined"
+                label="Input the starting address"
+                value={currentMessage}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
+              />
+            </form>
+          </Box>
+        )}
+
+        {/* Message Input Area */}
         <Box className="input-area">
           <TextField
             variant="outlined"
