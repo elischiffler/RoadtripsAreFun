@@ -77,7 +77,7 @@ const ChatPage = () => {
       const updatedChat = {
         ...selectedChat,
         start: updatedStart,
-        messages: [...selectedChat.messages, updatedStart]
+        messages: [...selectedChat.messages, updatedStart],
       };
 
       const updatedChats = chats.map((chat) =>
@@ -151,11 +151,17 @@ const ChatPage = () => {
       } else if (option === "current_location") {
         inputType = "current_location";
         getCurrentLocation((lat, lng) => {
-          const updatedChat = {
+          const endPt= `Latitude: ${lat}, Longitude: ${lng}`;
+          const updatedChat = selectedChat.start ? {
             ...selectedChat,
             showPrompt: false,
-            userInputType: inputType,
-            start: `Latitude: ${lat}, Longitude: ${lng}`, // Set the location as the start value
+            end: endPt, // Set the location as the end value
+            messages: [...selectedChat.messages, endPt],
+          } : {
+            ...selectedChat,
+            showPrompt: true,
+            start: endPt, // Set the location as the start value
+            messages: [...selectedChat.messages, endPt],
           };
 
           const updatedChats = chats.map((chat) =>
@@ -268,8 +274,10 @@ const ChatPage = () => {
         </Box>
 
         {selectedChat && selectedChat.showPrompt && (
-          <Box className="prompt-box">
-            <Typography variant="body1">Please choose an option:</Typography>
+          <Box className="prompt-box">{selectedChat.start?
+            <Typography variant="body1">Please choose how you want to select your ending location:</Typography>:
+            <Typography variant="body1">Please choose how you want to select your starting location:</Typography> }
+            
             <Button
               variant="contained"
               onClick={() => handleOptionClick("city_name")}
