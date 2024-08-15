@@ -18,10 +18,9 @@ const ChatPage = () => {
       title: "Chat 1",
       messages: [initialMessage],
       showPrompt: true,
-      userInputType: null, // New state to determine what input to show
-      start: null, // state to hold the starting value
-      end: null, // state to hold the ending point value
-
+      userInputType: null,
+      start: null,
+      end: null,
     },
     {
       id: 2,
@@ -33,7 +32,7 @@ const ChatPage = () => {
       showPrompt: false,
       userInputType: null,
       start: null,
-      end: null
+      end: null,
     },
   ]);
 
@@ -42,18 +41,14 @@ const ChatPage = () => {
   const [currentAddress, setCurrentAddress] = useState("");
   const [currentZip, setCurrentZip] = useState("");
   const [currentCity, setCurrentCity] = useState("");
-  const [currentState, setCurrentState] = useState("")
+  const [currentState, setCurrentState] = useState("");
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    if (chats.length > 0) {
+    if (chats.length > 0 && !selectedChat) {
       setSelectedChat(chats[0]);
     }
-  }, [chats]);
-
-  const handleChatClick = (chat) => {
-    setSelectedChat(chat);
-  };
+  }, [chats, selectedChat]);
 
   useEffect(() => {
     if (chatEndRef.current) {
@@ -61,25 +56,40 @@ const ChatPage = () => {
     }
   }, [selectedChat]);
 
+  const handleChatClick = (chat) => {
+    setSelectedChat(chat);
+  };
+
+  const handleInputChange = (event) => {
+    setCurrentMessage(event.target.value);
+  };
 
   const handleSendMessage = () => {
-    if (currentMessage.trim() !== "" && selectedChat) {
-      setSelectedChat((prevChat) => {
-        const updatedChat = {
-          ...prevChat,
-          messages: [...prevChat.messages, currentMessage],
-        };
+    if (selectedChat) {
+      let updatedStart = null;
 
-        const updatedChats = chats.map((chat) =>
-          chat.id === updatedChat.id ? updatedChat : chat
-        );
+      if (selectedChat.userInputType === "city_name") {
+        updatedStart = currentCity;
+      } else if (selectedChat.userInputType === "address") {
+        updatedStart = `${currentAddress}, ${currentZip}, ${currentCity}, ${currentState}`;
+      }
 
-        setChats(updatedChats);
+      const updatedChat = {
+        ...selectedChat,
+        start: updatedStart,
+      };
 
-        return updatedChat;
-      });
+      const updatedChats = chats.map((chat) =>
+        chat.id === updatedChat.id ? updatedChat : chat
+      );
 
+      setChats(updatedChats);
+      setSelectedChat(updatedChat);
       setCurrentMessage("");
+      setCurrentAddress("");
+      setCurrentZip("");
+      setCurrentCity("");
+      setCurrentState("");
     }
   };
 
@@ -92,6 +102,8 @@ const ChatPage = () => {
       messages: [initialMessage],
       showPrompt: true,
       userInputType: null,
+      start: null,
+      end: null,
     };
     setChats((prevChats) => [...prevChats, newChat]);
     setSelectedChat(newChat);
@@ -107,38 +119,22 @@ const ChatPage = () => {
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
-
-      if (selectedChat) {
-        // Update the start or end based on user input type
-        setSelectedChat((prevChat) => {
-          let updatedChat = { ...prevChat };
-
-          if (prevChat.userInputType === "city_name") {
-            updatedChat.start = currentCity;
-          } else if (prevChat.userInputType === "address") {
-            updatedChat.start = currentAddress.concat(", ", currentZip,
-               ", ", currentCity,
-                ", ", currentState);
-          }
-
-          const updatedChats = chats.map((chat) =>
-            chat.id === updatedChat.id ? updatedChat : chat
-          );
-
-          setChats(updatedChats);
-
-          return updatedChat;
-        });
-
-        // Reset the input fields after submission
-        setCurrentAddress("");
-        setCurrentZip("");
-        setCurrentCity("");
-        setCurrentState("");
-        
-      }
-      setCurrentMessage(selectedChat.start);
       handleSendMessage();
+    }
+  };
+
+  const getCurrentLocation = (callback) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          callback(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
     }
   };
 
@@ -146,7 +142,6 @@ const ChatPage = () => {
     if (selectedChat) {
       console.log(`User selected: ${option}`);
 
-      // Determine the input type based on the user's selection
       let inputType = null;
       if (option === "city_name") {
         inputType = "city_name";
@@ -154,9 +149,24 @@ const ChatPage = () => {
         inputType = "address";
       } else if (option === "current_location") {
         inputType = "current_location";
+        getCurrentLocation((lat, lng) => {
+          const updatedChat = {
+            ...selectedChat,
+            showPrompt: false,
+            userInputType: inputType,
+            start: `Latitude: ${lat}, Longitude: ${lng}`, // Set the location as the start value
+          };
+
+          const updatedChats = chats.map((chat) =>
+            chat.id === updatedChat.id ? updatedChat : chat
+          );
+
+          setChats(updatedChats);
+          setSelectedChat(updatedChat);
+        });
+        return;
       }
 
-      // Update the state with the new input type and hide the prompt
       const updatedChat = {
         ...selectedChat,
         showPrompt: false,
@@ -168,13 +178,12 @@ const ChatPage = () => {
       );
 
       setChats(updatedChats);
-      setSelectedChat(updatedChat); // Update the selectedChat state
+      setSelectedChat(updatedChat);
     }
   };
 
   return (
     <Box className="page-container">
-      {/* Sidebar with chat logs and navigation buttons */}
       <Box className="sidebar">
         <Box>
           <Button
@@ -227,7 +236,6 @@ const ChatPage = () => {
         </Box>
       </Box>
 
-      {/* Main content area for displaying selected chat and sending messages */}
       <Box className="main-content">
         <Box className="header">
           <Typography variant="h6" color="white">
@@ -258,7 +266,6 @@ const ChatPage = () => {
           )}
         </Box>
 
-        {/* Prompt Box */}
         {selectedChat && selectedChat.showPrompt && (
           <Box className="prompt-box">
             <Typography variant="body1">Please choose an option:</Typography>
@@ -283,7 +290,6 @@ const ChatPage = () => {
           </Box>
         )}
 
-        {/* Input Field */}
         {selectedChat && !selectedChat.showPrompt && (
           <Box className="input-area">
             {selectedChat.userInputType === "city_name" && (
@@ -341,7 +347,7 @@ const ChatPage = () => {
               onClick={handleSendMessage}
               disabled={selectedChat?.showPrompt} // Disable send button until an option is chosen
             >
-            Send
+              Send
             </Button>
           </Box>
         )}
