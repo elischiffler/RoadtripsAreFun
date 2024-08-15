@@ -6,6 +6,7 @@ import ItineraryButton from "../../components/buttons/ItineraryButton";
 import MapButton from "../../components/buttons/MapButton";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
+import Slider from '@mui/material/Slider';
 import "./ChatPage.css";
 
 const ChatPage = () => {
@@ -21,6 +22,7 @@ const ChatPage = () => {
       userInputType: null,
       start: null,
       end: null,
+      numStops: 0,
     },
     {
       id: 2,
@@ -33,6 +35,7 @@ const ChatPage = () => {
       userInputType: null,
       start: null,
       end: null,
+      numStops: 0,
     },
   ]);
 
@@ -43,6 +46,18 @@ const ChatPage = () => {
   const [currentCity, setCurrentCity] = useState("");
   const [currentState, setCurrentState] = useState("");
   const chatEndRef = useRef(null);
+
+  // State to hold the slider value
+  const [sliderValue, setSliderValue] = useState(5);
+
+  // Function to handle slider value change
+  const handleSliderChange = (event, newValue) => {
+    setSliderValue(newValue);
+  };
+
+  function valuetext(value) {
+    return `${value} stops`;
+  }
 
   useEffect(() => {
     if (chats.length > 0 && !selectedChat) {
@@ -65,18 +80,28 @@ const ChatPage = () => {
   };
 
   const handleSendMessage = () => {
-    if (selectedChat) {
+    if (selectedChat && selectedChat.numStops === 0) {
       let updatedStart = selectedChat.start ? selectedChat.start : null;
-
       if (selectedChat.userInputType === "city_name") {
         updatedStart = currentCity;
       } else if (selectedChat.userInputType === "address") {
         updatedStart = `${currentAddress}, ${currentZip}, ${currentCity}, ${currentState}`;
       }
 
-      const updatedChat = {
+      const updatedChat = selectedChat.end? {
+        ...selectedChat,
+        numStops: sliderValue,
+        messages: [...selectedChat.messages, `Number of stops ${sliderValue}`],
+      }: 
+      selectedChat.start? {
+        ...selectedChat,
+        end: updatedStart,
+        userInputType: null,
+        messages: [...selectedChat.messages, updatedStart],
+      }: {
         ...selectedChat,
         start: updatedStart,
+        showPrompt: true,
         messages: [...selectedChat.messages, updatedStart],
       };
 
@@ -105,6 +130,7 @@ const ChatPage = () => {
       userInputType: null,
       start: null,
       end: null,
+      numStops: 0,
     };
     setChats((prevChats) => [...prevChats, newChat]);
     setSelectedChat(newChat);
@@ -151,17 +177,17 @@ const ChatPage = () => {
       } else if (option === "current_location") {
         inputType = "current_location";
         getCurrentLocation((lat, lng) => {
-          const endPt= `Latitude: ${lat}, Longitude: ${lng}`;
+          const endPoint= `Latitude: ${lat}, Longitude: ${lng}`;
           const updatedChat = selectedChat.start ? {
             ...selectedChat,
             showPrompt: false,
-            end: endPt, // Set the location as the end value
-            messages: [...selectedChat.messages, endPt],
+            end: endPoint, // Set the location as the end value
+            messages: [...selectedChat.messages, endPoint],
           } : {
             ...selectedChat,
             showPrompt: true,
-            start: endPt, // Set the location as the start value
-            messages: [...selectedChat.messages, endPt],
+            start: endPoint, // Set the location as the start value
+            messages: [...selectedChat.messages, endPoint],
           };
 
           const updatedChats = chats.map((chat) =>
@@ -347,6 +373,26 @@ const ChatPage = () => {
                   fullWidth
                 />
               </>
+
+            )}
+
+            {/* Logic for after both start and end points are set */}
+            {selectedChat.end && selectedChat.numStops === 0 && (
+              <Slider
+              aria-label="Temperature"
+              defaultValue={5}
+              getAriaValueText={valuetext}
+              valueLabelDisplay="auto"
+              shiftStep={10}
+              color="green"
+              value = {sliderValue}
+              onChange={handleSliderChange}
+              step={1}
+              marks
+              min={1}
+              max={10}
+            />
+
             )}
 
             <Button
