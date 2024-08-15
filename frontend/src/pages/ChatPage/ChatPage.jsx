@@ -39,6 +39,10 @@ const ChatPage = () => {
 
   const [selectedChat, setSelectedChat] = useState(null);
   const [currentMessage, setCurrentMessage] = useState("");
+  const [currentAddress, setCurrentAddress] = useState("");
+  const [currentZip, setCurrentZip] = useState("");
+  const [currentCity, setCurrentCity] = useState("");
+  const [currentState, setCurrentState] = useState("")
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -57,9 +61,6 @@ const ChatPage = () => {
     }
   }, [selectedChat]);
 
-  const handleInputChange = (event) => {
-    setCurrentMessage(event.target.value);
-  };
 
   const handleSendMessage = () => {
     if (currentMessage.trim() !== "" && selectedChat) {
@@ -106,21 +107,45 @@ const ChatPage = () => {
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
+
+      if (selectedChat) {
+        // Update the start or end based on user input type
+        setSelectedChat((prevChat) => {
+          let updatedChat = { ...prevChat };
+
+          if (prevChat.userInputType === "city_name") {
+            updatedChat.start = currentCity;
+          } else if (prevChat.userInputType === "address") {
+            updatedChat.start = currentAddress.concat(", ", currentZip,
+               ", ", currentCity,
+                ", ", currentState);
+          }
+
+          const updatedChats = chats.map((chat) =>
+            chat.id === updatedChat.id ? updatedChat : chat
+          );
+
+          setChats(updatedChats);
+
+          return updatedChat;
+        });
+
+        // Reset the input fields after submission
+        setCurrentAddress("");
+        setCurrentZip("");
+        setCurrentCity("");
+        setCurrentState("");
+        
+      }
+      setCurrentMessage(selectedChat.start);
       handleSendMessage();
     }
   };
 
-  // const handleInput = (event) => {
-  //   if (event.key === "Enter"){
-  //     event.preventDefault();
-  //     handleSetInput;
-  //   }
-  // }
-
   const handleOptionClick = (option) => {
     if (selectedChat) {
       console.log(`User selected: ${option}`);
-      
+
       // Determine the input type based on the user's selection
       let inputType = null;
       if (option === "city_name") {
@@ -130,18 +155,18 @@ const ChatPage = () => {
       } else if (option === "current_location") {
         inputType = "current_location";
       }
-  
+
       // Update the state with the new input type and hide the prompt
       const updatedChat = {
         ...selectedChat,
         showPrompt: false,
         userInputType: inputType,
       };
-  
+
       const updatedChats = chats.map((chat) =>
         chat.id === updatedChat.id ? updatedChat : chat
       );
-  
+
       setChats(updatedChats);
       setSelectedChat(updatedChat); // Update the selectedChat state
     }
@@ -258,57 +283,68 @@ const ChatPage = () => {
           </Box>
         )}
 
-        {/* Input Field for City Name */}
-        {selectedChat && selectedChat.userInputType === "city_name" && (
-          <Box className="prompt-box">
-            <TextField
-              variant="outlined"
-              label="Input the name of the city you will be starting at"
-              value={currentMessage}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
-            />
-          </Box>
-        )}
-
-        {/* Input Field for an Address */}
-        {selectedChat && selectedChat.userInputType === "address" && (
-          <Box className="prompt-box">
-            <form>
+        {/* Input Field */}
+        {selectedChat && !selectedChat.showPrompt && (
+          <Box className="input-area">
+            {selectedChat.userInputType === "city_name" && (
               <TextField
-                variant="outlined"
-                label="Input the starting address"
-                value={currentMessage}
-                onChange={handleInputChange}
+                value={currentCity}
+                onChange={(e) => setCurrentCity(e.target.value)}
                 onKeyDown={handleKeyDown}
-                sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
+                variant="outlined"
+                placeholder="Enter city name..."
+                fullWidth
               />
-            </form>
+            )}
+
+            {selectedChat.userInputType === "address" && (
+              <>
+                <TextField
+                  value={currentAddress}
+                  onChange={(e) => setCurrentAddress(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  variant="outlined"
+                  placeholder="Enter address..."
+                  fullWidth
+                />
+                <TextField
+                  value={currentZip}
+                  onChange={(e) => setCurrentZip(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  variant="outlined"
+                  placeholder="Enter zip code..."
+                  fullWidth
+                />
+                <TextField
+                  value={currentCity}
+                  onChange={(e) => setCurrentCity(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  variant="outlined"
+                  placeholder="Enter city..."
+                  fullWidth
+                />
+                <TextField
+                  value={currentState}
+                  onChange={(e) => setCurrentState(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  variant="outlined"
+                  placeholder="Enter state..."
+                  fullWidth
+                />
+              </>
+            )}
+
+            <Button
+              variant="contained"
+              color="green"
+              sx={{ color: "white.light" }}
+              onClick={handleSendMessage}
+              disabled={selectedChat?.showPrompt} // Disable send button until an option is chosen
+            >
+            Send
+            </Button>
           </Box>
         )}
-
-        {/* Message Input Area */}
-        <Box className="input-area">
-          <TextField
-            variant="outlined"
-            placeholder="Type a message"
-            value={currentMessage}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
-            disabled={selectedChat?.showPrompt} // Disable input if the prompt is shown
-          />
-          <Button
-            variant="contained"
-            color="green"
-            sx={{ color: "white.light" }}
-            onClick={handleSendMessage}
-            disabled={selectedChat?.showPrompt} // Disable send button until an option is chosen
-          >
-            Send
-          </Button>
-        </Box>
       </Box>
     </Box>
   );
