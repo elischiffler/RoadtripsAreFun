@@ -9,14 +9,17 @@ import CloseIcon from "@mui/icons-material/Close";
 import "./ChatPage.css";
 
 const ChatPage = () => {
-  // State to store the list of chats
+  // Initial message for new chats
+  const initialMessage =
+    "Hello, this is Journey Genie! I would love to help you with your trip. Where will you be starting?";
+
+  // State to store the list of chats, each with an intro message and prompt state
   const [chats, setChats] = useState([
     {
       id: 1,
       title: "Chat 1",
-      messages: [
-        "Hello this is journey genie! I would love to help you with your trip. Where will you be starting?",
-      ],
+      messages: [initialMessage],
+      showPrompt: true, // Determines if the prompt box should be shown
     },
     {
       id: 2,
@@ -25,6 +28,7 @@ const ChatPage = () => {
         "Hi! I need some information.",
         "Of course! What do you need help with?",
       ],
+      showPrompt: false,
     },
   ]);
 
@@ -34,12 +38,6 @@ const ChatPage = () => {
   // State to store the current message being typed by the user
   const [currentMessage, setCurrentMessage] = useState("");
 
-  // State to manage the visibility of the prompt box
-  const [showPrompt, setShowPrompt] = useState(true);
-
-  // State to track if the send button is disabled
-  const [sendButtonDisabled, setSendButtonDisabled] = useState(true);
-  
   // Ref to keep track of the end of the chat for scrolling
   const chatEndRef = useRef(null);
 
@@ -88,7 +86,8 @@ const ChatPage = () => {
     const newChat = {
       id: newChatId,
       title: `Chat ${newChatId}`,
-      messages: [],
+      messages: [initialMessage], // Start with the initial message
+      showPrompt: true, // Start with the prompt box shown
     };
     // Adds this chat to chats along with all the previous chats
     setChats((prevChats) => [...prevChats, newChat]);
@@ -115,9 +114,14 @@ const ChatPage = () => {
 
   // Function to handle the user's choice from the prompt box
   const handleOptionClick = (option) => {
-    console.log(`User selected: ${option}`);
-    setSendButtonDisabled(false); // Re-enable send button after option is chosen
-    setShowPrompt(false); // Hide the prompt box
+    if (selectedChat) {
+      console.log(`User selected: ${option}`);
+      selectedChat.showPrompt = false;
+      setSelectedChat((prevChat) => ({
+        ...prevChat,
+        showPrompt: false, // Hide the prompt box for the current chat
+      }));
+    }
   };
 
   return (
@@ -207,7 +211,7 @@ const ChatPage = () => {
         </Box>
 
         {/* Prompt Box */}
-        {showPrompt && (
+        {selectedChat && selectedChat.showPrompt && (
           <Box className="prompt-box">
             <Typography variant="body1">Please choose an option:</Typography>
             <Button
@@ -239,14 +243,14 @@ const ChatPage = () => {
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             sx={{ flex: 1, bgcolor: "white", borderRadius: 1, mr: 2 }}
-            disabled={sendButtonDisabled} // Disable input if send button is disabled
+            disabled={selectedChat?.showPrompt} // Disable input if the prompt is shown
           />
           <Button
             variant="contained"
             color="green"
             sx={{ color: "white.light" }}
             onClick={handleSendMessage}
-            disabled={sendButtonDisabled} // Disable send button until an option is chosen
+            disabled={selectedChat?.showPrompt} // Disable send button until an option is chosen
           >
             Send
           </Button>
