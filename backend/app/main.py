@@ -1,5 +1,11 @@
-from . import app  # Import the `app` from the `__init__.py`
+from fastapi import FastAPI
+from app.routers import routing_api, location_api
 
+# Create the FastAPI instance
+app = FastAPI()
+
+app.include_router(routing_api.router)
+app.include_router(location_api.router)
 
 @app.get("/")
 async def root() -> str:

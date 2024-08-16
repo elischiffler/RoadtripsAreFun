@@ -1,10 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from geopy.geocoders import Nominatim
 
 # Initialize FastAPI
-app = FastAPI()
+router = APIRouter()
 
-@app.get("/validate-location")
+@router.get("/validate-location")
 def validate_location(address: str | None = None, coordinates: str | None = None) -> str:
     try:
         # check if a valid query is being sent
