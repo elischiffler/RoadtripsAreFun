@@ -8,6 +8,8 @@ dnspython
 email_validator
 fastapi
 fastapi-cli
+geographiclib==2.0
+geopy==2.4.1
 h11
 httpcore
 httptools
