@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 import requests
 from requests.exceptions import RequestException
 from pydantic import ValidationError
@@ -21,11 +21,10 @@ logging.basicConfig(level=logging.INFO)
 mapbox_access_token = os.getenv('MAPBOX_API')
 tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 
-# Initialize FastAPI
-app = FastAPI()
+# Grab app from APIRouter
+router = APIRouter()
 
-
-@app.get("/get-route", response_model=Route)
+@router.get("/get-route", response_model=Route)
 async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon: float, num_stops: int = 5) -> Route:
     """
     Retrieves a route from Mapbox API, adds intermediate stops, and returns the detailed route information.
