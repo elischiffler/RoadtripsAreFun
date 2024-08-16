@@ -1,0 +1,13 @@
+from typing import Optional
+
+from pydantic import BaseModel
+
+
+class location_payload(BaseModel):
+    is_coordinates: bool
+
+    class payload_data(BaseModel):
+        coordinates: Optional[tuple] = ()
+        address: Optional[str] = None
+
+    location: payload_data
