@@ -40,10 +40,11 @@ async def validate_location(request: Request) -> str:
         if location is None:
             raise HTTPException(status_code=404, detail="Location not found")
         return location.address
-    # Catch any errors accessing data that is unavailable or wrong type
-    except (ValueError, KeyError) as exception:
-        raise HTTPException(status_code=400, detail=f"Invalid input format: {str(exception)}")
     # Catch errors from validating the model
     except ValidationError as exception:
         raise HTTPException(status_code=400, detail=f"Invalid payload: {str(exception)}")
+    # Catch any errors accessing data that is unavailable or wrong type
+    except (ValueError, KeyError) as exception:
+        raise HTTPException(status_code=400, detail=f"Invalid input format: {str(exception)}")
+
 

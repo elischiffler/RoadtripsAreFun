@@ -47,6 +47,17 @@ def test_post_location_specific_SLO_address():
     assert response.status_code == 200
     assert response.text == '"Canyon Circle, Poly Canyon Village (171), San Luis Obispo County, California, 93407, United States"'
 
+def test_post_location_with_invalid_payload():
+    payload = {"is_coordinates": False,}
+    response = client.post("/validate-location", json=payload)
+    assert response.status_code == 400
+    assert "Invalid payload" in response.json()["detail"]
+
+def test_post_location_with_invalid_location():
+    payload = {"is_coordinates": False, "location":{"coordinates":"Not coordinate tuple"}}
+    response = client.post("/validate-location", json=payload)
+    assert response.status_code == 400
+    assert "Invalid payload" in response.json()["detail"]
 
 if __name__ == "__main__":
     pytest.main()
