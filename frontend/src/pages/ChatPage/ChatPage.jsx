@@ -24,21 +24,10 @@ const ChatPage = () => {
       end: null,
       numStops: 0,
     },
-    {
-      id: 2,
-      title: "Chat 2",
-      messages: [
-        "Hi! I need some information.",
-        "Of course! What do you need help with?",
-      ],
-      showPrompt: false,
-      userInputType: null,
-      start: null,
-      end: null,
-      numStops: 0,
-    },
+    
   ]);
 
+  // All use states are initialized to manage chat page display
   const [selectedChat, setSelectedChat] = useState(null);
   const [currentMessage, setCurrentMessage] = useState("");
   const [currentAddress, setCurrentAddress] = useState("");
@@ -46,8 +35,6 @@ const ChatPage = () => {
   const [currentCity, setCurrentCity] = useState("");
   const [currentState, setCurrentState] = useState("");
   const chatEndRef = useRef(null);
-
-  // State to hold the slider value
   const [sliderValue, setSliderValue] = useState(5);
 
   // Function to handle slider value change
@@ -55,43 +42,77 @@ const ChatPage = () => {
     setSliderValue(newValue);
   };
 
+  // Creates a user understandable label
   function valuetext(value) {
     return `${value} stops`;
   }
 
+
+  // Sets a default chat if available on startup
   useEffect(() => {
     if (chats.length > 0 && !selectedChat) {
       setSelectedChat(chats[0]);
     }
   }, [chats, selectedChat]);
 
+
+  // Scrollbar behavior handling
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [selectedChat]);
 
+
+  // Handles switching chats based on clicks
   const handleChatClick = (chat) => {
     setSelectedChat(chat);
   };
 
+  // TODO add back the default chat box once everything works this will be used to send chats
   const handleInputChange = (event) => {
     setCurrentMessage(event.target.value);
   };
 
+  // Sends an API request to our backend catching errors as needed
+  const validateLocation = async (start, isCoordinate = false) => {
+    try {
+      const queryParam = isCoordinate ? `coordinates=${encodeURIComponent(start)}` : `address=${encodeURIComponent(start)}`;
+      const response = await fetch(`/validate-location?${queryParam}`);
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const location = await response.text();
+      console.log('Validated Location:', location);
+      
+      // Handle the response data as needed
+      return location;
+      
+    } catch (error) {
+      console.error('Error validating location:', error);
+    }
+  };
+
+  // Currently works as the method for determining everything when the send button is clicked
   const handleSendMessage = () => {
+    // Checking to see if the basic requirements have been sent
     if (selectedChat && selectedChat.numStops === 0) {
+      // initializes updatedStart value to be altered
       let updatedStart = selectedChat.start ? selectedChat.start : null;
+      // Formats the updatedStart value based on inputType
       if (selectedChat.userInputType === "city_name") {
         updatedStart = currentCity;
       } else if (selectedChat.userInputType === "address") {
         updatedStart = `${currentAddress}, ${currentZip}, ${currentCity}, ${currentState}`;
       }
 
+      // Creates an updatedChat based on what requirement still needs to be fullfilled
       const updatedChat = selectedChat.end? {
         ...selectedChat,
         numStops: sliderValue,
-        messages: [...selectedChat.messages, `Number of stops ${sliderValue}`],
+        messages: [...selectedChat.messages, `Number of stops: ${sliderValue}`],
       }: 
       selectedChat.start? {
         ...selectedChat,
@@ -105,6 +126,7 @@ const ChatPage = () => {
         messages: [...selectedChat.messages, updatedStart],
       };
 
+      // Maps the chats to include the updated chat
       const updatedChats = chats.map((chat) =>
         chat.id === updatedChat.id ? updatedChat : chat
       );
@@ -116,9 +138,19 @@ const ChatPage = () => {
       setCurrentZip("");
       setCurrentCity("");
       setCurrentState("");
+
+      // Requires backend to be deployed but will get the string response from our backend API
+      if (selectedChat.end && selectedChat.numStops === 0){
+        location = validateLocation(end);
+      }
+      else if (selectedChat.numStops === 0){
+        location = validateLocation(start);
+      }
+
     }
   };
 
+  {/* Logic for creating new chats */}
   const handleNewChat = () => {
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
     const newChatId = maxId + 1;
@@ -136,6 +168,8 @@ const ChatPage = () => {
     setSelectedChat(newChat);
   };
 
+
+  {/* For deleting chats */}
   const handleDeleteChat = (chatId) => {
     setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
     if (selectedChat?.id === chatId) {
@@ -143,6 +177,8 @@ const ChatPage = () => {
     }
   };
 
+
+  {/* Functionality for using enter key within boxes*/}
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -150,6 +186,7 @@ const ChatPage = () => {
     }
   };
 
+  {/* Function that gets the users current location */}
   const getCurrentLocation = (callback) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -165,6 +202,7 @@ const ChatPage = () => {
     }
   };
 
+  {/* Handles the option for start or end location input preference */}
   const handleOptionClick = (option) => {
     if (selectedChat) {
       console.log(`User selected: ${option}`);
@@ -214,6 +252,8 @@ const ChatPage = () => {
       setSelectedChat(updatedChat);
     }
   };
+
+  
 
   return (
     <Box className="page-container">
@@ -276,6 +316,7 @@ const ChatPage = () => {
           </Typography>
         </Box>
 
+        {/* The chatboxes format */}
         <Box className="chat-box">
           {selectedChat ? (
             <Box className="chat-messages">
@@ -299,6 +340,7 @@ const ChatPage = () => {
           )}
         </Box>
 
+        {/* Prompt box */}
         {selectedChat && selectedChat.showPrompt && (
           <Box className="prompt-box">{selectedChat.start?
             <Typography variant="body1">Please choose how you want to select your ending location:</Typography>:
@@ -376,25 +418,30 @@ const ChatPage = () => {
 
             )}
 
-            {/* Logic for after both start and end points are set */}
+            {/* Logic for after both start and end points are set and adds a scrollbar to adjust */}
             {selectedChat.end && selectedChat.numStops === 0 && (
-              <Slider
-              aria-label="Temperature"
-              defaultValue={5}
-              getAriaValueText={valuetext}
-              valueLabelDisplay="auto"
-              shiftStep={10}
-              color="green"
-              value = {sliderValue}
-              onChange={handleSliderChange}
-              step={1}
-              marks
-              min={1}
-              max={10}
-            />
-
+              <>
+                <Typography variant="body1"
+                align="left"
+                >Please enter the number of stops:</Typography>
+                <Slider
+                aria-label="Temperature"
+                defaultValue={5}
+                getAriaValueText={valuetext}
+                valueLabelDisplay="auto"
+                shiftStep={10}
+                color="green"
+                value = {sliderValue}
+                onChange={handleSliderChange}
+                step={1}
+                marks
+                min={1}
+                max={10}
+              />
+            </>
             )}
 
+            {/* The send button */}
             <Button
               variant="contained"
               color="green"
