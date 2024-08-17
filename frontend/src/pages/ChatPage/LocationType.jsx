@@ -75,12 +75,11 @@ const addMessage = (chatId, newMessage, setChats) => {
   );
 };
 
-function changeBar(action) {
-  if (action === "Address") {
-    setAddressInput({
-      name: "Enter address",
-    });
-  }
+function changeBar(chatInput, setChatInput) {
+  setChatInput({
+    ...chatInput,
+    showAddressInput: true,
+  });
 }
 
 // Main Function
@@ -89,7 +88,8 @@ export const locationButtonClick = (
   setChats,
   chatId,
   action,
-  setAddressInput
+  setChatInput,
+  chatInput
 ) => {
   if (action === "Current Location") {
     //Change the previous message if current location is clicked
@@ -100,14 +100,25 @@ export const locationButtonClick = (
         `I would like to use my current location -- (${latitude}, ${longitude})`
       );
     });
+
+    // Bot adds a message
+    addMessage(
+      chatId,
+      "Perfect! How many stops would you like to take?",
+      setChats
+    );
   } else if (action === "Address") {
     //Change the previous message if address is clicked
     changePrevious(chatId, setChats, `I would like to use my address.`);
+
+    // Bot adds a message
     addMessage(
       chatId,
       "Sounds good! Please enter your address information.",
       setChats
     );
+
+    changeBar(chatInput, setChatInput);
   } else if (action === "City Name") {
     //Change the previous message  if city name is clicked
     changePrevious(chatId, setChats, "I would like to use my city name.");

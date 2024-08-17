@@ -7,6 +7,7 @@ import MapButton from "../../components/buttons/MapButton";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { locationButtonClick } from "./LocationType";
+import AddressBar from "./InputAddress";
 import "./ChatPage.css";
 
 const ChatPage = () => {
@@ -31,10 +32,10 @@ const ChatPage = () => {
   ]);
 
   const [selectedChat, setSelectedChat] = useState(null);
-  const [currentMessage, setCurrentMessage] = useState("");
-  const [addressInput, setAddressInput] = useState({
+  const [chatInput, setChatInput] = useState({
     name: "Type a Message",
     message: "",
+    showAddressInput: false,
   });
   const chatEndRef = useRef(null);
 
@@ -54,17 +55,25 @@ const ChatPage = () => {
     }
   }, [selectedChat]);
 
-  const handleInputChange = (event) => {
-    setCurrentMessage(event.target.value);
-  };
-
   const handleSendMessage = () => {
-    if (currentMessage.trim() !== "" && selectedChat) {
+    if (chatInput.message.trim() !== "" && selectedChat) {
+      // Add the inputted message into the chat log
       setSelectedChat((prevChat) => ({
         ...prevChat,
-        messages: [...prevChat.messages, currentMessage],
+        messages: [...prevChat.messages, chatInput.message],
       }));
-      setCurrentMessage("");
+
+      // Clear input box message
+      setChatInput({
+        ...chatInput,
+        message: "",
+      });
+
+      // Change input bar back to default if changed prior
+      setChatInput({
+        ...chatInput,
+        showAddressInput: false,
+      });
     }
   };
 
@@ -91,12 +100,6 @@ const ChatPage = () => {
     if (event.key === "Enter") {
       event.preventDefault();
       handleSendMessage();
-    }
-  };
-
-  const findLocation = (action) => {
-    if (selectedChat) {
-      locationButtonClick(setChats, selectedChat.id, action, setAddressInput);
     }
   };
 
@@ -184,7 +187,15 @@ const ChatPage = () => {
                           className="chat-buttons"
                           variant="contained"
                           color="primary"
-                          onClick={() => findLocation(button.action)}
+                          onClick={() =>
+                            locationButtonClick(
+                              setChats,
+                              selectedChat.id,
+                              button.action,
+                              setChatInput,
+                              chatInput
+                            )
+                          }
                         >
                           {button.label}
                         </Button>
@@ -201,28 +212,33 @@ const ChatPage = () => {
         </Box>
 
         <Box className="input-area">
-          <TextField
-            label={addressInput.name}
-            placeholder={addressInput.name}
-            value={addressInput.message}
-            onChange={(e) =>
-              setAddressInput.message({
-                ...addressInput.message,
-                message: e.target.value,
-              })
-            }
-            onKeyDown={handleKeyDown}
-            variant="outlined"
-            fullWidth
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            className="send-button"
-            onClick={() => changeBar("Address")}
-          >
-            Send
-          </Button>
+          {chatInput.showAddressInput ? (
+            <AddressBar /> // Show AddressBar if condition is true
+          ) : (
+            <TextField
+              label={chatInput.name}
+              placeholder={chatInput.name}
+              value={chatInput.message}
+              onChange={(e) =>
+                setChatInput({
+                  ...chatInput,
+                  message: e.target.value,
+                })
+              }
+              onKeyDown={handleKeyDown}
+              variant="outlined"
+              fullWidth
+            />
+          )}
+
+        <Button
+          variant="contained"
+          color="primary"
+          className="send-button"
+          onClick={handleSendMessage}
+        >
+          Send
+        </Button>
         </Box>
       </Box>
     </Box>

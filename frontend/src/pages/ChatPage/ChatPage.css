@@ -233,6 +233,12 @@
   border-top: 2px solid var(--white-dark);
 }
 
+.input-address {
+  flex: 1; /* Splits up bar into # equal parts*/
+  box-sizing: border-box;
+  width: 265px;
+}
+
 .send-button {
   background-color: var(--green-main) !important;
   color: var(--white-light) !important;
