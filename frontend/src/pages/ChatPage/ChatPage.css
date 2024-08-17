@@ -175,48 +175,55 @@
 }
 
 .message {
-  background-color: var(--white-light);
   padding: 16px;
   border-radius: 16px;
   max-width: 75%;
   box-sizing: border-box;
+  margin-bottom: 8px; /* Add margin for spacing between messages */
 }
 
-/* Styles for the prompt box */
-.prompt-box {
-  padding: 16px;
-  background-color: var(--white-light);
-  box-shadow: var(--mui-shadow-1);
-  border: 2px solid var(--white-dark);
-  border-radius: 8px;
+.message.bot {
+  align-self: flex-start;
+  background-color: #94939271;
+}
+
+.message.user {
+  align-self: flex-end;
+  background-color: var(--white-dark);
+}
+
+.message-container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-width: 300px;
-  margin: auto;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  align-items: flex-start; /* Align to the start for bot messages */
 }
 
-.prompt-box button {
+.message-container.user {
+  align-items: flex-end; /* Align to the end for user messages */
+}
+
+.button-container {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 8px;
+}
+
+.chat-buttons {
+  background-color: var(--white-dark) !important;
   width: 100%;
   padding: 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: var(--white-main);
-  border: 1px solid var(--white-dark);
-  color: black;
-}
-
-.prompt-box button:hover {
-  background-color: var(--white-dark);
+  border: 2px solid var(--white-black) !important;
+  border-radius: 10px !important;
+  text-align: center;
+  color: black !important;
 }
 
 .input-area {
   width: 83%;
   display: flex;
+  gap: 20px;
   padding: 16px;
   box-shadow: var(--mui-shadow-1);
   position: fixed;
@@ -224,4 +231,13 @@
   background-color: var(--white-main);
   box-sizing: border-box;
   border-top: 2px solid var(--white-dark);
+}
+
+.send-button {
+  background-color: var(--green-main) !important;
+  color: var(--white-light) !important;
+}
+
+.send-button:hover {
+  background: var(--green-main) !important;
 }
