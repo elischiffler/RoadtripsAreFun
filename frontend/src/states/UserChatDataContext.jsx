@@ -5,8 +5,11 @@ const UserChatDataContext = createContext();
 class ChatData {
   constructor() {
     this.action = null;
-    this.coords = new Array(2).fill(0);
-    this.address = new Array(4).fill("");
+    this.locationType = "start";
+    this.startCoords = new Array(2).fill(0);
+    this.startAddress = new Array(4).fill("");
+    this.endCoords = new Array(2).fill(0);
+    this.endAddress = new Array(4).fill("");
     this.submitted = false;
     this.stops = null;
     this.showStopSlider = false;

@@ -8,15 +8,24 @@ const AddressBar = () => {
   const UserChatData = useContext(UserChatDataContext);
 
   // Ensure UserChatData and address are defined, using default values if not
-  const initialAddress = UserChatData?.address || ["", "", "", ""];
+  let initialAddress;
+  if (UserChatData.locationType == "start") {
+    initialAddress = UserChatData?.startAddress || ["", "", "", ""];
+  } else if (UserChatData.locationType == "end") {
+    initialAddress = UserChatData?.endAddress || ["", "", "", ""];
+  }
 
   // Initialize state with the values from UserChatData
   const [address, setAddress] = useState(initialAddress);
 
   // Sync address state with UserChatData on initial render or when UserChatData changes
   useEffect(() => {
-    if (UserChatData && UserChatData.address) {
-      setAddress(UserChatData.address);
+    if (UserChatData) {
+      if (UserChatData.locationType == "start") {
+        setAddress(UserChatData.startAddress);
+      } else if (UserChatData.locationType == "end") {
+        setAddress(UserChatData.endAddress);
+      }
     }
   }, [UserChatData]);
 
@@ -25,9 +34,13 @@ const AddressBar = () => {
     updatedAddress[index] = value;
     setAddress(updatedAddress);
 
-    // Update the UserChatData instance's address property if UserChatData is defined
+    // Update the UserChatData instance's address property based on type
     if (UserChatData) {
-      UserChatData.address = updatedAddress;
+      if (UserChatData.locationType === "start") {
+        UserChatData.startAddress = updatedAddress;
+      } else if (UserChatData.locationType === "end") {
+        UserChatData.endAddress = updatedAddress;
+      }
     }
   };
 

@@ -75,12 +75,21 @@ const ChatPage = () => {
         // Remove the slider
         UserChatData.showStopSlider = false;
       } else if (chatInput.showAddressInput) {
-        // Adds a structured version of the users message
-        addMessage(
-          selectedChat.id,
-          setChats,
-          `${UserChatData.address[0]} ${UserChatData.address[1]} ${UserChatData.address[2]} ${UserChatData.address[3]}`
-        );
+        // Adds a structured version of the users message in address box
+        // Determine what data is displayed
+        if (UserChatData.locationType === "start") {
+          addMessage(
+            selectedChat.id,
+            setChats,
+            `${UserChatData.startAddress[0]} ${UserChatData.startAddress[1]} ${UserChatData.startAddress[2]} ${UserChatData.startAddress[3]}`
+          );
+        } else if (UserChatData.locationType === "end") {
+          addMessage(
+            selectedChat.id,
+            setChats,
+            `${UserChatData.endAddress[0]} ${UserChatData.endAddress[1]} ${UserChatData.endAddress[2]} ${UserChatData.endAddress[3]}`
+          );
+        }
 
         // Reset the input field and hide address input
         setChatInput({

@@ -1,6 +1,4 @@
-import { UserChatDataContext } from "../../states/UserChatDataContext";
-import { useContext } from "react";
-// Helper Functions
+// Helper Function
 
 // Function that gets the user's current location
 const getCurrentLocation = (callback) => {
@@ -118,7 +116,11 @@ function locationTypeResponse(
         setChats,
         `I would like to use my current location -- (${latitude}, ${longitude})`
       );
-      UserChatData.coords = [latitude, longitude];
+      if (UserChatData.locationType === "start") {
+        UserChatData.startCoords = [latitude, longitude];
+      } else {
+        UserChatData.endCoords = [latitude, longitude];
+      }
     });
   } else if (UserChatData.action === "Address") {
     // Handle address input logic
@@ -170,7 +172,7 @@ export const startWorkFlow = async (
   // Wait for user to input something
   await new Promise((resolve) => {
     const interval = setInterval(() => {
-      if (UserChatData.submitted || UserChatData.coords[0] != "") {
+      if (UserChatData.submitted || UserChatData.startCoords[0] != "") {
         UserChatData.submitted = false;
         clearInterval(interval);
         resolve();
@@ -191,6 +193,7 @@ export const startWorkFlow = async (
   await new Promise((resolve) => {
     const interval = setInterval(() => {
       if (!UserChatData.showStopSlider) {
+        UserChatData.submitted = false;
         clearInterval(interval);
         resolve();
       }
@@ -204,6 +207,9 @@ export const startWorkFlow = async (
     "How would you like to enter your end location?"
   );
 
+  UserChatData.locationType = "end";
+  UserChatData.action = null;
+
   addMessage(
     chatId,
     setChats,
@@ -211,12 +217,23 @@ export const startWorkFlow = async (
     askForLocationType.buttons
   );
 
+  // Wait for user to select a button
+  await new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (UserChatData.action) {
+        UserChatData.submitted = false;
+        clearInterval(interval);
+        resolve();
+      }
+    }, 100);
+  });
+
   locationTypeResponse(chatId, setChats, setChatInput, chatInput, UserChatData);
 
   // Wait for user to input something
   await new Promise((resolve) => {
     const interval = setInterval(() => {
-      if (UserChatData.submitted || UserChatData.coords[0] != "") {
+      if (UserChatData.submitted || UserChatData.endCoords[0] != "") {
         UserChatData.submitted = false;
         clearInterval(interval);
         resolve();
