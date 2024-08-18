@@ -7,6 +7,7 @@ import MapButton from "../../components/buttons/MapButton";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { startWorkFlow, addMessage } from "./startWorkFlow";
+import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
 import { UserChatDataContext } from "../../states/UserChatDataContext";
 import "./ChatPage.css";
@@ -61,7 +62,13 @@ const ChatPage = () => {
 
   const handleSendMessage = () => {
     if (selectedChat) {
-      if (chatInput.showAddressInput) {
+      if (UserChatData.showStopSlider) {
+        // Input the number of user stops
+        addMessage(selectedChat.id, UserChatData.stops, setChats);
+        console.log(UserChatData.stops);
+        // Remove the slider
+        UserChatData.showStopSlider = false;
+      } else if (chatInput.showAddressInput) {
         // Adds a structured version of the users message
         addMessage(
           selectedChat.id,
@@ -229,6 +236,8 @@ const ChatPage = () => {
         <Box className="input-area">
           {chatInput.showAddressInput ? (
             <AddressBar /> // Show AddressBar if condition is true
+          ) : UserChatData.showStopSlider ? (
+            <StopSlider />
           ) : (
             <TextField
               label={chatInput.name}

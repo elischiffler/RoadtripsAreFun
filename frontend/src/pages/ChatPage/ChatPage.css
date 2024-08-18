@@ -239,6 +239,32 @@
   width: 265px;
 }
 
+.num-stops-slider {
+  margin-top: 15px;
+}
+
+.num-stops-slider .MuiSlider-thumb {
+  background-color: var(--white-dark); /* Thumb color */
+  border: 2px solid var(--white-dark); /* Thumb border color */
+}
+
+.num-stops-slider .MuiSlider-rail {
+  background-color: var(--white-black); /* Rail color */
+}
+
+.num-stops-slider .MuiSlider-track {
+  background-color: var(--white-black); /* Track color */
+  border: none;
+}
+
+.num-stops-slider .MuiSlider-root {
+  height: 8px; /* Height of the track */
+}
+
+.num-stops-slider .MuiSlider-thumb:hover {
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.16); /* Thumb hover shadow */
+}
+
 .send-button {
   background-color: var(--green-main) !important;
   color: var(--white-light) !important;

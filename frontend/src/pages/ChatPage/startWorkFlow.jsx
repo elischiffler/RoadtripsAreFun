@@ -65,12 +65,16 @@ const changePrevious = (chatId, setChats, newMessage) => {
 
 // Adds a new message
 export const addMessage = (chatId, newMessage, setChats) => {
+  // Ensure newMessage is a string
+  const message =
+    typeof newMessage === "string" ? newMessage : String(newMessage);
+
   setChats((prevChats) =>
     prevChats.map((chat) =>
       chat.id === chatId
         ? {
             ...chat,
-            messages: [...chat.messages, newMessage], // Create a new array with the added message
+            messages: [...chat.messages, message], // Create a new array with the added message
           }
         : chat
     )
@@ -84,8 +88,18 @@ function changeBar(chatInput, setChatInput) {
   });
 }
 
-// Main Function
+const waitForCondition = (conditionFn, intervalTime = 100) => {
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (conditionFn()) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, intervalTime);
+  });
+};
 
+// Main Workflow
 export const startWorkFlow = async (
   setChats,
   chatId,
@@ -124,7 +138,7 @@ export const startWorkFlow = async (
   // Wait for user to input something
   await new Promise((resolve) => {
     const interval = setInterval(() => {
-      if (UserChatData.submitted === true || UserChatData.coords[0] != "") {
+      if (UserChatData.submitted || UserChatData.coords[0] != "") {
         UserChatData.submitted = false;
         clearInterval(interval);
         resolve();
@@ -136,6 +150,25 @@ export const startWorkFlow = async (
   addMessage(
     chatId,
     "Perfect! How many stops would you like to take?",
+    setChats
+  );
+
+  UserChatData.showStopSlider = true;
+
+  // Wait for user to input stops
+  await new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (!UserChatData.showStopSlider) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 100);
+  });
+
+  // Ask user for end location
+  addMessage(
+    chatId,
+    "How would you like to enter your end location?",
     setChats
   );
 };
