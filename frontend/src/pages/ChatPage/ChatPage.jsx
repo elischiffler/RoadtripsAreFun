@@ -77,10 +77,7 @@ const ChatPage = () => {
         });
       } else if (chatInput.message.trim() !== "") {
         // Handle regular message submission
-        setSelectedChat((prevChat) => ({
-          ...prevChat,
-          messages: [...prevChat.messages, chatInput.message],
-        }));
+        addMessage(selectedChat.id, chatInput.message, setChats);
 
         // Reset the input field
         setChatInput({
@@ -88,6 +85,9 @@ const ChatPage = () => {
           message: "",
         });
       }
+
+      // Notifys the workflow that they submitted there data
+      UserChatData.submitted = true;
     }
   };
 

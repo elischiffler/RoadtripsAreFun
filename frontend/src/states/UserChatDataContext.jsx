@@ -7,6 +7,7 @@ class ChatData {
     this.action = null;
     this.coords = new Array(2).fill(0);
     this.address = new Array(4).fill("");
+    this.submitted = false;
   }
 }
 

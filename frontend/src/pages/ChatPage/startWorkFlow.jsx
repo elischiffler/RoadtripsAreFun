@@ -124,14 +124,13 @@ export const startWorkFlow = async (
   // Wait for user to input something
   await new Promise((resolve) => {
     const interval = setInterval(() => {
-      if (UserChatData.address[1] != "" || UserChatData.coords[0] != "") {
+      if (UserChatData.submitted === true || UserChatData.coords[0] != "") {
+        UserChatData.submitted = false;
         clearInterval(interval);
         resolve();
       }
     }, 100);
   });
-  console.log(UserChatData.address[1]);
-  console.log(UserChatData.coords);
 
   // Bot adds a message
   addMessage(
