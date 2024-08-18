@@ -6,7 +6,7 @@ import ItineraryButton from "../../components/buttons/ItineraryButton";
 import MapButton from "../../components/buttons/MapButton";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import { locationButtonClick, addMessage } from "./LocationType";
+import { startWorkFlow, addMessage } from "./startWorkFlow";
 import AddressBar from "./InputAddress";
 import "./ChatPage.css";
 
@@ -69,12 +69,13 @@ const ChatPage = () => {
   const handleSendMessage = () => {
     if (selectedChat) {
       if (chatInput.showAddressInput) {
-        console.log(UserChatData.address[0]);
+        // Adds a structured version of the users message
         addMessage(
           selectedChat.id,
           `${UserChatData.address[0]} ${UserChatData.address[1]} ${UserChatData.address[2]} ${UserChatData.address[3]}`,
           setChats
         );
+
         // Reset the input field and hide address input
         setChatInput({
           ...chatInput,
@@ -208,7 +209,7 @@ const ChatPage = () => {
                           variant="contained"
                           color="primary"
                           onClick={() =>
-                            locationButtonClick(
+                            startWorkFlow(
                               setChats,
                               selectedChat.id,
                               button.action,

@@ -84,7 +84,7 @@ function changeBar(chatInput, setChatInput) {
 
 // Main Function
 
-export const locationButtonClick = (
+export const startWorkFlow = (
   setChats,
   chatId,
   action,
