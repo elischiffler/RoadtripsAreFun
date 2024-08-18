@@ -174,6 +174,7 @@ export const startWorkFlow = async (
     const interval = setInterval(() => {
       if (UserChatData.submitted || UserChatData.startCoords[0] != "") {
         UserChatData.submitted = false;
+        UserChatData.action = null;
         clearInterval(interval);
         resolve();
       }
@@ -208,7 +209,6 @@ export const startWorkFlow = async (
   );
 
   UserChatData.locationType = "end";
-  UserChatData.action = null;
 
   addMessage(
     chatId,
@@ -235,6 +235,7 @@ export const startWorkFlow = async (
     const interval = setInterval(() => {
       if (UserChatData.submitted || UserChatData.endCoords[0] != "") {
         UserChatData.submitted = false;
+        UserChatData.action = null;
         clearInterval(interval);
         resolve();
       }
@@ -242,4 +243,6 @@ export const startWorkFlow = async (
   });
 
   addMessage(chatId, setChats, "End of workflow");
+  console.log(UserChatData.startAddress);
+  console.log(UserChatData.endAddress);
 };

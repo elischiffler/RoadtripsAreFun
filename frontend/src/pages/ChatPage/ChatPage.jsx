@@ -99,7 +99,16 @@ const ChatPage = () => {
         });
       } else if (chatInput.message.trim() !== "") {
         // Handle regular message submission
-        addMessage(selectedChat.id, chatInput.message, setChats);
+        addMessage(selectedChat.id, setChats, chatInput.message);
+
+        // Check to see if message should be stored
+        if (UserChatData.action === "City Name") {
+          if (UserChatData.locationType === "start") {
+            UserChatData.startAddress[1] = chatInput.message;
+          } else if (UserChatData.locationType === "end") {
+            UserChatData.endAddress[1] = chatInput.message;
+          }
+        }
 
         // Reset the input field
         setChatInput({
