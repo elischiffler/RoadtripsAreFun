@@ -8,8 +8,9 @@ class ChatData {
     this.coords = new Array(2).fill(0);
     this.address = new Array(4).fill("");
     this.submitted = false;
-    this.stops = null
-    this.showStopSlider = false
+    this.stops = null;
+    this.showStopSlider = false;
+    this.workflowStarted = false;
   }
 }
 

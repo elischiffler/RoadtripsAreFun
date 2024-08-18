@@ -16,23 +16,15 @@ const ChatPage = () => {
   // Grabs the global instance of UserChatData
   const UserChatData = useContext(UserChatDataContext);
 
-  const initialMessageCluster = [
+  const initialMessage = [
     "Hello there! I’m Journey Genie, and I’m excited to help you with your trip planning. To get started, could you please tell me what type of location you'd like to use?",
-    {
-      text: "I would like to use my:",
-      buttons: [
-        { label: "Address", action: "Address" },
-        { label: "City Name", action: "City Name" },
-        { label: "Current Location", action: "Current Location" },
-      ],
-    },
   ];
 
   const [chats, setChats] = useState([
     {
       id: 1,
       title: "Chat 1",
-      messages: initialMessageCluster,
+      messages: initialMessage,
     },
   ]);
 
@@ -43,6 +35,20 @@ const ChatPage = () => {
     showAddressInput: false,
   });
   const chatEndRef = useRef(null);
+
+  // Starts the workflow on page first load and when a new chat is selected
+  useEffect(() => {
+    if (selectedChat && !UserChatData.workflowStarted) {
+      startWorkFlow(
+        setChats,
+        selectedChat.id,
+        setChatInput,
+        chatInput,
+        UserChatData
+      );
+      UserChatData.workflowStarted = true; // Ensure this flag is properly managed
+    }
+  }, [selectedChat]);
 
   useEffect(() => {
     if (chats.length > 0) {
@@ -64,7 +70,7 @@ const ChatPage = () => {
     if (selectedChat) {
       if (UserChatData.showStopSlider) {
         // Input the number of user stops
-        addMessage(selectedChat.id, UserChatData.stops, setChats);
+        addMessage(selectedChat.id, setChats, UserChatData.stops);
         console.log(UserChatData.stops);
         // Remove the slider
         UserChatData.showStopSlider = false;
@@ -72,8 +78,8 @@ const ChatPage = () => {
         // Adds a structured version of the users message
         addMessage(
           selectedChat.id,
-          `${UserChatData.address[0]} ${UserChatData.address[1]} ${UserChatData.address[2]} ${UserChatData.address[3]}`,
-          setChats
+          setChats,
+          `${UserChatData.address[0]} ${UserChatData.address[1]} ${UserChatData.address[2]} ${UserChatData.address[3]}`
         );
 
         // Reset the input field and hide address input
@@ -208,16 +214,7 @@ const ChatPage = () => {
                           className="chat-buttons"
                           variant="contained"
                           color="primary"
-                          onClick={() =>
-                            startWorkFlow(
-                              setChats,
-                              selectedChat.id,
-                              button.action,
-                              setChatInput,
-                              chatInput,
-                              UserChatData
-                            )
-                          }
+                          onClick={() => (UserChatData.action = button.action)}
                         >
                           {button.label}
                         </Button>

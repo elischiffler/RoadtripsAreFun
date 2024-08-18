@@ -64,10 +64,16 @@ const changePrevious = (chatId, setChats, newMessage) => {
 };
 
 // Adds a new message
-export const addMessage = (chatId, newMessage, setChats) => {
+export const addMessage = (chatId, setChats, newMessage, buttons = null) => {
   // Ensure newMessage is a string
-  const message =
-    typeof newMessage === "string" ? newMessage : String(newMessage);
+  const message = buttons
+    ? {
+        text: newMessage,
+        buttons: buttons,
+      }
+    : typeof newMessage === "string"
+    ? newMessage
+    : String(newMessage);
 
   setChats((prevChats) =>
     prevChats.map((chat) =>
@@ -88,27 +94,43 @@ function changeBar(chatInput, setChatInput) {
   });
 }
 
-const waitForCondition = (conditionFn, intervalTime = 100) => {
-  return new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (conditionFn()) {
-        clearInterval(interval);
-        resolve();
-      }
-    }, intervalTime);
-  });
+const askForLocationType = {
+  text: "I would like to use my:",
+  buttons: [
+    { label: "Address", action: "Address" },
+    { label: "City Name", action: "City Name" },
+    { label: "Current Location", action: "Current Location" },
+  ],
 };
 
 // Main Workflow
 export const startWorkFlow = async (
   setChats,
   chatId,
-  action,
   setChatInput,
   chatInput,
   UserChatData
 ) => {
-  if (action === "Current Location") {
+  // Ask user for location type
+  addMessage(
+    chatId,
+    setChats,
+    askForLocationType.text,
+    askForLocationType.buttons
+  );
+
+  // Wait for user to select a button
+  await new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (UserChatData.action) {
+        UserChatData.submitted = false;
+        clearInterval(interval);
+        resolve();
+      }
+    }, 100);
+  });
+
+  if (UserChatData.action === "Current Location") {
     //Change the previous message if current location is clicked
     getCurrentLocation((latitude, longitude) => {
       changePrevious(
@@ -118,21 +140,21 @@ export const startWorkFlow = async (
       );
       UserChatData.coords = [latitude, longitude];
     });
-  } else if (action === "Address") {
+  } else if (UserChatData.action === "Address") {
     // Handle address input logic
     changePrevious(chatId, setChats, `I would like to use my address.`);
     addMessage(
       chatId,
-      "Sounds good! Please enter your address information.",
-      setChats
+      setChats,
+      "Sounds good! Please enter your address information."
     );
 
     //Change the bar to be the address bar
     changeBar(chatInput, setChatInput);
-  } else if (action === "City Name") {
+  } else if (UserChatData.action === "City Name") {
     // Handle city name input logic
     changePrevious(chatId, setChats, "I would like to use my city name.");
-    addMessage(chatId, "Sounds good! Please enter your city name.", setChats);
+    addMessage(chatId, setChats, "Sounds good! Please enter your city name.");
   }
 
   // Wait for user to input something
@@ -149,8 +171,8 @@ export const startWorkFlow = async (
   // Bot adds a message
   addMessage(
     chatId,
-    "Perfect! How many stops would you like to take?",
-    setChats
+    setChats,
+    "Perfect! How many stops would you like to take?"
   );
 
   UserChatData.showStopSlider = true;
@@ -168,7 +190,15 @@ export const startWorkFlow = async (
   // Ask user for end location
   addMessage(
     chatId,
-    "How would you like to enter your end location?",
-    setChats
+    setChats,
+    "How would you like to enter your end location?"
   );
+
+  addMessage(
+    chatId,
+    setChats,
+    askForLocationType.text,
+    askForLocationType.buttons
+  );
+  console.log("test");
 };
