@@ -103,6 +103,41 @@ const askForLocationType = {
   ],
 };
 
+function locationTypeResponse(
+  chatId,
+  setChats,
+  setChatInput,
+  chatInput,
+  UserChatData
+) {
+  if (UserChatData.action === "Current Location") {
+    //Change the previous message if current location is clicked
+    getCurrentLocation((latitude, longitude) => {
+      changePrevious(
+        chatId,
+        setChats,
+        `I would like to use my current location -- (${latitude}, ${longitude})`
+      );
+      UserChatData.coords = [latitude, longitude];
+    });
+  } else if (UserChatData.action === "Address") {
+    // Handle address input logic
+    changePrevious(chatId, setChats, `I would like to use my address.`);
+    addMessage(
+      chatId,
+      setChats,
+      "Sounds good! Please enter your address information."
+    );
+
+    //Change the bar to be the address bar
+    changeBar(chatInput, setChatInput);
+  } else if (UserChatData.action === "City Name") {
+    // Handle city name input logic
+    changePrevious(chatId, setChats, "I would like to use my city name.");
+    addMessage(chatId, setChats, "Sounds good! Please enter your city name.");
+  }
+}
+
 // Main Workflow
 export const startWorkFlow = async (
   setChats,
@@ -130,32 +165,7 @@ export const startWorkFlow = async (
     }, 100);
   });
 
-  if (UserChatData.action === "Current Location") {
-    //Change the previous message if current location is clicked
-    getCurrentLocation((latitude, longitude) => {
-      changePrevious(
-        chatId,
-        setChats,
-        `I would like to use my current location -- (${latitude}, ${longitude})`
-      );
-      UserChatData.coords = [latitude, longitude];
-    });
-  } else if (UserChatData.action === "Address") {
-    // Handle address input logic
-    changePrevious(chatId, setChats, `I would like to use my address.`);
-    addMessage(
-      chatId,
-      setChats,
-      "Sounds good! Please enter your address information."
-    );
-
-    //Change the bar to be the address bar
-    changeBar(chatInput, setChatInput);
-  } else if (UserChatData.action === "City Name") {
-    // Handle city name input logic
-    changePrevious(chatId, setChats, "I would like to use my city name.");
-    addMessage(chatId, setChats, "Sounds good! Please enter your city name.");
-  }
+  locationTypeResponse(chatId, setChats, setChatInput, chatInput, UserChatData);
 
   // Wait for user to input something
   await new Promise((resolve) => {
@@ -200,5 +210,19 @@ export const startWorkFlow = async (
     askForLocationType.text,
     askForLocationType.buttons
   );
-  console.log("test");
+
+  locationTypeResponse(chatId, setChats, setChatInput, chatInput, UserChatData);
+
+  // Wait for user to input something
+  await new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (UserChatData.submitted || UserChatData.coords[0] != "") {
+        UserChatData.submitted = false;
+        clearInterval(interval);
+        resolve();
+      }
+    }, 100);
+  });
+
+  addMessage(chatId, setChats, "End of workflow");
 };
