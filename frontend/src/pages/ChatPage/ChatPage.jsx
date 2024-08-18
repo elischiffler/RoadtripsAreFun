@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import customTheme from "../../components/Theme";
 import LogoButton from "../../components/LogoButton";
@@ -8,18 +8,13 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { startWorkFlow, addMessage } from "./startWorkFlow";
 import AddressBar from "./InputAddress";
+import { UserChatDataContext } from "../../states/UserChatDataContext";
 import "./ChatPage.css";
 
-// Class to store the user data
-class ChatData {
-  constructor() {
-    this.action = null;
-    this.coords = new Array(2).fill(0);
-    this.address = new Array(4).fill("");
-  }
-}
-
 const ChatPage = () => {
+  // Grabs the global instance of UserChatData
+  const UserChatData = useContext(UserChatDataContext);
+
   const initialMessageCluster = [
     "Hello there! I’m Journey Genie, and I’m excited to help you with your trip planning. To get started, could you please tell me what type of location you'd like to use?",
     {
@@ -31,8 +26,6 @@ const ChatPage = () => {
       ],
     },
   ];
-  // Create an instance of userChatData
-  const UserChatData = new ChatData();
 
   const [chats, setChats] = useState([
     {
@@ -235,7 +228,7 @@ const ChatPage = () => {
 
         <Box className="input-area">
           {chatInput.showAddressInput ? (
-            <AddressBar UserChatData={UserChatData} /> // Show AddressBar if condition is true
+            <AddressBar /> // Show AddressBar if condition is true
           ) : (
             <TextField
               label={chatInput.name}

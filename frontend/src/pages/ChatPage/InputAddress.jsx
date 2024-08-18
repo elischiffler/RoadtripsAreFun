@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Box, TextField } from "@mui/material";
 import "./ChatPage.css";
+import { UserChatDataContext } from "../../states/UserChatDataContext";
 
-const AddressBar = ({ UserChatData }) => {
+const AddressBar = () => {
+  // Grabs the global instance of UserChatData
+  const UserChatData = useContext(UserChatDataContext);
+
   // Ensure UserChatData and address are defined, using default values if not
   const initialAddress = UserChatData?.address || ["", "", "", ""];
 

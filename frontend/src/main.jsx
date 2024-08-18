@@ -6,6 +6,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import customTheme from "./components/Theme";
 import { CssBaseline } from "@mui/material";
 import router from "./Router";
+import { UserChatDataProvider } from "./states/UserChatDataContext";
 
 // Globally setting the css variables
 const GlobalStyles = () => {
@@ -21,13 +22,14 @@ const GlobalStyles = () => {
   return null;
 };
 
-
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ThemeProvider theme={customTheme}>
-      <CssBaseline /> 
-      <GlobalStyles /> 
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <UserChatDataProvider>
+      <ThemeProvider theme={customTheme}>
+        <CssBaseline />
+        <GlobalStyles />
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </UserChatDataProvider>
   </React.StrictMode>
 );

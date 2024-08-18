@@ -1,3 +1,5 @@
+import { UserChatDataContext } from "../../states/UserChatDataContext";
+import { useContext } from "react";
 // Helper Functions
 
 // Function that gets the user's current location
@@ -84,7 +86,7 @@ function changeBar(chatInput, setChatInput) {
 
 // Main Function
 
-export const startWorkFlow = (
+export const startWorkFlow = async (
   setChats,
   chatId,
   action,
@@ -102,30 +104,39 @@ export const startWorkFlow = (
       );
       UserChatData.coords = [latitude, longitude];
     });
-
-    // Bot adds a message
-    addMessage(
-      chatId,
-      "Perfect! How many stops would you like to take?",
-      setChats
-    );
   } else if (action === "Address") {
-    //Change the previous message if address is clicked
+    // Handle address input logic
     changePrevious(chatId, setChats, `I would like to use my address.`);
-
-    // Bot adds a message
     addMessage(
       chatId,
       "Sounds good! Please enter your address information.",
       setChats
     );
 
+    //Change the bar to be the address bar
     changeBar(chatInput, setChatInput);
   } else if (action === "City Name") {
-    //Change the previous message  if city name is clicked
+    // Handle city name input logic
     changePrevious(chatId, setChats, "I would like to use my city name.");
-
-    // Bot adds a message
     addMessage(chatId, "Sounds good! Please enter your city name.", setChats);
   }
+
+  // Wait for user to input something
+  await new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (UserChatData.address[1] != "" || UserChatData.coords[0] != "") {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 100);
+  });
+  console.log(UserChatData.address[1]);
+  console.log(UserChatData.coords);
+
+  // Bot adds a message
+  addMessage(
+    chatId,
+    "Perfect! How many stops would you like to take?",
+    setChats
+  );
 };
