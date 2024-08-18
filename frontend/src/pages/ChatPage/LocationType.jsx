@@ -62,7 +62,7 @@ const changePrevious = (chatId, setChats, newMessage) => {
 };
 
 // Adds a new message
-const addMessage = (chatId, newMessage, setChats) => {
+export const addMessage = (chatId, newMessage, setChats) => {
   setChats((prevChats) =>
     prevChats.map((chat) =>
       chat.id === chatId
@@ -89,7 +89,8 @@ export const locationButtonClick = (
   chatId,
   action,
   setChatInput,
-  chatInput
+  chatInput,
+  UserChatData
 ) => {
   if (action === "Current Location") {
     //Change the previous message if current location is clicked
@@ -99,6 +100,7 @@ export const locationButtonClick = (
         setChats,
         `I would like to use my current location -- (${latitude}, ${longitude})`
       );
+      UserChatData.coords = [latitude, longitude];
     });
 
     // Bot adds a message

@@ -242,6 +242,7 @@
 .send-button {
   background-color: var(--green-main) !important;
   color: var(--white-light) !important;
+  height: 55px;
 }
 
 .send-button:hover {

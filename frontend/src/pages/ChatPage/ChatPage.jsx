@@ -6,9 +6,18 @@ import ItineraryButton from "../../components/buttons/ItineraryButton";
 import MapButton from "../../components/buttons/MapButton";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import { locationButtonClick } from "./LocationType";
+import { locationButtonClick, addMessage } from "./LocationType";
 import AddressBar from "./InputAddress";
 import "./ChatPage.css";
+
+// Class to store the user data
+class ChatData {
+  constructor() {
+    this.action = null;
+    this.coords = new Array(2).fill(0);
+    this.address = new Array(4).fill("");
+  }
+}
 
 const ChatPage = () => {
   const initialMessageCluster = [
@@ -22,6 +31,8 @@ const ChatPage = () => {
       ],
     },
   ];
+  // Create an instance of userChatData
+  const UserChatData = new ChatData();
 
   const [chats, setChats] = useState([
     {
@@ -56,24 +67,33 @@ const ChatPage = () => {
   }, [selectedChat]);
 
   const handleSendMessage = () => {
-    if (chatInput.message.trim() !== "" && selectedChat) {
-      // Add the inputted message into the chat log
-      setSelectedChat((prevChat) => ({
-        ...prevChat,
-        messages: [...prevChat.messages, chatInput.message],
-      }));
+    if (selectedChat) {
+      if (chatInput.showAddressInput) {
+        console.log(UserChatData.address[0]);
+        addMessage(
+          selectedChat.id,
+          `${UserChatData.address[0]} ${UserChatData.address[1]} ${UserChatData.address[2]} ${UserChatData.address[3]}`,
+          setChats
+        );
+        // Reset the input field and hide address input
+        setChatInput({
+          ...chatInput,
+          message: "",
+          showAddressInput: false,
+        });
+      } else if (chatInput.message.trim() !== "") {
+        // Handle regular message submission
+        setSelectedChat((prevChat) => ({
+          ...prevChat,
+          messages: [...prevChat.messages, chatInput.message],
+        }));
 
-      // Clear input box message
-      setChatInput({
-        ...chatInput,
-        message: "",
-      });
-
-      // Change input bar back to default if changed prior
-      setChatInput({
-        ...chatInput,
-        showAddressInput: false,
-      });
+        // Reset the input field
+        setChatInput({
+          ...chatInput,
+          message: "",
+        });
+      }
     }
   };
 
@@ -193,7 +213,8 @@ const ChatPage = () => {
                               selectedChat.id,
                               button.action,
                               setChatInput,
-                              chatInput
+                              chatInput,
+                              UserChatData
                             )
                           }
                         >
@@ -213,7 +234,7 @@ const ChatPage = () => {
 
         <Box className="input-area">
           {chatInput.showAddressInput ? (
-            <AddressBar /> // Show AddressBar if condition is true
+            <AddressBar UserChatData={UserChatData} /> // Show AddressBar if condition is true
           ) : (
             <TextField
               label={chatInput.name}
@@ -230,15 +251,14 @@ const ChatPage = () => {
               fullWidth
             />
           )}
-
-        <Button
-          variant="contained"
-          color="primary"
-          className="send-button"
-          onClick={handleSendMessage}
-        >
-          Send
-        </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            className="send-button"
+            onClick={handleSendMessage}
+          >
+            Send
+          </Button>
         </Box>
       </Box>
     </Box>
