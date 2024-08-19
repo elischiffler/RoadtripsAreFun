@@ -1,3 +1,4 @@
+import { validateLocation } from "./ValidateLocation";
 // Helper Function
 
 // Function that gets the user's current location
@@ -106,14 +107,16 @@ function locationTypeResponse(
 ) {
   if (UserChatData.action === "Current Location") {
     // If the user chose 'Current Location'
-    getCurrentLocation((latitude, longitude) => {
+    getCurrentLocation(async (latitude, longitude) => {
       // Update the previous message to include the location coordinates
       changePrevious(chatId, setChats, `I would like to use: Current Location`);
       // Save the coordinates to UserChatData
       if (UserChatData.locationType === "start") {
         UserChatData.startCoords = [latitude, longitude];
+        UserChatData.startConfirmed = await validateLocation([latitude, longitude], true);
       } else {
         UserChatData.endCoords = [latitude, longitude];
+        UserChatData.endConfirmed = await validateLocation([latitude, longitude], true);
       }
     });
   } else if (UserChatData.action === "Address") {
@@ -177,18 +180,33 @@ export const startWorkFlow = async (
     }, 100);
   });
 
+  // Display address from backend
   addMessage(
     chatId,
     setChats,
     `Is this the correct address?: ${UserChatData.startConfirmed}`,
-  )
+  );
 
+  // Ask for user to confirm the backend address
   addMessage(
     chatId,
     setChats,
     askForConfirmation.text,
     askForConfirmation.buttons,
-  )
+  );
+
+  // Wait for user to confirm the address
+  await new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (UserChatData.action) {
+        UserChatData.submitted = false;
+        changePrevious(chatId, setChats, `The address is: ${UserChatData.action}`);
+        UserChatData.action = null;
+        clearInterval(interval);
+        resolve();
+      }
+    }, 100);
+  });
 
   // Ask how many stops the user wants to take
   addMessage(
@@ -246,8 +264,36 @@ export const startWorkFlow = async (
   // Wait for the user to submit the end location data
   await new Promise((resolve) => {
     const interval = setInterval(() => {
-      if (UserChatData.submitted || UserChatData.endCoords[0] != "") {
+      if ((UserChatData.submitted || UserChatData.endCoords[0] != "") && UserChatData.endConfirmed) {
         UserChatData.submitted = false;
+        UserChatData.action = null;
+        clearInterval(interval);
+        resolve();
+      }
+    }, 100);
+  });
+
+  // Display address from backend
+  addMessage(
+    chatId,
+    setChats,
+    `Is this the correct address?: ${UserChatData.endConfirmed}`,
+  );
+
+  // Ask for user to confirm the backend address
+  addMessage(
+    chatId,
+    setChats,
+    askForConfirmation.text,
+    askForConfirmation.buttons,
+  );
+
+  // Wait for user to confirm the address
+  await new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (UserChatData.action) {
+        UserChatData.submitted = false;
+        changePrevious(chatId, setChats, `The address is: ${UserChatData.action}`);
         UserChatData.action = null;
         clearInterval(interval);
         resolve();

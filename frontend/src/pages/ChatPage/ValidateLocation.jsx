@@ -1,0 +1,28 @@
+import axios from 'axios';
+
+// Sends an API request to our backend to validate the location
+// It takes a starting location and a flag indicating whether the location is a coordinate or an address
+export const validateLocation = async (input, isCoordinate) => {
+try {
+    // Construct the query parameter based on whether the input is a coordinate or an address
+    const data = isCoordinate
+    ? {'location': {'coordinates': input}, is_coordinates: isCoordinate}
+    : {'location' : {'address' : input}, is_coordinates: isCoordinate};
+    
+    console.log("With data:", data);
+
+    // Send the a post request to the backend server
+    const response = await axios.post(`http://localhost:8000/validate-location`, data);
+
+    // Get the exact address as a string
+    const location =  response.data;
+    console.log("Validated Location:", location);
+
+    // Return the location data
+    return location;
+} catch (error) {
+    // Log any errors encountered during the request
+    console.error("Error validating location:", error);
+}
+};
+
