@@ -6,6 +6,7 @@ import ItineraryButton from "../../components/buttons/ItineraryButton";
 import MapButton from "../../components/buttons/MapButton";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
+import axios from 'axios';
 import { startWorkFlow, addMessage } from "./startWorkFlow";
 import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
@@ -81,9 +82,35 @@ const ChatPage = () => {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [selectedChat]);
+  
+  // Sends an API request to our backend to validate the location
+  // It takes a starting location and a flag indicating whether the location is a coordinate or an address
+  const validateLocation = async (input, isCoordinate) => {
+    try {
+      // Construct the query parameter based on whether the input is a coordinate or an address
+      const data = isCoordinate
+        ? {'location': {'coordinates': input}, is_coordinates: isCoordinate}
+        : {'location' : {'address' : input}, is_coordinates: isCoordinate};
+      
+      console.log("With data:", data);
+
+      // Send the a post request to the backend server
+      const response = await axios.post(`http://localhost:8000/validate-location`, data);
+
+      // Get the exact address as a string
+      const location =  response.data;
+      console.log("Validated Location:", location);
+
+      // Return the location data
+      return location;
+    } catch (error) {
+      // Log any errors encountered during the request
+      console.error("Error validating location:", error);
+    }
+  };
 
   // Handle the sending of messages in the chat
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (selectedChat) {
       if (UserChatData.showStopSlider) {
         // Handle input of the number of user stops
@@ -108,6 +135,9 @@ const ChatPage = () => {
           message: "",
           showAddressInput: false,
         });
+        
+        UserChatData.startConfirmed = await validateLocation(`${address[0]} ${address[1]} ${address[2]} ${address[3]}`, false);
+
       } else if (chatInput.message.trim() !== "") {
         // Handle regular message submission
         addMessage(selectedChat.id, setChats, chatInput.message);

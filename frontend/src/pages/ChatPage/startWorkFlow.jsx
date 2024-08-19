@@ -21,34 +21,7 @@ const getCurrentLocation = (callback) => {
   }
 };
 
-// Sends an API request to our backend to validate the location
-// It takes a starting location and a flag indicating whether the location is a coordinate or an address
-const validateLocation = async (start, isCoordinate = false) => {
-  try {
-    // Construct the query parameter based on whether the input is a coordinate or an address
-    const queryParam = isCoordinate
-      ? `coordinates=${encodeURIComponent(start)}`
-      : `address=${encodeURIComponent(start)}`;
 
-    // Send the request to the server
-    const response = await fetch(`/validate-location?${queryParam}`);
-
-    // Check if the response is ok
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    // Parse the response as text
-    const location = await response.text();
-    console.log("Validated Location:", location);
-
-    // Return the location data
-    return location;
-  } catch (error) {
-    // Log any errors encountered during the request
-    console.error("Error validating location:", error);
-  }
-};
 
 // Updates the previous message with a new one based on the user's input
 const changePrevious = (chatId, setChats, newMessage) => {
@@ -114,6 +87,14 @@ const askForLocationType = {
     { label: "Current Location", action: "Current Location" },
   ],
 };
+
+const askForConfirmation = {
+  text: "The address is:",
+  buttons: [
+    {label: "Correct", action: "Confirmed"},
+    {label: "Incorrect", action: null}
+  ]
+}
 
 // Handles the user's response based on their chosen location type
 function locationTypeResponse(
@@ -187,7 +168,7 @@ export const startWorkFlow = async (
   // Wait for the user to submit the location data
   await new Promise((resolve) => {
     const interval = setInterval(() => {
-      if (UserChatData.submitted || UserChatData.startCoords[0] != "") {
+      if ((UserChatData.submitted || UserChatData.startCoords[0] != "") && UserChatData.startConfirmed) {
         UserChatData.submitted = false;
         UserChatData.action = null;
         clearInterval(interval);
@@ -195,6 +176,19 @@ export const startWorkFlow = async (
       }
     }, 100);
   });
+
+  addMessage(
+    chatId,
+    setChats,
+    `Is this the correct address?: ${UserChatData.startConfirmed}`,
+  )
+
+  addMessage(
+    chatId,
+    setChats,
+    askForConfirmation.text,
+    askForConfirmation.buttons,
+  )
 
   // Ask how many stops the user wants to take
   addMessage(
