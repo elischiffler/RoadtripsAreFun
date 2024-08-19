@@ -13,13 +13,15 @@ import { UserChatDataContext } from "../../states/UserChatDataContext";
 import "./ChatPage.css";
 
 const ChatPage = () => {
-  // Grabs the global instance of UserChatData
+  // Retrieve the global instance of UserChatData
   const UserChatData = useContext(UserChatDataContext);
 
+  // Initial message displayed in a new chat
   const initialMessage = [
     "Hello there! I’m Journey Genie, and I’m excited to help you with your trip planning. To get started, could you please tell me what type of location you'd like to use?",
   ];
 
+  // State to manage the list of chats
   const [chats, setChats] = useState([
     {
       id: 1,
@@ -28,15 +30,20 @@ const ChatPage = () => {
     },
   ]);
 
+  // State to manage the currently selected chat
   const [selectedChat, setSelectedChat] = useState(null);
+
+  // State to manage the chat input (message box)
   const [chatInput, setChatInput] = useState({
     name: "Type a Message",
     message: "",
     showAddressInput: false,
   });
+
+  // Ref to scroll the chat to the bottom
   const chatEndRef = useRef(null);
 
-  // Starts the workflow on page first load and when a new chat is selected
+  // Trigger workflow when a chat is selected, ensuring it only starts once
   useEffect(() => {
     if (selectedChat && !UserChatData.workflowStarted) {
       startWorkFlow(
@@ -46,52 +53,50 @@ const ChatPage = () => {
         chatInput,
         UserChatData
       );
-      UserChatData.workflowStarted = true; // Ensure this flag is properly managed
+      UserChatData.workflowStarted = true; // Mark the workflow as started
     }
   }, [selectedChat]);
 
+  // Select the first chat by default when chats are loaded
   useEffect(() => {
     if (chats.length > 0) {
       setSelectedChat(chats[0]);
     }
   }, [chats]);
 
+  // Handle chat selection from the sidebar
   const handleChatClick = (chat) => {
     setSelectedChat(chat);
   };
 
+  // Scroll to the bottom of the chat when a new chat is selected
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [selectedChat]);
 
+  // Handle the sending of messages in the chat
   const handleSendMessage = () => {
     if (selectedChat) {
       if (UserChatData.showStopSlider) {
-        // Input the number of user stops
+        // Handle input of the number of user stops
         addMessage(selectedChat.id, setChats, UserChatData.stops);
-        console.log(UserChatData.stops);
-        // Remove the slider
-        UserChatData.showStopSlider = false;
+        UserChatData.showStopSlider = false; // Hide the stop slider
       } else if (chatInput.showAddressInput) {
-        // Adds a structured version of the users message in address box
-        // Determine what data is displayed
-        if (UserChatData.locationType === "start") {
-          addMessage(
-            selectedChat.id,
-            setChats,
-            `${UserChatData.startAddress[0]} ${UserChatData.startAddress[1]} ${UserChatData.startAddress[2]} ${UserChatData.startAddress[3]}`
-          );
-        } else if (UserChatData.locationType === "end") {
-          addMessage(
-            selectedChat.id,
-            setChats,
-            `${UserChatData.endAddress[0]} ${UserChatData.endAddress[1]} ${UserChatData.endAddress[2]} ${UserChatData.endAddress[3]}`
-          );
-        }
+        // Handle address input message
+        const address =
+          UserChatData.locationType === "start"
+            ? UserChatData.startAddress
+            : UserChatData.endAddress;
 
-        // Reset the input field and hide address input
+        addMessage(
+          selectedChat.id,
+          setChats,
+          `${address[0]} ${address[1]} ${address[2]} ${address[3]}`
+        );
+
+        // Reset input field and hide address input
         setChatInput({
           ...chatInput,
           message: "",
@@ -101,7 +106,7 @@ const ChatPage = () => {
         // Handle regular message submission
         addMessage(selectedChat.id, setChats, chatInput.message);
 
-        // Check to see if message should be stored
+        // Store the message if action is "City Name"
         if (UserChatData.action === "City Name") {
           if (UserChatData.locationType === "start") {
             UserChatData.startAddress[1] = chatInput.message;
@@ -117,30 +122,34 @@ const ChatPage = () => {
         });
       }
 
-      // Notifys the workflow that they submitted there data
+      // Notify the workflow that the data has been submitted
       UserChatData.submitted = true;
     }
   };
 
+  // Handle the creation of a new chat
   const handleNewChat = () => {
+    // Generate a new chat ID and add a new chat to the list
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
     const newChatId = maxId + 1;
     const newChat = {
       id: newChatId,
       title: `Chat ${newChatId}`,
-      messages: initialMessageCluster,
+      messages: initialMessage,
     };
     setChats((prevChats) => [...prevChats, newChat]);
-    setSelectedChat(newChat);
+    setSelectedChat(newChat); // Select the newly created chat
   };
 
+  // Handle the deletion of a chat
   const handleDeleteChat = (chatId) => {
     setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
     if (selectedChat?.id === chatId) {
-      setSelectedChat(null);
+      setSelectedChat(null); // Deselect the chat if it's the one being deleted
     }
   };
 
+  // Handle the pressing of the "Enter" key to send a message
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -150,6 +159,7 @@ const ChatPage = () => {
 
   return (
     <Box className="page-container">
+      {/* Sidebar for chat list and navigation */}
       <Box className="sidebar">
         <Box>
           <Button
@@ -161,6 +171,8 @@ const ChatPage = () => {
             New Chat
           </Button>
         </Box>
+
+        {/* Display list of chats in the sidebar */}
         <Box className="chat-logs">
           {chats.map((chat) => (
             <Box
@@ -182,7 +194,7 @@ const ChatPage = () => {
                 <CloseIcon
                   className="close-icon"
                   onClick={(e) => {
-                    e.stopPropagation();
+                    e.stopPropagation(); // Prevent chat selection on close icon click
                     handleDeleteChat(chat.id);
                   }}
                 />
@@ -191,6 +203,7 @@ const ChatPage = () => {
           ))}
         </Box>
 
+        {/* Sidebar bottom buttons for map and itinerary */}
         <Box className="sidebar-bottom">
           <Box sx={{ mb: -1, width: "100%" }}>
             <MapButton />
@@ -202,16 +215,20 @@ const ChatPage = () => {
         </Box>
       </Box>
 
+      {/* Main content area displaying the chat messages */}
       <Box className="main-content">
+        {/* Header with app title */}
         <Box className="header">
           <Typography variant="h6" color="white">
             Journey Genie
           </Typography>
         </Box>
 
+        {/* Chat box area */}
         <Box className="chat-box">
           {selectedChat ? (
             <Box className="chat-messages">
+              {/* Display messages in the selected chat */}
               {selectedChat.messages.map((message, index) =>
                 typeof message === "string" ? (
                   <Box
@@ -241,32 +258,34 @@ const ChatPage = () => {
                   </Box>
                 )
               )}
-              <div ref={chatEndRef} />
+              <div ref={chatEndRef} /> {/* Scroll to bottom */}
             </Box>
           ) : (
             <Typography variant="body1">Select a chat to start</Typography>
           )}
         </Box>
 
+        {/* Input area for typing and sending messages */}
         <Box className="input-area">
           {chatInput.showAddressInput ? (
-            <AddressBar /> // Show AddressBar if condition is true
+            <AddressBar /> // Show AddressBar if address input is required
           ) : UserChatData.showStopSlider ? (
-            <StopSlider />
+            <StopSlider /> // Show StopSlider if stop input is required
           ) : (
             <TextField
               label={chatInput.name}
               placeholder={chatInput.name}
               value={chatInput.message}
               onChange={(e) =>
-                setChatInput({
-                  ...chatInput,
-                  message: e.target.value,
-                })
+                setChatInput({ ...chatInput, message: e.target.value })
               }
               onKeyDown={handleKeyDown}
-              variant="outlined"
               fullWidth
+              multiline
+              sx={{
+                backgroundColor: customTheme.palette.white.main,
+                borderRadius: "5px",
+              }}
             />
           )}
           <Button
