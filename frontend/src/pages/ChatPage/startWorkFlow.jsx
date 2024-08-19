@@ -1,4 +1,4 @@
-import { validateLocation } from "./ValidateLocation";
+import { validateLocation } from "./validateLocation";
 // Helper Function
 
 // Function that gets the user's current location
@@ -33,7 +33,7 @@ const changePrevious = (chatId, setChats, newMessage) => {
             ...chat,
             messages: (chat.messages || []).map((message) =>
               typeof message === "object" &&
-              message.text === "I would like to use:"
+              (message.text === "I would like to use:" || message.text ==="The address is:")
                 ? {
                     ...message,
                     text: newMessage,
@@ -92,8 +92,8 @@ const askForLocationType = {
 const askForConfirmation = {
   text: "The address is:",
   buttons: [
-    {label: "Correct", action: "Confirmed"},
-    {label: "Incorrect", action: null}
+    {label: "Correct", action: "Correct"},
+    {label: "Incorrect", action: "Incorrect"}
   ]
 }
 
@@ -137,6 +137,44 @@ function locationTypeResponse(
   }
 }
 
+async function handleConfirmation(
+  chatId,
+  setChats,
+  UserChatData,
+){
+  const address = UserChatData.endConfirmed? UserChatData.endConfirmed : UserChatData.startConfirmed;
+  // Display address from backend
+  addMessage(
+    chatId,
+    setChats,
+    `Is this the correct address? ${address}`,
+  );
+
+  // Ask for user to confirm the backend address
+  addMessage(
+    chatId,
+    setChats,
+    askForConfirmation.text,
+    askForConfirmation.buttons,
+  );
+
+  // Wait for user to confirm the address
+  await new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (UserChatData.action) {
+        UserChatData.submitted = false;
+        clearInterval(interval);
+        resolve();
+      }
+    }, 100);
+  });
+  changePrevious(chatId, setChats, `The address is: ${UserChatData.action}`);
+  while(UserChatData.action !== "Correct"){
+
+  }
+  UserChatData.action = null;
+}
+
 // Main Workflow
 // This function orchestrates the chat flow, asking for and processing user inputs
 export const startWorkFlow = async (
@@ -171,7 +209,7 @@ export const startWorkFlow = async (
   // Wait for the user to submit the location data
   await new Promise((resolve) => {
     const interval = setInterval(() => {
-      if ((UserChatData.submitted || UserChatData.startCoords[0] != "") && UserChatData.startConfirmed) {
+      if (UserChatData.startConfirmed) {
         UserChatData.submitted = false;
         UserChatData.action = null;
         clearInterval(interval);
@@ -180,33 +218,8 @@ export const startWorkFlow = async (
     }, 100);
   });
 
-  // Display address from backend
-  addMessage(
-    chatId,
-    setChats,
-    `Is this the correct address?: ${UserChatData.startConfirmed}`,
-  );
 
-  // Ask for user to confirm the backend address
-  addMessage(
-    chatId,
-    setChats,
-    askForConfirmation.text,
-    askForConfirmation.buttons,
-  );
-
-  // Wait for user to confirm the address
-  await new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (UserChatData.action) {
-        UserChatData.submitted = false;
-        changePrevious(chatId, setChats, `The address is: ${UserChatData.action}`);
-        UserChatData.action = null;
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100);
-  });
+  await handleConfirmation(chatId, setChats, UserChatData);
 
   // Ask how many stops the user wants to take
   addMessage(
@@ -264,7 +277,7 @@ export const startWorkFlow = async (
   // Wait for the user to submit the end location data
   await new Promise((resolve) => {
     const interval = setInterval(() => {
-      if ((UserChatData.submitted || UserChatData.endCoords[0] != "") && UserChatData.endConfirmed) {
+      if (UserChatData.endConfirmed) {
         UserChatData.submitted = false;
         UserChatData.action = null;
         clearInterval(interval);
@@ -273,34 +286,9 @@ export const startWorkFlow = async (
     }, 100);
   });
 
-  // Display address from backend
-  addMessage(
-    chatId,
-    setChats,
-    `Is this the correct address?: ${UserChatData.endConfirmed}`,
-  );
 
-  // Ask for user to confirm the backend address
-  addMessage(
-    chatId,
-    setChats,
-    askForConfirmation.text,
-    askForConfirmation.buttons,
-  );
-
-  // Wait for user to confirm the address
-  await new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (UserChatData.action) {
-        UserChatData.submitted = false;
-        changePrevious(chatId, setChats, `The address is: ${UserChatData.action}`);
-        UserChatData.action = null;
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100);
-  });
-
+  await handleConfirmation(chatId, setChats, UserChatData);
+  
   // End the workflow with a message
   addMessage(chatId, setChats, "End of workflow");
 

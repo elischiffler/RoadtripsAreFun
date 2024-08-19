@@ -10,7 +10,7 @@ import { startWorkFlow, addMessage } from "./startWorkFlow";
 import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
 import { UserDataContext } from "../../states/UserDataContext";
-import { validateLocation } from "./ValidateLocation";
+import { validateLocation } from "./validateLocation";
 import "./ChatPage.css";
 
 const ChatPage = () => {
@@ -111,7 +111,7 @@ const ChatPage = () => {
           showAddressInput: false,
         });
         
-        // TODO add functionality for the endConfirmed
+        // Confirm the address that the user inputted
         if(UserChatData.locationType === "start"){
           UserChatData.startConfirmed = await validateLocation(`${address[0]} ${address[1]} ${address[2]} ${address[3]}`, false);
         }

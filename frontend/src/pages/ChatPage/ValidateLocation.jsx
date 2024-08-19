@@ -12,7 +12,7 @@ try {
     console.log("With data:", data);
 
     // Send the a post request to the backend server
-    const response = await axios.post(`http://localhost:8000/validate-location`, data);
+    const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}validate-location`, data);
 
     // Get the exact address as a string
     const location =  response.data;
