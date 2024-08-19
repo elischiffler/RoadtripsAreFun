@@ -127,7 +127,7 @@ function locationTypeResponse(
     // If the user chose 'Current Location'
     getCurrentLocation((latitude, longitude) => {
       // Update the previous message to include the location coordinates
-      changePrevious(chatId, setChats, `I would like to use: Current Locatio)`);
+      changePrevious(chatId, setChats, `I would like to use: Current Location`);
       // Save the coordinates to UserChatData
       if (UserChatData.locationType === "start") {
         UserChatData.startCoords = [latitude, longitude];

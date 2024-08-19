@@ -1,9 +1,16 @@
 import React, { createContext, useState } from "react";
 
-const UserChatDataContext = createContext();
+const UserDataContext = createContext();
+
+class Data {
+  constructor() {
+    this.chat = new ChatData();
+  }
+}
 
 class ChatData {
   constructor() {
+    this.chatId = null;
     this.action = null;
     this.locationType = "start";
     this.startCoords = new Array(2).fill(0);
@@ -17,14 +24,14 @@ class ChatData {
   }
 }
 
-export const UserChatDataProvider = ({ children }) => {
-  const [UserChatData] = useState(new ChatData()); // Initialize the global UserChatData instance
+export const UserDataProvider = ({ children }) => {
+  const [UserData] = useState(new Data()); // Initialize the global UserData instance
 
   return (
-    <UserChatDataContext.Provider value={UserChatData}>
+    <UserDataContext.Provider value={UserData}>
       {children}
-    </UserChatDataContext.Provider>
+    </UserDataContext.Provider>
   );
 };
 
-export { UserChatDataContext };
+export { UserDataContext };

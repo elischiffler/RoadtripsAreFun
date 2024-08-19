@@ -9,12 +9,14 @@ import CloseIcon from "@mui/icons-material/Close";
 import { startWorkFlow, addMessage } from "./startWorkFlow";
 import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
-import { UserChatDataContext } from "../../states/UserChatDataContext";
+import { UserDataContext } from "../../states/UserDataContext";
 import "./ChatPage.css";
 
 const ChatPage = () => {
-  // Retrieve the global instance of UserChatData
-  const UserChatData = useContext(UserChatDataContext);
+  // Retrieve the global instance of UserData
+  const UserData = useContext(UserDataContext);
+  // Use the UserChatData
+  const UserChatData = UserData.chat;
 
   // Initial message displayed in a new chat
   const initialMessage = [
@@ -46,6 +48,7 @@ const ChatPage = () => {
   // Trigger workflow when a chat is selected, ensuring it only starts once
   useEffect(() => {
     if (selectedChat && !UserChatData.workflowStarted) {
+      // Start the workflow for the newly selected chat
       startWorkFlow(
         setChats,
         selectedChat.id,
@@ -53,9 +56,11 @@ const ChatPage = () => {
         chatInput,
         UserChatData
       );
-      UserChatData.workflowStarted = true; // Mark the workflow as started
+
+      // Mark the workflow as started
+      UserChatData.workflowStarted = true;
     }
-  }, [selectedChat]);
+  }, [selectedChat, UserChatData.workflowStarted]);
 
   // Select the first chat by default when chats are loaded
   useEffect(() => {
@@ -65,8 +70,9 @@ const ChatPage = () => {
   }, [chats]);
 
   // Handle chat selection from the sidebar
-  const handleChatClick = (chat) => {
+  const handleAddChat = (chat) => {
     setSelectedChat(chat);
+    UserChatData.workflowStarted = false;
   };
 
   // Scroll to the bottom of the chat when a new chat is selected
@@ -180,7 +186,7 @@ const ChatPage = () => {
               className={`chat-item ${
                 selectedChat?.id === chat.id ? "selected" : ""
               }`}
-              onClick={() => handleChatClick(chat)}
+              onClick={() => handleAddChat(chat)}
               sx={{
                 bgcolor:
                   selectedChat?.id === chat.id

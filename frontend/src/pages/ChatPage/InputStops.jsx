@@ -1,10 +1,12 @@
 import React, { useContext } from "react";
 import Slider from "@mui/material/Slider";
-import { UserChatDataContext } from "../../states/UserChatDataContext";
+import { UserDataContext } from "../../states/UserDataContext";
 
 const StopSlider = () => {
-  // Access UserChatData from the context
-  const UserChatData = useContext(UserChatDataContext);
+  // Retrieve the global instance of UserData
+  const UserData = useContext(UserDataContext);
+  // Use the UserChatData
+  const UserChatData = UserData.chat;
 
   const handleChange = (event, newValue) => {
     // Update the stops value in UserChatData
