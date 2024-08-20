@@ -1,8 +1,18 @@
 from fastapi import FastAPI
 from app.routers import routing_api, location_api
+from fastapi.middleware.cors import CORSMiddleware
 
 # Create the FastAPI instance
 app = FastAPI()
+
+# Enables support of the front end while on a different domain/port
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins; replace with specific origins for production
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all HTTP methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 app.include_router(routing_api.router)
 app.include_router(location_api.router)

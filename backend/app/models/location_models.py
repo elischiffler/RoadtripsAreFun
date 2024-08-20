@@ -7,7 +7,7 @@ class location_payload(BaseModel):
     is_coordinates: bool
 
     class payload_data(BaseModel):
-        coordinates: Optional[tuple] = ()
+        coordinates: Optional[list] = []
         address: Optional[str] = None
 
     location: payload_data

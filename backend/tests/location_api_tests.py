@@ -20,7 +20,7 @@ def test_post_location_LosAngeles_address():
 def test_post_location_HollyWood_Sign_coordinates():
     payload = {"is_coordinates": True,
               "location":{
-              "coordinates": (34.133759465, -118.319665388)
+              "coordinates": [34.133759465, -118.319665388]
               }}
     response = client.post("/validate-location", json=payload)
 
