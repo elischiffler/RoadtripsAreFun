@@ -137,53 +137,13 @@ function locationTypeResponse(
   }
 }
 
-async function handleConfirmation(
-  chatId,
+// Workflow for allowing a user to input a location 
+async function inputLocationWorkflow(chatId,
   setChats,
-  UserChatData,
-){
-  const address = UserChatData.endConfirmed? UserChatData.endConfirmed : UserChatData.startConfirmed;
-  // Display address from backend
-  addMessage(
-    chatId,
-    setChats,
-    `Is this the correct address? ${address}`,
-  );
-
-  // Ask for user to confirm the backend address
-  addMessage(
-    chatId,
-    setChats,
-    askForConfirmation.text,
-    askForConfirmation.buttons,
-  );
-
-  // Wait for user to confirm the address
-  await new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (UserChatData.action) {
-        UserChatData.submitted = false;
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100);
-  });
-  changePrevious(chatId, setChats, `The address is: ${UserChatData.action}`);
-  while(UserChatData.action !== "Correct"){
-
-  }
-  UserChatData.action = null;
-}
-
-// Main Workflow
-// This function orchestrates the chat flow, asking for and processing user inputs
-export const startWorkFlow = async (
-  setChats,
-  chatId,
   setChatInput,
   chatInput,
-  UserChatData
-) => {
+  UserChatData,
+){
   // Ask user for location type
   addMessage(
     chatId,
@@ -207,6 +167,20 @@ export const startWorkFlow = async (
   locationTypeResponse(chatId, setChats, setChatInput, chatInput, UserChatData);
 
   // Wait for the user to submit the location data
+  if(UserChatData.locationType === "end"){
+    await new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (UserChatData.endConfirmed) {
+          UserChatData.submitted = false;
+          UserChatData.action = null;
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+  }
+  
+  else{
   await new Promise((resolve) => {
     const interval = setInterval(() => {
       if (UserChatData.startConfirmed) {
@@ -216,10 +190,102 @@ export const startWorkFlow = async (
         resolve();
       }
     }, 100);
-  });
+  });}}
 
 
-  await handleConfirmation(chatId, setChats, UserChatData);
+
+
+// Displays the backend address to user and asks for the confirmation
+async function displayConfirmationDetails(chatId,
+  setChats,
+  UserChatData,){
+    const address = UserChatData.endConfirmed? UserChatData.endConfirmed : UserChatData.startConfirmed;
+
+    // Display address from backend
+    addMessage(
+      chatId,
+      setChats,
+      `Is this the correct address? ${address}`,
+    );
+  
+    // Ask for user to confirm the backend address
+    addMessage(
+      chatId,
+      setChats,
+      askForConfirmation.text,
+      askForConfirmation.buttons,
+    );
+  
+    // Wait for user to confirm the address
+    await new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (UserChatData.action) {
+          UserChatData.submitted = false;
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+    changePrevious(chatId, setChats, `The address is: ${UserChatData.action}`);
+}
+
+// Loops confirmation of location until it is successfully validated
+async function handleConfirmation(
+  chatId,
+  setChats,
+  setChatInput,
+  chatInput,
+  UserChatData,
+){
+
+  await displayConfirmationDetails(chatId, setChats, UserChatData);
+  
+  // Loop until the user sends a correct response
+  while(UserChatData.action !== "Correct"){
+    UserChatData.action = null;
+    if(UserChatData.endConfirmed){
+      UserChatData.endConfirmed = null;
+    }
+    else{UserChatData.startConfirmed = null;}
+    // Message prompting re-entry of address
+    addMessage(
+      chatId,
+      setChats,
+      "My apologies, how would you like to re-enter the location?"
+    );
+    // Have them repeat inputting their location
+    await inputLocationWorkflow(chatId, setChats, setChatInput, chatInput, UserChatData);
+    // Have the user confirmed the newly generated address
+    await displayConfirmationDetails(chatId, setChats, UserChatData);
+  }
+  UserChatData.action = null;
+}
+
+
+// Main Workflow
+// This function orchestrates the chat flow, asking for and processing user inputs
+export const startWorkFlow = async (
+  setChats,
+  chatId,
+  setChatInput,
+  chatInput,
+  UserChatData
+) => {
+  // Ask for the starting location preferences
+  await inputLocationWorkflow(chatId,
+    setChats,
+    setChatInput,
+    chatInput,
+    UserChatData);
+
+  // Confirm the users starting address with the backend
+  await handleConfirmation(
+    chatId,
+    setChats,
+    setChatInput,
+    chatInput,
+    UserChatData,
+  );
 
   // Ask how many stops the user wants to take
   addMessage(
@@ -252,42 +318,23 @@ export const startWorkFlow = async (
   // Change the location type to 'end'
   UserChatData.locationType = "end";
 
-  // Ask user for the end location type
-  addMessage(
+
+  // Ask for ending location preferences
+  await inputLocationWorkflow(chatId,
+    setChats,
+    setChatInput,
+    chatInput,
+    UserChatData);
+
+  
+  // Confirm the users ending address with the backend
+  await handleConfirmation(
     chatId,
     setChats,
-    askForLocationType.text,
-    askForLocationType.buttons
+    setChatInput,
+    chatInput,
+    UserChatData,
   );
-
-  // Wait for the user to select the end location type
-  await new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (UserChatData.action) {
-        UserChatData.submitted = false;
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100);
-  });
-
-  // Handle the user's selected end location type
-  locationTypeResponse(chatId, setChats, setChatInput, chatInput, UserChatData);
-
-  // Wait for the user to submit the end location data
-  await new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (UserChatData.endConfirmed) {
-        UserChatData.submitted = false;
-        UserChatData.action = null;
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100);
-  });
-
-
-  await handleConfirmation(chatId, setChats, UserChatData);
   
   // End the workflow with a message
   addMessage(chatId, setChats, "End of workflow");
