@@ -1,4 +1,4 @@
-import { validateLocation } from "./validateLocation";
+import { validateLocation } from "./ValidateLocation";
 // Helper Function
 
 // Function that gets the user's current location
