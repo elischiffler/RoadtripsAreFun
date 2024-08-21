@@ -5,8 +5,10 @@ import { UserDataContext } from "../../states/UserDataContext";
 const StopSlider = () => {
   // Retrieve the global instance of UserData
   const UserData = useContext(UserDataContext);
-  // Use the UserChatData
-  const UserChatData = UserData.chat;
+  // Grab the chat logs
+  const ChatLogsData = UserData.chatlogs
+  // Grab Users chat data depending on log
+  const UserChatData = ChatLogsData.chatdata;
 
   const handleChange = (event, newValue) => {
     // Update the stops value in UserChatData

@@ -4,10 +4,14 @@ const UserDataContext = createContext();
 
 class Data {
   constructor() {
-    this.chat = new ChatData();
+    this.chatlogs = new ChatLogs();
   }
 }
-
+class ChatLogs {
+  constructor() {
+    this.chatdata = new ChatData()
+  }
+}
 class ChatData {
   constructor() {
     this.chatId = null;

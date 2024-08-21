@@ -16,8 +16,10 @@ import "./ChatPage.css";
 const ChatPage = () => {
   // Retrieve the global instance of UserData
   const UserData = useContext(UserDataContext);
-  // Use the UserChatData
-  const UserChatData = UserData.chat;
+  // Grab the chat logs
+  const ChatLogsData = UserData.chatlogs
+  // Grab Users chat data depending on log
+  const UserChatData = ChatLogsData.chatdata;
 
   // Initial message displayed in a new chat
   const initialMessage = [
@@ -73,7 +75,6 @@ const ChatPage = () => {
   // Handle chat selection from the sidebar
   const handleAddChat = (chat) => {
     setSelectedChat(chat);
-    UserChatData.workflowStarted = false;
   };
 
   // Scroll to the bottom of the chat when a new chat is selected

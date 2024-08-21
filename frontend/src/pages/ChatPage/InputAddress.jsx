@@ -6,8 +6,10 @@ import { UserDataContext } from "../../states/UserDataContext";
 const AddressBar = () => {
   // Retrieve the global instance of UserData
   const UserData = useContext(UserDataContext);
-  // Use the UserChatData
-  const UserChatData = UserData.chat;
+  // Grab the chat logs
+  const ChatLogsData = UserData.chatlogs
+  // Grab Users chat data depending on log
+  const UserChatData = ChatLogsData.chatdata;
 
   // Initialize the address based on the type of location (start or end)
   let initialAddress;
