@@ -17,6 +17,10 @@ class Route(BaseModel):
     steps: list[Route_Step]
     stops: list[Dict[str, Any]]
 
+    class Stop(BaseModel):
+        name: str
+        coordinates: Optional[list[list[float]]] = []
+        duration: float
 
 # Mapbox Base Models
 class Mapbox_waypoint(BaseModel):
@@ -79,11 +83,11 @@ class MapBox(BaseModel):
 
         weight_name: str
         weight: float
-        duration: float # Total length in seconds
-        distance: float # Total distance in meters
-        legs: list[Mapbox_leg] # A leg represents a route between two destinations of the journey
-        geometry: Mapbox_geo # Contains every coordinate of the route
-        waypoints: Optional[Mapbox_waypoint] = [] # Contains start, end, and stops locations
+        duration: float  # Total length in seconds
+        distance: float  # Total distance in meters
+        legs: list[Mapbox_leg]  # A leg represents a route between two destinations of the journey
+        geometry: Mapbox_geo  # Contains every coordinate of the route
+        waypoints: Optional[Mapbox_waypoint] = []  # Contains start, end, and stops locations
 
     routes: list[MapBox_Route]
     waypoints: list[Mapbox_waypoint]
@@ -232,6 +236,7 @@ class Amadeus_Hotel_Search(BaseModel):
             value: float
             displayValue: Optional[str] = None
             isUnlimited: Optional[str] = None
+
         distance: Amadeus_Distance
         last_update: Optional[str] = None
 
@@ -240,7 +245,7 @@ class Amadeus_Hotel_Search(BaseModel):
         links: Dict[str, str]
         sort: Optional[str] = None
 
-    data: list [Amadeus_Hotel_Data]
+    data: list[Amadeus_Hotel_Data]
     meta: Amadeus_Meta
 
 
