@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # Create the FastAPI instance
 app = FastAPI()
 
-# Enables support of the front end while on a different domain/port
+# Enables support of the front end on a different domain/port
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allows all origins; replace with specific origins for production

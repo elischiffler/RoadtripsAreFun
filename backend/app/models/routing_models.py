@@ -206,3 +206,49 @@ class Trip_Advisor_Information(BaseModel):
         display_name: str
     awards: Optional[list[Trip_Advisor_Award]] = None
     error: Optional[Trip_Advisor_Error] = None
+
+
+class Amadeus_Hotel_Search(BaseModel):
+    class Amadeus_Hotel_Data(BaseModel):
+        subtype: Optional[str] = None
+        name: str
+        timeZoneName: Optional[str] = None
+        iataCode: str
+        address: dict[str, str]
+        geoCode: dict[str, float]
+        hotelId: str
+        chainCode: str
+
+        class Amadeus_Distance(BaseModel):
+            unit: str
+            value: float
+            displayValue: Optional[str] = None
+            isUnlimited: Optional[str] = None
+        distance: Amadeus_Distance
+        last_update: Optional[str] = None
+
+    class Amadeus_Meta(BaseModel):
+        count: int
+        links: dict[str, str]
+        sort: Optional[str] = None
+    data: [Amadeus_Hotel_Data]
+    meta: Amadeus_Meta
+
+
+class Amadeus_Hotel_Offers(BaseModel):
+    type: str
+    is_available: Optional[bool] = None
+    self: str
+    hotel: Any
+    offers: list[Any] = None
+
+class Amadeus_Access(BaseModel):
+    type: str
+    username: str
+    application_name: str
+    client_id: str
+    token_type: str
+    access_token: str
+    expires_in: int
+    state: str
+    scope: str
