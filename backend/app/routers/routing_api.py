@@ -70,11 +70,11 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
         for leg in route.legs:
 
             # Add the duration to each stop
-            if(idx < len(stopping_points)):
+            if idx < len(stopping_points):
                 stopping_points[idx]['duration'] = leg.duration
             else:
                 # Include the duration to get to the end
-                stopping_points.append({'name': 'end', 'duration': leg.duration})
+                stopping_points.append({'name': 'Arrive at your destination', 'duration': leg.duration})
             idx += 1
             for step in leg.steps:
                 # Each step has a distance, duration, instruction, and location
