@@ -60,7 +60,7 @@ const LoginPage = () => {
           {/* Actual form components design and functionality */}
           <form onSubmit={handleSubmit}>
             <TextField
-              label="Username or Email"
+              label="Email"
               variant="outlined"
               fullWidth
               margin="normal"
