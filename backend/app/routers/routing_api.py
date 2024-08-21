@@ -63,11 +63,19 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
         # Construct waypoints string and make new route with stopping points
         waypoints = ';'.join([f"{lon},{lat}" for lat, lon in coordinates])
         route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
-
         distance, duration = route.distance, route.duration
         steps = []
 
+        idx = 0
         for leg in route.legs:
+
+            # Add the duration to each stop
+            if(idx < len(stopping_points)):
+                stopping_points[idx]['duration'] = leg.duration
+            else:
+                # Include the duration to get to the end
+                stopping_points.append({'name': 'end', 'duration': leg.duration})
+            idx += 1
             for step in leg.steps:
                 # Each step has a distance, duration, instruction, and location
                 steps.append(Route_Step(distance=step.distance,
