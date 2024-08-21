@@ -6,6 +6,7 @@ from requests.exceptions import RequestException
 from pydantic import ValidationError
 from app.models.routing_models import MapBox, Route, Route_Step, Trip_Advisor_Location_Search, Trip_Advisor_Information, Amadeus_Access, Amadeus_Hotel_Search
 from dotenv import load_dotenv
+from typing import Dict, Any
 import os
 import logging
 
@@ -55,9 +56,12 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
 
         # Use initial route to find stopping points
         stopping_points = await _add_stops(route, num_stops)
+        coordinates = []
+        for stop in stopping_points:
+            coordinates.append(stop['coordinates'])
 
         # Construct waypoints string and make new route with stopping points
-        waypoints = ';'.join([f"{lon},{lat}" for lat, lon in stopping_points])
+        waypoints = ';'.join([f"{lon},{lat}" for lat, lon in coordinates])
         route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
 
         distance, duration = route.distance, route.duration
@@ -72,12 +76,13 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
                                         location=step.maneuver.location))
 
         #Add all stopping coordinates to a single variable
-        coordinates = [[start_lat, start_lon]] + stopping_points + [[end_lat, end_lon]]
+        coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
 
         return Route(coordinates=coordinates,
                      distance=distance,
                      duration=duration,
-                     steps=steps)
+                     steps=steps,
+                     stops=stopping_points)
 
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
@@ -125,7 +130,7 @@ async def _call_route(start_lat: float, start_lon: float, end_lat: float, end_lo
     return route
 
 
-async def _add_stops(route: MapBox_route, num_stops: int) -> list[list[float]]:
+async def _add_stops(route: MapBox_route, num_stops: int) -> list[Dict[str, Any]]:
     """
     Determines stopping points along the route based on the specified number of stops.
 
@@ -134,7 +139,7 @@ async def _add_stops(route: MapBox_route, num_stops: int) -> list[list[float]]:
     - num_stops (int): Number of intermediate stops to include.
 
     Returns:
-    - list[list[float]]: List of coordinates for the stopping points.
+    - list[Dict[str, Any]]: List of details for the stopping points.
     """
     stopping_points = []
     interval = route.duration / (num_stops + 1)
@@ -194,7 +199,7 @@ def _find_position(coordinates: list[list[float]], steps: list[Mapbox_step], ela
     return coordinates[-1]
 
 
-async def _find_stop(category: str, lat: str, lon: str, radius: str) -> list[float]:
+async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str, Any]:
     """
     Finds a nearby location of a specific category using the TripAdvisor API and returns its coordinates.
 
@@ -227,9 +232,9 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> list[flo
         if len(locations.data) > 0:
             location = locations.data[0]  # Get the first location from the response
             location_id = location.location_id
-            coordinates = await _get_details(location_id)
-            if coordinates is not None:
-                return coordinates
+            details = await _get_details(location_id)
+            if details is not None:
+                return details
             else:
                 raise HTTPException(status_code=500, detail="Location data is missing latitude or longitude")
         else:
@@ -240,7 +245,7 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> list[flo
         raise HTTPException(status_code=501, detail=f'Improper TripAdvisor response: {str(exception)}')
 
 
-async def _get_details(location_id: str) -> list[float]:
+async def _get_details(location_id: str) -> Dict[str, Any]:
     """
     Retrieves detailed information about a location from the TripAdvisor API using its location ID.
 
@@ -266,7 +271,8 @@ async def _get_details(location_id: str) -> list[float]:
 
     lat = details.latitude
     lon = details.longitude
-    return [lat, lon]
+    name = details.name
+    return {'coordinates': [lat, lon], 'name': name}
 
 
 async def _find_hotel(lat: float, lon: float, radius: int = 5) -> list[Any]:

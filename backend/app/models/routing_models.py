@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 
 from pydantic import BaseModel
 
@@ -15,6 +15,7 @@ class Route(BaseModel):
     distance: float
     duration: float
     steps: list[Route_Step]
+    stops: list[Dict[str, Any]]
 
 
 # Mapbox Base Models
@@ -22,7 +23,7 @@ class Mapbox_waypoint(BaseModel):
     name: str
     location: list[float]
     distance: Optional[float] = None
-    metadata: Optional[dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None
 
 
 class Mapbox_geo(BaseModel):
@@ -34,7 +35,7 @@ class MapBox(BaseModel):
     class MapBox_Route(BaseModel):
         class Mapbox_leg(BaseModel):
             class Mapbox_notification(BaseModel):
-                details: Optional[dict[str, str]] = None
+                details: Optional[Dict[str, str]] = None
                 subtype: Optional[str] = None
                 type: str
                 geometry_index_end: Optional[int] = None
@@ -78,11 +79,11 @@ class MapBox(BaseModel):
 
         weight_name: str
         weight: float
-        duration: float
-        distance: float
-        legs: list[Mapbox_leg]
-        geometry: Mapbox_geo
-        waypoints: Optional[Mapbox_waypoint] = []
+        duration: float # Total length in seconds
+        distance: float # Total distance in meters
+        legs: list[Mapbox_leg] # A leg represents a route between two destinations of the journey
+        geometry: Mapbox_geo # Contains every coordinate of the route
+        waypoints: Optional[Mapbox_waypoint] = [] # Contains start, end, and stops locations
 
     routes: list[MapBox_Route]
     waypoints: list[Mapbox_waypoint]
@@ -155,8 +156,8 @@ class Trip_Advisor_Information(BaseModel):
     rating: Optional[float] = None
     rating_image_url: Optional[str] = None
     num_reviews: Optional[str] = None
-    review_rating_count: Optional[dict[str, str]] = None
-    subratings: Optional[dict[str, Any]] = None
+    review_rating_count: Optional[Dict[str, str]] = None
+    subratings: Optional[Dict[str, Any]] = None
     photo_count: Optional[int] = None
     see_all_photos: Optional[str] = None
     price_level: Optional[str] = None  # A number of dollar signs 1-5 indicating price
@@ -221,8 +222,8 @@ class Amadeus_Hotel_Search(BaseModel):
         name: str
         timeZoneName: Optional[str] = None
         iataCode: str
-        address: dict[str, str]
-        geoCode: dict[str, float]
+        address: Dict[str, str]
+        geoCode: Dict[str, float]
         hotelId: str
         chainCode: str
 
@@ -236,7 +237,7 @@ class Amadeus_Hotel_Search(BaseModel):
 
     class Amadeus_Meta(BaseModel):
         count: int
-        links: dict[str, str]
+        links: Dict[str, str]
         sort: Optional[str] = None
 
     data: list [Amadeus_Hotel_Data]
