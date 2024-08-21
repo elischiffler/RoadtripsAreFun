@@ -1,9 +1,6 @@
-<<<<<<< Updated upstream
-import { validateLocation } from "./ValidateLocation";
-=======
+
 import { validateLocation } from "./validateLocation";
 import { getRoute } from "./getRoute";
->>>>>>> Stashed changes
 // Helper Function
 
 // Function that gets the user's current location
@@ -204,7 +201,7 @@ async function inputLocationWorkflow(chatId,
 async function displayConfirmationDetails(chatId,
   setChats,
   UserChatData,){
-    const address = UserChatData.endConfirmed? UserChatData.endConfirmed : UserChatData.startConfirmed;
+    const address = UserChatData.endConfirmed? UserChatData.endConfirmed['address'] : UserChatData.startConfirmed['address'];
 
     // Display address from backend
     addMessage(
