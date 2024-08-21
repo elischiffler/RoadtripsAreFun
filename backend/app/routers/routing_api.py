@@ -149,7 +149,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, budget: float) -> list
         if current_time < route.duration:  # Ensure we are within the route duration
             current_lat, current_lon = _find_position(coordinates, steps, current_time)
             stopping_points.append(await _find_stop('attractions', current_lat, current_lon, 30))
-            stopping_points.append(await _find_hotel(current_lat, current_lon))
+            # stopping_points.append(await _find_hotel(current_lat, current_lon)) # API is having issues with their test servers
             current_time += interval  # Increment time for the next stop
 
     return stopping_points
