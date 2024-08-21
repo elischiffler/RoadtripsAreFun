@@ -148,8 +148,8 @@ async def _add_stops(route: MapBox_route, num_stops: int, budget: float) -> list
     for _ in range(num_stops):
         if current_time < route.duration:  # Ensure we are within the route duration
             current_lat, current_lon = _find_position(coordinates, steps, current_time)
-            # hotel = stopping_points.append(await _find_hotel(current_lat, current_lon, price_range = price_range))
             stopping_points.append(await _find_stop('attractions', current_lat, current_lon, 30))
+            stopping_points.append(await _find_hotel(current_lat, current_lon))
             current_time += interval  # Increment time for the next stop
 
     return stopping_points
@@ -269,19 +269,20 @@ async def _get_details(location_id: str) -> list[float]:
     return [lat, lon]
 
 
-async def _find_hotel(lat: float, lon: float, price_range: str, access_token, radius: int = 5) -> list[Any]:
-    hotels_list_url = f""
-    headers = {
-        "Authorization": f"Bearer {access_token}"
-    }
-    params = {
-        'latitude': lat,
-        'longitude': lon,
-        'radius': radius,
-        'radiusUnit': 'MILE',
-        'ratings': ['2', '3', '4', '5'],
-    }
+async def _find_hotel(lat: float, lon: float, radius: int = 5) -> list[Any]:
     try:
+        access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
+        hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
+        headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+        params = {
+            'latitude': lat,
+            'longitude': lon,
+            'radius': radius,
+            'radiusUnit': 'MILE',
+            'ratings': ['2', '3', '4', '5'], # Indicates hotel star level
+        }
         response = requests.get(hotels_list_url, params=params, headers=headers)
         json_data = response.json()
         hotels = Amadeus_Hotel_Search.model_validate(json_data)
