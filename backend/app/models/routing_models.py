@@ -16,6 +16,7 @@ class Route(BaseModel):
     duration: float
     steps: list[Route_Step]
 
+
 # Mapbox Base Models
 class Mapbox_waypoint(BaseModel):
     name: str
@@ -117,9 +118,11 @@ class Trip_Advisor_Location_Search(BaseModel):
     data: list[Trip_Advisor_Location]
     error: Optional[Trip_Advisor_Error] = None
 
+
 class Trip_Advisor_Subcategory(BaseModel):
     name: str
     localized_name: str
+
 
 class Trip_Advisor_Information(BaseModel):
     class Trip_Advisor_Ancestors(BaseModel):
@@ -127,7 +130,7 @@ class Trip_Advisor_Information(BaseModel):
         level: Optional[str] = None
         name: Optional[str] = None
         location_id: Optional[int] = None
-    
+
     class Trip_Advisor_Ranking(BaseModel):
         geo_location_id: Optional[int] = None
         ranking_string: Optional[str] = None
@@ -163,8 +166,10 @@ class Trip_Advisor_Information(BaseModel):
             class Trip_Advisor_Time(BaseModel):
                 day: int
                 time: str
+
             open: Trip_Advisor_Time
             close: Trip_Advisor_Time
+
         periods: Optional[list[Trip_Advisor_Period]] = None
         weekday_text: Optional[list[str]] = None
 
@@ -184,7 +189,7 @@ class Trip_Advisor_Information(BaseModel):
 
     groups: Optional[list[Trip_Advisor_Group]] = None
     styles: Optional[list[str]] = None
-    neighborhood_info: Optional[list[Trip_Advisor_Subcategory]] = None # List of nearby neighborhoods
+    neighborhood_info: Optional[list[Trip_Advisor_Subcategory]] = None  # List of nearby neighborhoods
 
     class Trip_Advisor_TripType(BaseModel):
         name: str
@@ -201,9 +206,11 @@ class Trip_Advisor_Information(BaseModel):
             tiny: str
             small: str
             large: str
+
         images: list[Trip_Advisor_Image]
         categories: list[str]
         display_name: str
+
     awards: Optional[list[Trip_Advisor_Award]] = None
     error: Optional[Trip_Advisor_Error] = None
 
@@ -231,7 +238,8 @@ class Amadeus_Hotel_Search(BaseModel):
         count: int
         links: dict[str, str]
         sort: Optional[str] = None
-    data: [Amadeus_Hotel_Data]
+
+    data: list [Amadeus_Hotel_Data]
     meta: Amadeus_Meta
 
 
@@ -241,6 +249,7 @@ class Amadeus_Hotel_Offers(BaseModel):
     self: str
     hotel: Any
     offers: list[Any] = None
+
 
 class Amadeus_Access(BaseModel):
     type: str
