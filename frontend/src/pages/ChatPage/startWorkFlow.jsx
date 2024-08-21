@@ -1,4 +1,9 @@
+<<<<<<< Updated upstream
 import { validateLocation } from "./ValidateLocation";
+=======
+import { validateLocation } from "./validateLocation";
+import { getRoute } from "./getRoute";
+>>>>>>> Stashed changes
 // Helper Function
 
 // Function that gets the user's current location
@@ -335,11 +340,19 @@ export const startWorkFlow = async (
     chatInput,
     UserChatData,
   );
+
+  // Log the start and end addresses (or coordinates)
+  console.log(UserChatData.startConfirmed);
+  console.log(UserChatData.endConfirmed);
+
+  await getRoute(UserChatData.startConfirmed['latitude'],
+    UserChatData.startConfirmed['longitude'],
+    UserChatData.endConfirmed['latitude'],
+    UserChatData.endConfirmed['longitude'],
+    UserChatData.stops,
+  );
   
   // End the workflow with a message
   addMessage(chatId, setChats, "End of workflow");
 
-  // Log the start and end addresses (or coordinates)
-  console.log(UserChatData.startAddress);
-  console.log(UserChatData.endAddress);
 };
