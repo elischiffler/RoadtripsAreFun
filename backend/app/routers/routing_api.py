@@ -125,7 +125,7 @@ async def _call_route(start_lat: float, start_lon: float, end_lat: float, end_lo
     return route
 
 
-async def _add_stops(route: MapBox_route, num_stops: int, budget: float) -> list[list[float]]:
+async def _add_stops(route: MapBox_route, num_stops: int) -> list[list[float]]:
     """
     Determines stopping points along the route based on the specified number of stops.
 
