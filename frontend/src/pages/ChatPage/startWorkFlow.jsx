@@ -1,4 +1,5 @@
 import { validateLocation } from "./ValidateLocation";
+import { useEffect } from "react"
 // Helper Function
 
 // Function that gets the user's current location
@@ -113,10 +114,10 @@ function locationTypeResponse(
       // Save the coordinates to UserChatData
       if (UserChatData.locationType === "start") {
         UserChatData.startCoords = [latitude, longitude];
-        UserChatData.startConfirmed = await validateLocation([latitude, longitude], true);
+        UserChatData.startConfirmed = await validateLocation([latitude, longitude], true, UserChatData, setChats, setChatInput, chatInput);
       } else {
         UserChatData.endCoords = [latitude, longitude];
-        UserChatData.endConfirmed = await validateLocation([latitude, longitude], true);
+        UserChatData.endConfirmed = await validateLocation([latitude, longitude], true, UserChatData, setChats, setChatInput, chatInput);
       }
     });
   } else if (UserChatData.action === "Address") {
@@ -143,7 +144,7 @@ function locationTypeResponse(
 }
 
 // Workflow for allowing a user to input a location 
-async function inputLocationWorkflow(chatId,
+export async function inputLocationWorkflow(chatId,
   setChats,
   setChatInput,
   chatInput,
@@ -193,7 +194,6 @@ async function inputLocationWorkflow(chatId,
     }, 100);
   });
 }}
-
 
 
 
@@ -261,6 +261,15 @@ async function handleConfirmation(
   }
   UserChatData.action = null;
 }
+// Create a function that can handle rollbacks
+const rollbackToCheckpoint = (checkpoint, setChatInput) => {
+  // Restore the UserChatData state
+  Object.assign(UserChatData, checkpoint);
+
+  // Restore the chatInput state
+  setChatInput({ ...checkpoint.chatInput });
+
+};
 
 
 // Main Workflow
@@ -272,6 +281,12 @@ export const startWorkFlow = async (
   chatInput,
   UserChatData
 ) => {
+    // Save initial state as a checkpoint
+    const initialState = {
+      ...UserChatData,
+      chatInput: { ...chatInput },
+    };
+
   UserChatData.workflowStarted = true
   UserChatData.showInputBar = false
   // Ask for the starting location preferences

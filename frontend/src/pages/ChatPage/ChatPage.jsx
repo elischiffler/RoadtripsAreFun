@@ -112,10 +112,10 @@ const ChatPage = () => {
         
         // Confirm the address that the user inputted
         if(UserChatData.locationType === "start"){
-          UserChatData.startConfirmed = await validateLocation(`${address[0]} ${address[1]} ${address[2]} ${address[3]}`, false);
+          UserChatData.startConfirmed = await validateLocation(`${address[0]} ${address[1]} ${address[2]} ${address[3]}`, false, UserChatData, setChats, setChatInput, chatInput);
         }
         else{
-          UserChatData.endConfirmed = await validateLocation(`${address[0]} ${address[1]} ${address[2]} ${address[3]}`, false);
+          UserChatData.endConfirmed = await validateLocation(`${address[0]} ${address[1]} ${address[2]} ${address[3]}`, false, UserChatData, setChats, setChatInput, chatInput);
         }
 
       } else if (chatInput.message.trim() !== "") {
@@ -127,10 +127,10 @@ const ChatPage = () => {
         if (UserChatData.action === "City Name") {
           if (UserChatData.locationType === "start") {
             UserChatData.startAddress[1] = chatInput.message;
-            UserChatData.startConfirmed = await validateLocation(UserChatData.startAddress[1], false);
+            UserChatData.startConfirmed = await validateLocation(UserChatData.startAddress[1], false, UserChatData, setChats, setChatInput, chatInput);
           } else if (UserChatData.locationType === "end") {
             UserChatData.endAddress[1] = chatInput.message;
-            UserChatData.endConfirmed = await validateLocation(UserChatData.endAddress[1], false);
+            UserChatData.endConfirmed = await validateLocation(UserChatData.endAddress[1], false, UserChatData, setChats, setChatInput, chatInput);
           }
         }
 
