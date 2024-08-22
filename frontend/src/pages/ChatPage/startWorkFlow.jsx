@@ -1,6 +1,7 @@
 
 import { validateLocation } from "./validateLocation";
 import { getRoute } from "./getRoute";
+import { generateItinerary } from "../ItineraryPage/generateItinerary";
 // Helper Function
 
 // Function that gets the user's current location
@@ -342,13 +343,17 @@ export const startWorkFlow = async (
   console.log(UserChatData.startConfirmed);
   console.log(UserChatData.endConfirmed);
 
+  // Generate the route
   UserChatData.route = await getRoute(UserChatData.startConfirmed['latitude'],
     UserChatData.startConfirmed['longitude'],
     UserChatData.endConfirmed['latitude'],
     UserChatData.endConfirmed['longitude'],
     UserChatData.stops,
   );
-  
+
+  // Generate the itinerary data 
+  UserChatData.itinerary = await generateItinerary(UserChatData.route);
+
   // End the workflow with a message
   addMessage(chatId, setChats, "End of workflow");
 

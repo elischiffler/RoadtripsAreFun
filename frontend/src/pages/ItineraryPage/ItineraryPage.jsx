@@ -48,13 +48,6 @@ const ItineraryPage = () => {
     },
   ];
 
-  useEffect( ()=>{
-    if(UserChatData.route){
-      // Generate the itinerary on the first render
-      UserChatData.itinerary = generateItinerary(UserChatData.route);
-      console.log("The itinerary: ", UserChatData.itinerary);
-    }
-  }, [])
 
   return (
     <Container className="itinerary-page" maxWidth={false} disableGutters>
@@ -71,21 +64,17 @@ const ItineraryPage = () => {
 
       {/* Scrollable Main Content Box */}
       <Box className="scrollable-main-content">
-        {itinerary.map((day, index) => (
+        {UserChatData.itinerary.map((day, index) => (
           <Box key={index} className="day-box">
             <Box className="day-header">
-              <Typography variant="h6">{day.day}</Typography>
+              <Typography variant="h6">{day['date']}</Typography>
             </Box>
             <Box>
-              {day.activities.map((activity, idx) => (
+              {day['stops'].map((activity, idx) => (
                 <Box key={idx} className="activity-box">
-                  <Typography variant="body1">{activity}</Typography>
+                  <Typography variant="body1">{activity['name']}</Typography>
                   <Typography variant="body2" className="activity-time">
-                    {idx === 0
-                      ? "9:00 AM"
-                      : idx === 1
-                      ? "12:00 PM"
-                      : "3:00 PM"}
+                    {activity['time']}
                   </Typography>
                 </Box>
               ))}
