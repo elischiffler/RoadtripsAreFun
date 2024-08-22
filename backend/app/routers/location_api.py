@@ -19,7 +19,7 @@ async def validate_location(request: Request) -> location_model:
         - str: Validated location address
 
     Raises:
-        - HTTPException: For errors with the received payload
+        - HTTPException: For errors with the received payload or parsing data
 
     """
     try:

@@ -10,6 +10,19 @@ router = APIRouter()
 
 @router.post("/generate-itinerary")
 async def generate_itinerary(request: Request) -> List[itinerary_day]:
+    """
+    Receives a json payload from the frontend and uses the data to generate an itinerary organized by date
+
+    Args:
+        request(_fastapi.Request): a JSON payload with the format of an itinerary_payload
+
+    Returns:
+        List[itinerary_day]: a list of itinerary days each containing information about a stop
+
+    Raises:
+        HTTPException: if the payload is malformed or error
+
+    """
     try:
         # Convert json payload back to route
         json_data = await request.json()
@@ -20,27 +33,46 @@ async def generate_itinerary(request: Request) -> List[itinerary_day]:
 
         # initialize a list of stops with a generic message and specified start time
         stop_list = [
-            {'date': current_time.strftime('%A, %B %d %Y'), 'time': current_time.strftime('%H:%M'),
+            {'date': current_time.strftime('%A, %B %d %Y'),
+             'time': current_time.strftime('%H:%M'),
              'name': 'Depart from your starting location'}]
         # loop through the stops and get the time for each
         for stop in data.route.stops:
             # Add the time of the stop to the current time
-            current_time = current_time + timedelta(seconds=stop['duration'])
+            current_time += timedelta(seconds=stop['duration'])
             # Add the stop to stop_list
             stop_list.append(
                 {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
                  'time': current_time.strftime('%H:%M'),  # Hour:Minutes
                  'name': stop['name']})
-        # Organize the stops by date
-        itinerary = await _day_itinerary(stop_list)
-        return itinerary
+        if len(stop_list) >=2:
+            # Organize the stops by date
+            itinerary = await _day_itinerary(stop_list)
+            return itinerary
+        else:
+            raise HTTPException(status_code=400, detail="Incomplete route provided")
     except ValidationError as error:
         raise HTTPException(status_code=400, detail=f"Invalid payload: {error}")
-    except Exception as error:
-        raise HTTPException(status_code=500, detail=f"Error generating itinerary: {error}")
+    except KeyError as error:
+        raise HTTPException(status_code=500, detail=f"Missing expected data: {error}")
+    except ValueError as error:
+        raise HTTPException(status_code=500, detail=f"Error processing data: {error}")
 
 
 async def _day_itinerary(itinerary: List[Dict[str, Any]]) -> List[itinerary_day]:
+    """
+    Processes a list of stops sorting them into itinerary_day objects using their dates
+
+    Args:
+        itinerary(List[Dict[str, Any]]): An in order list of stops that contain name and date-time:
+
+    Returns:
+        List[itinerary_day]: a list of itinerary days each containing stops and time the user will arrive
+
+    Raises:
+        HTTPException: if the itinerary is not properly formatted or errors parsing data
+
+    """
     try:
         day_itinerary = []
         curr_day = {'date': itinerary[0]['date'], 'stops': []}
