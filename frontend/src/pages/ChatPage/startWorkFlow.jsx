@@ -1,5 +1,4 @@
-
-import { validateLocation } from "./validateLocation";
+import { validateLocation } from "./ValidateLocation";
 import { getRoute } from "./getRoute";
 // Helper Function
 
@@ -115,13 +114,16 @@ function locationTypeResponse(
       // Save the coordinates to UserChatData
       if (UserChatData.locationType === "start") {
         UserChatData.startCoords = [latitude, longitude];
-        UserChatData.startConfirmed = await validateLocation([latitude, longitude], true);
+        UserChatData.startConfirmed = await validateLocation([latitude, longitude], true, UserChatData, setChats, setChatInput, chatInput);
       } else {
         UserChatData.endCoords = [latitude, longitude];
-        UserChatData.endConfirmed = await validateLocation([latitude, longitude], true);
+        UserChatData.endConfirmed = await validateLocation([latitude, longitude], true, UserChatData, setChats, setChatInput, chatInput);
       }
     });
   } else if (UserChatData.action === "Address") {
+    // Allow user access to the input bar
+    UserChatData.showInputBar = true
+    UserChatData.showAddressInput = true
     // If the user chose 'Address'
     changePrevious(chatId, setChats, `I would like to use: Address`);
     addMessage(
@@ -133,6 +135,8 @@ function locationTypeResponse(
     // Change the input bar to show the address input field
     changeBar(chatInput, setChatInput);
   } else if (UserChatData.action === "City Name") {
+    // Allow user access to the input bar
+    UserChatData.showInputBar = true
     // If the user chose 'City Name'
     changePrevious(chatId, setChats, "I would like to use: City Name");
     addMessage(chatId, setChats, "Sounds good! Please enter your city name.");
@@ -140,12 +144,13 @@ function locationTypeResponse(
 }
 
 // Workflow for allowing a user to input a location 
-async function inputLocationWorkflow(chatId,
+export async function inputLocationWorkflow(chatId,
   setChats,
   setChatInput,
   chatInput,
-  UserChatData,
+  UserChatData
 ){
+
   // Ask user for location type
   addMessage(
     chatId,
@@ -153,18 +158,15 @@ async function inputLocationWorkflow(chatId,
     askForLocationType.text,
     askForLocationType.buttons
   );
-
   // Wait for the user to select a location type
   await new Promise((resolve) => {
     const interval = setInterval(() => {
       if (UserChatData.action) {
-        UserChatData.submitted = false;
         clearInterval(interval);
         resolve();
       }
     }, 100);
   });
-
   // Handle the user's selected location type
   locationTypeResponse(chatId, setChats, setChatInput, chatInput, UserChatData);
 
@@ -173,7 +175,6 @@ async function inputLocationWorkflow(chatId,
     await new Promise((resolve) => {
       const interval = setInterval(() => {
         if (UserChatData.endConfirmed) {
-          UserChatData.submitted = false;
           UserChatData.action = null;
           clearInterval(interval);
           resolve();
@@ -186,14 +187,13 @@ async function inputLocationWorkflow(chatId,
   await new Promise((resolve) => {
     const interval = setInterval(() => {
       if (UserChatData.startConfirmed) {
-        UserChatData.submitted = false;
         UserChatData.action = null;
         clearInterval(interval);
         resolve();
       }
     }, 100);
-  });}}
-
+  });
+}}
 
 
 
@@ -222,7 +222,6 @@ async function displayConfirmationDetails(chatId,
     await new Promise((resolve) => {
       const interval = setInterval(() => {
         if (UserChatData.action) {
-          UserChatData.submitted = false;
           clearInterval(interval);
           resolve();
         }
@@ -262,6 +261,15 @@ async function handleConfirmation(
   }
   UserChatData.action = null;
 }
+// Create a function that can handle rollbacks
+const rollbackToCheckpoint = (checkpoint, setChatInput) => {
+  // Restore the UserChatData state
+  Object.assign(UserChatData, checkpoint);
+
+  // Restore the chatInput state
+  setChatInput({ ...checkpoint.chatInput });
+
+};
 
 
 // Main Workflow
@@ -273,6 +281,14 @@ export const startWorkFlow = async (
   chatInput,
   UserChatData
 ) => {
+    // Save initial state as a checkpoint
+    const initialState = {
+      ...UserChatData,
+      chatInput: { ...chatInput },
+    };
+
+  UserChatData.workflowStarted = true
+  UserChatData.showInputBar = false
   // Ask for the starting location preferences
   await inputLocationWorkflow(chatId,
     setChats,
@@ -297,18 +313,19 @@ export const startWorkFlow = async (
   );
 
   // Show a slider for the user to select the number of stops
+  UserChatData.showInputBar = true;
   UserChatData.showStopSlider = true;
 
   // Wait for the user to submit the number of stops
   await new Promise((resolve) => {
     const interval = setInterval(() => {
       if (!UserChatData.showStopSlider) {
-        UserChatData.submitted = false;
         clearInterval(interval);
         resolve();
       }
     }, 100);
   });
+  UserChatData.showInputBar = false;
 
   // Ask for the end location
   addMessage(

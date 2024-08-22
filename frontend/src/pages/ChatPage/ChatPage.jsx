@@ -10,14 +10,15 @@ import { startWorkFlow, addMessage } from "./startWorkFlow";
 import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
 import { UserDataContext } from "../../states/UserDataContext";
-import { validateLocation } from "./validateLocation";
+import { validateLocation } from "./ValidateLocation";
 import "./ChatPage.css";
 
 const ChatPage = () => {
   // Retrieve the global instance of UserData
   const UserData = useContext(UserDataContext);
-  // Use the UserChatData
-  const UserChatData = UserData.chat;
+  // Grab the chat logs
+  const ChatLogsData = UserData.chatlogs
+  const [UserChatData, setUserChatData] = useState(ChatLogsData.createChatData(1));
 
   // Initial message displayed in a new chat
   const initialMessage = [
@@ -40,15 +41,16 @@ const ChatPage = () => {
   const [chatInput, setChatInput] = useState({
     name: "Type a Message",
     message: "",
-    showAddressInput: false,
   });
 
   // Ref to scroll the chat to the bottom
   const chatEndRef = useRef(null);
-
+  
+  // State to track workflow status
+  const [workflowStarted, setWorkflowStarted] = useState(false);
   // Trigger workflow when a chat is selected, ensuring it only starts once
   useEffect(() => {
-    if (selectedChat && !UserChatData.workflowStarted) {
+    if (selectedChat && !workflowStarted) {
       // Start the workflow for the newly selected chat
       startWorkFlow(
         setChats,
@@ -57,24 +59,26 @@ const ChatPage = () => {
         chatInput,
         UserChatData
       );
-
       // Mark the workflow as started
-      UserChatData.workflowStarted = true;
+      setWorkflowStarted(true);
     }
-  }, [selectedChat, UserChatData.workflowStarted]);
+  }, [selectedChat, workflowStarted, UserChatData]);
 
-  // Select the first chat by default when chats are loaded
+  // Automatically create a chat instance during the initial load
   useEffect(() => {
     if (chats.length > 0) {
-      setSelectedChat(chats[0]);
+      const chat = chats[UserChatData.chatId - 1];
+      setSelectedChat(chat);
     }
   }, [chats]);
 
   // Handle chat selection from the sidebar
-  const handleAddChat = (chat) => {
-    setSelectedChat(chat);
-    UserChatData.workflowStarted = false;
+  const handleSelectChat = (chat) => {
+    const selectedChatData = ChatLogsData.getChatDataById(chat.id);
+    setSelectedChat({ ...chat, ...selectedChatData });
+    setUserChatData(ChatLogsData.getChatDataById(chat.id))
   };
+
 
   // Scroll to the bottom of the chat when a new chat is selected
   useEffect(() => {
@@ -91,7 +95,7 @@ const ChatPage = () => {
         // Handle input of the number of user stops
         addMessage(selectedChat.id, setChats, UserChatData.stops);
         UserChatData.showStopSlider = false; // Hide the stop slider
-      } else if (chatInput.showAddressInput) {
+      } else if (UserChatData.showAddressInput) {
         // Handle address input message
         const address =
           UserChatData.locationType === "start"
@@ -103,62 +107,68 @@ const ChatPage = () => {
           setChats,
           `${address[0]} ${address[1]} ${address[2]} ${address[3]}`
         );
-
-        // Reset input field and hide address input
-        setChatInput({
-          ...chatInput,
-          message: "",
-          showAddressInput: false,
-        });
+        UserChatData.showInputBar = false
+        UserChatData.showAddressInput = false
         
         // Confirm the address that the user inputted
         if(UserChatData.locationType === "start"){
-          UserChatData.startConfirmed = await validateLocation(`${address[0]} ${address[1]} ${address[2]} ${address[3]}`, false);
+          UserChatData.startConfirmed = await validateLocation(`${address[0]} ${address[1]} ${address[2]} ${address[3]}`, false, UserChatData, setChats, setChatInput, chatInput);
         }
         else{
-          UserChatData.endConfirmed = await validateLocation(`${address[0]} ${address[1]} ${address[2]} ${address[3]}`, false);
+          UserChatData.endConfirmed = await validateLocation(`${address[0]} ${address[1]} ${address[2]} ${address[3]}`, false, UserChatData, setChats, setChatInput, chatInput);
         }
 
       } else if (chatInput.message.trim() !== "") {
         // Handle regular message submission
         addMessage(selectedChat.id, setChats, chatInput.message);
 
+
         // Store the message if action is "City Name"
         if (UserChatData.action === "City Name") {
           if (UserChatData.locationType === "start") {
             UserChatData.startAddress[1] = chatInput.message;
-            UserChatData.startConfirmed = await validateLocation(UserChatData.startAddress[1], false);
+            UserChatData.startConfirmed = await validateLocation(UserChatData.startAddress[1], false, UserChatData, setChats, setChatInput, chatInput);
           } else if (UserChatData.locationType === "end") {
             UserChatData.endAddress[1] = chatInput.message;
-            UserChatData.endConfirmed = await validateLocation(UserChatData.endAddress[1], false);
+            UserChatData.endConfirmed = await validateLocation(UserChatData.endAddress[1], false, UserChatData, setChats, setChatInput, chatInput);
           }
         }
+
+        //Hide the input bar
+        UserChatData.showInputBar = false
 
         // Reset the input field
         setChatInput({
           ...chatInput,
           message: "",
         });
+      
       }
 
-      // Notify the workflow that the data has been submitted
-      UserChatData.submitted = true;
     }
   };
 
-  // Handle the creation of a new chat
   const handleNewChat = () => {
-    // Generate a new chat ID and add a new chat to the list
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
     const newChatId = maxId + 1;
+  
+    // Create new chat data
+    const NewChatData = ChatLogsData.createChatData(newChatId);
+  
+    // Create new chat object
     const newChat = {
       id: newChatId,
       title: `Chat ${newChatId}`,
       messages: initialMessage,
     };
+  
+    // Update UserChatData and chats
+    setUserChatData(NewChatData);
     setChats((prevChats) => [...prevChats, newChat]);
-    setSelectedChat(newChat); // Select the newly created chat
+    setSelectedChat(newChat);
+    setWorkflowStarted(false)
   };
+
 
   // Handle the deletion of a chat
   const handleDeleteChat = (chatId) => {
@@ -167,6 +177,7 @@ const ChatPage = () => {
       setSelectedChat(null); // Deselect the chat if it's the one being deleted
     }
   };
+  
 
   // Handle the pressing of the "Enter" key to send a message
   const handleKeyDown = (event) => {
@@ -199,7 +210,7 @@ const ChatPage = () => {
               className={`chat-item ${
                 selectedChat?.id === chat.id ? "selected" : ""
               }`}
-              onClick={() => handleAddChat(chat)}
+              onClick={() => handleSelectChat(chat)}
               sx={{
                 bgcolor:
                   selectedChat?.id === chat.id
@@ -285,11 +296,12 @@ const ChatPage = () => {
         </Box>
 
         {/* Input area for typing and sending messages */}
+        {UserChatData.showInputBar ? (
         <Box className="input-area">
-          {chatInput.showAddressInput ? (
-            <AddressBar /> // Show AddressBar if address input is required
+          {UserChatData.showAddressInput ? (
+            <AddressBar UserChatData = {UserChatData}/> // Show AddressBar if address input is required
           ) : UserChatData.showStopSlider ? (
-            <StopSlider /> // Show StopSlider if stop input is required
+            <StopSlider UserChatData = {UserChatData}/> // Show StopSlider if stop input is required
           ) : (
             <TextField
               label={chatInput.name}
@@ -316,6 +328,10 @@ const ChatPage = () => {
             Send
           </Button>
         </Box>
+        ):(
+        <Box className = "input-area"
+        sx={{height: "10%"}}/>
+        )}
       </Box>
     </Box>
   );

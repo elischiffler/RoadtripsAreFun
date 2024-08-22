@@ -1,13 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, TextField } from "@mui/material";
 import "./ChatPage.css";
-import { UserDataContext } from "../../states/UserDataContext";
 
-const AddressBar = () => {
-  // Retrieve the global instance of UserData
-  const UserData = useContext(UserDataContext);
-  // Use the UserChatData
-  const UserChatData = UserData.chat;
+const AddressBar = ({ UserChatData }) => {
 
   // Initialize the address based on the type of location (start or end)
   let initialAddress;
