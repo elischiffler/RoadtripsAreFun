@@ -1,4 +1,4 @@
-import { validateLocation } from "./validateLocation";
+import { validateLocation } from "./ValidateLocation";
 import { getRoute } from "./getRoute";
 // Helper Function
 
