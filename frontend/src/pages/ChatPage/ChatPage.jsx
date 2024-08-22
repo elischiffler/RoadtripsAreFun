@@ -60,7 +60,6 @@ const ChatPage = () => {
         chatInput,
         UserChatData
       );
-      console.log(UserChatData);
       // Mark the workflow as started
       setWorkflowStarted(true);
     }
@@ -70,7 +69,6 @@ const ChatPage = () => {
   useEffect(() => {
     if (chats.length > 0) {
       const chat = chats[UserChatData.chatId - 1];
-      console.log(chat)
       setSelectedChat(chat);
     }
   }, [chats]);
@@ -79,6 +77,7 @@ const ChatPage = () => {
   const handleSelectChat = (chat) => {
     const selectedChatData = ChatLogsData.getChatDataById(chat.id);
     setSelectedChat({ ...chat, ...selectedChatData });
+    setUserChatData(ChatLogsData.getChatDataById(chat.id))
   };
 
 
@@ -110,12 +109,7 @@ const ChatPage = () => {
           `${address[0]} ${address[1]} ${address[2]} ${address[3]}`
         );
 
-        // Reset input field and hide address input
-        setChatInput({
-          ...chatInput,
-          message: "",
-          showAddressInput: false,
-        });
+        UserChatData.showAddressInput = false
         
         // Confirm the address that the user inputted
         if(UserChatData.locationType === "start"){
@@ -301,7 +295,7 @@ const ChatPage = () => {
 
         {/* Input area for typing and sending messages */}
         <Box className="input-area">
-          {chatInput.showAddressInput ? (
+          {UserChatData.showAddressInput ? (
             <AddressBar UserChatData = {UserChatData}/> // Show AddressBar if address input is required
           ) : UserChatData.showStopSlider ? (
             <StopSlider /> // Show StopSlider if stop input is required

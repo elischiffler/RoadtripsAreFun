@@ -120,6 +120,7 @@ function locationTypeResponse(
       }
     });
   } else if (UserChatData.action === "Address") {
+    UserChatData.showAddressInput = true
     // If the user chose 'Address'
     changePrevious(chatId, setChats, `I would like to use: Address`);
     addMessage(
@@ -162,7 +163,6 @@ async function inputLocationWorkflow(chatId,
       }
     }, 100);
   });
-  console.log("goal")
   // Handle the user's selected location type
   locationTypeResponse(chatId, setChats, setChatInput, chatInput, UserChatData);
 
@@ -340,7 +340,4 @@ export const startWorkFlow = async (
   // End the workflow with a message
   addMessage(chatId, setChats, "End of workflow");
 
-  // Log the start and end addresses (or coordinates)
-  console.log(UserChatData.startAddress);
-  console.log(UserChatData.endAddress);
 };

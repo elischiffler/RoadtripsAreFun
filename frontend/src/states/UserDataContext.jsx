@@ -44,6 +44,7 @@ class ChatData {
     this.submitted = false;
     this.stops = [];
     this.showStopSlider = false;
+    this.showAddressInput = false;
     this.workflowStarted = false;
   }
 }
