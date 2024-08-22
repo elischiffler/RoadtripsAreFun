@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Request
 from geopy.geocoders import Nominatim
 from app.models.location_models import location_payload, location_model
 from pydantic import ValidationError
-from typing import Any, Dict
 
 # Initialize FastAPI
 router = APIRouter()

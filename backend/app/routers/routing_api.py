@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, HTTPException
 import requests
@@ -162,7 +162,7 @@ async def _add_stops(route: MapBox_route, num_stops: int) -> list[Dict[str, Any]
         if current_time < route.duration:  # Ensure we are within the route duration
             current_lat, current_lon = _find_position(coordinates, steps, current_time)
             stopping_points.append(await _find_stop('attractions', current_lat, current_lon, 30))
-            # stopping_points.append(await _find_hotel(current_lat, current_lon)) # API is having issues with their test servers
+            stopping_points.append(await _find_hotel(current_lat, current_lon))
             current_time += interval  # Increment time for the next stop
 
     return stopping_points
@@ -283,7 +283,7 @@ async def _get_details(location_id: str) -> Dict[str, Any]:
     return {'coordinates': [lat, lon], 'name': name}
 
 
-async def _find_hotel(lat: float, lon: float, radius: int = 5) -> list[Any]:
+async def _find_hotel(lat: float, lon: float, radius: int = 30) -> dict[str, list[float] | str]: #TODO increase radius until a hotel is found
     try:
         access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
         hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
@@ -303,8 +303,9 @@ async def _find_hotel(lat: float, lon: float, radius: int = 5) -> list[Any]:
         if len(hotels.data) > 0:
             hotel = hotels.data[0]
             coordinates = [hotel.geoCode['latitude'], hotel.geoCode['longitude']]
+            name = hotel.name
             # cost = await _get_cost(hotel_id=hotel.hotel_id, price_range=price_range)
-            return coordinates
+            return {'coordinates': coordinates, 'name': name}
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
     except RequestException as exception:
