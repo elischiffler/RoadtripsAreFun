@@ -16,12 +16,12 @@ async def generate_itinerary(request: Request):
         itinerary = [
             {'date-time': {'date': current_time.strftime('%A, %B %d %Y'), 'time': current_time.strftime('%H:%M')},
              'name': 'Depart from your starting location'}]
-        for stop in data.stops:
+        for stop in data.route.stops:
             # Add the time of the stop to the current time
-            current_time = current_time + timedelta(seconds=stop.duration)
+            current_time = current_time + timedelta(seconds=stop['duration'])
             itinerary.append(
                 {'date-time': {'date': current_time.strftime('%A, %B %d %Y'), 'time': current_time.strftime('%H:%M')},
-                 'name': stop.name})
+                 'name': stop['name']})
         return itinerary
-    except Exception as e:
-        pass
+    except Exception as error:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {error}")
