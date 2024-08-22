@@ -18,8 +18,7 @@ const ChatPage = () => {
   const UserData = useContext(UserDataContext);
   // Grab the chat logs
   const ChatLogsData = UserData.chatlogs
-  // Grab Users chat data depending on log
-  const UserChatData = ChatLogsData.chatdata;
+  const UserChatData = ChatLogsData.createChatData(1)
 
   // Initial message displayed in a new chat
   const initialMessage = [
@@ -47,10 +46,12 @@ const ChatPage = () => {
 
   // Ref to scroll the chat to the bottom
   const chatEndRef = useRef(null);
-
+  
+  // State to track workflow status
+  const [workflowStarted, setWorkflowStarted] = useState(false);
   // Trigger workflow when a chat is selected, ensuring it only starts once
   useEffect(() => {
-    if (selectedChat && !UserChatData.workflowStarted) {
+    if (selectedChat && !workflowStarted) {
       // Start the workflow for the newly selected chat
       startWorkFlow(
         setChats,
@@ -59,23 +60,26 @@ const ChatPage = () => {
         chatInput,
         UserChatData
       );
-
+      console.log(UserChatData);
       // Mark the workflow as started
-      UserChatData.workflowStarted = true;
+      setWorkflowStarted(true);
     }
-  }, [selectedChat, UserChatData.workflowStarted]);
+  }, [selectedChat, workflowStarted]);
 
-  // Select the first chat by default when chats are loaded
+  // Automatically create a chat instance during the initial load
   useEffect(() => {
     if (chats.length > 0) {
-      setSelectedChat(chats[0]);
+      const firstChat = chats[0];
+      setSelectedChat(firstChat);
     }
   }, [chats]);
 
   // Handle chat selection from the sidebar
-  const handleAddChat = (chat) => {
-    setSelectedChat(chat);
+  const handleSelectChat = (chat) => {
+    const selectedChatData = ChatLogsData.getChatDataById(chat.id);
+    setSelectedChat({ ...chat, ...selectedChatData });
   };
+
 
   // Scroll to the bottom of the chat when a new chat is selected
   useEffect(() => {
@@ -149,17 +153,23 @@ const ChatPage = () => {
 
   // Handle the creation of a new chat
   const handleNewChat = () => {
-    // Generate a new chat ID and add a new chat to the list
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
     const newChatId = maxId + 1;
+
+    const NewChatData = ChatLogsData.createChatData(newChatId);
+
     const newChat = {
       id: newChatId,
       title: `Chat ${newChatId}`,
       messages: initialMessage,
     };
+
+    UserChatData = NewChatData
+
     setChats((prevChats) => [...prevChats, newChat]);
-    setSelectedChat(newChat); // Select the newly created chat
+    setSelectedChat(newChat);
   };
+
 
   // Handle the deletion of a chat
   const handleDeleteChat = (chatId) => {
@@ -168,6 +178,13 @@ const ChatPage = () => {
       setSelectedChat(null); // Deselect the chat if it's the one being deleted
     }
   };
+  
+  // Handles when the location type buttons are clicked
+  const handleChatButtonClick = (action) => {
+    console.log("start")
+    UserChatData.action = action
+    console.log(UserChatData.action)
+  }
 
   // Handle the pressing of the "Enter" key to send a message
   const handleKeyDown = (event) => {
@@ -200,7 +217,7 @@ const ChatPage = () => {
               className={`chat-item ${
                 selectedChat?.id === chat.id ? "selected" : ""
               }`}
-              onClick={() => handleAddChat(chat)}
+              onClick={() => handleSelectChat(chat)}
               sx={{
                 bgcolor:
                   selectedChat?.id === chat.id
@@ -269,7 +286,7 @@ const ChatPage = () => {
                           className="chat-buttons"
                           variant="contained"
                           color="primary"
-                          onClick={() => (UserChatData.action = button.action)}
+                          onClick={() => (handleChatButtonClick(button.action))}
                         >
                           {button.label}
                         </Button>
@@ -288,7 +305,7 @@ const ChatPage = () => {
         {/* Input area for typing and sending messages */}
         <Box className="input-area">
           {chatInput.showAddressInput ? (
-            <AddressBar /> // Show AddressBar if address input is required
+            <AddressBar UserChatData = {UserChatData}/> // Show AddressBar if address input is required
           ) : UserChatData.showStopSlider ? (
             <StopSlider /> // Show StopSlider if stop input is required
           ) : (

@@ -144,6 +144,7 @@ async function inputLocationWorkflow(chatId,
   chatInput,
   UserChatData,
 ){
+
   // Ask user for location type
   addMessage(
     chatId,
@@ -151,7 +152,6 @@ async function inputLocationWorkflow(chatId,
     askForLocationType.text,
     askForLocationType.buttons
   );
-
   // Wait for the user to select a location type
   await new Promise((resolve) => {
     const interval = setInterval(() => {
@@ -162,7 +162,7 @@ async function inputLocationWorkflow(chatId,
       }
     }, 100);
   });
-
+  console.log("goal")
   // Handle the user's selected location type
   locationTypeResponse(chatId, setChats, setChatInput, chatInput, UserChatData);
 
@@ -271,6 +271,7 @@ export const startWorkFlow = async (
   chatInput,
   UserChatData
 ) => {
+  UserChatData.workflowStarted = true
   // Ask for the starting location preferences
   await inputLocationWorkflow(chatId,
     setChats,
