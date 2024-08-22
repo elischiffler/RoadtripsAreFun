@@ -41,7 +41,6 @@ const ChatPage = () => {
   const [chatInput, setChatInput] = useState({
     name: "Type a Message",
     message: "",
-    showAddressInput: false,
   });
 
   // Ref to scroll the chat to the bottom
@@ -96,7 +95,7 @@ const ChatPage = () => {
         // Handle input of the number of user stops
         addMessage(selectedChat.id, setChats, UserChatData.stops);
         UserChatData.showStopSlider = false; // Hide the stop slider
-      } else if (chatInput.showAddressInput) {
+      } else if (UserChatData.showAddressInput) {
         // Handle address input message
         const address =
           UserChatData.locationType === "start"
@@ -122,6 +121,7 @@ const ChatPage = () => {
       } else if (chatInput.message.trim() !== "") {
         // Handle regular message submission
         addMessage(selectedChat.id, setChats, chatInput.message);
+
 
         // Store the message if action is "City Name"
         if (UserChatData.action === "City Name") {
@@ -301,7 +301,7 @@ const ChatPage = () => {
           {UserChatData.showAddressInput ? (
             <AddressBar UserChatData = {UserChatData}/> // Show AddressBar if address input is required
           ) : UserChatData.showStopSlider ? (
-            <StopSlider /> // Show StopSlider if stop input is required
+            <StopSlider UserChatData = {UserChatData}/> // Show StopSlider if stop input is required
           ) : (
             <TextField
               label={chatInput.name}

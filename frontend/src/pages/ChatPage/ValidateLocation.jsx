@@ -9,7 +9,6 @@ try {
     ? {'location': {'coordinates': input}, is_coordinates: isCoordinate}
     : {'location' : {'address' : input}, is_coordinates: isCoordinate};
     
-    console.log("With data:", data);
 
     // Send the a post request to the backend server
     const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}validate-location`, data);
