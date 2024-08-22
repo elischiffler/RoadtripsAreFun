@@ -283,7 +283,7 @@ async def _get_details(location_id: str) -> Dict[str, Any]:
     return {'coordinates': [lat, lon], 'name': name}
 
 
-async def _find_hotel(lat: float, lon: float, radius: int = 30) -> dict[str, list[float] | str]: #TODO increase radius until a hotel is found
+async def _find_hotel(lat: float, lon: float, radius: int = 10) -> dict[str, list[float] | str]:
     try:
         access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
         hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
@@ -299,13 +299,16 @@ async def _find_hotel(lat: float, lon: float, radius: int = 30) -> dict[str, lis
         }
         response = requests.get(hotels_list_url, params=params, headers=headers)
         json_data = response.json()
+        # If no hotel is found search for one with a larger radius
+        if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
+            return await _find_hotel(lat, lon, radius + 10)
         hotels = Amadeus_Hotel_Search.model_validate(json_data)
         if len(hotels.data) > 0:
             hotel = hotels.data[0]
             coordinates = [hotel.geoCode['latitude'], hotel.geoCode['longitude']]
-            name = hotel.name
+            name = hotel.name.lower()
             # cost = await _get_cost(hotel_id=hotel.hotel_id, price_range=price_range)
-            return {'coordinates': coordinates, 'name': name}
+            return {'coordinates': coordinates, 'name': name.capitalize()}
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
     except RequestException as exception:
