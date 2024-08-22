@@ -142,7 +142,7 @@ async function inputLocationWorkflow(chatId,
   setChats,
   setChatInput,
   chatInput,
-  UserChatData,
+  UserChatData
 ){
 
   // Ask user for location type

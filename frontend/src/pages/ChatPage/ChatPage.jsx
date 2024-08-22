@@ -18,7 +18,7 @@ const ChatPage = () => {
   const UserData = useContext(UserDataContext);
   // Grab the chat logs
   const ChatLogsData = UserData.chatlogs
-  const UserChatData = ChatLogsData.createChatData(1)
+  const [UserChatData, setUserChatData] = useState(ChatLogsData.createChatData(1));
 
   // Initial message displayed in a new chat
   const initialMessage = [
@@ -64,13 +64,14 @@ const ChatPage = () => {
       // Mark the workflow as started
       setWorkflowStarted(true);
     }
-  }, [selectedChat, workflowStarted]);
+  }, [selectedChat, workflowStarted, UserChatData]);
 
   // Automatically create a chat instance during the initial load
   useEffect(() => {
     if (chats.length > 0) {
-      const firstChat = chats[0];
-      setSelectedChat(firstChat);
+      const chat = chats[UserChatData.chatId - 1];
+      console.log(chat)
+      setSelectedChat(chat);
     }
   }, [chats]);
 
@@ -151,23 +152,25 @@ const ChatPage = () => {
     }
   };
 
-  // Handle the creation of a new chat
   const handleNewChat = () => {
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
     const newChatId = maxId + 1;
-
+  
+    // Create new chat data
     const NewChatData = ChatLogsData.createChatData(newChatId);
-
+  
+    // Create new chat object
     const newChat = {
       id: newChatId,
       title: `Chat ${newChatId}`,
       messages: initialMessage,
     };
-
-    UserChatData = NewChatData
-
+  
+    // Update UserChatData and chats
+    setUserChatData(NewChatData);
     setChats((prevChats) => [...prevChats, newChat]);
     setSelectedChat(newChat);
+    setWorkflowStarted(false)
   };
 
 
@@ -179,12 +182,6 @@ const ChatPage = () => {
     }
   };
   
-  // Handles when the location type buttons are clicked
-  const handleChatButtonClick = (action) => {
-    console.log("start")
-    UserChatData.action = action
-    console.log(UserChatData.action)
-  }
 
   // Handle the pressing of the "Enter" key to send a message
   const handleKeyDown = (event) => {
@@ -286,7 +283,7 @@ const ChatPage = () => {
                           className="chat-buttons"
                           variant="contained"
                           color="primary"
-                          onClick={() => (handleChatButtonClick(button.action))}
+                          onClick={() => (UserChatData.action = button.action)}
                         >
                           {button.label}
                         </Button>
