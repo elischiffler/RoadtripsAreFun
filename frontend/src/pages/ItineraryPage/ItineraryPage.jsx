@@ -7,9 +7,17 @@ import {
 import LogoButton from "../../components/LogoButton";
 import ChatButton from "../../components/buttons/ChatButton";
 import MapButton from "../../components/buttons/MapButton";
+import { UserDataContext } from "../../states/UserDataContext";
 import "./ItineraryPage.css";
+import { useContext } from "react"
 
 const ItineraryPage = () => {
+
+  // Retrieve the global instance of UserData
+  const UserData = useContext(UserDataContext);
+  // Use the UserChatData
+  const UserChatData = UserData.chat;
+
   // Sample itinerary data
   const itinerary = [
     {
@@ -41,6 +49,7 @@ const ItineraryPage = () => {
   return (
     <Container className="itinerary-page" maxWidth={false} disableGutters>
       {/* Fixed Top Box */}
+      {console.log(UserChatData.route)};
       <Box className="fixed-top-box">
         <LogoButton />
         <Box className="title">

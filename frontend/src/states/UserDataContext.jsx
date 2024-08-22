@@ -21,6 +21,9 @@ class ChatData {
     this.stops = null;
     this.showStopSlider = false;
     this.workflowStarted = false;
+    this.startConfirmed = null;
+    this.endConfirmed = null;
+    this.route = null;
   }
 }
 

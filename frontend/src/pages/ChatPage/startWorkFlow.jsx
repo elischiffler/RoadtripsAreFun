@@ -342,7 +342,7 @@ export const startWorkFlow = async (
   console.log(UserChatData.startConfirmed);
   console.log(UserChatData.endConfirmed);
 
-  await getRoute(UserChatData.startConfirmed['latitude'],
+  UserChatData.route = await getRoute(UserChatData.startConfirmed['latitude'],
     UserChatData.startConfirmed['longitude'],
     UserChatData.endConfirmed['latitude'],
     UserChatData.endConfirmed['longitude'],
