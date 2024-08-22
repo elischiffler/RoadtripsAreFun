@@ -9,6 +9,7 @@ class itinerary_payload(BaseModel):
     route: Route
     start_time: Optional[datetime] = datetime.now()
 
+
 class itinerary_day(BaseModel):
     date: str
-    stops: [List[Dict[str, Any]]]
+    stops: List[Dict[str, Any]]
