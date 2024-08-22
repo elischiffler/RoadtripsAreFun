@@ -13,6 +13,7 @@ const StopSlider = () => {
   const handleChange = (event, newValue) => {
     // Update the stops value in UserChatData
     UserChatData.stops = newValue;
+    console.log(UserChatData.stops)
   };
 
   return (

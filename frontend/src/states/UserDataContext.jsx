@@ -41,8 +41,8 @@ class ChatData {
     this.startAddress = new Array(4).fill("");
     this.endCoords = new Array(2).fill(0);
     this.endAddress = new Array(4).fill("");
-    this.submitted = false;
     this.stops = [];
+    this.showInputBar = true;
     this.showStopSlider = false;
     this.showAddressInput = false;
     this.workflowStarted = false;

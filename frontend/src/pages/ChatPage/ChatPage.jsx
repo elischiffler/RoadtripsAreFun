@@ -108,7 +108,7 @@ const ChatPage = () => {
           setChats,
           `${address[0]} ${address[1]} ${address[2]} ${address[3]}`
         );
-
+        UserChatData.showInputBar = false
         UserChatData.showAddressInput = false
         
         // Confirm the address that the user inputted
@@ -134,15 +134,17 @@ const ChatPage = () => {
           }
         }
 
+        //Hide the input bar
+        UserChatData.showInputBar = false
+
         // Reset the input field
         setChatInput({
           ...chatInput,
           message: "",
         });
+      
       }
 
-      // Notify the workflow that the data has been submitted
-      UserChatData.submitted = true;
     }
   };
 
@@ -294,6 +296,7 @@ const ChatPage = () => {
         </Box>
 
         {/* Input area for typing and sending messages */}
+        {UserChatData.showInputBar ? (
         <Box className="input-area">
           {UserChatData.showAddressInput ? (
             <AddressBar UserChatData = {UserChatData}/> // Show AddressBar if address input is required
@@ -325,6 +328,10 @@ const ChatPage = () => {
             Send
           </Button>
         </Box>
+        ):(
+        <Box className = "input-area"
+        sx={{height: "10%"}}/>
+        )}
       </Box>
     </Box>
   );

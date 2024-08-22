@@ -120,6 +120,8 @@ function locationTypeResponse(
       }
     });
   } else if (UserChatData.action === "Address") {
+    // Allow user access to the input bar
+    UserChatData.showInputBar = true
     UserChatData.showAddressInput = true
     // If the user chose 'Address'
     changePrevious(chatId, setChats, `I would like to use: Address`);
@@ -132,6 +134,8 @@ function locationTypeResponse(
     // Change the input bar to show the address input field
     changeBar(chatInput, setChatInput);
   } else if (UserChatData.action === "City Name") {
+    // Allow user access to the input bar
+    UserChatData.showInputBar = true
     // If the user chose 'City Name'
     changePrevious(chatId, setChats, "I would like to use: City Name");
     addMessage(chatId, setChats, "Sounds good! Please enter your city name.");
@@ -157,7 +161,6 @@ async function inputLocationWorkflow(chatId,
   await new Promise((resolve) => {
     const interval = setInterval(() => {
       if (UserChatData.action) {
-        UserChatData.submitted = false;
         clearInterval(interval);
         resolve();
       }
@@ -171,7 +174,6 @@ async function inputLocationWorkflow(chatId,
     await new Promise((resolve) => {
       const interval = setInterval(() => {
         if (UserChatData.endConfirmed) {
-          UserChatData.submitted = false;
           UserChatData.action = null;
           clearInterval(interval);
           resolve();
@@ -184,13 +186,13 @@ async function inputLocationWorkflow(chatId,
   await new Promise((resolve) => {
     const interval = setInterval(() => {
       if (UserChatData.startConfirmed) {
-        UserChatData.submitted = false;
         UserChatData.action = null;
         clearInterval(interval);
         resolve();
       }
     }, 100);
-  });}}
+  });
+}}
 
 
 
@@ -220,7 +222,6 @@ async function displayConfirmationDetails(chatId,
     await new Promise((resolve) => {
       const interval = setInterval(() => {
         if (UserChatData.action) {
-          UserChatData.submitted = false;
           clearInterval(interval);
           resolve();
         }
@@ -272,6 +273,7 @@ export const startWorkFlow = async (
   UserChatData
 ) => {
   UserChatData.workflowStarted = true
+  UserChatData.showInputBar = false
   // Ask for the starting location preferences
   await inputLocationWorkflow(chatId,
     setChats,
@@ -296,18 +298,19 @@ export const startWorkFlow = async (
   );
 
   // Show a slider for the user to select the number of stops
+  UserChatData.showInputBar = true;
   UserChatData.showStopSlider = true;
 
   // Wait for the user to submit the number of stops
   await new Promise((resolve) => {
     const interval = setInterval(() => {
       if (!UserChatData.showStopSlider) {
-        UserChatData.submitted = false;
         clearInterval(interval);
         resolve();
       }
     }, 100);
   });
+  UserChatData.showInputBar = false;
 
   // Ask for the end location
   addMessage(
