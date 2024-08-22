@@ -10,7 +10,7 @@ import { startWorkFlow, addMessage } from "./startWorkFlow";
 import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
 import { UserDataContext } from "../../states/UserDataContext";
-import { validateLocation } from "./validateLocation";
+import { validateLocation } from "./ValidateLocation";
 import "./ChatPage.css";
 
 const ChatPage = () => {
