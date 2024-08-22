@@ -1,5 +1,5 @@
-import { validateLocation } from "./ValidateLocation";
-import { useEffect } from "react"
+import { validateLocation } from "./validateLocation";
+import { getRoute } from "./getRoute";
 // Helper Function
 
 // Function that gets the user's current location
@@ -201,7 +201,7 @@ export async function inputLocationWorkflow(chatId,
 async function displayConfirmationDetails(chatId,
   setChats,
   UserChatData,){
-    const address = UserChatData.endConfirmed? UserChatData.endConfirmed : UserChatData.startConfirmed;
+    const address = UserChatData.endConfirmed? UserChatData.endConfirmed['address'] : UserChatData.startConfirmed['address'];
 
     // Display address from backend
     addMessage(
@@ -353,6 +353,17 @@ export const startWorkFlow = async (
     setChatInput,
     chatInput,
     UserChatData,
+  );
+
+  // Log the start and end addresses (or coordinates)
+  console.log(UserChatData.startConfirmed);
+  console.log(UserChatData.endConfirmed);
+
+  await getRoute(UserChatData.startConfirmed['latitude'],
+    UserChatData.startConfirmed['longitude'],
+    UserChatData.endConfirmed['latitude'],
+    UserChatData.endConfirmed['longitude'],
+    UserChatData.stops,
   );
   
   // End the workflow with a message
