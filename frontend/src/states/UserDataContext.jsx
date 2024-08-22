@@ -24,6 +24,7 @@ class ChatData {
     this.startConfirmed = null;
     this.endConfirmed = null;
     this.route = null;
+    this.itinerary = null;
   }
 }
 

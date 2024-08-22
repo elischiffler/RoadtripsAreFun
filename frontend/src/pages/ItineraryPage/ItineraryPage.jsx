@@ -9,7 +9,9 @@ import ChatButton from "../../components/buttons/ChatButton";
 import MapButton from "../../components/buttons/MapButton";
 import { UserDataContext } from "../../states/UserDataContext";
 import "./ItineraryPage.css";
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
+import { generateItinerary } from "./generateItinerary";
+
 
 const ItineraryPage = () => {
 
@@ -45,6 +47,14 @@ const ItineraryPage = () => {
       ],
     },
   ];
+
+  useEffect( ()=>{
+    if(UserChatData.route){
+      // Generate the itinerary on the first render
+      UserChatData.itinerary = generateItinerary(UserChatData.route);
+      console.log("The itinerary: ", UserChatData.itinerary);
+    }
+  }, [])
 
   return (
     <Container className="itinerary-page" maxWidth={false} disableGutters>

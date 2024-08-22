@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-export const generateItinerary = async (UserChatData) => {
+export const generateItinerary = async (route) => {
     try{
         const data = {
-            'route': UserChatData.route
+            'route': route
         };
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}`, data);
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}generate-itinerary`, data);
 
         const itinerary = response.data;
         console.log("Generated itinerary: ", itinerary);
