@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, TextField } from "@mui/material";
 import "./ChatPage.css";
 
-const AddressBar = (UserChatData) => {
+const AddressBar = ({ UserChatData }) => {
 
   // Initialize the address based on the type of location (start or end)
   let initialAddress;
