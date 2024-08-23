@@ -37,14 +37,16 @@ async def generate_itinerary(request: Request) -> List[itinerary_day]:
              'time': current_time.strftime('%H:%M'),
              'name': 'Depart from your starting location'}]
         # loop through the stops and get the time for each
+        print(data.route.stops)
         for stop in data.route.stops:
-            # Add the time of the stop to the current time
+            # Add the time of to get to the stop to the current time
             current_time += timedelta(seconds=stop['duration'])
             # Add the stop to stop_list
             stop_list.append(
                 {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
                  'time': current_time.strftime('%H:%M'),  # Hour:Minutes
                  'name': stop['name']})
+            current_time += timedelta(hours=stop['length']) # Increment current time by the time by the length of stop
         if len(stop_list) >=2:
             # Organize the stops by date
             itinerary = await _day_itinerary(stop_list)
@@ -78,7 +80,7 @@ async def _day_itinerary(itinerary: List[Dict[str, Any]]) -> List[itinerary_day]
         curr_day = {'date': itinerary[0]['date'], 'stops': []}
         # iterate through all stops
         for stop in itinerary:
-            # Check if the date matches and if so add to the same day
+            # Check if the date matches and if so add stop to the same day
             if stop['date'] == curr_day['date']:
                 curr_day['stops'].append({'name': stop['name'], 'time': stop['time']})
             # If date doesn't match it is a new day
