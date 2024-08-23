@@ -9,8 +9,7 @@ import ChatButton from "../../components/buttons/ChatButton";
 import MapButton from "../../components/buttons/MapButton";
 import { UserDataContext } from "../../states/UserDataContext";
 import "./ItineraryPage.css";
-import { useContext, useEffect } from "react"
-import { generateItinerary } from "./generateItinerary";
+import { useContext } from "react"
 
 
 const ItineraryPage = () => {
@@ -71,12 +70,22 @@ const ItineraryPage = () => {
             </Box>
             <Box>
               {day['stops'].map((activity, idx) => (
+                activity['address'] ?(
                 <Box key={idx} className="activity-box">
+                  <Typography variant="body1">{activity['name']}</Typography>
+                  <Typography variant="body2" className="activity-time">
+                    {`Arrival time: ${activity['time']}`}
+                  </Typography>
+                  <Typography variant="body2" className="activity-time">
+                    {`Address: ${activity['address']}`}
+                  </Typography>
+                </Box>):
+                (<Box key={idx} className="activity-box">
                   <Typography variant="body1">{activity['name']}</Typography>
                   <Typography variant="body2" className="activity-time">
                     {activity['time']}
                   </Typography>
-                </Box>
+                </Box>)
               ))}
             </Box>
           </Box>
