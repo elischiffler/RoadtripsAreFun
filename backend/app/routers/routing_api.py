@@ -5,7 +5,8 @@ from fastapi import APIRouter, HTTPException
 import requests
 from requests.exceptions import RequestException
 from pydantic import ValidationError
-from app.models.routing_models import MapBox, Route, Route_Step, Trip_Advisor_Location_Search, Trip_Advisor_Information, Amadeus_Access, Amadeus_Hotel_Search
+from app.models.routing_models import MapBox, Route, Route_Step, Trip_Advisor_Location_Search, Trip_Advisor_Information, \
+    Amadeus_Access, Amadeus_Hotel_Search
 from dotenv import load_dotenv
 from typing import Dict, Any
 import os
@@ -144,7 +145,7 @@ async def _call_route(start_lat: float, start_lon: float, end_lat: float, end_lo
     return route
 
 
-async def _add_stops(route: MapBox_route, num_stops: int, date: datetime) -> list[Dict[str, Any]]:
+async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_start: int = 9, daily_end: int = 16) -> list[Dict[str, Any]]:
     """
     Determines stopping points along the route based on the specified number of stops.
 
@@ -156,41 +157,38 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime) -> lis
     - list[Dict[str, Any]]: List of details for the stopping points.
     """
     stopping_points = []
-    interval = route.duration / (num_stops + 1) # Divide trip up into segments for finding stops
-    current_time = interval # Initialize the current time in seconds
-    steps = route.legs[0].steps # Only one leg in the initial route
-    coordinates = route.geometry.coordinates # Get all coordinates of the route
-    # Figure out the number of days the route will take (results in a range ~7.84-8.8 hrs of driving a day)
-    print(route.duration)
-    num_days = round((route.duration + 3600*(num_stops))/28800) # Total duration including time at stops plus
-    print(num_days)
-    if num_days > 0: # Multi day trip
-        hotel_interval = route.duration/(num_days) # Time before you need to look for hotels
-    else: # Single day trip
-        hotel_interval = route.duration # Look for a single hotel at end of route
-        num_days = 1
-    curr_day = 1
+    interval = route.duration / (num_stops + 1)  # Divide trip up into segments for finding stops in seconds
+    current_time = date.hour * 3600  # Initialize the current time of the day in seconds
+    steps = route.legs[0].steps  # Only one leg in the initial route
+    coordinates = route.geometry.coordinates  # Get all coordinates of the route
+    current_day = 0  # Initialize number of days in route
+    total_time = 0  # Total time traveled to the destination
+    time_till_stop = interval  # Track the time until next stop
 
     # price_range = await _get_price_range(budget, cost, num_stops) TODO Implement budget
 
     # Add stopping places until the trip is over
     for _ in range(num_stops):
+        # While it will be 5:00PM the current day before the next stop, find a hotel
+        while current_time + time_till_stop >= (daily_end * 3600):  # Check if the time to the next stop will be later than 5PM
+            time_traveled = (daily_end * 3600) - current_time # Calculate time traveled that day
+            total_time += time_traveled  # Add the time traveled toward the next stop that day
+            time_till_stop -= time_traveled  # Remove the amount of time traveled in the day from time to the stop
 
-        # Loop until we don't need to look for a hotel the interval
-        while curr_day <= num_days and curr_day * hotel_interval < current_time:
-            print(f"Looking for hotel at duration: {hotel_interval * curr_day}")
-            # Get the hotel coordinates for the appropriate interval
-            hotel_lat, hotel_lon = _find_position(coordinates, steps, (curr_day * hotel_interval))  # Find the hotel we are missing
+            hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)  # figure out the location at 5PM
             stopping_points.append(await _find_hotel(hotel_lat, hotel_lon))  # Append a found hotel
-            date += timedelta(hours=12)  # Allocate 12 hours at each overnight
-            curr_day += 1  # Increment the day to find the next spot to commute to
+            current_day += 1  # increment the days that have passed
+            current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
 
-        if current_time < route.duration:  # Ensure we are within the route duration
+        if total_time < route.duration:  # Ensure we are within the route duration
             print(f"Current stop interval duration: {current_time}")
-            current_lat, current_lon = _find_position(coordinates, steps, current_time)
-            stopping_points.append(await _find_stop('attractions', current_lat, current_lon, 30))
-            date += timedelta(hours=2, seconds=interval) # Allocate two hours detours per stop/ increment for the time to drive to the location
-            current_time += interval  # Increment time for the next stop
+            total_time += time_till_stop  # Increment the total time by time traveled to stop
+            current_lat, current_lon = _find_position(coordinates, steps, total_time) # Find the next stop position
+            current_time += time_till_stop + (3600*2) # Change current time to include distance and time at stop
+            stopping_points.append(await _find_stop('attractions', current_lat, current_lon, 30)) # Add the stop to the list
+            date += timedelta(hours=2,
+                              seconds=interval)  # Allocate two hours detours per stop/ increment for the time to drive to the location
+            time_till_stop = interval  # Reset the time to the next stop
         print(stopping_points)
 
     return stopping_points
@@ -307,8 +305,8 @@ async def _get_details(location_id: int) -> Dict[str, Any]:
 
     lat = details.latitude
     lon = details.longitude
-    name = details.name
-    return {'coordinates': [lat, lon], 'name': name, 'length': 2}
+    name = details.name.lower()
+    return {'coordinates': [lat, lon], 'name': name.capitalize(), 'length': 2}
 
 
 async def _find_hotel(lat: float, lon: float, radius: int = 10) -> dict[str, list[float] | str]:
@@ -323,7 +321,7 @@ async def _find_hotel(lat: float, lon: float, radius: int = 10) -> dict[str, lis
             'longitude': lon,
             'radius': radius,
             'radiusUnit': 'MILE',
-            'ratings': ['2', '3', '4', '5'], # Indicates hotel star level
+            'ratings': ['2', '3', '4', '5'],  # Indicates hotel star level
         }
         response = requests.get(hotels_list_url, params=params, headers=headers)
         json_data = response.json()
