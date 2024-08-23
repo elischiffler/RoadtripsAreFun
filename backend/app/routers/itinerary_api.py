@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request
-from app.models.itinerary_models import itinerary_payload, itinerary_day
+from app.models.itinerary_models import Itinerary_Payload, Itinerary_Day
 from datetime import timedelta, datetime
 from typing import List, Dict, Any
 from pydantic import ValidationError
@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.post("/generate-itinerary")
-async def generate_itinerary(request: Request) -> List[itinerary_day]:
+async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
     """
     Receives a json payload from the frontend and uses the data to generate an itinerary organized by date
 
@@ -26,7 +26,7 @@ async def generate_itinerary(request: Request) -> List[itinerary_day]:
     try:
         # Convert json payload back to route
         json_data = await request.json()
-        data = itinerary_payload.model_validate(json_data)
+        data = Itinerary_Payload.model_validate(json_data) # Validate the frontend payload
 
         # initialize current_time to be the specified start_time
         current_time = data.start_time
@@ -78,7 +78,7 @@ async def generate_itinerary(request: Request) -> List[itinerary_day]:
         raise HTTPException(status_code=502, detail=f"Error processing data: {error}")
 
 
-async def _day_itinerary(itinerary: List[Dict[str, Any]]) -> List[itinerary_day]:
+async def _day_itinerary(itinerary: List[Dict[str, Any]]) -> List[Itinerary_Day]:
     """
     Processes a list of stops sorting them into itinerary_day objects using their dates
 
@@ -106,14 +106,15 @@ async def _day_itinerary(itinerary: List[Dict[str, Any]]) -> List[itinerary_day]
                 curr_day['stops'].append(point)
             # If date doesn't match it is a new day
             else:
-                day_itinerary.append(curr_day)  # Add the fully complete date itinerary to the final list
+                day_itinerary.append(Itinerary_Day.model_validate(curr_day))  # Add the fully complete date itinerary to the final list
                 # change the current day to be a new day with the information of the current stop
                 curr_day = {'date': stop['date'],
                             'stops': [{'name': stop['name'],
                                        'time': stop['time'],}]}
                 if stop.get('address'):
                     curr_day['stops'][0]['address'] = stop['address']
-        day_itinerary.append(itinerary_day.model_validate(curr_day))
+
+        day_itinerary.append(Itinerary_Day.model_validate(curr_day))
         return day_itinerary
     except ValidationError as error:
         raise HTTPException(status_code=500, detail=f"Error with date validation: {error}")
