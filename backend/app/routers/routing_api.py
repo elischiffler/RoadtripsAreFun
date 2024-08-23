@@ -70,6 +70,7 @@ async def get_route(start_lat: float,
         waypoints = ';'.join([f"{lon},{lat}" for lat, lon in coordinates])
         route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
         distance, duration = route.distance, route.duration
+        geometry = route.geometry
         steps = []
 
         idx = 0
@@ -96,7 +97,8 @@ async def get_route(start_lat: float,
                      distance=distance,
                      duration=duration,
                      steps=steps,
-                     stops=stopping_points)
+                     stops=stopping_points,
+                     geometry=geometry)
 
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
