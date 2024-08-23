@@ -72,18 +72,25 @@ async def get_route(start_lat: float,
         route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
         distance, duration = route.distance, route.duration
         steps = []
+        geolocator = Nominatim(user_agent="RP-Hotels")  # Initialize a geolocator
 
         idx = 0
         for leg in route.legs:
 
             # Add the duration to each stop
-            if idx < len(stopping_points):
+            if idx < len(stopping_points) and stopping_points[idx]['type'] != 'generic':
                 stopping_points[idx]['duration'] = leg.duration
+                temp_coordinates = stopping_points[idx]['coordinates']
+                location = geolocator.reverse(f"{temp_coordinates[0]}, {temp_coordinates[1]}")  # Reverse geolocate
+                if location:
+                    stopping_points[idx]['address'] = location.address  # Add the address to each
             else:
+                location = geolocator.reverse(f"{end_lat}, {end_lon}")
                 # Include the duration to get to the end
                 stopping_points.append({'name': 'Arrive at your destination',
                                         'duration': leg.duration,
-                                        'type': 'generic'})
+                                        'type': 'end',
+                                        'address': location.address})
             idx += 1
             for step in leg.steps:
                 # Each step has a distance, duration, instruction, and location
@@ -92,7 +99,7 @@ async def get_route(start_lat: float,
                                         instruction=step.maneuver.instruction,
                                         location=step.maneuver.location))
 
-        #Add all stopping coordinates to a single variable
+        # Add all stopping coordinates to a single variable
         coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
 
         return Route(coordinates=coordinates,
@@ -147,7 +154,8 @@ async def _call_route(start_lat: float, start_lon: float, end_lat: float, end_lo
     return route
 
 
-async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_start: int = 9, daily_end: int = 16) -> list[Dict[str, Any]]:
+async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_start: int = 9, daily_end: int = 16) -> \
+        list[Dict[str, Any]]:
     """
     Determines stopping points along the route based on the specified number of stops.
 
@@ -172,8 +180,9 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_
     # Add stopping places until the trip is over
     for _ in range(num_stops):
         # While it will be 5:00PM the current day before the next stop, find a hotel
-        while current_time + time_till_stop >= (daily_end * 3600):  # Check if the time to the next stop will be later than 5PM
-            time_traveled = (daily_end * 3600) - current_time # Calculate time traveled that day
+        while current_time + time_till_stop >= (
+                daily_end * 3600):  # Check if the time to the next stop will be later than 5PM
+            time_traveled = (daily_end * 3600) - current_time  # Calculate time traveled that day
             total_time += time_traveled  # Add the time traveled toward the next stop that day
             time_till_stop -= time_traveled  # Remove the amount of time traveled in the day from time to the stop
 
@@ -186,15 +195,14 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_
             current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
 
         if total_time < route.duration:  # Ensure we are within the route duration
-            print(f"Current stop interval duration: {current_time}")
             total_time += time_till_stop  # Increment the total time by time traveled to stop
-            current_lat, current_lon = _find_position(coordinates, steps, total_time) # Find the next stop position
-            current_time += time_till_stop + (3600*2) # Change current time to include distance and time at stop
-            stopping_points.append(await _find_stop('attractions', current_lat, current_lon, 30)) # Add the stop to the list
+            current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
+            current_time += time_till_stop + (3600 * 2)  # Change current time to include distance and time at stop
+            stopping_points.append(
+                await _find_stop('attractions', current_lat, current_lon, 30))  # Add the stop to the list
             date += timedelta(hours=2,
                               seconds=interval)  # Allocate two hours detours per stop/ increment for the time to drive to the location
             time_till_stop = interval  # Reset the time to the next stop
-        print(stopping_points)
 
     return stopping_points
 
@@ -335,19 +343,15 @@ async def _find_hotel(lat: float, lon: float, radius: int = 30) -> dict[str, lis
             return await _find_hotel(lat, lon, radius + 10)
         hotels = Amadeus_Hotel_Search.model_validate(json_data)
         if len(hotels.data) > 0:
-            hotel = hotels.data[0] #TODO parse through hotels for best offers
+            hotel = hotels.data[0]  #TODO parse through hotels for best offers
             coordinates = [hotel.geoCode['latitude'], hotel.geoCode['longitude']]
             name = hotel.name.lower()
-            geolocator = Nominatim(user_agent="RP-Hotels") # Initialize a geolocator
-            location = geolocator.reverse(f"{coordinates[0]}, {coordinates[1]}") # Reverse geolocate hotel coordinates
+
             # cost = await _get_cost(hotel_id=hotel.hotel_id, price_range=price_range)
-            if location is not None:
-                return {'coordinates': coordinates,
-                        'name': name.capitalize(),
-                        'type': 'hotel',
-                        'address': location.address}
-            else:
-                raise HTTPException(status_code=404, detail=f"No address found")
+            return {'coordinates': coordinates,
+                    'name': name.capitalize(),
+                    'type': 'hotel',
+                    }
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
     except RequestException as exception:

@@ -23,6 +23,7 @@ class Route(BaseModel):
         duration: float
         type: str
 
+
 # Mapbox Base Models
 class Mapbox_waypoint(BaseModel):
     name: str
