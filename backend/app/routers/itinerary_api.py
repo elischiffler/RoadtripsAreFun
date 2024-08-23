@@ -46,15 +46,23 @@ async def generate_itinerary(request: Request) -> List[itinerary_day]:
                 {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
                  'time': current_time.strftime('%H:%M'),  # Hour:Minutes
                  'name': stop['name']})
-            if stop['length'] == 12: # If the stop is a hotel
+            if stop['type'] == 'hotel': # If the stop is a hotel
                 current_time = datetime(current_time.year, # set current time to be next day at 9AM
                                         current_time.month,
                                         current_time.day+1,
-                                        9,
+                                        9, # TODO Make the start time a parameter
                                         0,
                                         0)
-            else:
-                current_time += timedelta(hours=stop['length']) # Increment current time by the length of stop
+                stop_list.append(
+                    {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
+                     'time': current_time.strftime('%H:%M'),  # Hour:Minutes
+                     'name': 'Depart from your hotel'})
+            elif stop['type'] == 'stop':
+                current_time += timedelta(hours=2) # Increment two hours for time at the stop
+                stop_list.append(
+                    {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
+                     'time': current_time.strftime('%H:%M'),  # Hour:Minutes
+                     'name': 'Depart from the stop'})
         if len(stop_list) >=2:
             # Organize the stops by date
             itinerary = await _day_itinerary(stop_list)

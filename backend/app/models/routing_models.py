@@ -21,7 +21,7 @@ class Route(BaseModel):
         name: str
         coordinates: Optional[list[list[float]]] = []
         duration: float
-        length: int
+        type: str
 
 # Mapbox Base Models
 class Mapbox_waypoint(BaseModel):

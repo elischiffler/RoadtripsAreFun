@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Any, Dict, List
-
+from geopy.geocoders import Nominatim
 from fastapi import APIRouter, HTTPException
 import requests
 from requests.exceptions import RequestException
@@ -81,7 +81,9 @@ async def get_route(start_lat: float,
                 stopping_points[idx]['duration'] = leg.duration
             else:
                 # Include the duration to get to the end
-                stopping_points.append({'name': 'Arrive at your destination', 'duration': leg.duration, 'length': 0})
+                stopping_points.append({'name': 'Arrive at your destination',
+                                        'duration': leg.duration,
+                                        'type': 'generic'})
             idx += 1
             for step in leg.steps:
                 # Each step has a distance, duration, instruction, and location
@@ -177,6 +179,9 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_
 
             hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)  # figure out the location at 5PM
             stopping_points.append(await _find_hotel(hotel_lat, hotel_lon))  # Append a found hotel
+            # stopping_points.append({'name': 'Depart from the hotel',
+            #                         'duration': 0,
+            #                         'type': 'generic'})
             current_day += 1  # increment the days that have passed
             current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
 
@@ -306,10 +311,10 @@ async def _get_details(location_id: int) -> Dict[str, Any]:
     lat = details.latitude
     lon = details.longitude
     name = details.name.lower()
-    return {'coordinates': [lat, lon], 'name': name.capitalize(), 'length': 2}
+    return {'coordinates': [lat, lon], 'name': name.capitalize(), 'type': 'stop'}
 
 
-async def _find_hotel(lat: float, lon: float, radius: int = 10) -> dict[str, list[float] | str]:
+async def _find_hotel(lat: float, lon: float, radius: int = 30) -> dict[str, list[float] | str]:
     try:
         access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
         hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
@@ -330,11 +335,19 @@ async def _find_hotel(lat: float, lon: float, radius: int = 10) -> dict[str, lis
             return await _find_hotel(lat, lon, radius + 10)
         hotels = Amadeus_Hotel_Search.model_validate(json_data)
         if len(hotels.data) > 0:
-            hotel = hotels.data[0]
+            hotel = hotels.data[0] #TODO parse through hotels for best offers
             coordinates = [hotel.geoCode['latitude'], hotel.geoCode['longitude']]
             name = hotel.name.lower()
+            geolocator = Nominatim(user_agent="RP-Hotels") # Initialize a geolocator
+            location = geolocator.reverse(f"{coordinates[0]}, {coordinates[1]}") # Reverse geolocate hotel coordinates
             # cost = await _get_cost(hotel_id=hotel.hotel_id, price_range=price_range)
-            return {'coordinates': coordinates, 'name': name.capitalize(), 'length': 12}
+            if location is not None:
+                return {'coordinates': coordinates,
+                        'name': name.capitalize(),
+                        'type': 'hotel',
+                        'address': location.address}
+            else:
+                raise HTTPException(status_code=404, detail=f"No address found")
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
     except RequestException as exception:
