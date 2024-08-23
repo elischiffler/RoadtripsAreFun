@@ -110,16 +110,16 @@ class Trip_Advisor_Address(BaseModel):
     city: Optional[str] = None
     state: Optional[str] = None
     country: Optional[str] = None
-    postal_code: Optional[str] = None
+    postalcode: Optional[str] = None
     address_string: Optional[str] = None
 
 
 class Trip_Advisor_Location_Search(BaseModel):
     class Trip_Advisor_Location(BaseModel):
-        location_id: int
+        location_id: str
         name: str
-        distance: str
-        bearing: str
+        distance: Optional[str] = None
+        bearing: Optional[str] = None
         address_obj: Optional[Trip_Advisor_Address] = None
 
     data: list[Trip_Advisor_Location]
@@ -136,35 +136,35 @@ class Trip_Advisor_Information(BaseModel):
         abbrv: Optional[str] = None
         level: Optional[str] = None
         name: Optional[str] = None
-        location_id: Optional[int] = None
+        location_id: Optional[str] = None
 
     class Trip_Advisor_Ranking(BaseModel):
-        geo_location_id: Optional[int] = None
+        geo_location_id: Optional[str] = None
         ranking_string: Optional[str] = None
         geo_location_name: Optional[str] = None
-        ranking_out_of: Optional[int] = None
-        ranking: Optional[int] = None
+        ranking_out_of: Optional[str] = None
+        ranking: Optional[str] = None
 
-    location_id: Optional[int] = None
+    location_id: Optional[str] = None
     name: Optional[str] = None
     description: Optional[str] = None
     web_url: Optional[str] = None
     address_obj: Optional[Trip_Advisor_Address] = None
     ancestors: Optional[list[Trip_Advisor_Ancestors]] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    latitude: Optional[str] = None
+    longitude: Optional[str] = None
     timezone: Optional[str] = None
     email: Optional[str] = None
     phone: Optional[str] = None
     website: Optional[str] = None
     write_review: Optional[str] = None
     ranking_data: Optional[Trip_Advisor_Ranking] = None
-    rating: Optional[float] = None
+    rating: Optional[str] = None
     rating_image_url: Optional[str] = None
     num_reviews: Optional[str] = None
     review_rating_count: Optional[Dict[str, str]] = None
     subratings: Optional[Dict[str, Any]] = None
-    photo_count: Optional[int] = None
+    photo_count: Optional[str] = None
     see_all_photos: Optional[str] = None
     price_level: Optional[str] = None  # A number of dollar signs 1-5 indicating price
 
@@ -207,19 +207,22 @@ class Trip_Advisor_Information(BaseModel):
 
     class Trip_Advisor_Award(BaseModel):
         award_type: str
-        year: int
+        year: str
 
         class Trip_Advisor_Image(BaseModel):
             tiny: str
             small: str
             large: str
 
-        images: list[Trip_Advisor_Image]
+        images: Trip_Advisor_Image
         categories: list[str]
         display_name: str
 
     awards: Optional[list[Trip_Advisor_Award]] = None
     error: Optional[Trip_Advisor_Error] = None
+
+    class Config:
+        extra = 'allow'  # This will ignore any extra fields not defined in the model
 
 
 class Amadeus_Hotel_Search(BaseModel):

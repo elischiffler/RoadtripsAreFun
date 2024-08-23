@@ -34,14 +34,14 @@ async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
         # initialize a list of stops with a generic message and specified start time
         stop_list = [
             {'date': current_time.strftime('%A, %B %d %Y'),
-             'time': current_time.strftime('%H:%M'),
+             'time': current_time.strftime('%I:%M %p'),
              'name': 'Depart from your starting location'}]
         # loop through the stops and get the time for each
         for stop in data.route.stops:
             # Add the time of to get to the stop to the current time
             current_time += timedelta(seconds=stop['duration'])
             destination = {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
-                    'time': current_time.strftime('%H:%M'),  # Hour:Minutes
+                    'time': current_time.strftime('%I:%M %p'),  # Hour:Minutes
                     'name': stop['name']}
             # Add the stop to stop_list
             if stop['type'] != 'generic':
@@ -56,13 +56,13 @@ async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
                                         0)
                 stop_list.append(
                     {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
-                     'time': current_time.strftime('%H:%M'),  # Hour:Minutes
+                     'time': current_time.strftime('%I:%M %p'),  # Hour:Minutes
                      'name': 'Depart from your hotel'})
             elif stop['type'] == 'stop':
                 current_time += timedelta(hours=2) # Increment two hours for time at the stop
                 stop_list.append(
                     {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
-                     'time': current_time.strftime('%H:%M'),  # Hour:Minutes
+                     'time': current_time.strftime('%I:%M %p'),  # Hour:Minutes
                      'name': 'Depart from the stop'})
         if len(stop_list) >= 2:
             # Organize the stops by date

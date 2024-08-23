@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from typing import Any, Dict, List
 from geopy.geocoders import Nominatim
 from fastapi import APIRouter, HTTPException
 import requests
@@ -98,10 +97,9 @@ async def get_route(start_lat: float,
                                         duration=step.duration,
                                         instruction=step.maneuver.instruction,
                                         location=step.maneuver.location))
-
         # Add all stopping coordinates to a single variable
         coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
-
+        print("Ready to return")
         return Route(coordinates=coordinates,
                      distance=distance,
                      duration=duration,
