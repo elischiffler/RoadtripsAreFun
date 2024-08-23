@@ -97,7 +97,6 @@ async def _day_itinerary(itinerary: List[Dict[str, Any]]) -> List[Itinerary_Day]
         curr_day = {'date': itinerary[0]['date'], 'stops': []}
         # iterate through all stops
         for stop in itinerary:
-            print(stop)
             # Check if the date matches and if so add stop to the same day
             if stop['date'] == curr_day['date']:
                 point = {'name': stop['name'], 'time': stop['time']}

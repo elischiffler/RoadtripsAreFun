@@ -178,32 +178,26 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_
     # price_range = await _get_price_range(budget, cost, num_stops) TODO Implement budget
 
     # Add stopping places until the trip is over
-    for _ in range(num_stops):
-        # While it will be 5:00PM the current day before the next stop, find a hotel
-        while current_time + time_till_stop >= (
-                daily_end * 3600):  # Check if the time to the next stop will be later than 5PM
+    for _ in range(num_stops+1):
+        # Check whether the daily end or the next stop comes first
+        while total_time < route.duration and current_time + time_till_stop >= (daily_end * 3600): # Check if next stop or daily end comes next
             time_traveled = (daily_end * 3600) - current_time  # Calculate time traveled that day
             total_time += time_traveled  # Add the time traveled toward the next stop that day
             time_till_stop -= time_traveled  # Remove the amount of time traveled in the day from time to the stop
-
             hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)  # figure out the location at 5PM
             stopping_points.append(await _find_hotel(hotel_lat, hotel_lon))  # Append a found hotel
-            # stopping_points.append({'name': 'Depart from the hotel',
-            #                         'duration': 0,
-            #                         'type': 'generic'})
             current_day += 1  # increment the days that have passed
             current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
 
-        if total_time < route.duration:  # Ensure we are within the route duration
+        if total_time + time_till_stop < route.duration:  # Ensure we are within the route duration
             total_time += time_till_stop  # Increment the total time by time traveled to stop
             current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
             current_time += time_till_stop + (3600 * 2)  # Change current time to include distance and time at stop
             stopping_points.append(
                 await _find_stop('attractions', current_lat, current_lon, 30))  # Add the stop to the list
             date += timedelta(hours=2,
-                              seconds=interval)  # Allocate two hours detours per stop/ increment for the time to drive to the location
+                              seconds=interval) # Allocate two hours detours per stop/ increment for the time to drive to the location
             time_till_stop = interval  # Reset the time to the next stop
-
     return stopping_points
 
 
