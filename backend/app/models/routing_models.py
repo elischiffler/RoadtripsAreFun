@@ -1,7 +1,9 @@
 from typing import Any, Optional, Dict
 
 from pydantic import BaseModel
-
+class Mapbox_geo(BaseModel):
+    coordinates: list[list[float]]
+    type: str
 
 class Route_Step(BaseModel):
     distance: float
@@ -16,6 +18,7 @@ class Route(BaseModel):
     duration: float
     steps: list[Route_Step]
     stops: list[Dict[str, Any]]
+    geometry: Mapbox_geo
 
     class Stop(BaseModel):
         name: str
@@ -31,10 +34,6 @@ class Mapbox_waypoint(BaseModel):
     distance: Optional[float] = None
     metadata: Optional[Dict[str, Any]] = None
 
-
-class Mapbox_geo(BaseModel):
-    coordinates: list[list[float]]
-    type: str
 
 
 class MapBox(BaseModel):
