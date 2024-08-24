@@ -13,7 +13,7 @@ const StopSlider = ({ UserChatData }) => {
       defaultValue={0}
       aria-label="Stop slider"
       valueLabelDisplay="auto"
-      min={0}
+      min={1}
       max={10}
       onChange={handleChange} // Use the handler function
     />

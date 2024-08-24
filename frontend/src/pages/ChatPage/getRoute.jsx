@@ -15,7 +15,7 @@ export const getRoute = async (start_lat,
             'num_stops': stops,
         };
 
-        // Send request for a route given the User inputs
+        // Send request for a route given the user inputs
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}get-route`, { params: params });
 
         // Access route information returned
@@ -27,6 +27,6 @@ export const getRoute = async (start_lat,
     }
     catch(error){
         // Log any errors encountered during the request
-        console.error("Error validating location:", error);
+        console.error("Error creating a route:", error);
     }
 };

@@ -46,6 +46,10 @@ class ChatData {
     this.showStopSlider = false;
     this.showAddressInput = false;
     this.workflowStarted = false;
+    this.startConfirmed = null;
+    this.endConfirmed = null;
+    this.route = null;
+    this.itinerary = null;
   }
 }
 

@@ -7,9 +7,18 @@ import {
 import LogoButton from "../../components/LogoButton";
 import ChatButton from "../../components/buttons/ChatButton";
 import MapButton from "../../components/buttons/MapButton";
+import { UserDataContext } from "../../states/UserDataContext";
 import "./ItineraryPage.css";
+import { useContext } from "react"
+
 
 const ItineraryPage = () => {
+
+  // Retrieve the global instance of UserData
+  const UserData = useContext(UserDataContext);
+  // Use the UserChatData
+  const UserChatData = UserData.chat;
+
   // Sample itinerary data
   const itinerary = [
     {
@@ -38,9 +47,11 @@ const ItineraryPage = () => {
     },
   ];
 
+
   return (
     <Container className="itinerary-page" maxWidth={false} disableGutters>
       {/* Fixed Top Box */}
+      {console.log(UserChatData.route)};
       <Box className="fixed-top-box">
         <LogoButton />
         <Box className="title">
@@ -52,23 +63,29 @@ const ItineraryPage = () => {
 
       {/* Scrollable Main Content Box */}
       <Box className="scrollable-main-content">
-        {itinerary.map((day, index) => (
+        {UserChatData.itinerary.map((day, index) => (
           <Box key={index} className="day-box">
             <Box className="day-header">
-              <Typography variant="h6">{day.day}</Typography>
+              <Typography variant="h6">{day['date']}</Typography>
             </Box>
             <Box>
-              {day.activities.map((activity, idx) => (
+              {day['stops'].map((activity, idx) => (
+                activity['address'] ?(
                 <Box key={idx} className="activity-box">
-                  <Typography variant="body1">{activity}</Typography>
+                  <Typography variant="body1">{activity['name']}</Typography>
                   <Typography variant="body2" className="activity-time">
-                    {idx === 0
-                      ? "9:00 AM"
-                      : idx === 1
-                      ? "12:00 PM"
-                      : "3:00 PM"}
+                    {`Arrival time: ${activity['time']}`}
                   </Typography>
-                </Box>
+                  <Typography variant="body2" className="activity-time">
+                    {`Address: ${activity['address']}`}
+                  </Typography>
+                </Box>):
+                (<Box key={idx} className="activity-box">
+                  <Typography variant="body1">{activity['name']}</Typography>
+                  <Typography variant="body2" className="activity-time">
+                    {`Departure time: ${activity['time']}`}
+                  </Typography>
+                </Box>)
               ))}
             </Box>
           </Box>
