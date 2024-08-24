@@ -83,7 +83,7 @@ const ItineraryPage = () => {
                 (<Box key={idx} className="activity-box">
                   <Typography variant="body1">{activity['name']}</Typography>
                   <Typography variant="body2" className="activity-time">
-                    {activity['time']}
+                    {`Departure time: ${activity['time']}`}
                   </Typography>
                 </Box>)
               ))}
