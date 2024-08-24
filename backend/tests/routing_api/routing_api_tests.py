@@ -70,6 +70,39 @@ def test_get_route_one_stop():
     assert isinstance(response_data["steps"], list)
     assert len(response_data["steps"]) > 0
 
+def test_get_route_three_stops_Portland_WashDC():
+    response = client.get("/get-route", params={"start_lat": 45.5202471, "start_lon": -122.674194,
+                                                "end_lat": 38.8950368, "end_lon": -77.0365427,
+                                                "num_stops": 3})
+
+    assert response.status_code == 200
+    response_data = response.json()
+    assert "coordinates" in response_data
+    assert isinstance(response_data["coordinates"], list)
+    assert "distance" in response_data
+    assert isinstance(response_data["distance"], float)
+    assert "duration" in response_data
+    assert isinstance(response_data["duration"], float)
+    assert "steps" in response_data
+    assert isinstance(response_data["steps"], list)
+    assert len(response_data["steps"]) > 0
+
+def test_get_route_three_stops_LA_Arlington():
+    response = client.get("/get-route", params={"start_lat": 33.71855065, "start_lon": -117.92873300964388,
+                                                "end_lat": 38.8769326, "end_lon": -77.0893094,
+                                                "num_stops": 3})
+
+    assert response.status_code == 200
+    response_data = response.json()
+    assert "coordinates" in response_data
+    assert isinstance(response_data["coordinates"], list)
+    assert "distance" in response_data
+    assert isinstance(response_data["distance"], float)
+    assert "duration" in response_data
+    assert isinstance(response_data["duration"], float)
+    assert "steps" in response_data
+    assert isinstance(response_data["steps"], list)
+    assert len(response_data["steps"]) > 0
 
 if __name__ == "__main__":
     pytest.main()

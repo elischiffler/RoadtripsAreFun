@@ -11,3 +11,8 @@ class location_payload(BaseModel):
         address: Optional[str] = None
 
     location: payload_data
+
+class location_model(BaseModel):
+    address: str
+    latitude: float
+    longitude: float

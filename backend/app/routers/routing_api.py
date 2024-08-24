@@ -1,10 +1,11 @@
-from typing import Any
-
+from datetime import datetime, timedelta
+from geopy.geocoders import Nominatim
 from fastapi import APIRouter, HTTPException
 import requests
 from requests.exceptions import RequestException
 from pydantic import ValidationError
-from app.models.routing_models import MapBox, Route, Route_Step, Trip_Advisor_Location_Search, Trip_Advisor_Information, Amadeus_Access, Amadeus_Hotel_Search
+from app.models.routing_models import MapBox, Route, Route_Step, Trip_Advisor_Location_Search, Trip_Advisor_Information, \
+    Amadeus_Access, Amadeus_Hotel_Search
 from dotenv import load_dotenv
 from typing import Dict, Any
 import os
@@ -29,7 +30,12 @@ router = APIRouter()
 
 
 @router.get("/get-route", response_model=Route)
-async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon: float, num_stops: int = 5) -> Route:
+async def get_route(start_lat: float,
+                    start_lon: float,
+                    end_lat: float,
+                    end_lon: float,
+                    num_stops: int = 5,
+                    start: datetime = datetime(2024, 9, 21, 9, 0, 0)) -> Route:
     """
     Retrieves a route from Mapbox API, adds intermediate stops, and returns the detailed route information.
 
@@ -39,6 +45,7 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
     - end_lat (float): Latitude of the destination point.
     - end_lon (float): Longitude of the destination point.
     - num_stops (int): Number of intermediate stops to include in the route.
+    - start(datetime): Start date of the route.
 
     Returns:
     - Route: Detailed route information including coordinates, distance, duration, and step-by-step instructions.
@@ -55,7 +62,7 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
         route = await _call_route(start_lat, start_lon, end_lat, end_lon)
 
         # Use initial route to find stopping points
-        stopping_points = await _add_stops(route, num_stops)
+        stopping_points = await _add_stops(route, num_stops, date=start)
         coordinates = []
         for stop in stopping_points:
             coordinates.append(stop['coordinates'])
@@ -63,21 +70,37 @@ async def get_route(start_lat: float, start_lon: float, end_lat: float, end_lon:
         # Construct waypoints string and make new route with stopping points
         waypoints = ';'.join([f"{lon},{lat}" for lat, lon in coordinates])
         route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
-
         distance, duration = route.distance, route.duration
         steps = []
+        geolocator = Nominatim(user_agent="RP-Hotels")  # Initialize a geolocator
 
+        idx = 0
         for leg in route.legs:
+
+            # Add the duration to each stop
+            if idx < len(stopping_points) and stopping_points[idx]['type'] != 'generic':
+                stopping_points[idx]['duration'] = leg.duration
+                temp_coordinates = stopping_points[idx]['coordinates']
+                location = geolocator.reverse(f"{temp_coordinates[0]}, {temp_coordinates[1]}")  # Reverse geolocate
+                if location:
+                    stopping_points[idx]['address'] = location.address  # Add the address to each
+            else:
+                location = geolocator.reverse(f"{end_lat}, {end_lon}")
+                # Include the duration to get to the end
+                stopping_points.append({'name': 'Arrive at your destination',
+                                        'duration': leg.duration,
+                                        'type': 'end',
+                                        'address': location.address})
+            idx += 1
             for step in leg.steps:
                 # Each step has a distance, duration, instruction, and location
                 steps.append(Route_Step(distance=step.distance,
                                         duration=step.duration,
                                         instruction=step.maneuver.instruction,
                                         location=step.maneuver.location))
-
-        #Add all stopping coordinates to a single variable
+        # Add all stopping coordinates to a single variable
         coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
-
+        print("Ready to return")
         return Route(coordinates=coordinates,
                      distance=distance,
                      duration=duration,
@@ -130,33 +153,53 @@ async def _call_route(start_lat: float, start_lon: float, end_lat: float, end_lo
     return route
 
 
-async def _add_stops(route: MapBox_route, num_stops: int) -> list[Dict[str, Any]]:
+async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_start: int = 9, daily_end: int = 16) -> \
+        list[Dict[str, Any]]:
     """
     Determines stopping points along the route based on the specified number of stops.
 
     Parameters:
     - route (MapBox_route): The route object containing route details.
     - num_stops (int): Number of intermediate stops to include.
+    - date (datetime): Takes in the start date of the trip
+    - daily_start (int): The hour of each day the user wants to start driving.
+    - daily_end (int): The hour of each day the user wants to end driving.
 
     Returns:
     - list[Dict[str, Any]]: List of details for the stopping points.
     """
     stopping_points = []
-    interval = route.duration / (num_stops + 1)
-    current_time = interval
-    steps = route.legs[0].steps
-    coordinates = route.geometry.coordinates
-    cost = 0
-    # price_range = await _get_price_range(budget, cost, num_stops)
+    interval = route.duration / (num_stops + 1)  # Divide trip up into segments for finding stops in seconds
+    current_time = date.hour * 3600  # Initialize the current time of the day in seconds
+    steps = route.legs[0].steps  # Only one leg in the initial route
+    coordinates = route.geometry.coordinates  # Get all coordinates of the route
+    current_day = 0  # Initialize number of days in route
+    total_time = 0  # Total time traveled to the destination
+    time_till_stop = interval  # Track the time until next stop
+
+    # price_range = await _get_price_range(budget, cost, num_stops) TODO Implement budget
 
     # Add stopping places until the trip is over
-    for _ in range(num_stops):
-        if current_time < route.duration:  # Ensure we are within the route duration
-            current_lat, current_lon = _find_position(coordinates, steps, current_time)
-            stopping_points.append(await _find_stop('attractions', current_lat, current_lon, 30))
-            # stopping_points.append(await _find_hotel(current_lat, current_lon)) # API is having issues with their test servers
-            current_time += interval  # Increment time for the next stop
+    for _ in range(num_stops+1):
+        # Check whether the daily end or the next stop comes first
+        while total_time < route.duration and current_time + time_till_stop >= (daily_end * 3600): # Check if next stop or daily end comes next
+            time_traveled = (daily_end * 3600) - current_time  # Calculate time traveled that day
+            total_time += time_traveled  # Add the time traveled toward the next stop that day
+            time_till_stop -= time_traveled  # Remove the amount of time traveled in the day from time to the stop
+            hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)  # figure out the location at 5PM
+            stopping_points.append(await _find_hotel(hotel_lat, hotel_lon))  # Append a found hotel
+            current_day += 1  # increment the days that have passed
+            current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
 
+        if total_time + time_till_stop < route.duration:  # Ensure we are within the route duration
+            total_time += time_till_stop  # Increment the total time by time traveled to stop
+            current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
+            current_time += time_till_stop + (3600 * 2)  # Change current time to include distance and time at stop
+            stopping_points.append(
+                await _find_stop('attractions', current_lat, current_lon, 30))  # Add the stop to the list
+            date += timedelta(hours=2,
+                              seconds=interval) # Allocate two hours detours per stop/ increment for the time to drive to the location
+            time_till_stop = interval  # Reset the time to the next stop
     return stopping_points
 
 
@@ -210,7 +253,7 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str
     - radius (str): Search radius in miles.
 
     Returns:
-    - list[float]: Coordinates (latitude and longitude) of the nearest location.
+    - Dict[str, Any]: Details of an attraction with a name and location.
 
     Raises:
     - HTTPException: For errors related to TripAdvisor requests or response processing.
@@ -245,7 +288,7 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str
         raise HTTPException(status_code=501, detail=f'Improper TripAdvisor response: {str(exception)}')
 
 
-async def _get_details(location_id: str) -> Dict[str, Any]:
+async def _get_details(location_id: int) -> Dict[str, Any]:
     """
     Retrieves detailed information about a location from the TripAdvisor API using its location ID.
 
@@ -253,10 +296,11 @@ async def _get_details(location_id: str) -> Dict[str, Any]:
     - location_id (str): The ID of the location to retrieve details for.
 
     Returns:
-    - list[float]: Coordinates (latitude and longitude) of the location.
+    - Dict[str, Any]: Details of an attraction with a name and location.
 
     Raises:
     - HTTPException: For errors related to TripAdvisor requests or response processing.
+
     """
     location_details_url = f"https://api.content.tripadvisor.com/api/v1/location/{location_id}/details"
     params = {
@@ -271,11 +315,26 @@ async def _get_details(location_id: str) -> Dict[str, Any]:
 
     lat = details.latitude
     lon = details.longitude
-    name = details.name
-    return {'coordinates': [lat, lon], 'name': name}
+    name = details.name.lower()
+    return {'coordinates': [lat, lon], 'name': name.capitalize(), 'type': 'stop'}
 
 
-async def _find_hotel(lat: float, lon: float, radius: int = 5) -> list[Any]:
+async def _find_hotel(lat: float, lon: float, radius: int = 30) -> dict[str, list[float] | str]:
+    """
+    Finds a hotel location for a given position and radius.
+
+    Args:
+    - lat(float): Latitude of the search area
+    - lon(float): Longitude of the search area
+    - radius(int): Radius in miles to search for hotels
+
+    Returns:
+    - dict[str, list[float] | str]: A dictionary containing the hotel description and navigation
+
+    Raises:
+    - HTTPException: For errors related to TripAdvisor requests or response processing.
+
+    """
     try:
         access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
         hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
@@ -287,16 +346,24 @@ async def _find_hotel(lat: float, lon: float, radius: int = 5) -> list[Any]:
             'longitude': lon,
             'radius': radius,
             'radiusUnit': 'MILE',
-            'ratings': ['2', '3', '4', '5'], # Indicates hotel star level
+            'ratings': ['2', '3', '4', '5'],  # Indicates hotel star level
         }
         response = requests.get(hotels_list_url, params=params, headers=headers)
         json_data = response.json()
+        # If no hotel is found search for one with a larger radius
+        if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
+            return await _find_hotel(lat, lon, radius + 10)
         hotels = Amadeus_Hotel_Search.model_validate(json_data)
         if len(hotels.data) > 0:
-            hotel = hotels.data[0]
+            hotel = hotels.data[0]  #TODO parse through hotels for best offers
             coordinates = [hotel.geoCode['latitude'], hotel.geoCode['longitude']]
+            name = hotel.name.lower()
+
             # cost = await _get_cost(hotel_id=hotel.hotel_id, price_range=price_range)
-            return coordinates
+            return {'coordinates': coordinates,
+                    'name': name.capitalize(),
+                    'type': 'hotel',
+                    }
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
     except RequestException as exception:
@@ -326,6 +393,19 @@ async def _find_hotel(lat: float, lon: float, radius: int = 5) -> list[Any]:
 #     return f"{remaining_avg-100:.2f}-{remaining_avg+100:.2f}"
 
 async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
+    """
+    A function to get the amadeus access token to use its API
+
+    Args:
+    - API_KEY: The API key generated from an Amadeus account
+    - API_SECRET: The API secret generated from an Amadeus account
+
+    Returns:
+    - str: The Amadeus access token
+
+    Raises:
+    - HTTPException: For errors related to an unexpected response from Amadeus.
+    """
     url = "https://test.api.amadeus.com/v1/security/oauth2/token"
     headers = {
         "Content-Type": "application/x-www-form-urlencoded"
