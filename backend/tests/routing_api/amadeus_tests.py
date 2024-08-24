@@ -16,9 +16,8 @@ async def test_get_amadeus_token():
 async def test_get_hotels():
     lat = 33.710521
     lon = -117.763716
-    hotel_coords = await _find_hotel(lat, lon)
-    print(hotel_coords)
-    assert isinstance(hotel_coords, list)
+    hotel_info = await _find_hotel(lat, lon)
+    assert isinstance(hotel_info, dict)
 
 if __name__ == "__main__":
     pytest.main()
