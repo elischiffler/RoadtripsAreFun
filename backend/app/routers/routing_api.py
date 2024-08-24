@@ -45,6 +45,7 @@ async def get_route(start_lat: float,
     - end_lat (float): Latitude of the destination point.
     - end_lon (float): Longitude of the destination point.
     - num_stops (int): Number of intermediate stops to include in the route.
+    - start(datetime): Start date of the route.
 
     Returns:
     - Route: Detailed route information including coordinates, distance, duration, and step-by-step instructions.
@@ -160,6 +161,9 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_
     Parameters:
     - route (MapBox_route): The route object containing route details.
     - num_stops (int): Number of intermediate stops to include.
+    - date (datetime): Takes in the start date of the trip
+    - daily_start (int): The hour of each day the user wants to start driving.
+    - daily_end (int): The hour of each day the user wants to end driving.
 
     Returns:
     - list[Dict[str, Any]]: List of details for the stopping points.
@@ -249,7 +253,7 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str
     - radius (str): Search radius in miles.
 
     Returns:
-    - list[float]: Coordinates (latitude and longitude) of the nearest location.
+    - Dict[str, Any]: Details of an attraction with a name and location.
 
     Raises:
     - HTTPException: For errors related to TripAdvisor requests or response processing.
@@ -292,10 +296,11 @@ async def _get_details(location_id: int) -> Dict[str, Any]:
     - location_id (str): The ID of the location to retrieve details for.
 
     Returns:
-    - list[float]: Coordinates (latitude and longitude) of the location.
+    - Dict[str, Any]: Details of an attraction with a name and location.
 
     Raises:
     - HTTPException: For errors related to TripAdvisor requests or response processing.
+
     """
     location_details_url = f"https://api.content.tripadvisor.com/api/v1/location/{location_id}/details"
     params = {
@@ -315,6 +320,21 @@ async def _get_details(location_id: int) -> Dict[str, Any]:
 
 
 async def _find_hotel(lat: float, lon: float, radius: int = 30) -> dict[str, list[float] | str]:
+    """
+    Finds a hotel location for a given position and radius.
+
+    Args:
+    - lat(float): Latitude of the search area
+    - lon(float): Longitude of the search area
+    - radius(int): Radius in miles to search for hotels
+
+    Returns:
+    - dict[str, list[float] | str]: A dictionary containing the hotel description and navigation
+
+    Raises:
+    - HTTPException: For errors related to TripAdvisor requests or response processing.
+
+    """
     try:
         access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
         hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
@@ -373,6 +393,19 @@ async def _find_hotel(lat: float, lon: float, radius: int = 30) -> dict[str, lis
 #     return f"{remaining_avg-100:.2f}-{remaining_avg+100:.2f}"
 
 async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
+    """
+    A function to get the amadeus access token to use its API
+
+    Args:
+    - API_KEY: The API key generated from an Amadeus account
+    - API_SECRET: The API secret generated from an Amadeus account
+
+    Returns:
+    - str: The Amadeus access token
+
+    Raises:
+    - HTTPException: For errors related to an unexpected response from Amadeus.
+    """
     url = "https://test.api.amadeus.com/v1/security/oauth2/token"
     headers = {
         "Content-Type": "application/x-www-form-urlencoded"
