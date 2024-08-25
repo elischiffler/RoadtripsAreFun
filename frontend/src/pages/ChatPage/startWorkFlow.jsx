@@ -280,7 +280,8 @@ export const startWorkFlow = async (
   chatId,
   setChatInput,
   chatInput,
-  UserChatData
+  UserChatData,
+  ChatLogsData,
 ) => {
     // Save initial state as a checkpoint
     const initialState = {
@@ -356,10 +357,6 @@ export const startWorkFlow = async (
     UserChatData,
   );
 
-  // Log the start and end addresses (or coordinates)
-  console.log(UserChatData.startConfirmed);
-  console.log(UserChatData.endConfirmed);
-
   // Generate the route
   UserChatData.route = await getRoute(UserChatData.startConfirmed['latitude'],
     UserChatData.startConfirmed['longitude'],
@@ -370,6 +367,7 @@ export const startWorkFlow = async (
 
   // Generate the itinerary data 
   UserChatData.itinerary = await generateItinerary(UserChatData.route);
+  ChatLogsData.chatdata[UserChatData.chatId-1] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
 
   // End the workflow with a message
   addMessage(chatId, setChats, "End of workflow");

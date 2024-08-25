@@ -1,26 +1,24 @@
-import React, { useEffect, useContext, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
-import { UserDataContext } from "../states/UserDataContext";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
-const MapboxExample = () => {
+const Map = ({UserChatData}) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
 
-  // Retrieve the global instance of UserData
-  const UserData = useContext(UserDataContext);
-  // Use the UserChatData
-  const UserChatData = UserData.chat;
 
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+    const latitude = (UserChatData.startConfirmed['latitude'] + UserChatData.endConfirmed['latitude'])/2; // central latitude
+    const longitude = (UserChatData.startConfirmed['longitude'] + UserChatData.endConfirmed['longitude'])/2;
+    console.log("Central Coordinates: ", latitude, longitude);
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v12",
-      center: [-122.486052, 37.830348],
-      zoom: 14,
+      center: [longitude, latitude],
+      zoom: 4,
     });
 
     mapRef.current.on("load", () => {
@@ -50,7 +48,7 @@ const MapboxExample = () => {
         },
       });
     });
-  });
+  }, [UserChatData]); // Rerender the map if UserChatData changes
 
   return (
     <div
@@ -61,4 +59,4 @@ const MapboxExample = () => {
   );
 };
 
-export default MapboxExample;
+export default Map;

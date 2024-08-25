@@ -17,8 +17,9 @@ const ChatPage = () => {
   // Retrieve the global instance of UserData
   const UserData = useContext(UserDataContext);
   // Grab the chat logs
-  const ChatLogsData = UserData.chatlogs
-  const [UserChatData, setUserChatData] = useState(ChatLogsData.createChatData(1));
+  const ChatLogsData = UserData.chatlogs;
+  // State to track current chats data
+  const [UserChatData, setUserChatData] = useState(ChatLogsData.chatData? ChatLogsData.chatData[0]: ChatLogsData.createChatData(1));
 
   // Initial message displayed in a new chat
   const initialMessage = [
@@ -50,18 +51,21 @@ const ChatPage = () => {
   const [workflowStarted, setWorkflowStarted] = useState(false);
   // Trigger workflow when a chat is selected, ensuring it only starts once
   useEffect(() => {
-    if (selectedChat && !workflowStarted) {
+    if (selectedChat && !workflowStarted && UserChatData) {
       // Start the workflow for the newly selected chat
       startWorkFlow(
         setChats,
         selectedChat.id,
         setChatInput,
         chatInput,
-        UserChatData
+        UserChatData, 
+        ChatLogsData,
       );
       // Mark the workflow as started
       setWorkflowStarted(true);
     }
+    console.log("Current chat logs: ", ChatLogsData);
+    console.log("Current chat data: ", UserChatData);
   }, [selectedChat, workflowStarted, UserChatData]);
 
   // Automatically create a chat instance during the initial load
@@ -76,7 +80,8 @@ const ChatPage = () => {
   const handleSelectChat = (chat) => {
     const selectedChatData = ChatLogsData.getChatDataById(chat.id);
     setSelectedChat({ ...chat, ...selectedChatData });
-    setUserChatData(ChatLogsData.getChatDataById(chat.id))
+    setUserChatData(ChatLogsData.getChatDataById(chat.id));
+    ChatLogsData.currentId = chat.id;
   };
 
 
@@ -150,6 +155,7 @@ const ChatPage = () => {
 
   const handleNewChat = () => {
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
+    console.log('Chat ID:', maxId);
     const newChatId = maxId + 1;
   
     // Create new chat data

@@ -16,42 +16,31 @@ const ItineraryPage = () => {
 
   // Retrieve the global instance of UserData
   const UserData = useContext(UserDataContext);
-  // Use the UserChatData
-  const UserChatData = UserData.chat;
+  // Grab the chat logs and make sure everything is defined
+  const ChatLogsData = UserData?.chatlogs || {};
+  const UserChatData = ChatLogsData?.chatdata?.[ChatLogsData.currentId - 1];
+  console.log(ChatLogsData);
+  console.log(UserChatData);
 
-  // Sample itinerary data
-  const itinerary = [
-    {
-      day: "June 19th",
-      activities: [
-        "Visit the local museum",
-        "Lunch at the downtown cafe",
-        "Explore the historic district",
-      ],
-    },
-    {
-      day: "June 20th",
-      activities: [
-        "Hiking in the national park",
-        "Picnic at the lake",
-        "Stargazing at the observatory",
-      ],
-    },
-    {
-      day: "June 21st",
-      activities: [
-        "Morning yoga on the beach",
-        "Brunch at the seaside restaurant",
-        "Relax at the spa",
-      ],
-    },
-  ];
+  if (!UserChatData || !UserChatData.itinerary) {
+    return (
+      <Container className="itinerary-page" maxWidth={false} disableGutters>
+        <Box className="fixed-top-box">
+          <LogoButton />
+          <Box className="title">
+            <Typography variant="h6" color="white.black">
+              No Itinerary Available
+            </Typography>
+          </Box>
+        </Box>
+      </Container>
+    );
+  }
 
 
   return (
     <Container className="itinerary-page" maxWidth={false} disableGutters>
       {/* Fixed Top Box */}
-      {console.log(UserChatData.route)};
       <Box className="fixed-top-box">
         <LogoButton />
         <Box className="title">

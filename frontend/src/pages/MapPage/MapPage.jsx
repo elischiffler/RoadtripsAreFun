@@ -1,12 +1,20 @@
-import { React } from "react";
+import { React, useContext } from "react";
 import { Box } from "@mui/material";
 import LogoButton from "../../components/LogoButton";
 import ItineraryButton from "../../components/buttons/ItineraryButton";
 import ChatButton from "../../components/buttons/ChatButton";
 import Map from "../../components/Map";
+import { UserDataContext } from "../../states/UserDataContext"
 import "./MapPage.css";
 
 const MapPage = () => {
+
+  // Retrieve the global instance of UserData
+  const UserData = useContext(UserDataContext);
+  // Grab the chat logs
+  const ChatLogsData = UserData?.chatlogs || {};
+  const UserChatData = ChatLogsData?.chatdata?.[ChatLogsData.currentId - 1];
+  console.log(UserChatData);
 
   return (
     <Box className="map-page-container">
@@ -30,7 +38,7 @@ const MapPage = () => {
 
       {/* Main Content */}
       <Box className="main-content">
-        <Map />
+        <Map UserChatData = { UserChatData } />
       </Box>
     </Box>
   );

@@ -11,6 +11,7 @@ class Data {
 class ChatLogs {
   constructor() {
     this.chatdata = []; // Start with an empty array
+    this.currentId = 1;
   }
 
   // Method to find a specific ChatData by chatId
