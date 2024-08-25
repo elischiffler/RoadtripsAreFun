@@ -126,8 +126,8 @@ class Trip_Advisor_Location_Search(BaseModel):
 
 
 class Trip_Advisor_Subcategory(BaseModel):
-    name: str
-    localized_name: str
+    name: Optional[str] = None
+    localized_name: Optional[str] = None
 
 
 class Trip_Advisor_Information(BaseModel):
