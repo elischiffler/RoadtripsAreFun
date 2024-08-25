@@ -87,7 +87,7 @@ const ItineraryPage = () => {
           <ChatButton />
         </Box>
         <Box className="button-container">
-          <MapButton />
+          <MapButton route={UserChatData.route}/>
         </Box>
       </Box>
     </Container>

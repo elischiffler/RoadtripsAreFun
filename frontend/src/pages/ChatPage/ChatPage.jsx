@@ -19,7 +19,7 @@ const ChatPage = () => {
   // Grab the chat logs
   const ChatLogsData = UserData.chatlogs;
   // State to track current chats data
-  const [UserChatData, setUserChatData] = useState(ChatLogsData.chatData? ChatLogsData.chatData[0]: ChatLogsData.createChatData(1));
+  const [UserChatData, setUserChatData] = useState(ChatLogsData.chatData? ChatLogsData.chatData[ChatLogsData.currentId-1]: ChatLogsData.createChatData(1));
 
   // Initial message displayed in a new chat
   const initialMessage = [
@@ -242,10 +242,10 @@ const ChatPage = () => {
         {/* Sidebar bottom buttons for map and itinerary */}
         <Box className="sidebar-bottom">
           <Box sx={{ mb: -1, width: "100%" }}>
-            <MapButton />
+            <MapButton route={UserChatData.route}/>
           </Box>
           <Box sx={{ mb: -1, width: "100%" }}>
-            <ItineraryButton />
+            <ItineraryButton itinerary={UserChatData.itinerary} />
           </Box>
           <LogoButton />
         </Box>

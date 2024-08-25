@@ -27,7 +27,7 @@ const MapPage = () => {
 
         {/* Itinerary Button */}
         <Box className="itinerary-button-container">
-          <ItineraryButton />
+          <ItineraryButton itinerary={UserChatData.itinerary}/>
         </Box>
 
         {/* Chat Button */}

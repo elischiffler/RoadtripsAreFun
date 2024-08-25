@@ -11,8 +11,7 @@ const Map = ({UserChatData}) => {
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
     const latitude = (UserChatData.startConfirmed['latitude'] + UserChatData.endConfirmed['latitude'])/2; // central latitude
-    const longitude = (UserChatData.startConfirmed['longitude'] + UserChatData.endConfirmed['longitude'])/2;
-    console.log("Central Coordinates: ", latitude, longitude);
+    const longitude = (UserChatData.startConfirmed['longitude'] + UserChatData.endConfirmed['longitude'])/2; // central longitude
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
