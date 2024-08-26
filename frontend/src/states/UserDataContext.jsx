@@ -42,7 +42,7 @@ class ChatData {
     this.startAddress = new Array(4).fill("");
     this.endCoords = new Array(2).fill(0);
     this.endAddress = new Array(4).fill("");
-    this.stops = [];
+    this.stops = 1;
     this.showInputBar = true;
     this.showStopSlider = false;
     this.showAddressInput = false;

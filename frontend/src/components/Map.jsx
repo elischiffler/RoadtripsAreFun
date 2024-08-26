@@ -12,12 +12,13 @@ const Map = ({UserChatData}) => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
     const latitude = (UserChatData.startConfirmed['latitude'] + UserChatData.endConfirmed['latitude'])/2; // central latitude
     const longitude = (UserChatData.startConfirmed['longitude'] + UserChatData.endConfirmed['longitude'])/2; // central longitude
+    const zoom_factor = Math.pow(UserChatData.route['duration'], 1/(3.5)); // Formula somewhat accurate
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v12",
       center: [longitude, latitude],
-      zoom: 4,
+      zoom: 100/zoom_factor, // As duration increases the zoom decreases
     });
 
     mapRef.current.on("load", () => {

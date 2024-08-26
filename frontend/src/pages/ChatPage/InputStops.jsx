@@ -10,7 +10,7 @@ const StopSlider = ({ UserChatData }) => {
   return (
     <Slider
       className="num-stops-slider"
-      defaultValue={0}
+      defaultValue={1}
       aria-label="Stop slider"
       valueLabelDisplay="auto"
       min={1}
