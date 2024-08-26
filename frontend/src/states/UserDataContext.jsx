@@ -1,30 +1,27 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
 const UserDataContext = createContext();
 
 class Data {
-  constructor() {
-    this.chatlogs = new ChatLogs();
+  constructor(chatlogs = new ChatLogs()) {
+    this.chatlogs = chatlogs;
   }
 }
 
 class ChatLogs {
-  constructor() {
-    this.chatdata = []; // Start with an empty array
-    this.currentId = 1;
+  constructor(chatdata = [], currentId = 1) {
+    this.chatdata = chatdata;
+    this.currentId = currentId;
   }
 
-  // Method to find a specific ChatData by chatId
   getChatDataById(chatId) {
     return this.chatdata.find(chat => chat.chatId === chatId);
   }
 
-  // Method to add a new ChatData instance
   addChatData(chatData) {
     this.chatdata.push(chatData);
   }
 
-  // Method to create and add a new ChatData instance
   createChatData(chatId) {
     const newChatData = new ChatData(chatId);
     this.addChatData(newChatData);
@@ -32,30 +29,74 @@ class ChatLogs {
   }
 }
 
-
 class ChatData {
-  constructor(chatId = null) {
+  constructor({
+    chatId = null,
+    action = null,
+    locationType = "start",
+    startCoords = [0, 0],
+    startAddress = ["", "", "", ""],
+    endCoords = [0, 0],
+    endAddress = ["", "", "", ""],
+    stops = 1,
+    showInputBar = true,
+    showStopSlider = false,
+    showAddressInput = false,
+    workflowStarted = false,
+    startConfirmed = null,
+    endConfirmed = null,
+    route = null,
+    itinerary = null,
+  } = {}) {
     this.chatId = chatId;
-    this.action = null;
-    this.locationType = "start";
-    this.startCoords = new Array(2).fill(0);
-    this.startAddress = new Array(4).fill("");
-    this.endCoords = new Array(2).fill(0);
-    this.endAddress = new Array(4).fill("");
-    this.stops = 1;
-    this.showInputBar = true;
-    this.showStopSlider = false;
-    this.showAddressInput = false;
-    this.workflowStarted = false;
-    this.startConfirmed = null;
-    this.endConfirmed = null;
-    this.route = null;
-    this.itinerary = null;
+    this.action = action;
+    this.locationType = locationType;
+    this.startCoords = startCoords;
+    this.startAddress = startAddress;
+    this.endCoords = endCoords;
+    this.endAddress = endAddress;
+    this.stops = stops;
+    this.showInputBar = showInputBar;
+    this.showStopSlider = showStopSlider;
+    this.showAddressInput = showAddressInput;
+    this.workflowStarted = workflowStarted;
+    this.startConfirmed = startConfirmed;
+    this.endConfirmed = endConfirmed;
+    this.route = route;
+    this.itinerary = itinerary;
   }
 }
 
 export const UserDataProvider = ({ children }) => {
-  const [UserData] = useState(new Data()); // Initialize the global UserData instance
+  const [UserData, setUserData] = useState(() => {
+    const savedData = sessionStorage.getItem("UserData");
+    if (savedData) {
+      // Deserialize and reconstruct the instance
+      const parsedData = JSON.parse(savedData);
+
+      const chatlogs = new ChatLogs(
+        parsedData.chatlogs.chatdata.map(chat => new ChatData(chat)),
+        parsedData.chatlogs.currentId
+      );
+
+      return new Data(chatlogs);
+    }
+
+    return new Data(); // Initialize a new instance if none exists in sessionStorage
+  });
+
+  useEffect(() => {
+    // Serialize and save the instance whenever it changes
+    sessionStorage.setItem(
+      "UserData",
+      JSON.stringify({
+        chatlogs: {
+          chatdata: UserData.chatlogs.chatdata,
+          currentId: UserData.chatlogs.currentId,
+        },
+      })
+    );
+  }, [UserData]);
 
   return (
     <UserDataContext.Provider value={UserData}>

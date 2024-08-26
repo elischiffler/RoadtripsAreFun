@@ -14,8 +14,11 @@ import { validateLocation } from "./ValidateLocation";
 import "./ChatPage.css";
 
 const ChatPage = () => {
+
+  const savedData = sessionStorage.getItem("UserData");
   // Retrieve the global instance of UserData
-  const UserData = useContext(UserDataContext);
+  const UserData = savedData?.chatlogs? JSON.parse(savedData) : useContext(UserDataContext);
+  console.log('The data: ', UserData)
   // Grab the chat logs
   const ChatLogsData = UserData.chatlogs;
   // State to track current chats data
@@ -64,7 +67,7 @@ const ChatPage = () => {
     console.log("Current chat data: ", UserChatData);
   }, [selectedChat, workflowStarted, UserChatData]);
 
-  // Automatically load chats from local storage or create a chat instance during the initial load
+  // Automatically load chats from local storage or create a chat during the initial mount
   useEffect(() => {
     const savedChats = sessionStorage.getItem("chats");
     if (savedChats && savedChats.length > 0) {
@@ -83,7 +86,9 @@ const ChatPage = () => {
       console.log("Initialized chats with default:", initialChats);
     }
   }, []);
-  
+
+
+  // Automatically setSelected chat on initial mount
   useEffect(() => {
     if (chats.length > 0) {
       const chatId = UserChatData.chatId - 1;
@@ -95,12 +100,19 @@ const ChatPage = () => {
     }
   }, [chats, UserChatData.chatId]);
   
+  // Saving chats to sessionStorage whenever chats change
   useEffect(() => {
     if (chats.length > 0) {
       sessionStorage.setItem("chats", JSON.stringify(chats));
       console.log("Saved chats to sessionStorage:", chats);
     }
   }, [chats]);
+
+  // Saving chats to sessionStorage whenever chats change
+  useEffect(() => {
+    sessionStorage.setItem("UserData", JSON.stringify(UserData));
+    console.log("Saved data to sessionStorage:", UserData);
+  }, [UserChatData]);
 
   // Handle chat selection from the sidebar
   const handleSelectChat = (chat) => {
