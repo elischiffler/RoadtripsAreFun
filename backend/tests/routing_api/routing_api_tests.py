@@ -120,6 +120,21 @@ def test_get_route_one_stop_day_trip():
     assert isinstance(response_data["steps"], list)
     assert len(response_data["steps"]) > 0
 
+def test_get_route_OC_to_NY():
+    response = client.get("/get-route", params={"start_lat": 33.7038145, "start_lon": -117.9627349,
+                                                "end_lat": 40.7127281, "end_lon": -74.0060152})
+    assert response.status_code == 200
+    response_data = response.json()
+    assert "coordinates" in response_data
+    assert isinstance(response_data["coordinates"], list)
+    assert "distance" in response_data
+    assert isinstance(response_data["distance"], float)
+    assert "duration" in response_data
+    assert isinstance(response_data["duration"], float)
+    assert "steps" in response_data
+    assert isinstance(response_data["steps"], list)
+    assert len(response_data["steps"]) > 0
+
 
 if __name__ == "__main__":
     pytest.main()

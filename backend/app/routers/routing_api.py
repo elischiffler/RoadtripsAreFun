@@ -61,6 +61,7 @@ async def get_route(start_lat: float,
         # Construct initial route without stops
         route = await _call_route(start_lat, start_lon, end_lat, end_lon)
         print("got initial route")
+        print(f"end lat lon: {end_lat}, {end_lon}")
 
         # Use initial route to find stopping points
         stopping_points = await _add_stops(route, num_stops, date=start)
@@ -174,6 +175,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_
     """
     stopping_points = []
     interval = route.duration / (num_stops + 1)  # Divide trip up into segments for finding stops in seconds
+    end_search = route.duration - 3600 # Stop looking for stops if within the last hour of the trip
     current_time = date.hour * 3600  # Initialize the current time of the day in seconds
     steps = route.legs[0].steps  # Only one leg in the initial route
     coordinates = route.geometry.coordinates  # Get all coordinates of the route
@@ -186,7 +188,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_
     # Add stopping places until the trip is over
     for _ in range(num_stops+1):
         # Check whether the daily end or the next stop comes first
-        while total_time < route.duration and current_time + time_till_stop >= (daily_end * 3600): # Check if next stop or daily end comes next
+        while total_time < end_search and current_time + time_till_stop >= (daily_end * 3600): # Check if next stop or daily end comes next
             time_traveled = (daily_end * 3600) - current_time  # Calculate time traveled that day
             total_time += time_traveled  # Add the time traveled toward the next stop that day
             print('finding hotel...')
@@ -197,11 +199,13 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_
             current_day += 1  # increment the days that have passed
             current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
 
-        if total_time + time_till_stop < route.duration:  # Ensure we are within the route duration
+        if total_time + time_till_stop < end_search:  # Ensure we are within the route duration
             total_time += time_till_stop  # Increment the total time by time traveled to stop
+            print('finding stop...')
+            print(total_time)
+            print(route.duration)
             current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
-            print('finding stop')
-
+            print(current_lat, current_lon)
             current_time += time_till_stop + (3600 * 2)  # Current time includes distance and time spent at stop
             stopping_points.append(
                 await _find_stop('attractions', current_lat, current_lon, 30))  # Add the stop to the list
@@ -278,9 +282,10 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str
     }
 
     try:
+        print(params)
         response = requests.get(nearby_search_url, params=params)
         json_data = response.json()
-        print(json_data)
+        print(response.status_code)
         locations = Trip_Advisor_Location_Search.model_validate(json_data)
         print('validated')
         if len(locations.data) > 0:
@@ -301,7 +306,7 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str
         raise HTTPException(status_code=501, detail=f'Improper TripAdvisor response: {str(exception)}')
 
 
-async def _get_details(location_id: int) -> Dict[str, Any]:
+async def _get_details(location_id: str) -> Dict[str, Any]:
     """
     Retrieves detailed information about a location from the TripAdvisor API using its location ID.
 
