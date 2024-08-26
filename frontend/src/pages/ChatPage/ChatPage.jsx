@@ -19,7 +19,9 @@ const ChatPage = () => {
   // Grab the chat logs
   const ChatLogsData = UserData.chatlogs;
   // State to track current chats data
-  const [UserChatData, setUserChatData] = useState(ChatLogsData.chatData? ChatLogsData.chatData[ChatLogsData.currentId-1]: ChatLogsData.createChatData(1));
+  const [UserChatData, setUserChatData] = useState(ChatLogsData.chatdata.length > 0?
+    ChatLogsData.chatdata[ChatLogsData.currentId-1]:
+    ChatLogsData.createChatData(1));
 
   // Initial message displayed in a new chat
   const initialMessage = [
