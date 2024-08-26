@@ -382,12 +382,14 @@ export const startWorkFlow = async (
     // Send a message prompting the user to resend their information
     addMessage(UserChatData.chatId, setChats, "Error creating route. Please re-enter how you would like to choose your starting location.");
 
+    // Reset values 
     UserChatData.action = null;
     UserChatData.locationType = 'start';
     UserChatData.endConfirmed = null;
     UserChatData.startConfirmed = null;
 
-   await startWorkFlow(setChats,
+    // Restart workflow for another route
+    await startWorkFlow(setChats,
         UserChatData.chatId,
         setChatInput,
         chatInput,

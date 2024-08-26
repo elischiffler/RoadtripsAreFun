@@ -29,13 +29,7 @@ const ChatPage = () => {
   ];
 
   // State to manage the list of chats
-  const [chats, setChats] = useState([
-    {
-      id: 1,
-      title: "Chat 1",
-      messages: initialMessage,
-    },
-  ]);
+  const [chats, setChats] = useState([]);
 
   // State to manage the currently selected chat
   const [selectedChat, setSelectedChat] = useState(null);
@@ -50,7 +44,7 @@ const ChatPage = () => {
   const chatEndRef = useRef(null);
   
   // State to track workflow status
-  const [workflowStarted, setWorkflowStarted] = useState(false);
+  const [workflowStarted, setWorkflowStarted] = useState(UserChatData.workflowStarted);
   // Trigger workflow when a chat is selected, ensuring it only starts once
   useEffect(() => {
     if (selectedChat && !workflowStarted && UserChatData) {
@@ -70,11 +64,41 @@ const ChatPage = () => {
     console.log("Current chat data: ", UserChatData);
   }, [selectedChat, workflowStarted, UserChatData]);
 
-  // Automatically create a chat instance during the initial load
+  // Automatically load chats from local storage or create a chat instance during the initial load
+  useEffect(() => {
+    const savedChats = sessionStorage.getItem("chats");
+    if (savedChats && savedChats.length > 0) {
+      const parsedChats = JSON.parse(savedChats);
+      setChats(parsedChats);
+      console.log("Loaded chats from sessionStorage:", parsedChats);
+    } else {
+      const initialChats = [
+        {
+          id: 1,
+          title: "Chat 1",
+          messages: initialMessage,
+        },
+      ];
+      setChats(initialChats);
+      console.log("Initialized chats with default:", initialChats);
+    }
+  }, []);
+  
   useEffect(() => {
     if (chats.length > 0) {
-      const chat = chats[UserChatData.chatId - 1];
-      setSelectedChat(chat);
+      const chatId = UserChatData.chatId - 1;
+      if (chatId >= 0 && chatId < chats.length) {
+        setSelectedChat(chats[chatId]);
+      } else {
+        console.error("Invalid chat ID:", UserChatData.chatId);
+      }
+    }
+  }, [chats, UserChatData.chatId]);
+  
+  useEffect(() => {
+    if (chats.length > 0) {
+      sessionStorage.setItem("chats", JSON.stringify(chats));
+      console.log("Saved chats to sessionStorage:", chats);
     }
   }, [chats]);
 
