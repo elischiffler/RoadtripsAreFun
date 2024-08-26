@@ -28,5 +28,6 @@ export const getRoute = async (start_lat,
     catch(error){
         // Log any errors encountered during the request
         console.error("Error creating a route:", error);
+        return null
     }
 };

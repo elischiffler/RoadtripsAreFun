@@ -363,13 +363,36 @@ export const startWorkFlow = async (
     UserChatData.endConfirmed['latitude'],
     UserChatData.endConfirmed['longitude'],
     UserChatData.stops,
+    setChats,
+    setChatInput,
+    chatInput,
+    UserChatData,
+    ChatLogsData,
   );
 
-  // Generate the itinerary data 
-  UserChatData.itinerary = await generateItinerary(UserChatData.route);
-  ChatLogsData.chatdata[UserChatData.chatId-1] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
+  if(UserChatData.route){
+    // Generate the itinerary data 
+    UserChatData.itinerary = await generateItinerary(UserChatData.route);
+    ChatLogsData.chatdata[UserChatData.chatId-1] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
 
-  // End the workflow with a message
-  addMessage(chatId, setChats, "End of workflow");
+    // End the workflow with a message
+    addMessage(chatId, setChats, "End of workflow");
+  }
+  else{
+    // Send a message prompting the user to resend their information
+    addMessage(UserChatData.chatId, setChats, "Error creating route. Please re-enter how you would like to choose your starting location.");
 
+    UserChatData.action = null;
+    UserChatData.locationType = 'start';
+    UserChatData.endConfirmed = null;
+    UserChatData.startConfirmed = null;
+
+   await startWorkFlow(setChats,
+        UserChatData.chatId,
+        setChatInput,
+        chatInput,
+        UserChatData,
+        ChatLogsData,
+    )
+  }
 };
