@@ -4,18 +4,18 @@ import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { Link } from "react-router-dom";
 
 // ItineraryButton component that conditionally renders a link to the itinerary page
-const ItineraryButton = ({ route }) => {
+const ItineraryButton = ({ itinerary }) => {
   const button = (
     <Button
     variant="contained"
     color="green"
     startIcon={<FormatListBulletedIcon className="button-icon" />} // Add itinerary icon to the button
     className="button"
-    disabled={!route} // Disable button if no route
+    disabled={!itinerary} // Disable button if no itinerary
   >
     <Box className="button-content">
       <Typography variant="body1" className="typography">
-        Map
+        Itinerary
       </Typography>
     </Box>
   </Button>
@@ -23,19 +23,19 @@ const ItineraryButton = ({ route }) => {
 
   return (
     <Link
-      to={route ? "/itinerary" : "#"} // Prevent navigation if route is not provided
+      to={itinerary ? "/itinerary" : "#"} // Prevent navigation if itinerary is not provided
       className="link"
       onClick={(e) => {
-        if (!route) e.preventDefault(); // Disable link if no route
+        if (!itinerary) e.preventDefault(); // Disable link if no itinerary
       }}
     >
-            {/* Conditionally wrap the button in a Tooltip if the button is disabled */}
-            {!route ? (
-        <Tooltip title="Please answer the questions first" placement="right" arrow>
-          <span>
-          {button}
-          </span>
-        </Tooltip>
+      {/* Conditionally wrap the button in a Tooltip if the button is disabled */}
+      {!itinerary ? (
+      <Tooltip title="Please answer the questions first" placement="right" arrow>
+        <span>
+        {button}
+        </span>
+      </Tooltip>
       ) : (
         button
       )}
