@@ -17,7 +17,6 @@ const ChatPage = () => {
 
   // Retrieve the global instance of UserData
   const UserData = useContext(UserDataContext);
-  console.log('The data: ', UserData);
   // Grab the chat logs
   const ChatLogsData = UserData.chatlogs;
   // State to track current chats data
@@ -62,8 +61,6 @@ const ChatPage = () => {
       // Mark the workflow as started
       setWorkflowStarted(true);
     }
-    console.log("Current chat logs: ", ChatLogsData);
-    console.log("Current chat data: ", UserChatData);
   }, [selectedChat, workflowStarted, UserChatData]);
 
   // Automatically load chats from local storage or create a chat during the initial mount

@@ -376,7 +376,7 @@ export const startWorkFlow = async (
     ChatLogsData.chatdata[UserChatData.chatId-1] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
 
     // End the workflow with a message
-    addMessage(chatId, setChats, "End of workflow");
+    addMessage(chatId, setChats, "Successfully generated your trip! Click on the Map and Itinerary buttons to view the details.");
   }
   else{
     // Send a message prompting the user to resend their information
