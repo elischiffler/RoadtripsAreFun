@@ -1,36 +1,44 @@
 import React from "react";
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box, Typography, Tooltip } from "@mui/material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { Link } from "react-router-dom";
 
 // ItineraryButton component that conditionally renders a link to the itinerary page
-const ItineraryButton = ({ itinerary }) => {
+const ItineraryButton = ({ route }) => {
+  const button = (
+    <Button
+    variant="contained"
+    color="green"
+    startIcon={<FormatListBulletedIcon className="button-icon" />} // Add itinerary icon to the button
+    className="button"
+    disabled={!route} // Disable button if no route
+  >
+    <Box className="button-content">
+      <Typography variant="body1" className="typography">
+        Map
+      </Typography>
+    </Box>
+  </Button>
+  );
+
   return (
     <Link
-      to={itinerary ? "/itinerary" : "#"} // If 'itinerary' is provided, link to the itinerary page; otherwise, use a placeholder link
+      to={route ? "/itinerary" : "#"} // Prevent navigation if route is not provided
       className="link"
       onClick={(e) => {
-        if (!itinerary) {
-          e.preventDefault(); // Prevent navigation if 'itinerary' is not set
-        }
+        if (!route) e.preventDefault(); // Disable link if no route
       }}
     >
-      <Button
-        variant="contained"
-        className="button"
-        disabled={!itinerary} // Disable the button if 'itinerary' is not set
-      >
-        <Box className="button-content">
-          <FormatListBulletedIcon className="button-icon" />{" "}
-          {/* Icon for the button, adjust margin as needed */}
-          <Typography
-            variant="body1"
-            className="typography"
-          >
-            Itinerary
-          </Typography>
-        </Box>
-      </Button>
+            {/* Conditionally wrap the button in a Tooltip if the button is disabled */}
+            {!route ? (
+        <Tooltip title="Please answer the questions first" placement="right" arrow>
+          <span>
+          {button}
+          </span>
+        </Tooltip>
+      ) : (
+        button
+      )}
     </Link>
   );
 };
