@@ -3,13 +3,15 @@
 .page-container {
   display: flex;
   height: 100vh;
-  overflow: hidden;
   box-sizing: border-box;
 }
 
 .sidebar {
   width: 17%;
+  height: 100vh;
   background-color: var(--white-light);
+  z-index: 1000;
+  position: fixed;
   display: flex;
   flex-direction: column;
   padding-left: 16px;
@@ -128,9 +130,12 @@
 }
 
 .header {
-  width: 100%;
+  width: 83%;
+  position: fixed;
+  left: 17%;
+  height:8%;
+  top:0;
   background-color: var(--white-main);
-  padding: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -140,8 +145,13 @@
 .chat-box {
   flex: 1;
   overflow-y: auto;
+  top: 8%;
+  bottom: 10%;
+  left: 17%;
+  right: 0;
   background-color: var(--white-main);
   display: flex;
+  position:fixed;
   flex-direction: column;
   gap: 16px;
   box-sizing: border-box;
@@ -152,7 +162,6 @@
   flex-direction: column;
   gap: 16px;
   padding: 16px;
-  max-height: calc(100vh - 153px);
   overflow-y: auto;
   box-sizing: border-box;
 }
@@ -227,7 +236,10 @@
   padding: 16px;
   box-shadow: var(--mui-shadow-1);
   position: fixed;
+  height: 10% !important;
   bottom: 0;
+  right: 0;
+  left: 17%;
   background-color: var(--white-main);
   box-sizing: border-box;
   border-top: 2px solid var(--white-dark);

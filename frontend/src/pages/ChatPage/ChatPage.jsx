@@ -381,8 +381,7 @@ const ChatPage = () => {
           </Button>
         </Box>
         ):(
-        <Box className = "input-area"
-        sx={{height: "10%"}}/>
+        <Box className = "input-area"/>
         )}
       </Box>
     </Box>
