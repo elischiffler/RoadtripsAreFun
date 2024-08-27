@@ -9,19 +9,22 @@ class Data {
 }
 
 class ChatLogs {
-  constructor(chatdata = [], currentId = 1) {
-    this.chatdata = chatdata;
+  constructor(chatdata = [], currentId = 1,) {
+    this.chatdata = chatdata; // Start with an empty array
     this.currentId = currentId;
   }
 
+  // Method to find a specific ChatData by chatId
   getChatDataById(chatId) {
     return this.chatdata.find(chat => chat.chatId === chatId);
   }
 
+  // Method to add a new ChatData instance
   addChatData(chatData) {
     this.chatdata.push(chatData);
   }
 
+  // Method to create and add a new ChatData instance
   createChatData(chatId) {
     const newChatData = new ChatData(chatId);
     this.addChatData(newChatData);
@@ -29,15 +32,15 @@ class ChatLogs {
   }
 }
 
+
 class ChatData {
-  constructor({
-    chatId = null,
+  constructor(chatId = null,
     action = null,
     locationType = "start",
-    startCoords = [0, 0],
-    startAddress = ["", "", "", ""],
-    endCoords = [0, 0],
-    endAddress = ["", "", "", ""],
+    startCoords = new Array(2).fill(0),
+    startAddress = new Array(4).fill(""),
+    endCoords = new Array(2).fill(0),
+    endAddress = new Array(4).fill(""),
     stops = 1,
     showInputBar = true,
     showStopSlider = false,
@@ -47,7 +50,7 @@ class ChatData {
     endConfirmed = null,
     route = null,
     itinerary = null,
-  } = {}) {
+  ) {
     this.chatId = chatId;
     this.action = action;
     this.locationType = locationType;
@@ -73,15 +76,39 @@ export const UserDataProvider = ({ children }) => {
     if (savedData) {
       // Deserialize and reconstruct the instance
       const parsedData = JSON.parse(savedData);
+      console.log('parsed data: ', parsedData);
+      const chatdata = [];
 
-      const chatlogs = new ChatLogs(
-        parsedData.chatlogs.chatdata.map(chat => new ChatData(chat)),
-        parsedData.chatlogs.currentId
-      );
+      if (Array.isArray(parsedData.chatlogs.chatdata)) {
+        for (const chat of parsedData.chatlogs.chatdata) {
+          chatdata.push(new ChatData(
+            chat.chatId,
+            chat.action,
+            chat.locationType,
+            chat.startCoords,
+            chat.startAddress,
+            chat.endCoords,
+            chat.endAddress,
+            chat.stops,
+            chat.showInputBar,
+            chat.showStopSlider,
+            chat.showAddressInput,
+            chat.workflowStarted,
+            chat.startConfirmed,
+            chat.endConfirmed,
+            chat.route,
+            chat.itinerary
+          ));
+        }
+      }
 
-      return new Data(chatlogs);
+      const chatlogs = new ChatLogs(chatdata, parsedData.chatlogs.currentId);
+      console.log("Parsed logs: ", chatlogs);
+      var loadedData = new Data(chatlogs);
+      console.log('Loaded saved data from sessionStorage: ', loadedData);
+      return loadedData;
     }
-
+    console.log('Created a new UserData instance');
     return new Data(); // Initialize a new instance if none exists in sessionStorage
   });
 
@@ -96,6 +123,7 @@ export const UserDataProvider = ({ children }) => {
         },
       })
     );
+    console.log("Saved data to sessionStorage: ", UserData);
   }, [UserData]);
 
   return (

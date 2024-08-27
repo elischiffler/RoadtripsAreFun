@@ -15,14 +15,13 @@ import "./ChatPage.css";
 
 const ChatPage = () => {
 
-  const savedData = sessionStorage.getItem("UserData");
   // Retrieve the global instance of UserData
-  const UserData = savedData?.chatlogs? JSON.parse(savedData) : useContext(UserDataContext);
-  console.log('The data: ', UserData)
+  const UserData = useContext(UserDataContext);
+  console.log('The data: ', UserData);
   // Grab the chat logs
   const ChatLogsData = UserData.chatlogs;
   // State to track current chats data
-  const [UserChatData, setUserChatData] = useState(ChatLogsData.chatdata.length > 0?
+  const [UserChatData, setUserChatData] = useState(ChatLogsData?.chatdata?.length > 0?
     ChatLogsData.chatdata[ChatLogsData.currentId-1]:
     ChatLogsData.createChatData(1));
 
@@ -91,6 +90,7 @@ const ChatPage = () => {
   // Automatically setSelected chat on initial mount
   useEffect(() => {
     if (chats.length > 0) {
+      console.log("Current data: ", UserChatData)
       const chatId = UserChatData.chatId - 1;
       if (chatId >= 0 && chatId < chats.length) {
         setSelectedChat(chats[chatId]);
@@ -108,11 +108,19 @@ const ChatPage = () => {
     }
   }, [chats]);
 
-  // Saving chats to sessionStorage whenever chats change
   useEffect(() => {
-    sessionStorage.setItem("UserData", JSON.stringify(UserData));
-    console.log("Saved data to sessionStorage:", UserData);
-  }, [UserChatData]);
+    // Serialize and save the instance whenever it changes
+    sessionStorage.setItem(
+      "UserData",
+      JSON.stringify({
+        chatlogs: {
+          chatdata: UserData.chatlogs.chatdata,
+          currentId: UserData.chatlogs.currentId,
+        },
+      })
+    );
+    console.log("Saved data to sessionStorage: ", UserData);
+  }, [UserData, ChatLogsData, UserChatData, selectedChat, workflowStarted]);
 
   // Handle chat selection from the sidebar
   const handleSelectChat = (chat) => {
