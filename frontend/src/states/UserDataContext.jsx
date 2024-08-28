@@ -27,8 +27,17 @@ class ChatLogs {
   // Method to create and add a new ChatData instance
   createChatData(chatId) {
     const newChatData = new ChatData(chatId);
-    this.addChatData(newChatData);
+    if(this.getChatDataById(chatId)){ // check if there alread is this chatId
+      this.chatdata[chatId-1] = newChatData; // replace the outdated version
+    }
+    else{
+      this.addChatData(newChatData); // add a new instance to the end of the chat list
+    };
     return newChatData;
+  }
+
+  removeChatData(chatId){
+    this.chatdata = this.chatdata.filter(ChatData => ChatData.chatId !== chatId);
   }
 }
 

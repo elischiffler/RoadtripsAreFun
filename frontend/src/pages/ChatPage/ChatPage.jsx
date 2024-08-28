@@ -141,7 +141,7 @@ const ChatPage = () => {
             currentId: UserData.chatlogs.currentId,
           },
         })
-      ); 
+      );
     };
   };
 
@@ -248,6 +248,7 @@ const ChatPage = () => {
   // Handle the deletion of a chat
   const handleDeleteChat = (chatId) => {
     setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
+    ChatLogsData.removeChatData(chatId);
     if (selectedChat?.id === chatId) {
       setSelectedChat(null); // Deselect the chat if it's the one being deleted
     }
@@ -314,7 +315,7 @@ const ChatPage = () => {
             <MapButton route={UserChatData.route}/>
           </Box>
           <Box sx={{ mb: -1, width: "100%" }}>
-            <ItineraryButton route={UserChatData.itinerary} />
+            <ItineraryButton itinerary={UserChatData.itinerary} />
           </Box>
           <LogoButton />
         </Box>
