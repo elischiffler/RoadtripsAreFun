@@ -14,7 +14,7 @@ import { validateLocation } from "./ValidateLocation";
 import { ring } from 'ldrs' //Loading Animation
 import "./ChatPage.css";
 
-ring.register('LoadingChatAnimation')  //Define the loading animation
+ring.register('loading-chat')  //Define the loading animation
 
 const ChatPage = () => {
 
