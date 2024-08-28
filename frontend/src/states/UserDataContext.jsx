@@ -50,6 +50,7 @@ class ChatData {
     endConfirmed = null,
     route = null,
     itinerary = null,
+    update = true,
   ) {
     this.chatId = chatId;
     this.action = action;
@@ -67,6 +68,7 @@ class ChatData {
     this.endConfirmed = endConfirmed;
     this.route = route;
     this.itinerary = itinerary;
+    this.update = update;
   }
 }
 
@@ -76,7 +78,6 @@ export const UserDataProvider = ({ children }) => {
     if (savedData) {
       // Deserialize and reconstruct the instance
       const parsedData = JSON.parse(savedData);
-      console.log('parsed data: ', parsedData);
       const chatdata = [];
 
       if (Array.isArray(parsedData.chatlogs.chatdata)) {
@@ -93,17 +94,17 @@ export const UserDataProvider = ({ children }) => {
             chat.showInputBar,
             chat.showStopSlider,
             chat.showAddressInput,
-            chat.workflowStarted,
+            false,
             chat.startConfirmed,
             chat.endConfirmed,
             chat.route,
-            chat.itinerary
+            chat.itinerary,
+            chat.update,
           ));
         }
       }
 
       const chatlogs = new ChatLogs(chatdata, parsedData.chatlogs.currentId);
-      console.log("Parsed logs: ", chatlogs);
       var loadedData = new Data(chatlogs);
       console.log('Loaded saved data from sessionStorage: ', loadedData);
       return loadedData;

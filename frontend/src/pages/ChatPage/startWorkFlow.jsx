@@ -60,17 +60,29 @@ export const addMessage = (chatId, setChats, newMessage, buttons = null) => {
     : typeof newMessage === "string"
     ? newMessage
     : String(newMessage);
-
-  setChats((prevChats) =>
-    prevChats.map((chat) =>
-      chat.id === chatId
-        ? {
-            ...chat,
-            messages: [...chat.messages, message], // Append the new message to the chat
-          }
-        : chat
-    )
+      
+  setChats((prevChats) =>{
+    const prevLength = prevChats[chatId-1].messages.length-1;
+    const prevMessage = prevChats[chatId-1].messages[prevLength];
+    console.log("message1",message);
+    console.log("message2",prevChats[chatId-1].messages[prevLength]);
+    if( prevMessage !== message && // Check if they are the same text
+      !(typeof prevMessage === 'object' && typeof message === 'object' && prevMessage.text === message.text) // Check if they are the same objects
+    ){ // Determine if the last message is the same as the previous
+      const newChats = prevChats.map((chat) => // Create a new chats with the newMessage at the end
+        chat.id === chatId
+          ? {
+              ...chat,
+              messages: [...chat.messages, message], // Append the new message to the chat
+            }
+          : chat
+      );
+      return newChats
+    };
+    return prevChats
+  }
   );
+
 };
 
 // Changes the input bar to show the address input field
@@ -105,7 +117,7 @@ function locationTypeResponse(
   setChats,
   setChatInput,
   chatInput,
-  UserChatData
+  UserChatData,
 ) {
   if (UserChatData.action === "Current Location") {
     // If the user chose 'Current Location'
@@ -130,7 +142,7 @@ function locationTypeResponse(
     addMessage(
       chatId,
       setChats,
-      "Sounds good! Please enter your address information."
+      "Sounds good! Please enter your address information.",
     );
 
     // Change the input bar to show the address input field
@@ -140,7 +152,7 @@ function locationTypeResponse(
     UserChatData.showInputBar = true
     // If the user chose 'City Name'
     changePrevious(chatId, setChats, "I would like to use: City Name");
-    addMessage(chatId, setChats, "Sounds good! Please enter your city name.");
+    addMessage(chatId, setChats, "Sounds good! Please enter your city name.",);
   }
 }
 
@@ -149,25 +161,29 @@ export async function inputLocationWorkflow(chatId,
   setChats,
   setChatInput,
   chatInput,
-  UserChatData
+  UserChatData,
 ){
 
-  // Ask user for location type
-  addMessage(
-    chatId,
-    setChats,
-    askForLocationType.text,
-    askForLocationType.buttons
-  );
-  // Wait for the user to select a location type
-  await new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (UserChatData.action) {
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100);
-  });
+  if(!UserChatData.action){
+    // Ask user for location type
+    addMessage(
+      chatId,
+      setChats,
+      askForLocationType.text,
+      askForLocationType.buttons,
+    );
+    // Wait for the user to select a location type
+    await new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (UserChatData.action) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+  };
+
+  
   // Handle the user's selected location type
   locationTypeResponse(chatId, setChats, setChatInput, chatInput, UserChatData);
 
@@ -201,7 +217,9 @@ export async function inputLocationWorkflow(chatId,
 // Displays the backend address to user and asks for the confirmation
 async function displayConfirmationDetails(chatId,
   setChats,
-  UserChatData,){
+  UserChatData,
+){
+    UserChatData.update = false;
     const address = UserChatData.endConfirmed? UserChatData.endConfirmed['address'] : UserChatData.startConfirmed['address'];
 
     // Display address from backend
@@ -253,7 +271,7 @@ async function handleConfirmation(
     addMessage(
       chatId,
       setChats,
-      "My apologies, how would you like to re-enter the location?"
+      "My apologies, how would you like to re-enter the location?",
     );
     // Have them repeat inputting their location
     await inputLocationWorkflow(chatId, setChats, setChatInput, chatInput, UserChatData);
@@ -288,99 +306,122 @@ export const startWorkFlow = async (
       ...UserChatData,
       chatInput: { ...chatInput },
     };
-
-  UserChatData.workflowStarted = true
-  UserChatData.showInputBar = false
-  // Ask for the starting location preferences
-  await inputLocationWorkflow(chatId,
-    setChats,
-    setChatInput,
-    chatInput,
-    UserChatData);
-
-  // Confirm the users starting address with the backend
-  await handleConfirmation(
-    chatId,
-    setChats,
-    setChatInput,
-    chatInput,
-    UserChatData,
-  );
-
-  // Ask how many stops the user wants to take
-  addMessage(
-    chatId,
-    setChats,
-    "Perfect! How many stops would you like to take?"
-  );
-
-  // Show a slider for the user to select the number of stops
-  UserChatData.showInputBar = true;
-  UserChatData.showStopSlider = true;
-
-  // Wait for the user to submit the number of stops
-  await new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (!UserChatData.showStopSlider) {
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100);
-  });
-  UserChatData.showInputBar = false;
-
-  // Ask for the end location
-  addMessage(
-    chatId,
-    setChats,
-    "How would you like to enter your end location?"
-  );
-
-  // Change the location type to 'end'
-  UserChatData.locationType = "end";
-
-
-  // Ask for ending location preferences
-  await inputLocationWorkflow(chatId,
-    setChats,
-    setChatInput,
-    chatInput,
-    UserChatData);
-
   
-  // Confirm the users ending address with the backend
-  await handleConfirmation(
-    chatId,
-    setChats,
-    setChatInput,
-    chatInput,
-    UserChatData,
-  );
+  console.log("Starting a workflow");
+  UserChatData.workflowStarted = true
+  if(!UserChatData.showStopSlider && !UserChatData.startConfirmed) { // Checkpoint 1: Choose a start location
+    UserChatData.showInputBar = false
+    UserChatData.update = false; // Stop saving data while awaiting confirmation
 
-  // Generate the route
-  UserChatData.route = await getRoute(UserChatData.startConfirmed['latitude'],
-    UserChatData.startConfirmed['longitude'],
-    UserChatData.endConfirmed['latitude'],
-    UserChatData.endConfirmed['longitude'],
-    UserChatData.stops,
-    setChats,
-    setChatInput,
-    chatInput,
-    UserChatData,
-    ChatLogsData,
-  );
 
-  if(UserChatData.route){
+    // Ask for the starting location preferences
+    await inputLocationWorkflow(chatId,
+      setChats,
+      setChatInput,
+      chatInput,
+      UserChatData
+    );
+  
+    UserChatData.update = false;
+
+    // Confirm the users starting address with the backend
+    await handleConfirmation(
+      chatId,
+      setChats,
+      setChatInput,
+      chatInput,
+      UserChatData,
+    );
+  
+  
+    UserChatData.update = true; // Start saving after confirmation
+
+    // Ask how many stops the user wants to take
+    addMessage(
+      chatId,
+      setChats,
+      "Perfect! How many stops would you like to take?",
+    );
+
+    // Show a slider for the user to select the number of stops
+    UserChatData.showInputBar = true;
+    UserChatData.showStopSlider = true;
+    
+    
+  };
+
+  if(UserChatData.showInputBar || UserChatData.showStopSlider) { // Checkpoint 2: Input stops
+    if(UserChatData.showStopSlider){
+      // Wait for the user to submit the number of stops
+      await new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (!UserChatData.showStopSlider) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 100);
+      });
+      UserChatData.showInputBar = false;
+    };
+
+  };
+
+  if (!UserChatData.endConfirmed && !UserChatData.route){  // Checkpoint 3: Choose an end location
+    // Ask for the end location
+    addMessage(
+      chatId,
+      setChats,
+      "How would you like to enter your end location?",
+    );
+
+    UserChatData.update = false;
+    UserChatData.locationType = "end";
+
+    // Ask for ending location preferences
+    await inputLocationWorkflow(chatId,
+      setChats,
+      setChatInput,
+      chatInput,
+      UserChatData,
+    );
+
+
+    UserChatData.update = false;
+
+
+    // Confirm the users ending address with the backend
+    await handleConfirmation(
+      chatId,
+      setChats,
+      setChatInput,
+      chatInput,
+      UserChatData,
+    );
+    
+
+    UserChatData.update = true; // Start saving after confirmation
+
+
+    // Generate the route
+    UserChatData.route = await getRoute(UserChatData.startConfirmed['latitude'],
+      UserChatData.startConfirmed['longitude'],
+      UserChatData.endConfirmed['latitude'],
+      UserChatData.endConfirmed['longitude'],
+      UserChatData.stops,
+    );
+  };
+
+  if(UserChatData.route && !UserChatData.itinerary){ // Checkpoint 4 End behaviors
     // Generate the itinerary data 
     UserChatData.itinerary = await generateItinerary(UserChatData.route);
     ChatLogsData.chatdata[UserChatData.chatId-1] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
 
     // End the workflow with a message
-    addMessage(chatId, setChats, "Successfully generated your trip! Click on the Map and Itinerary buttons to view the details.");
+    addMessage(chatId, setChats, "Successfully generated your trip! Click on the Map and Itinerary buttons to view the details.",);
   }
-  else{
+  else if (!UserChatData.route){
     // Send a message prompting the user to resend their information
-    addMessage(UserChatData.chatId, setChats, "Error creating route. Please re-enter how you would like to choose your starting location.");
+    addMessage(UserChatData.chatId, setChats, "Error creating route. Please re-enter how you would like to choose your starting location.",);
 
     // Reset values 
     UserChatData.action = null;
@@ -395,6 +436,6 @@ export const startWorkFlow = async (
         chatInput,
         UserChatData,
         ChatLogsData,
-    )
-  }
+    );
+  };
 };
