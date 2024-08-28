@@ -11,7 +11,10 @@ import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
 import { UserDataContext } from "../../states/UserDataContext";
 import { validateLocation } from "./ValidateLocation";
+import { ring } from 'ldrs' //Loading Animation
 import "./ChatPage.css";
+
+ring.register('LoadingChatAnimation')  //Define the loading animation
 
 const ChatPage = () => {
 

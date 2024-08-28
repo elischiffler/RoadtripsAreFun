@@ -50,6 +50,7 @@ class ChatData {
     endConfirmed = null,
     route = null,
     itinerary = null,
+    loading = false
   ) {
     this.chatId = chatId;
     this.action = action;
@@ -67,6 +68,7 @@ class ChatData {
     this.endConfirmed = endConfirmed;
     this.route = route;
     this.itinerary = itinerary;
+    this.loading = loading;
   }
 }
 
