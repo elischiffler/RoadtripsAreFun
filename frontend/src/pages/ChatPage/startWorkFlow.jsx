@@ -109,6 +109,7 @@ function locationTypeResponse(
   UserChatData
 ) {
   if (UserChatData.action === "Current Location") {
+    UserChatData.loading = true
     // If the user chose 'Current Location'
     getCurrentLocation(async (latitude, longitude) => {
       // Update the previous message to include the location coordinates
@@ -398,6 +399,4 @@ export const startWorkFlow = async (
         ChatLogsData,
     )
   }
-
-  UserChatData.loading = true
 };

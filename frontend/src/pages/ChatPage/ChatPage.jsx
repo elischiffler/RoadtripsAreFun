@@ -199,10 +199,10 @@ const ChatPage = () => {
     }
   };
 
- // Create a ref to store the previous chatid
+  // Create a ref to store the previous chatid
  const previousChatIdRef = useRef(UserChatData.chatId);
 
-  // Adds the loading message
+  // Effect to handle adding and removing loaders
   useEffect(() => {
     // Check if the chatid has changed
     if (UserChatData.chatId !== previousChatIdRef.current) {
@@ -211,12 +211,31 @@ const ChatPage = () => {
       return; // Exit early to avoid running the effect when chatid changes
     }
 
-    // If not, proceed with the loading logic
+    // Handle loading state
     if (UserChatData.loading) {
+      // Add a loading message if not already added
       addMessage(UserChatData.chatId, setChats, "loading");
+    } else {
+      // Remove the loading message when loading is false
+      deleteLoader();
     }
   }, [UserChatData.loading, UserChatData.chatId]);
 
+    // Function to delete the loader message
+    const deleteLoader = () => {
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === UserChatData.chatId
+            ? {
+                ...chat,
+                messages: chat.messages.filter(
+                  (message) => !(message.type === 'loading-chat')
+                ),
+              }
+            : chat
+        )
+      );
+    };
 
   const handleNewChat = () => {
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
