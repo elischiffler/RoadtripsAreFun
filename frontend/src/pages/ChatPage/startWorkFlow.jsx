@@ -396,4 +396,6 @@ export const startWorkFlow = async (
         ChatLogsData,
     )
   }
+
+  UserChatData.loading = true
 };

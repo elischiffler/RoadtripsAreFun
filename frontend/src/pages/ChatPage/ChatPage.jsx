@@ -199,6 +199,25 @@ const ChatPage = () => {
     }
   };
 
+ // Create a ref to store the previous chatid
+ const previousChatIdRef = useRef(UserChatData.chatId);
+
+  // Adds the loading message
+  useEffect(() => {
+    // Check if the chatid has changed
+    if (UserChatData.chatId !== previousChatIdRef.current) {
+      // Update the ref with the new chatid
+      previousChatIdRef.current = UserChatData.chatId;
+      return; // Exit early to avoid running the effect when chatid changes
+    }
+
+    // If not, proceed with the loading logic
+    if (UserChatData.loading) {
+      addMessage(UserChatData.chatId, setChats, "loading...");
+    }
+  }, [UserChatData.loading, UserChatData.chatId]);
+
+
   const handleNewChat = () => {
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
     console.log('Chat ID:', maxId);
