@@ -51,7 +51,9 @@ const replacePreviousMessage = (chatId, setChats, newMessage) => {
 // Adds a new message to the chat with optional buttons
 export const addMessage = (chatId, setChats, newMessage, buttons = null) => {
   // Ensure the newMessage is a string, optionally with buttons
-  const message = buttons
+  const message = newMessage === "loading" 
+    ? <loading-chat size="30" color="black"></loading-chat>
+    : buttons
     ? {
         text: newMessage,
         buttons: buttons,
