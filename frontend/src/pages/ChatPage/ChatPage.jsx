@@ -51,6 +51,7 @@ const ChatPage = () => {
   const [workflowStarted, setWorkflowStarted] = useState(UserChatData.workflowStarted);
   // Trigger workflow when a chat is selected, ensuring it only starts once
   useEffect(() => {
+    setWorkflowStarted(UserChatData.workflowStarted); // ensure the accurate workflowStarted is set
     if (selectedChat && !workflowStarted && UserChatData) {
       // Start the workflow for the newly selected chat
       startWorkFlow(
@@ -66,10 +67,16 @@ const ChatPage = () => {
     }
   }, [selectedChat, workflowStarted, UserChatData]);
 
+  // Saves the UserData whenever the there are changes to chat data or the chats
+  useEffect(() => {
+    saveUserData();
+    console.log("Current chat data: ", UserChatData);
+  }, [UserChatData, selectedChat, chats, UserChatData.locationType])
+
   // Automatically load chats from local storage or create a chat during the initial mount
   useEffect(() => {
     const savedChats = sessionStorage.getItem("chats");
-    if (savedChats && savedChats.length > 0) {
+    if (savedChats && savedChats.length > 2) { // Check that more than an empty array is returned
       const parsedChats = JSON.parse(savedChats);
       setChats(parsedChats);
       console.log("Loaded chats from sessionStorage:", parsedChats);
@@ -86,11 +93,31 @@ const ChatPage = () => {
     }
   }, []);
 
+  // Effect to handle users navigating away from the page
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      console.log("User is about to leave the page.");
+
+      saveUserData();
+
+      // If you want to prompt the user before leaving
+      event.preventDefault();
+      event.returnValue = ''; // Chrome requires returnValue to be set
+      
+    };
+
+    // Event listener to detect if the user is navigating away/refreshing
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   // Automatically setSelected chat on initial mount
   useEffect(() => {
     if (chats.length > 0) {
-      console.log("Current data: ", UserChatData)
       const chatId = UserChatData.chatId - 1;
       if (chatId >= 0 && chatId < chats.length) {
         setSelectedChat(chats[chatId]);
@@ -99,28 +126,27 @@ const ChatPage = () => {
       }
     }
   }, [chats, UserChatData.chatId]);
-  
-  // Saving chats to sessionStorage whenever chats change
-  useEffect(() => {
-    if (chats.length > 0) {
+
+
+  const saveUserData = () => {
+    if(chats.length>0 && UserChatData.update){
+      // Save chats to the session storage
       sessionStorage.setItem("chats", JSON.stringify(chats));
       console.log("Saved chats to sessionStorage:", chats);
-    }
-  }, [chats]);
 
-  useEffect(() => {
-    // Serialize and save the instance whenever it changes
-    sessionStorage.setItem(
-      "UserData",
-      JSON.stringify({
-        chatlogs: {
-          chatdata: UserData.chatlogs.chatdata,
-          currentId: UserData.chatlogs.currentId,
-        },
-      })
-    );
-    console.log("Saved data to sessionStorage: ", UserData);
-  }, [UserData, ChatLogsData, UserChatData, selectedChat, workflowStarted]);
+      console.log("Saved data to sessionStorage: ", UserData);
+      // Save the UserData to the session
+      sessionStorage.setItem(
+        "UserData",
+        JSON.stringify({
+          chatlogs: {
+            chatdata: UserData.chatlogs.chatdata,
+            currentId: UserData.chatlogs.currentId,
+          },
+        })
+      );
+    };
+  };
 
   // Handle chat selection from the sidebar
   const handleSelectChat = (chat) => {
@@ -263,6 +289,7 @@ const ChatPage = () => {
   // Handle the deletion of a chat
   const handleDeleteChat = (chatId) => {
     setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
+    ChatLogsData.removeChatData(chatId);
     if (selectedChat?.id === chatId) {
       setSelectedChat(null); // Deselect the chat if it's the one being deleted
     }

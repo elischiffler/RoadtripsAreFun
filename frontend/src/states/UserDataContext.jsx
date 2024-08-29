@@ -27,8 +27,17 @@ class ChatLogs {
   // Method to create and add a new ChatData instance
   createChatData(chatId) {
     const newChatData = new ChatData(chatId);
-    this.addChatData(newChatData);
+    if(this.getChatDataById(chatId)){ // check if there alread is this chatId
+      this.chatdata[chatId-1] = newChatData; // replace the outdated version
+    }
+    else{
+      this.addChatData(newChatData); // add a new instance to the end of the chat list
+    };
     return newChatData;
+  }
+
+  removeChatData(chatId){
+    this.chatdata = this.chatdata.filter(ChatData => ChatData.chatId !== chatId);
   }
 }
 
@@ -51,6 +60,7 @@ class ChatData {
     route = null,
     itinerary = null,
     loading = false
+    update = true,
   ) {
     this.chatId = chatId;
     this.action = action;
@@ -69,6 +79,7 @@ class ChatData {
     this.route = route;
     this.itinerary = itinerary;
     this.loading = loading;
+    this.update = update;
   }
 }
 
@@ -78,7 +89,6 @@ export const UserDataProvider = ({ children }) => {
     if (savedData) {
       // Deserialize and reconstruct the instance
       const parsedData = JSON.parse(savedData);
-      console.log('parsed data: ', parsedData);
       const chatdata = [];
 
       if (Array.isArray(parsedData.chatlogs.chatdata)) {
@@ -95,17 +105,17 @@ export const UserDataProvider = ({ children }) => {
             chat.showInputBar,
             chat.showStopSlider,
             chat.showAddressInput,
-            chat.workflowStarted,
+            false,
             chat.startConfirmed,
             chat.endConfirmed,
             chat.route,
-            chat.itinerary
+            chat.itinerary,
+            chat.update,
           ));
         }
       }
 
       const chatlogs = new ChatLogs(chatdata, parsedData.chatlogs.currentId);
-      console.log("Parsed logs: ", chatlogs);
       var loadedData = new Data(chatlogs);
       console.log('Loaded saved data from sessionStorage: ', loadedData);
       return loadedData;
