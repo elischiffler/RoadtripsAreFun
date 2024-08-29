@@ -59,8 +59,8 @@ class ChatData {
     endConfirmed = null,
     route = null,
     itinerary = null,
-    loading = false
-    update = true,
+    loading = false,
+    update = true
   ) {
     this.chatId = chatId;
     this.action = action;
