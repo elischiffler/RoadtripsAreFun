@@ -18,8 +18,8 @@ ring.register('loading-chat')  //Define the loading animation
 
 const ChatPage = () => {
 
-  // Retrieve the global instance of UserData
-  const UserData = useContext(UserDataContext);
+  // Retrieve the global instance of UserData and getUserData function
+  const { UserData, getUserData } = useContext(UserDataContext);
   // Grab the chat logs
   const ChatLogsData = UserData.chatlogs;
   // State to track current chats data
@@ -73,14 +73,24 @@ const ChatPage = () => {
     console.log("Current chat data: ", UserChatData);
   }, [UserChatData, selectedChat, chats, UserChatData.locationType])
 
-  // Automatically load chats from local storage or create a chat during the initial mount
-  useEffect(() => {
+  // Get SavedChats from session storage
+  const getSavedChats = () => {
     const savedChats = sessionStorage.getItem("chats");
     if (savedChats && savedChats.length > 2) { // Check that more than an empty array is returned
       const parsedChats = JSON.parse(savedChats);
-      setChats(parsedChats);
       console.log("Loaded chats from sessionStorage:", parsedChats);
+      return parsedChats;
     } else {
+      return null;
+    };
+  }
+
+  // Automatically load chats from local storage or create a chat during the initial mount
+  useEffect(() => {
+    const prevChats = getSavedChats();
+    if(prevChats){
+      setChats(prevChats);
+    }else{
       const initialChats = [
         {
           id: 1,
@@ -88,8 +98,8 @@ const ChatPage = () => {
           messages: initialMessage,
         },
       ];
-      setChats(initialChats);
       console.log("Initialized chats with default:", initialChats);
+      setChats(initialChats);
     }
   }, []);
 
@@ -128,20 +138,62 @@ const ChatPage = () => {
   }, [chats, UserChatData.chatId]);
 
 
+  // Function to save all relevant User information to the sessionStorage
   const saveUserData = () => {
-    if(chats.length>0 && UserChatData.update){
-      // Save chats to the session storage
-      sessionStorage.setItem("chats", JSON.stringify(chats));
-      console.log("Saved chats to sessionStorage:", chats);
+    if(chats.length>0 && UserChatData.update){ // Make sure data's valid and save condition is true
+      // Save current chat to the previous chats in the sessionStorage
+      var newChats = null; // Variable for chats to be saved
+      const prevChats = getSavedChats(); // Get the sessionStorage chats
+      if(prevChats){
+        const newChat = chats.find(Chat => // Find the currently selected chat in chats
+          Chat.id === UserChatData.chatId
+        );
+        // If the current chatId already exists in the sessionStorage
+        if(prevChats.find(
+          Chat => Chat.id === UserChatData.chatId
+        )){ // replace the sessionStorage version with the new chat
+          newChats = prevChats.map(Chat =>
+            Chat.id === UserChatData.chatId? newChat: Chat
+          );
+        }else{ // Add the new chat if it's the first instance
+          prevChats.push(newChat);
+          newChats = prevChats;
+        }
+      }else{
+        // save the first session version of chats
+        newChats = chats
+      };
+      sessionStorage.setItem("chats", JSON.stringify(newChats));
+      console.log("Saved chats to sessionStorage:", newChats);
+      
 
-      console.log("Saved data to sessionStorage: ", UserData);
-      // Save the UserData to the session
+      // Save new UserChatData to previously stored UserChatData in sessionStorage
+      var saveData = null;
+      const prevData = getUserData(); // Retrieve previous value of UserData
+      console.log("Previous Data in storage", prevData);
+      if(prevData?.chatlogs?.chatdata?.length > 0){ // Check to be sure it isn't the first instance of the data
+        if(
+          prevData.chatlogs.getChatDataById(UserChatData.chatId) // Check if the ChatData already exists
+        ){
+          const newChatLogs = prevData.chatlogs.chatdata.map(ChatData => // Map the new UserData to replace the previous one
+            ChatData.chatId === UserChatData.chatId? UserChatData : ChatData);
+          prevData.chatlogs.chatdata = newChatLogs; // set the previous User Data to include the new UserChatData
+        }else{
+          prevData.chatlogs.addChatData(UserChatData); // add the new Chat Data
+        }
+        prevData.chatlogs.currentId = UserChatData.chatId; // Set the currentId to be the current Chat Datas
+        saveData = prevData;
+      }else{saveData = UserData;}; // Save the current UserData if its the first instance of UserData
+      
+
+      console.log("Saved data to sessionStorage: ", saveData);
+      // Save the current ChatData to the session storage
       sessionStorage.setItem(
         "UserData",
         JSON.stringify({
           chatlogs: {
-            chatdata: UserData.chatlogs.chatdata,
-            currentId: UserData.chatlogs.currentId,
+            chatdata: saveData.chatlogs.chatdata,
+            currentId: saveData.chatlogs.currentId,
           },
         })
       );

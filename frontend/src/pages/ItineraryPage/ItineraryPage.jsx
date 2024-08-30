@@ -15,7 +15,7 @@ import { useContext } from "react"
 const ItineraryPage = () => {
 
   // Retrieve the global instance of UserData
-  const UserData = useContext(UserDataContext);
+  const { UserData } = useContext(UserDataContext);
   // Grab the chat logs and make sure everything is defined
   const ChatLogsData = UserData?.chatlogs || {};
   const UserChatData = ChatLogsData?.chatdata?.[ChatLogsData.currentId - 1];

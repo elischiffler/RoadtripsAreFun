@@ -9,8 +9,9 @@ import "./MapPage.css";
 
 const MapPage = () => {
 
-  // Retrieve the global instance of UserData
-  const UserData = useContext(UserDataContext);
+  // Retrieve the the instance of UserData from sessionStorage
+  const { UserData } = useContext(UserDataContext);
+  
   // Grab the chat logs
   const ChatLogsData = UserData?.chatlogs || {};
   const UserChatData = ChatLogsData?.chatdata?.[ChatLogsData.currentId - 1];

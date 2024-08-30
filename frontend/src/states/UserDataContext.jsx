@@ -84,45 +84,40 @@ class ChatData {
 }
 
 export const UserDataProvider = ({ children }) => {
-  const [UserData, setUserData] = useState(() => {
+  // Function to retrieve UserData from the sessionStorage
+  const getUserData = () => {
     const savedData = sessionStorage.getItem("UserData");
     if (savedData) {
-      // Deserialize and reconstruct the instance
       const parsedData = JSON.parse(savedData);
-      const chatdata = [];
-
-      if (Array.isArray(parsedData.chatlogs.chatdata)) {
-        for (const chat of parsedData.chatlogs.chatdata) {
-          chatdata.push(new ChatData(
-            chat.chatId,
-            chat.action,
-            chat.locationType,
-            chat.startCoords,
-            chat.startAddress,
-            chat.endCoords,
-            chat.endAddress,
-            chat.stops,
-            chat.showInputBar,
-            chat.showStopSlider,
-            chat.showAddressInput,
-            false,
-            chat.startConfirmed,
-            chat.endConfirmed,
-            chat.route,
-            chat.itinerary,
-            chat.update,
-          ));
-        }
-      }
-
+      const chatdata = parsedData.chatlogs.chatdata.map(chat => new ChatData(
+        chat.chatId,
+        chat.action,
+        chat.locationType,
+        chat.startCoords,
+        chat.startAddress,
+        chat.endCoords,
+        chat.endAddress,
+        chat.stops,
+        chat.showInputBar,
+        chat.showStopSlider,
+        chat.showAddressInput,
+        false,
+        chat.startConfirmed,
+        chat.endConfirmed,
+        chat.route,
+        chat.itinerary,
+        chat.update,
+      ));
       const chatlogs = new ChatLogs(chatdata, parsedData.chatlogs.currentId);
-      var loadedData = new Data(chatlogs);
-      console.log('Loaded saved data from sessionStorage: ', loadedData);
-      return loadedData;
+      console.log('Loaded saved data from sessionStorage');
+      return new Data(chatlogs);
     }
     console.log('Created a new UserData instance');
-    return new Data(); // Initialize a new instance if none exists in sessionStorage
-  });
+    return new Data();
+  };
+
+  // initializes gloval instance of UserData
+  const [UserData, setUserData] = useState(getUserData());
 
   useEffect(() => {
     // Serialize and save the instance whenever it changes
@@ -139,7 +134,7 @@ export const UserDataProvider = ({ children }) => {
   }, [UserData]);
 
   return (
-    <UserDataContext.Provider value={UserData}>
+    <UserDataContext.Provider value={{UserData, getUserData}}>
       {children}
     </UserDataContext.Provider>
   );
