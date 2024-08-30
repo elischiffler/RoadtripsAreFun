@@ -24,7 +24,7 @@ const ChatPage = () => {
   const ChatLogsData = UserData.chatlogs;
   // State to track current chats data
   const [UserChatData, setUserChatData] = useState(ChatLogsData?.chatdata?.length > 0?
-    ChatLogsData.chatdata[ChatLogsData.currentId-1]:
+    ChatLogsData.getChatDataById(ChatLogsData.currentId):
     ChatLogsData.createChatData(1));
 
   // Initial message displayed in a new chat
@@ -71,9 +71,9 @@ const ChatPage = () => {
   useEffect(() => {
     saveUserData();
     console.log("Current chat data: ", UserChatData);
-  }, [UserChatData, selectedChat, chats, UserChatData.locationType])
+  }, [UserChatData, selectedChat, chats])
 
-  // Get SavedChats from session storage
+  // Get SavedChats from sessionStorage
   const getSavedChats = () => {
     const savedChats = sessionStorage.getItem("chats");
     if (savedChats && savedChats.length > 2) { // Check that more than an empty array is returned
@@ -85,7 +85,7 @@ const ChatPage = () => {
     };
   }
 
-  // Automatically load chats from local storage or create a chat during the initial mount
+  // Automatically load chats from sessionStorage or create a chat during initial mount
   useEffect(() => {
     const prevChats = getSavedChats();
     if(prevChats){
@@ -128,9 +128,9 @@ const ChatPage = () => {
   // Automatically setSelected chat on initial mount
   useEffect(() => {
     if (chats.length > 0) {
-      const chatId = UserChatData.chatId - 1;
-      if (chatId >= 0 && chatId < chats.length) {
-        setSelectedChat(chats[chatId]);
+      const idx = chats.findIndex(chat => chat.id === UserChatData.chatId);
+      if (idx >= 0 && idx < chats.length) {
+        setSelectedChat(chats[idx]);
       } else {
         console.error("Invalid chat ID:", UserChatData.chatId);
       }
@@ -144,10 +144,10 @@ const ChatPage = () => {
       // Save current chat to the previous chats in the sessionStorage
       var newChats = null; // Variable for chats to be saved
       const prevChats = getSavedChats(); // Get the sessionStorage chats
-      if(prevChats){
-        const newChat = chats.find(Chat => // Find the currently selected chat in chats
-          Chat.id === UserChatData.chatId
-        );
+      const newChat = chats.find(Chat => // Find the currently selected chat in chats
+        Chat.id === UserChatData.chatId
+      );
+      if(prevChats && newChat){
         // If the current chatId already exists in the sessionStorage
         if(prevChats.find(
           Chat => Chat.id === UserChatData.chatId
@@ -158,11 +158,12 @@ const ChatPage = () => {
         }else{ // Add the new chat if it's the first instance
           prevChats.push(newChat);
           newChats = prevChats;
-        }
+        };
       }else{
         // save the first session version of chats
         newChats = chats
       };
+      
       sessionStorage.setItem("chats", JSON.stringify(newChats));
       console.log("Saved chats to sessionStorage:", newChats);
       
@@ -204,7 +205,7 @@ const ChatPage = () => {
   const handleSelectChat = (chat) => {
     const selectedChatData = ChatLogsData.getChatDataById(chat.id);
     setSelectedChat({ ...chat, ...selectedChatData });
-    setUserChatData(ChatLogsData.getChatDataById(chat.id));
+    setUserChatData(selectedChatData);
     ChatLogsData.currentId = chat.id;
   };
 
