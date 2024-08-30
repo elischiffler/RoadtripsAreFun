@@ -26,20 +26,19 @@ const getCurrentLocation = (callback) => {
 
 
 
-// Updates the previous message with a new one based on the user's input
-const changePrevious = (chatId, setChats, newMessage) => {
+// Updates the previous message with a new one based on a dynamic match condition
+const replacePreviousMessage = (chatId, setChats, newMessage) => {
   setChats((prevChats) =>
     prevChats.map((chat) =>
       chat.id === chatId
         ? {
             ...chat,
-            messages: (chat.messages || []).map((message) =>
-              typeof message === "object" &&
-              (message.text === "I would like to use:" || message.text ==="The address is:")
+            messages: (chat.messages || []).map((message, index, array) =>
+              index === array.length - 1 // Target the last message in the array
                 ? {
                     ...message,
-                    text: newMessage,
-                    buttons: [], // Remove buttons after the choice is made
+                    text: newMessage, // Replace the text with the new message
+                    buttons: [], // Optionally clear buttons
                   }
                 : message
             ),
@@ -52,7 +51,9 @@ const changePrevious = (chatId, setChats, newMessage) => {
 // Adds a new message to the chat with optional buttons
 export const addMessage = (chatId, setChats, newMessage, buttons = null) => {
   // Ensure the newMessage is a string, optionally with buttons
-  const message = buttons
+  const message = newMessage === "loading" 
+    ? <loading-chat size="30" color="black"></loading-chat>
+    : buttons
     ? {
         text: newMessage,
         buttons: buttons,
@@ -118,10 +119,11 @@ function locationTypeResponse(
   UserChatData,
 ) {
   if (UserChatData.action === "Current Location") {
+    UserChatData.loading = true
     // If the user chose 'Current Location'
     getCurrentLocation(async (latitude, longitude) => {
       // Update the previous message to include the location coordinates
-      changePrevious(chatId, setChats, `I would like to use: Current Location`);
+      replacePreviousMessage(chatId, setChats, `I would like to use: Current Location`);
       // Save the coordinates to UserChatData
       if (UserChatData.locationType === "start") {
         UserChatData.startCoords = [latitude, longitude];
@@ -136,7 +138,7 @@ function locationTypeResponse(
     UserChatData.showInputBar = true
     UserChatData.showAddressInput = true
     // If the user chose 'Address'
-    changePrevious(chatId, setChats, `I would like to use: Address`);
+    replacePreviousMessage(chatId, setChats, `I would like to use: Address`);
     addMessage(
       chatId,
       setChats,
@@ -149,8 +151,8 @@ function locationTypeResponse(
     // Allow user access to the input bar
     UserChatData.showInputBar = true
     // If the user chose 'City Name'
-    changePrevious(chatId, setChats, "I would like to use: City Name");
-    addMessage(chatId, setChats, "Sounds good! Please enter your city name.",);
+    replacePreviousMessage(chatId, setChats, "I would like to use: City Name");
+    addMessage(chatId, setChats, "Sounds good! Please enter your city name.");
   }
 }
 
@@ -244,7 +246,7 @@ async function displayConfirmationDetails(chatId,
         }
       }, 100);
     });
-    changePrevious(chatId, setChats, `The address is: ${UserChatData.action}`);
+    replacePreviousMessage(chatId, setChats, `The address is: ${UserChatData.action}`);
 }
 
 // Loops confirmation of location until it is successfully validated

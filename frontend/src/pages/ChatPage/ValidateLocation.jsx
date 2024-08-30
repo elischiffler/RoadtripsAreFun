@@ -10,9 +10,10 @@ try {
     ? {'location': {'coordinates': input}, is_coordinates: isCoordinate}
     : {'location' : {'address' : input}, is_coordinates: isCoordinate};
     
-
+    UserChatData.loading = true  // Start a loading chat animation
     // Send the a post request to the backend server
     const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}validate-location`, data);
+    UserChatData.loading = false// Delete the loading chat animation
 
     // Get the exact address
     const location =  response.data;
@@ -21,6 +22,7 @@ try {
     // Return the location data
     return location;
 } catch (error) {
+    UserChatData.loading = false
     // Log any errors encountered during the request
     console.error("Error validating location:", error);
     addMessage(UserChatData.chatId, setChats, "Error finding the location. Please try again.")

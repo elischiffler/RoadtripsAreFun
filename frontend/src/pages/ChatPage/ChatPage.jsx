@@ -11,7 +11,10 @@ import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
 import { UserDataContext } from "../../states/UserDataContext";
 import { validateLocation } from "./ValidateLocation";
+import { ring } from 'ldrs' //Loading Animation
 import "./ChatPage.css";
+
+ring.register('loading-chat')  //Define the loading animation
 
 const ChatPage = () => {
 
@@ -222,6 +225,44 @@ const ChatPage = () => {
     }
   };
 
+  // Create a ref to store the previous chatid
+ const previousChatIdRef = useRef(UserChatData.chatId);
+
+  // Effect to handle adding and removing loaders
+  useEffect(() => {
+    // Check if the chatid has changed
+    if (UserChatData.chatId !== previousChatIdRef.current) {
+      // Update the ref with the new chatid
+      previousChatIdRef.current = UserChatData.chatId;
+      return; // Exit early to avoid running the effect when chatid changes
+    }
+
+    // Handle loading state
+    if (UserChatData.loading) {
+      // Add a loading message if not already added
+      addMessage(UserChatData.chatId, setChats, "loading");
+    } else {
+      // Remove the loading message when loading is false
+      deleteLoader();
+    }
+  }, [UserChatData.loading, UserChatData.chatId]);
+
+    // Function to delete the loader message
+    const deleteLoader = () => {
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === UserChatData.chatId
+            ? {
+                ...chat,
+                messages: chat.messages.filter(
+                  (message) => !(message.type === 'loading-chat')
+                ),
+              }
+            : chat
+        )
+      );
+    };
+
   const handleNewChat = () => {
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
     console.log('Chat ID:', maxId);
@@ -335,35 +376,54 @@ const ChatPage = () => {
           {selectedChat ? (
             <Box className="chat-messages">
               {/* Display messages in the selected chat */}
-              {selectedChat.messages.map((message, index) =>
-                typeof message === "string" ? (
-                  <Box
-                    key={index}
-                    className={`message ${index % 2 === 0 ? "bot" : "user"}`}
-                  >
-                    <Typography variant="body1">{message}</Typography>
-                  </Box>
-                ) : (
-                  <Box key={index} className="message-container user">
-                    <Box className="message user">
-                      <Typography variant="body1">{message.text}</Typography>
+              {selectedChat.messages.map((message, index) => {
+                if (typeof message === "string") {
+                  // Render simple text messages
+                  return (
+                    <Box
+                      key={index}
+                      className={`message ${index % 2 === 0 ? "bot" : "user"}`}
+                    >
+                      <Typography variant="body1">{message}</Typography>
                     </Box>
-                    <Box className="button-container">
-                      {message.buttons.map((button, buttonIndex) => (
-                        <Button
-                          key={buttonIndex}
-                          className="chat-buttons"
-                          variant="contained"
-                          color="primary"
-                          onClick={() => (UserChatData.action = button.action)}
-                        >
-                          {button.label}
-                        </Button>
-                      ))}
+                  );
+                }
+                else if (message.buttons) {
+                  // Render messages that contain both text and buttons
+                  return (
+                    <Box key={index} className="message-container user">
+                      {/* Render the message text */}
+                      <Box className="message user">
+                        <Typography variant="body1">{message.text}</Typography>
+                      </Box>
+                      {/* Render buttons associated with the message */}
+                      <Box className="button-container">
+                        {message.buttons.map((button, buttonIndex) => (
+                          <Button
+                            key={buttonIndex}
+                            className="chat-buttons"
+                            variant="contained"
+                            color="primary"
+                            onClick={() => (UserChatData.action = button.action)}
+                          >
+                            {button.label}
+                          </Button>
+                        ))}
+                      </Box>
                     </Box>
-                  </Box>
-                )
-              )}
+                  );
+                }  else if (UserChatData.loading) {
+                  // Render a React component if 'message' is a React element
+                  return (
+                    <Box key={index} className="message-container">
+                      {/* Dynamically create and render the React component */}
+                      <loading-chat size="30" color="black"></loading-chat>
+                    </Box>
+                  );
+                }
+                // Return null if none of the above conditions are met
+                return null;
+              })}
               <div ref={chatEndRef} /> {/* Scroll to bottom */}
             </Box>
           ) : (
