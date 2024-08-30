@@ -109,8 +109,9 @@ export const UserDataProvider = ({ children }) => {
         chat.update,
       ));
       const chatlogs = new ChatLogs(chatdata, parsedData.chatlogs.currentId);
-      console.log('Loaded saved data from sessionStorage');
-      return new Data(chatlogs);
+      const UserData = new Data(chatlogs);
+      console.log('Loaded saved data from sessionStorage: ', UserData);
+      return UserData
     }
     console.log('Created a new UserData instance');
     return new Data();

@@ -61,10 +61,11 @@ export const addMessage = (chatId, setChats, newMessage, buttons = null) => {
     : typeof newMessage === "string"
     ? newMessage
     : String(newMessage);
-      
+
   setChats((prevChats) =>{
-    const prevLength = prevChats[chatId-1].messages.length-1;
-    const prevMessage = prevChats[chatId-1].messages[prevLength];
+    const idx = prevChats.findIndex(chat => chat.id === chatId); // get index of current chat
+    const prevLength = prevChats[idx]?.messages?.length-1;
+    const prevMessage = prevChats[idx]?.messages[prevLength];
     if( prevMessage !== message && // Check if they are the same text
       !(typeof prevMessage === 'object' && typeof message === 'object' && prevMessage.text === message.text) // Check if they are the same objects
     ){ // Determine if the last message is the same as the previous
