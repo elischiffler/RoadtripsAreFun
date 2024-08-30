@@ -198,6 +198,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, daily_
             print('found hotel!')
             current_day += 1  # increment the days that have passed
             current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
+            date = datetime(date.year, date.month, date.day+1, daily_start, 0, 0) # New day
 
         if total_time + time_till_stop < end_search:  # Ensure we are within the route duration
             total_time += time_till_stop  # Increment the total time by time traveled to stop
@@ -368,10 +369,11 @@ async def _find_hotel(lat: float, lon: float, radius: int = 30) -> dict[str, lis
         }
         response = requests.get(hotels_list_url, params=params, headers=headers)
         json_data = response.json()
+        print(json_data)
         # If no hotel is found search for one with a larger radius
         if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
             return await _find_hotel(lat, lon, radius + 10)
-        hotels = Amadeus_Hotel_Search.model_validate(json_data)
+        hotels = Amadeus_Hotel_Search.model_validate(json_data) # Validate the response
         if len(hotels.data) > 0:
             hotel = hotels.data[0]  #TODO parse through hotels for best offers
             coordinates = [hotel.geoCode['latitude'], hotel.geoCode['longitude']]
@@ -395,7 +397,7 @@ async def _find_hotel(lat: float, lon: float, radius: int = 30) -> dict[str, lis
 #     params = {
 #         'hotelIds': [hotel_id], #TODO search for multiple hotels at the same time for best offer
 #         'adults': adults, #TODO allow for guests to specify the number of ppl
-#         'checkInDate': check_in, #TODO allow user to specify a trip start date and calculate where they are each day
+#         'checkInDate': check_in, #TODO allow user to specify a trip start date
 #         'checkOutDate': check_out,
 #         'priceRange': price_range,
 #         'currency': 'USD',

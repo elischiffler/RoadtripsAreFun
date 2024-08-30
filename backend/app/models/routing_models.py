@@ -258,7 +258,7 @@ class Amadeus_Hotel_Offers(BaseModel):
     is_available: Optional[bool] = None
     self: str
     hotel: Any
-    offers: list[Any] = None
+    offers: list[Any] = []
 
 
 class Amadeus_Access(BaseModel):

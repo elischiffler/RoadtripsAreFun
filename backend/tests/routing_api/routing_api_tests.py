@@ -135,6 +135,21 @@ def test_get_route_OC_to_NY():
     assert isinstance(response_data["steps"], list)
     assert len(response_data["steps"]) > 0
 
+def test_get_route_SantaMaria_LasVegas():
+    response = client.get("/get-route", params={"start_lat": 36.1672559, "start_lon": -115.148516,
+                                                "end_lat": 34.9531295, "end_lon": -120.435857,
+                                                "num_stops": 3})
+    assert response.status_code == 200
+    response_data = response.json()
+    assert "coordinates" in response_data
+    assert isinstance(response_data["coordinates"], list)
+    assert "distance" in response_data
+    assert isinstance(response_data["distance"], float)
+    assert "duration" in response_data
+    assert isinstance(response_data["duration"], float)
+    assert "steps" in response_data
+    assert isinstance(response_data["steps"], list)
+    assert len(response_data["steps"]) > 0
 
 if __name__ == "__main__":
     pytest.main()
