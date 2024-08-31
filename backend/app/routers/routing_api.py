@@ -28,27 +28,22 @@ tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 # Grab app from APIRouter
 router = APIRouter()
 
+# Globalize inital_route
+initial_route = None
 
 @router.get('/get-initial-route')
 async def get_initial_route(start_lat: float,
                     start_lon: float,
                     end_lat: float,
-                    end_lon: float, num_stops: int = 5, start: datetime = datetime(2024, 9, 21, 9, 0, 0)) -> Dict[str, Any] :
-    
-    #Check for num_stops positive or zero
-    if not isinstance(num_stops, int) or num_stops < 0:
-        raise ValueError("Number of stops must be a non-negative integer")
-    
+                    end_lon: float) -> float :
+    global initial_route
     try:
         # Construct initial route without stops
-        route = await _call_route(start_lat, start_lon, end_lat, end_lon)
+        initial_route = await _call_route(start_lat, start_lon, end_lat, end_lon)
         print("got initial route")
-        duration= route.duration
-        # Use initial route to find stopping points
-        stopping_points = await _add_stops(route, num_stops, date=start)
-        print("got stopping points")
-        # Return a dictionary with both values
-        return {"duration": duration, "stopping_points": stopping_points}
+        duration = initial_route.duration
+        # Return the duration
+        return duration
     
 
     except RequestException as exception:
@@ -64,8 +59,9 @@ async def get_final_route(start_lat,
                     start_lon,
                     end_lat,
                     end_lon,
-                    stopping_points,
-                    budget: float = 1000,) -> Route:
+                    num_stops: int = 5,
+                    budget: float = 1000,
+                    start: datetime = datetime(2024, 9, 21, 9, 0, 0)) -> Route:
     """
     Retrieves a route from Mapbox API, adds intermediate stops, and returns the detailed route information.
 
@@ -83,7 +79,16 @@ async def get_final_route(start_lat,
     Raises:
     - HTTPException: For errors related to Mapbox requests or response processing.
     """
+
+    #Check for num_stops positive or zero
+    if not isinstance(num_stops, int) or num_stops < 0:
+        raise ValueError("Number of stops must be a non-negative integer")
+    
     try:
+        # Use initial route to find stopping points
+        stopping_points = await _add_stops(initial_route, num_stops, date=start)
+        print("got stopping points")
+
         coordinates = []
         for stop in stopping_points:
             coordinates.append(stop['coordinates'])
