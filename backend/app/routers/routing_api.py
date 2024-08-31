@@ -28,19 +28,29 @@ tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 # Grab app from APIRouter
 router = APIRouter()
 
-@router.get('/get-initial-route', response_model=Route)
+
+@router.get('/get-initial-route')
 async def get_initial_route(start_lat: float,
                     start_lon: float,
                     end_lat: float,
-                    end_lon: float) -> Route:
+                    end_lon: float, num_stops: int = 5, start: datetime = datetime(2024, 9, 21, 9, 0, 0)) -> Dict[str, Any] :
+    
+    #Check for num_stops positive or zero
+    if not isinstance(num_stops, int) or num_stops < 0:
+        raise ValueError("Number of stops must be a non-negative integer")
+    
     try:
         # Construct initial route without stops
         route = await _call_route(start_lat, start_lon, end_lat, end_lon)
         print("got initial route")
-        coordinates=[[start_lat,start_lon],[start_lat,start_lon]]
         duration= route.duration
-        return Route(coordinates=coordinates,
-                     duration=duration)
+        # Use initial route to find stopping points
+        stopping_points = await _add_stops(route, num_stops, date=start)
+        print("got stopping points")
+        # Return a dictionary with both values
+        return {"duration": duration, "stopping_points": stopping_points}
+    
+
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
     except ValidationError as exception:
@@ -50,13 +60,12 @@ async def get_initial_route(start_lat: float,
     
 
 @router.get("/get-final-route", response_model=Route)
-async def get_route(start_lat,
+async def get_final_route(start_lat,
                     start_lon,
                     end_lat,
                     end_lon,
-                    num_stops: int = 5,
-                    budget: float = 1000,
-                    start: datetime = datetime(2024, 9, 21, 9, 0, 0)) -> Route:
+                    stopping_points,
+                    budget: float = 1000,) -> Route:
     """
     Retrieves a route from Mapbox API, adds intermediate stops, and returns the detailed route information.
 
@@ -74,15 +83,7 @@ async def get_route(start_lat,
     Raises:
     - HTTPException: For errors related to Mapbox requests or response processing.
     """
-    #Check for num_stops positive or zero
-    if not isinstance(num_stops, int) or num_stops < 0:
-        raise ValueError("Number of stops must be a non-negative integer")
-
     try:
-
-        # Use initial route to find stopping points
-        stopping_points = await _add_stops(route, num_stops, date=start)
-        print("got stopping points")
         coordinates = []
         for stop in stopping_points:
             coordinates.append(stop['coordinates'])
