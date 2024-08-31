@@ -259,87 +259,89 @@ class Qualified_Desc(BaseModel):
 
 
 class Amadeus_Hotel_Offers(BaseModel):
-    class Hotel(BaseModel):
-        hotelId: str
-        chainCode: str
-        brandCode: str
-        dupeId: Optional[str] = None
-        name: str
-        cityCode: Optional[str] = None
-        class Config:
-            extra = 'allow' # Poor documentation is available
+    class Amadeus_Hotel_Offer(BaseModel):
+        class Hotel(BaseModel):
+            hotelId: str
+            chainCode: str
+            brandCode: str
+            dupeId: Optional[str] = None
+            name: str
+            cityCode: Optional[str] = None
+            class Config:
+                extra = 'allow' # Poor documentation is available
 
-    class Offer(BaseModel):
-        class Rate_Family(BaseModel):
-            code: str
-            type: str
+        class Offer(BaseModel):
+            class Rate_Family(BaseModel):
+                code: str
+                type: str
 
-        class Commission(BaseModel):
-            percentage: str
-            amount: str
-            description: Qualified_Desc
+            class Commission(BaseModel):
+                percentage: str
+                amount: str
+                description: Qualified_Desc
 
-        class Room(BaseModel):
-            class Room_Type(BaseModel):
-                category: str
-                beds: int
-                bedType: str
+            class Room(BaseModel):
+                class Room_Type(BaseModel):
+                    category: str
+                    beds: int
+                    bedType: str
 
-            type: str
-            typeEstimated: Room_Type
-            description: Qualified_Desc
+                type: str
+                typeEstimated: Room_Type
+                description: Qualified_Desc
 
-        class Hotel_Guest(BaseModel):
-            adults: int
-            childAges: Optional[list[int]]
+            class Hotel_Guest(BaseModel):
+                adults: int
+                childAges: Optional[list[int]]
 
-        class Hotel_Price(BaseModel):
-            currency: str
-            sellingTotal: str
-            total: str
-            base: str
-            taxes: Optional[list[Any]] = None
-            markups: Optional[list[Any]] = None
-            variations: Optional[dict[str, Any]]
+            class Hotel_Price(BaseModel):
+                currency: str
+                sellingTotal: str
+                total: str
+                base: str
+                taxes: Optional[list[Any]] = None
+                markups: Optional[list[Any]] = None
+                variations: Optional[dict[str, Any]]
 
-        class Hotel_Policy(BaseModel):
-            class checkInPolicy(BaseModel):
-                checkIn: str
-                checkInDescription: Qualified_Desc
-                checkOut: str
-                checkOutDescription: Qualified_Desc
+            class Hotel_Policy(BaseModel):
+                class checkInPolicy(BaseModel):
+                    checkIn: str
+                    checkInDescription: Qualified_Desc
+                    checkOut: str
+                    checkOutDescription: Qualified_Desc
 
-            paymentType: Optional[str] = None
-            guarantee: Optional[Dict[str, Any]]
-            deposit: Optional[Dict[str, Any]]
-            prepay: Optional[Dict[str, Any]]
-            holdTime: Optional[Dict[str, Any]]
-            cancellations: Optional[list[Any]]
-            checkInOut: Any
+                paymentType: Optional[str] = None
+                guarantee: Optional[Dict[str, Any]]
+                deposit: Optional[Dict[str, Any]]
+                prepay: Optional[Dict[str, Any]]
+                holdTime: Optional[Dict[str, Any]]
+                cancellations: Optional[list[Any]]
+                checkInOut: Any
 
 
-        type: Optional[str] = None
-        id: list[str]
-        checkInDate: Optional[str] = None
-        checkOutDate: Optional[str] = None
-        roomQuantity: Optional[str] = None
-        rateCode: str
-        rateFamilyEstimated: Optional[Rate_Family] = None
-        category: Optional[str] = None
-        description: Optional[Qualified_Desc] = None
-        commission: Optional[Commission] = None
-        boardType: Optional[str] = None
-        room: Room
-        guests: Optional[Hotel_Guest] = None
-        price: Hotel_Price
-        policies: Optional[Hotel_Policy] = None
-        self: Optional[str] = None
+            type: Optional[str] = None
+            id: list[str]
+            checkInDate: Optional[str] = None
+            checkOutDate: Optional[str] = None
+            roomQuantity: Optional[str] = None
+            rateCode: str
+            rateFamilyEstimated: Optional[Rate_Family] = None
+            category: Optional[str] = None
+            description: Optional[Qualified_Desc] = None
+            commission: Optional[Commission] = None
+            boardType: Optional[str] = None
+            room: Room
+            guests: Optional[Hotel_Guest] = None
+            price: Hotel_Price
+            policies: Optional[Hotel_Policy] = None
+            self: Optional[str] = None
 
-    type: str
-    is_available: Optional[bool] = None
-    self: str
-    hotel: Hotel
-    offers: list[Offer] = []
+        type: str
+        is_available: Optional[bool] = None
+        self: str
+        hotel: Hotel
+        offers: list[Offer] = []
+    data: list[Amadeus_Hotel_Offer]
 
 
 class Amadeus_Access(BaseModel):
