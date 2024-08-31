@@ -420,8 +420,8 @@ export const startWorkFlow = async (
       UserChatData.startConfirmed['longitude'],
       UserChatData.endConfirmed['latitude'],
       UserChatData.endConfirmed['longitude'],
-      UserChatData.budget,
-      UserChatData.stopping_points
+      UserChatData.stops,
+      UserChatData.budget
     );
   };
 
