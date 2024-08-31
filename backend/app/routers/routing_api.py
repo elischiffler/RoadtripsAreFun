@@ -28,13 +28,39 @@ tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 # Grab app from APIRouter
 router = APIRouter()
 
+# Globalize inital_route
+initial_route = None
 
-@router.get("/get-route", response_model=Route)
-async def get_route(start_lat: float,
+@router.get('/get-initial-route')
+async def get_initial_route(start_lat: float,
                     start_lon: float,
                     end_lat: float,
-                    end_lon: float,
+                    end_lon: float) -> float :
+    global initial_route
+    try:
+        # Construct initial route without stops
+        initial_route = await _call_route(start_lat, start_lon, end_lat, end_lon)
+        print("got initial route")
+        duration = initial_route.duration
+        # Return the duration
+        return duration
+    
+
+    except RequestException as exception:
+        raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
+    except ValidationError as exception:
+            raise HTTPException(status_code=501, detail=f'Improper Mapbox response: {str(exception)}')
+    except (KeyError, ValueError) as exception:
+            raise HTTPException(status_code=502, detail=f"Error processing Mapbox response: {str(exception)}")
+    
+
+@router.get("/get-final-route", response_model=Route)
+async def get_final_route(start_lat,
+                    start_lon,
+                    end_lat,
+                    end_lon,
                     num_stops: int = 5,
+                    budget: float = 1000,
                     start: datetime = datetime(2024, 9, 21, 9, 0, 0)) -> Route:
     """
     Retrieves a route from Mapbox API, adds intermediate stops, and returns the detailed route information.
@@ -53,19 +79,16 @@ async def get_route(start_lat: float,
     Raises:
     - HTTPException: For errors related to Mapbox requests or response processing.
     """
+
     #Check for num_stops positive or zero
     if not isinstance(num_stops, int) or num_stops < 0:
         raise ValueError("Number of stops must be a non-negative integer")
-
+    
     try:
-        # Construct initial route without stops
-        route = await _call_route(start_lat, start_lon, end_lat, end_lon)
-        print("got initial route")
-        print(f"end lat lon: {end_lat}, {end_lon}")
-
         # Use initial route to find stopping points
-        stopping_points = await _add_stops(route, num_stops, date=start)
+        stopping_points = await _add_stops(initial_route, num_stops, date=start)
         print("got stopping points")
+
         coordinates = []
         for stop in stopping_points:
             coordinates.append(stop['coordinates'])
