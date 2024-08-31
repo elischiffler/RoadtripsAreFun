@@ -263,7 +263,7 @@ class Amadeus_Hotel_Offers(BaseModel):
         class Hotel(BaseModel):
             hotelId: str
             chainCode: str
-            brandCode: str
+            brandCode: Optional[str] = None
             dupeId: Optional[str] = None
             name: str
             cityCode: Optional[str] = None
@@ -292,11 +292,11 @@ class Amadeus_Hotel_Offers(BaseModel):
 
             class Hotel_Guest(BaseModel):
                 adults: int
-                childAges: Optional[list[int]]
+                childAges: Optional[list[int]] = None
 
             class Hotel_Price(BaseModel):
                 currency: str
-                sellingTotal: str
+                sellingTotal: Optional[str] = None
                 total: str
                 base: str
                 taxes: Optional[list[Any]] = None
@@ -311,16 +311,16 @@ class Amadeus_Hotel_Offers(BaseModel):
                     checkOutDescription: Qualified_Desc
 
                 paymentType: Optional[str] = None
-                guarantee: Optional[Dict[str, Any]]
-                deposit: Optional[Dict[str, Any]]
-                prepay: Optional[Dict[str, Any]]
-                holdTime: Optional[Dict[str, Any]]
-                cancellations: Optional[list[Any]]
-                checkInOut: Any
+                guarantee: Optional[Dict[str, Any]] = None
+                deposit: Optional[Dict[str, Any]] = None
+                prepay: Optional[Dict[str, Any]] = None
+                holdTime: Optional[Dict[str, Any]] = None
+                cancellations: Optional[list[Any]] = None
+                checkInOut: Optional[checkInPolicy] = None
 
 
             type: Optional[str] = None
-            id: list[str]
+            id: str
             checkInDate: Optional[str] = None
             checkOutDate: Optional[str] = None
             roomQuantity: Optional[str] = None

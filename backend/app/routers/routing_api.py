@@ -159,7 +159,8 @@ async def _call_route(start_lat: float, start_lon: float, end_lat: float, end_lo
     return route
 
 
-async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget: float, daily_start: int = 9, daily_end: int = 16) -> \
+async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget: float, daily_start: int = 9,
+                     daily_end: int = 16) -> \
         list[Dict[str, Any]]:
     """
     Determines stopping points along the route based on the specified number of stops.
@@ -176,31 +177,40 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
     """
     stopping_points = []
     interval = route.duration / (num_stops + 1)  # Divide trip up into segments for finding stops in seconds
-    end_search = route.duration - 3600 # Stop looking for stops if within the last hour of the trip
+    end_search = route.duration - 3600  # Stop looking for stops if within the last hour of the trip
     current_time = date.hour * 3600  # Initialize the current time of the day in seconds
     steps = route.legs[0].steps  # Only one leg in the initial route
     coordinates = route.geometry.coordinates  # Get all coordinates of the route
     current_day = 0  # Initialize number of days in route
     total_time = 0  # Total time traveled to the destination
     time_till_stop = interval  # Track the time until next stop
+    price_range = ''
 
-    estimate_of_days = route.duration//((daily_end - daily_start)*3600) # Estimate for days the route will take
-    price_range = _get_price_range(budget, budget/estimate_of_days, num_stops) # TODO Implement budget
+    estimate_of_days = route.duration // ((daily_end - daily_start) * 3600)  # Estimate for days the route will take
+    if estimate_of_days > 0:
+        price_range = _get_price_range(budget, budget / estimate_of_days, num_stops)  # TODO Implement budget
+    else:
+        price_range = _get_price_range(budget, budget, num_stops)
 
     # Add stopping places until the trip is over
-    for _ in range(num_stops+1):
+    for _ in range(num_stops + 1):
         # Check whether the daily end or the next stop comes first
-        while total_time < end_search and current_time + time_till_stop >= (daily_end * 3600): # Check if next stop or daily end comes next
+        while total_time < end_search and current_time + time_till_stop >= (
+                daily_end * 3600):  # Check if next stop or daily end comes next
             time_traveled = (daily_end * 3600) - current_time  # Calculate time traveled that day
             total_time += time_traveled  # Add the time traveled toward the next stop that day
+            date += timedelta(seconds=time_traveled)
             print('finding hotel...')
             time_till_stop -= time_traveled  # Remove the amount of time traveled in the day from time to the stop
             hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)  # figure out the location at 5PM
-            stopping_points.append(await _find_hotel(hotel_lat, hotel_lon))  # Append a found hotel
+            stopping_points.append(await _find_hotel(hotel_lat,
+                                                     hotel_lon,
+                                                     price_range,
+                                                     date))  # Append a found hotel
             print('found hotel!')
             current_day += 1  # increment the days that have passed
             current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
-            date = datetime(date.year, date.month, date.day+1, daily_start, 0, 0) # New day
+            date = datetime(date.year, date.month, date.day + 1, daily_start, 0, 0)  # New day
 
         if total_time + time_till_stop < end_search:  # Ensure we are within the route duration
             total_time += time_till_stop  # Increment the total time by time traveled to stop
@@ -214,7 +224,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
                 await _find_stop('attractions', current_lat, current_lon, 30))  # Add the stop to the list
             print('found stop!')
             date += timedelta(hours=2,
-                              seconds=interval) # Allocate two hours detours per stop/ increment for the time to drive to the location
+                              seconds=interval)  # Allocate two hours detours per stop/ increment for the time to drive to the location
             time_till_stop = interval  # Reset the time to the next stop
     return stopping_points
 
@@ -376,27 +386,29 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
         # If no hotel is found search for one with a larger radius
         if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
             return await _find_hotel(lat, lon, radius + 10)
-        hotels = Amadeus_Hotel_Search.model_validate(json_data) # Validate the response
+        hotels = Amadeus_Hotel_Search.model_validate(json_data)  # Validate the response
         hotel_list = hotels.data
         if len(hotel_list) > 0:
             # Put price function here
-            hotel_info = {} # Initialize a dictionary to store hotel info with the key being the hotelId
-            id_list = [] # List of hotel id's to send for to get offers
-            for hotel in hotel_list: # Loop through all nearby hotels
-                # coordinates, id, name
-                coordinates = [hotel.geoCode['latitude'], hotel.geoCode['longitude']] # Get coordinates for routing
-                hotel_id = hotel.hotelId # Amadeus's unique hotel ID
-                id_list.append(hotel_id) # Add the id to the id_list
+            hotel_info = {}  # Initialize a dictionary to store hotel info with the key being the hotelId
+            id_list = []  # List of hotel id's to send for to get offers
+            for hotel in hotel_list:  # Loop through all nearby hotels for coordinates, id, and name
+                coordinates = [hotel.geoCode['latitude'], hotel.geoCode['longitude']]  # Get coordinates for routing
+                hotel_id = hotel.hotelId  # Amadeus's unique hotel ID
+                id_list.append(hotel_id)  # Add the id to the id_list
                 name = hotel.name.lower()
-                hotel_info[hotel_id] = {'coordinates': coordinates, 'name': name.capitalize(), 'type': 'hotel'} # Add relevant info from the search to hotel_info
+                hotel_info[hotel_id] = {'coordinates': coordinates, 'name': name.capitalize(),
+                                        'type': 'hotel'}  # Add relevant info from the search to hotel_info
             location_pricing = await _get_cost(access_token=access_token,
                                                hotel_ids=id_list,
                                                check_in=check_in,
-                                               check_out= datetime(check_in.year, check_in.month, check_in.day + 1, 9, 0, 0), # The next day at 9 AM
+                                               check_out=datetime(check_in.year, check_in.month, check_in.day + 1, 9, 0,
+                                                                  0),  # The next day at 9 AM
                                                price_range=price_range)
-            location = hotel_info[location_pricing['hotel_id']] # Retrieve the saved hotel_info from the hotel_id of the found offer
-            location['price'] = location_pricing['price'] # Add pricing to the already saved info hotel info
-            location['name'] = location_pricing['name'] # Add the name to location info
+            location = hotel_info[
+                location_pricing['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
+            location['price'] = location_pricing['price']  # Add pricing to the already saved info hotel info
+            location['name'] = location_pricing['name']  # Add the name to location info
             return location
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
@@ -406,7 +418,8 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
         raise HTTPException(status_code=501, detail=f'Improper Amadeus response: {str(exception)}')
 
 
-async def _get_cost(access_token: str, hotel_ids: list[str], check_in: datetime, check_out: datetime, price_range: str, adults: int = 2) -> dict[str, Any]:
+async def _get_cost(access_token: str, hotel_ids: list[str], check_in: datetime, check_out: datetime, price_range: str,
+                    adults: int = 2) -> dict[str, Any]:
     """Returns pricing info on the highest rated hotel that is within a given price range"""
     hotel_price_url = "https://test.api.amadeus.com/v2/shopping/hotel-offers"
     check_in_date = check_in.strftime('%Y-%m-%d')
@@ -416,8 +429,8 @@ async def _get_cost(access_token: str, hotel_ids: list[str], check_in: datetime,
     }
     params = {
         'hotelIds': hotel_ids,
-        'adults': adults, #TODO allow for guests to specify the number of ppl
-        'checkInDate': check_in_date, #TODO allow user to specify a trip start date
+        'adults': adults,  #TODO allow for guests to specify the number of ppl
+        'checkInDate': check_in_date,  #TODO allow user to specify a trip start date
         'checkOutDate': check_out_date,
         'priceRange': price_range,
         'currency': 'USD',
@@ -425,37 +438,103 @@ async def _get_cost(access_token: str, hotel_ids: list[str], check_in: datetime,
     try:
         response = requests.get(hotel_price_url, params=params, headers=headers)
         json_data = response.json()
-        offers = Amadeus_Hotel_Offers.model_validate(json_data)
-        if len(offers.data) > 0: # Ensure at least one hotel is returned
-            valid_offers = [] # A list to track valid offers
-            for hotel in offers.data:
-                offer_list = hotel.offers # List of offers from a single hotel
-                hotel_name = hotel.hotel.name
-                hotel_id = hotel.hotelId # Amadeus ID of the hotel
-                for offer in offer_list: # Check if user will make checkIn and retrieve price
-                    total = float(offer.price.total)
-                    try:
-                        # Convert str check in/out to a datetime form
-                        hot_checkin = offer.policies.checkInOut.checkIn
-                        hot_checkin = datetime.strptime(hot_checkin, "%H:%M:%S").time()
-                        hot_checkout = offer.policies.checkInOut.checkOut
-                        hot_checkout = datetime.strptime(hot_checkout, "%H:%M:%S").time()
-                    except AttributeError: # If the policy is not provided set values that always work
-                        hot_checkin = time(0, 0, 0) # Check in at midnight
-                        hot_checkout = time(0,0,0) # Check out at midnight
-                    if hot_checkin < check_in.time() and hot_checkout > check_out.time(): # Check that checkInOut policy meets the route's needs
-                        # TODO get ranking info and add to temp_offer then return the hotel with the highest ranking in valid offers
-                        temp_offer = {
-                            'name': hotel_name,
-                            'hotel_id': hotel_id,
-                            'price': total,
+        print(json_data)
+        json_data = {
+            "data": [
+                {
+                    "type": "hotel-offers",
+                    "hotel": {
+                        "type": "hotel",
+                        "hotelId": "MCLONGHM",
+                        "chainCode": "MC",
+                        "dupeId": "700031300",
+                        "name": "JW Marriott Grosvenor House London",
+                        "cityCode": "LON",
+                        "latitude": 51.50988,
+                        "longitude": -0.15509
+                    },
+                    "available": True,
+                    "offers": [
+                        {
+                            "id": "TSXOJ6LFQ2",
+                            "checkInDate": "2023-11-22",
+                            "checkOutDate": "2023-11-23",
+                            "rateCode": "V  ",
+                            "rateFamilyEstimated": {
+                                "code": "PRO",
+                                "type": "P"
+                            },
+                            "room": {
+                                "type": "ELE",
+                                "typeEstimated": {
+                                    "category": "EXECUTIVE_ROOM",
+                                    "beds": 1,
+                                    "bedType": "DOUBLE"
+                                },
+                                "description": {
+                                    "text": "Prepay Non-refundable Non-changeable, prepay in full\nExecutive King Room, Executive Lounge Access,\n1 King, 35sqm/377sqft-40sqm/430sqft, Wireless",
+                                    "lang": "EN"
+                                }
+                            },
+                            "guests": {
+                                "adults": 1
+                            },
+                            "price": {
+                                "currency": "GBP",
+                                "base": "716.00",
+                                "total": "716.00",
+                                "variations": {
+                                    "average": {
+                                        "base": "716.00"
+                                    },
+                                    "changes": [
+                                        {
+                                            "startDate": "2023-11-22",
+                                            "endDate": "2023-11-23",
+                                            "total": "716.00"
+                                        }
+                                    ]
+                                }
+                            },
+                            "policies": {
+                                "paymentType": "deposit",
+                                "cancellation": {
+                                    "description": {
+                                        "text": "NON-REFUNDABLE RATE"
+                                    },
+                                    "type": "FULL_STAY"
+                                }
+                            },
+                            "self": "https://test.api.amadeus.com/v3/shopping/hotel-offers/TSXOJ6LFQ2"
                         }
-                        valid_offers.append(temp_offer)
+                    ],
+                    "self": "https://test.api.amadeus.com/v3/shopping/hotel-offers?hotelIds=MCLONGHM&adults=1&checkInDate=2023-11-22&paymentPolicy=NONE&roomQuantity=1"
+                }
+            ]
+        }
+        offers = Amadeus_Hotel_Offers.model_validate(json_data)
+        if len(offers.data) > 0:  # Ensure at least one hotel is returned
+            valid_offers = []  # A list to track valid offers
+            for hotel in offers.data:
+                offer_list = hotel.offers  # List of offers from a single hotel
+                hotel_name = hotel.hotel.name
+                hotel_id = hotel.hotel.hotelId  # Amadeus ID of the hotel
+                print(hotel_name, hotel_id)
+                for offer in offer_list:  # Check if user will make checkIn and retrieve price
+                    total = float(offer.price.total)
+                    print(total)
+                    # TODO get ranking info and add to temp_offer then return the hotel with the highest ranking in valid offers
+                    temp_offer = {
+                        'name': hotel_name,
+                        'hotel_id': hotel_id,
+                        'price': total,
+                    }
+                    valid_offers.append(temp_offer)
                 return valid_offers[0]
         else:
             raise HTTPException(status_code=404, detail="No offers found for this price range")
     except ValidationError as exception:
-        print(exception) # Print errors from model validation while testing
+        print(exception)  # Print errors from model validation while testing
         for error in exception.errors():
             print(error)
         raise HTTPException(status_code=500, detail=f"Amadeus request validation failed: {str(exception)}")
@@ -464,8 +543,12 @@ async def _get_cost(access_token: str, hotel_ids: list[str], check_in: datetime,
 
 
 def _get_price_range(budget: float, current_cost: float, stops_left: int) -> str:
-    remaining_avg = (budget-current_cost)/stops_left
-    return f"{remaining_avg-100:.2f}-{remaining_avg+100:.2f}"
+    remaining_avg = (budget - current_cost) / stops_left
+    if remaining_avg > 100:
+        return f"{remaining_avg - 100:.2f}-{remaining_avg + 100:.2f}"
+    else:
+        return f"{remaining_avg:.2f}-{remaining_avg + 100:.2f}"
+
 
 async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
     """
@@ -497,6 +580,6 @@ async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
         if response_data.access_token is not None:
             return response_data.access_token
         else:
-            raise HTTPException(status_code=401, detail="No Amadeus access token returned")
+            raise HTTPException(status_code=404, detail="No Amadeus access token returned")
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f'Improper Amadeus response: {str(exception)}')
