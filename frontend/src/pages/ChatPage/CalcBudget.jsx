@@ -12,6 +12,7 @@ export const calcBudget = async (duration) => {
         }
       }
       console.log(hotelCount)
-      return hotelCount
+      const minHotelBudget = hotelCount * 100
+      return minHotelBudget
     }
 

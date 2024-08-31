@@ -53,6 +53,7 @@ class ChatData {
     stops = 1,
     showInputBar = true,
     showStopSlider = false,
+    showBudgetSlider = false,
     showAddressInput = false,
     workflowStarted = false,
     startConfirmed = null,
@@ -61,6 +62,7 @@ class ChatData {
     itinerary = null,
     loading = false,
     update = true,
+    minHotelBudget = null,
     budget = 0
   ) {
     this.chatId = chatId;
@@ -73,6 +75,7 @@ class ChatData {
     this.stops = stops;
     this.showInputBar = showInputBar;
     this.showStopSlider = showStopSlider;
+    this.showBudgetSlider = showBudgetSlider;
     this.showAddressInput = showAddressInput;
     this.workflowStarted = workflowStarted;
     this.startConfirmed = startConfirmed;
@@ -81,6 +84,7 @@ class ChatData {
     this.itinerary = itinerary;
     this.loading = loading;
     this.update = update;
+    this.minHotelBudget = minHotelBudget;
     this.budget = budget
   }
 }

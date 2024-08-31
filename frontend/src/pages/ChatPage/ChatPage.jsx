@@ -7,6 +7,7 @@ import MapButton from "../../components/buttons/MapButton";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { startWorkFlow, addMessage } from "./startWorkFlow";
+import BudgetSlider from "./InputBudget";
 import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
 import { UserDataContext } from "../../states/UserDataContext";
@@ -225,6 +226,9 @@ const ChatPage = () => {
         // Handle input of the number of user stops
         addMessage(selectedChat.id, setChats, UserChatData.stops);
         UserChatData.showStopSlider = false; // Hide the stop slider
+      } else if (UserChatData.showBudgetSlider) {
+        addMessage(selectedChat.id, setChats, `$${UserChatData.budget}`)  //Display the budget the user input
+        UserChatData.showBudgetSlider = false // Hide the budget slider
       } else if (UserChatData.showAddressInput) {
         // Handle address input message
         const address =
@@ -491,6 +495,8 @@ const ChatPage = () => {
             <AddressBar UserChatData = {UserChatData}/> // Show AddressBar if address input is required
           ) : UserChatData.showStopSlider ? (
             <StopSlider UserChatData = {UserChatData}/> // Show StopSlider if stop input is required
+          ) : UserChatData.showBudgetSlider ? (
+            <BudgetSlider UserChatData = {UserChatData}/>// Show BudgetSlider if budget input is required
           ) : (
             <TextField
               label={chatInput.name}

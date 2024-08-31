@@ -412,8 +412,21 @@ export const startWorkFlow = async (
       UserChatData
     );
 
-    minBudget = await calcBudget(duration)
-    console.log("Minimum Budget:", minBudget)
+    UserChatData.minHotelBudget = await calcBudget(duration)
+    addMessage(chatId, setChats, `We estimate your minimum hotel cost to be: ${UserChatData.minHotelBudget}`)
+    UserChatData.showInputBar = true
+    UserChatData.showBudgetSlider = true
+
+    // Wait for the user to input something
+    await new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (!UserChatData.showBudgetSlider) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+    console.log(`budget: ${UserChatData.budget}`)
 
     // Generate the final route account for budget
     UserChatData.route = await getFinalRoute(UserChatData.startConfirmed['latitude'],

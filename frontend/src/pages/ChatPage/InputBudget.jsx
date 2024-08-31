@@ -1,23 +1,23 @@
 import Slider from "@mui/material/Slider";
 
-const StopSlider = ({ UserChatData }) => {
+const BudgetSlider = ({ UserChatData }) => {
 
   const handleChange = (event, newValue) => {
     // Update the stops value in UserChatData
-    UserChatData.stops = newValue;
+    UserChatData.budget = newValue;
   };
 
   return (
     <Slider
       className="input-slider"
-      defaultValue={1}
+      defaultValue={UserChatData.minHotelBudget}
       aria-label="Stop slider"
       valueLabelDisplay="auto"
-      min={1}
-      max={10}
+      min={UserChatData.minHotelBudget}
+      max={UserChatData.minHotelBudget * 2}
       onChange={handleChange} // Use the handler function
     />
   );
 };
 
-export default StopSlider;
+export default BudgetSlider;
