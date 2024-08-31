@@ -1,12 +1,9 @@
-import { getInitialRoute } from "./getRoute";
 
-const calcBudget = async () => {
+
+export const calcBudget = async (duration) => {
     // Generate the initial route and grab the routes duration
-    duration = await getInitialRoute(UserChatData.startConfirmed['latitude'],
-        UserChatData.startConfirmed['longitude'],
-        UserChatData.endConfirmed['latitude'],
-        UserChatData.endConfirmed['longitude']
-      );
+
+      console.log("duration: ", duration)
+      return 0
     }
 
-    

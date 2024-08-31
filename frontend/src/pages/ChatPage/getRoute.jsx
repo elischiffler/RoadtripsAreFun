@@ -1,13 +1,18 @@
 import axios from 'axios';
-export const getInitialRoute = async(start_lat, start_lon, end_lat, end_lon)=> {
+export const getInitialRoute = async(start_lat, start_lon, end_lat, end_lon, stops, UserChatData)=> {
     try{
     const params = {
         'start_lat': start_lat,
         'start_lon': start_lon,
         'end_lat': end_lat,
-        'end_lon': end_lon
+        'end_lon': end_lon,
+        'num_stops': stops
     }
     const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}get-initial-route`, { params: params });
+    const { duration, stopping_points }  = response.data
+    UserChatData.stopping_points = stopping_points
+    console.log(duration, stopping_points)
+    return duration
     }
     catch(error){
         // Log any errors encountered during the request
@@ -29,7 +34,7 @@ export const getFinalRoute = async (start_lat,
             'end_lat': end_lat,
             'end_lon': end_lon,
             'budget': budget,
-            'num_stops': stops,
+            'stopping_points': stops,
         };
 
         // Send request for a route given the user inputs

@@ -403,16 +403,25 @@ export const startWorkFlow = async (
 
     UserChatData.update = true; // Start saving after confirmation
 
-    minBudget = calcBudget()
+    //Get the users initial route duration
+    const duration  = await getInitialRoute(UserChatData.startConfirmed['latitude'],
+      UserChatData.startConfirmed['longitude'],
+      UserChatData.endConfirmed['latitude'],
+      UserChatData.endConfirmed['longitude'],
+      UserChatData.stops,
+      UserChatData
+    );
 
+    minBudget = await calcBudget(duration)
+    console.log("Minimum Budget:", minBudget)
 
-    // Generate the finalroute
+    // Generate the final route account for budget
     UserChatData.route = await getFinalRoute(UserChatData.startConfirmed['latitude'],
       UserChatData.startConfirmed['longitude'],
       UserChatData.endConfirmed['latitude'],
       UserChatData.endConfirmed['longitude'],
       UserChatData.budget,
-      UserChatData.stops
+      UserChatData.stopping_points
     );
   };
 
