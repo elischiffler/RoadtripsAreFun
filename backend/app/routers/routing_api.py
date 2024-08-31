@@ -420,7 +420,24 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
 
 async def _get_cost(access_token: str, hotel_ids: list[str], check_in: datetime, check_out: datetime, price_range: str,
                     adults: int = 2) -> dict[str, Any]:
-    """Returns pricing info on the highest rated hotel that is within a given price range"""
+    """
+    Returns pricing info on the highest rated hotel that is within a given price range
+
+    Args:
+        - access_token(str): Amadeus access token
+        - hotel_ids(list[str]): List of hotels ids
+        - check_in(datetime): Check in date and time
+        - check_out(datetime): Check out date and time
+        - price_range(str): Price range for hotels
+        - adults(int): Number of adults
+
+    Returns
+        - dict[str, Any]: A dictionary containing the hotel description and pricing information
+
+    Raises
+        - HTTPException: For errors related to Amadeus requests or response processing.
+
+    """
     hotel_price_url = "https://test.api.amadeus.com/v2/shopping/hotel-offers"
     check_in_date = check_in.strftime('%Y-%m-%d')
     check_out_date = check_out.strftime('%Y-%m-%d')
@@ -583,3 +600,5 @@ async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
             raise HTTPException(status_code=404, detail="No Amadeus access token returned")
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f'Improper Amadeus response: {str(exception)}')
+
+# async def _get_hotel_ratings()
