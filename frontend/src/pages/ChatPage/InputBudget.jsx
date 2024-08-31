@@ -7,6 +7,11 @@ const BudgetSlider = ({ UserChatData }) => {
     UserChatData.budget = newValue;
   };
 
+// Function to format the value with a dollar sign
+const formatValue = (value) => {
+    return `$${value}`;
+  };
+
   return (
     <Slider
       className="input-slider"
@@ -15,7 +20,8 @@ const BudgetSlider = ({ UserChatData }) => {
       valueLabelDisplay="auto"
       min={UserChatData.minHotelBudget}
       max={UserChatData.minHotelBudget * 2}
-      onChange={handleChange} // Use the handler function
+      onChange={handleChange}
+      valueLabelFormat={formatValue}
     />
   );
 };

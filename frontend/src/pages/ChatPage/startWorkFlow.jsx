@@ -413,7 +413,7 @@ export const startWorkFlow = async (
     );
 
     UserChatData.minHotelBudget = await calcBudget(duration)
-    addMessage(chatId, setChats, `We estimate your minimum hotel cost to be: ${UserChatData.minHotelBudget}`)
+    addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.minHotelBudget}`)
     UserChatData.showInputBar = true
     UserChatData.showBudgetSlider = true
 
