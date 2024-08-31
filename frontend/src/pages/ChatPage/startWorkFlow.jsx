@@ -1,6 +1,7 @@
 import { validateLocation } from "./ValidateLocation";
-import { getRoute } from "./getRoute";
+import { getInitialRoute, getFinalRoute } from "./getRoute";
 import { generateItinerary } from "../ItineraryPage/generateItinerary";
+import { calcBudget } from "./CalcBudget"
 // Helper Function
 
 // Function that gets the user's current location
@@ -402,13 +403,16 @@ export const startWorkFlow = async (
 
     UserChatData.update = true; // Start saving after confirmation
 
+    minBudget = calcBudget()
 
-    // Generate the route
-    UserChatData.route = await getRoute(UserChatData.startConfirmed['latitude'],
+
+    // Generate the finalroute
+    UserChatData.route = await getFinalRoute(UserChatData.startConfirmed['latitude'],
       UserChatData.startConfirmed['longitude'],
       UserChatData.endConfirmed['latitude'],
       UserChatData.endConfirmed['longitude'],
-      UserChatData.stops,
+      UserChatData.budget,
+      UserChatData.stops
     );
   };
 

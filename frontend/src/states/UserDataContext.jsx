@@ -60,7 +60,8 @@ class ChatData {
     route = null,
     itinerary = null,
     loading = false,
-    update = true
+    update = true,
+    budget = 0
   ) {
     this.chatId = chatId;
     this.action = action;
@@ -80,6 +81,7 @@ class ChatData {
     this.itinerary = itinerary;
     this.loading = loading;
     this.update = update;
+    this.budget = budget
   }
 }
 
