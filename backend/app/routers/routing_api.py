@@ -6,7 +6,7 @@ from requests.exceptions import RequestException
 from pydantic import ValidationError
 from app.models.routing_models.routing_models import MapBox, Route, Route_Step
 from app.models.routing_models.trip_advisor_models import Trip_Advisor_Location_Search, Trip_Advisor_Information
-from app.models.routing_models.amadeus_models import Amadeus_Access, Amadeus_Hotel_Search, Amadeus_Hotel_Offers
+from app.models.routing_models.amadeus_models import Amadeus_Access, Amadeus_Hotel_Search, Amadeus_Hotel_Offers, Amadeus_Hotel_Ratings
 from dotenv import load_dotenv
 from typing import Dict, Any
 import os
@@ -32,11 +32,12 @@ router = APIRouter()
 # Globalize initial_route
 initial_route = None
 
+
 @router.get('/get-initial-route')
 async def get_initial_route(start_lat: float,
-                    start_lon: float,
-                    end_lat: float,
-                    end_lon: float) -> float :
+                            start_lon: float,
+                            end_lat: float,
+                            end_lon: float) -> float:
     global initial_route
     try:
         # Construct initial route without stops
@@ -45,24 +46,24 @@ async def get_initial_route(start_lat: float,
         duration = initial_route.duration
         # Return the duration
         return duration
-    
+
 
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
     except ValidationError as exception:
-            raise HTTPException(status_code=501, detail=f'Improper Mapbox response: {str(exception)}')
+        raise HTTPException(status_code=501, detail=f'Improper Mapbox response: {str(exception)}')
     except (KeyError, ValueError) as exception:
-            raise HTTPException(status_code=502, detail=f"Error processing Mapbox response: {str(exception)}")
-    
+        raise HTTPException(status_code=502, detail=f"Error processing Mapbox response: {str(exception)}")
+
 
 @router.get("/get-final-route", response_model=Route)
 async def get_final_route(start_lat,
-                    start_lon,
-                    end_lat,
-                    end_lon,
-                    num_stops: int = 5,
-                    budget: float = 1000,
-                    start: datetime = datetime(2024, 9, 21, 9, 0, 0)) -> Route:
+                          start_lon,
+                          end_lat,
+                          end_lon,
+                          num_stops: int = 5,
+                          budget: float = 1000,
+                          start: datetime = datetime(2024, 9, 21, 9, 0, 0)) -> Route:
     """
     Retrieves a route from Mapbox API, adds intermediate stops, and returns the detailed route information.
 
@@ -84,7 +85,7 @@ async def get_final_route(start_lat,
     #Check for num_stops positive or zero
     if not isinstance(num_stops, int) or num_stops < 0:
         raise ValueError("Number of stops must be a non-negative integer")
-    
+
     try:
         # Use initial route to find stopping points
         stopping_points = await _add_stops(initial_route, num_stops, date=start, budget=budget)
@@ -408,7 +409,7 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
         print(json_data)
         # If no hotel is found search for one with a larger radius
         if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
-            return await _find_hotel(lat, lon, radius + 10)
+            return await _find_hotel(lat, lon, price_range, check_in, radius + 10)
         hotels = Amadeus_Hotel_Search.model_validate(json_data)  # Validate the response
         hotel_list = hotels.data
         if len(hotel_list) > 0:
@@ -422,12 +423,14 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
                 name = hotel.name.lower()
                 hotel_info[hotel_id] = {'coordinates': coordinates, 'name': name.capitalize(),
                                         'type': 'hotel'}  # Add relevant info from the search to hotel_info
-            location_pricing = await _get_cost(access_token=access_token,
-                                               hotel_ids=id_list,
-                                               check_in=check_in,
-                                               check_out=datetime(check_in.year, check_in.month, check_in.day + 1, 9, 0,
-                                                                  0),  # The next day at 9 AM
-                                               price_range=price_range)
+            offers = await _get_offers(access_token=access_token,
+                                       hotel_ids=id_list,
+                                       check_in=check_in,
+                                       check_out=datetime(check_in.year, check_in.month, check_in.day + 1, 9,
+                                                          0,
+                                                          0),  # The next day at 9 AM
+                                       price_range=price_range)
+            ratings = await
             location = hotel_info[
                 location_pricing['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
             location['price'] = location_pricing['price']  # Add pricing to the already saved info hotel info
@@ -441,8 +444,9 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
         raise HTTPException(status_code=501, detail=f'Improper Amadeus response: {str(exception)}')
 
 
-async def _get_cost(access_token: str, hotel_ids: list[str], check_in: datetime, check_out: datetime, price_range: str,
-                    adults: int = 2) -> dict[str, Any]:
+async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetime, check_out: datetime,
+                      price_range: str,
+                      adults: int = 2) -> dict[str, Any]:
     """
     Returns pricing info on the highest rated hotel that is within a given price range
 
@@ -554,23 +558,25 @@ async def _get_cost(access_token: str, hotel_ids: list[str], check_in: datetime,
         }
         offers = Amadeus_Hotel_Offers.model_validate(json_data)
         if len(offers.data) > 0:  # Ensure at least one hotel is returned
-            valid_offers = []  # A list to track valid offers
+            valid_offers = {}  # A dict to track valid offers
             for hotel in offers.data:
+                min_offer = 1000000  # Set a min to be overly expensive
                 offer_list = hotel.offers  # List of offers from a single hotel
                 hotel_name = hotel.hotel.name
                 hotel_id = hotel.hotel.hotelId  # Amadeus ID of the hotel
                 print(hotel_name, hotel_id)
-                for offer in offer_list:  # Check if user will make checkIn and retrieve price
-                    total = float(offer.price.total)
-                    print(total)
-                    # TODO get ranking info and add to temp_offer then return the hotel with the highest ranking in valid offers
-                    temp_offer = {
-                        'name': hotel_name,
-                        'hotel_id': hotel_id,
-                        'price': total,
-                    }
-                    valid_offers.append(temp_offer)
-                return valid_offers[0]
+                for offer in offer_list:  # Retrieve the offer price
+                    total = float(offer.price.total)  # Convert the str into a float
+                    if total < min_offer:
+                        min_offer = total  # Track the cheapest offer that fits the user's criteria per hotel
+                # TODO get ranking info and add to temp_offer then return the hotel with the highest ranking in valid offers
+                temp_offer = {
+                    'name': hotel_name,
+                    'price': min_offer,
+                }
+                valid_offers[hotel_id] = temp_offer
+            print(valid_offers)
+            return valid_offers
         else:
             raise HTTPException(status_code=404, detail="No offers found for this price range")
     except ValidationError as exception:
@@ -624,4 +630,27 @@ async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f'Improper Amadeus response: {str(exception)}')
 
-# async def _get_hotel_ratings():
+
+async def _get_hotel_ratings(hotel_ids: list[str]) -> list[tuple]:
+    """Return a list of tuples of hotelIds and ratings sorted from highest to lowest rating"""
+    try:
+        access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
+        hotels_list_url = "https://test.api.amadeus.com/v2"
+        headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+        params = {
+            "hotelIds":hotel_ids
+        }
+        response = requests.get(hotels_list_url, params=params, headers=headers)
+        json_data = response.json()
+        sentiments = Amadeus_Hotel_Ratings.model_validate(json_data).data # all the returned hotel sentiments
+        ratings = [] # List to store the returned hotel ratings
+        for hotel in sentiments:
+            hotel_id = hotel.hotelId
+            rating = hotel.overallRating
+            ratings.append((hotel_id, rating))
+        ratings.sort(key=lambda x: x[1], reverse=True)
+        return ratings
+    except ValidationError as exception:
+        raise HTTPException(status_code=500, detail=f'Improper Amadeus response: {str(exception)}')

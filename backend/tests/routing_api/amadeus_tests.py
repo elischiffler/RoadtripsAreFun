@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timedelta
 
-from app.routers.routing_api import _get_amadeus_token, _find_hotel, _get_cost
+from app.routers.routing_api import _get_amadeus_token, _find_hotel, _get_offers
 import pytest
 from dotenv import load_dotenv
 
@@ -25,16 +25,15 @@ async def test_get_hotels():
     assert isinstance(hotel_info, dict)
 
 @pytest.mark.asyncio
-async def test_get_cost():
+async def test_get_offers():
     hotelIds = ['adafas']
     access_token = 'fake'
     price_range = '100-200'
     check_in = datetime.now()
     check_out = check_in + timedelta(days=1)
-    hotel_cost = await _get_cost(access_token, hotelIds, check_in, check_out, price_range)
+    hotel_cost = await _get_offers(access_token, hotelIds, check_in, check_out, price_range)
     assert isinstance(hotel_cost, dict)
     assert isinstance(hotel_cost['price'], float)
-    assert isinstance(hotel_cost['hotel_id'], str)
     assert isinstance(hotel_cost['name'], str)
 
 if __name__ == "__main__":
