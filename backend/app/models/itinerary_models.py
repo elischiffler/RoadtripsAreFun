@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 
 from pydantic import BaseModel
-from .routing_models import Route
+from app.models.routing_models.routing_models import Route
 
 
 class Itinerary_Payload(BaseModel):

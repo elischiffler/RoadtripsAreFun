@@ -1,11 +1,12 @@
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 from geopy.geocoders import Nominatim
 from fastapi import APIRouter, HTTPException
 import requests
 from requests.exceptions import RequestException
 from pydantic import ValidationError
-from app.models.routing_models import MapBox, Route, Route_Step, Trip_Advisor_Location_Search, Trip_Advisor_Information, \
-    Amadeus_Access, Amadeus_Hotel_Search, Amadeus_Hotel_Offers
+from app.models.routing_models.routing_models import MapBox, Route, Route_Step
+from app.models.routing_models.trip_advisor_models import Trip_Advisor_Location_Search, Trip_Advisor_Information
+from app.models.routing_models.amadeus_models import Amadeus_Access, Amadeus_Hotel_Search, Amadeus_Hotel_Offers
 from dotenv import load_dotenv
 from typing import Dict, Any
 import os
@@ -28,7 +29,7 @@ tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 # Grab app from APIRouter
 router = APIRouter()
 
-# Globalize inital_route
+# Globalize initial_route
 initial_route = None
 
 @router.get('/get-initial-route')
@@ -623,4 +624,4 @@ async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f'Improper Amadeus response: {str(exception)}')
 
-# async def _get_hotel_ratings()
+# async def _get_hotel_ratings():
