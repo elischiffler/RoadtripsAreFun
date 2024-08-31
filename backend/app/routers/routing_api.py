@@ -423,6 +423,7 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
                 name = hotel.name.lower()
                 hotel_info[hotel_id] = {'coordinates': coordinates, 'name': name.capitalize(),
                                         'type': 'hotel'}  # Add relevant info from the search to hotel_info
+            # Get the cheapest offer that matches the user's preference per hotel
             offers = await _get_offers(access_token=access_token,
                                        hotel_ids=id_list,
                                        check_in=check_in,
@@ -430,11 +431,14 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
                                                           0,
                                                           0),  # The next day at 9 AM
                                        price_range=price_range)
-            ratings = await
+            highest_rated = await _get_hotel_ratings(offers.keys()) # Look for ratings on the hotels with valid offers
+            best_offer = offers[highest_rated[0]]
             location = hotel_info[
-                location_pricing['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
-            location['price'] = location_pricing['price']  # Add pricing to the already saved info hotel info
-            location['name'] = location_pricing['name']  # Add the name to location info
+                best_offer['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
+            location['price'] = best_offer['price']  # Add pricing to the already saved info hotel info
+            location['name'] = best_offer['name']  # Add the name to location info
+            location['rating'] = highest_rated[1]
+            # Returns a dictionary with a coordinates, name, type, price, and rating of the hotel
             return location
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
@@ -631,7 +635,7 @@ async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
         raise HTTPException(status_code=500, detail=f'Improper Amadeus response: {str(exception)}')
 
 
-async def _get_hotel_ratings(hotel_ids: list[str]) -> list[tuple]:
+async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
     """Return a list of tuples of hotelIds and ratings sorted from highest to lowest rating"""
     try:
         access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
@@ -651,6 +655,6 @@ async def _get_hotel_ratings(hotel_ids: list[str]) -> list[tuple]:
             rating = hotel.overallRating
             ratings.append((hotel_id, rating))
         ratings.sort(key=lambda x: x[1], reverse=True)
-        return ratings
+        return ratings[0]
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f'Improper Amadeus response: {str(exception)}')
