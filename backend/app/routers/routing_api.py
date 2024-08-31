@@ -380,7 +380,7 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
         hotel_list = hotels.data
         if len(hotel_list) > 0:
             # Put price function here
-            hotel_info = {} # Initialize a dictionary to store various hotel info with the key being the hotelId
+            hotel_info = {} # Initialize a dictionary to store hotel info with the key being the hotelId
             id_list = [] # List of hotel id's to send for to get offers
             for hotel in hotel_list: # Loop through all nearby hotels
                 # coordinates, id, name
@@ -388,8 +388,12 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
                 hotel_id = hotel.hotelId # Amadeus's unique hotel ID
                 id_list.append(hotel_id) # Add the id to the id_list
                 name = hotel.name.lower()
-                hotel_info[hotel_id] = {'coordinates': coordinates, 'name': name, 'type': 'hotel'} # Add relevant info from the search to hotel_info
-            location_pricing = await _get_cost(hotel_ids=id_list, price_range=price_range)
+                hotel_info[hotel_id] = {'coordinates': coordinates, 'name': name.capitalize(), 'type': 'hotel'} # Add relevant info from the search to hotel_info
+            location_pricing = await _get_cost(access_token=access_token,
+                                               hotel_ids=id_list,
+                                               check_in=check_in,
+                                               check_out= datetime(check_in.year, check_in.month, check_in.day + 1, 9, 0, 0), # The next day at 9 AM
+                                               price_range=price_range)
             location = hotel_info[location_pricing['hotel_id']] # Retrieve the saved hotel_info from the hotel_id of the found offer
             location['price'] = location_pricing['price'] # Add pricing to the already saved info hotel info
             location['name'] = location_pricing['name'] # Add the name to location info
@@ -402,13 +406,16 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
         raise HTTPException(status_code=501, detail=f'Improper Amadeus response: {str(exception)}')
 
 
-async def _get_cost(hotel_ids: list[str], check_in: datetime, check_out: datetime, price_range: str, adults: int = 2) -> dict[str, Any]:
-    """Return the offer cost and the amadeus hotel id and name"""
+async def _get_cost(access_token: str, hotel_ids: list[str], check_in: datetime, check_out: datetime, price_range: str, adults: int = 2) -> dict[str, Any]:
+    """Returns pricing info on the highest rated hotel that is within a given price range"""
     hotel_price_url = "https://test.api.amadeus.com/v2/shopping/hotel-offers"
     check_in_date = check_in.strftime('%Y-%m-%d')
     check_out_date = check_out.strftime('%Y-%m-%d')
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
     params = {
-        'hotelIds': hotel_ids, #TODO search for multiple hotels at the same time for best offer
+        'hotelIds': hotel_ids,
         'adults': adults, #TODO allow for guests to specify the number of ppl
         'checkInDate': check_in_date, #TODO allow user to specify a trip start date
         'checkOutDate': check_out_date,
@@ -416,7 +423,7 @@ async def _get_cost(hotel_ids: list[str], check_in: datetime, check_out: datetim
         'currency': 'USD',
     }
     try:
-        response = requests.get(hotel_price_url, params=params)
+        response = requests.get(hotel_price_url, params=params, headers=headers)
         json_data = response.json()
         offers = Amadeus_Hotel_Offers.model_validate(json_data)
         if len(offers.data) > 0: # Ensure at least one hotel is returned
@@ -436,7 +443,8 @@ async def _get_cost(hotel_ids: list[str], check_in: datetime, check_out: datetim
                     except AttributeError: # If the policy is not provided set values that always work
                         hot_checkin = time(0, 0, 0) # Check in at midnight
                         hot_checkout = time(0,0,0) # Check out at midnight
-                    if hot_checkin < check_in.time() and hot_checkout > check_out.time(): # Check that checkInOut policy meets the routes needs
+                    if hot_checkin < check_in.time() and hot_checkout > check_out.time(): # Check that checkInOut policy meets the route's needs
+                        # TODO get ranking info and add to temp_offer then return the hotel with the highest ranking in valid offers
                         temp_offer = {
                             'name': hotel_name,
                             'hotel_id': hotel_id,
