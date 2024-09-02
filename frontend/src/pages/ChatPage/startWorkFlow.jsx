@@ -404,7 +404,7 @@ export const startWorkFlow = async (
     UserChatData.update = true; // Start saving after confirmation
 
     //Get the users initial route duration
-    const duration  = await getInitialRoute(UserChatData.startConfirmed['latitude'],
+    const initial_route  = await getInitialRoute(UserChatData.startConfirmed['latitude'],
       UserChatData.startConfirmed['longitude'],
       UserChatData.endConfirmed['latitude'],
       UserChatData.endConfirmed['longitude'],
@@ -412,7 +412,7 @@ export const startWorkFlow = async (
       UserChatData
     );
 
-    UserChatData.minHotelBudget = await calcBudget(duration)
+    UserChatData.minHotelBudget = await calcBudget(initial_route['duration']);
     addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.minHotelBudget}`)
     UserChatData.showInputBar = true
     UserChatData.showBudgetSlider = true
@@ -429,12 +429,9 @@ export const startWorkFlow = async (
     console.log(`budget: ${UserChatData.budget}`)
 
     // Generate the final route account for budget
-    UserChatData.route = await getFinalRoute(UserChatData.startConfirmed['latitude'],
-      UserChatData.startConfirmed['longitude'],
-      UserChatData.endConfirmed['latitude'],
-      UserChatData.endConfirmed['longitude'],
-      UserChatData.stops,
-      UserChatData.budget
+    UserChatData.route = await getFinalRoute(initial_route,
+      UserChatData.budget,
+      UserChatData.stops
     );
   };
 

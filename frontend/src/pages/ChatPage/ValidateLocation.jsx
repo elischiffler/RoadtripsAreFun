@@ -33,4 +33,3 @@ try {
     inputLocationWorkflow(UserChatData.chatId, setChats, setChatInput, chatInput, UserChatData)
 }
 };
-
