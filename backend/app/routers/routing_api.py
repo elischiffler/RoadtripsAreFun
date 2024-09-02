@@ -46,9 +46,9 @@ async def get_initial_route(start_lat: float,
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
     except ValidationError as exception:
-        raise HTTPException(status_code=501, detail=f'Improper Mapbox response: {str(exception)}')
+        raise HTTPException(status_code=502, detail=f'Improper Mapbox response: {str(exception)}')
     except (KeyError, ValueError) as exception:
-        raise HTTPException(status_code=502, detail=f"Error processing Mapbox response: {str(exception)}")
+        raise HTTPException(status_code=500, detail=f"Error processing Mapbox response: {str(exception)}")
 
 
 @router.post("/generate-final-route", response_model=Route)
@@ -140,10 +140,7 @@ async def get_final_route(request: Request) -> Route:
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
     except ValidationError as exception:
-        print(exception)
-        for error in exception.errors():
-            print(error)
-        raise HTTPException(status_code=501, detail=f'Improper Mapbox response: {str(exception)}')
+        raise HTTPException(status_code=502, detail=f'Improper Mapbox response: {str(exception)}')
     except (KeyError, ValueError) as exception:
         raise HTTPException(status_code=502, detail=f"Error processing Mapbox response: {str(exception)}")
 
@@ -341,7 +338,7 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"TripAdvisor request failed: {str(exception)}")
     except ValidationError as exception:
-        raise HTTPException(status_code=501, detail=f'Improper TripAdvisor response: {str(exception)}')
+        raise HTTPException(status_code=502, detail=f'Improper TripAdvisor response: {str(exception)}')
 
 
 async def _get_details(location_id: str) -> Dict[str, Any]:
@@ -447,7 +444,7 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
     except ValidationError as exception:
-        raise HTTPException(status_code=501, detail=f'Improper Amadeus response: {str(exception)}')
+        raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
 
 
 async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetime, check_out: datetime,
@@ -586,10 +583,7 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
         else:
             raise HTTPException(status_code=404, detail="No offers found for this price range")
     except ValidationError as exception:
-        print(exception)  # Print errors from model validation while testing
-        for error in exception.errors():
-            print(error)
-        raise HTTPException(status_code=500, detail=f"Amadeus request validation failed: {str(exception)}")
+        raise HTTPException(status_code=502, detail=f"Amadeus request validation failed: {str(exception)}")
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
 
@@ -634,7 +628,7 @@ async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
         else:
             raise HTTPException(status_code=404, detail="No Amadeus access token returned")
     except ValidationError as exception:
-        raise HTTPException(status_code=500, detail=f'Improper Amadeus response: {str(exception)}')
+        raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
 
 
 async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
