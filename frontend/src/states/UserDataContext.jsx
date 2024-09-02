@@ -58,6 +58,7 @@ class ChatData {
     workflowStarted = false,
     startConfirmed = null,
     endConfirmed = null,
+    initial = null,
     route = null,
     itinerary = null,
     loading = false,
@@ -79,6 +80,7 @@ class ChatData {
     this.workflowStarted = workflowStarted;
     this.startConfirmed = startConfirmed;
     this.endConfirmed = endConfirmed;
+    this.initial = initial;
     this.route = route;
     this.itinerary = itinerary;
     this.loading = loading;
@@ -95,7 +97,6 @@ export const UserDataProvider = ({ children }) => {
     const savedData = sessionStorage.getItem("UserData");
     if (savedData) {
       const parsedData = JSON.parse(savedData);
-      console.log("Saved Data", parsedData);
       const chatdata = parsedData.chatlogs.chatdata.map(chat => new ChatData(
         chat.chatId,
         chat.action,
@@ -112,6 +113,7 @@ export const UserDataProvider = ({ children }) => {
         false,
         chat.startConfirmed,
         chat.endConfirmed,
+        chat.initial,
         chat.route,
         chat.itinerary,
         false, 

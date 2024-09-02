@@ -419,7 +419,7 @@ export const startWorkFlow = async (
     
   };
 
-  if(UserChatData.showInputBar || UserChatData.showStopSlider) { // Checkpoint 2: Input stops
+  if(UserChatData.showInputBar && UserChatData.showStopSlider) { // Checkpoint 2: Input stops
     if(UserChatData.showStopSlider){
       // Wait for the user to submit the number of stops
       await new Promise((resolve) => {
@@ -436,7 +436,7 @@ export const startWorkFlow = async (
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
-  if (!UserChatData.endConfirmed && !UserChatData.route){  // Checkpoint 3: Choose an end location
+  if (!UserChatData.endConfirmed && !UserChatData.initial){  // Checkpoint 3: Choose an end location
     // Ask for the end location
     addMessage(
       chatId,
@@ -454,9 +454,6 @@ export const startWorkFlow = async (
       UserChatData,
     );
 
-
-
-
     // Confirm the users ending address with the backend
     await handleConfirmation(
       chatId,
@@ -469,7 +466,7 @@ export const startWorkFlow = async (
 
 
     //Get the users initial route duration
-    const initial_route  = await getInitialRoute(UserChatData.startConfirmed['latitude'],
+    UserChatData.initial  = await getInitialRoute(UserChatData.startConfirmed['latitude'],
       UserChatData.startConfirmed['longitude'],
       UserChatData.endConfirmed['latitude'],
       UserChatData.endConfirmed['longitude'],
@@ -478,10 +475,10 @@ export const startWorkFlow = async (
     );
 
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+  };
 
-
-    // CheckPoint Budget
-    UserChatData.minHotelBudget = await calcBudget(initial_route['duration']);
+  if(UserChatData.initial && !UserChatData.budget){ // Checkpoint 4: Calculate a budget
+    UserChatData.minHotelBudget = await calcBudget(UserChatData.initial['duration']);
     addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.minHotelBudget}`)
     UserChatData.showInputBar = true
     UserChatData.showBudgetSlider = true
@@ -498,10 +495,13 @@ export const startWorkFlow = async (
     console.log(`budget: ${UserChatData.budget}`)
 
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+  };
 
+
+  if(!UserChatData.route && UserChatData.initial){ // Checkpoint 5: Generate the final route
     // Final Route Checkpoint
     // Generate the final route account for budget
-    UserChatData.route = await getFinalRoute(initial_route,
+    UserChatData.route = await getFinalRoute(UserChatData.initial,
       UserChatData.budget,
       UserChatData.stops
     );
@@ -509,7 +509,7 @@ export const startWorkFlow = async (
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
-  if(UserChatData.route && !UserChatData.itinerary){ // Checkpoint 4 End behaviors
+  if(UserChatData.route && !UserChatData.itinerary){ // Checkpoint 6: End behaviors
     // Generate the itinerary data 
     UserChatData.itinerary = await generateItinerary(UserChatData.route);
     ChatLogsData.chatdata[UserChatData.chatId-1] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
