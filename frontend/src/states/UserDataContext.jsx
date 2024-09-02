@@ -61,9 +61,8 @@ class ChatData {
     route = null,
     itinerary = null,
     loading = false,
-    update = true,
     minHotelBudget = null,
-    budget = 0
+    budget = 0,
   ) {
     this.chatId = chatId;
     this.action = action;
@@ -83,11 +82,12 @@ class ChatData {
     this.route = route;
     this.itinerary = itinerary;
     this.loading = loading;
-    this.update = update;
     this.minHotelBudget = minHotelBudget;
     this.budget = budget;
   }
 }
+
+export {Data, ChatLogs};
 
 export const UserDataProvider = ({ children }) => {
   // Function to retrieve UserData from the sessionStorage
@@ -95,6 +95,7 @@ export const UserDataProvider = ({ children }) => {
     const savedData = sessionStorage.getItem("UserData");
     if (savedData) {
       const parsedData = JSON.parse(savedData);
+      console.log("Saved Data", parsedData);
       const chatdata = parsedData.chatlogs.chatdata.map(chat => new ChatData(
         chat.chatId,
         chat.action,
@@ -106,14 +107,14 @@ export const UserDataProvider = ({ children }) => {
         chat.stops,
         chat.showInputBar,
         chat.showStopSlider,
+        chat.showBudgetSlider,
         chat.showAddressInput,
         false,
         chat.startConfirmed,
         chat.endConfirmed,
         chat.route,
         chat.itinerary,
-        false,
-        chat.update,
+        false, 
         chat.minHotelBudget,
         chat.budget,
       ));

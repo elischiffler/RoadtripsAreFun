@@ -2,6 +2,7 @@ import { validateLocation } from "./ValidateLocation";
 import { getInitialRoute, getFinalRoute } from "./getRoute";
 import { generateItinerary } from "../ItineraryPage/generateItinerary";
 import { calcBudget } from "./CalcBudget"
+import { Data, ChatLogs } from "../../states/UserDataContext";
 // Helper Function
 
 // Function that gets the user's current location
@@ -93,6 +94,74 @@ function changeBar(chatInput, setChatInput) {
     showAddressInput: true, // Show the address input field
   });
 }
+
+// Function to save all relevant User information to the sessionStorage
+const saveUserData = (setChats, UserChatData, getUserData, getSavedChats) => {
+  setChats((chats) =>{
+    if(chats.length> 0){ // Make sure data's valid and save condition is true
+      // Save current chat to the previous chats in the sessionStorage
+      var newChats = null; // Variable for chats to be saved
+      const prevChats = getSavedChats(); // Get the sessionStorage chats
+      const newChat = chats.find(Chat => // Find the currently selected chat in chats
+        Chat.id === UserChatData.chatId
+      );
+      if(prevChats && newChat){
+        // If the current chatId already exists in the sessionStorage
+        if(prevChats.find(
+          Chat => Chat.id === UserChatData.chatId
+        )){ // replace the sessionStorage version with the new chat
+          newChats = prevChats.map(Chat =>
+            Chat.id === UserChatData.chatId? newChat: Chat
+          );
+        }else{ // Add the new chat if it's the first instance
+          prevChats.push(newChat);
+          newChats = prevChats;
+        };
+      }else{
+        // save the first session version of chats
+        newChats = chats
+      };
+      
+      sessionStorage.setItem("chats", JSON.stringify(newChats));
+      console.log("Saved chats to sessionStorage:", newChats);
+      
+
+      // Save new UserChatData to previously stored UserChatData in sessionStorage
+      var saveData = null;
+      const prevData = getUserData(); // Retrieve previous value of UserData
+      console.log("Previous Data in storage", prevData);
+      if(prevData?.chatlogs?.chatdata?.length > 0){ // Check to be sure it isn't the first instance of the data
+        if(
+          prevData.chatlogs.getChatDataById(UserChatData.chatId) // Check if the ChatData already exists
+        ){
+          const newChatLogs = prevData.chatlogs.chatdata.map(ChatData => // Map the new UserData to replace the previous one
+            ChatData.chatId === UserChatData.chatId? UserChatData : ChatData);
+          prevData.chatlogs.chatdata = newChatLogs; // set the previous User Data to include the new UserChatData
+        }else{
+          prevData.chatlogs.addChatData(UserChatData); // add the new Chat Data
+        }
+        prevData.chatlogs.currentId = UserChatData.chatId; // Set the currentId to be the current Chat Datas
+        saveData = prevData;
+      }else{ // If no valid data is stored create some with UserChatData
+        const first_log = new ChatLogs([UserChatData], UserChatData.chatId) // Create the first ChatLogs
+        saveData = new Data(first_log) // Create the first data instance with the current UserChatData
+      };
+      
+      console.log("Saved data to sessionStorage: ", saveData);
+      // Save the current ChatData to the session storage
+      sessionStorage.setItem(
+        "UserData",
+        JSON.stringify({
+          chatlogs: {
+            chatdata: saveData.chatlogs.chatdata,
+            currentId: saveData.chatlogs.currentId,
+          },
+        })
+      );
+    };
+    return chats
+  })
+};
 
 // Predefined object representing the location type options presented to the user
 const askForLocationType = {
@@ -221,7 +290,6 @@ async function displayConfirmationDetails(chatId,
   setChats,
   UserChatData,
 ){
-    UserChatData.update = false;
     const address = UserChatData.endConfirmed? UserChatData.endConfirmed['address'] : UserChatData.startConfirmed['address'];
 
     // Display address from backend
@@ -302,6 +370,8 @@ export const startWorkFlow = async (
   chatInput,
   UserChatData,
   ChatLogsData,
+  getUserData,
+  getSavedChats,
 ) => {
     // Save initial state as a checkpoint
     const initialState = {
@@ -313,7 +383,7 @@ export const startWorkFlow = async (
   UserChatData.workflowStarted = true
   if(!UserChatData.showStopSlider && !UserChatData.startConfirmed) { // Checkpoint 1: Choose a start location
     UserChatData.showInputBar = false
-    UserChatData.update = false; // Stop saving data while awaiting confirmation
+    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
 
 
     // Ask for the starting location preferences
@@ -324,7 +394,6 @@ export const startWorkFlow = async (
       UserChatData
     );
   
-    UserChatData.update = false;
 
     // Confirm the users starting address with the backend
     await handleConfirmation(
@@ -335,9 +404,6 @@ export const startWorkFlow = async (
       UserChatData,
     );
   
-  
-    UserChatData.update = true; // Start saving after confirmation
-
     // Ask how many stops the user wants to take
     addMessage(
       chatId,
@@ -348,7 +414,8 @@ export const startWorkFlow = async (
     // Show a slider for the user to select the number of stops
     UserChatData.showInputBar = true;
     UserChatData.showStopSlider = true;
-    
+
+    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
     
   };
 
@@ -366,6 +433,7 @@ export const startWorkFlow = async (
       UserChatData.showInputBar = false;
     };
 
+    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
   if (!UserChatData.endConfirmed && !UserChatData.route){  // Checkpoint 3: Choose an end location
@@ -376,7 +444,6 @@ export const startWorkFlow = async (
       "How would you like to enter your end location?",
     );
 
-    UserChatData.update = false;
     UserChatData.locationType = "end";
 
     // Ask for ending location preferences
@@ -388,7 +455,6 @@ export const startWorkFlow = async (
     );
 
 
-    UserChatData.update = false;
 
 
     // Confirm the users ending address with the backend
@@ -401,7 +467,6 @@ export const startWorkFlow = async (
     );
     
 
-    UserChatData.update = true; // Start saving after confirmation
 
     //Get the users initial route duration
     const initial_route  = await getInitialRoute(UserChatData.startConfirmed['latitude'],
@@ -412,6 +477,10 @@ export const startWorkFlow = async (
       UserChatData
     );
 
+    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+
+
+    // CheckPoint Budget
     UserChatData.minHotelBudget = await calcBudget(initial_route['duration']);
     addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.minHotelBudget}`)
     UserChatData.showInputBar = true
@@ -428,11 +497,16 @@ export const startWorkFlow = async (
     });
     console.log(`budget: ${UserChatData.budget}`)
 
+    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+
+    // Final Route Checkpoint
     // Generate the final route account for budget
     UserChatData.route = await getFinalRoute(initial_route,
       UserChatData.budget,
       UserChatData.stops
     );
+    
+    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
   if(UserChatData.route && !UserChatData.itinerary){ // Checkpoint 4 End behaviors
@@ -442,6 +516,7 @@ export const startWorkFlow = async (
 
     // End the workflow with a message
     addMessage(chatId, setChats, "Successfully generated your trip! Click on the Map and Itinerary buttons to view the details.",);
+    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   }
   else if (!UserChatData.route){
     // Send a message prompting the user to resend their information
@@ -460,6 +535,9 @@ export const startWorkFlow = async (
         chatInput,
         UserChatData,
         ChatLogsData,
+        getUserData,
+        getSavedChats,
     );
+    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 };
