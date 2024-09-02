@@ -43,7 +43,7 @@ class ChatLogs {
 
 
 class ChatData {
-  constructor(chatId = null,
+  constructor(chatId = null, // Constructor gives initial values if not provided/ defines possible input parameters
     action = null,
     locationType = "start",
     startCoords = new Array(2).fill(0),
@@ -85,7 +85,7 @@ class ChatData {
     this.loading = loading;
     this.update = update;
     this.minHotelBudget = minHotelBudget;
-    this.budget = budget
+    this.budget = budget;
   }
 }
 
@@ -112,7 +112,10 @@ export const UserDataProvider = ({ children }) => {
         chat.endConfirmed,
         chat.route,
         chat.itinerary,
+        false,
         chat.update,
+        chat.minHotelBudget,
+        chat.budget,
       ));
       const chatlogs = new ChatLogs(chatdata, parsedData.chatlogs.currentId);
       const UserData = new Data(chatlogs);
