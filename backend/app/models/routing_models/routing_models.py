@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Optional, Dict
 
 from pydantic import BaseModel
@@ -88,9 +89,15 @@ class MapBox(BaseModel):
         distance: float  # Total distance in meters
         legs: list[Mapbox_leg]  # A leg represents a route between two destinations of the journey
         geometry: Mapbox_geo  # Contains every coordinate of the route
-        waypoints: Optional[Mapbox_waypoint] = []  # Contains start, end, and stops locations
+        waypoints: Optional[list[Mapbox_waypoint]] = []  # Contains start, end, and stops locations
 
     routes: list[MapBox_Route]
     waypoints: list[Mapbox_waypoint]
     code: str
     uuid: str
+
+class Route_Payload(BaseModel):
+    initial_route: MapBox.MapBox_Route
+    num_stops: int
+    budget: float
+    start: Optional[datetime] = datetime(2024, 9, 21, 9, 0, 0)

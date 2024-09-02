@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from geopy.geocoders import Nominatim
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 import requests
 from requests.exceptions import RequestException
 from pydantic import ValidationError
-from app.models.routing_models.routing_models import MapBox, Route, Route_Step
+from app.models.routing_models.routing_models import MapBox, Route, Route_Step, Route_Payload
 from app.models.routing_models.trip_advisor_models import Trip_Advisor_Location_Search, Trip_Advisor_Information
-from app.models.routing_models.amadeus_models import Amadeus_Access, Amadeus_Hotel_Search, Amadeus_Hotel_Offers, Amadeus_Hotel_Ratings
+from app.models.routing_models.amadeus_models import Amadeus_Access, Amadeus_Hotel_Search, Amadeus_Hotel_Offers, \
+    Amadeus_Hotel_Ratings
 from dotenv import load_dotenv
 from typing import Dict, Any
 import os
@@ -29,25 +30,19 @@ tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 # Grab app from APIRouter
 router = APIRouter()
 
-# Globalize initial_route
-initial_route = None
-
 
 @router.get('/get-initial-route')
 async def get_initial_route(start_lat: float,
                             start_lon: float,
                             end_lat: float,
-                            end_lon: float) -> float:
-    global initial_route
+                            end_lon: float) -> MapBox_route:
     try:
         # Construct initial route without stops
         initial_route = await _call_route(start_lat, start_lon, end_lat, end_lon)
         print("got initial route")
         duration = initial_route.duration
         # Return the duration
-        return duration
-
-
+        return initial_route
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
     except ValidationError as exception:
@@ -56,14 +51,8 @@ async def get_initial_route(start_lat: float,
         raise HTTPException(status_code=502, detail=f"Error processing Mapbox response: {str(exception)}")
 
 
-@router.get("/get-final-route", response_model=Route)
-async def get_final_route(start_lat,
-                          start_lon,
-                          end_lat,
-                          end_lon,
-                          num_stops: int = 5,
-                          budget: float = 1000,
-                          start: datetime = datetime(2024, 9, 21, 9, 0, 0)) -> Route:
+@router.post("/generate-final-route", response_model=Route)
+async def get_final_route(request: Request) -> Route:
     """
     Retrieves a route from Mapbox API, adds intermediate stops, and returns the detailed route information.
 
@@ -82,11 +71,22 @@ async def get_final_route(start_lat,
     - HTTPException: For errors related to Mapbox requests or response processing.
     """
 
-    #Check for num_stops positive or zero
-    if not isinstance(num_stops, int) or num_stops < 0:
-        raise ValueError("Number of stops must be a non-negative integer")
-
     try:
+        # Validate provided payload and use data to initialize variables
+        json_data = await request.json()
+        payload = Route_Payload.model_validate(json_data)
+        initial_route = payload.initial_route
+        print(initial_route.geometry.coordinates)
+        start_lon, start_lat = initial_route.geometry.coordinates[0]
+        end_lon, end_lat = initial_route.geometry.coordinates[-1]
+        print(start_lat, start_lon, end_lat, end_lon)
+        num_stops = payload.num_stops
+        start=payload.start
+        budget=payload.budget
+
+        # Check for num_stops positive or zero
+        if not isinstance(num_stops, int) or num_stops < 0:
+            raise ValueError("Number of stops must be a non-negative integer")
         # Use initial route to find stopping points
         stopping_points = await _add_stops(initial_route, num_stops, date=start, budget=budget)
         print("got stopping points")
@@ -140,6 +140,9 @@ async def get_final_route(start_lat,
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
     except ValidationError as exception:
+        print(exception)
+        for error in exception.errors():
+            print(error)
         raise HTTPException(status_code=501, detail=f'Improper Mapbox response: {str(exception)}')
     except (KeyError, ValueError) as exception:
         raise HTTPException(status_code=502, detail=f"Error processing Mapbox response: {str(exception)}")
@@ -208,8 +211,6 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
     current_day = 0  # Initialize number of days in route
     total_time = 0  # Total time traveled to the destination
     time_till_stop = interval  # Track the time until next stop
-    price_range = ''
-
     estimate_of_days = route.duration // ((daily_end - daily_start) * 3600)  # Estimate for days the route will take
     if estimate_of_days > 0:
         price_range = _get_price_range(budget, budget / estimate_of_days, num_stops)  # TODO Implement budget
@@ -431,8 +432,9 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
                                                           0,
                                                           0),  # The next day at 9 AM
                                        price_range=price_range)
-            highest_rated = await _get_hotel_ratings(offers.keys()) # Look for ratings on the hotels with valid offers
-            best_offer = offers[highest_rated[0]]
+            print(offers.keys())
+            highest_rated = await _get_hotel_ratings(offers.keys())  # Look for ratings on the hotels with valid offers
+            best_offer = offers[highest_rated[0]]  # Use the hotelId returned with highest_rated to get its offer info
             location = hotel_info[
                 best_offer['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
             location['price'] = best_offer['price']  # Add pricing to the already saved info hotel info
@@ -564,7 +566,7 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
         if len(offers.data) > 0:  # Ensure at least one hotel is returned
             valid_offers = {}  # A dict to track valid offers
             for hotel in offers.data:
-                min_offer = 1000000  # Set a min to be overly expensive
+                min_offer = 1000000  # Set a min to be impossibly expensive
                 offer_list = hotel.offers  # List of offers from a single hotel
                 hotel_name = hotel.hotel.name
                 hotel_id = hotel.hotel.hotelId  # Amadeus ID of the hotel
@@ -597,7 +599,7 @@ def _get_price_range(budget: float, current_cost: float, stops_left: int) -> str
     if remaining_avg > 100:
         return f"{remaining_avg - 100:.2f}-{remaining_avg + 100:.2f}"
     else:
-        return f"{remaining_avg:.2f}-{remaining_avg + 100:.2f}"
+        return f"0-{remaining_avg + 100:.2f}"
 
 
 async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
@@ -644,17 +646,76 @@ async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
             "Authorization": f"Bearer {access_token}"
         }
         params = {
-            "hotelIds":hotel_ids
+            "hotelIds": hotel_ids
         }
         response = requests.get(hotels_list_url, params=params, headers=headers)
         json_data = response.json()
-        sentiments = Amadeus_Hotel_Ratings.model_validate(json_data).data # all the returned hotel sentiments
-        ratings = [] # List to store the returned hotel ratings
+        json_data = {
+            "data": [
+                {
+                    "type": "hotelSentiment",
+                    "numberOfReviews": 218,
+                    "numberOfRatings": 278,
+                    "hotelId": "ADNYCCTB",
+                    "overallRating": 93,
+                    "sentiments": {
+                        "sleepQuality": 87,
+                        "service": 98,
+                        "facilities": 90,
+                        "roomComforts": 92,
+                        "valueForMoney": 87,
+                        "catering": 89,
+                        "location": 98,
+                        "pointsOfInterest": 91,
+                        "staff": 100
+                    }
+                },
+                {
+                    "type": "hotelSentiment",
+                    "numberOfReviews": 2667,
+                    "numberOfRatings": 2666,
+                    "hotelId": "TELONMFS",
+                    "overallRating": 81,
+                    "sentiments": {
+                        "sleepQuality": 78,
+                        "service": 80,
+                        "facilities": 75,
+                        "roomComforts": 87,
+                        "valueForMoney": 75,
+                        "catering": 81,
+                        "location": 89,
+                        "internet": 72,
+                        "pointsOfInterest": 81,
+                        "staff": 89
+                    }
+                }
+            ],
+            "meta": {
+                "count": 1,
+                "links": {
+                    "self": "https://test.api.amadeus.com/v2/e-reputation/hotel-sentiments?hotelIds=ADNYCCTB,TELONMFS,XXXYYY01"
+                }
+            },
+            "warnings": [
+                {
+                    "code": 913,
+                    "title": "PROPERTIES NOT FOUND",
+                    "detail": "Some of the requested properties were not found in our database.",
+                    "source": {
+                        "parameter": "hotelIds",
+                        "pointer": "XXXYYY01"
+                    }
+                }
+            ]
+        }
+        sentiments = Amadeus_Hotel_Ratings.model_validate(json_data).data  # all the returned hotel sentiments
+        ratings = []  # List to store the returned hotel ratings
         for hotel in sentiments:
             hotel_id = hotel.hotelId
             rating = hotel.overallRating
             ratings.append((hotel_id, rating))
         ratings.sort(key=lambda x: x[1], reverse=True)
+        print(ratings)
         return ratings[0]
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f'Improper Amadeus response: {str(exception)}')
