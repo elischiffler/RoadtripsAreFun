@@ -76,10 +76,8 @@ async def get_final_route(request: Request) -> Route:
         json_data = await request.json()
         payload = Route_Payload.model_validate(json_data)
         initial_route = payload.initial_route
-        print(initial_route.geometry.coordinates)
         start_lon, start_lat = initial_route.geometry.coordinates[0]
         end_lon, end_lat = initial_route.geometry.coordinates[-1]
-        print(start_lat, start_lon, end_lat, end_lon)
         num_stops = payload.num_stops
         start=payload.start
         budget=payload.budget
@@ -87,6 +85,7 @@ async def get_final_route(request: Request) -> Route:
         # Check for num_stops positive or zero
         if not isinstance(num_stops, int) or num_stops < 0:
             raise ValueError("Number of stops must be a non-negative integer")
+
         # Use initial route to find stopping points
         stopping_points = await _add_stops(initial_route, num_stops, date=start, budget=budget)
         print("got stopping points")
