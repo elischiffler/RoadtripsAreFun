@@ -383,7 +383,6 @@ export const startWorkFlow = async (
   UserChatData.workflowStarted = true
   if(!UserChatData.showStopSlider && !UserChatData.startConfirmed) { // Checkpoint 1: Choose a start location
     UserChatData.showInputBar = false
-    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
 
 
     // Ask for the starting location preferences
@@ -478,10 +477,11 @@ export const startWorkFlow = async (
   };
 
   if(UserChatData.initial && !UserChatData.budget){ // Checkpoint 4: Calculate a budget
-    UserChatData.minHotelBudget = await calcBudget(UserChatData.initial['duration']);
+    UserChatData.minHotelBudget = await calcBudget(UserChatData.initial['duration']); // Get the estimated min budget
+    UserChatData.budget = UserChatData.minHotelBudget // Assign a default budget
     addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.minHotelBudget}`)
     UserChatData.showInputBar = true
-    UserChatData.showBudgetSlider = true
+    UserChatData.showBudgetSlider = true // Allow user to customize their budget preference
 
     // Wait for the user to input something
     await new Promise((resolve) => {
@@ -527,6 +527,7 @@ export const startWorkFlow = async (
     UserChatData.locationType = 'start';
     UserChatData.endConfirmed = null;
     UserChatData.startConfirmed = null;
+    UserChatData.initial = null;
 
     // Restart workflow for another route
     await startWorkFlow(setChats,
