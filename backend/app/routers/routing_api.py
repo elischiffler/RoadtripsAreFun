@@ -40,7 +40,6 @@ async def get_initial_route(start_lat: float,
         # Construct initial route without stops
         initial_route = await _call_route(start_lat, start_lon, end_lat, end_lon)
         print("got initial route")
-        duration = initial_route.duration
         # Return the duration
         return initial_route
     except RequestException as exception:
@@ -477,79 +476,6 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
         response = requests.get(hotel_price_url, params=params, headers=headers)
         json_data = response.json()
         print(json_data)
-        json_data = {
-            "data": [
-                {
-                    "type": "hotel-offers",
-                    "hotel": {
-                        "type": "hotel",
-                        "hotelId": "MCLONGHM",
-                        "chainCode": "MC",
-                        "dupeId": "700031300",
-                        "name": "JW Marriott Grosvenor House London",
-                        "cityCode": "LON",
-                        "latitude": 51.50988,
-                        "longitude": -0.15509
-                    },
-                    "available": True,
-                    "offers": [
-                        {
-                            "id": "TSXOJ6LFQ2",
-                            "checkInDate": "2023-11-22",
-                            "checkOutDate": "2023-11-23",
-                            "rateCode": "V  ",
-                            "rateFamilyEstimated": {
-                                "code": "PRO",
-                                "type": "P"
-                            },
-                            "room": {
-                                "type": "ELE",
-                                "typeEstimated": {
-                                    "category": "EXECUTIVE_ROOM",
-                                    "beds": 1,
-                                    "bedType": "DOUBLE"
-                                },
-                                "description": {
-                                    "text": "Prepay Non-refundable Non-changeable, prepay in full\nExecutive King Room, Executive Lounge Access,\n1 King, 35sqm/377sqft-40sqm/430sqft, Wireless",
-                                    "lang": "EN"
-                                }
-                            },
-                            "guests": {
-                                "adults": 1
-                            },
-                            "price": {
-                                "currency": "GBP",
-                                "base": "716.00",
-                                "total": "716.00",
-                                "variations": {
-                                    "average": {
-                                        "base": "716.00"
-                                    },
-                                    "changes": [
-                                        {
-                                            "startDate": "2023-11-22",
-                                            "endDate": "2023-11-23",
-                                            "total": "716.00"
-                                        }
-                                    ]
-                                }
-                            },
-                            "policies": {
-                                "paymentType": "deposit",
-                                "cancellation": {
-                                    "description": {
-                                        "text": "NON-REFUNDABLE RATE"
-                                    },
-                                    "type": "FULL_STAY"
-                                }
-                            },
-                            "self": "https://test.api.amadeus.com/v3/shopping/hotel-offers/TSXOJ6LFQ2"
-                        }
-                    ],
-                    "self": "https://test.api.amadeus.com/v3/shopping/hotel-offers?hotelIds=MCLONGHM&adults=1&checkInDate=2023-11-22&paymentPolicy=NONE&roomQuantity=1"
-                }
-            ]
-        }
         offers = Amadeus_Hotel_Offers.model_validate(json_data)
         if len(offers.data) > 0:  # Ensure at least one hotel is returned
             valid_offers = {}  # A dict to track valid offers
@@ -644,64 +570,6 @@ async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
         response = requests.get(hotels_list_url, params=params, headers=headers)
         json_data = response.json()
         print(json_data)
-        json_data = {
-            "data": [
-                {
-                    "type": "hotelSentiment",
-                    "numberOfReviews": 218,
-                    "numberOfRatings": 278,
-                    "hotelId": "ADNYCCTB",
-                    "overallRating": 93,
-                    "sentiments": {
-                        "sleepQuality": 87,
-                        "service": 98,
-                        "facilities": 90,
-                        "roomComforts": 92,
-                        "valueForMoney": 87,
-                        "catering": 89,
-                        "location": 98,
-                        "pointsOfInterest": 91,
-                        "staff": 100
-                    }
-                },
-                {
-                    "type": "hotelSentiment",
-                    "numberOfReviews": 2667,
-                    "numberOfRatings": 2666,
-                    "hotelId": "TELONMFS",
-                    "overallRating": 81,
-                    "sentiments": {
-                        "sleepQuality": 78,
-                        "service": 80,
-                        "facilities": 75,
-                        "roomComforts": 87,
-                        "valueForMoney": 75,
-                        "catering": 81,
-                        "location": 89,
-                        "internet": 72,
-                        "pointsOfInterest": 81,
-                        "staff": 89
-                    }
-                }
-            ],
-            "meta": {
-                "count": 1,
-                "links": {
-                    "self": "https://test.api.amadeus.com/v2/e-reputation/hotel-sentiments?hotelIds=ADNYCCTB,TELONMFS,XXXYYY01"
-                }
-            },
-            "warnings": [
-                {
-                    "code": 913,
-                    "title": "PROPERTIES NOT FOUND",
-                    "detail": "Some of the requested properties were not found in our database.",
-                    "source": {
-                        "parameter": "hotelIds",
-                        "pointer": "XXXYYY01"
-                    }
-                }
-            ]
-        }
         sentiments = Amadeus_Hotel_Ratings.model_validate(json_data).data  # all the returned hotel sentiments
         ratings = []  # List to store the returned hotel ratings
         if len(sentiments) > 0:
