@@ -15,13 +15,13 @@ export const calcHotelBudget = async (duration) => {
       return minHotelBudget
     }
 
-export const calcGasBudget = async (duration, year, make, model) => {
-  const carBudget = 10
-  console.log(model)
-  const carInfo = await getCarInfo(year, make, model)
-  const mpg = carInfo['combination_mpg']
-  console.log(mpg)
-  return carBudget
+export const calcGasBudget = async (distanceInMeters, year, make, model) => {
+  const carInfo = await getCarInfo(year, make, model)  // Get car info from backend
+  const mpg = carInfo['combination_mpg']  // Grab the miles per gallon of the car
+  const distanceInMiles = distanceInMeters * 0.000621371 // Turns the distance into miles
+  const gasUsed = distanceInMiles / mpg  // Calculate how much gas was used
+  const gasBudget = gasUsed * 3.317 // 3.317 is the average price of gas in the US. Switch to a more specific number using api and user location in future
+  return Math.round(gasBudget)
 }
 
 const getCarInfo = async (year, make, model) => {

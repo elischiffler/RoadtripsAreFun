@@ -511,7 +511,7 @@ export const startWorkFlow = async (
       }, 100);
     });
 
-    UserChatData.carBudget = await calcGasBudget(UserChatData.initial['duration'], UserChatData.carDetails[0], UserChatData.carDetails[1], UserChatData.carDetails[2])
+    UserChatData.carBudget = await calcGasBudget(UserChatData.initial['distance'], UserChatData.carDetails[0], UserChatData.carDetails[1], UserChatData.carDetails[2])
     // Calculate the total budget
     UserChatData.budget  = UserChatData.hotelBudget + UserChatData.carBudget
 
