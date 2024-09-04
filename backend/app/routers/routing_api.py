@@ -57,18 +57,14 @@ async def get_final_route(request: Request) -> Route:
     Retrieves a route from Mapbox API, adds intermediate stops, and returns the detailed route information.
 
     Parameters:
-    - start_lat (float): Latitude of the starting point.
-    - start_lon (float): Longitude of the starting point.
-    - end_lat (float): Latitude of the destination point.
-    - end_lon (float): Longitude of the destination point.
-    - num_stops (int): Number of intermediate stops to include in the route.
-    - start(datetime): Start date of the route.
+        - request (Request): A JSON payload containing data of the initial route, number of stops, budget, and
+        start date
 
     Returns:
-    - Route: Detailed route information including coordinates, distance, duration, and step-by-step instructions.
+        - Route: Detailed route information including coordinates, distance, duration, and step-by-step instructions.
 
     Raises:
-    - HTTPException: For errors related to Mapbox requests or response processing.
+        - HTTPException: For errors related to Mapbox requests or response processing.
     """
 
     try:
@@ -236,10 +232,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
         if total_time + time_till_stop < end_search:  # Ensure we are within the route duration
             total_time += time_till_stop  # Increment the total time by time traveled to stop
             print('finding stop...')
-            print(total_time)
-            print(route.duration)
             current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
-            print(current_lat, current_lon)
             current_time += time_till_stop + (3600 * 2)  # Current time includes distance and time spent at stop
             stopping_points.append(
                 await _find_stop('attractions', current_lat, current_lon, 30))  # Add the stop to the list
@@ -316,7 +309,6 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str
     }
 
     try:
-        print(params)
         response = requests.get(nearby_search_url, params=params)
         json_data = response.json()
         print(response.status_code)
@@ -467,7 +459,7 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
         - HTTPException: For errors related to Amadeus requests or response processing.
 
     """
-    hotel_price_url = "https://test.api.amadeus.com/v2/shopping/hotel-offers"
+    hotel_price_url = "https://test.api.amadeus.com/v3/shopping/hotel-offers"
     check_in_date = check_in.strftime('%Y-%m-%d')
     check_out_date = check_out.strftime('%Y-%m-%d')
     headers = {
@@ -566,7 +558,6 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
                 offer_list = hotel.offers  # List of offers from a single hotel
                 hotel_name = hotel.hotel.name
                 hotel_id = hotel.hotel.hotelId  # Amadeus ID of the hotel
-                print(hotel_name, hotel_id)
                 for offer in offer_list:  # Retrieve the offer price
                     total = float(offer.price.total)  # Convert the str into a float
                     if total < min_offer:
@@ -582,7 +573,7 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
         else:
             raise HTTPException(status_code=404, detail="No offers found for this price range")
     except ValidationError as exception:
-        raise HTTPException(status_code=502, detail=f"Amadeus request validation failed: {str(exception)}")
+        raise HTTPException(status_code=502, detail=f"Error validating Amadeus offer response: {str(exception)}")
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
 
@@ -631,7 +622,16 @@ async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
 
 
 async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
-    """Return a list of tuples of hotelIds and ratings sorted from highest to lowest rating"""
+    """
+    Return a list of tuples of hotelIds and ratings sorted from highest to lowest rating
+
+    Args:
+        - hotel_ids: A list of amadeus hotel IDs
+
+    Returns:
+        - tuple: A tuple containing the hotelId and rating for the highest rated hotel from the list
+
+    """
     try:
         access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
         hotels_list_url = "https://test.api.amadeus.com/v2"
@@ -643,6 +643,7 @@ async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
         }
         response = requests.get(hotels_list_url, params=params, headers=headers)
         json_data = response.json()
+        print(json_data)
         json_data = {
             "data": [
                 {
@@ -703,12 +704,17 @@ async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
         }
         sentiments = Amadeus_Hotel_Ratings.model_validate(json_data).data  # all the returned hotel sentiments
         ratings = []  # List to store the returned hotel ratings
-        for hotel in sentiments:
-            hotel_id = hotel.hotelId
-            rating = hotel.overallRating
-            ratings.append((hotel_id, rating))
-        ratings.sort(key=lambda x: x[1], reverse=True)
-        print(ratings)
-        return ratings[0]
+        if len(sentiments) > 0:
+            for hotel in sentiments:
+                hotel_id = hotel.hotelId
+                rating = hotel.overallRating
+                ratings.append((hotel_id, rating))
+            ratings.sort(key=lambda x: x[1], reverse=True)
+            print(ratings)
+            return ratings[0]
+        else:
+            raise HTTPException(status_code=404, detail="No hotels found for the provided ids")
     except ValidationError as exception:
-        raise HTTPException(status_code=500, detail=f'Improper Amadeus response: {str(exception)}')
+        raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
+    except (KeyError, ValueError) as exception:
+        raise HTTPException(status_code=500, detail=f'Unable to parse response: {str(exception)}')

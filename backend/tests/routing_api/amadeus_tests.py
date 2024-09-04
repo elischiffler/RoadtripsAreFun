@@ -19,8 +19,8 @@ async def test_get_amadeus_token():
 async def test_get_hotels():
     lat = 33.710521
     lon = -117.763716
-    price_range = '100-200'
-    check_in = datetime.now()
+    price_range = '0-2000'
+    check_in = datetime(2024,11,20,0,0,0)
     hotel_info = await _find_hotel(lat, lon, price_range, check_in)
     assert isinstance(hotel_info, dict)
 
