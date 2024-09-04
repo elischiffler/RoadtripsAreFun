@@ -141,7 +141,7 @@ const ChatPage = () => {
         addMessage(selectedChat.id, setChats, UserChatData.stops);
         UserChatData.showStopSlider = false; // Hide the stop slider
       } else if (UserChatData.showBudgetSlider) {
-        addMessage(selectedChat.id, setChats, `$${UserChatData.budget}`)  //Display the budget the user input
+        addMessage(selectedChat.id, setChats, `$${UserChatData.hotelBudget}`)  //Display the hotel budget the user input
         UserChatData.showBudgetSlider = false // Hide the budget slider
       } else if (UserChatData.showAddressInput) {
         // Handle address input message
