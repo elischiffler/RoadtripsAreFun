@@ -23,7 +23,7 @@ load_dotenv()
 # Setup logging (for debugging)
 logging.basicConfig(level=logging.INFO)
 
-# Get APIs
+# Get API tokens
 mapbox_access_token = os.getenv('MAPBOX_API')
 tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 
@@ -40,8 +40,7 @@ async def get_initial_route(start_lat: float,
         # Construct initial route without stops
         initial_route = await _call_route(start_lat, start_lon, end_lat, end_lon)
         print("got initial route")
-        duration = initial_route.duration
-        # Return the duration
+        # Return the initial route
         return initial_route
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
