@@ -189,6 +189,7 @@
   max-width: 75%;
   box-sizing: border-box;
   margin-bottom: 8px; /* Add margin for spacing between messages */
+  white-space: pre-wrap;
 }
 
 .message.bot {
