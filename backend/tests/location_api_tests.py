@@ -13,9 +13,8 @@ def test_post_location_LosAngeles_address():
 
     response = client.post("/validate-location", json=payload)
 
-    print(response.text)
     assert response.status_code == 200
-    assert response.text == '"Los Angeles, Los Angeles County, California, United States"'
+    assert response.json().get("address") == 'Los Angeles, Los Angeles County, California, United States'
 
 def test_post_location_HollyWood_Sign_coordinates():
     payload = {"is_coordinates": True,
@@ -25,7 +24,7 @@ def test_post_location_HollyWood_Sign_coordinates():
     response = client.post("/validate-location", json=payload)
 
     assert response.status_code == 200
-    assert response.text == '"Mount Lee Drive, Los Feliz Neighborhood Council District, Los Angeles, Los Angeles County, California, 90068, United States"'
+    assert response.json().get("address") == 'Mount Lee Drive, Los Feliz Neighborhood Council District, Los Angeles, Los Angeles County, California, 90068, United States'
 
 def test_post_location_misspell():
     payload= {"is_coordinates": False,
@@ -45,7 +44,7 @@ def test_post_location_specific_SLO_address():
     response = client.post("/validate-location", json=payload)
     
     assert response.status_code == 200
-    assert response.text == '"Canyon Circle, Poly Canyon Village (171), San Luis Obispo County, California, 93407, United States"'
+    assert response.json().get("address") == 'Canyon Circle, Poly Canyon Village (171), San Luis Obispo County, California, 93407, United States'
 
 def test_post_location_with_invalid_payload():
     payload = {"is_coordinates": False,}

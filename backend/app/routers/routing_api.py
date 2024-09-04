@@ -8,6 +8,7 @@ from app.models.routing_models.routing_models import MapBox, Route, Route_Step, 
 from app.models.routing_models.trip_advisor_models import Trip_Advisor_Location_Search, Trip_Advisor_Information
 from app.models.routing_models.amadeus_models import Amadeus_Access, Amadeus_Hotel_Search, Amadeus_Hotel_Offers, \
     Amadeus_Hotel_Ratings
+from app.utils.geolocation_helpers import get_location
 from dotenv import load_dotenv
 from typing import Dict, Any
 import os
@@ -30,6 +31,7 @@ tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 # Grab app from APIRouter
 router = APIRouter()
 
+geolocator = Nominatim(user_agent="RP-Hotels")  # Initialize a global geolocator
 
 @router.get('/get-initial-route')
 async def get_initial_route(start_lat: float,
@@ -95,7 +97,6 @@ async def get_final_route(request: Request) -> Route:
         distance, duration = route.distance, route.duration
         geometry = route.geometry
         steps = []
-        geolocator = Nominatim(user_agent="RP-Hotels")  # Initialize a geolocator
 
         idx = 0
         for leg in route.legs:
@@ -103,8 +104,8 @@ async def get_final_route(request: Request) -> Route:
             # Add the duration to each stop
             if idx < len(stopping_points) and stopping_points[idx]['type'] != 'generic':
                 stopping_points[idx]['duration'] = leg.duration
-                temp_coordinates = stopping_points[idx]['coordinates']
-                location = geolocator.reverse(f"{temp_coordinates[0]}, {temp_coordinates[1]}")  # Reverse geolocate
+                location = get_location(geocoder=geolocator,
+                                        coords=stopping_points[idx]['coordinates'])
                 if location:
                     stopping_points[idx]['address'] = location.address  # Add the address to each
             else:
@@ -398,6 +399,11 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
         # If no hotel is found search for one with a larger radius
         if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
             return await _find_hotel(lat, lon, price_range, check_in, radius + 10)
+        elif response.status_code == 500 and json_data['errors'][0]['code'] == 38189:
+            print("Scraping!")
+            # Webscrape logic goes here
+
+            pass
         hotels = Amadeus_Hotel_Search.model_validate(json_data)  # Validate the response
         hotel_list = hotels.data
         if len(hotel_list) > 0:
