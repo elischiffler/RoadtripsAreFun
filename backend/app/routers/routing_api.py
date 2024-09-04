@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from geopy.geocoders import Nominatim
+from geopy.geocoders import OpenCage
 from fastapi import APIRouter, HTTPException, Request, Response
 import requests
 from requests.exceptions import RequestException
@@ -33,7 +33,9 @@ tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 # Grab app from APIRouter
 router = APIRouter()
 
-geolocator = Nominatim(user_agent="RP-Hotels")  # Initialize a global geolocator
+open_cage_key = os.getenv('OPENCAGE_KEY')
+
+geolocator = OpenCage(api_key=open_cage_key,user_agent="RP-Hotels")  # Initialize a global geolocator
 
 
 @router.get('/get-initial-route')
@@ -44,8 +46,6 @@ async def get_initial_route(start_lat: float,
     try:
         # Construct initial route without stops
         initial_route = await _call_route(start_lat, start_lon, end_lat, end_lon)
-        print("got initial route")
-        print(initial_route.geometry.coordinates)
         return initial_route
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
@@ -105,7 +105,7 @@ async def get_final_route(request: Request) -> Route:
         for leg in route.legs:
 
             # Add the duration to each stop
-            if idx < len(stopping_points) and stopping_points[idx]['type'] != 'generic':
+            if idx < len(stopping_points) and stopping_points[idx]['type'] != 'generic': # TODO Remove this by fixing trip advisor
                 stopping_points[idx]['duration'] = leg.duration
                 location = get_location(geocoder=geolocator,
                                         coords=stopping_points[idx]['coordinates'])
@@ -208,25 +208,36 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
     time_till_stop = interval  # Track the time until next stop
     estimate_of_days = route.duration // ((daily_end - daily_start) * 3600)  # Estimate for days the route will take
     if estimate_of_days > 0:
-        price_range = _get_price_range(budget, budget / estimate_of_days, num_stops)  # TODO Implement budget
+        price_range = _get_price_range(budget, budget / estimate_of_days, num_stops)
     else:
         price_range = _get_price_range(budget, budget, num_stops)
 
     # Add stopping places until the trip is over
     for _ in range(num_stops + 1):
         # Check whether the daily end or the next stop comes first
-        while total_time < end_search and current_time + time_till_stop >= (
-                daily_end * 3600):  # Check if next stop or daily end comes next
+        while total_time < end_search and current_time + time_till_stop >= (daily_end * 3600):
             time_traveled = (daily_end * 3600) - current_time  # Calculate time traveled that day
             total_time += time_traveled  # Add the time traveled toward the next stop that day
             date += timedelta(seconds=time_traveled)
-            print('finding hotel...')
             time_till_stop -= time_traveled  # Remove the amount of time traveled in the day from time to the stop
             hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)  # figure out the location at 5PM
-            stopping_points.append(await _find_hotel(hotel_lat,
-                                                     hotel_lon,
-                                                     price_range,
-                                                     date))  # Append a found hotel
+            attempts = 3 # 3 tries to find a hotel before raising an error with the route
+            while attempts > 0:
+                try:
+                    print('finding hotel...', hotel_lat, hotel_lon)
+                    stopping_points.append(await _find_hotel(hotel_lat,
+                                                             hotel_lon,
+                                                             price_range,
+                                                             date))  # Append a found hotel
+                    break
+                except HTTPException as exception:
+                    if exception.status_code == 404: # Handle a not found error occurring
+                        attempts -= 1 # subtract an attempt
+                        if attempts == 0:
+                            raise exception # Raise an error after 3 tries
+                        total_time += 1800 # Increase total time by 30 minutes
+                        date += timedelta(seconds=1800) # Increase the datetime
+                        hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)
             print('found hotel!')
             current_day += 1  # increment the days that have passed
             current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
@@ -234,8 +245,8 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
 
         if total_time + time_till_stop < end_search:  # Ensure we are within the route duration
             total_time += time_till_stop  # Increment the total time by time traveled to stop
-            print('finding stop...')
             current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
+            print('finding stop...', current_lat, current_lon)
             current_time += time_till_stop + (3600 * 2)  # Current time includes distance and time spent at stop
             stopping_points.append(
                 await _find_stop('attractions', current_lat, current_lon, 30))  # Add the stop to the list
@@ -314,15 +325,11 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str
     try:
         response = requests.get(nearby_search_url, params=params)
         json_data = response.json()
-        print(response.status_code)
         locations = Trip_Advisor_Location_Search.model_validate(json_data)
-        print('validated')
         if len(locations.data) > 0:
             location = locations.data[0]  # Get the first location from the response
             location_id = location.location_id
-            print('getting details')
             details = await _get_details(location_id)
-            print('got details')
             if details is not None:
                 return details
             else:
@@ -405,7 +412,6 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
         if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
             return await _find_hotel(lat, lon, price_range, check_in, radius + 10)
         elif response.status_code == 500 and json_data['errors'][0]['code'] == 38189:
-
             print(price_range)
             query = get_location(geocoder=geolocator, coords=[lat, lon]).address
             valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
@@ -447,7 +453,7 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
         # If nothing is found try another search with a larger price range/radius
         if exception.status_code == 404 and (price_range != ((0,1000), '0-1000')):
             price_range= ((0,1000), '0-1000')
-            return await _find_hotel(lat, lon, price_range, check_in, radius+10)
+            return await _find_hotel(lat, lon, price_range, check_in, radius*radius)
         raise exception
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
@@ -493,7 +499,6 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
     try:
         response = requests.get(hotel_price_url, params=params, headers=headers)
         json_data = response.json()
-        print(json_data)
         offers = Amadeus_Hotel_Offers.model_validate(json_data)
         if len(offers.data) > 0:  # Ensure at least one hotel is returned
             valid_offers = {}  # A dict to track valid offers
@@ -506,13 +511,11 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
                     total = float(offer.price.total)  # Convert the str into a float
                     if total < min_offer:
                         min_offer = total  # Track the cheapest offer that fits the user's criteria per hotel
-                # TODO get ranking info and add to temp_offer then return the hotel with the highest ranking in valid offers
                 temp_offer = {
                     'name': hotel_name,
                     'price': min_offer,
                 }
                 valid_offers[hotel_id] = temp_offer
-            print(valid_offers)
             return valid_offers
         else:
             raise HTTPException(status_code=404, detail="No offers found for this price range")
@@ -628,7 +631,7 @@ def get_html_response(url: str, query: Optional[str] =None) -> Response:
     ]  # A small list containing reliable user agents
     if query:
         params = {
-            'q': query
+            'q': query,
         }
     else:
         params = None
@@ -644,7 +647,7 @@ def get_html_response(url: str, query: Optional[str] =None) -> Response:
         'DNT': "1"  # Do not track the request header
     }
 
-    print(headers)
+    print(query)
     response = requests.get(url, params=params, headers=headers)
     return response
 
@@ -683,7 +686,7 @@ def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
         Dict[str, Any]: The updated hotel listing
 
     """
-    print(hotel['url'])
+    print('search url: ', hotel['url'])
     response = get_html_response(url=hotel['url']) # Use the already found direct google url
     if response.status_code == 200:
         parser=html.fromstring(response.text) # Format the data for parsing
@@ -691,8 +694,10 @@ def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
         if len(details) > 0: # Ensure details were found
             details = details[0] # set the details to be the first instance
             address = details.xpath(".//span[@class='CFH2De']/text()")[0] # Get the full address from the website page
+            print(address)
             location = get_location(geocoder=geolocator, address=address) # Geolocate for additional area info
             coordinates = [location.latitude, location.longitude] # Get the coordinates of the hotel
+            print(coordinates)
             # Add new values to the dictionary
             hotel['coordinates'], hotel['address'] = coordinates, address
     return hotel # Return the updated data
