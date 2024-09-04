@@ -504,6 +504,7 @@ export const startWorkFlow = async (
     await new Promise((resolve) => {
       const interval = setInterval(() => {
         if (!UserChatData.showInputBar) {
+          UserChatData.action = null
           clearInterval(interval);
           resolve();
         }

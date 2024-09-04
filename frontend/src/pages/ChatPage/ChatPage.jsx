@@ -182,26 +182,32 @@ const ChatPage = () => {
         } else if (UserChatData.action === "Car Details") { //Store the car details if action is "Car Details"
           // List of makes with spaces
           const makesWithSpaces = ["Aston Martin", "Alfa Romeo", "Land Rover", "Rolls Royce", "Mercedes Benz"];
-          // Regular expression to match year and make
-          const match = chatInput.message.match(/^(\d{4})\s+(.+?)\s+(.+)$/);
-          UserChatData.carDetails[0] = "test"
+          // Regular expression to match the year, make, and model
+          const match = chatInput.message.match(/^(\d{4})\s+(\S+)(?:\s+(.+))?$/);
 
           if (match) {
-              const year = match[1];
-              const possibleMake = match[2];   // Could be a make or part of a make with spaces
-              const model = match[3];  // The remaining parts
-
-              // Check if the possible make is one with a space
-              const make = makesWithSpaces.includes(possibleMake) ? possibleMake : match[2].split(" ")[0];
-              const actualModel = makesWithSpaces.includes(possibleMake) ? model : `${match[2].split(" ").slice(1).join(" ")} ${model}`;
-
-              UserChatData.carDetails[0] = year
-              UserChatData.carDetails[1] = make
-              UserChatData.carDetails[2] = actualModel
+            const year = match[1];
+            const possibleMake = match[2];  // Could be a single word make or part of a make with spaces
+            const remainingParts = match[3]; // Contains the rest of the input which could be the full model or part of the make and model
+          
+            // Determine if the make has a space
+            const make = makesWithSpaces.find((m) => remainingParts.startsWith(m.split(" ")[1])) 
+                        ? possibleMake + " " + remainingParts.split(" ")[0]  // Concatenate to form the full make
+                        : possibleMake;
+          
+            // Extract the model from the remaining parts based on whether the make is with spaces or not
+            const model = makesWithSpaces.includes(make) 
+                          ? remainingParts.split(" ").slice(1).join(" ")   // Skip the first word which is part of the make
+                          : remainingParts;
+          
+            // Assign the details to the UserChatData object
+            UserChatData.carDetails[0] = year;
+            UserChatData.carDetails[1] = make;
+            UserChatData.carDetails[2] = model;
           } else {
-              console.log("Invalid format");
+            console.log("Invalid input format");
           }
-          UserChatData.action = null
+
         }
 
         //Hide the input bar

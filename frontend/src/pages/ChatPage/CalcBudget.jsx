@@ -1,4 +1,4 @@
-
+import axios from 'axios';
 
 export const calcHotelBudget = async (duration) => {
     // Generate the initial route and grab the routes duration
@@ -17,6 +17,28 @@ export const calcHotelBudget = async (duration) => {
 
 export const calcGasBudget = async (duration, year, make, model) => {
   const carBudget = 10
-  console.log(year, make, model)
+  console.log(model)
+  const carInfo = await getCarInfo(year, make, model)
+  const mpg = carInfo['combination_mpg']
+  console.log(mpg)
   return carBudget
+}
+
+const getCarInfo = async (year, make, model) => {
+  try{
+  const params ={
+    'model': model,
+    'make': make,
+    'year': year
+  }
+  const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}get-car-details`, { params: params });
+  const carInfo = response.data
+  console.log(`Car Details: ${carInfo}`)
+  return carInfo
+  }
+  catch(error){
+    // Log any errors encountered during the request
+    console.error("Error getting car info:", error);
+    return null;
+  }
 }
