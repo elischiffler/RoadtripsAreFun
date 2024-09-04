@@ -64,6 +64,7 @@ class ChatData {
     loading = false,
     hotelBudget = null,
     carBudget = 0,
+    carDetails = new Array(3).fill(""),
     budget = 0,
   ) {
     this.chatId = chatId;
@@ -86,7 +87,8 @@ class ChatData {
     this.itinerary = itinerary;
     this.loading = loading;
     this.hotelBudget = hotelBudget;
-    this.carBudget = carBudget
+    this.carBudget = carBudget;
+    this.carDetails = carDetails;
     this.budget = budget;
   }
 }
@@ -119,7 +121,9 @@ export const UserDataProvider = ({ children }) => {
         chat.route,
         chat.itinerary,
         false, 
-        chat.minHotelBudget,
+        chat.hotelBudget,
+        chat.carBudget,
+        chat.carDetails,
         chat.budget,
       ));
       const chatlogs = new ChatLogs(chatdata, parsedData.chatlogs.currentId);

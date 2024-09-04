@@ -170,7 +170,6 @@ const ChatPage = () => {
         // Handle regular message submission
         addMessage(selectedChat.id, setChats, chatInput.message);
 
-
         // Store the message if action is "City Name"
         if (UserChatData.action === "City Name") {
           if (UserChatData.locationType === "start") {
@@ -180,6 +179,29 @@ const ChatPage = () => {
             UserChatData.endAddress[1] = chatInput.message;
             UserChatData.endConfirmed = await validateLocation(UserChatData.endAddress[1], false, UserChatData, setChats, setChatInput, chatInput);
           }
+        } else if (UserChatData.action === "Car Details") { //Store the car details if action is "Car Details"
+          // List of makes with spaces
+          const makesWithSpaces = ["Aston Martin", "Alfa Romeo", "Land Rover", "Rolls Royce", "Mercedes Benz"];
+          // Regular expression to match year and make
+          const match = chatInput.message.match(/^(\d{4})\s+(.+?)\s+(.+)$/);
+          UserChatData.carDetails[0] = "test"
+
+          if (match) {
+              const year = match[1];
+              const possibleMake = match[2];   // Could be a make or part of a make with spaces
+              const model = match[3];  // The remaining parts
+
+              // Check if the possible make is one with a space
+              const make = makesWithSpaces.includes(possibleMake) ? possibleMake : match[2].split(" ")[0];
+              const actualModel = makesWithSpaces.includes(possibleMake) ? model : `${match[2].split(" ").slice(1).join(" ")} ${model}`;
+
+              UserChatData.carDetails[0] = year
+              UserChatData.carDetails[1] = make
+              UserChatData.carDetails[2] = actualModel
+          } else {
+              console.log("Invalid format");
+          }
+          UserChatData.action = null
         }
 
         //Hide the input bar

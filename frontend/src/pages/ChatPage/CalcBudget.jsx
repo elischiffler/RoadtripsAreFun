@@ -11,8 +11,12 @@ export const calcHotelBudget = async (duration) => {
             duration -= 25200  //Subtract a day worth of driving from duration
         }
       }
-      console.log(hotelCount)
       const minHotelBudget = hotelCount * 100
       return minHotelBudget
     }
 
+export const calcGasBudget = async (duration, year, make, model) => {
+  const carBudget = 10
+  console.log(year, make, model)
+  return carBudget
+}

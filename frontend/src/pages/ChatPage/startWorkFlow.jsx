@@ -1,7 +1,7 @@
 import { validateLocation } from "./ValidateLocation";
 import { getInitialRoute, getFinalRoute } from "./getRoute";
 import { generateItinerary } from "../ItineraryPage/generateItinerary";
-import { calcHotelBudget } from "./CalcBudget"
+import { calcHotelBudget, calcGasBudget } from "./CalcBudget"
 import { Data, ChatLogs } from "../../states/UserDataContext";
 // Helper Function
 
@@ -476,8 +476,8 @@ export const startWorkFlow = async (
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
-  UserChatData.hotelBudget = await calcHotelBudget(UserChatData.initial['duration']); // Get the estimated minimum hotel budget
   if(UserChatData.initial){ // Checkpoint 4: Calculate a budget
+    UserChatData.hotelBudget = await calcHotelBudget(UserChatData.initial['duration']); // Get the estimated minimum hotel budget
     if (UserChatData.hotelBudget) {  //If the user has to go to a hotel
       addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.hotelBudget}. Would you like to increase this budget?`)
       UserChatData.showInputBar = true
@@ -494,9 +494,23 @@ export const startWorkFlow = async (
       });
 
       console.log(`hotel budget: ${UserChatData.hotelBudget}`)
-  }
-  
-    UserChatData.carBudget = 10
+    }
+
+    addMessage(chatId, setChats, "Please enter the year, make and model of the vehicle you plan to use. (e.g. 2020 Mazda CX-3)")
+    UserChatData.action = "Car Details"
+    UserChatData.showInputBar = true
+
+    // Wait for the user to input there car details
+    await new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (!UserChatData.showInputBar) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+
+    UserChatData.carBudget = await calcGasBudget(UserChatData.initial['duration'], UserChatData.carDetails[0], UserChatData.carDetails[1], UserChatData.carDetails[2])
     // Calculate the total budget
     UserChatData.budget  = UserChatData.hotelBudget + UserChatData.carBudget
 
