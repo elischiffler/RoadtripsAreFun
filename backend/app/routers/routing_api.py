@@ -449,12 +449,6 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
             return location
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
-    except HTTPException as exception:
-        # If nothing is found try another search with a larger price range/radius
-        if exception.status_code == 404 and (price_range != ((0,1000), '0-1000')):
-            price_range= ((0,1000), '0-1000')
-            return await _find_hotel(lat, lon, price_range, check_in, radius*radius)
-        raise exception
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
     except ValidationError as exception:
@@ -618,6 +612,7 @@ def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str
         valid_hotels = list(
             filter(lambda listing: price_range[0] <= listing['price'] <= price_range[1], listings)) # Filter hotels out of budget
         if len(valid_hotels) > 0:
+            print("advanced search...", valid_hotels)
             ideal_hotel = _get_advanced_listing(valid_hotels[0]) # Get information on address and website url
             return ideal_hotel
         else:
@@ -691,9 +686,12 @@ def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
     if response.status_code == 200:
         parser=html.fromstring(response.text) # Format the data for parsing
         details = parser.xpath("//div[@class='iInyCf QqZUDd Zuc8V BLvVUb HoSN7e']") # Div with relevant info
+        print(details)
         if len(details) > 0: # Ensure details were found
             details = details[0] # set the details to be the first instance
-            address = details.xpath(".//span[@class='CFH2De']/text()")[0] # Get the full address from the website page
+            hotel_location_path = details.xpath(".//div[@class='K4nuhf']")[0] # Exact container that will always have location
+            print(hotel_location_path)
+            address = hotel_location_path.xpath(".//span[@class='CFH2De']/text()")[0] # Get the full address from the website page
             print(address)
             location = get_location(geocoder=geolocator, address=address) # Geolocate for additional area info
             coordinates = [location.latitude, location.longitude] # Get the coordinates of the hotel
