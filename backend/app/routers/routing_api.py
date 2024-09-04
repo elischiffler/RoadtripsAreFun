@@ -444,7 +444,7 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
     except HTTPException as exception:
-        # If nothing is found try another search with a larger price range
+        # If nothing is found try another search with a larger price range/radius
         if exception.status_code == 404 and (price_range != ((0,1000), '0-1000')):
             price_range= ((0,1000), '0-1000')
             return await _find_hotel(lat, lon, price_range, check_in, radius+10)
@@ -522,50 +522,6 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
         raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
 
 
-def _get_price_range(budget: float, current_cost: float, stops_left: int) -> tuple[tuple[float, float], str]:
-    remaining_avg = (budget - current_cost) / stops_left
-    min_cost, max_cost = remaining_avg - 100, remaining_avg + 100
-    if remaining_avg > 100:
-        return (min_cost, max_cost), f"{min_cost:.2f}-{max_cost:.2f}"
-    else:
-        return (0, max_cost), f"0-{max_cost:.2f}"
-
-
-async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
-    """
-    A function to get the amadeus access token to use its API
-
-    Args:
-    - API_KEY: The API key generated from an Amadeus account
-    - API_SECRET: The API secret generated from an Amadeus account
-
-    Returns:
-    - str: The Amadeus access token
-
-    Raises:
-    - HTTPException: For errors related to an unexpected response from Amadeus.
-    """
-    url = "https://test.api.amadeus.com/v1/security/oauth2/token"
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    data = {
-        "grant_type": "client_credentials",
-        "client_id": API_KEY,
-        "client_secret": API_SECRET
-    }
-    try:
-        response = requests.post(url, headers=headers, data=data)
-        json_data = response.json()
-        response_data = Amadeus_Access.model_validate(json_data)
-        if response_data.access_token is not None:
-            return response_data.access_token
-        else:
-            raise HTTPException(status_code=404, detail="No Amadeus access token returned")
-    except ValidationError as exception:
-        raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
-
-
 async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
     """
     Return a list of tuples of hotelIds and ratings sorted from highest to lowest rating
@@ -604,6 +560,41 @@ async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
         raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
     except (KeyError, ValueError) as exception:
         raise HTTPException(status_code=500, detail=f'Unable to parse response: {str(exception)}')
+
+
+async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
+    """
+    A function to get the amadeus access token to use its API
+
+    Args:
+    - API_KEY: The API key generated from an Amadeus account
+    - API_SECRET: The API secret generated from an Amadeus account
+
+    Returns:
+    - str: The Amadeus access token
+
+    Raises:
+    - HTTPException: For errors related to an unexpected response from Amadeus.
+    """
+    url = "https://test.api.amadeus.com/v1/security/oauth2/token"
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    data = {
+        "grant_type": "client_credentials",
+        "client_id": API_KEY,
+        "client_secret": API_SECRET
+    }
+    try:
+        response = requests.post(url, headers=headers, data=data)
+        json_data = response.json()
+        response_data = Amadeus_Access.model_validate(json_data)
+        if response_data.access_token is not None:
+            return response_data.access_token
+        else:
+            raise HTTPException(status_code=404, detail="No Amadeus access token returned")
+    except ValidationError as exception:
+        raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
 
 
 def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str, Any]:
@@ -706,6 +697,14 @@ def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
             hotel['coordinates'], hotel['address'] = coordinates, address
     return hotel # Return the updated data
 
+
+def _get_price_range(budget: float, current_cost: float, stops_left: int) -> tuple[tuple[float, float], str]:
+    remaining_avg = (budget - current_cost) / stops_left
+    min_cost, max_cost = remaining_avg - 100, remaining_avg + 100
+    if remaining_avg > 100:
+        return (min_cost, max_cost), f"{min_cost:.2f}-{max_cost:.2f}"
+    else:
+        return (0, max_cost), f"0-{max_cost:.2f}"
 
 
 def _str_to_rating(rating: str) -> Tuple[float, int]:
