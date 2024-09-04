@@ -329,6 +329,7 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str
                 raise HTTPException(status_code=500, detail="Location data is missing latitude or longitude")
         else:
             raise HTTPException(status_code=404, detail="No locations found")
+
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"TripAdvisor request failed: {str(exception)}")
     except ValidationError as exception:
@@ -423,7 +424,7 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
                 name = hotel.name.lower()
                 hotel_info[hotel_id] = {'coordinates': coordinates, 'name': name.capitalize(),
                                         'type': 'hotel'}  # Add relevant info from the search to hotel_info
-            # Get the cheapest offer that matches the user's preference per hotel
+            # Get a dict of offers using hotelIds as keys
             offers = await _get_offers(access_token=access_token,
                                        hotel_ids=id_list,
                                        check_in=check_in,
@@ -431,18 +432,23 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
                                                           0,
                                                           0),  # The next day at 9 AM
                                        price_range=price_range[1])
-            print(offers.keys())
             highest_rated = await _get_hotel_ratings(offers.keys())  # Look for ratings on the hotels with valid offers
             best_offer = offers[highest_rated[0]]  # Use the hotelId returned with highest_rated to get its offer info
             location = hotel_info[
                 best_offer['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
             location['price'] = best_offer['price']  # Add pricing to the already saved info hotel info
             location['name'] = best_offer['name']  # Add the name to location info
-            location['rating'] = highest_rated[1]
+            location['stars'] = round(highest_rated[1]/20,2) # Get a star value by dividing the 0-100 rating
             # Returns a dictionary with a coordinates, name, type, price, and rating of the hotel
             return location
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
+    except HTTPException as exception:
+        # If nothing is found try another search with a larger price range
+        if exception.status_code == 404 and (price_range != ((0,1000), '0-1000')):
+            price_range= ((0,1000), '0-1000')
+            return await _find_hotel(lat, lon, price_range, check_in, radius+10)
+        raise exception
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
     except ValidationError as exception:
