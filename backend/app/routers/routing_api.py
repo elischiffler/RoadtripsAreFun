@@ -366,10 +366,11 @@ async def _get_details(location_id: str) -> Dict[str, Any]:
     return {'coordinates': [lat, lon], 'name': name.capitalize(), 'type': 'stop'}
 
 
-async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple, str], check_in: datetime, radius: int = 30) -> \
+async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,float], str], check_in: datetime, radius: int = 30) -> \
         dict[str, list[float] | str]:
     """
-    Finds a hotel location for a given position and radius.
+    Finds a hotel location for a given position and radius. Each hotel will have a name, coordinates, address, type,
+    price, stars, review_count.
 
     Args:
     - lat(float): Latitude of the search area
@@ -403,12 +404,12 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple, str], ch
         if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
             return await _find_hotel(lat, lon, price_range, check_in, radius + 10)
         elif response.status_code == 500 and json_data['errors'][0]['code'] == 38189:
-            print("Scraping...")
-            print(price_range)
 
+            print(price_range)
             query = get_location(geocoder=geolocator, coords=[lat, lon]).address
-            nearby_hotels = find_google_hotels(query=query)
-            print('nearby hotels:', nearby_hotels)
+            valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
+            valid_hotel['type'] = 'hotel'
+            return valid_hotel
         hotels = Amadeus_Hotel_Search.model_validate(json_data)  # Validate the response
         hotel_list = hotels.data
         if len(hotel_list) > 0:
@@ -581,7 +582,6 @@ async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
         }
         response = requests.get(hotels_list_url, params=params, headers=headers)
         json_data = response.json()
-        print(json_data)
         sentiments = Amadeus_Hotel_Ratings.model_validate(json_data).data  # all the returned hotel sentiments
         ratings = []  # List to store the returned hotel ratings
         if len(sentiments) > 0:
@@ -600,7 +600,7 @@ async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
         raise HTTPException(status_code=500, detail=f'Unable to parse response: {str(exception)}')
 
 
-def find_google_hotels(query: str, price_range: Tuple[float, float]) -> List[Dict[str, Any]]:
+def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str, Any]:
     """
     Handles the parsing of a Google hotels for the best hotel given the users preferences
 
@@ -617,7 +617,6 @@ def find_google_hotels(query: str, price_range: Tuple[float, float]) -> List[Dic
         listings = parse_google_response(response.text) # Convert the response to a string to parse
         valid_hotels = list(
             filter(lambda listing: price_range[0] <= listing['price'] <= price_range[1], listings)) # Filter hotels out of budget
-        print(valid_hotels)
         if len(valid_hotels) > 0:
             ideal_hotel = _get_advanced_listing(valid_hotels[0]) # Get information on address and website url
             return ideal_hotel
@@ -669,20 +668,17 @@ def parse_google_response(response: str) -> List[Dict[str, Any]]:
             stars, review_count = _str_to_rating(rank_details[0]) # Convert the rank information
             listings.append({
                 "name": name[0],
-                "url": f"https://www.google.com/{google_url[0]}",
+                "url": f"https://www.google.com{google_url[0]}",
                 "price": price,
                 "stars": stars,
                 "review_count": review_count,
             })
-        else:
-            raise HTTPException(status_code=500, detail="Missing details from scraped response")
     listings.sort(key=lambda listing: listing["stars"], reverse=True)
-    print(listings)
     return listings
 
 def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Scrapes a given hotel listing for an accurate website url and address
+    Scrapes a given hotel listing for an accurate website url and location info
     Args:
         hotel(Dict[str, Any]): The hotel dictionary to be updated
 
@@ -690,15 +686,24 @@ def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
         Dict[str, Any]: The updated hotel listing
 
     """
-    print(hotel)
+    print(hotel['url'])
     response = get_html_response(url=hotel['url']) # Use the already found direct google url
     if response.status_code == 200:
-        parser= html.fromstring(response.txt) # Format the data for parsing
+        parser=html.fromstring(response.text) # Format the data for parsing
+        details = parser.xpath("//div[@class='iInyCf QqZUDd Zuc8V BLvVUb HoSN7e']") # Div with relevant info
+        if len(details) > 0: # Ensure details were found
+            details = details[0] # set the details to be the first instance
+            address = details.xpath(".//span[@class='CFH2De']/text()")[0] # Get the full address from the website page
+            location = get_location(geocoder=geolocator, address=address) # Geolocate for additional area info
+            coordinates = [location.latitude, location.longitude] # Get the coordinates of the hotel
+            # Add new values to the dictionary
+            hotel['coordinates'], hotel['address'] = coordinates, address
+    return hotel # Return the updated data
 
 
 
 def _str_to_rating(rating: str) -> Tuple[float, int]:
     details = rating.split()
     stars = float(details[0])  # Get the star rating
-    review_count = int(details[6].replace(',', ''))  # Get the number of reviews
+    review_count = int(details[6].replace(',', ''))  # Remove commas to get review count as an integer
     return stars, review_count
