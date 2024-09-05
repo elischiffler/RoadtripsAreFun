@@ -121,7 +121,7 @@ async def get_final_route(request: Request) -> Route:
                                         'type': 'end',
                                         'address': location.address})
             idx += 1
-            for step in leg.steps:
+            for step in leg.steps: # Not really doing anything
                 # Each step has a distance, duration, instruction, and location
                 steps.append(Route_Step(distance=step.distance,
                                         duration=step.duration,
@@ -241,9 +241,12 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
                         if attempts == 0:
                             raise exception # Raise an error after 3 tries
                         total_time += 1800 # Increase total drive time by 30 minutes
+                        print(total_time)
                         time_till_stop -= 3600 # Decrease time till stop by 30 minutes
                         date += timedelta(seconds=1800) # Increase the datetime
                         hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time) # Find the new position after driving
+                    else:
+                        raise exception
             print('found hotel!')
             total_cost += stopping_points[-1]['price'] # Add the cost of the hotel
             print(f"budget - total cost: {budget}-{total_cost} = {budget-total_cost}")
@@ -409,6 +412,14 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
 
     """
     try:
+        # Webscrape first
+        print(price_range)
+        query = get_location(geocoder=geolocator, coords=[lat, lon]).address
+        valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
+        valid_hotel['type'] = 'hotel'
+        return valid_hotel
+
+
         access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
         hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
         headers = {
@@ -426,8 +437,7 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
         # If no hotel is found search for one with a larger radius
         if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
             return await _find_hotel(lat, lon, price_range, check_in, radius + 10)
-        elif response.status_code == 500 and json_data['errors'][0]['code'] == 38189:
-            print(price_range)
+        elif isinstance(lat, float) or (response.status_code == 500 and json_data['errors'][0]['code'] == 38189):
             query = get_location(geocoder=geolocator, coords=[lat, lon]).address
             valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
             valid_hotel['type'] = 'hotel'
@@ -621,9 +631,9 @@ def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str
 
     """
     url = 'https://www.google.com/travel/search'  # Link to google hotels
-    response = get_html_response(query=query, url=url)
+    response = _get_html_response(query=query, url=url)
     if response.status_code == 200:
-        listings = parse_google_response(response.text) # Convert the response to a string to parse
+        listings = _parse_google_response(response.text) # Convert the response to a string to parse
         valid_hotels = list(
             filter(lambda listing: price_range[0] <= listing['price'] <= price_range[1], listings)) # Filter hotels out of budget
         if len(valid_hotels) > 0:
@@ -633,7 +643,8 @@ def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str
         else:
             raise HTTPException(status_code=404, detail="No valid hotels found for the given price range")
 
-def get_html_response(url: str, query: Optional[str] =None) -> Response:
+
+def _get_html_response(url: str, query: Optional[str] =None) -> Response:
     user_agents = [
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0',
@@ -662,7 +673,7 @@ def get_html_response(url: str, query: Optional[str] =None) -> Response:
     return response
 
 
-def parse_google_response(response: str) -> List[Dict[str, Any]]:
+def _parse_google_response(response: str) -> List[Dict[str, Any]]:
     parser = html.fromstring(response)
     hotels_list = parser.xpath("//div[@jsname='mutHjb']")  # Get a list of divs which contain the specified jsname
     listings = []
@@ -696,7 +707,7 @@ def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
         Dict[str, Any]: The updated hotel listing
 
     """
-    response = get_html_response(url=hotel['url']) # Use the already found direct google url
+    response = _get_html_response(url=hotel['url']) # Use the already found direct google url
     if response.status_code == 200:
         parser=html.fromstring(response.text) # Format the data for parsing
         details = parser.xpath("//div[@class='iInyCf QqZUDd Zuc8V BLvVUb HoSN7e']") # Div with relevant info
@@ -740,7 +751,7 @@ def _get_price_range(remaining_budget: float, duration_left: float, stops_left: 
 
 def _str_to_rating(rating: str) -> Tuple[float, int]:
     """
-    Converts a scraped
+    Parses scraped rating information for relevant number
 
     Args:
         rating(str): Scraped unprocessed data for ratings

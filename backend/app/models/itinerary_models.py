@@ -17,5 +17,6 @@ class Itinerary_Day(BaseModel):
         name: str
         time: str
         address: Optional[str] = None
+        url: Optional[str] = None
     stops: List[Itinerary_Stop]
 

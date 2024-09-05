@@ -26,7 +26,7 @@ async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
     try:
         # Convert json payload back to route
         json_data = await request.json()
-        data = Itinerary_Payload.model_validate(json_data) # Validate the frontend payload
+        data = Itinerary_Payload.model_validate(json_data)  # Validate the frontend payload
 
         # initialize current_time to be the specified start_time
         current_time = data.start_time
@@ -41,17 +41,18 @@ async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
             # Add the time of to get to the stop to the current time
             current_time += timedelta(seconds=stop['duration'])
             destination = {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
-                    'time': current_time.strftime('%I:%M %p'),  # Hour:Minutes
-                    'name': stop['name']}
+                           'time': current_time.strftime('%I:%M %p'),  # Hour:Minutes
+                           'name': stop['name'],
+                           'url': stop.get('url')}
             # Add the stop to stop_list
             if stop['type'] != 'generic':
                 destination['address'] = stop['address']
             stop_list.append(destination)
-            if stop['type'] == 'hotel': # If the stop is a hotel
-                current_time = datetime(current_time.year, # set current time to be next day at 9AM
+            if stop['type'] == 'hotel':  # If the stop is a hotel
+                current_time = datetime(current_time.year,  # set current time to be next day at 9AM
                                         current_time.month,
-                                        current_time.day+1,
-                                        9, # TODO Make the start time a parameter
+                                        current_time.day + 1,
+                                        9,  # TODO Make the start time a parameter
                                         0,
                                         0)
                 stop_list.append(
@@ -59,7 +60,7 @@ async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
                      'time': current_time.strftime('%I:%M %p'),  # Hour:Minutes
                      'name': 'Depart from your hotel'})
             elif stop['type'] == 'stop':
-                current_time += timedelta(hours=2) # Increment two hours for time at the stop
+                current_time += timedelta(hours=2)  # Increment two hours for time at the stop
                 stop_list.append(
                     {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
                      'time': current_time.strftime('%I:%M %p'),  # Hour:Minutes
@@ -67,6 +68,7 @@ async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
         if len(stop_list) >= 2:
             # Organize the stops by date
             itinerary = await _day_itinerary(stop_list)
+            print(itinerary)
             return itinerary
         else:
             raise HTTPException(status_code=400, detail="Incomplete route provided")
@@ -97,21 +99,16 @@ async def _day_itinerary(itinerary: List[Dict[str, Any]]) -> List[Itinerary_Day]
         curr_day = {'date': itinerary[0]['date'], 'stops': []}
         # iterate through all stops
         for stop in itinerary:
+            point = {'name': stop['name'], 'time': stop['time'], 'address': stop.get('address'), 'url': stop.get('url')}
             # Check if the date matches and if so add stop to the same day
             if stop['date'] == curr_day['date']:
-                point = {'name': stop['name'], 'time': stop['time']}
-                if stop.get('address'):
-                    point['address'] = stop['address']
                 curr_day['stops'].append(point)
             # If date doesn't match it is a new day
             else:
-                day_itinerary.append(Itinerary_Day.model_validate(curr_day))  # Add the fully complete date itinerary to the final list
+                day_itinerary.append(Itinerary_Day.model_validate(curr_day))  # Add the validated itinerary day to the itinerary list
                 # change the current day to be a new day with the information of the current stop
                 curr_day = {'date': stop['date'],
-                            'stops': [{'name': stop['name'],
-                                       'time': stop['time'],}]}
-                if stop.get('address'):
-                    curr_day['stops'][0]['address'] = stop['address']
+                            'stops': [point]}
 
         day_itinerary.append(Itinerary_Day.model_validate(curr_day))
         return day_itinerary
