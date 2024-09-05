@@ -21,6 +21,7 @@ class Route(BaseModel):
     steps: list[Route_Step]
     stops: list[Dict[str, Any]]
     geometry: Mapbox_geo
+    cost: float
 
     class Stop(BaseModel):
         name: str

@@ -20,7 +20,11 @@ def test_get_location():
     assert isinstance(location.latitude, float) and isinstance(location.longitude, float)
     print(location.address)
 
-
+def test_get_location2():
+    address = 'Thornwood High School, 17101 South Park Avenue, Thornton Junction, South Holland, IL 60473, United States of America'
+    location = get_location(geocoder=geocoder, address=address)
+    assert isinstance(location, Location)
+    assert isinstance(location.latitude, float) and isinstance(location.longitude, float)
 
 if __name__ == "__main__":
     pytest.main()

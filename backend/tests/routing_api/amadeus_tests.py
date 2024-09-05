@@ -4,6 +4,16 @@ from datetime import datetime, timedelta
 from app.routers.routing_api import _get_amadeus_token, _find_hotel, _get_offers, _get_hotel_ratings
 import pytest
 from dotenv import load_dotenv
+from app.utils.geolocation_helpers import get_location
+from geopy.geocoders import OpenCage
+
+load_dotenv()
+
+open_cage_key = os.getenv('OPENCAGE_KEY')
+
+print(open_cage_key)
+geocoder= OpenCage(open_cage_key, user_agent='rp-testing')
+
 
 load_dotenv()
 
@@ -40,6 +50,17 @@ async def test_get_offers(): # Change once API gets worked out
         assert isinstance(hotel_cost[key], dict)
         assert isinstance(hotel_cost[key]['price'], float)
         assert isinstance(hotel_cost[key]['name'], str)
+@pytest.mark.asyncio
+async def test_get_hotel_ThornwoodHS():
+    address = 'Thornwood High School, 17101 South Park Avenue, Thornton Junction, South Holland, IL 60473, United States of America'
+    location = get_location(geocoder=geocoder, address=address)
+    lat = location.latitude
+    lon = location.longitude
+    price_range = ((139.5, 339.5), '139.50-339.50')
+    check_in = datetime(2024, 11, 20, 0, 0, 0)
+    hotel_info = await _find_hotel(lat, lon, price_range, check_in)
+    assert isinstance(hotel_info, dict)
+
 
 @pytest.mark.asyncio
 async def test_get_hotel_ratings():

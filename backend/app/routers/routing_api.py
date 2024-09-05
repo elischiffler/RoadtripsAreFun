@@ -81,13 +81,14 @@ async def get_final_route(request: Request) -> Route:
         num_stops = payload.num_stops
         start = payload.start
         budget = payload.budget
+        print(budget)
 
         # Check for num_stops positive or zero
         if not isinstance(num_stops, int) or num_stops < 0:
             raise ValueError("Number of stops must be a non-negative integer")
 
         # Use initial route to find stopping points
-        stopping_points = await _add_stops(initial_route, num_stops, date=start, budget=budget)
+        stopping_points, total_cost = await _add_stops(initial_route, num_stops, date=start, budget=budget)
         print("got stopping points")
 
         coordinates = []
@@ -128,20 +129,21 @@ async def get_final_route(request: Request) -> Route:
                                         location=step.maneuver.location))
         # Add all stopping coordinates to a single variable
         coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
-        print('ready to return')
+        print('Route budget:', total_cost)
         return Route(coordinates=coordinates,
                      distance=distance,
                      duration=duration,
                      steps=steps,
                      stops=stopping_points,
-                     geometry=geometry)
+                     geometry=geometry,
+                     cost=total_cost)
 
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
     except ValidationError as exception:
         raise HTTPException(status_code=502, detail=f'Improper Mapbox response: {str(exception)}')
     except (KeyError, ValueError) as exception:
-        raise HTTPException(status_code=502, detail=f"Error processing Mapbox response: {str(exception)}")
+        raise HTTPException(status_code=502, detail=f"Unexpected value or key: {str(exception)}")
 
 
 async def _call_route(start_lat: float, start_lon: float, end_lat: float, end_lon: float,
@@ -184,7 +186,7 @@ async def _call_route(start_lat: float, start_lon: float, end_lat: float, end_lo
 
 async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget: float, daily_start: int = 9,
                      daily_end: int = 16) -> \
-        list[Dict[str, Any]]:
+        tuple[list[dict[str, list[float] | str] | dict[str, Any]], int]:
     """
     Determines stopping points along the route based on the specified number of stops.
 
@@ -204,14 +206,16 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
     current_time = date.hour * 3600  # Initialize the current time of the day in seconds
     steps = route.legs[0].steps  # Only one leg in the initial route
     coordinates = route.geometry.coordinates  # Get all coordinates of the route
-    current_day = 0  # Initialize number of days in route
+    current_day = 1  # Initialize number of days in route
     total_time = 0  # Total time traveled to the destination
     time_till_stop = interval  # Track the time until next stop
-    estimate_of_days = route.duration // ((daily_end - daily_start) * 3600)  # Estimate for days the route will take
-    if estimate_of_days > 0:
-        price_range = _get_price_range(budget, budget / estimate_of_days, num_stops)
-    else:
-        price_range = _get_price_range(budget, budget, num_stops)
+    driving_interval = daily_end - daily_start
+
+    price_range = _get_price_range(remaining_budget=budget, # Get an initial price range for the hotels
+                                   duration_left=route.duration,
+                                   stops_left=num_stops,
+                                   daily_drive_time=driving_interval,)
+    total_cost = 0 # Initialize value to track cost
 
     # Add stopping places until the trip is over
     for _ in range(num_stops + 1):
@@ -222,7 +226,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
             date += timedelta(seconds=time_traveled)
             time_till_stop -= time_traveled  # Remove the amount of time traveled in the day from time to the stop
             hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)  # figure out the location at 5PM
-            attempts = 3 # 3 tries to find a hotel before raising an error with the route
+            attempts = 12 # 12 attempts (6 hours) to find a hotel before raising an error with the route
             while attempts > 0:
                 try:
                     print('finding hotel...', hotel_lat, hotel_lon)
@@ -236,10 +240,20 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
                         attempts -= 1 # subtract an attempt
                         if attempts == 0:
                             raise exception # Raise an error after 3 tries
-                        total_time += 1800 # Increase total time by 30 minutes
+                        total_time += 1800 # Increase total drive time by 30 minutes
+                        time_till_stop -= 3600 # Decrease time till stop by 30 minutes
                         date += timedelta(seconds=1800) # Increase the datetime
-                        hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)
+                        hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time) # Find the new position after driving
             print('found hotel!')
+            total_cost += stopping_points[-1]['price'] # Add the cost of the hotel
+            print(f"budget - total cost: {budget}-{total_cost} = {budget-total_cost}")
+            print(f"remaining duration: {route.duration-total_time}")
+            print(f"number of stops left: {num_stops}")
+            price_range = _get_price_range(remaining_budget=budget-total_cost, # Recalculate a price range for the next hotel
+                                           duration_left=route.duration-total_time,
+                                           stops_left=num_stops,
+                                           daily_drive_time=driving_interval)
+            print(price_range)
             current_day += 1  # increment the days that have passed
             current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
             date = datetime(date.year, date.month, date.day + 1, daily_start, 0, 0)  # New day
@@ -252,10 +266,11 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
             stopping_points.append(
                 await _find_stop('attractions', current_lat, current_lon, 30))  # Add the stop to the list
             print('found stop!')
+            num_stops-=1 # Decrement the number of stops
             date += timedelta(hours=2,
                               seconds=interval)  # Allocate two hours detours per stop/ increment for the time to drive to the location
             time_till_stop = interval  # Reset the time to the next stop
-    return stopping_points
+    return stopping_points, total_cost
 
 
 def _find_position(coordinates: list[list[float]], steps: list[Mapbox_step], elapsed_time: float) -> list[float]:
@@ -408,7 +423,6 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
         }
         response = requests.get(hotels_list_url, params=params, headers=headers)
         json_data = response.json()
-        print(json_data)
         # If no hotel is found search for one with a larger radius
         if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
             return await _find_hotel(lat, lon, price_range, check_in, radius + 10)
@@ -659,7 +673,7 @@ def parse_google_response(response: str) -> List[Dict[str, Any]]:
         pricing_details = hotel.xpath(  # List includes extraneous information unreliably
             ".//span[@jsaction='mouseenter:JttVIc;mouseleave:VqIRre;']//text()"
         )
-        if len(pricing_details) > 2:  # Ensure pricing is available for the listing
+        if len(pricing_details) == 4:  # Ensure all pricing info is being returned
             price = int(pricing_details[0].replace('$', ''))  # Format and convert the price for further processing
             stars, review_count = _str_to_rating(rank_details[0]) # Convert the rank information
             listings.append({
@@ -686,24 +700,38 @@ def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
     if response.status_code == 200:
         parser=html.fromstring(response.text) # Format the data for parsing
         details = parser.xpath("//div[@class='iInyCf QqZUDd Zuc8V BLvVUb HoSN7e']") # Div with relevant info
-        print(details)
         if len(details) > 0: # Ensure details were found
             details = details[0] # set the details to be the first instance
             hotel_location_path = details.xpath(".//div[@class='K4nuhf']")[0] # Exact container that will always have location
-            print(hotel_location_path)
             address = hotel_location_path.xpath(".//span[@class='CFH2De']/text()")[0] # Get the full address from the website page
-            print(address)
             location = get_location(geocoder=geolocator, address=address) # Geolocate for additional area info
             coordinates = [location.latitude, location.longitude] # Get the coordinates of the hotel
-            print(coordinates)
             # Add new values to the dictionary
             hotel['coordinates'], hotel['address'] = coordinates, address
     return hotel # Return the updated data
 
 
-def _get_price_range(budget: float, current_cost: float, stops_left: int) -> tuple[tuple[float, float], str]:
-    remaining_avg = (budget - current_cost) / stops_left
-    min_cost, max_cost = remaining_avg - 100, remaining_avg + 100
+def _get_price_range(remaining_budget: float, duration_left: float, stops_left: int, daily_drive_time: int) -> tuple[tuple[float, float], str]:
+    """
+    Function to dynamically calculate a price range based on remaining trip length and budget
+
+    Args:
+        - remaining_budget(float): The remaining budget for the trip
+        - duration_left(float): The driving duration of the trip
+        - stops_left(int): The number of stops left for the trip
+        - daily_drive_time(int): The daily drive time for the trip
+
+    Returns:
+        - tuple[tuple[float, float], str]: The dynamic price range for the next hotel
+
+    """
+    # Found the full days of driving left in the trip
+    days_left = (duration_left + stops_left*(2*3600))//(daily_drive_time*3600)
+    if days_left == 0:
+        remaining_avg = remaining_budget
+    else:
+        remaining_avg = remaining_budget / days_left # Get a new avg cost of hotels by taking away the current price
+    min_cost, max_cost = remaining_avg - 100, remaining_avg + 100 # 100 dollar deviations from price avg for a reasonable range
     if remaining_avg > 100:
         return (min_cost, max_cost), f"{min_cost:.2f}-{max_cost:.2f}"
     else:
@@ -711,6 +739,16 @@ def _get_price_range(budget: float, current_cost: float, stops_left: int) -> tup
 
 
 def _str_to_rating(rating: str) -> Tuple[float, int]:
+    """
+    Converts a scraped
+
+    Args:
+        rating(str): Scraped unprocessed data for ratings
+
+    Returns:
+        Tuple[float, int]: The number of stars (0-5) and user review count
+
+    """
     details = rating.split()
     stars = float(details[0])  # Get the star rating
     review_count = int(details[6].replace(',', ''))  # Remove commas to get review count as an integer
