@@ -35,7 +35,7 @@ router = APIRouter()
 
 open_cage_key = os.getenv('OPENCAGE_KEY')
 
-geolocator = OpenCage(api_key=open_cage_key,user_agent="RP-Hotels")  # Initialize a global geolocator
+geolocator = OpenCage(api_key=open_cage_key, user_agent="RP-Hotels")  # Initialize a global geolocator
 
 
 @router.get('/get-initial-route')
@@ -107,7 +107,7 @@ async def get_final_route(request: Request) -> Route:
 
             # Add the duration to each stop
             if idx < len(stopping_points) and stopping_points[idx]['type'] != 'generic':
-                stopping_points[idx]['duration'] = leg.duration # For each stopping point add the duration to each
+                stopping_points[idx]['duration'] = leg.duration  # For each stopping point add the duration to each
                 if stopping_points[idx].get('address') is None:
                     location = get_location(geocoder=geolocator,
                                             coords=stopping_points[idx]['coordinates'])
@@ -121,7 +121,7 @@ async def get_final_route(request: Request) -> Route:
                                         'type': 'end',
                                         'address': location.address})
             idx += 1
-            for step in leg.steps: # Not really doing anything
+            for step in leg.steps:  # Not really doing anything
                 # Each step has a distance, duration, instruction, and location
                 steps.append(Route_Step(distance=step.distance,
                                         duration=step.duration,
@@ -211,11 +211,11 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
     time_till_stop = interval  # Track the time until next stop
     driving_interval = daily_end - daily_start
 
-    price_range = _get_price_range(remaining_budget=budget, # Get an initial price range for the hotels
+    price_range = _get_price_range(remaining_budget=budget,  # Get an initial price range for the hotels
                                    duration_left=route.duration,
                                    stops_left=num_stops,
-                                   daily_drive_time=driving_interval,)
-    total_cost = 0 # Initialize value to track cost
+                                   daily_drive_time=driving_interval, )
+    total_cost = 0  # Initialize value to track cost
 
     # Add stopping places until the trip is over
     for _ in range(num_stops + 1):
@@ -226,7 +226,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
             date += timedelta(seconds=time_traveled)
             time_till_stop -= time_traveled  # Remove the amount of time traveled in the day from time to the stop
             hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)  # figure out the location at 5PM
-            attempts = 12 # 12 attempts (6 hours) to find a hotel before raising an error with the route
+            attempts = 12  # 12 attempts (6 hours) to find a hotel before raising an error with the route
             while attempts > 0:
                 try:
                     print('finding hotel...', hotel_lat, hotel_lon)
@@ -236,24 +236,26 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
                                                              date))  # Append a found hotel
                     break
                 except HTTPException as exception:
-                    if exception.status_code == 404: # Handle a not found error occurring
-                        attempts -= 1 # subtract an attempt
+                    if exception.status_code == 404:  # Handle a not found error occurring
+                        attempts -= 1  # subtract an attempt
                         if attempts == 0:
-                            raise exception # Raise an error after 3 tries
-                        total_time += 1800 # Increase total drive time by 30 minutes
+                            raise exception  # Raise an error after 3 tries
+                        total_time += 1800  # Increase total drive time by 30 minutes
                         print(total_time)
-                        time_till_stop -= 3600 # Decrease time till stop by 30 minutes
-                        date += timedelta(seconds=1800) # Increase the datetime
-                        hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time) # Find the new position after driving
+                        time_till_stop -= 3600  # Decrease time till stop by 30 minutes
+                        date += timedelta(seconds=1800)  # Increase the datetime
+                        hotel_lat, hotel_lon = _find_position(coordinates, steps,
+                                                              total_time)  # Find the new position after driving
                     else:
                         raise exception
             print('found hotel!')
-            total_cost += stopping_points[-1]['price'] # Add the cost of the hotel
-            print(f"budget - total cost: {budget}-{total_cost} = {budget-total_cost}")
-            print(f"remaining duration: {route.duration-total_time}")
+            total_cost += stopping_points[-1]['price']  # Add the cost of the hotel
+            print(f"budget - total cost: {budget}-{total_cost} = {budget - total_cost}")
+            print(f"remaining duration: {route.duration - total_time}")
             print(f"number of stops left: {num_stops}")
-            price_range = _get_price_range(remaining_budget=budget-total_cost, # Recalculate a price range for the next hotel
-                                           duration_left=route.duration-total_time,
+            price_range = _get_price_range(remaining_budget=budget - total_cost,
+                                           # Recalculate a price range for the next hotel
+                                           duration_left=route.duration - total_time,
                                            stops_left=num_stops,
                                            daily_drive_time=driving_interval)
             print(price_range)
@@ -269,7 +271,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
             stopping_points.append(
                 await _find_stop('attractions', current_lat, current_lon, 30))  # Add the stop to the list
             print('found stop!')
-            num_stops-=1 # Decrement the number of stops
+            num_stops -= 1  # Decrement the number of stops
             date += timedelta(hours=2,
                               seconds=interval)  # Allocate two hours detours per stop/ increment for the time to drive to the location
             time_till_stop = interval  # Reset the time to the next stop
@@ -389,11 +391,14 @@ async def _get_details(location_id: str) -> Dict[str, Any]:
 
     lat = details.latitude
     lon = details.longitude
-    name = details.name.lower()
-    return {'coordinates': [lat, lon], 'name': name.capitalize(), 'type': 'stop'}
+    name = details.name
+    url = details.web_url
+    address = details.address_obj.address_string
+    return {'coordinates': [lat, lon], 'name': name, 'type': 'stop', 'url': url, 'address': address}
 
 
-async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,float], str], check_in: datetime, radius: int = 30) -> \
+async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, float], str], check_in: datetime,
+                      radius: int = 30) -> \
         dict[str, list[float] | str]:
     """
     Finds a hotel location for a given position and radius. Each hotel will have a name, coordinates, address, type,
@@ -420,7 +425,7 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
             valid_hotel['type'] = 'hotel'
             return valid_hotel
 
-        # Use a Amadeus second
+        # If scraping fails use the Amadeus API
         access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
         hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
         headers = {
@@ -452,20 +457,20 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
                 hotel_info[hotel_id] = {'coordinates': coordinates, 'name': name.capitalize(),
                                         'type': 'hotel'}  # Add relevant info from the search to hotel_info
             # Get a dict of offers using hotelIds as keys
-            offers = await _get_offers(access_token=access_token,
-                                       hotel_ids=id_list,
-                                       check_in=check_in,
-                                       check_out=datetime(check_in.year, check_in.month, check_in.day + 1, 9,
-                                                          0,
-                                                          0),  # The next day at 9 AM
-                                       price_range=price_range[1])
-            highest_rated = await _get_hotel_ratings(offers.keys())  # Look for ratings on the hotels with valid offers
+            offers = await _get_amadeus_offers(access_token=access_token,
+                                               hotel_ids=id_list,
+                                               check_in=check_in,
+                                               check_out=datetime(check_in.year, check_in.month, check_in.day + 1, 9,
+                                                                  0,
+                                                                  0),  # The next day at 9 AM
+                                               price_range=price_range[1])
+            highest_rated = await _get_amadeus_ratings(offers.keys())  # Look for ratings on the hotels with valid offers
             best_offer = offers[highest_rated[0]]  # Use the hotelId returned with highest_rated to get its offer info
             location = hotel_info[
                 best_offer['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
             location['price'] = best_offer['price']  # Add pricing to the already saved info hotel info
             location['name'] = best_offer['name']  # Add the name to location info
-            location['stars'] = round(highest_rated[1]/20,2) # Get a star value by dividing the 0-100 rating
+            location['stars'] = round(highest_rated[1] / 20, 2)  # Get a star value by dividing the 0-100 rating
             # Returns a dictionary with a coordinates, name, type, price, and rating of the hotel
             return location
         else:
@@ -476,9 +481,13 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
         raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
 
 
-async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetime, check_out: datetime,
-                      price_range: str,
-                      adults: int = 2) -> dict[str, Any]:
+async def find_amadeus_hotels():
+    pass
+
+
+async def _get_amadeus_offers(access_token: str, hotel_ids: list[str], check_in: datetime, check_out: datetime,
+                              price_range: str,
+                              adults: int = 2) -> dict[str, Any]:
     """
     Returns pricing info on the highest rated hotel that is within a given price range
 
@@ -540,7 +549,7 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
         raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
 
 
-async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
+async def _get_amadeus_ratings(hotel_ids: list[str]) -> tuple:
     """
     Return a list of tuples of hotelIds and ratings sorted from highest to lowest rating
 
@@ -632,19 +641,21 @@ def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str
     url = 'https://www.google.com/travel/search'  # Link to google hotels
     response = _get_html_response(query=query, url=url)
     if response.status_code == 200:
-        listings = _parse_google_response(response.text) # Convert the response to a string to parse
-        if len(listings) > 0: # Ensure listings were found
+        listings = _parse_google_response(response.text)  # Convert the response to a string to parse
+        if len(listings) > 0:  # Ensure listings were found
             # Filter hotels out of budget
             valid_hotels = list(filter(lambda listing: price_range[0] <= listing['price'] <= price_range[1], listings))
-            while len(valid_hotels) > 0: # Search through all hotel offerings
+            while len(valid_hotels) > 0:  # Search through all hotel offerings
                 print("advanced search...", valid_hotels)
-                ideal_hotel = _get_advanced_listing(valid_hotels.pop()) # Get detailed information on the highest rated hotel
-                if ideal_hotel is not None: # Ensure advanced information was found
+                ideal_hotel = _get_advanced_listing(
+                    valid_hotels.pop())  # Get detailed information on the highest rated hotel
+                if ideal_hotel is not None:  # Ensure advanced information was found
                     return ideal_hotel
-        raise HTTPException(status_code=404, detail="No valid hotels found for the given parameters") # To handle research
+        raise HTTPException(status_code=404,
+                            detail="No valid hotels found for the given parameters")  # To handle research
 
 
-def _get_html_response(url: str, query: Optional[str] =None) -> Response:
+def _get_html_response(url: str, query: Optional[str] = None) -> Response:
     user_agents = [
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0',
@@ -695,8 +706,8 @@ def _parse_google_response(response: str) -> List[Dict[str, Any]]:
         )
         if len(pricing_details) == 4:  # Ensure all pricing info is being returned
             price = int(pricing_details[0].replace('$', ''))  # Format and convert the price for further processing
-            stars, review_count = _str_to_rating(rank_details[0]) # Extract rank information
-            listings.append({ # Add a hotel with all its relevant information
+            stars, review_count = _str_to_rating(rank_details[0])  # Extract rank information
+            listings.append({  # Add a hotel with all its relevant information
                 "name": name[0],
                 "url": f"https://www.google.com{google_url[0]}",
                 "price": price,
@@ -706,6 +717,7 @@ def _parse_google_response(response: str) -> List[Dict[str, Any]]:
     if len(listings) > 0:
         listings.sort(key=lambda listing: listing["stars"])  # Sort hotels lowest rated to highest
     return listings
+
 
 def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any] | None:
     """
@@ -717,23 +729,26 @@ def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any] | None:
         Dict[str, Any]: The updated hotel listing
 
     """
-    response = _get_html_response(url=hotel['url']) # Use the already found direct google url
+    response = _get_html_response(url=hotel['url'])  # Use the already found direct google url
     if response.status_code == 200:
-        parser=html.fromstring(response.text) # Format the data for parsing
-        details = parser.xpath("//div[@class='iInyCf QqZUDd Zuc8V BLvVUb HoSN7e']") # Div with relevant info
-        if len(details) > 0: # Ensure details were found
-            details = details[0] # set the details to be the first instance
-            hotel_location_path = details.xpath(".//div[@class='K4nuhf']")[0] # Exact container that will always have location
-            address = hotel_location_path.xpath(".//span[@class='CFH2De']/text()")[0] # Get the full address from the website page
-            location = get_location(geocoder=geolocator, address=address) # Geolocate for additional area info
-            coordinates = [location.latitude, location.longitude] # Get the coordinates of the hotel
+        parser = html.fromstring(response.text)  # Format the data for parsing
+        details = parser.xpath("//div[@class='iInyCf QqZUDd Zuc8V BLvVUb HoSN7e']")  # Div with relevant info
+        if len(details) > 0:  # Ensure details were found
+            details = details[0]  # set the details to be the first instance
+            hotel_location_path = details.xpath(".//div[@class='K4nuhf']")[
+                0]  # Exact container that will always have location
+            address = hotel_location_path.xpath(".//span[@class='CFH2De']/text()")[
+                0]  # Get the full address from the website page
+            location = get_location(geocoder=geolocator, address=address)  # Geolocate for additional area info
+            coordinates = [location.latitude, location.longitude]  # Get the coordinates of the hotel
             # Add new values to the dictionary
             hotel['coordinates'], hotel['address'] = coordinates, address
-            return hotel # Return the updated data
+            return hotel  # Return the updated data
         return None
 
 
-def _get_price_range(remaining_budget: float, duration_left: float, stops_left: int, daily_drive_time: int) -> tuple[tuple[float, float], str]:
+def _get_price_range(remaining_budget: float, duration_left: float, stops_left: int, daily_drive_time: int) -> tuple[
+    tuple[float, float], str]:
     """
     Function to dynamically calculate a price range based on remaining trip length and budget
 
@@ -748,12 +763,12 @@ def _get_price_range(remaining_budget: float, duration_left: float, stops_left: 
 
     """
     # Found the full days of driving left in the trip
-    days_left = (duration_left + stops_left*(2*3600))//(daily_drive_time*3600)
+    days_left = (duration_left + stops_left * (2 * 3600)) // (daily_drive_time * 3600)
     if days_left == 0:
         remaining_avg = remaining_budget
     else:
-        remaining_avg = remaining_budget / days_left # Get a new avg cost of hotels by taking away the current price
-    min_cost, max_cost = remaining_avg - 100, remaining_avg + 100 # 100 dollar deviations from price avg for a reasonable range
+        remaining_avg = remaining_budget / days_left  # Get a new avg cost of hotels by taking away the current price
+    min_cost, max_cost = remaining_avg - 100, remaining_avg + 100  # 100 dollar deviations from price avg for a reasonable range
     if remaining_avg > 100:
         return (min_cost, max_cost), f"{min_cost:.2f}-{max_cost:.2f}"
     else:
