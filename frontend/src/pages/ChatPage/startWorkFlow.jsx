@@ -551,6 +551,7 @@ export const startWorkFlow = async (
     UserChatData.endConfirmed = null;
     UserChatData.startConfirmed = null;
     UserChatData.initial = null;
+    UserChatData.budget = null;
 
     // Restart workflow for another route
     await startWorkFlow(setChats,

@@ -61,7 +61,19 @@ const ItineraryPage = () => {
               {day['stops'].map((activity, idx) => (
                 activity['address'] ?(
                 <Box key={idx} className="activity-box">
-                  <Typography variant="body1">{activity['name']}</Typography>
+                  <Typography variant="body1">
+                    {activity['url']? // Conditionally render the name
+                      // Makes the name clickable and navigates you to the booking link in a new tab
+                      (
+                        <a href={activity['url']}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="activity-link">
+                          {activity['name']}
+                        </a>
+                      ):
+                      (activity['name'])}
+                  </Typography>
                   <Typography variant="body2" className="activity-time">
                     {`Arrival time: ${activity['time']}`}
                   </Typography>
