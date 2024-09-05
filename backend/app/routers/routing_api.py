@@ -26,7 +26,7 @@ load_dotenv()
 # Setup logging (for debugging)
 logging.basicConfig(level=logging.INFO)
 
-# Get APIs
+# Get API tokens
 mapbox_access_token = os.getenv('MAPBOX_API')
 tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 
