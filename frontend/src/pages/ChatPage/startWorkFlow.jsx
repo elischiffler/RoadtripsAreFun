@@ -1,7 +1,7 @@
 import { validateLocation } from "./ValidateLocation";
 import { getInitialRoute, getFinalRoute } from "./getRoute";
 import { generateItinerary } from "../ItineraryPage/generateItinerary";
-import { calcBudget } from "./CalcBudget"
+import { calcHotelBudget, calcGasBudget } from "./CalcBudget"
 import { Data, ChatLogs } from "../../states/UserDataContext";
 // Helper Function
 
@@ -476,23 +476,46 @@ export const startWorkFlow = async (
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
-  if(UserChatData.initial && !UserChatData.budget){ // Checkpoint 4: Calculate a budget
-    UserChatData.minHotelBudget = await calcBudget(UserChatData.initial['duration']); // Get the estimated min budget
-    UserChatData.budget = UserChatData.minHotelBudget // Assign a default budget
-    addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.minHotelBudget}`)
-    UserChatData.showInputBar = true
-    UserChatData.showBudgetSlider = true // Allow user to customize their budget preference
+  if(UserChatData.initial){ // Checkpoint 4: Calculate a budget
+    UserChatData.hotelBudget = await calcHotelBudget(UserChatData.initial['duration']); // Get the estimated minimum hotel budget
+    if (UserChatData.hotelBudget) {  //If the user has to go to a hotel
+      addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.hotelBudget}. Would you like to increase this budget?`)
+      UserChatData.showInputBar = true
+      UserChatData.showBudgetSlider = true // Allow user to customize their budget preference
 
-    // Wait for the user to input something
+      // Wait for the user to input there hotel budget
+      await new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (!UserChatData.showBudgetSlider) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 100);
+      });
+
+      console.log(`hotel budget: ${UserChatData.hotelBudget}`)
+    }
+
+    addMessage(chatId, setChats, "Please enter the year, make and model of the vehicle you plan to use. (e.g. 2020 Mazda CX-3)")
+    UserChatData.action = "Car Details"
+    UserChatData.showInputBar = true
+
+    // Wait for the user to input there car details
     await new Promise((resolve) => {
       const interval = setInterval(() => {
-        if (!UserChatData.showBudgetSlider) {
+        if (!UserChatData.showInputBar) {
+          UserChatData.action = null
           clearInterval(interval);
           resolve();
         }
       }, 100);
     });
-    console.log(`budget: ${UserChatData.budget}`)
+
+    UserChatData.carBudget = await calcGasBudget(UserChatData.initial['distance'], UserChatData.carDetails[0], UserChatData.carDetails[1], UserChatData.carDetails[2])
+    // Calculate the total budget
+    UserChatData.budget  = UserChatData.hotelBudget + UserChatData.carBudget
+
+    addMessage(chatId, setChats, `In total, we estimate your budget to be $${UserChatData.budget}:\nHotel Budget: $${UserChatData.hotelBudget}\nGas Budget: $${UserChatData.carBudget}`)
 
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
