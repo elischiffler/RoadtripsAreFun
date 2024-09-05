@@ -156,7 +156,8 @@ const ChatPage = () => {
         addMessage(
           selectedChat.id,
           setChats,
-          `${address[0]} ${address[1]} ${address[2]} ${address[3]}`
+          `${address[0]} ${address[1]} ${address[2]} ${address[3]}`,
+          'user',
         );
         UserChatData.showInputBar = false
         UserChatData.showAddressInput = false

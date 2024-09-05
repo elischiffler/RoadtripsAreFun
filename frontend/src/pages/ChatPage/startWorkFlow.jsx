@@ -312,7 +312,7 @@ async function displayConfirmationDetails(chatId,
       chatId,
       setChats,
       askForConfirmation.text,
-      'bot',
+      'user',
       askForConfirmation.buttons,
     );
   
@@ -326,6 +326,29 @@ async function displayConfirmationDetails(chatId,
       }, 100);
     });
     replacePreviousMessage(chatId, setChats, `The address is: ${UserChatData.action}`);
+}
+
+export async function handlePromptCarInfo(
+  chatId,
+  setChats,
+  UserChatData
+){
+  addMessage(chatId, setChats, "Please enter the year, make and model of the vehicle you plan to use. (e.g. 2020 Mazda CX-3)", 'bot',);
+  UserChatData.action = "Car Details";
+  UserChatData.showInputBar = true;
+
+  // Wait for the user to input there car details
+  await new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (!UserChatData.showInputBar) {
+        UserChatData.action = null
+        clearInterval(interval);
+        resolve();
+      }
+    }, 100);
+  });
+
+  UserChatData = await calcGasBudget(UserChatData.initial['distance'], UserChatData.carDetails[0], UserChatData.carDetails[1], UserChatData.carDetails[2], UserChatData.chatId, setChats, UserChatData);
 }
 
 // Loops confirmation of location until it is successfully validated
@@ -508,22 +531,9 @@ export const startWorkFlow = async (
       console.log(`hotel budget: ${UserChatData.hotelBudget}`)
     }
 
-    addMessage(chatId, setChats, "Please enter the year, make and model of the vehicle you plan to use. (e.g. 2020 Mazda CX-3)", 'bot',)
-    UserChatData.action = "Car Details"
-    UserChatData.showInputBar = true
+    // Handle getting the car info from the user and estimating a gas budget
+    await handlePromptCarInfo(chatId, setChats, UserChatData); 
 
-    // Wait for the user to input there car details
-    await new Promise((resolve) => {
-      const interval = setInterval(() => {
-        if (!UserChatData.showInputBar) {
-          UserChatData.action = null
-          clearInterval(interval);
-          resolve();
-        }
-      }, 100);
-    });
-
-    UserChatData.carBudget = await calcGasBudget(UserChatData.initial['distance'], UserChatData.carDetails[0], UserChatData.carDetails[1], UserChatData.carDetails[2])
     // Calculate the total budget
     UserChatData.budget  = UserChatData.hotelBudget + UserChatData.carBudget
 
@@ -550,7 +560,7 @@ export const startWorkFlow = async (
     ChatLogsData.chatdata[UserChatData.chatId-1] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
 
     // End the workflow with a message
-    addMessage(chatId, setChats, "Successfully generated your trip! Click on the Map and Itinerary buttons to view the details.", 'bot');
+    addMessage(chatId, setChats, `Successfully generated your trip! Based on hotel and gas it should cost $${UserChatData.route['cost'] + UserChatData.carBudget}. Click on the Map and Itinerary buttons to view the details.`, 'bot');
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   }
   else if (!UserChatData.route){
