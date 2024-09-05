@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
-from geopy.geocoders import Nominatim
-from fastapi import APIRouter, HTTPException, Request
+from geopy.geocoders import OpenCage
+from fastapi import APIRouter, HTTPException, Request, Response
 import requests
 from requests.exceptions import RequestException
 from pydantic import ValidationError
@@ -8,10 +8,13 @@ from app.models.routing_models.routing_models import MapBox, Route, Route_Step, 
 from app.models.routing_models.trip_advisor_models import Trip_Advisor_Location_Search, Trip_Advisor_Information
 from app.models.routing_models.amadeus_models import Amadeus_Access, Amadeus_Hotel_Search, Amadeus_Hotel_Offers, \
     Amadeus_Hotel_Ratings
+from app.utils.geolocation_helpers import get_location
 from dotenv import load_dotenv
-from typing import Dict, Any
+from typing import Dict, Any, List, Tuple, Optional
 import os
 import logging
+from lxml import html
+import random
 
 # Define the types for convenience
 Mapbox_step = MapBox.MapBox_Route.Mapbox_leg.Mapbox_step
@@ -30,6 +33,10 @@ tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
 # Grab app from APIRouter
 router = APIRouter()
 
+open_cage_key = os.getenv('OPENCAGE_KEY')
+
+geolocator = OpenCage(api_key=open_cage_key,user_agent="RP-Hotels")  # Initialize a global geolocator
+
 
 @router.get('/get-initial-route')
 async def get_initial_route(start_lat: float,
@@ -39,8 +46,6 @@ async def get_initial_route(start_lat: float,
     try:
         # Construct initial route without stops
         initial_route = await _call_route(start_lat, start_lon, end_lat, end_lon)
-        print("got initial route")
-        # Return the initial route
         return initial_route
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
@@ -56,18 +61,14 @@ async def get_final_route(request: Request) -> Route:
     Retrieves a route from Mapbox API, adds intermediate stops, and returns the detailed route information.
 
     Parameters:
-    - start_lat (float): Latitude of the starting point.
-    - start_lon (float): Longitude of the starting point.
-    - end_lat (float): Latitude of the destination point.
-    - end_lon (float): Longitude of the destination point.
-    - num_stops (int): Number of intermediate stops to include in the route.
-    - start(datetime): Start date of the route.
+        - request (Request): A JSON payload containing data of the initial route, number of stops, budget, and
+        start date
 
     Returns:
-    - Route: Detailed route information including coordinates, distance, duration, and step-by-step instructions.
+        - Route: Detailed route information including coordinates, distance, duration, and step-by-step instructions.
 
     Raises:
-    - HTTPException: For errors related to Mapbox requests or response processing.
+        - HTTPException: For errors related to Mapbox requests or response processing.
     """
 
     try:
@@ -78,8 +79,8 @@ async def get_final_route(request: Request) -> Route:
         start_lon, start_lat = initial_route.geometry.coordinates[0]
         end_lon, end_lat = initial_route.geometry.coordinates[-1]
         num_stops = payload.num_stops
-        start=payload.start
-        budget=payload.budget
+        start = payload.start
+        budget = payload.budget
 
         # Check for num_stops positive or zero
         if not isinstance(num_stops, int) or num_stops < 0:
@@ -99,18 +100,18 @@ async def get_final_route(request: Request) -> Route:
         distance, duration = route.distance, route.duration
         geometry = route.geometry
         steps = []
-        geolocator = Nominatim(user_agent="RP-Hotels")  # Initialize a geolocator
 
         idx = 0
         for leg in route.legs:
 
             # Add the duration to each stop
             if idx < len(stopping_points) and stopping_points[idx]['type'] != 'generic':
-                stopping_points[idx]['duration'] = leg.duration
-                temp_coordinates = stopping_points[idx]['coordinates']
-                location = geolocator.reverse(f"{temp_coordinates[0]}, {temp_coordinates[1]}")  # Reverse geolocate
-                if location:
-                    stopping_points[idx]['address'] = location.address  # Add the address to each
+                stopping_points[idx]['duration'] = leg.duration # For each stopping point add the duration to each
+                if stopping_points[idx].get('address') is None:
+                    location = get_location(geocoder=geolocator,
+                                            coords=stopping_points[idx]['coordinates'])
+                    if location:
+                        stopping_points[idx]['address'] = location.address  # Add the address to each
             else:
                 location = geolocator.reverse(f"{end_lat}, {end_lon}")
                 # Include the duration to get to the end
@@ -208,25 +209,36 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
     time_till_stop = interval  # Track the time until next stop
     estimate_of_days = route.duration // ((daily_end - daily_start) * 3600)  # Estimate for days the route will take
     if estimate_of_days > 0:
-        price_range = _get_price_range(budget, budget / estimate_of_days, num_stops)  # TODO Implement budget
+        price_range = _get_price_range(budget, budget / estimate_of_days, num_stops)
     else:
         price_range = _get_price_range(budget, budget, num_stops)
 
     # Add stopping places until the trip is over
     for _ in range(num_stops + 1):
         # Check whether the daily end or the next stop comes first
-        while total_time < end_search and current_time + time_till_stop >= (
-                daily_end * 3600):  # Check if next stop or daily end comes next
+        while total_time < end_search and current_time + time_till_stop >= (daily_end * 3600):
             time_traveled = (daily_end * 3600) - current_time  # Calculate time traveled that day
             total_time += time_traveled  # Add the time traveled toward the next stop that day
             date += timedelta(seconds=time_traveled)
-            print('finding hotel...')
             time_till_stop -= time_traveled  # Remove the amount of time traveled in the day from time to the stop
             hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)  # figure out the location at 5PM
-            stopping_points.append(await _find_hotel(hotel_lat,
-                                                     hotel_lon,
-                                                     price_range,
-                                                     date))  # Append a found hotel
+            attempts = 3 # 3 tries to find a hotel before raising an error with the route
+            while attempts > 0:
+                try:
+                    print('finding hotel...', hotel_lat, hotel_lon)
+                    stopping_points.append(await _find_hotel(hotel_lat,
+                                                             hotel_lon,
+                                                             price_range,
+                                                             date))  # Append a found hotel
+                    break
+                except HTTPException as exception:
+                    if exception.status_code == 404: # Handle a not found error occurring
+                        attempts -= 1 # subtract an attempt
+                        if attempts == 0:
+                            raise exception # Raise an error after 3 tries
+                        total_time += 1800 # Increase total time by 30 minutes
+                        date += timedelta(seconds=1800) # Increase the datetime
+                        hotel_lat, hotel_lon = _find_position(coordinates, steps, total_time)
             print('found hotel!')
             current_day += 1  # increment the days that have passed
             current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
@@ -234,11 +246,8 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
 
         if total_time + time_till_stop < end_search:  # Ensure we are within the route duration
             total_time += time_till_stop  # Increment the total time by time traveled to stop
-            print('finding stop...')
-            print(total_time)
-            print(route.duration)
             current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
-            print(current_lat, current_lon)
+            print('finding stop...', current_lat, current_lon)
             current_time += time_till_stop + (3600 * 2)  # Current time includes distance and time spent at stop
             stopping_points.append(
                 await _find_stop('attractions', current_lat, current_lon, 30))  # Add the stop to the list
@@ -315,24 +324,20 @@ async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str
     }
 
     try:
-        print(params)
         response = requests.get(nearby_search_url, params=params)
         json_data = response.json()
-        print(response.status_code)
         locations = Trip_Advisor_Location_Search.model_validate(json_data)
-        print('validated')
         if len(locations.data) > 0:
             location = locations.data[0]  # Get the first location from the response
             location_id = location.location_id
-            print('getting details')
             details = await _get_details(location_id)
-            print('got details')
             if details is not None:
                 return details
             else:
                 raise HTTPException(status_code=500, detail="Location data is missing latitude or longitude")
         else:
             raise HTTPException(status_code=404, detail="No locations found")
+
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"TripAdvisor request failed: {str(exception)}")
     except ValidationError as exception:
@@ -370,10 +375,11 @@ async def _get_details(location_id: str) -> Dict[str, Any]:
     return {'coordinates': [lat, lon], 'name': name.capitalize(), 'type': 'stop'}
 
 
-async def _find_hotel(lat: float, lon: float, price_range: str, check_in: datetime, radius: int = 30) -> \
+async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,float], str], check_in: datetime, radius: int = 30) -> \
         dict[str, list[float] | str]:
     """
-    Finds a hotel location for a given position and radius.
+    Finds a hotel location for a given position and radius. Each hotel will have a name, coordinates, address, type,
+    price, stars, review_count.
 
     Args:
     - lat(float): Latitude of the search area
@@ -406,6 +412,12 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
         # If no hotel is found search for one with a larger radius
         if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
             return await _find_hotel(lat, lon, price_range, check_in, radius + 10)
+        elif response.status_code == 500 and json_data['errors'][0]['code'] == 38189:
+            print(price_range)
+            query = get_location(geocoder=geolocator, coords=[lat, lon]).address
+            valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
+            valid_hotel['type'] = 'hotel'
+            return valid_hotel
         hotels = Amadeus_Hotel_Search.model_validate(json_data)  # Validate the response
         hotel_list = hotels.data
         if len(hotel_list) > 0:
@@ -419,22 +431,21 @@ async def _find_hotel(lat: float, lon: float, price_range: str, check_in: dateti
                 name = hotel.name.lower()
                 hotel_info[hotel_id] = {'coordinates': coordinates, 'name': name.capitalize(),
                                         'type': 'hotel'}  # Add relevant info from the search to hotel_info
-            # Get the cheapest offer that matches the user's preference per hotel
+            # Get a dict of offers using hotelIds as keys
             offers = await _get_offers(access_token=access_token,
                                        hotel_ids=id_list,
                                        check_in=check_in,
                                        check_out=datetime(check_in.year, check_in.month, check_in.day + 1, 9,
                                                           0,
                                                           0),  # The next day at 9 AM
-                                       price_range=price_range)
-            print(offers.keys())
+                                       price_range=price_range[1])
             highest_rated = await _get_hotel_ratings(offers.keys())  # Look for ratings on the hotels with valid offers
             best_offer = offers[highest_rated[0]]  # Use the hotelId returned with highest_rated to get its offer info
             location = hotel_info[
                 best_offer['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
             location['price'] = best_offer['price']  # Add pricing to the already saved info hotel info
             location['name'] = best_offer['name']  # Add the name to location info
-            location['rating'] = highest_rated[1]
+            location['stars'] = round(highest_rated[1]/20,2) # Get a star value by dividing the 0-100 rating
             # Returns a dictionary with a coordinates, name, type, price, and rating of the hotel
             return location
         else:
@@ -466,7 +477,7 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
         - HTTPException: For errors related to Amadeus requests or response processing.
 
     """
-    hotel_price_url = "https://test.api.amadeus.com/v2/shopping/hotel-offers"
+    hotel_price_url = "https://test.api.amadeus.com/v3/shopping/hotel-offers"
     check_in_date = check_in.strftime('%Y-%m-%d')
     check_out_date = check_out.strftime('%Y-%m-%d')
     headers = {
@@ -483,80 +494,6 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
     try:
         response = requests.get(hotel_price_url, params=params, headers=headers)
         json_data = response.json()
-        print(json_data)
-        json_data = {
-            "data": [
-                {
-                    "type": "hotel-offers",
-                    "hotel": {
-                        "type": "hotel",
-                        "hotelId": "MCLONGHM",
-                        "chainCode": "MC",
-                        "dupeId": "700031300",
-                        "name": "JW Marriott Grosvenor House London",
-                        "cityCode": "LON",
-                        "latitude": 51.50988,
-                        "longitude": -0.15509
-                    },
-                    "available": True,
-                    "offers": [
-                        {
-                            "id": "TSXOJ6LFQ2",
-                            "checkInDate": "2023-11-22",
-                            "checkOutDate": "2023-11-23",
-                            "rateCode": "V  ",
-                            "rateFamilyEstimated": {
-                                "code": "PRO",
-                                "type": "P"
-                            },
-                            "room": {
-                                "type": "ELE",
-                                "typeEstimated": {
-                                    "category": "EXECUTIVE_ROOM",
-                                    "beds": 1,
-                                    "bedType": "DOUBLE"
-                                },
-                                "description": {
-                                    "text": "Prepay Non-refundable Non-changeable, prepay in full\nExecutive King Room, Executive Lounge Access,\n1 King, 35sqm/377sqft-40sqm/430sqft, Wireless",
-                                    "lang": "EN"
-                                }
-                            },
-                            "guests": {
-                                "adults": 1
-                            },
-                            "price": {
-                                "currency": "GBP",
-                                "base": "716.00",
-                                "total": "716.00",
-                                "variations": {
-                                    "average": {
-                                        "base": "716.00"
-                                    },
-                                    "changes": [
-                                        {
-                                            "startDate": "2023-11-22",
-                                            "endDate": "2023-11-23",
-                                            "total": "716.00"
-                                        }
-                                    ]
-                                }
-                            },
-                            "policies": {
-                                "paymentType": "deposit",
-                                "cancellation": {
-                                    "description": {
-                                        "text": "NON-REFUNDABLE RATE"
-                                    },
-                                    "type": "FULL_STAY"
-                                }
-                            },
-                            "self": "https://test.api.amadeus.com/v3/shopping/hotel-offers/TSXOJ6LFQ2"
-                        }
-                    ],
-                    "self": "https://test.api.amadeus.com/v3/shopping/hotel-offers?hotelIds=MCLONGHM&adults=1&checkInDate=2023-11-22&paymentPolicy=NONE&roomQuantity=1"
-                }
-            ]
-        }
         offers = Amadeus_Hotel_Offers.model_validate(json_data)
         if len(offers.data) > 0:  # Ensure at least one hotel is returned
             valid_offers = {}  # A dict to track valid offers
@@ -565,33 +502,62 @@ async def _get_offers(access_token: str, hotel_ids: list[str], check_in: datetim
                 offer_list = hotel.offers  # List of offers from a single hotel
                 hotel_name = hotel.hotel.name
                 hotel_id = hotel.hotel.hotelId  # Amadeus ID of the hotel
-                print(hotel_name, hotel_id)
                 for offer in offer_list:  # Retrieve the offer price
                     total = float(offer.price.total)  # Convert the str into a float
                     if total < min_offer:
                         min_offer = total  # Track the cheapest offer that fits the user's criteria per hotel
-                # TODO get ranking info and add to temp_offer then return the hotel with the highest ranking in valid offers
                 temp_offer = {
                     'name': hotel_name,
                     'price': min_offer,
                 }
                 valid_offers[hotel_id] = temp_offer
-            print(valid_offers)
             return valid_offers
         else:
             raise HTTPException(status_code=404, detail="No offers found for this price range")
     except ValidationError as exception:
-        raise HTTPException(status_code=502, detail=f"Amadeus request validation failed: {str(exception)}")
+        raise HTTPException(status_code=502, detail=f"Error validating Amadeus offer response: {str(exception)}")
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
 
 
-def _get_price_range(budget: float, current_cost: float, stops_left: int) -> str:
-    remaining_avg = (budget - current_cost) / stops_left
-    if remaining_avg > 100:
-        return f"{remaining_avg - 100:.2f}-{remaining_avg + 100:.2f}"
-    else:
-        return f"0-{remaining_avg + 100:.2f}"
+async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
+    """
+    Return a list of tuples of hotelIds and ratings sorted from highest to lowest rating
+
+    Args:
+        - hotel_ids: A list of amadeus hotel IDs
+
+    Returns:
+        - tuple: A tuple containing the hotelId and rating for the highest rated hotel from the list
+
+    """
+    try:
+        access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
+        hotels_list_url = "https://test.api.amadeus.com/v2"
+        headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+        params = {
+            "hotelIds": hotel_ids
+        }
+        response = requests.get(hotels_list_url, params=params, headers=headers)
+        json_data = response.json()
+        sentiments = Amadeus_Hotel_Ratings.model_validate(json_data).data  # all the returned hotel sentiments
+        ratings = []  # List to store the returned hotel ratings
+        if len(sentiments) > 0:
+            for hotel in sentiments:
+                hotel_id = hotel.hotelId
+                rating = hotel.overallRating
+                ratings.append((hotel_id, rating))
+            ratings.sort(key=lambda x: x[1], reverse=True)
+            print(ratings)
+            return ratings[0]
+        else:
+            raise HTTPException(status_code=404, detail="No hotels found for the provided ids")
+    except ValidationError as exception:
+        raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
+    except (KeyError, ValueError) as exception:
+        raise HTTPException(status_code=500, detail=f'Unable to parse response: {str(exception)}')
 
 
 async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
@@ -629,85 +595,123 @@ async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
         raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
 
 
-async def _get_hotel_ratings(hotel_ids: list[str]) -> tuple:
-    """Return a list of tuples of hotelIds and ratings sorted from highest to lowest rating"""
-    try:
-        access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
-        hotels_list_url = "https://test.api.amadeus.com/v2"
-        headers = {
-            "Authorization": f"Bearer {access_token}"
-        }
+def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str, Any]:
+    """
+    Handles the parsing of a Google hotels for the best hotel given the users preferences
+
+    Args:
+        - query:
+        - price_range: a tuple containing max and min pricing
+
+    Returns:
+
+    """
+    url = 'https://www.google.com/travel/search'  # Link to google hotels
+    response = get_html_response(query=query, url=url)
+    if response.status_code == 200:
+        listings = parse_google_response(response.text) # Convert the response to a string to parse
+        valid_hotels = list(
+            filter(lambda listing: price_range[0] <= listing['price'] <= price_range[1], listings)) # Filter hotels out of budget
+        if len(valid_hotels) > 0:
+            print("advanced search...", valid_hotels)
+            ideal_hotel = _get_advanced_listing(valid_hotels[0]) # Get information on address and website url
+            return ideal_hotel
+        else:
+            raise HTTPException(status_code=404, detail="No valid hotels found for the given price range")
+
+def get_html_response(url: str, query: Optional[str] =None) -> Response:
+    user_agents = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36',
+    ]  # A small list containing reliable user agents
+    if query:
         params = {
-            "hotelIds": hotel_ids
+            'q': query,
         }
-        response = requests.get(hotels_list_url, params=params, headers=headers)
-        json_data = response.json()
-        json_data = {
-            "data": [
-                {
-                    "type": "hotelSentiment",
-                    "numberOfReviews": 218,
-                    "numberOfRatings": 278,
-                    "hotelId": "ADNYCCTB",
-                    "overallRating": 93,
-                    "sentiments": {
-                        "sleepQuality": 87,
-                        "service": 98,
-                        "facilities": 90,
-                        "roomComforts": 92,
-                        "valueForMoney": 87,
-                        "catering": 89,
-                        "location": 98,
-                        "pointsOfInterest": 91,
-                        "staff": 100
-                    }
-                },
-                {
-                    "type": "hotelSentiment",
-                    "numberOfReviews": 2667,
-                    "numberOfRatings": 2666,
-                    "hotelId": "TELONMFS",
-                    "overallRating": 81,
-                    "sentiments": {
-                        "sleepQuality": 78,
-                        "service": 80,
-                        "facilities": 75,
-                        "roomComforts": 87,
-                        "valueForMoney": 75,
-                        "catering": 81,
-                        "location": 89,
-                        "internet": 72,
-                        "pointsOfInterest": 81,
-                        "staff": 89
-                    }
-                }
-            ],
-            "meta": {
-                "count": 1,
-                "links": {
-                    "self": "https://test.api.amadeus.com/v2/e-reputation/hotel-sentiments?hotelIds=ADNYCCTB,TELONMFS,XXXYYY01"
-                }
-            },
-            "warnings": [
-                {
-                    "code": 913,
-                    "title": "PROPERTIES NOT FOUND",
-                    "detail": "Some of the requested properties were not found in our database.",
-                    "source": {
-                        "parameter": "hotelIds",
-                        "pointer": "XXXYYY01"
-                    }
-                }
-            ]
-        }
-        sentiments = Amadeus_Hotel_Ratings.model_validate(json_data).data  # all the returned hotel sentiments
-        ratings = []  # List to store the returned hotel ratings
-        for hotel in sentiments:
-            hotel_id = hotel.hotelId
-            rating = hotel.overallRating
-            ratings.append((hotel_id, rating))
-        ratings.sort(key=lambda x: x[1], reverse=True)
-        print(ratings)
-        return ratings[0]
-    except ValidationError as exception:
-        raise HTTPException(status_code=500, detail=f'Improper Amadeus response: {str(exception)}')
+    else:
+        params = None
+
+    headers = {
+        'user-agent': random.choice(user_agents),  # select a random reliable user-agent
+        'authority': 'www.google.com',
+        'method': 'GET',
+        'scheme': 'https',
+        'accept-language': 'en-US,en;q=0.9',
+        'cache-control': 'max-age=0',
+        'upgrade-insecure-requests': '1',
+        'DNT': "1"  # Do not track the request header
+    }
+
+    print(query)
+    response = requests.get(url, params=params, headers=headers)
+    return response
+
+
+def parse_google_response(response: str) -> List[Dict[str, Any]]:
+    parser = html.fromstring(response)
+    hotels_list = parser.xpath("//div[@jsname='mutHjb']")  # Get a list of divs which contain the specified jsname
+    listings = []
+    for hotel in hotels_list:
+        name = hotel.xpath(".//h2[@class='BgYkof ogfYpf ykx2he']/text()")  # Get this classes text value
+        google_url = hotel.xpath(".//a[@class='PVOOXe']/@href")  # Get the google listing link for later scraping
+        rank_details = hotel.xpath(".//span[@class='ta47le ']/@aria-label")
+        pricing_details = hotel.xpath(  # List includes extraneous information unreliably
+            ".//span[@jsaction='mouseenter:JttVIc;mouseleave:VqIRre;']//text()"
+        )
+        if len(pricing_details) > 2:  # Ensure pricing is available for the listing
+            price = int(pricing_details[0].replace('$', ''))  # Format and convert the price for further processing
+            stars, review_count = _str_to_rating(rank_details[0]) # Convert the rank information
+            listings.append({
+                "name": name[0],
+                "url": f"https://www.google.com{google_url[0]}",
+                "price": price,
+                "stars": stars,
+                "review_count": review_count,
+            })
+    listings.sort(key=lambda listing: listing["stars"], reverse=True)
+    return listings
+
+def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Scrapes a given hotel listing for an accurate website url and location info
+    Args:
+        hotel(Dict[str, Any]): The hotel dictionary to be updated
+
+    Returns:
+        Dict[str, Any]: The updated hotel listing
+
+    """
+    response = get_html_response(url=hotel['url']) # Use the already found direct google url
+    if response.status_code == 200:
+        parser=html.fromstring(response.text) # Format the data for parsing
+        details = parser.xpath("//div[@class='iInyCf QqZUDd Zuc8V BLvVUb HoSN7e']") # Div with relevant info
+        print(details)
+        if len(details) > 0: # Ensure details were found
+            details = details[0] # set the details to be the first instance
+            hotel_location_path = details.xpath(".//div[@class='K4nuhf']")[0] # Exact container that will always have location
+            print(hotel_location_path)
+            address = hotel_location_path.xpath(".//span[@class='CFH2De']/text()")[0] # Get the full address from the website page
+            print(address)
+            location = get_location(geocoder=geolocator, address=address) # Geolocate for additional area info
+            coordinates = [location.latitude, location.longitude] # Get the coordinates of the hotel
+            print(coordinates)
+            # Add new values to the dictionary
+            hotel['coordinates'], hotel['address'] = coordinates, address
+    return hotel # Return the updated data
+
+
+def _get_price_range(budget: float, current_cost: float, stops_left: int) -> tuple[tuple[float, float], str]:
+    remaining_avg = (budget - current_cost) / stops_left
+    min_cost, max_cost = remaining_avg - 100, remaining_avg + 100
+    if remaining_avg > 100:
+        return (min_cost, max_cost), f"{min_cost:.2f}-{max_cost:.2f}"
+    else:
+        return (0, max_cost), f"0-{max_cost:.2f}"
+
+
+def _str_to_rating(rating: str) -> Tuple[float, int]:
+    details = rating.split()
+    stars = float(details[0])  # Get the star rating
+    review_count = int(details[6].replace(',', ''))  # Remove commas to get review count as an integer
+    return stars, review_count

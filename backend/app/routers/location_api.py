@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Request
 from geopy.geocoders import Nominatim
 from app.models.location_models import location_payload, location_model
 from pydantic import ValidationError
+from app.utils.geolocation_helpers import get_location
 
 # Initialize FastAPI
 router = APIRouter()
@@ -31,10 +32,9 @@ async def validate_location(request: Request) -> location_model:
 
         # geolocate by either a string describing an address or exact coordinates
         if data.is_coordinates:
-            coordinates = data.location.coordinates
-            location = geolocator.reverse(f"{coordinates[0]}, {coordinates[1]}")
+            location = get_location(geolocator, coords=data.location.coordinates)
         else:
-            location = geolocator.geocode(data.location.address)
+            location = get_location(geolocator, address=data.location.address)
 
         # return the str address if location is valid
         if location is None:
