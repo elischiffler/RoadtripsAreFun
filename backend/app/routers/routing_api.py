@@ -105,12 +105,13 @@ async def get_final_route(request: Request) -> Route:
         for leg in route.legs:
 
             # Add the duration to each stop
-            if idx < len(stopping_points) and stopping_points[idx]['type'] != 'generic': # TODO Remove this by fixing trip advisor
-                stopping_points[idx]['duration'] = leg.duration
-                location = get_location(geocoder=geolocator,
-                                        coords=stopping_points[idx]['coordinates'])
-                if location:
-                    stopping_points[idx]['address'] = location.address  # Add the address to each
+            if idx < len(stopping_points) and stopping_points[idx]['type'] != 'generic':
+                stopping_points[idx]['duration'] = leg.duration # For each stopping point add the duration to each
+                if stopping_points[idx].get('address') is None:
+                    location = get_location(geocoder=geolocator,
+                                            coords=stopping_points[idx]['coordinates'])
+                    if location:
+                        stopping_points[idx]['address'] = location.address  # Add the address to each
             else:
                 location = geolocator.reverse(f"{end_lat}, {end_lon}")
                 # Include the duration to get to the end
@@ -681,7 +682,6 @@ def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
         Dict[str, Any]: The updated hotel listing
 
     """
-    print('search url: ', hotel['url'])
     response = get_html_response(url=hotel['url']) # Use the already found direct google url
     if response.status_code == 200:
         parser=html.fromstring(response.text) # Format the data for parsing
