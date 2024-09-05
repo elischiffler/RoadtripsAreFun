@@ -30,7 +30,10 @@ const ChatPage = () => {
 
   // Initial message displayed in a new chat
   const initialMessage = [
-    "Hello there! I’m Journey Genie, and I’m excited to help you with your trip planning. To get started, could you please tell me what type of location you'd like to use?",
+    {
+      text: "Hello there! I’m Journey Genie, and I’m excited to help you with your trip planning. To get started, could you please tell me what type of location you'd like to use?",
+      sender: 'bot' // either bot or user
+    },
   ];
 
   // State to manage the list of chats
@@ -138,10 +141,10 @@ const ChatPage = () => {
     if (selectedChat) {
       if (UserChatData.showStopSlider) {
         // Handle input of the number of user stops
-        addMessage(selectedChat.id, setChats, UserChatData.stops);
+        addMessage(selectedChat.id, setChats, UserChatData.stops, 'user');
         UserChatData.showStopSlider = false; // Hide the stop slider
       } else if (UserChatData.showBudgetSlider) {
-        addMessage(selectedChat.id, setChats, `$${UserChatData.hotelBudget}`)  //Display the hotel budget the user input
+        addMessage(selectedChat.id, setChats, `$${UserChatData.hotelBudget}`, 'user')  //Display the hotel budget the user input
         UserChatData.showBudgetSlider = false // Hide the budget slider
       } else if (UserChatData.showAddressInput) {
         // Handle address input message
@@ -168,7 +171,7 @@ const ChatPage = () => {
 
       } else if (chatInput.message.trim() !== "") {
         // Handle regular message submission
-        addMessage(selectedChat.id, setChats, chatInput.message);
+        addMessage(selectedChat.id, setChats, chatInput.message, 'user');
 
         // Store the message if action is "City Name"
         if (UserChatData.action === "City Name") {
@@ -239,7 +242,7 @@ const ChatPage = () => {
     // Handle loading state
     if (UserChatData.loading) {
       // Add a loading message if not already added
-      addMessage(UserChatData.chatId, setChats, "loading");
+      addMessage(UserChatData.chatId, setChats, "loading", 'bot');
     } else {
       // Remove the loading message when loading is false
       deleteLoader();
@@ -376,14 +379,14 @@ const ChatPage = () => {
             <Box className="chat-messages">
               {/* Display messages in the selected chat */}
               {selectedChat.messages.map((message, index) => {
-                if (typeof message === "string") {
+                if (Object.keys(message).length === 2) {
                   // Render simple text messages
                   return (
                     <Box
                       key={index}
-                      className={`message ${index % 2 === 0 ? "bot" : "user"}`}
+                      className={`message ${message.sender}`}
                     >
-                      <Typography variant="body1">{message}</Typography>
+                      <Typography variant="body1">{message.text}</Typography>
                     </Box>
                   );
                 }

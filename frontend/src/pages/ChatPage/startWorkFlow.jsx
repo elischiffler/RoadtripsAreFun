@@ -51,26 +51,31 @@ const replacePreviousMessage = (chatId, setChats, newMessage) => {
 };
 
 // Adds a new message to the chat with optional buttons
-export const addMessage = (chatId, setChats, newMessage, buttons = null) => {
+export const addMessage = (chatId, setChats, newMessage, sender, buttons = null) => {
   // Ensure the newMessage is a string, optionally with buttons
   const message = newMessage === "loading" 
     ? <loading-chat size="30" color="black"></loading-chat>
     : buttons
     ? {
         text: newMessage,
+        sender: sender,
         buttons: buttons,
       }
     : typeof newMessage === "string"
-    ? newMessage
-    : String(newMessage);
+    ? {
+      text: newMessage,
+      sender: sender,
+      }
+    : {
+        text: String(newMessage),
+        sender: sender,
+      };
 
   setChats((prevChats) =>{
     const idx = prevChats.findIndex(chat => chat.id === chatId); // get index of current chat
     const prevLength = prevChats[idx]?.messages?.length-1;
     const prevMessage = prevChats[idx]?.messages[prevLength];
-    if( prevMessage !== message && // Check if they are the same text
-      !(typeof prevMessage === 'object' && typeof message === 'object' && prevMessage.text === message.text) // Check if they are the same objects
-    ){ // Determine if the last message is the same as the previous
+    if( prevMessage.text !== message.text){ // Determine if the last message is the same as the previous
       const newChats = prevChats.map((chat) => // Create a new chats with the newMessage at the end
         chat.id === chatId
           ? {
@@ -214,6 +219,7 @@ function locationTypeResponse(
       chatId,
       setChats,
       "Sounds good! Please enter your address information.",
+      'bot',
     );
 
     // Change the input bar to show the address input field
@@ -223,7 +229,7 @@ function locationTypeResponse(
     UserChatData.showInputBar = true
     // If the user chose 'City Name'
     replacePreviousMessage(chatId, setChats, "I would like to use: City Name");
-    addMessage(chatId, setChats, "Sounds good! Please enter your city name.");
+    addMessage(chatId, setChats, "Sounds good! Please enter your city name.", 'bot');
   }
 }
 
@@ -241,6 +247,7 @@ export async function inputLocationWorkflow(chatId,
       chatId,
       setChats,
       askForLocationType.text,
+      'user',
       askForLocationType.buttons,
     );
     // Wait for the user to select a location type
@@ -297,6 +304,7 @@ async function displayConfirmationDetails(chatId,
       chatId,
       setChats,
       `Is this the correct address? ${address}`,
+      'bot',
     );
   
     // Ask for user to confirm the backend address
@@ -304,6 +312,7 @@ async function displayConfirmationDetails(chatId,
       chatId,
       setChats,
       askForConfirmation.text,
+      'bot',
       askForConfirmation.buttons,
     );
   
@@ -342,6 +351,7 @@ async function handleConfirmation(
       chatId,
       setChats,
       "My apologies, how would you like to re-enter the location?",
+      'bot',
     );
     // Have them repeat inputting their location
     await inputLocationWorkflow(chatId, setChats, setChatInput, chatInput, UserChatData);
@@ -408,6 +418,7 @@ export const startWorkFlow = async (
       chatId,
       setChats,
       "Perfect! How many stops would you like to take?",
+      'bot',
     );
 
     // Show a slider for the user to select the number of stops
@@ -441,6 +452,7 @@ export const startWorkFlow = async (
       chatId,
       setChats,
       "How would you like to enter your end location?",
+      'bot',
     );
 
     UserChatData.locationType = "end";
@@ -479,7 +491,7 @@ export const startWorkFlow = async (
   if(UserChatData.initial){ // Checkpoint 4: Calculate a budget
     UserChatData.hotelBudget = await calcHotelBudget(UserChatData.initial['duration']); // Get the estimated minimum hotel budget
     if (UserChatData.hotelBudget) {  //If the user has to go to a hotel
-      addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.hotelBudget}. Would you like to increase this budget?`)
+      addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.hotelBudget}. Would you like to increase this budget?`, 'bot')
       UserChatData.showInputBar = true
       UserChatData.showBudgetSlider = true // Allow user to customize their budget preference
 
@@ -496,7 +508,7 @@ export const startWorkFlow = async (
       console.log(`hotel budget: ${UserChatData.hotelBudget}`)
     }
 
-    addMessage(chatId, setChats, "Please enter the year, make and model of the vehicle you plan to use. (e.g. 2020 Mazda CX-3)")
+    addMessage(chatId, setChats, "Please enter the year, make and model of the vehicle you plan to use. (e.g. 2020 Mazda CX-3)", 'bot',)
     UserChatData.action = "Car Details"
     UserChatData.showInputBar = true
 
@@ -515,7 +527,7 @@ export const startWorkFlow = async (
     // Calculate the total budget
     UserChatData.budget  = UserChatData.hotelBudget + UserChatData.carBudget
 
-    addMessage(chatId, setChats, `In total, we estimate your budget to be $${UserChatData.budget}:\nHotel Budget: $${UserChatData.hotelBudget}\nGas Budget: $${UserChatData.carBudget}`)
+    addMessage(chatId, setChats, `In total, we estimate your budget to be $${UserChatData.budget}:\nHotel Budget: $${UserChatData.hotelBudget}\nGas Budget: $${UserChatData.carBudget}`, 'bot',)
 
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
@@ -525,7 +537,7 @@ export const startWorkFlow = async (
     // Final Route Checkpoint
     // Generate the final route account for budget
     UserChatData.route = await getFinalRoute(UserChatData.initial,
-      UserChatData.budget,
+      UserChatData.hotelBudget,
       UserChatData.stops
     );
     
@@ -538,12 +550,12 @@ export const startWorkFlow = async (
     ChatLogsData.chatdata[UserChatData.chatId-1] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
 
     // End the workflow with a message
-    addMessage(chatId, setChats, "Successfully generated your trip! Click on the Map and Itinerary buttons to view the details.",);
+    addMessage(chatId, setChats, "Successfully generated your trip! Click on the Map and Itinerary buttons to view the details.", 'bot');
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   }
   else if (!UserChatData.route){
     // Send a message prompting the user to resend their information
-    addMessage(UserChatData.chatId, setChats, "Error creating route. Please re-enter how you would like to choose your starting location.",);
+    addMessage(UserChatData.chatId, setChats, "Error creating route. Please re-enter how you would like to choose your starting location.", 'bot');
 
     // Reset values 
     UserChatData.action = null;

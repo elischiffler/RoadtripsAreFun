@@ -25,7 +25,7 @@ try {
     UserChatData.loading = false
     // Log any errors encountered during the request
     console.error("Error validating location:", error);
-    addMessage(UserChatData.chatId, setChats, "Error finding the location. Please try again.")
+    addMessage(UserChatData.chatId, setChats, "Error finding the location. Please try again.", 'bot')
 
     //Set values back to regular
     UserChatData.action = null
