@@ -202,7 +202,8 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
     """
     stopping_points = []
     interval = route.duration / (num_stops + 1)  # Divide trip up into segments for finding stops in seconds
-    end_search = route.duration - 3600  # Stop looking for stops if within the last hour of the trip
+    end_hotel_search = route.duration - 3600 * 4  # Stop looking for hotels if within the last 4 hours of the trip (Latest you could get there is 8pm)
+    end_stop_search = route.duration - 1800 # Stop looking for attractions within the last 30 minutes of trip
     current_time = date.hour * 3600  # Initialize the current time of the day in seconds
     steps = route.legs[0].steps  # Only one leg in the initial route
     coordinates = route.geometry.coordinates  # Get all coordinates of the route
@@ -220,7 +221,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
     # Add stopping places until the trip is over
     for _ in range(num_stops + 1):
         # Check whether the daily end or the next stop comes first
-        while total_time < end_search and current_time + time_till_stop >= (daily_end * 3600):
+        while total_time < end_hotel_search and current_time + time_till_stop >= (daily_end * 3600):
             time_traveled = (daily_end * 3600) - current_time  # Calculate time traveled that day
             total_time += time_traveled  # Add the time traveled toward the next stop that day
             date += timedelta(seconds=time_traveled)
@@ -253,8 +254,8 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
             print(f"budget - total cost: {budget}-{total_cost} = {budget - total_cost}")
             print(f"remaining duration: {route.duration - total_time}")
             print(f"number of stops left: {num_stops}")
+            # Recalculate a price range for the next hotel
             price_range = _get_price_range(remaining_budget=budget - total_cost,
-                                           # Recalculate a price range for the next hotel
                                            duration_left=route.duration - total_time,
                                            stops_left=num_stops,
                                            daily_drive_time=driving_interval)
@@ -263,7 +264,8 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
             current_time = 3600 * daily_start  # set the current time to be the desired start time the next day
             date = datetime(date.year, date.month, date.day + 1, daily_start, 0, 0)  # New day
 
-        if total_time + time_till_stop < end_search:  # Ensure we are within the route duration
+        # Ensure we are within the route duration and not looking past 9 pm for a stop
+        if (total_time + time_till_stop < end_stop_search) and current_time < (21*3600) and num_stops > 0:
             total_time += time_till_stop  # Increment the total time by time traveled to stop
             current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
             print('finding stop...', current_lat, current_lon)
@@ -394,6 +396,8 @@ async def _get_details(location_id: str) -> Dict[str, Any]:
     name = details.name
     url = details.web_url
     address = details.address_obj.address_string
+    print("stop category: ", details.subcategory)
+    print("stop group", details.groups)
     return {'coordinates': [lat, lon], 'name': name, 'type': 'stop', 'url': url, 'address': address}
 
 
@@ -679,7 +683,7 @@ def _get_html_response(url: str, query: Optional[str] = None) -> Response:
         'DNT': "1"  # Do not track the request header
     }
 
-    print(query)
+    print("search query:", query)
     response = requests.get(url, params=params, headers=headers)
     return response
 
@@ -768,7 +772,7 @@ def _get_price_range(remaining_budget: float, duration_left: float, stops_left: 
         remaining_avg = remaining_budget
     else:
         remaining_avg = remaining_budget / days_left  # Get a new avg cost of hotels by taking away the current price
-    min_cost, max_cost = remaining_avg - 100, remaining_avg + 100  # 100 dollar deviations from price avg for a reasonable range
+    min_cost, max_cost = remaining_avg - 75, remaining_avg + 75  # 100 dollar deviations from price avg for a reasonable range
     if remaining_avg > 100:
         return (min_cost, max_cost), f"{min_cost:.2f}-{max_cost:.2f}"
     else:
