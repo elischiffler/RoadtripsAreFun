@@ -416,10 +416,11 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
         print(price_range)
         query = get_location(geocoder=geolocator, coords=[lat, lon]).address
         valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
-        valid_hotel['type'] = 'hotel'
-        return valid_hotel
+        if valid_hotel:
+            valid_hotel['type'] = 'hotel'
+            return valid_hotel
 
-
+        # Use a Amadeus second
         access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
         hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
         headers = {
@@ -437,11 +438,6 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float,flo
         # If no hotel is found search for one with a larger radius
         if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
             return await _find_hotel(lat, lon, price_range, check_in, radius + 10)
-        elif isinstance(lat, float) or (response.status_code == 500 and json_data['errors'][0]['code'] == 38189):
-            query = get_location(geocoder=geolocator, coords=[lat, lon]).address
-            valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
-            valid_hotel['type'] = 'hotel'
-            return valid_hotel
         hotels = Amadeus_Hotel_Search.model_validate(json_data)  # Validate the response
         hotel_list = hotels.data
         if len(hotel_list) > 0:
@@ -619,29 +615,33 @@ async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
         raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
 
 
-def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str, Any]:
+def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str, Any] | None:
     """
     Handles the parsing of a Google hotels for the best hotel given the users preferences
 
     Args:
-        - query:
+        - query: The search parameter for google
         - price_range: a tuple containing max and min pricing
 
     Returns:
+        - Dict[str, Any]: Relevant hotel information
 
+    Raises:
+        - HTTPException: When no hotel information is found
     """
     url = 'https://www.google.com/travel/search'  # Link to google hotels
     response = _get_html_response(query=query, url=url)
     if response.status_code == 200:
         listings = _parse_google_response(response.text) # Convert the response to a string to parse
-        valid_hotels = list(
-            filter(lambda listing: price_range[0] <= listing['price'] <= price_range[1], listings)) # Filter hotels out of budget
-        if len(valid_hotels) > 0:
-            print("advanced search...", valid_hotels)
-            ideal_hotel = _get_advanced_listing(valid_hotels[0]) # Get information on address and website url
-            return ideal_hotel
-        else:
-            raise HTTPException(status_code=404, detail="No valid hotels found for the given price range")
+        if len(listings) > 0: # Ensure listings were found
+            # Filter hotels out of budget
+            valid_hotels = list(filter(lambda listing: price_range[0] <= listing['price'] <= price_range[1], listings))
+            while len(valid_hotels) > 0: # Search through all hotel offerings
+                print("advanced search...", valid_hotels)
+                ideal_hotel = _get_advanced_listing(valid_hotels.pop()) # Get detailed information on the highest rated hotel
+                if ideal_hotel is not None: # Ensure advanced information was found
+                    return ideal_hotel
+        raise HTTPException(status_code=404, detail="No valid hotels found for the given parameters") # To handle research
 
 
 def _get_html_response(url: str, query: Optional[str] =None) -> Response:
@@ -674,6 +674,15 @@ def _get_html_response(url: str, query: Optional[str] =None) -> Response:
 
 
 def _parse_google_response(response: str) -> List[Dict[str, Any]]:
+    """
+    Parses an HTML response for hotel information
+    Parameters
+        - response: The HTML response in string format
+
+    Returns
+        - List[Dict[str, Any]]: List of hotel information sorted by rating
+
+    """
     parser = html.fromstring(response)
     hotels_list = parser.xpath("//div[@jsname='mutHjb']")  # Get a list of divs which contain the specified jsname
     listings = []
@@ -686,22 +695,23 @@ def _parse_google_response(response: str) -> List[Dict[str, Any]]:
         )
         if len(pricing_details) == 4:  # Ensure all pricing info is being returned
             price = int(pricing_details[0].replace('$', ''))  # Format and convert the price for further processing
-            stars, review_count = _str_to_rating(rank_details[0]) # Convert the rank information
-            listings.append({
+            stars, review_count = _str_to_rating(rank_details[0]) # Extract rank information
+            listings.append({ # Add a hotel with all its relevant information
                 "name": name[0],
                 "url": f"https://www.google.com{google_url[0]}",
                 "price": price,
                 "stars": stars,
                 "review_count": review_count,
             })
-    listings.sort(key=lambda listing: listing["stars"], reverse=True)
+    if len(listings) > 0:
+        listings.sort(key=lambda listing: listing["stars"])  # Sort hotels lowest rated to highest
     return listings
 
-def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
+def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any] | None:
     """
     Scrapes a given hotel listing for an accurate website url and location info
     Args:
-        hotel(Dict[str, Any]): The hotel dictionary to be updated
+        hotel(Dict[str, Any]): The hotel information that will be updated
 
     Returns:
         Dict[str, Any]: The updated hotel listing
@@ -719,7 +729,8 @@ def _get_advanced_listing(hotel: Dict[str, Any]) -> Dict[str, Any]:
             coordinates = [location.latitude, location.longitude] # Get the coordinates of the hotel
             # Add new values to the dictionary
             hotel['coordinates'], hotel['address'] = coordinates, address
-    return hotel # Return the updated data
+            return hotel # Return the updated data
+        return None
 
 
 def _get_price_range(remaining_budget: float, duration_left: float, stops_left: int, daily_drive_time: int) -> tuple[tuple[float, float], str]:
