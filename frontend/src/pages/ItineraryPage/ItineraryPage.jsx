@@ -80,6 +80,12 @@ const ItineraryPage = () => {
                   <Typography variant="body2" className="activity-time">
                     {`Address: ${activity['address']}`}
                   </Typography>
+                  <Typography variant="body2" className="activity-time">
+                    {activity['price']?
+                      `Price: $${activity['price']}`:
+                      null
+                    }
+                  </Typography>
                 </Box>):
                 (<Box key={idx} className="activity-box">
                   <Typography variant="body1">{activity['name']}</Typography>
