@@ -267,16 +267,35 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
         # Ensure we are within the route duration and not looking past 9 pm for a stop
         if (total_time + time_till_stop < end_stop_search) and current_time < (21 * 3600) and num_stops > 0:
             total_time += time_till_stop  # Increment the total time by time traveled to stop
-            current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
-            print('finding stop...', current_lat, current_lon)
             current_time += time_till_stop + (3600 * 2)  # Current time includes distance and time spent at stop
-            stopping_points.append(
-                await _find_stop('attractions', current_lat, current_lon, 30))  # Add the stop to the list
-            print('found stop!')
+            time_till_stop = interval  # Reset the time to the next stop
+            attempts = 2 # 2 attempts before raising an error to find a stop to limit API calls
+            search_radius = 30 # Set the attraction search radius in miles
+            while attempts > 0:
+                try:
+                    current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
+                    print('finding stop...', current_lat, current_lon)
+                    stopping_points.append( # Add the stop to the list
+                        await _find_stop('attractions', current_lat, current_lon, search_radius)
+                    )
+                    print('found stop!')
+                    break # Exit the loop
+                except HTTPException as exception:
+                    if exception.status_code == 404:
+                        attempts -= 1
+                        if attempts == 0:
+                            raise exception
+                        search_radius += search_radius # Double the search radius
+                        total_time += 3600 # Redo the search an hour later
+                        # Decrement the time until the next stop by an hour (next stop will come sooner than interval)
+                        time_till_stop -= 3600
+                        date += timedelta(seconds=3600)  # Increase the datetime
+                        current_time+=3600 # Increment the current time counter
+                    else:
+                        raise exception
             num_stops -= 1  # Decrement the number of stops
             date += timedelta(hours=2,
                               seconds=interval)  # Allocate two hours detours per stop/ increment for the time to drive to the location
-            time_till_stop = interval  # Reset the time to the next stop
     return stopping_points, total_cost
 
 
@@ -319,7 +338,7 @@ def _find_position(coordinates: list[list[float]], steps: list[Mapbox_step], ela
     return coordinates[-1]
 
 
-async def _find_stop(category: str, lat: str, lon: str, radius: str) -> Dict[str, Any]:
+async def _find_stop(category: str, lat: str, lon: str, radius: int) -> Dict[str, Any]:
     """
     Finds a nearby location of a specific category using the TripAdvisor API and returns its coordinates.
 
