@@ -504,15 +504,13 @@ export const startWorkFlow = async (
       UserChatData.startConfirmed['longitude'],
       UserChatData.endConfirmed['latitude'],
       UserChatData.endConfirmed['longitude'],
-      UserChatData.stops,
-      UserChatData
     );
 
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
   if(UserChatData.initial){ // Checkpoint 4: Calculate a budget
-    UserChatData.hotelBudget = await calcHotelBudget(UserChatData.initial['duration']); // Get the estimated minimum hotel budget
+    UserChatData.hotelBudget = await calcHotelBudget(UserChatData.initial['duration'], UserChatData.stops); // Get the estimated minimum hotel budget
     if (UserChatData.hotelBudget) {  //If the user has to go to a hotel
       addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.hotelBudget}. Would you like to increase this budget?`, 'bot')
       UserChatData.showInputBar = true

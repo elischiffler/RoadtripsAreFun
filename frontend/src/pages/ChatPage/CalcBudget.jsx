@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { addMessage, handlePromptCarInfo, } from './startWorkFlow';
 
-export const calcHotelBudget = async (duration) => {
+export const calcHotelBudget = async (route_duration, stops) => {
     // Generate the initial route and grab the routes duration
     let hotelCount = 0
+    var duration = route_duration + stops*7200 // Can edit this number (set to 2 hours per stop)
       if (duration < 25200){   // Can edit this number (set to 7 hours driving per day)
         return 0
       } else {

@@ -1,5 +1,5 @@
 import axios from 'axios';
-export const getInitialRoute = async(start_lat, start_lon, end_lat, end_lon, UserChatData)=> {
+export const getInitialRoute = async(start_lat, start_lon, end_lat, end_lon)=> {
     try{
     const params = {
         'start_lat': start_lat,
