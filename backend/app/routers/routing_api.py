@@ -203,7 +203,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
     stopping_points = []
     interval = route.duration / (num_stops + 1)  # Divide trip up into segments for finding stops in seconds
     end_hotel_search = route.duration - 3600 * 4  # Stop looking for hotels if within the last 4 hours of the trip (Latest you could get there is 8pm)
-    end_stop_search = route.duration - 1800 # Stop looking for attractions within the last 30 minutes of trip
+    end_stop_search = route.duration - 1800  # Stop looking for attractions within the last 30 minutes of trip
     current_time = date.hour * 3600  # Initialize the current time of the day in seconds
     steps = route.legs[0].steps  # Only one leg in the initial route
     coordinates = route.geometry.coordinates  # Get all coordinates of the route
@@ -265,7 +265,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
             date = datetime(date.year, date.month, date.day + 1, daily_start, 0, 0)  # New day
 
         # Ensure we are within the route duration and not looking past 9 pm for a stop
-        if (total_time + time_till_stop < end_stop_search) and current_time < (21*3600) and num_stops > 0:
+        if (total_time + time_till_stop < end_stop_search) and current_time < (21 * 3600) and num_stops > 0:
             total_time += time_till_stop  # Increment the total time by time traveled to stop
             current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
             print('finding stop...', current_lat, current_lon)
@@ -468,7 +468,8 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, fl
                                                                   0,
                                                                   0),  # The next day at 9 AM
                                                price_range=price_range[1])
-            highest_rated = await _get_amadeus_ratings(offers.keys())  # Look for ratings on the hotels with valid offers
+            highest_rated = await _get_amadeus_ratings(
+                offers.keys())  # Look for ratings on the hotels with valid offers
             best_offer = offers[highest_rated[0]]  # Use the hotelId returned with highest_rated to get its offer info
             location = hotel_info[
                 best_offer['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
@@ -772,7 +773,8 @@ def _get_price_range(remaining_budget: float, duration_left: float, stops_left: 
         remaining_avg = remaining_budget
     else:
         remaining_avg = remaining_budget / days_left  # Get a new avg cost of hotels by taking away the current price
-    min_cost, max_cost = remaining_avg - 75, remaining_avg + 75  # 100 dollar deviations from price avg for a reasonable range
+    min_cost = remaining_avg - 75 if remaining_avg < 225 else 150  # Ensures the min is reasonable
+    max_cost = remaining_avg + 75
     if remaining_avg > 100:
         return (min_cost, max_cost), f"{min_cost:.2f}-{max_cost:.2f}"
     else:
