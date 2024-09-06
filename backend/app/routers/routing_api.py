@@ -202,7 +202,8 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
     """
     stopping_points = []
     interval = route.duration / (num_stops + 1)  # Divide trip up into segments for finding stops in seconds
-    end_hotel_search = route.duration - 3600 * 4  # Stop looking for hotels if within the last 4 hours of the trip (Latest you could get there is 8pm)
+    # Stop looking for hotels if within the last 4 hours of the trip (Latest you could get there is 8pm)
+    end_hotel_search = route.duration - 3600 * 4
     end_stop_search = route.duration - 1800  # Stop looking for attractions within the last 30 minutes of trip
     current_time = date.hour * 3600  # Initialize the current time of the day in seconds
     steps = route.legs[0].steps  # Only one leg in the initial route
@@ -729,7 +730,7 @@ def _parse_google_response(response: str) -> List[Dict[str, Any]]:
             ".//span[@jsaction='mouseenter:JttVIc;mouseleave:VqIRre;']//text()"
         )
         if len(pricing_details) == 4:  # Ensure all pricing info is being returned
-            price = int(pricing_details[0].replace('$', ''))  # Format and convert the price for further processing
+            price = int(''.join(filter(str.isdigit, pricing_details[0])))  # Convert representation to an integer representation of price
             stars, review_count = _str_to_rating(rank_details[0])  # Extract rank information
             listings.append({  # Add a hotel with all its relevant information
                 "name": name[0],

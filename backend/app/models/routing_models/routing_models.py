@@ -97,6 +97,7 @@ class MapBox(BaseModel):
     code: str
     uuid: str
 
+
 class Route_Payload(BaseModel):
     initial_route: MapBox.MapBox_Route
     num_stops: int
