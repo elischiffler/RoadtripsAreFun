@@ -251,7 +251,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
                     else:
                         raise exception
             print('found hotel!')
-            total_cost += stopping_points[-1]['price']  # Add the cost of the hotel
+            total_cost += stopping_points[-1]['price']  # Add the cost of the hotel to the total
             print(f"budget - total cost: {budget}-{total_cost} = {budget - total_cost}")
             print(f"remaining duration: {route.duration - total_time}")
             print(f"number of stops left: {num_stops}")
@@ -369,24 +369,28 @@ async def _find_stop(category: str, lat: str, lon: str, radius: int) -> Dict[str
         response = requests.get(nearby_search_url, params=params)
         json_data = response.json()
         locations = Trip_Advisor_Location_Search.model_validate(json_data)
+        lowest_rank = 999 # Set to be unrealistically high
+        ideal_stop = None
         if len(locations.data) > 0:
-            location = locations.data[0]  # Get the first location from the response
-            location_id = location.location_id
-            details = await _get_details(location_id)
-            if details is not None:
-                return details
-            else:
-                raise HTTPException(status_code=500, detail="Location data is missing latitude or longitude")
-        else:
-            raise HTTPException(status_code=404, detail="No locations found")
-
+            for location in locations.data:
+                location_id = location.location_id
+                rank, details = await _get_details(location_id)
+                # Check to see if a lower ranked
+                if rank < lowest_rank:
+                    lowest_rank = rank
+                    ideal_stop = details
+                if rank == 1: # End loop early if highest rank is found
+                    break
+            if ideal_stop is not None:
+                return ideal_stop
+        raise HTTPException(status_code=404, detail="No locations found")
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"TripAdvisor request failed: {str(exception)}")
     except ValidationError as exception:
         raise HTTPException(status_code=502, detail=f'Improper TripAdvisor response: {str(exception)}')
 
 
-async def _get_details(location_id: str) -> Dict[str, Any]:
+async def _get_details(location_id: str) -> Tuple[int,Dict[str, Any]]:
     """
     Retrieves detailed information about a location from the TripAdvisor API using its location ID.
 
@@ -416,9 +420,15 @@ async def _get_details(location_id: str) -> Dict[str, Any]:
     name = details.name
     url = details.web_url
     address = details.address_obj.address_string
+    ranking = details.ranking_data
+    print(ranking)
     print("stop category: ", details.subcategory)
     print("stop group", details.groups)
-    return {'coordinates': [lat, lon], 'name': name, 'type': 'stop', 'url': url, 'address': address}
+    if ranking is not None:
+        rank= int(ranking.ranking)
+    else:
+        rank = 999 # Rank is unrealistically high
+    return rank, {'coordinates': [lat, lon], 'name': name, 'type': 'stop', 'url': url, 'address': address}
 
 
 async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, float], str], check_in: datetime,
