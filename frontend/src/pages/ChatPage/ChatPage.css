@@ -246,7 +246,7 @@
   border-top: 2px solid var(--white-dark);
 }
 
-.input-address {
+.split-input-bar {
   flex: 1; /* Splits up bar into # equal parts*/
   box-sizing: border-box;
   width: 265px;

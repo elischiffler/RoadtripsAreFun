@@ -60,7 +60,7 @@ const AddressBar = ({ UserChatData }) => {
       {addressFields.map((field, index) => (
         <TextField
           key={index}
-          className="input-address"
+          className="split-input-bar"
           placeholder={field.placeholder}
           value={field.value}
           onChange={(e) => handleAddressChange(index, e.target.value)}

@@ -7,6 +7,7 @@ import MapButton from "../../components/buttons/MapButton";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { startWorkFlow, addMessage } from "./startWorkFlow";
+import CarInputBar from "./InputCar";
 import BudgetSlider from "./InputBudget";
 import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
@@ -149,6 +150,17 @@ const ChatPage = () => {
       } else if (UserChatData.showBudgetSlider) {
         addMessage(selectedChat.id, setChats, `$${UserChatData.hotelBudget}`, 'user')  //Display the hotel budget the user input
         UserChatData.showBudgetSlider = false // Hide the budget slider
+      } else if (UserChatData.action === "Car Details") { //Store the car details if action is "Car Details"
+        // Handle car input message
+        const carDetails = UserChatData.carDetails || ["", "", ""];
+        
+        addMessage(
+          selectedChat.id,
+          setChats,
+          `${carDetails[0]} ${carDetails[1]} ${carDetails[2]}`,
+          'user',
+        );
+        UserChatData.showInputBar = false
       } else if (UserChatData.showAddressInput) {
         // Handle address input message
         const address =
@@ -186,35 +198,6 @@ const ChatPage = () => {
             UserChatData.endAddress[1] = chatInput.message;
             UserChatData.endConfirmed = await validateLocation(UserChatData.endAddress[1], false, UserChatData, setChats, setChatInput, chatInput);
           }
-        } else if (UserChatData.action === "Car Details") { //Store the car details if action is "Car Details"
-          // List of makes with spaces
-          const makesWithSpaces = ["Aston Martin", "Alfa Romeo", "Land Rover", "Rolls Royce", "Mercedes Benz"];
-          // Regular expression to match the year, make, and model
-          const match = chatInput.message.match(/^(\d{4})\s+(\S+)(?:\s+(.+))?$/);
-
-          if (match) {
-            const year = match[1];
-            const possibleMake = match[2];  // Could be a single word make or part of a make with spaces
-            const remainingParts = match[3]; // Contains the rest of the input which could be the full model or part of the make and model
-          
-            // Determine if the make has a space
-            const make = makesWithSpaces.find((m) => remainingParts.startsWith(m.split(" ")[1])) 
-                        ? possibleMake + " " + remainingParts.split(" ")[0]  // Concatenate to form the full make
-                        : possibleMake;
-          
-            // Extract the model from the remaining parts based on whether the make is with spaces or not
-            const model = makesWithSpaces.includes(make) 
-                          ? remainingParts.split(" ").slice(1).join(" ")   // Skip the first word which is part of the make
-                          : remainingParts;
-          
-            // Assign the details to the UserChatData object
-            UserChatData.carDetails[0] = year;
-            UserChatData.carDetails[1] = make;
-            UserChatData.carDetails[2] = model;
-          } else {
-            console.log("Invalid input format");
-          }
-
         }
 
         //Hide the input bar
@@ -446,6 +429,8 @@ const ChatPage = () => {
             <StopSlider UserChatData = {UserChatData}/> // Show StopSlider if stop input is required
           ) : UserChatData.showBudgetSlider ? (
             <BudgetSlider UserChatData = {UserChatData}/>// Show BudgetSlider if budget input is required
+          ) : UserChatData.action === "Car Details" ? (
+            <CarInputBar UserChatData = {UserChatData}/> // Show Car Input Bar if car input is required
           ) : (
             <TextField
               label={chatInput.name}
