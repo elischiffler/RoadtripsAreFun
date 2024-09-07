@@ -102,6 +102,9 @@ const ChatPage = () => {
       console.log("Initialized chats with default:", initialChats);
       setChats(initialChats);
     }
+    for(var i=0; i < ChatLogsData.chatdata.length; i++){
+      ChatLogsData.chatdata[i].workflowStarted = false; // Reset the workflows for all saved chats on mount
+    }
   }, []);
 
 
@@ -465,6 +468,7 @@ const ChatPage = () => {
             color="primary"
             className="send-button"
             onClick={handleSendMessage}
+            disabled={!UserChatData.route && UserChatData.budget > 0} // Disable the send button if the initial route 
           >
             Send
           </Button>
