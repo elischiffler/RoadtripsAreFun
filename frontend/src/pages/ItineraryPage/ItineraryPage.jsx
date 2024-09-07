@@ -1,4 +1,4 @@
-import { React } from "react";
+import { React, useContext } from "react";
 import {
   Box,
   Typography,
@@ -9,7 +9,6 @@ import ChatButton from "../../components/buttons/ChatButton";
 import MapButton from "../../components/buttons/MapButton";
 import { UserDataContext } from "../../states/UserDataContext";
 import "./ItineraryPage.css";
-import { useContext } from "react"
 
 
 const ItineraryPage = () => {

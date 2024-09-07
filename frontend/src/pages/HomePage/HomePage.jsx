@@ -1,4 +1,4 @@
-import { React } from "react";
+import { React, useContext, useEffect,  } from "react";
 import {
   Box,
   Container,
@@ -10,6 +10,7 @@ import LogoButton from "../../components/LogoButton";
 import InfoIcon from "@mui/icons-material/Info";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import "./HomePage.css";
+import { UserDataContext } from "../../states/UserDataContext";
 
 const isAuthenticated = () => {
   const accessToken = sessionStorage.getItem("accessToken");
@@ -27,6 +28,17 @@ export default function HomePage() {
       navigate("/login");
     }
   };
+  
+  // Retrieve global instance of data
+  const { setUserData, getUserData } = useContext(UserDataContext);
+
+  // Reset the UserData to be the last saved data if renavigating to chat
+  useEffect(()=>{
+    const prevData = getUserData()
+    if(prevData){
+      setUserData(prevData)
+    }
+  }, []);
 
 
   return (

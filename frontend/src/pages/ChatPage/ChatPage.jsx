@@ -52,7 +52,7 @@ const ChatPage = () => {
   const chatEndRef = useRef(null);
   
   // State to track workflow status
-  const [workflowStarted, setWorkflowStarted] = useState(UserChatData.workflowStarted);
+  const [workflowStarted, setWorkflowStarted] = useState(UserChatData.workflowStarted? UserChatData.workflowStarted : false);
   // Trigger workflow when a chat is selected, ensuring it only starts once
   useEffect(() => {
     setWorkflowStarted(UserChatData.workflowStarted); // ensure the accurate workflowStarted is set
