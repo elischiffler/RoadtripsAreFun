@@ -509,7 +509,7 @@ export const startWorkFlow = async (
     saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
-  if(UserChatData.initial){ // Checkpoint 4: Calculate a budget
+  if(UserChatData.initial && !UserChatData.route){ // Checkpoint 4: Calculate a budget
     UserChatData.hotelBudget = await calcHotelBudget(UserChatData.initial['duration'], UserChatData.stops); // Get the estimated minimum hotel budget
     if (UserChatData.hotelBudget) {  //If the user has to go to a hotel
       addMessage(chatId, setChats, `We estimate your minimum hotel cost to be $${UserChatData.hotelBudget}. Would you like to increase this budget?`, 'bot')
