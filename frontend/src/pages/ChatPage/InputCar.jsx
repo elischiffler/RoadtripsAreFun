@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, TextField } from "@mui/material";
 import "./ChatPage.css";
 
-const CarInputBar = ({ UserChatData }) => {
+const CarInputBar = ({ UserChatData, handleKeyDown }) => {
   // Initialize state with the values from UserChatData
   const [carInfo, setCarInfo] = useState(UserChatData.carDetails || ["", "", ""]);
 
@@ -42,6 +42,7 @@ const CarInputBar = ({ UserChatData }) => {
           placeholder={field.placeholder}
           value={field.value}
           onChange={(e) => handleCarInfoChange(index, e.target.value)}
+          onKeyDown={handleKeyDown}
         />
       ))}
     </Box>

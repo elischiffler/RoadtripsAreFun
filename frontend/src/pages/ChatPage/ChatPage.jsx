@@ -424,13 +424,13 @@ const ChatPage = () => {
         {UserChatData.showInputBar ? (
         <Box className="input-area">
           {UserChatData.showAddressInput ? (
-            <AddressBar UserChatData = {UserChatData}/> // Show AddressBar if address input is required
+            <AddressBar UserChatData = {UserChatData} handleKeyDown={handleKeyDown}/> // Show AddressBar if address input is required
           ) : UserChatData.showStopSlider ? (
-            <StopSlider UserChatData = {UserChatData}/> // Show StopSlider if stop input is required
+            <StopSlider UserChatData = {UserChatData} handleKeyDown={handleKeyDown}/> // Show StopSlider if stop input is required
           ) : UserChatData.showBudgetSlider ? (
-            <BudgetSlider UserChatData = {UserChatData}/>// Show BudgetSlider if budget input is required
+            <BudgetSlider UserChatData = {UserChatData} handleKeyDown={handleKeyDown}/>// Show BudgetSlider if budget input is required
           ) : UserChatData.action === "Car Details" ? (
-            <CarInputBar UserChatData = {UserChatData}/> // Show Car Input Bar if car input is required
+            <CarInputBar UserChatData = {UserChatData} handleKeyDown={handleKeyDown}/> // Show Car Input Bar if car input is required
           ) : (
             <TextField
               label={chatInput.name}

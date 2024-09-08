@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, TextField } from "@mui/material";
 import "./ChatPage.css";
 
-const AddressBar = ({ UserChatData }) => {
+const AddressBar = ({ UserChatData, handleKeyDown }) => {
 
   // Initialize the address based on the type of location (start or end)
   let initialAddress;
@@ -64,6 +64,7 @@ const AddressBar = ({ UserChatData }) => {
           placeholder={field.placeholder}
           value={field.value}
           onChange={(e) => handleAddressChange(index, e.target.value)}
+          onKeyDown={handleKeyDown}
         />
       ))}
     </Box>

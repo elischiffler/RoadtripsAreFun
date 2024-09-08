@@ -1,6 +1,6 @@
 import Slider from "@mui/material/Slider";
 
-const StopSlider = ({ UserChatData }) => {
+const StopSlider = ({ UserChatData, handleKeyDown }) => {
 
   const handleChange = (event, newValue) => {
     // Update the stops value in UserChatData
@@ -16,6 +16,7 @@ const StopSlider = ({ UserChatData }) => {
       min={1}
       max={10}
       onChange={handleChange} // Use the handler function
+      onKeyDown={handleKeyDown}
     />
   );
 };

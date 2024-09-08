@@ -1,6 +1,6 @@
 import Slider from "@mui/material/Slider";
 
-const BudgetSlider = ({ UserChatData }) => {
+const BudgetSlider = ({ UserChatData, handleKeyDown }) => {
 
   const handleChange = (event, newValue) => {
     // Update the stops value in UserChatData
@@ -22,6 +22,7 @@ const formatValue = (value) => {
       max={UserChatData.hotelBudget * 2}
       onChange={handleChange}
       valueLabelFormat={formatValue}
+      onKeyDown={handleKeyDown}
     />
   );
 };
