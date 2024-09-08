@@ -533,10 +533,13 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, fl
     # Now that you have a query try to webscrape
     try:
         valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
-        if valid_hotel:
+        # Ensure a valid hotel is found and its within the search radius
+        if valid_hotel and geodesic((valid_hotel['coordinates'][0], valid_hotel['coordinates'][1]),
+                                    (lat, lon)).miles <= radius:
             valid_hotel['type'] = 'hotel'
             return valid_hotel
-
+        else:
+            raise HTTPException(status_code=404, detail="No hotels found")
         # If scraping fails use the Amadeus API
         access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
         hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
@@ -767,6 +770,7 @@ async def _get_nearby_city(lat: float, lon: float, radius: Optional[float] = 500
         if len(places) > 0:
             # Iterate through all the returned places
             for place in places:
+                print(place.place_id)
                 # Check if a nearby location name is found
                 if place.vicinity:
                     return place.vicinity
