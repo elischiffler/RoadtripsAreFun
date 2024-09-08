@@ -440,7 +440,7 @@ export const startWorkFlow = async (
     addMessage(
       chatId,
       setChats,
-      "Perfect! How many stops would you like to take?",
+      "Perfect! How many attractions would you like to see?",
       'bot',
     );
 

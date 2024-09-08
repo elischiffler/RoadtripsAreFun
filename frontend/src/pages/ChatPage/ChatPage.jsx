@@ -32,7 +32,7 @@ const ChatPage = () => {
   // Initial message displayed in a new chat
   const initialMessage = [
     {
-      text: "Hello there! I’m Journey Genie, and I’m excited to help you with your trip planning. To get started, could you please tell me what type of location you'd like to use?",
+      text: "Hello there! I’m Journey Genie, and I’m excited to help you with your trip planning. To get started, could you please tell me how you would like to enter your trip's starting point?",
       sender: 'bot' // either bot or user
     },
   ];
