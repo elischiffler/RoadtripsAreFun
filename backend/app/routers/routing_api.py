@@ -530,6 +530,7 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, fl
         query = location.address
         if len(location_array) >= 4: # Check if the address includes the highway you are on
             query = ", ".join(location_array[1:]) # Remove the most specific detail to not get an invalid google search
+
     # Now that you have a query try to webscrape
     try:
         valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
@@ -540,61 +541,67 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, fl
             return valid_hotel
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
-        # If scraping fails use the Amadeus API
-        access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
-        hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
-        headers = {
-            "Authorization": f"Bearer {access_token}"
-        }
-        params = {
-            'latitude': lat,
-            'longitude': lon,
-            'radius': radius,
-            'radiusUnit': 'MILE',
-            'ratings': ['2', '3', '4', '5'],  # Indicates hotel star level
-        }
-        response = requests.get(hotels_list_url, params=params, headers=headers)
-        json_data = response.json()
-        # If no hotel is found search for one with a larger radius
-        if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
-            return await _find_hotel(lat, lon, price_range, check_in, radius + 10)
-        hotels = Amadeus_Hotel_Search.model_validate(json_data)  # Validate the response
-        hotel_list = hotels.data
-        if len(hotel_list) > 0:
-            # Put price function here
-            hotel_info = {}  # Initialize a dictionary to store hotel info with the key being the hotelId
-            id_list = []  # List of hotel id's to send for to get offers
-            for hotel in hotel_list:  # Loop through all nearby hotels for coordinates, id, and name
-                coordinates = [hotel.geoCode['latitude'], hotel.geoCode['longitude']]  # Get coordinates for routing
-                hotel_id = hotel.hotelId  # Amadeus's unique hotel ID
-                id_list.append(hotel_id)  # Add the id to the id_list
-                name = hotel.name.lower()
-                hotel_info[hotel_id] = {'coordinates': coordinates, 'name': name.capitalize(),
-                                        'type': 'hotel'}  # Add relevant info from the search to hotel_info
-            # Get a dict of offers using hotelIds as keys
-            offers = await _get_amadeus_offers(access_token=access_token,
-                                               hotel_ids=id_list,
-                                               check_in=check_in,
-                                               check_out=datetime(check_in.year, check_in.month, check_in.day + 1, 9,
-                                                                  0,
-                                                                  0),  # The next day at 9 AM
-                                               price_range=price_range[1])
-            highest_rated = await _get_amadeus_ratings(
-                offers.keys())  # Look for ratings on the hotels with valid offers
-            best_offer = offers[highest_rated[0]]  # Use the hotelId returned with highest_rated to get its offer info
-            location = hotel_info[
-                best_offer['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
-            location['price'] = best_offer['price']  # Add pricing to the already saved info hotel info
-            location['name'] = best_offer['name']  # Add the name to location info
-            location['stars'] = round(highest_rated[1] / 20, 2)  # Get a star value by dividing the 0-100 rating
-            # Returns a dictionary with a coordinates, name, type, price, and rating of the hotel
-            return location
+    except HTTPException as exception:
+        if exception.status_code == 404:
+            try:
+                # If scraping fails use the Amadeus API
+                access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
+                hotels_list_url = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-geocode"
+                headers = {
+                    "Authorization": f"Bearer {access_token}"
+                }
+                params = {
+                    'latitude': lat,
+                    'longitude': lon,
+                    'radius': radius,
+                    'radiusUnit': 'MILE',
+                    'ratings': ['2', '3', '4', '5'],  # Indicates hotel star level
+                }
+                response = requests.get(hotels_list_url, params=params, headers=headers)
+                json_data = response.json()
+                # If no hotel is found search for one with a larger radius
+                if response.status_code == 400 and json_data['errors'][0]['code'] == 895:
+                    return await _find_hotel(lat, lon, price_range, check_in, radius + 10)
+                hotels = Amadeus_Hotel_Search.model_validate(json_data)  # Validate the response
+                hotel_list = hotels.data
+                if len(hotel_list) > 0:
+                    # Put price function here
+                    hotel_info = {}  # Initialize a dictionary to store hotel info with the key being the hotelId
+                    id_list = []  # List of hotel id's to send for to get offers
+                    for hotel in hotel_list:  # Loop through all nearby hotels for coordinates, id, and name
+                        coordinates = [hotel.geoCode['latitude'], hotel.geoCode['longitude']]  # Get coordinates for routing
+                        hotel_id = hotel.hotelId  # Amadeus's unique hotel ID
+                        id_list.append(hotel_id)  # Add the id to the id_list
+                        name = hotel.name.lower()
+                        hotel_info[hotel_id] = {'coordinates': coordinates, 'name': name.capitalize(),
+                                                'type': 'hotel'}  # Add relevant info from the search to hotel_info
+                    # Get a dict of offers using hotelIds as keys
+                    offers = await _get_amadeus_offers(access_token=access_token,
+                                                       hotel_ids=id_list,
+                                                       check_in=check_in,
+                                                       check_out=datetime(check_in.year, check_in.month, check_in.day + 1, 9,
+                                                                          0,
+                                                                          0),  # The next day at 9 AM
+                                                       price_range=price_range[1])
+                    highest_rated = await _get_amadeus_ratings(
+                        offers.keys())  # Look for ratings on the hotels with valid offers
+                    best_offer = offers[highest_rated[0]]  # Use the hotelId returned with highest_rated to get its offer info
+                    location = hotel_info[
+                        best_offer['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
+                    location['price'] = best_offer['price']  # Add pricing to the already saved info hotel info
+                    location['name'] = best_offer['name']  # Add the name to location info
+                    location['stars'] = round(highest_rated[1] / 20, 2)  # Get a star value by dividing the 0-100 rating
+                    # Returns a dictionary with a coordinates, name, type, price, and rating of the hotel
+                    return location
+                else:
+                    raise HTTPException(status_code=404, detail="No hotels found")
+            except RequestException as exception:
+                raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
+            except ValidationError as exception:
+                raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
         else:
-            raise HTTPException(status_code=404, detail="No hotels found")
-    except RequestException as exception:
-        raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
-    except ValidationError as exception:
-        raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
+            raise exception
+
 
 
 async def find_amadeus_hotels():
