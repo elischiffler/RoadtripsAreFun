@@ -9,6 +9,7 @@ from app.models.routing_models.trip_advisor_models import Trip_Advisor_Location_
 from app.models.routing_models.amadeus_models import Amadeus_Access, Amadeus_Hotel_Search, Amadeus_Hotel_Offers, \
     Amadeus_Hotel_Ratings
 from app.utils.geolocation_helpers import get_location
+from geopy.distance import geodesic
 from dotenv import load_dotenv
 from typing import Dict, Any, List, Tuple, Optional
 import os
@@ -185,8 +186,7 @@ async def _call_route(start_lat: float, start_lon: float, end_lat: float, end_lo
 
 
 async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget: float, daily_start: int = 9,
-                     daily_end: int = 16) -> \
-        tuple[list[dict[str, list[float] | str] | dict[str, Any]], int]:
+                     daily_end: int = 16) -> Tuple[List[Dict[str, List[float] | str] | dict[str, Any]], int]:
     """
     Determines stopping points along the route based on the specified number of stops.
 
@@ -221,9 +221,15 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
 
     # Add stopping places until the trip is over
     for _ in range(num_stops + 1):
+        print(f"Loop number {_}")
+        print(f"Still within range for searchin hotels: {total_time < end_hotel_search}")
+        print(f"Stop comes after the hotel: {current_time + time_till_stop >= (daily_end * 3600)}")
         # Check whether the daily end or the next stop comes first
         while total_time < end_hotel_search and current_time + time_till_stop >= (daily_end * 3600):
             time_traveled = (daily_end * 3600) - current_time  # Calculate time traveled that day
+            # If you just finished a stop and the time is later than the daily_end look for hotel at current location
+            if time_traveled < 0:
+                time_traveled = 0
             total_time += time_traveled  # Add the time traveled toward the next stop that day
             date += timedelta(seconds=time_traveled)
             time_till_stop -= time_traveled  # Remove the amount of time traveled in the day from time to the stop
@@ -231,7 +237,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
             attempts = 12  # 12 attempts (6 hours) to find a hotel before raising an error with the route
             while attempts > 0:
                 try:
-                    print('finding hotel...', hotel_lat, hotel_lon)
+                    print(f'finding hotel at {hotel_lat, hotel_lon} at the time {total_time}')
                     stopping_points.append(await _find_hotel(hotel_lat,
                                                              hotel_lon,
                                                              price_range,
@@ -246,6 +252,7 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
                         print(total_time)
                         time_till_stop -= 3600  # Decrease time till stop by 30 minutes
                         date += timedelta(seconds=1800)  # Increase the datetime
+                        current_time += 1800
                         hotel_lat, hotel_lon = _find_position(coordinates, steps,
                                                               total_time)  # Find the new position after driving
                     else:
@@ -269,13 +276,15 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
         if (total_time + time_till_stop < end_stop_search) and current_time < (21 * 3600) and num_stops > 0:
             total_time += time_till_stop  # Increment the total time by time traveled to stop
             current_time += time_till_stop + (3600 * 2)  # Current time includes distance and time spent at stop
+            date += timedelta(hours=2,
+                              seconds=time_till_stop)  # Allocate two hours detours per stop/ increment for the time to drive to the location
             time_till_stop = interval  # Reset the time to the next stop
             attempts = 2 # 2 attempts before raising an error to find a stop to limit API calls
             search_radius = 30 # Set the attraction search radius in miles
             while attempts > 0:
                 try:
                     current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
-                    print('finding stop...', current_lat, current_lon)
+                    print(f'finding stop at {current_lat, current_lon} at the time {total_time}')
                     stopping_points.append( # Add the stop to the list
                         await _find_stop('attractions', current_lat, current_lon, search_radius)
                     )
@@ -291,12 +300,12 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
                         # Decrement the time until the next stop by an hour (next stop will come sooner than interval)
                         time_till_stop -= 3600
                         date += timedelta(seconds=3600)  # Increase the datetime
-                        current_time+=3600 # Increment the current time counter
+                        current_time += 3600 # Increment the current time counter
                     else:
                         raise exception
             num_stops -= 1  # Decrement the number of stops
-            date += timedelta(hours=2,
-                              seconds=interval)  # Allocate two hours detours per stop/ increment for the time to drive to the location
+            print(date)
+            print(f"The next stop will be in {current_time + time_till_stop} seconds")
     return stopping_points, total_cost
 
 
@@ -318,16 +327,55 @@ def _find_position(coordinates: list[list[float]], steps: list[Mapbox_step], ela
 
         # Check if the elapsed time falls within the current step
         if accumulated_time + step_duration >= elapsed_time:
-            # Get a ratio for interpolation
+            # Get a ratio for interpolation (Percentage of the step you are currently at)
             ratio = (elapsed_time - accumulated_time) / step_duration
 
-            # Get the starting and ending coordinates of the current step
-            start_coord = step.geometry.coordinates[0]
-            end_coord = step.geometry.coordinates[-1]
+            # Get the coordinates/distance of the target step (form of lon,lat from Mapbox)
+            step_coords = step.geometry.coordinates
+
+            # Get the geodisic distance in meters you are currently at in the step
+            target_distance = geodesic((step_coords[0][1],step_coords[0][0]), (step_coords[-1][1],step_coords[-1][0])).meters * ratio
+
+            # Track accumulated distance over the step to determine the nearest coordinates
+            accumulated_distance = 0
+            # print(len(step_coords))
+            while len(step_coords) > 3: # Search for the closest two-three coordinates using a binary search
+                center_idx = len(step_coords) // 2 - 1 # Get the middle index of the coordinates
+
+                # Get the first half of the step coordinates and find the distance of the half
+                left_half = step_coords[:center_idx]
+                half_distance = geodesic((left_half[0][1], left_half[0][0]),
+                                         (left_half[-1][1], left_half[-1][0])).meters
+
+                # Determine if the half contains the current distance
+                if half_distance + accumulated_distance >= target_distance:
+                    # Set coordinates to left half if it contains the distance
+                    step_coords = left_half
+                else:
+                    # Set coordinates to right half if step is not found and accumulate the distance of the left half
+                    step_coords = step_coords[center_idx:]
+                    accumulated_distance += half_distance
+
+            # Get the starting and ending coordinates of the reduced step
+            start_coord = step_coords[0]
+            end_coord = step_coords[-1]
+
+            # Get the remaining distance from the start coord to the end coord
+            remaining_distance = target_distance - accumulated_distance
+
+            # Get the distance of the currently examined segment
+            segment_distance = geodesic((start_coord[1], start_coord[0]),
+                                        (end_coord[1], end_coord[0])).meters
+
+            if segment_distance > 0:
+                # Get the interpolation ratio (Percentage of the segment the desired coordinates are in)
+                segment_ratio = remaining_distance/segment_distance
+            else:
+                segment_ratio = 0
 
             # Interpolate the latitude and longitude based on the ratio
-            lat = start_coord[1] + ratio * (end_coord[1] - start_coord[1])
-            lon = start_coord[0] + ratio * (end_coord[0] - start_coord[0])
+            lat = start_coord[1] + segment_ratio * (end_coord[1] - start_coord[1])
+            lon = start_coord[0] + segment_ratio * (end_coord[0] - start_coord[0])
 
             # Return the interpolated coordinates
             return [lat, lon]
@@ -453,7 +501,14 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, fl
     try:
         # Webscrape first
         print(price_range)
-        query = get_location(geocoder=geolocator, coords=[lat, lon]).address
+        location = get_location(geocoder=geolocator, coords=[lat, lon])
+        if location is None:
+            print("Caught the error")
+            raise HTTPException(status_code=404, detail="No location found")
+        query = location.address
+        query_list = query.split(", ")
+        if len(query_list) >= 4: # Check if the address includes the highway you are on
+            query = ", ".join(query_list[1:]) # Remove the most specific detail to not get an invalid google search
         valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
         if valid_hotel:
             valid_hotel['type'] = 'hotel'

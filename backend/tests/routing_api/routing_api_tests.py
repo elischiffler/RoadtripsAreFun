@@ -174,5 +174,21 @@ def test_final_route_OC_StLouis():
     assert final_response.status_code == 200
     assert isinstance(final_route["distance"], float) and final_route["duration"] > 0
 
+
+def test_bodies_of_water_route_Annapolis_CrystalFalls():
+    response = client.get("/get-initial-route",
+                          params={"start_lat": 38.9786401, "start_lon": -76.492786,
+                                  "end_lat": 46.098007, "end_lon": -88.334024})
+    response_data = response.json()
+    payload = {
+        'initial_route': response_data,
+        'num_stops': 8,
+        'budget': 600,
+    }
+    final_response = client.post("/generate-final-route", json=payload)
+    final_route = final_response.json()
+    assert final_response.status_code == 200
+    assert isinstance(final_route["distance"], float) and final_route["duration"] > 0
+
 if __name__ == "__main__":
     pytest.main()
