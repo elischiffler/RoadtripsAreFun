@@ -18,7 +18,7 @@ export const calcHotelBudget = async (route_duration, stops) => {
     }
 
 export const calcGasBudget = async (distanceInMeters, year, make, model, chatId, setChats, UserChatData) => {
-  const carInfo = await getCarInfo(year, make, model, chatId, setChats)  // Get car info from backend
+  const carInfo = await getCarInfo(year, make, model, chatId, setChats, UserChatData)  // Get car info from backend
   if(carInfo){
     const mpg = carInfo['combination_mpg'];  // Grab the miles per gallon of the car
     const distanceInMiles = distanceInMeters * 0.000621371; // Turns the distance into miles
@@ -31,7 +31,7 @@ export const calcGasBudget = async (distanceInMeters, year, make, model, chatId,
   };
 }
 
-const getCarInfo = async (year, make, model, chatId, setChats) => {
+const getCarInfo = async (year, make, model, chatId, setChats, UserChatData) => {
   try{
   const params ={
     'model': model,
@@ -46,7 +46,19 @@ const getCarInfo = async (year, make, model, chatId, setChats) => {
   catch(error){
     // Log any errors encountered during the request
     console.error("Error getting car info:", error);
-    addMessage(chatId, setChats, 'We had an error getting your car information. Could you please re-enter your car information?', 'bot');
+
+    if (error.response.status === 500) {
+      handleElectricCar(chatId, setChats)      
+    } else {
+      addMessage(chatId, setChats, 'We had an error getting your car information. Could you please re-enter your car information?', 'bot');
+    }
+    // Resets the input field
+    UserChatData.carDetails = new Array(3).fill("")
+    
     return null;
   }
+}
+
+const handleElectricCar = async (chatId, setChats) => {
+  addMessage(chatId, setChats, 'We currently do not support creating a traveling budget with electric cars. Would you like to skip creating a gas budget or input a new car?', 'bot');
 }

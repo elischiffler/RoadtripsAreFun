@@ -333,7 +333,7 @@ export async function handlePromptCarInfo(
   setChats,
   UserChatData
 ){
-  addMessage(chatId, setChats, "Please enter the year, make and model of the vehicle you plan to use. (e.g. 2020 Mazda CX-3)", 'bot',);
+  addMessage(chatId, setChats, "The next step in creating your budget is getting an estimated gas cost. Please enter the year, make and model of the vehicle you plan to use. (e.g. 2020 Mazda CX-3)", 'bot',);
   UserChatData.action = "Car Details";
   UserChatData.showInputBar = true;
 
