@@ -8,6 +8,7 @@ from app.models.routing_models.routing_models import MapBox, Route, Route_Step, 
 from app.models.routing_models.trip_advisor_models import Trip_Advisor_Location_Search, Trip_Advisor_Information
 from app.models.routing_models.amadeus_models import Amadeus_Access, Amadeus_Hotel_Search, Amadeus_Hotel_Offers, \
     Amadeus_Hotel_Ratings
+from app.models.routing_models.google_places_models import GooglePlaces
 from app.utils.geolocation_helpers import get_location
 from geopy.distance import geodesic
 from dotenv import load_dotenv
@@ -30,6 +31,7 @@ logging.basicConfig(level=logging.INFO)
 # Get API tokens
 mapbox_access_token = os.getenv('MAPBOX_API')
 tripadvisor_access_token = os.getenv('TRIPADVISOR_API')
+google_places_access_token = os.getenv('GOOGLE_PLACES_API')
 
 # Grab app from APIRouter
 router = APIRouter()
@@ -463,20 +465,24 @@ async def _get_details(location_id: str) -> Tuple[int,Dict[str, Any]]:
     json_data = response.json()
     details = Trip_Advisor_Information.model_validate(json_data)
 
-    lat = details.latitude
-    lon = details.longitude
-    name = details.name
-    url = details.web_url
-    address = details.address_obj.address_string
-    ranking = details.ranking_data
-    print(ranking)
-    print("stop category: ", details.subcategory)
-    print("stop group", details.groups)
-    if ranking is not None:
-        rank= int(ranking.ranking)
-    else:
-        rank = 999 # Rank is unrealistically high
-    return rank, {'coordinates': [lat, lon], 'name': name, 'type': 'stop', 'url': url, 'address': address}
+    try:
+        lat = details.latitude
+        lon = details.longitude
+        name = details.name
+        url = details.web_url
+        address = details.address_obj.address_string
+        ranking = details.ranking_data
+        # print(ranking)
+        # print("stop category: ", details.subcategory)
+        # print("stop group", details.groups)
+        if ranking is not None:
+            rank= int(ranking.ranking)
+        else:
+            rank = 999 # Rank is unrealistically high
+        return rank, {'coordinates': [lat, lon], 'name': name, 'type': 'stop', 'url': url, 'address': address}
+    # Catch any attributes that were not returned values and send back an empty response
+    except AttributeError:
+        return 999, {}
 
 
 async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, float], str], check_in: datetime,
@@ -487,29 +493,45 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, fl
     price, stars, review_count.
 
     Args:
-    - lat(float): Latitude of the search area
-    - lon(float): Longitude of the search area
-    - radius(int): Radius in miles to search for hotels
+        - lat(float): Latitude of the search area
+        - lon(float): Longitude of the search area
+        - radius(int): Radius in miles to search for hotels
 
     Returns:
-    - dict[str, list[float] | str]: A dictionary containing the hotel description and navigation
+        - dict[str, list[float] | str]: A dictionary containing the hotel description and navigation
 
     Raises:
-    - HTTPException: For errors related to TripAdvisor requests or response processing.
+        - HTTPException: For errors related to TripAdvisor requests or response processing.
 
     """
+    # Get a geolocated location
+    location = get_location(geocoder=geolocator, coords=[lat, lon])
+
+    # Ensure we could geolocate the provided coordinates
+    if location is None:
+        raise HTTPException(status_code=404, detail="No location found")
+    print(price_range)
+
+    # Split the location string into its components
+    location_array = location.address.split(", ")
     try:
-        print(price_range)
-        # Scrape a nearby city using Google maps
+        # Get a nearby city partial address using Google Places API
+        query = await _get_nearby_city(lat, lon)
+        # Ensure we have all the necessary information to get a valid hotel query
+        if query is None or len(location_array) < 2:
+            raise HTTPException(status_code=404, detail="No cities found")
+        # Add state and country information to the returned city address
+        query += f", {location_array[-2]}, {location_array[-1]}"
+        print(f"Using google's query {query}")
 
-
-        location = get_location(geocoder=geolocator, coords=[lat, lon])
-        if location is None:
-            raise HTTPException(status_code=404, detail="No location found")
+    # Catch all possible exceptions when using the Google API
+    except (ValidationError, HTTPException, AttributeError):
+        # If the API fails use the geolocated address for a rough estimate of the address
         query = location.address
-        query_list = query.split(", ")
-        if len(query_list) >= 4: # Check if the address includes the highway you are on
-            query = ", ".join(query_list[1:]) # Remove the most specific detail to not get an invalid google search
+        if len(location_array) >= 4: # Check if the address includes the highway you are on
+            query = ", ".join(location_array[1:]) # Remove the most specific detail to not get an invalid google search
+    # Now that you have a query try to webscrape
+    try:
         valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
         if valid_hotel:
             valid_hotel['type'] = 'hotel'
@@ -713,6 +735,48 @@ async def _get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
             raise HTTPException(status_code=404, detail="No Amadeus access token returned")
     except ValidationError as exception:
         raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
+
+
+async def _get_nearby_city(lat: float, lon: float, radius: Optional[float] = 50000) -> str:
+    """
+    Uses Google Places Nearby search to find a nearby city name from a given location
+
+    Args:
+        - lat(float): Latitude of the search area
+        - lon(float): Longitude of the search area
+        - radius(int): Radius in miles to search for hotels
+
+    Returns:
+        - str: A nearby city name
+
+    Raises:
+        - HTTPException: For errors related to an unexpected response from Google Places API.
+
+    """
+    url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+    params = {
+        'location': f'{lat},{lon}',
+        'radius': radius, # In meters
+        'keyword': 'city',
+        'key' : google_places_access_token,
+    }
+    try:
+        response = requests.get(url, params=params)
+        json_data = response.json()
+        places = GooglePlaces.model_validate(json_data).results
+        if len(places) > 0:
+            # Iterate through all the returned places
+            for place in places:
+                # Check if a nearby location name is found
+                if place.vicinity:
+                    return place.vicinity
+        else:
+            raise HTTPException(status_code=404, detail="No places found for the provided location")
+
+    except ValidationError as exception:
+        raise HTTPException(status_code=500, detail=f'Improper Google Places response: {str(exception)}')
+    except RequestException as exception:
+        raise HTTPException(status_code=502, detail=f"Google Places request failed: {str(exception)}")
 
 
 def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str, Any] | None:

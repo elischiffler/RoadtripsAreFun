@@ -111,7 +111,7 @@ class GooglePlaces(BaseModel):
         wheelchair_accessible_entrance: Optional[bool] = None
 
     html_attributions: List[str]
-    results: List[Any]
+    results: List[GooglePlace]
     status: str
     error_message: Optional[str] = None
     info_messages: Optional[List[str]] = []
