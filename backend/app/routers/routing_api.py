@@ -499,11 +499,12 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, fl
 
     """
     try:
-        # Webscrape first
         print(price_range)
+        # Scrape a nearby city using Google maps
+
+
         location = get_location(geocoder=geolocator, coords=[lat, lon])
         if location is None:
-            print("Caught the error")
             raise HTTPException(status_code=404, detail="No location found")
         query = location.address
         query_list = query.split(", ")
