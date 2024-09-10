@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from geopy.geocoders import OpenCage
-from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi import APIRouter, HTTPException, Request
 import requests
 from requests.exceptions import RequestException
 from pydantic import ValidationError
@@ -281,28 +281,29 @@ async def _add_stops(route: MapBox_route, num_stops: int, date: datetime, budget
             date += timedelta(hours=2,
                               seconds=time_till_stop)  # Allocate two hours detours per stop/ increment for the time to drive to the location
             time_till_stop = interval  # Reset the time to the next stop
-            attempts = 2 # 2 attempts before raising an error to find a stop to limit API calls
-            search_radius = 30 # Set the attraction search radius in miles
+            attempts = 2  # 2 attempts before raising an error to find a stop to limit API calls
+            search_radius = 30  # Set the attraction search radius in miles
             while attempts > 0:
                 try:
-                    current_lat, current_lon = _find_position(coordinates, steps, total_time)  # Find the next stop position
+                    current_lat, current_lon = _find_position(coordinates, steps,
+                                                              total_time)  # Find the next stop position
                     print(f'finding stop at {current_lat, current_lon} at the time {total_time}')
-                    stopping_points.append( # Add the stop to the list
+                    stopping_points.append(  # Add the stop to the list
                         await _find_stop('attractions', current_lat, current_lon, search_radius)
                     )
                     print('found stop!')
-                    break # Exit the loop
+                    break  # Exit the loop
                 except HTTPException as exception:
                     if exception.status_code == 404:
                         attempts -= 1
                         if attempts == 0:
                             raise exception
-                        search_radius += search_radius # Double the search radius
-                        total_time += 3600 # Redo the search an hour later
+                        search_radius += search_radius  # Double the search radius
+                        total_time += 3600  # Redo the search an hour later
                         # Decrement the time until the next stop by an hour (next stop will come sooner than interval)
                         time_till_stop -= 3600
                         date += timedelta(seconds=3600)  # Increase the datetime
-                        current_time += 3600 # Increment the current time counter
+                        current_time += 3600  # Increment the current time counter
                     else:
                         raise exception
             num_stops -= 1  # Decrement the number of stops
@@ -336,13 +337,14 @@ def _find_position(coordinates: list[list[float]], steps: list[Mapbox_step], ela
             step_coords = step.geometry.coordinates
 
             # Get the geodisic distance in meters you are currently at in the step
-            target_distance = geodesic((step_coords[0][1],step_coords[0][0]), (step_coords[-1][1],step_coords[-1][0])).meters * ratio
+            target_distance = geodesic((step_coords[0][1], step_coords[0][0]),
+                                       (step_coords[-1][1], step_coords[-1][0])).meters * ratio
 
             # Track accumulated distance over the step to determine the nearest coordinates
             accumulated_distance = 0
             # print(len(step_coords))
-            while len(step_coords) > 3: # Search for the closest two-three coordinates using a binary search
-                center_idx = len(step_coords) // 2 - 1 # Get the middle index of the coordinates
+            while len(step_coords) > 3:  # Search for the closest two-three coordinates using a binary search
+                center_idx = len(step_coords) // 2 - 1  # Get the middle index of the coordinates
 
                 # Get the first half of the step coordinates and find the distance of the half
                 left_half = step_coords[:center_idx]
@@ -371,7 +373,7 @@ def _find_position(coordinates: list[list[float]], steps: list[Mapbox_step], ela
 
             if segment_distance > 0:
                 # Get the interpolation ratio (Percentage of the segment the desired coordinates are in)
-                segment_ratio = remaining_distance/segment_distance
+                segment_ratio = remaining_distance / segment_distance
             else:
                 segment_ratio = 0
 
@@ -419,7 +421,7 @@ async def _find_stop(category: str, lat: str, lon: str, radius: int) -> Dict[str
         response = requests.get(nearby_search_url, params=params)
         json_data = response.json()
         locations = Trip_Advisor_Location_Search.model_validate(json_data)
-        lowest_rank = 999 # Set to be unrealistically high
+        lowest_rank = 999  # Set to be unrealistically high
         ideal_stop = None
         if len(locations.data) > 0:
             for location in locations.data:
@@ -429,7 +431,7 @@ async def _find_stop(category: str, lat: str, lon: str, radius: int) -> Dict[str
                 if rank < lowest_rank:
                     lowest_rank = rank
                     ideal_stop = details
-                if rank == 1: # End loop early if highest rank is found
+                if rank == 1:  # End loop early if highest rank is found
                     break
             if ideal_stop is not None:
                 return ideal_stop
@@ -440,7 +442,7 @@ async def _find_stop(category: str, lat: str, lon: str, radius: int) -> Dict[str
         raise HTTPException(status_code=502, detail=f'Improper TripAdvisor response: {str(exception)}')
 
 
-async def _get_details(location_id: str) -> Tuple[int,Dict[str, Any]]:
+async def _get_details(location_id: str) -> Tuple[int, Dict[str, Any]]:
     """
     Retrieves detailed information about a location from the TripAdvisor API using its location ID.
 
@@ -476,9 +478,9 @@ async def _get_details(location_id: str) -> Tuple[int,Dict[str, Any]]:
         # print("stop category: ", details.subcategory)
         # print("stop group", details.groups)
         if ranking is not None:
-            rank= int(ranking.ranking)
+            rank = int(ranking.ranking)
         else:
-            rank = 999 # Rank is unrealistically high
+            rank = 999  # Rank is unrealistically high
         return rank, {'coordinates': [lat, lon], 'name': name, 'type': 'stop', 'url': url, 'address': address}
     # Catch any attributes that were not returned values and send back an empty response
     except AttributeError:
@@ -528,21 +530,21 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, fl
     except (ValidationError, HTTPException, AttributeError):
         # If the API fails use the geolocated address for a rough estimate of the address
         query = location.address
-        if len(location_array) >= 4: # Check if the address includes the highway you are on
-            query = ", ".join(location_array[1:]) # Remove the most specific detail to not get an invalid google search
+        if len(location_array) >= 4:  # Check if the address includes the highway you are on
+            query = ", ".join(location_array[1:])  # Remove the most specific detail to not get an invalid google search
 
     # Now that you have a query try to webscrape
     try:
-        valid_hotel = find_google_hotels(query=query, price_range=price_range[0])
+        valid_hotel = find_google_hotels(query=query, price_range=price_range[0], coords=(lat, lon), radius=radius)
         # Ensure a valid hotel is found and its within the search radius
-        if valid_hotel and geodesic((valid_hotel['coordinates'][0], valid_hotel['coordinates'][1]),
-                                    (lat, lon)).miles <= radius:
+        if valid_hotel:
             valid_hotel['type'] = 'hotel'
             return valid_hotel
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
     except HTTPException as exception:
-        if exception.status_code == 404:
+        # Disabling Amadeus for now the API appears to be nonfunctional
+        if exception.status_code == 600:
             try:
                 # If scraping fails use the Amadeus API
                 access_token = await _get_amadeus_token(os.getenv('AMADEUS_KEY'), os.getenv('AMADEUS_SECRET'))
@@ -569,7 +571,8 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, fl
                     hotel_info = {}  # Initialize a dictionary to store hotel info with the key being the hotelId
                     id_list = []  # List of hotel id's to send for to get offers
                     for hotel in hotel_list:  # Loop through all nearby hotels for coordinates, id, and name
-                        coordinates = [hotel.geoCode['latitude'], hotel.geoCode['longitude']]  # Get coordinates for routing
+                        coordinates = [hotel.geoCode['latitude'],
+                                       hotel.geoCode['longitude']]  # Get coordinates for routing
                         hotel_id = hotel.hotelId  # Amadeus's unique hotel ID
                         id_list.append(hotel_id)  # Add the id to the id_list
                         name = hotel.name.lower()
@@ -579,13 +582,17 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, fl
                     offers = await _get_amadeus_offers(access_token=access_token,
                                                        hotel_ids=id_list,
                                                        check_in=check_in,
-                                                       check_out=datetime(check_in.year, check_in.month, check_in.day + 1, 9,
+                                                       check_out=datetime(check_in.year, check_in.month,
+                                                                          check_in.day + 1, 9,
                                                                           0,
                                                                           0),  # The next day at 9 AM
                                                        price_range=price_range[1])
-                    highest_rated = await _get_amadeus_ratings(
-                        offers.keys())  # Look for ratings on the hotels with valid offers
-                    best_offer = offers[highest_rated[0]]  # Use the hotelId returned with highest_rated to get its offer info
+
+                    # Look for ratings on the hotels with valid offers
+                    highest_rated = await _get_amadeus_ratings(offers.keys())
+
+                    # Use the hotelId returned with highest_rated to get its offer info
+                    best_offer = offers[highest_rated[0]]
                     location = hotel_info[
                         best_offer['hotel_id']]  # Retrieve the saved hotel_info from the hotel_id of the found offer
                     location['price'] = best_offer['price']  # Add pricing to the already saved info hotel info
@@ -601,11 +608,6 @@ async def _find_hotel(lat: float, lon: float, price_range: Tuple[Tuple[float, fl
                 raise HTTPException(status_code=502, detail=f'Improper Amadeus response: {str(exception)}')
         else:
             raise exception
-
-
-
-async def find_amadeus_hotels():
-    pass
 
 
 async def _get_amadeus_offers(access_token: str, hotel_ids: list[str], check_in: datetime, check_out: datetime,
@@ -766,9 +768,9 @@ async def _get_nearby_city(lat: float, lon: float, radius: Optional[float] = 500
     url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
     params = {
         'location': f'{lat},{lon}',
-        'radius': radius, # In meters
+        'radius': radius,  # In meters
         'keyword': 'city',
-        'key' : google_places_access_token,
+        'key': google_places_access_token,
     }
     try:
         response = requests.get(url, params=params)
@@ -790,7 +792,8 @@ async def _get_nearby_city(lat: float, lon: float, radius: Optional[float] = 500
         raise HTTPException(status_code=502, detail=f"Google Places request failed: {str(exception)}")
 
 
-def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str, Any] | None:
+def find_google_hotels(query: str, price_range: Tuple[float, float], coords: Tuple[float, float], radius: int) -> Dict[
+                                                                                                                      str, Any] | None:
     """
     Handles the parsing of a Google hotels for the best hotel given the users preferences
 
@@ -811,17 +814,24 @@ def find_google_hotels(query: str, price_range: Tuple[float, float]) -> Dict[str
         if len(listings) > 0:  # Ensure listings were found
             # Filter hotels out of budget
             valid_hotels = list(filter(lambda listing: price_range[0] <= listing['price'] <= price_range[1], listings))
-            while len(valid_hotels) > 0:  # Search through all hotel offerings
+            # Check only the top 20% of hotels found
+            attempts = round(len(valid_hotels) * .2)
+            while attempts > 0:  # Search through all hotel offerings
                 print("advanced search...", valid_hotels)
-                ideal_hotel = _get_advanced_listing(
-                    valid_hotels.pop())  # Get detailed information on the highest rated hotel
-                if ideal_hotel is not None:  # Ensure advanced information was found
+
+                # Get detailed information on the highest rated hotel
+                ideal_hotel = _get_advanced_listing(valid_hotels.pop())
+
+                # Ensure advanced information was found and its within the search radius
+                if ideal_hotel is not None and geodesic((ideal_hotel['coordinates'][0], ideal_hotel['coordinates'][1]),
+                                                        coords).miles <= radius:
                     return ideal_hotel
+                attempts -= 1  # Remove an attempt
         raise HTTPException(status_code=404,
                             detail="No valid hotels found for the given parameters")  # To handle research
 
 
-def _get_html_response(url: str, query: Optional[str] = None) -> Response:
+def _get_html_response(url: str, query: Optional[str] = None) -> requests.Response:
     user_agents = [
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0',
@@ -835,7 +845,7 @@ def _get_html_response(url: str, query: Optional[str] = None) -> Response:
         params = None
 
     headers = {
-        'user-agent': random.choice(user_agents),  # select a random reliable user-agent
+        'user-agent': random.choice(user_agents),
         'authority': 'www.google.com',
         'method': 'GET',
         'scheme': 'https',
@@ -871,9 +881,11 @@ def _parse_google_response(response: str) -> List[Dict[str, Any]]:
             ".//span[@jsaction='mouseenter:JttVIc;mouseleave:VqIRre;']//text()"
         )
         if len(pricing_details) == 4:  # Ensure all pricing info is being returned
-            price = int(''.join(filter(str.isdigit, pricing_details[0])))  # Convert representation to an integer representation of price
+            # Convert str representation to an integer representation of price
+            price = int(''.join(filter(str.isdigit, pricing_details[0])))
             stars, review_count = _str_to_rating(rank_details[0])  # Extract rank information
-            listings.append({  # Add a hotel with all its relevant information
+            # Add a hotel to listings with all its relevant information
+            listings.append({
                 "name": name[0],
                 "url": f"https://www.google.com{google_url[0]}",
                 "price": price,
