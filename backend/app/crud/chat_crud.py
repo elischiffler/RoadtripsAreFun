@@ -3,7 +3,6 @@ from boto3.dynamodb.conditions import Key
 from app.schemas import chat_schemas
 from app.core.config import settings
 from pydantic import BaseModel
-from fastapi import HTTPException
 
 session = boto3.Session(profile_name=settings.AWS_NAME)
 dynamodb = session.resource('dynamodb', region_name=settings.AWS_REGION)
@@ -15,6 +14,7 @@ def create_chat(auth_token: str,
                 chat_id: str,
                 chat_data: chat_schemas.ChatDataSchema,
                 chat_logs: chat_schemas.ChatLogSchema):
+    """Create a new chat instance in the database"""
     response = table.put_item(
         Item={
             'UserId': auth_token,
@@ -27,6 +27,7 @@ def create_chat(auth_token: str,
 
 
 def get_chat(auth_token: str, chat_id: str) -> chat_schemas.ChatSchema:
+    """Get an individual chat from the database"""
     response = table.get_item(
         Key={
             'UserId': auth_token,
@@ -37,15 +38,17 @@ def get_chat(auth_token: str, chat_id: str) -> chat_schemas.ChatSchema:
 
 
 def get_all_chats(auth_token: str):
+    """Get all chats for a given authentication token."""
+    # Query all chat items for a give authentication token
     response = table.query(
         KeyConditionExpression=Key('UserId').eq(auth_token)
     )
     items = response.get('Items', [])
-    if len(items) == 0:
-        raise HTTPException(status_code=404, detail="No items found for the user")
     return items
 
+
 def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
+    """Update a component of a users chat in the database"""
     # Iterate through all the values that are going to be set
     update_expression = 'SET ' + ', '.join(f"{prefix}.{key} = :{key}" for key in chat_schema.dict().keys())
     # Iterate through the attributes you want to change the value of
@@ -65,6 +68,8 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
 
 
 def delete_chat(auth_token: str, chat_id: str) -> chat_schemas.ChatSchema:
+    """Delete a desired chat from the database"""
+    # Delete the desired chat
     response = table.delete_item(
         Key={
             'UserId': auth_token,
@@ -72,9 +77,3 @@ def delete_chat(auth_token: str, chat_id: str) -> chat_schemas.ChatSchema:
         }
     )
     return response
-
-
-
-
-
-

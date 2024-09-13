@@ -9,15 +9,20 @@ router = APIRouter()
 
 @router.get('/chats/{chat_id}')
 async def initialize_chats(partition_key: int):
+    """Initialize all the previously stored chats in the database."""
     try:
+        # Get all stored items for a users unique partition key
         items = get_all_chats(str(partition_key))
+        # Initialize list to hold all chat items
         chats = []
         if len(items) > 0:
+            # Iterate through all the items returned
             for item in items:
+                # Add a complete chat entry tuple with a chat log and chat data to chats
                 chats.append((item['ChatData'], item['ChatLog']))
-            return JSONResponse(status_code=200, content={'chats': chats})
-        else:
-            return JSONResponse(status_code=200, content={'chats': []})
+        # Return a response indicating a successful query and a list of found chats
+        return JSONResponse(status_code=200, content={'chats': chats})
+
     except KeyError as exception:
         raise HTTPException(status_code=500, detail=f'Stored data was missing a value: {exception}')
     except ConnectionError as exception:
@@ -29,10 +34,13 @@ async def initialize_chats(partition_key: int):
 
 
 @router.post('/chats/{chat_id}')
-async def chat_add(chat_id: int, partition_key: int, chat: ChatSchema):
-    chat_data = chat.ChatData
-    chat_log = chat.ChatLog
+async def chat_add(chat_id: int, partition_key: int, request: ChatSchema):
+    """Add a new chat to the database."""
+    # Get pertinent data from the request payload
+    chat_data = request.ChatData
+    chat_log = request.ChatLog
     try:
+        # Create a new item in the database for the given chat data and log
         response = create_chat(str(partition_key), str(chat_id), chat_data, chat_log)
         return JSONResponse(status_code=200, content={'response': response})
     except ConnectionError as exception:
@@ -44,19 +52,22 @@ async def chat_add(chat_id: int, partition_key: int, chat: ChatSchema):
 
 
 @router.put('/chats/{chat_id}')
-async def chat_update(chat_id: int, partition_key: int, chat: ChatSchema):
-    chat_data = chat.ChatData
-    chat_log = chat.ChatLog
+async def chat_update(chat_id: int, partition_key: int, request: ChatSchema):
+    """Update the chat components from the database."""
+    # Retrieve pertinent data from the request payload
+    chat_data = request.ChatData
+    chat_log = request.ChatLog
     responses = []
     try:
-        if chat_data:
-            responses.append(update_chat_component(str(partition_key), str(chat_id), chat_data, 'ChatData'))
-        # Check if chat logs were set and then update the database
-        if chat_log:
-            responses.append(update_chat_component(str(partition_key), str(chat_id), chat_log, 'ChatLog'))
-        # Check to be sure some data was sent else raise an error
+        # Ensure there is data to add
         if chat_data is None and chat_log is None:
             raise ValueError("Chat data or logs data is required")
+        # Check if chat data was sent to be updated in the database
+        if chat_data:
+            responses.append(update_chat_component(str(partition_key), str(chat_id), chat_data, 'ChatData'))
+        # Check if a chat log was sent to be updated in the database
+        if chat_log:
+            responses.append(update_chat_component(str(partition_key), str(chat_id), chat_log, 'ChatLog'))
         return JSONResponse(status_code=200, content={'response': responses})
     except DataNotFoundError as exception:
         raise HTTPException(status_code=404, detail=f"Chat was not found: {exception}")
@@ -68,7 +79,9 @@ async def chat_update(chat_id: int, partition_key: int, chat: ChatSchema):
 
 @router.delete("/chats/{chat_id}")
 async def delete_chat_component(chat_id: int, partition_key: int):
+    """Delete a particular chat component from the database."""
     try:
+        # Delete the chat and send a success response if no errors are raised
         delete_chat(str(chat_id), str(partition_key))
         return JSONResponse(status_code=200,
                             content={'status': 'success', 'message': f'Chat {chat_id} deleted successfully'})
