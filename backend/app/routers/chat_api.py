@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from app.crud.chat_crud import update_chat_component, create_chat, delete_chat, get_all_chats
 from app.schemas.chat_schemas import ChatSchema
@@ -14,9 +15,11 @@ async def initialize_chats(partition_key: int):
         if len(items) > 0:
             for item in items:
                 chats.append((item['ChatData'], item['ChatLog']))
-            return chats
+            return JSONResponse(status_code=200, content={'chats': chats})
         else:
-            raise HTTPException(status_code=404, detail='No Chats found')
+            return JSONResponse(status_code=200, content={'chats': []})
+    except KeyError as exception:
+        raise HTTPException(status_code=500, detail=f'Stored data was missing a value: {exception}')
     except ConnectionError as exception:
         raise HTTPException(status_code=500, detail=f"Error connecting to the database: {exception}")
     except ClientError as exception:
@@ -24,13 +27,14 @@ async def initialize_chats(partition_key: int):
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f"Error validating request: {exception}")
 
+
 @router.post('/chats/{chat_id}')
 async def chat_add(chat_id: int, partition_key: int, chat: ChatSchema):
     chat_data = chat.ChatData
     chat_log = chat.ChatLog
     try:
         response = create_chat(str(partition_key), str(chat_id), chat_data, chat_log)
-        return {'status': '200 SUCCESS', 'response': response}
+        return JSONResponse(status_code=200, content={'response': response})
     except ConnectionError as exception:
         raise HTTPException(status_code=500, detail=f"Error connecting to the database: {exception}")
     except ClientError as exception:
@@ -53,7 +57,7 @@ async def chat_update(chat_id: int, partition_key: int, chat: ChatSchema):
         # Check to be sure some data was sent else raise an error
         if chat_data is None and chat_log is None:
             raise ValueError("Chat data or logs data is required")
-        return {'status': '200 SUCCESS', 'response': responses}
+        return JSONResponse(status_code=200, content={'response': responses})
     except DataNotFoundError as exception:
         raise HTTPException(status_code=404, detail=f"Chat was not found: {exception}")
     except ConnectionError as exception:
@@ -65,8 +69,9 @@ async def chat_update(chat_id: int, partition_key: int, chat: ChatSchema):
 @router.delete("/chats/{chat_id}")
 async def delete_chat_component(chat_id: int, partition_key: int):
     try:
-        response = delete_chat(str(chat_id), str(partition_key))
-        return {"status": "success", "response": response}
+        delete_chat(str(chat_id), str(partition_key))
+        return JSONResponse(status_code=200,
+                            content={'status': 'success', 'message': f'Chat {chat_id} deleted successfully'})
     except ConnectionError as exception:
         raise HTTPException(status_code=500, detail=f"Error connecting to the database: {exception}")
     except ClientError as exception:

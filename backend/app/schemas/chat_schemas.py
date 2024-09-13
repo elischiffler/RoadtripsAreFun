@@ -3,7 +3,6 @@ from typing import List, Any, Optional
 from app.models.routing_models.routing_models import MapBox, Route
 
 
-
 class ChatDataSchema(BaseModel):
     chatId: int
     action: str
