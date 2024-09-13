@@ -2,6 +2,8 @@ from pydantic import BaseModel
 from typing import List, Any, Optional
 from app.models.routing_models.routing_models import MapBox, Route
 
+
+
 class ChatDataSchema(BaseModel):
     chatId: int
     action: str
@@ -27,14 +29,16 @@ class ChatDataSchema(BaseModel):
     budget: int
 
 
-class ChatLogsSchema(BaseModel):
-    class ChatLogs(BaseModel):
-        class ChatMessage(BaseModel):
-            text: str
-            sender: str
-            buttons: Optional[List[Any]]
-        id: int
-        title: str
-        messages: List[ChatMessage]
-    data: List[ChatLogs]
+class ChatLogSchema(BaseModel):
+    class ChatMessage(BaseModel):
+        text: str
+        sender: str
+        buttons: Optional[List[Any]]
+    id: int
+    title: str
+    messages: List[ChatMessage]
 
+
+class ChatSchema(BaseModel):
+    ChatData: ChatDataSchema
+    ChatLog: ChatLogSchema
