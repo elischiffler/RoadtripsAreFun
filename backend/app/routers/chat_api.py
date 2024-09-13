@@ -55,6 +55,7 @@ async def chat_add(chat_id: int, partition_key: int, request: ChatSchema):
 async def chat_update(chat_id: int, partition_key: int, request: ChatSchema):
     """Update the chat components from the database."""
     # Retrieve pertinent data from the request payload
+    print(request)
     chat_data = request.ChatData
     chat_log = request.ChatLog
     responses = []
@@ -68,7 +69,7 @@ async def chat_update(chat_id: int, partition_key: int, request: ChatSchema):
         # Check if a chat log was sent to be updated in the database
         if chat_log:
             responses.append(update_chat_component(str(partition_key), str(chat_id), chat_log, 'ChatLog'))
-        return JSONResponse(status_code=200, content={'response': responses})
+        return JSONResponse(status_code=200, content={'response': 'Success'})
     except DataNotFoundError as exception:
         raise HTTPException(status_code=404, detail=f"Chat was not found: {exception}")
     except ConnectionError as exception:

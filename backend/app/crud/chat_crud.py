@@ -48,22 +48,52 @@ def get_all_chats(auth_token: str):
 
 
 def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
-    """Update a component of a users chat in the database"""
-    # Iterate through all the values that are going to be set
-    update_expression = 'SET ' + ', '.join(f"{prefix}.{key} = :{key}" for key in chat_schema.dict().keys())
-    # Iterate through the attributes you want to change the value of
-    expression_attribute_values = {f":{key}": value for key, value in chat_schema.dict().items() if value is not None}
+    """Update a component of a user's chat in the database"""
+
+    # Convert the schema to a dictionary
+    comp_dict = chat_schema.dict()
+
+    # Initialize placeholders for attribute names and values
+    expression_attribute_names = {}
+    expression_attribute_values = {}
+
+    # Prepare the update expression and attribute values
+    update_expression = 'SET '
+    update_clauses = []
+
+    use_expression_attribute_names = False
+
+    for key, value in comp_dict.items():
+        if value is not None or value != []:
+            # Handle reserved keywords by creating placeholders for attribute names
+            if key == 'action':  # Example reserved keyword
+                placeholder_name = '#action'
+                expression_attribute_names[placeholder_name] = key
+                use_expression_attribute_names = True
+            else:
+                placeholder_name = key
+
+            update_clauses.append(f"{prefix}.{placeholder_name} = :{key}")
+            expression_attribute_values[f":{key}"] = {'S': value}  # Adjust type if necessary
+
+    # Join update clauses
+    update_expression += ', '.join(update_clauses)
 
     # Update the items in the database
-    response = table.update_item(
-        Key={
+    kwargs = {
+        'Key': {
             'UserId': auth_token,
             'ChatId': chat_id,
         },
-        UpdateExpression=update_expression,
-        ExpressionAttributeValues=expression_attribute_values,
-        ReturnValues='UPDATED_NEW'
-    )
+        'UpdateExpression': update_expression,
+        'ExpressionAttributeValues': expression_attribute_values,
+        'ReturnValues': 'UPDATED_NEW'
+    }
+
+    if use_expression_attribute_names:
+        kwargs['ExpressionAttributeNames'] = expression_attribute_names
+
+    response = table.update_item(**kwargs)
     return response
 
 

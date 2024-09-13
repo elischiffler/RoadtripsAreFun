@@ -114,5 +114,65 @@ def test_delete_chat():
     )
     assert response.status_code == 200
 
+
+def test_update_chat():
+    chat_id = 3
+    partition_key = 88
+    response1 = create_chat(
+        auth_token=str(partition_key),
+        chat_id=str(chat_id),
+        chat_data=ChatDatas[0],
+        chat_logs=ChatLogs[0],
+    )
+    assert response1['ResponseMetadata']['HTTPStatusCode'] == 200
+    payload = {
+        'ChatData': {
+            'chatId': 1,
+            'action': None,
+            'locationType': '',
+            'startCoords': [],
+            'startAddress': '',
+            'endCoords': [],
+            'endAddress': '',
+            'stops': 1,
+            'showInputBar': False,
+            'showStopSlider': False,
+            'showBudgetSlider': False,
+            'showAddressInput': False,
+            'workflowStarted': False,
+            'startConfirmed': None,
+            'endConfirmed': None,
+            'initial': None,
+            'route': None,
+            'itinerary': None,
+            'loading': False,
+            'hotelBudget': None,
+            'carDetails': [],
+            'budget': 0,
+        },
+        'ChatLog': {
+            'id': 1,
+            'title': 'Chat 1',
+            'messages': [{
+                'text': 'Hello welcome to Journey Genie',
+                'sender': "bot",
+                'buttons': []
+            },
+                {
+                    'text': 'I want to drive cross country fro LA to NYC',
+                    'sender': "user",
+                    'buttons': []
+                }]
+        }
+    }
+
+    # Post request with correct chat_id in the path and partition_key as a query param
+    response = client.put(
+        f'/chats/update/{chat_id}?partition_key={partition_key}',
+        json=payload
+    )
+    assert response.status_code == 200
+
+
 if __name__ == '__main__':
     pytest.main()
