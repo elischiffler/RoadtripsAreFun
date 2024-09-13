@@ -33,7 +33,7 @@ async def initialize_chats(partition_key: int):
         raise HTTPException(status_code=500, detail=f"Error validating request: {exception}")
 
 
-@router.post('/chats/{chat_id}')
+@router.post('/chats/create/{chat_id}')
 async def chat_add(chat_id: int, partition_key: int, request: ChatSchema):
     """Add a new chat to the database."""
     # Get pertinent data from the request payload
@@ -41,7 +41,7 @@ async def chat_add(chat_id: int, partition_key: int, request: ChatSchema):
     chat_log = request.ChatLog
     try:
         # Create a new item in the database for the given chat data and log
-        response = create_chat(str(partition_key), str(chat_id), chat_data, chat_log)
+        response = create_chat(str(partition_key), str(chat_id), chat_data.dict(), chat_log.dict())
         return JSONResponse(status_code=200, content={'response': response})
     except ConnectionError as exception:
         raise HTTPException(status_code=500, detail=f"Error connecting to the database: {exception}")
@@ -51,7 +51,7 @@ async def chat_add(chat_id: int, partition_key: int, request: ChatSchema):
         raise HTTPException(status_code=500, detail=f"Error validating request: {exception}")
 
 
-@router.put('/chats/{chat_id}')
+@router.put('/chats/update/{chat_id}')
 async def chat_update(chat_id: int, partition_key: int, request: ChatSchema):
     """Update the chat components from the database."""
     # Retrieve pertinent data from the request payload
@@ -77,12 +77,12 @@ async def chat_update(chat_id: int, partition_key: int, request: ChatSchema):
         raise HTTPException(status_code=500, detail=f"Client error processing request: {exception}")
 
 
-@router.delete("/chats/{chat_id}")
+@router.delete("/chats/delete/{chat_id}")
 async def delete_chat_component(chat_id: int, partition_key: int):
     """Delete a particular chat component from the database."""
     try:
         # Delete the chat and send a success response if no errors are raised
-        delete_chat(str(chat_id), str(partition_key))
+        delete_chat(str(partition_key), str(chat_id))
         return JSONResponse(status_code=200,
                             content={'status': 'success', 'message': f'Chat {chat_id} deleted successfully'})
     except ConnectionError as exception:

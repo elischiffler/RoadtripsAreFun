@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import routing_api, location_api, itinerary_api, car_api
+from app.routers import routing_api, location_api, itinerary_api, car_api, chat_api
 from fastapi.middleware.cors import CORSMiddleware
 
 # Create the FastAPI instance
@@ -18,6 +18,7 @@ app.include_router(routing_api.router)
 app.include_router(location_api.router)
 app.include_router(itinerary_api.router)
 app.include_router(car_api.router)
+app.include_router(chat_api.router)
 
 @app.get("/")
 async def root() -> str:

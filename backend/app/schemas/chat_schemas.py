@@ -5,7 +5,7 @@ from app.models.routing_models.routing_models import MapBox, Route
 
 class ChatDataSchema(BaseModel):
     chatId: int
-    action: str
+    action: Optional[str] = None
     locationType: str
     startCoords: List[float]
     startAddress: str
@@ -32,7 +32,7 @@ class ChatLogSchema(BaseModel):
     class ChatMessage(BaseModel):
         text: str
         sender: str
-        buttons: Optional[List[Any]]
+        buttons: Optional[List[Any]] = []
     id: int
     title: str
     messages: List[ChatMessage]

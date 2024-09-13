@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timedelta
 
-from app.routers.routing_api import _get_amadeus_token, _find_hotel, _get_offers, _get_hotel_ratings
+from app.routers.routing_api import _get_amadeus_token, _find_hotel
 import pytest
 from dotenv import load_dotenv
 from app.utils.geolocation_helpers import get_location
