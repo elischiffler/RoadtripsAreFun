@@ -29,7 +29,31 @@ ChatDatas = [
         'hotelBudget': None,
         'carDetails': [],
         'budget': 0,
-    },
+    },{
+            'chatId': 1,
+            'action': None,
+            'locationType': '',
+            'startCoords': [],
+            'startAddress': '',
+            'endCoords': [],
+            'endAddress': '',
+            'stops': 1,
+            'showInputBar': False,
+            'showStopSlider': False,
+            'showBudgetSlider': False,
+            'showAddressInput': False,
+            'workflowStarted': False,
+            'startConfirmed': None,
+            'endConfirmed': None,
+            'initial': None,
+            'route': None,
+            'itinerary': None,
+            'loading': False,
+            'hotelBudget': None,
+            'carDetails': [],
+            'budget': 0,
+        },
+
 ]
 
 ChatLogs = [
@@ -128,20 +152,20 @@ def test_update_chat():
     payload = {
         'ChatData': {
             'chatId': 1,
-            'action': None,
+            'action': 'Address',
             'locationType': '',
             'startCoords': [],
             'startAddress': '',
             'endCoords': [],
             'endAddress': '',
             'stops': 1,
-            'showInputBar': False,
+            'showInputBar': True,
             'showStopSlider': False,
-            'showBudgetSlider': False,
+            'showBudgetSlider': True,
             'showAddressInput': False,
             'workflowStarted': False,
             'startConfirmed': None,
-            'endConfirmed': None,
+            'endConfirmed': [116.12341324123412,15.234234234],
             'initial': None,
             'route': None,
             'itinerary': None,
@@ -173,6 +197,8 @@ def test_update_chat():
     )
     assert response.status_code == 200
 
+def test_initialize_chats():
+    pass
 
 if __name__ == '__main__':
     pytest.main()
