@@ -30,21 +30,21 @@ ChatDatas = [
         'carDetails': [],
         'budget': 0,
     },{
-            'chatId': 1,
-            'action': None,
+            'chatId': 2,
+            'action': 'Hello World',
             'locationType': '',
             'startCoords': [],
             'startAddress': '',
             'endCoords': [],
             'endAddress': '',
             'stops': 1,
-            'showInputBar': False,
+            'showInputBar': True,
             'showStopSlider': False,
             'showBudgetSlider': False,
-            'showAddressInput': False,
-            'workflowStarted': False,
-            'startConfirmed': None,
-            'endConfirmed': None,
+            'showAddressInput': True,
+            'workflowStarted': True,
+            'startConfirmed': [124.324, 52134],
+            'endConfirmed': [-112.0234, 48.57689],
             'initial': None,
             'route': None,
             'itinerary': None,
@@ -198,7 +198,37 @@ def test_update_chat():
     assert response.status_code == 200
 
 def test_initialize_chats():
-    pass
+    partition_key = 88
+    response = create_chat(
+        auth_token=str(partition_key),
+        chat_id=str(1),
+        chat_data=ChatDatas[0],
+        chat_logs=ChatLogs[0],
+    )
+    assert response['ResponseMetadata']['HTTPStatusCode'] == 200
+    response = create_chat(
+        auth_token=str(partition_key),
+        chat_id=str(2),
+        chat_data=ChatDatas[0],
+        chat_logs=ChatLogs[0],
+    )
+    assert response['ResponseMetadata']['HTTPStatusCode'] == 200
+    response = create_chat(
+        auth_token=str(partition_key),
+        chat_id=str(3),
+        chat_data=ChatDatas[0],
+        chat_logs=ChatLogs[0],
+    )
+    assert response['ResponseMetadata']['HTTPStatusCode'] == 200
+    params = {
+        'partition_key': partition_key,
+    }
+    response = client.get('/chats', params=params)
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 3
+
+
 
 if __name__ == '__main__':
     pytest.main()

@@ -7,7 +7,7 @@ from botocore.exceptions import ClientError, DataNotFoundError, ConnectionError
 
 router = APIRouter()
 
-@router.get('/chats/{chat_id}')
+@router.get('/chats')
 async def initialize_chats(partition_key: int):
     """Initialize all the previously stored chats in the database."""
     try:
@@ -21,7 +21,7 @@ async def initialize_chats(partition_key: int):
                 # Add a complete chat entry tuple with a chat log and chat data to chats
                 chats.append((item['ChatData'], item['ChatLog']))
         # Return a response indicating a successful query and a list of found chats
-        return JSONResponse(status_code=200, content={'chats': chats})
+        return chats
 
     except KeyError as exception:
         raise HTTPException(status_code=500, detail=f'Stored data was missing a value: {exception}')
@@ -42,7 +42,7 @@ async def chat_add(chat_id: int, partition_key: int, request: ChatSchema):
     try:
         # Create a new item in the database for the given chat data and log
         response = create_chat(str(partition_key), str(chat_id), chat_data.dict(), chat_log.dict())
-        return JSONResponse(status_code=200, content={'response': response})
+        return response
     except ConnectionError as exception:
         raise HTTPException(status_code=500, detail=f"Error connecting to the database: {exception}")
     except ClientError as exception:
@@ -69,7 +69,7 @@ async def chat_update(chat_id: int, partition_key: int, request: ChatSchema):
         # Check if a chat log was sent to be updated in the database
         if chat_log:
             responses.append(update_chat_component(str(partition_key), str(chat_id), chat_log, 'ChatLog'))
-        return JSONResponse(status_code=200, content={'response': 'Success'})
+        return responses
     except DataNotFoundError as exception:
         raise HTTPException(status_code=404, detail=f"Chat was not found: {exception}")
     except ConnectionError as exception:

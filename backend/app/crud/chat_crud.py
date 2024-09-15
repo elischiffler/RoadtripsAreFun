@@ -3,8 +3,8 @@ from boto3.dynamodb.conditions import Key
 from app.schemas import chat_schemas
 from app.core.config import settings
 from pydantic import BaseModel
-import decimal
 from decimal import Decimal, ROUND_HALF_UP
+from typing import Any, Dict
 
 session = boto3.Session(profile_name=settings.AWS_NAME)
 dynamodb = session.resource('dynamodb', region_name=settings.AWS_REGION)
@@ -14,8 +14,8 @@ table = dynamodb.Table(settings.DYNAMODB_TABLE_NAME)
 
 def create_chat(auth_token: str,
                 chat_id: str,
-                chat_data: chat_schemas.ChatDataSchema,
-                chat_logs: chat_schemas.ChatLogSchema):
+                chat_data: Dict[str, Any],
+                chat_logs: Dict[str, Any]):
     """Create a new chat instance in the database"""
     response = table.put_item(
         Item={
@@ -81,7 +81,7 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
             elif isinstance(value, list):
                 for idx in range(len(value)):
                     value[idx] = Decimal(value[idx]).quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP) if isinstance(value[idx], float) else value[idx]
-                    
+
             update_clauses.append(f"{prefix}.{placeholder_name} = :{key}")
             expression_attribute_values[f":{key}"] = {'S': value}  # Adjust type if necessary
 
