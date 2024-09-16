@@ -15,6 +15,7 @@ import { UserDataContext } from "../../states/UserDataContext";
 import { validateLocation } from "./ValidateLocation";
 import { ring } from 'ldrs' //Loading Animation
 import "./ChatPage.css";
+import { createChat } from "./DatabaseUtils";
 
 ring.register('loading-chat')  //Define the loading animation
 
@@ -36,6 +37,9 @@ const ChatPage = () => {
       sender: 'bot' // either bot or user
     },
   ];
+
+  //Retrieve the authorization token
+  const accessToken = sessionStorage.getItem("accessToken");
 
   // State to manage the list of chats
   const [chats, setChats] = useState([]);
@@ -272,6 +276,9 @@ const ChatPage = () => {
     setChats((prevChats) => [...prevChats, newChat]);
     setSelectedChat(newChat);
     setWorkflowStarted(false)
+
+    createChat(accessToken,UserChatData, newChat);
+    console.log('Stored new chat', accessToken,UserChatData, newChat)
   };
 
 

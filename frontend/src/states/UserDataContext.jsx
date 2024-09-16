@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 
 const UserDataContext = createContext();
 
@@ -93,7 +93,7 @@ class ChatData {
   }
 }
 
-export {Data, ChatLogs};
+export {Data, ChatLogs, ChatData};
 
 export const UserDataProvider = ({ children }) => {
   // Function to retrieve UserData from the sessionStorage
@@ -137,20 +137,6 @@ export const UserDataProvider = ({ children }) => {
 
   // initializes gloval instance of UserData
   const [UserData, setUserData] = useState(getUserData());
-
-  useEffect(() => {
-    // Serialize and save the instance whenever it changes
-    sessionStorage.setItem(
-      "UserData",
-      JSON.stringify({
-        chatlogs: {
-          chatdata: UserData.chatlogs.chatdata,
-          currentId: UserData.chatlogs.currentId,
-        },
-      })
-    );
-    console.log("Saved data to sessionStorage: ", UserData);
-  }, [UserData]);
 
   return (
     <UserDataContext.Provider value={{UserData, setUserData, getUserData}}>
