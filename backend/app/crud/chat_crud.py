@@ -17,6 +17,17 @@ def create_chat(auth_token: str,
                 chat_data: Dict[str, Any],
                 chat_logs: Dict[str, Any]):
     """Create a new chat instance in the database"""
+
+    coords = [chat_data['startCoords'], chat_data['endCoords']]
+    if len(coords) > 0:
+        for coord in coords:
+            #print(coord)
+            if coords[0]:
+                coord[0] = Decimal(coord[0]).quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP)
+            if coords[1]:
+                coord[1] = Decimal(coord[1]).quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP)
+    chat_data['startCoords'] = coords[0]
+    chat_data['endCoords'] = coords[1]
     response = table.put_item(
         Item={
             'UserId': auth_token,
@@ -45,6 +56,7 @@ def get_all_chats(auth_token: str):
     response = table.query(
         KeyConditionExpression=Key('UserId').eq(auth_token)
     )
+    print(response)
     items = response.get('Items', [])
     return items
 
@@ -53,7 +65,7 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
     """Update a component of a user's chat in the database"""
 
     # Convert the schema to a dictionary
-    comp_dict = chat_schema.dict()
+    comp_dict = chat_schema.model_dump()
 
     # Initialize placeholders for attribute names and values
     expression_attribute_names = {}

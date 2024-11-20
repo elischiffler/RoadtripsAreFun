@@ -11,9 +11,9 @@ ChatDatas = [
         'action': None,
         'locationType': '',
         'startCoords': [],
-        'startAddress': '',
+        'startAddress': ['', '', '', ''],
         'endCoords': [],
-        'endAddress': '',
+        'endAddress': ['', '', '', ''],
         'stops': 1,
         'showInputBar': False,
         'showStopSlider': False,
@@ -68,50 +68,21 @@ ChatLogs = [
     }
 ]
 
-@pytest.mark.asyncio
+# @pytest.mark.asyncio
 def test_add_initialized_chat():
     # Create the payload for the body (request)
     payload = {
-        'ChatData': {
-            'chatId': 1,
-            'action': None,
-            'locationType': '',
-            'startCoords': [],
-            'startAddress': '',
-            'endCoords': [],
-            'endAddress': '',
-            'stops': 1,
-            'showInputBar': False,
-            'showStopSlider': False,
-            'showBudgetSlider': False,
-            'showAddressInput': False,
-            'workflowStarted': False,
-            'startConfirmed': None,
-            'endConfirmed': None,
-            'initial': None,
-            'route': None,
-            'itinerary': None,
-            'loading': False,
-            'hotelBudget': None,
-            'carDetails': [],
-            'budget': 0,
-        },
-        'ChatLog': {
-            'id': 1,
-            'title': 'Chat 1',
-            'messages': [{
-                'text': 'Hello welcome to Journey Genie',
-                'sender': "bot",
-                'buttons': []
-            }]
-        }
+        'PartitionKey': '12345678',
+        'ChatData': ChatDatas[0],
+        'ChatLog': ChatLogs[0]
     }
 
     # Post request with correct chat_id in the path and partition_key as a query param
     response = client.post(
-        '/chats/create/1?partition_key=12345678',
+        '/chats/create/1',
         json=payload
     )
+    print(response.json())
 
     # Assert the status code is 200
     assert response.status_code == 200
@@ -199,24 +170,25 @@ def test_update_chat():
 
 def test_initialize_chats():
     partition_key = 88
+    print(partition_key, ChatDatas[0], ChatLogs[0])
     response = create_chat(
         auth_token=str(partition_key),
         chat_id=str(1),
-        chat_data=ChatDatas[0],
+        chat_data=ChatDatas[1],
         chat_logs=ChatLogs[0],
     )
     assert response['ResponseMetadata']['HTTPStatusCode'] == 200
     response = create_chat(
         auth_token=str(partition_key),
         chat_id=str(2),
-        chat_data=ChatDatas[0],
+        chat_data=ChatDatas[1],
         chat_logs=ChatLogs[0],
     )
     assert response['ResponseMetadata']['HTTPStatusCode'] == 200
     response = create_chat(
         auth_token=str(partition_key),
         chat_id=str(3),
-        chat_data=ChatDatas[0],
+        chat_data=ChatDatas[1],
         chat_logs=ChatLogs[0],
     )
     assert response['ResponseMetadata']['HTTPStatusCode'] == 200
@@ -226,9 +198,11 @@ def test_initialize_chats():
     response = client.get('/chats', params=params)
     assert response.status_code == 200
     data = response.json()
+    print(data)
     assert len(data) == 3
 
 
 
+
 if __name__ == '__main__':
-    pytest.main()
+    pytest.main(["-k", "test_initialize_chats"])
