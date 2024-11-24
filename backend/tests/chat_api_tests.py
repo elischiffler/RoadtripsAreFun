@@ -121,14 +121,15 @@ def test_update_chat():
     )
     assert response1['ResponseMetadata']['HTTPStatusCode'] == 200
     payload = {
+        'PartitionKey': '88',
         'ChatData': {
             'chatId': 1,
             'action': 'Address',
             'locationType': '',
             'startCoords': [],
-            'startAddress': '',
+            'startAddress': ['','','',''],
             'endCoords': [],
-            'endAddress': '',
+            'endAddress': ['','','',''],
             'stops': 1,
             'showInputBar': True,
             'showStopSlider': False,
@@ -166,6 +167,7 @@ def test_update_chat():
         f'/chats/update/{chat_id}?partition_key={partition_key}',
         json=payload
     )
+    print(response.json())
     assert response.status_code == 200
 
 def test_initialize_chats():
@@ -174,21 +176,21 @@ def test_initialize_chats():
     response = create_chat(
         auth_token=str(partition_key),
         chat_id=str(1),
-        chat_data=ChatDatas[1],
+        chat_data=ChatDatas[0],
         chat_logs=ChatLogs[0],
     )
     assert response['ResponseMetadata']['HTTPStatusCode'] == 200
     response = create_chat(
         auth_token=str(partition_key),
         chat_id=str(2),
-        chat_data=ChatDatas[1],
+        chat_data=ChatDatas[0],
         chat_logs=ChatLogs[0],
     )
     assert response['ResponseMetadata']['HTTPStatusCode'] == 200
     response = create_chat(
         auth_token=str(partition_key),
         chat_id=str(3),
-        chat_data=ChatDatas[1],
+        chat_data=ChatDatas[0],
         chat_logs=ChatLogs[0],
     )
     assert response['ResponseMetadata']['HTTPStatusCode'] == 200
