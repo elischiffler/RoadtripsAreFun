@@ -1,3 +1,4 @@
+import json
 import boto3
 from boto3.dynamodb.conditions import Key
 from app.schemas import chat_schemas
@@ -12,6 +13,17 @@ dynamodb = session.resource('dynamodb', region_name=settings.AWS_REGION)
 table = dynamodb.Table(settings.DYNAMODB_TABLE_NAME)
 
 
+def convert_floats_to_decimal(data: Any):
+    """Converts various datatypes to replace any float values with decimal variants"""
+    if isinstance(data, float):
+        return Decimal(data).quantize(Decimal('0.00001'), rounding=ROUND_HALF_UP)
+    elif isinstance(data, list):
+        return [convert_floats_to_decimal(item) for item in data]
+    elif isinstance(data, dict):
+        return {k: convert_floats_to_decimal(v) for k,v in data.items()}
+    else:
+        return data
+            
 def create_chat(auth_token: str,
                 chat_id: str,
                 chat_data: Dict[str, Any],
@@ -23,9 +35,9 @@ def create_chat(auth_token: str,
         for coord in coords:
             #print(coord)
             if coords[0]:
-                coord[0] = Decimal(coord[0]).quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP)
+                coord[0] = convert_floats_to_decimal(coords[0])
             if coords[1]:
-                coord[1] = Decimal(coord[1]).quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP)
+                coord[1] = convert_floats_to_decimal(coords[1])
     chat_data['startCoords'] = coords[0]
     chat_data['endCoords'] = coords[1]
     response = table.put_item(
@@ -76,23 +88,24 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
     update_clauses = []
 
     use_expression_attribute_names = False
+    empty_vals = [[], {}, None, False, '']
 
     for key, value in comp_dict.items():
-        if value is not None or value != []:
+        if value not in empty_vals:
+
+            # Ensure that all values are converted to their correct data types for storage
+            if isinstance(value, (float, list, dict)):
+                value = convert_floats_to_decimal(value)
+
             # Handle reserved keywords by creating placeholders for attribute names
-            if key == 'action':  # Example reserved keyword
+            if key == 'initial':
+                print(value)
+            if key == 'action':
                 placeholder_name = '#action'
                 expression_attribute_names[placeholder_name] = key
                 use_expression_attribute_names = True
             else:
                 placeholder_name = key
-
-            # Convert floats to a rounded decimal to meet AWS requirements
-            if isinstance(value, float):
-                value = Decimal(round(value, 6))
-            elif isinstance(value, list):
-                for idx in range(len(value)):
-                    value[idx] = Decimal(value[idx]).quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP) if isinstance(value[idx], float) else value[idx]
 
             update_clauses.append(f"{prefix}.{placeholder_name} = :{key}")
             expression_attribute_values[f":{key}"] = {'S': value}  # Adjust type if necessary

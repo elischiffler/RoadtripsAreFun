@@ -38,7 +38,6 @@ async def initialize_chats(partition_key: str):
 async def chat_add(chat_id: str, request: ChatSchema):
     """Add a new chat to the database."""
     # Get pertinent data from the request payload
-    #print('\n\n\n\n', request)
     chat_data = request.ChatData
     chat_log = request.ChatLog
     try:
@@ -57,7 +56,6 @@ async def chat_add(chat_id: str, request: ChatSchema):
 async def chat_update(chat_id: int, request: ChatSchema):
     """Update the chat components from the database."""
     # Retrieve pertinent data from the request payload
-    print(request)
     chat_data = request.ChatData
     chat_log = request.ChatLog
     responses = []
@@ -77,6 +75,7 @@ async def chat_update(chat_id: int, request: ChatSchema):
     except ConnectionError as exception:
         raise HTTPException(status_code=500, detail=f"Error connecting to the database: {exception}")
     except ClientError as exception:
+        # print(exception)
         raise HTTPException(status_code=500, detail=f"Client error processing request: {exception}")
 
 
