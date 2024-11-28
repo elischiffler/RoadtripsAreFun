@@ -15,14 +15,14 @@ import { UserDataContext } from "../../states/UserDataContext";
 import { validateLocation } from "./ValidateLocation";
 import { ring } from 'ldrs' //Loading Animation
 import "./ChatPage.css";
-import { createChat } from "./DatabaseUtils";
+import { createChat, deleteChat, initializeUserData } from "./DatabaseUtils";
 
 ring.register('loading-chat')  //Define the loading animation
 
 const ChatPage = () => {
 
   // Retrieve the global instance of UserData and getUserData function
-  const { UserData, getUserData } = useContext(UserDataContext);
+  const { UserData, setUserData } = useContext(UserDataContext);
   // Grab the chat logs
   const ChatLogsData = UserData.chatlogs;
   // State to track current chats data
@@ -43,6 +43,8 @@ const ChatPage = () => {
 
   // State to manage the list of chats
   const [chats, setChats] = useState([]);
+
+  const chatsRef = useRef(chats);
 
   // State to manage the currently selected chat
   const [selectedChat, setSelectedChat] = useState(null);
@@ -70,46 +72,43 @@ const ChatPage = () => {
         chatInput,
         UserChatData, 
         ChatLogsData,
-        getUserData,
-        getSavedChats,
+        chatsRef,
+        accessToken
       );
       // Mark the workflow as started
       setWorkflowStarted(true);
     }
   }, [selectedChat, workflowStarted, UserChatData]);
 
+  // Automatically load chats from Database or create a chat during initial mount TODO change to be load from the database and if there isn't entries then make one
+  useEffect( () => {
+    const fetchData = async () => {
+      if (chats.length === 0) {
+        const prevChats = await initializeUserData(accessToken);
+        console.log(prevChats)
+        if (prevChats) {
+          setChats(prevChats['chats']);
+          setUserData(prevChats['UserData']);
+        } else {
+          const initialChats = [
+            {
+              id: 1,
+              title: "Chat 1",
+              messages: initialMessage,
+            },
+          ];
+          console.log("Initialized chats with default:", initialChats);
+          setChats(initialChats);
+          createChat(accessToken, UserChatData, initialChats[0]);
+        };
 
-  // Get SavedChats from sessionStorage
-  const getSavedChats = () => {
-    const savedChats = sessionStorage.getItem("chats");
-    if (savedChats && savedChats.length > 2) { // Check that more than an empty array is returned
-      const parsedChats = JSON.parse(savedChats);
-      console.log("Loaded chats from sessionStorage:", parsedChats);
-      return parsedChats;
-    } else {
-      return null;
+        for (let i = 0; i < ChatLogsData.chatdata.length; i++) {
+          ChatLogsData.chatdata[i].workflowStarted = false; // Reset the workflows for all saved chats on mount
+        };
+      };
     };
-  }
 
-  // Automatically load chats from sessionStorage or create a chat during initial mount
-  useEffect(() => {
-    const prevChats = getSavedChats();
-    if(prevChats){
-      setChats(prevChats);
-    }else{
-      const initialChats = [
-        {
-          id: 1,
-          title: "Chat 1",
-          messages: initialMessage,
-        },
-      ];
-      console.log("Initialized chats with default:", initialChats);
-      setChats(initialChats);
-    }
-    for(var i=0; i < ChatLogsData.chatdata.length; i++){
-      ChatLogsData.chatdata[i].workflowStarted = false; // Reset the workflows for all saved chats on mount
-    }
+    fetchData().catch((error) => console.error("Error fetching data:", error));
   }, []);
 
 
@@ -125,7 +124,9 @@ const ChatPage = () => {
     }
   }, [chats, UserChatData.chatId]);
 
-
+  useEffect(() =>{
+    chatsRef.current = chats;
+  }, [chats]);
   
   // Handle chat selection from the sidebar
   const handleSelectChat = (chat) => {
@@ -256,7 +257,7 @@ const ChatPage = () => {
       );
     };
 
-  const handleNewChat = () => {
+  const handleNewChat = async () => {
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
     console.log('Chat ID:', maxId);
     const newChatId = maxId + 1;
@@ -277,15 +278,16 @@ const ChatPage = () => {
     setSelectedChat(newChat);
     setWorkflowStarted(false)
 
-    createChat(accessToken,UserChatData, newChat);
-    console.log('Stored new chat', accessToken,UserChatData, newChat)
+    await createChat(accessToken,NewChatData, newChat);
+    console.log('Stored new chat', NewChatData, newChat)
   };
 
 
   // Handle the deletion of a chat
-  const handleDeleteChat = (chatId) => {
+  const handleDeleteChat = async (chatId) => {
     setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
     ChatLogsData.removeChatData(chatId);
+    await deleteChat(accessToken, chatId);
     if (selectedChat?.id === chatId) {
       setSelectedChat(null); // Deselect the chat if it's the one being deleted
     }

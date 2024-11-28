@@ -3,6 +3,7 @@ import { getInitialRoute, getFinalRoute } from "./getRoute";
 import { generateItinerary } from "../ItineraryPage/generateItinerary";
 import { calcHotelBudget, calcGasBudget } from "./CalcBudget"
 import { Data, ChatLogs } from "../../states/UserDataContext";
+import { updateUserData } from "./DatabaseUtils";
 // Helper Function
 
 // Function that gets the user's current location
@@ -100,73 +101,6 @@ function changeBar(chatInput, setChatInput) {
   });
 }
 
-// Function to save all relevant User information to the sessionStorage
-const saveUserData = (setChats, UserChatData, getUserData, getSavedChats) => {
-  setChats((chats) =>{
-    if(chats.length> 0){ // Make sure data's valid and save condition is true
-      // Save current chat to the previous chats in the sessionStorage
-      var newChats = null; // Variable for chats to be saved
-      const prevChats = getSavedChats(); // Get the sessionStorage chats
-      const newChat = chats.find(Chat => // Find the currently selected chat in chats
-        Chat.id === UserChatData.chatId
-      );
-      if(prevChats && newChat){
-        // If the current chatId already exists in the sessionStorage
-        if(prevChats.find(
-          Chat => Chat.id === UserChatData.chatId
-        )){ // replace the sessionStorage version with the new chat
-          newChats = prevChats.map(Chat =>
-            Chat.id === UserChatData.chatId? newChat: Chat
-          );
-        }else{ // Add the new chat if it's the first instance
-          prevChats.push(newChat);
-          newChats = prevChats;
-        };
-      }else{
-        // save the first session version of chats
-        newChats = chats
-      };
-      
-      sessionStorage.setItem("chats", JSON.stringify(newChats));
-      console.log("Saved chats to sessionStorage:", newChats);
-      
-
-      // Save new UserChatData to previously stored UserChatData in sessionStorage
-      var saveData = null;
-      const prevData = getUserData(); // Retrieve previous value of UserData
-      console.log("Previous Data in storage", prevData);
-      if(prevData?.chatlogs?.chatdata?.length > 0){ // Check to be sure it isn't the first instance of the data
-        if(
-          prevData.chatlogs.getChatDataById(UserChatData.chatId) // Check if the ChatData already exists
-        ){
-          const newChatLogs = prevData.chatlogs.chatdata.map(ChatData => // Map the new UserData to replace the previous one
-            ChatData.chatId === UserChatData.chatId? UserChatData : ChatData);
-          prevData.chatlogs.chatdata = newChatLogs; // set the previous User Data to include the new UserChatData
-        }else{
-          prevData.chatlogs.addChatData(UserChatData); // add the new Chat Data
-        }
-        prevData.chatlogs.currentId = UserChatData.chatId; // Set the currentId to be the current Chat Datas
-        saveData = prevData;
-      }else{ // If no valid data is stored create some with UserChatData
-        const first_log = new ChatLogs([UserChatData], UserChatData.chatId) // Create the first ChatLogs
-        saveData = new Data(first_log) // Create the first data instance with the current UserChatData
-      };
-      
-      console.log("Saved data to sessionStorage: ", saveData);
-      // Save the current ChatData to the session storage
-      sessionStorage.setItem(
-        "UserData",
-        JSON.stringify({
-          chatlogs: {
-            chatdata: saveData.chatlogs.chatdata,
-            currentId: saveData.chatlogs.currentId,
-          },
-        })
-      );
-    };
-    return chats
-  })
-};
 
 // Predefined object representing the location type options presented to the user
 const askForLocationType = {
@@ -403,8 +337,10 @@ export const startWorkFlow = async (
   chatInput,
   UserChatData,
   ChatLogsData,
-  getUserData,
-  getSavedChats,
+  chatsRef,
+ // getUserData,
+ // getSavedChats,
+  access_token
 ) => {
     // Save initial state as a checkpoint
     const initialState = {
@@ -448,7 +384,8 @@ export const startWorkFlow = async (
     UserChatData.showInputBar = true;
     UserChatData.showStopSlider = true;
 
-    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    await updateUserData(access_token, UserChatData, chatsRef.current);
+    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
     
   };
 
@@ -466,7 +403,8 @@ export const startWorkFlow = async (
       UserChatData.showInputBar = false;
     };
 
-    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    await updateUserData(access_token, UserChatData, chatsRef.current);
+    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
   if (!UserChatData.endConfirmed && !UserChatData.initial){  // Checkpoint 3: Choose an end location
@@ -506,7 +444,8 @@ export const startWorkFlow = async (
       UserChatData.endConfirmed['longitude'],
     );
 
-    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    await updateUserData(access_token, UserChatData, chatsRef.current);
+    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
   if(UserChatData.initial && !UserChatData.route){ // Checkpoint 4: Calculate a budget
@@ -537,7 +476,8 @@ export const startWorkFlow = async (
 
     addMessage(chatId, setChats, `In total, we estimate your budget to be $${UserChatData.budget}:\nHotel Budget: $${UserChatData.hotelBudget}\nGas Budget: $${UserChatData.carBudget}`, 'bot',)
 
-    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    await updateUserData(access_token, UserChatData, chatsRef.current);
+    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
 
@@ -548,8 +488,8 @@ export const startWorkFlow = async (
       UserChatData.hotelBudget,
       UserChatData.stops
     );
-    
-    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    await updateUserData(access_token, UserChatData, chatsRef.current);
+    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 
   if(UserChatData.route && !UserChatData.itinerary){ // Checkpoint 6: End behaviors
@@ -559,7 +499,8 @@ export const startWorkFlow = async (
 
     // End the workflow with a message
     addMessage(chatId, setChats, `Successfully generated your trip! Based on hotel and gas it should cost $${UserChatData.route['cost'] + UserChatData.carBudget}. Click on the Map and Itinerary buttons to view the details.`, 'bot');
-    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    await updateUserData(access_token, UserChatData, chatsRef.current);
+    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   }
   else if (!UserChatData.route){
     // Send a message prompting the user to resend their information
@@ -582,7 +523,9 @@ export const startWorkFlow = async (
         ChatLogsData,
         getUserData,
         getSavedChats,
+        access_token,
     );
-    saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    await updateUserData(access_token, UserChatData, chatsRef.current);
+    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   };
 };

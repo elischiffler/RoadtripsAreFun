@@ -8,7 +8,7 @@ export const createChat = async (auth_token, UserChatData, ChatLog) => {
             'ChatData': UserChatData,
             'ChatLog': ChatLog
         };
-        response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}chats/create/${UserChatData.chatId}`, data);
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}chats/create/${UserChatData.chatId}`, data);
         console.log('Successfully stored new chat in database:', response);
         return null;
     }
@@ -24,8 +24,8 @@ export const deleteChat = async(auth_token, chatId) => {
             'partition_key':  auth_token
         }
         await axios.delete(`${import.meta.env.VITE_BACKEND_SERVER}chats/delete/${chatId}`, {params})
-        .then(console.log(response => console.log('Successfully deleted chat:', response)));
-        return null
+        console.log(`Successfully deleted chat: Chat ${chatId}`);
+        return null;
     }
     catch(error){
         console.log('Failed to delete chat:', error);
@@ -38,13 +38,13 @@ export const initializeUserData = async(auth_token) => {
         const params = {
             'partition_key': auth_token
         }
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}chats`, params)
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}chats`, {params: params})
         const user_data = response.data;
         var chats = []
         var chatdata = []
-        for(i = 0; i < user_data.length; i++){
+        for(var i = 0; i < user_data.length; i++){
             chats.push(user_data[i][1]);
-            chat_d = user_data[i][0];
+            var chat_d = user_data[i][0];
             chatdata.push(new ChatData(
                 chat_d['chatId'],
                 chat_d['action'],
@@ -73,10 +73,34 @@ export const initializeUserData = async(auth_token) => {
         }
         const logs = new ChatLogs(chatdata);
         const UserData = new Data(logs);
+        console.log('retrieved chat data from database', chats, UserData);
         return {'chats': chats, 'UserData': UserData};
     }
     catch(error){
         console.log('Error retrieving saved chats:', error);
+        return null;
     }
 };
 
+
+export const updateUserData = async(access_token, UserChatData, chats) => {
+    try{
+        let newChat = chats.find(Chat => // Find the currently selected chat in chats
+            Chat.id === UserChatData.chatId
+            );
+
+        console.log('new ChatLog is:', newChat);
+        const data = {
+            'PartitionKey': access_token,
+            'ChatData': UserChatData,
+            'ChatLog': newChat,
+        };
+        const response = await axios.put(`${import.meta.env.VITE_BACKEND_SERVER}chats/update/${UserChatData.chatId}`, data);
+        console.log('Successfully updated chat in database:', response);
+        return null;
+    }
+    catch(error){
+        console.log('Error updating a new chat in the database:', error);
+        return null;
+    }
+};
