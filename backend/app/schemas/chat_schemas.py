@@ -7,9 +7,9 @@ class ChatDataSchema(BaseModel):
     chatId: int
     action: Optional[str] = None
     locationType: str
-    startCoords: List[float]
+    startCoords: List[float] | None
     startAddress: Optional[List[str]] = []
-    endCoords: List[float]
+    endCoords: List[float] | None
     endAddress: Optional[List[str]] = []
     stops: int
     showInputBar: bool

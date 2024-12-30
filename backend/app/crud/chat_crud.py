@@ -1,6 +1,8 @@
 import json
 import boto3
+import boto3.dynamodb
 from boto3.dynamodb.conditions import Key
+import boto3.dynamodb.types
 from app.schemas import chat_schemas
 from app.core.config import settings
 from pydantic import BaseModel
@@ -12,6 +14,7 @@ dynamodb = session.resource('dynamodb', region_name=settings.AWS_REGION)
 
 table = dynamodb.Table(settings.DYNAMODB_TABLE_NAME)
 
+type_set = set(['S', 'D', 'N', 'M'])
 
 def convert_floats_to_decimal(data: Any):
     """Converts various datatypes to replace any float values with decimal variants"""
@@ -23,6 +26,27 @@ def convert_floats_to_decimal(data: Any):
         return {k: convert_floats_to_decimal(v) for k,v in data.items()}
     else:
         return data
+    
+def deserialize_response(data: Any):
+    """
+    Recursively deserialize a dynamodb response and convert to valid python types
+    """
+    deserializer = boto3.dynamodb.types.TypeDeserializer()
+    if isinstance(data, dict):
+        if set(data.keys()).intersection(type_set):
+            deserialized = deserializer.deserialize(data)
+            return deserialize_response(deserialized)
+        else:
+            return {k: deserialize_response(v) for k,v in data.items()}
+    elif isinstance(data, list):
+        return [deserialize_response(v) for v in data]
+    elif isinstance(data, Decimal):
+        print('found decimal: ', data)
+        if data%1 == 0:
+            return int(data)
+        else:
+            return float(data)
+    return data
             
 def create_chat(auth_token: str,
                 chat_id: str,
@@ -68,9 +92,13 @@ def get_all_chats(auth_token: str):
     response = table.query(
         KeyConditionExpression=Key('UserId').eq(auth_token)
     )
-    print(response)
     items = response.get('Items', [])
-    return items
+    print('premodified items', items)
+    for i in range(len(items)):
+        items[i] = deserialize_response(items[i])
+        print(f'deserialized item {i}\n{items}\n\n\n\n')
+    print('deserialized items', items)
+    return 
 
 
 def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
