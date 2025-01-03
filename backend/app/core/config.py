@@ -8,6 +8,7 @@ class Settings:
     AWS_REGION = os.getenv("AWS_REGION")  # Default to 'us-west-1' if not set
     DYNAMODB_TABLE_NAME = os.getenv("DYNAMODB_TABLE_NAME")  # Default to 'RoadtripAI' if not set
     AWS_NAME = os.getenv("AWS_USER")
+    DYNAMODB_ROUTE_TABLE = os.getenv("DYNAMODB_ROUTE_TABLE")
 
 
 settings = Settings()

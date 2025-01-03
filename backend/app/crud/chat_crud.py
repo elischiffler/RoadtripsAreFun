@@ -13,6 +13,7 @@ session = boto3.Session(profile_name=settings.AWS_NAME)
 dynamodb = session.resource('dynamodb', region_name=settings.AWS_REGION)
 
 table = dynamodb.Table(settings.DYNAMODB_TABLE_NAME)
+route_table = dynamodb.Table(settings.DYNAMODB_ROUTE_TABLE)
 
 type_set = set(['S', 'D', 'N', 'M'])
 
@@ -41,12 +42,17 @@ def deserialize_response(data: Any):
     elif isinstance(data, list):
         return [deserialize_response(v) for v in data]
     elif isinstance(data, Decimal):
-        print('found decimal: ', data)
         if data%1 == 0:
             return int(data)
         else:
             return float(data)
     return data
+
+def segment_route(geometry: list[float], seg_size: int = 10000) -> list[list[float]]:
+    segments = []
+    for i in range(0, len(geometry), seg_size):
+        segments.append(geometry[i, i + seg_size])
+    return segments
             
 def create_chat(auth_token: str,
                 chat_id: str,
@@ -93,12 +99,10 @@ def get_all_chats(auth_token: str):
         KeyConditionExpression=Key('UserId').eq(auth_token)
     )
     items = response.get('Items', [])
-    print('premodified items', items)
     for i in range(len(items)):
         items[i] = deserialize_response(items[i])
-        print(f'deserialized item {i}\n{items}\n\n\n\n')
     print('deserialized items', items)
-    return 
+    return items
 
 
 def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
@@ -127,7 +131,17 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
 
             # Handle reserved keywords by creating placeholders for attribute names
             if key == 'initial':
-                print(value)
+                route = value['geometry']
+                print(route)
+                route_id = f'{auth_token}-{chat_id}'
+                segments = segment_route(route)
+                with route_table.batch_writer() as batch:
+                    for seg_id, segment in enumerate(segments):
+                        batch.put_item({
+                            'route_id': route_id,
+                            'segment_id': seg_id,
+                            'coords': segment
+                        })
             if key == 'action':
                 placeholder_name = '#action'
                 expression_attribute_names[placeholder_name] = key
