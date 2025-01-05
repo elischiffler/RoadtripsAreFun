@@ -51,7 +51,7 @@ def deserialize_response(data: Any):
 def segment_route(geometry: list[float], seg_size: int = 10000) -> list[list[float]]:
     segments = []
     for i in range(0, len(geometry), seg_size):
-        segments.append(geometry[i, i + seg_size])
+        segments.append(geometry[i : i + seg_size])
     return segments
             
 def create_chat(auth_token: str,
@@ -131,17 +131,19 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
 
             # Handle reserved keywords by creating placeholders for attribute names
             if key == 'initial':
-                route = value['geometry']
-                print(route)
+                route = value['geometry']['coordinates']
                 route_id = f'{auth_token}-{chat_id}'
                 segments = segment_route(route)
                 with route_table.batch_writer() as batch:
                     for seg_id, segment in enumerate(segments):
                         batch.put_item({
                             'route_id': route_id,
-                            'segment_id': seg_id,
+                            'segment_id': str(seg_id),
                             'coords': segment
                         })
+                value['geometry'] = route_id
+                value['legs'] = None
+                print(value)
             if key == 'action':
                 placeholder_name = '#action'
                 expression_attribute_names[placeholder_name] = key
