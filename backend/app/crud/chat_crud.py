@@ -101,8 +101,25 @@ def get_all_chats(auth_token: str):
     items = response.get('Items', [])
     for i in range(len(items)):
         items[i] = deserialize_response(items[i])
-    print('deserialized items', items)
     return items
+
+def get_segments(route_id: str):
+    """Get all the segments associated with a single route_id"""
+    # Query for all segments for a given route id
+    print('route_id', route_id)
+    response = route_table.query(
+        KeyConditionExpression=Key('route_id').eq(route_id)
+    )
+    print('got response')
+    segments = response.get('Items')
+    sorted_segs = sorted(segments, key=lambda x: x['segment_id'])
+    segs = []
+    for seg in sorted_segs:
+        seg = deserialize_response(seg)
+        print('segsssssssss', seg)
+
+        segs.extend(seg['coords'])
+    return segs
 
 
 def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):

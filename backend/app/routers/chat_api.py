@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-from app.crud.chat_crud import update_chat_component, create_chat, delete_chat, get_all_chats
+from app.crud.chat_crud import update_chat_component, create_chat, delete_chat, get_all_chats, get_segments
 from app.schemas.chat_schemas import ChatSchema
 from botocore.exceptions import ClientError, DataNotFoundError, ConnectionError
 from boto3.dynamodb.types import TypeDeserializer
@@ -16,14 +16,18 @@ async def initialize_chats(partition_key: str):
         items = get_all_chats(partition_key)
         # Initialize list to hold all chat items
         chats = []
-        print(items)
         if items and len(items) > 0:
             # Iterate through all the items returned
             for item in items:
+                print(item)
+                if item['ChatData']['initial']:
+                    sorted_segments = get_segments(route_id=item['ChatData']['initial']['geometry'])
+                    item['ChatData']['initial']['geometry'] = {}
+                    item['ChatData']['initial']['geometry']['coordinates'] = sorted_segments
                 # Add a complete chat entry tuple with a chat log and chat data to chats
                 chats.append((item['ChatData'], item['ChatLog']))
         # Return a response indicating a successful query and a list of found chats
-        print(chats)
+        print('Output:', chats)
         return chats
 
     except KeyError as exception:
@@ -61,7 +65,6 @@ async def chat_update(chat_id: int, request: ChatSchema):
     chat_data = request.ChatData
     chat_log = request.ChatLog
     responses = []
-    print(chat_data)
     try:
         # Ensure there is data to add
         if chat_data is None and chat_log is None:
@@ -78,7 +81,6 @@ async def chat_update(chat_id: int, request: ChatSchema):
     except ConnectionError as exception:
         raise HTTPException(status_code=500, detail=f"Error connecting to the database: {exception}")
     except ClientError as exception:
-        print(exception)
         raise HTTPException(status_code=500, detail=f"Client error processing request: {exception}")
 
 
