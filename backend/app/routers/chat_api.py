@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-from app.crud.chat_crud import update_chat_component, create_chat, delete_chat, get_all_chats, get_segments
+from app.crud.chat_crud import update_chat_component, create_chat, delete_chat, get_all_chats, get_segments, restore_legs
 from app.schemas.chat_schemas import ChatSchema
 from botocore.exceptions import ClientError, DataNotFoundError, ConnectionError
 from boto3.dynamodb.types import TypeDeserializer
@@ -19,15 +19,14 @@ async def initialize_chats(partition_key: str):
         if items and len(items) > 0:
             # Iterate through all the items returned
             for item in items:
-                print(item)
                 if item['ChatData']['initial']:
                     sorted_segments = get_segments(route_id=item['ChatData']['initial']['geometry'])
                     item['ChatData']['initial']['geometry'] = {}
                     item['ChatData']['initial']['geometry']['coordinates'] = sorted_segments
+                    item['ChatData']['initial']['legs'] = restore_legs(legs=item['ChatData']['initial']['legs'])
                 # Add a complete chat entry tuple with a chat log and chat data to chats
                 chats.append((item['ChatData'], item['ChatLog']))
         # Return a response indicating a successful query and a list of found chats
-        print('Output:', chats)
         return chats
 
     except KeyError as exception:

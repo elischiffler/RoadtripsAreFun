@@ -4,7 +4,7 @@ from typing import Any, Optional, Dict
 from pydantic import BaseModel
 class Mapbox_geo(BaseModel):
     coordinates: list[list[float]]
-    type: str
+    type: Optional[str] = None
 
 
 class Route_Step(BaseModel):
@@ -88,7 +88,7 @@ class MapBox(BaseModel):
         weight: float
         duration: float  # Total length in seconds
         distance: float  # Total distance in meters
-        legs: list[Mapbox_leg]  # A leg represents a route between two destinations of the journey
+        legs: list[Mapbox_leg] | None  # A leg represents a route between two destinations of the journey
         geometry: Mapbox_geo  # Contains every coordinate of the route
         waypoints: Optional[list[Mapbox_waypoint]] = []  # Contains start, end, and stops locations
 

@@ -1,4 +1,3 @@
-import json
 import boto3
 import boto3.dynamodb
 from boto3.dynamodb.conditions import Key
@@ -6,53 +5,17 @@ import boto3.dynamodb.types
 from app.schemas import chat_schemas
 from app.core.config import settings
 from pydantic import BaseModel
-from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Dict
+from ..utils.crud_helpers import convert_floats_to_decimal, deserialize_response,segment_route,store_legs
 
 session = boto3.Session(profile_name=settings.AWS_NAME)
 dynamodb = session.resource('dynamodb', region_name=settings.AWS_REGION)
 
 table = dynamodb.Table(settings.DYNAMODB_TABLE_NAME)
 route_table = dynamodb.Table(settings.DYNAMODB_ROUTE_TABLE)
+step_table = dynamodb.Table(settings.STEP_TABLE)
 
-type_set = set(['S', 'D', 'N', 'M'])
 
-def convert_floats_to_decimal(data: Any):
-    """Converts various datatypes to replace any float values with decimal variants"""
-    if isinstance(data, float):
-        return Decimal(data).quantize(Decimal('0.00001'), rounding=ROUND_HALF_UP)
-    elif isinstance(data, list):
-        return [convert_floats_to_decimal(item) for item in data]
-    elif isinstance(data, dict):
-        return {k: convert_floats_to_decimal(v) for k,v in data.items()}
-    else:
-        return data
-    
-def deserialize_response(data: Any):
-    """
-    Recursively deserialize a dynamodb response and convert to valid python types
-    """
-    deserializer = boto3.dynamodb.types.TypeDeserializer()
-    if isinstance(data, dict):
-        if set(data.keys()).intersection(type_set):
-            deserialized = deserializer.deserialize(data)
-            return deserialize_response(deserialized)
-        else:
-            return {k: deserialize_response(v) for k,v in data.items()}
-    elif isinstance(data, list):
-        return [deserialize_response(v) for v in data]
-    elif isinstance(data, Decimal):
-        if data%1 == 0:
-            return int(data)
-        else:
-            return float(data)
-    return data
-
-def segment_route(geometry: list[float], seg_size: int = 10000) -> list[list[float]]:
-    segments = []
-    for i in range(0, len(geometry), seg_size):
-        segments.append(geometry[i : i + seg_size])
-    return segments
             
 def create_chat(auth_token: str,
                 chat_id: str,
@@ -63,7 +26,6 @@ def create_chat(auth_token: str,
     coords = [chat_data['startCoords'], chat_data['endCoords']]
     if len(coords) > 0:
         for coord in coords:
-            #print(coord)
             if coords[0]:
                 coord[0] = convert_floats_to_decimal(coords[0])
             if coords[1]:
@@ -106,18 +68,14 @@ def get_all_chats(auth_token: str):
 def get_segments(route_id: str):
     """Get all the segments associated with a single route_id"""
     # Query for all segments for a given route id
-    print('route_id', route_id)
     response = route_table.query(
         KeyConditionExpression=Key('route_id').eq(route_id)
     )
-    print('got response')
     segments = response.get('Items')
     sorted_segs = sorted(segments, key=lambda x: x['segment_id'])
     segs = []
     for seg in sorted_segs:
         seg = deserialize_response(seg)
-        print('segsssssssss', seg)
-
         segs.extend(seg['coords'])
     return segs
 
@@ -139,7 +97,10 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
     use_expression_attribute_names = False
     empty_vals = [[], {}, None, False, '']
 
+    route_id = f'{auth_token}-{chat_id}'
+
     for key, value in comp_dict.items():
+        route = None
         if value not in empty_vals:
 
             # Ensure that all values are converted to their correct data types for storage
@@ -149,7 +110,20 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
             # Handle reserved keywords by creating placeholders for attribute names
             if key == 'initial':
                 route = value['geometry']['coordinates']
-                route_id = f'{auth_token}-{chat_id}'
+                value['geometry'] = route_id
+                value['legs'] = store_legs(auth_token=auth_token,
+                                           legs=value['legs'],
+                                           s_table=step_table)
+
+            if key == 'route':
+                route = value['coordinates']
+            if key == 'action':
+                placeholder_name = '#action'
+                expression_attribute_names[placeholder_name] = key
+                use_expression_attribute_names = True
+            else:
+                placeholder_name = key
+            if route:
                 segments = segment_route(route)
                 with route_table.batch_writer() as batch:
                     for seg_id, segment in enumerate(segments):
@@ -158,15 +132,6 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                             'segment_id': str(seg_id),
                             'coords': segment
                         })
-                value['geometry'] = route_id
-                value['legs'] = None
-                print(value)
-            if key == 'action':
-                placeholder_name = '#action'
-                expression_attribute_names[placeholder_name] = key
-                use_expression_attribute_names = True
-            else:
-                placeholder_name = key
 
             update_clauses.append(f"{prefix}.{placeholder_name} = :{key}")
             expression_attribute_values[f":{key}"] = {'S': value}  # Adjust type if necessary
@@ -202,3 +167,20 @@ def delete_chat(auth_token: str, chat_id: str) -> chat_schemas.ChatSchema:
         }
     )
     return response
+
+def restore_legs(legs: list[Any]):
+    """Restore the coordinates of all the steps to their proper values"""
+    rest_legs = []
+    for leg in legs:
+        leg_id = leg['steps'][0]['geometry']['coordinates']
+        response = step_table.query(
+            KeyConditionExpression = Key('leg_id').eq(leg_id)
+        )
+        steps_coords = response.get('Items')
+        print(steps_coords)
+        steps_coords = sorted(steps_coords, key=lambda x: x['step_id'])
+        for i in range(len(steps_coords)):
+            leg['steps'][i]['geometry']['coordinates'] = deserialize_response(steps_coords[i]['coordinates'])
+        rest_legs.append(leg)
+    return rest_legs
+        
