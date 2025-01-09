@@ -132,6 +132,7 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                             'segment_id': str(seg_id),
                             'coords': segment
                         })
+                print('Modified route:', value)
 
             update_clauses.append(f"{prefix}.{placeholder_name} = :{key}")
             expression_attribute_values[f":{key}"] = {'S': value}  # Adjust type if necessary

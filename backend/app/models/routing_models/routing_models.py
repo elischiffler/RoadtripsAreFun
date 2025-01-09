@@ -65,19 +65,19 @@ class MapBox(BaseModel):
                 intersections: list[Any]
                 exits: Optional[str] = None
                 destinations: Optional[str] = None
-                maneuver: Mapbox_Maneuver
-                name: str
+                maneuver: Optional[Mapbox_Maneuver] = None
+                name: Optional[str] = None
                 duration: float
                 distance: float
-                driving_side: str
-                weight: float
-                mode: str
+                driving_side: Optional[str] = None
+                weight: Optional[float] = None
+                mode: Optional[str] = None
                 geometry: Mapbox_geo
                 ref: Optional[str] = None
 
             notifications: Optional[list[Mapbox_notification]] = []
             via_waypoints: Optional[list[Any]] = []
-            admins: list[Mapbox_admin]
+            admins: Optional[list[Mapbox_admin]] =[]
             weight: float
             duration: float
             steps: list[Mapbox_step]
@@ -88,8 +88,8 @@ class MapBox(BaseModel):
         weight: float
         duration: float  # Total length in seconds
         distance: float  # Total distance in meters
-        legs: list[Mapbox_leg] | None  # A leg represents a route between two destinations of the journey
-        geometry: Mapbox_geo  # Contains every coordinate of the route
+        legs: list[Mapbox_leg]  # A leg represents a route between two destinations of the journey
+        geometry: Optional[Mapbox_geo] = None  # Contains every coordinate of the route
         waypoints: Optional[list[Mapbox_waypoint]] = []  # Contains start, end, and stops locations
 
     routes: list[MapBox_Route]

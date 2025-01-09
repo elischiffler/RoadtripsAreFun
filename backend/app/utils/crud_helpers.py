@@ -57,6 +57,8 @@ def store_legs(auth_token: str, legs: list[Any], s_table: boto3.dynamodb.table) 
                     'coordinates': step['geometry']['coordinates']
                 })
                 step['geometry']['coordinates'] = leg_id
+                step['intersections'], step['exits'], step['destinations'], step['maneuver'], step['weight'] = None, None, None, None, None
+                leg['notifications'], leg['via_waypoints'], leg['admins'] = [], [], []
                 leg['steps'][step_id] = step
         legs_mod.append(leg)
     return legs_mod
