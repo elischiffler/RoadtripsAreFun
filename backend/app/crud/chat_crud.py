@@ -116,7 +116,8 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                                            s_table=step_table)
 
             if key == 'route':
-                route = value['coordinates']
+                route = value['geometry']['coordinates']
+                value['geometry']['coordinates'] = route_id
             if key == 'action':
                 placeholder_name = '#action'
                 expression_attribute_names[placeholder_name] = key

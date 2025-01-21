@@ -24,6 +24,9 @@ async def initialize_chats(partition_key: str):
                     item['ChatData']['initial']['geometry'] = {}
                     item['ChatData']['initial']['geometry']['coordinates'] = sorted_segments
                     item['ChatData']['initial']['legs'] = restore_legs(legs=item['ChatData']['initial']['legs'])
+                if item['ChatData']['route']:
+                    item['ChatData']['route']['geometry']
+                    item['ChatData']['route']['geometry']['coordinates'] = sorted_segments
                 # Add a complete chat entry tuple with a chat log and chat data to chats
                 chats.append((item['ChatData'], item['ChatLog']))
         # Return a response indicating a successful query and a list of found chats

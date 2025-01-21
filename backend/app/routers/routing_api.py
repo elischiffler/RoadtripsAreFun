@@ -124,19 +124,19 @@ async def get_final_route(request: Request) -> Route:
                                         'type': 'end',
                                         'address': location.address})
             idx += 1
-            for step in leg.steps:  # Not really doing anything
-                # Each step has a distance, duration, instruction, and location
-                steps.append(Route_Step(distance=step.distance,
-                                        duration=step.duration,
-                                        instruction=step.maneuver.instruction,
-                                        location=step.maneuver.location))
+            # for step in leg.steps:  # Not really doing anything
+            #     # Each step has a distance, duration, instruction, and location
+            #     steps.append(Route_Step(distance=step.distance,
+            #                             duration=step.duration,
+            #                             instruction=step.maneuver.instruction,
+            #                             location=step.maneuver.location))
         # Add all stopping coordinates to a single variable
         coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
         print('Route budget:', total_cost)
         return Route(coordinates=coordinates,
                      distance=distance,
                      duration=duration,
-                     steps=steps,
+                     #steps=steps,
                      stops=stopping_points,
                      geometry=geometry,
                      cost=total_cost)

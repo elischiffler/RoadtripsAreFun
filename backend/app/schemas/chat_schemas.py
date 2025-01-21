@@ -32,7 +32,7 @@ class ChatLogSchema(BaseModel):
     class ChatMessage(BaseModel):
         text: str
         sender: str
-        buttons: Optional[List[Any]] = []
+        buttons: Optional[List[Any]] = None
     id: int
     title: str
     messages: List[ChatMessage]

@@ -19,7 +19,7 @@ class Route(BaseModel):
     distance: float
     duration: float
     steps: list[Route_Step]
-    stops: list[Dict[str, Any]]
+    stops: Optional [list[Dict[str, Any]]] = None # TODO use or remove this
     geometry: Mapbox_geo
     cost: float
 
