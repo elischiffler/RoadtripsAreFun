@@ -49,6 +49,7 @@ const replacePreviousMessage = (chatId, setChats, newMessage) => {
         : chat
     )
   );
+  
 };
 
 // Adds a new message to the chat with optional buttons
@@ -317,6 +318,7 @@ async function handleConfirmation(
   }
   UserChatData.action = null;
 }
+
 // Create a function that can handle rollbacks
 const rollbackToCheckpoint = (checkpoint, setChatInput) => {
   // Restore the UserChatData state
@@ -521,8 +523,9 @@ export const startWorkFlow = async (
         chatInput,
         UserChatData,
         ChatLogsData,
-        getUserData,
-        getSavedChats,
+        // getUserData,
+        // getSavedChats,
+        chatsRef,
         access_token,
     );
     await updateUserData(access_token, UserChatData, chatsRef.current);

@@ -95,6 +95,7 @@ export const updateUserData = async(access_token, UserChatData, chats) => {
             'ChatData': UserChatData,
             'ChatLog': newChat,
         };
+        console.log('Updating with data:', UserChatData);
         const response = await axios.put(`${import.meta.env.VITE_BACKEND_SERVER}chats/update/${UserChatData.chatId}`, data);
         console.log('Successfully updated chat in database:', response);
         return null;

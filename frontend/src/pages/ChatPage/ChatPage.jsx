@@ -8,6 +8,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { startWorkFlow, addMessage } from "./startWorkFlow";
 import CarInputBar from "./InputCar";
+import { Data } from "../../states/UserDataContext";
 import BudgetSlider from "./InputBudget";
 import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
@@ -39,11 +40,10 @@ const ChatPage = () => {
   ];
 
   //Retrieve the authorization token
-  const accessToken = sessionStorage.getItem("accessToken");
+  const accessToken = sessionStorage.getItem("refreshToken");
 
   // State to manage the list of chats
   const [chats, setChats] = useState([]);
-
   const chatsRef = useRef(chats);
 
   // State to manage the currently selected chat
@@ -54,6 +54,8 @@ const ChatPage = () => {
     name: "Type a Message",
     message: "",
   });
+
+  const [loading, setLoading] = useState(true); // Loading state to manage rendering
 
   // Ref to scroll the chat to the bottom
   const chatEndRef = useRef(null);
@@ -84,31 +86,40 @@ const ChatPage = () => {
   useEffect( () => {
     const fetchData = async () => {
       if (chats.length === 0) {
-        const prevChats = await initializeUserData(accessToken);
-        console.log(prevChats)
-        if (prevChats) {
-          setChats(prevChats['chats']);
-          setUserData(prevChats['UserData']);
-        } else {
-          const initialChats = [
-            {
-              id: 1,
-              title: "Chat 1",
-              messages: initialMessage,
-            },
-          ];
-          console.log("Initialized chats with default:", initialChats);
-          setChats(initialChats);
-          createChat(accessToken, UserChatData, initialChats[0]);
-        };
+        try{
+          const prevChats = await initializeUserData(accessToken);
+          console.log(prevChats)
+          if (prevChats) {
+            setChats(prevChats['chats']);
+            setUserData(prevChats['UserData']);
+            const currentId = UserData.ChatLogsData.currentId;
+            setSelectedChat(chats.find((chat) => chat.id === currentId));
+          } else {
+            const initialChats = [
+              {
+                id: 1,
+                title: "Chat 1",
+                messages: initialMessage,
+              },
+            ];
+            console.log("Initialized chats with default:", initialChats);
+            setChats(initialChats);
+            createChat(accessToken, UserChatData, initialChats[0]);
+          };
 
-        for (let i = 0; i < ChatLogsData.chatdata.length; i++) {
-          ChatLogsData.chatdata[i].workflowStarted = false; // Reset the workflows for all saved chats on mount
+          for (let i = 0; i < ChatLogsData.chatdata.length; i++) {
+            ChatLogsData.chatdata[i].workflowStarted = false; // Reset the workflows for all saved chats on mount
+          };}
+        catch(error){
+          console.log('Error loading data from database');
+        }
+        finally{
+          setLoading(false);
         };
       };
     };
 
-    fetchData().catch((error) => console.error("Error fetching data:", error));
+    fetchData();
   }, []);
 
 
@@ -302,6 +313,8 @@ const ChatPage = () => {
     }
   };
 
+
+
   return (
     <Box className="page-container">
       {/* Sidebar for chat list and navigation */}
@@ -375,7 +388,7 @@ const ChatPage = () => {
             <Box className="chat-messages">
               {/* Display messages in the selected chat */}
               {selectedChat.messages.map((message, index) => {
-                if (Object.keys(message).length === 2) {
+                if (Object.keys(message).length === 2 || message.buttons === null) {
                   // Render simple text messages
                   return (
                     <Box

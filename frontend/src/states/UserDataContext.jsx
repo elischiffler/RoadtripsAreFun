@@ -46,9 +46,9 @@ class ChatData {
   constructor(chatId = null, // Constructor gives initial values if not provided/ defines possible input parameters
     action = null,
     locationType = "start",
-    startCoords = new Array(2).fill(0),
+    startCoords = null,
     startAddress = new Array(4).fill(""),
-    endCoords = new Array(2).fill(0),
+    endCoords = null,
     endAddress = new Array(4).fill(""),
     stops = 1,
     showInputBar = true,
