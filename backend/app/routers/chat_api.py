@@ -3,15 +3,18 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from app.crud.chat_crud import update_chat_component, create_chat, delete_chat, get_all_chats, get_segments, restore_legs
 from app.schemas.chat_schemas import ChatSchema
+from app.utils.auth import get_user_id_from_token
 
 router = APIRouter()
 
 @router.get('/chats')
 async def initialize_chats(partition_key: str):
     """Initialize all the previously stored chats in the database."""
+    # Decode the permanent user ID from the temporary access token
+    user_id = get_user_id_from_token(partition_key)
     try:
         # Get all stored items for a users unique partition key
-        items = get_all_chats(partition_key)
+        items = get_all_chats(user_id)
         # Initialize list to hold all chat items
         chats = []
         if items and len(items) > 0:
@@ -42,9 +45,10 @@ async def chat_add(chat_id: str, request: ChatSchema):
     # Get pertinent data from the request payload
     chat_data = request.ChatData
     chat_log = request.ChatLog
+    user_id = get_user_id_from_token(request.PartitionKey)
     try:
         # Create a new item in the database for the given chat data and log
-        response = create_chat(request.PartitionKey, chat_id, chat_data.model_dump(), chat_log.model_dump())
+        response = create_chat(user_id, chat_id, chat_data.model_dump(), chat_log.model_dump())
         return response
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f"Error validating request: {exception}")
@@ -56,6 +60,7 @@ async def chat_update(chat_id: int, request: ChatSchema):
     # Retrieve pertinent data from the request payload
     chat_data = request.ChatData
     chat_log = request.ChatLog
+    user_id = get_user_id_from_token(request.PartitionKey)
     responses = []
     try:
         # Ensure there is data to add
@@ -63,10 +68,10 @@ async def chat_update(chat_id: int, request: ChatSchema):
             raise ValueError("Chat data or logs data is required")
         # Check if chat data was sent to be updated in the database
         if chat_data:
-            responses.append(update_chat_component(request.PartitionKey, str(chat_id), chat_data, 'ChatData'))
+            responses.append(update_chat_component(user_id, str(chat_id), chat_data, 'ChatData'))
         # Check if a chat log was sent to be updated in the database
         if chat_log:
-            responses.append(update_chat_component(request.PartitionKey, str(chat_id), chat_log, 'ChatLog'))
+            responses.append(update_chat_component(user_id, str(chat_id), chat_log, 'ChatLog'))
         return responses
     except Exception as exception:
         raise HTTPException(status_code=500, detail=f"Error updating chat: {exception}")
@@ -75,9 +80,10 @@ async def chat_update(chat_id: int, request: ChatSchema):
 @router.delete("/chats/delete/{chat_id}")
 async def delete_chat_component(chat_id: int, partition_key: str):
     """Delete a particular chat component from the database."""
+    user_id = get_user_id_from_token(partition_key)
     try:
         # Delete the chat and send a success response if no errors are raised
-        delete_chat(partition_key, str(chat_id))
+        delete_chat(user_id, str(chat_id))
         return JSONResponse(status_code=200,
                             content={'status': 'success', 'message': f'Chat {chat_id} deleted successfully'})
     except ValidationError as exception:
