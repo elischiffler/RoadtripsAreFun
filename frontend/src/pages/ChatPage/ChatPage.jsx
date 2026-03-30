@@ -23,13 +23,14 @@ ring.register('loading-chat')  //Define the loading animation
 const ChatPage = () => {
 
   // Retrieve the global instance of UserData and getUserData function
-  const { UserData, setUserData } = useContext(UserDataContext);
+  const { UserData, setUserData, chats, setChats } = useContext(UserDataContext);
   // Grab the chat logs
   const ChatLogsData = UserData.chatlogs;
   // State to track current chats data
-  const [UserChatData, setUserChatData] = useState(ChatLogsData?.chatdata?.length > 0?
-    ChatLogsData.getChatDataById(ChatLogsData.currentId):
-    ChatLogsData.createChatData(1));
+  const initialUserChatData = ChatLogsData?.chatdata?.length > 0
+    ? (ChatLogsData.getChatDataById(ChatLogsData.currentId) || ChatLogsData.chatdata[0])
+    : ChatLogsData.createChatData(1);
+  const [UserChatData, setUserChatData] = useState(initialUserChatData);
 
   // Initial message displayed in a new chat
   const initialMessage = [
@@ -43,7 +44,6 @@ const ChatPage = () => {
   const accessToken = sessionStorage.getItem("refreshToken");
 
   // State to manage the list of chats
-  const [chats, setChats] = useState([]);
   const chatsRef = useRef(chats);
 
   // State to manage the currently selected chat
@@ -61,24 +61,30 @@ const ChatPage = () => {
   const chatEndRef = useRef(null);
   
   // State to track workflow status
-  const [workflowStarted, setWorkflowStarted] = useState(UserChatData.workflowStarted? UserChatData.workflowStarted : false);
+  const [workflowStarted, setWorkflowStarted] = useState(UserChatData?.workflowStarted || false);
   // Trigger workflow when a chat is selected, ensuring it only starts once
   useEffect(() => {
-    setWorkflowStarted(UserChatData.workflowStarted); // ensure the accurate workflowStarted is set
+    setWorkflowStarted(UserChatData?.workflowStarted || false); // ensure the accurate workflowStarted is set
     if (selectedChat && !workflowStarted && UserChatData) {
-      // Start the workflow for the newly selected chat
-      startWorkFlow(
-        setChats,
-        selectedChat.id,
-        setChatInput,
-        chatInput,
-        UserChatData, 
-        ChatLogsData,
-        chatsRef,
-        accessToken
-      );
-      // Mark the workflow as started
-      setWorkflowStarted(true);
+      if (UserChatData.isComplete) {
+        // Chat is finished, bypass workflow entirely
+        setWorkflowStarted(true);
+        UserChatData.workflowStarted = true;
+      } else {
+        // Start the workflow for the newly selected chat
+        startWorkFlow(
+          setChats,
+          selectedChat.id,
+          setChatInput,
+          chatInput,
+          UserChatData, 
+          ChatLogsData,
+          chatsRef,
+          accessToken
+        );
+        // Mark the workflow as started
+        setWorkflowStarted(true);
+      }
     }
   }, [selectedChat, workflowStarted, UserChatData]);
 
@@ -92,8 +98,8 @@ const ChatPage = () => {
           if (prevChats) {
             setChats(prevChats['chats']);
             setUserData(prevChats['UserData']);
-            const currentId = UserData.ChatLogsData.currentId;
-            setSelectedChat(chats.find((chat) => chat.id === currentId));
+            const currentId = prevChats['UserData'].chatlogs.currentId;
+            setSelectedChat(prevChats['chats'].find((chat) => chat.id === currentId));
           } else {
             const initialChats = [
               {
@@ -116,6 +122,8 @@ const ChatPage = () => {
         finally{
           setLoading(false);
         };
+      } else {
+        setLoading(false);
       };
     };
 

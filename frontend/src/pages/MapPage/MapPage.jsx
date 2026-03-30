@@ -1,5 +1,5 @@
 import { React, useContext } from "react";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import LogoButton from "../../components/LogoButton";
 import ItineraryButton from "../../components/buttons/ItineraryButton";
 import ChatButton from "../../components/buttons/ChatButton";
@@ -14,8 +14,28 @@ const MapPage = () => {
   
   // Grab the chat logs
   const ChatLogsData = UserData?.chatlogs || {};
-  const UserChatData = ChatLogsData?.chatdata?.[ChatLogsData.currentId - 1];
+  const UserChatData = ChatLogsData?.chatdata?.length > 0
+    ? (ChatLogsData.getChatDataById(ChatLogsData.currentId) || ChatLogsData.chatdata[0])
+    : null;
   console.log(UserChatData);
+
+  if (!UserChatData || !UserChatData.route) {
+    return (
+      <Box className="map-page-container">
+        <Box className="left-sidebar">
+          <Box className="logo-button-container">
+            <LogoButton />
+          </Box>
+          <Box className="chat-button-container">
+            <ChatButton />
+          </Box>
+        </Box>
+        <Box className="main-content" sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <Typography variant="h6">No Route Available</Typography>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box className="map-page-container">

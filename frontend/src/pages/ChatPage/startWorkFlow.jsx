@@ -2,7 +2,6 @@ import { validateLocation } from "./ValidateLocation";
 import { getInitialRoute, getFinalRoute } from "./getRoute";
 import { generateItinerary } from "../ItineraryPage/generateItinerary";
 import { calcHotelBudget, calcGasBudget } from "./CalcBudget"
-import { Data, ChatLogs } from "../../states/UserDataContext";
 import { updateUserData } from "./DatabaseUtils";
 // Helper Function
 
@@ -87,7 +86,7 @@ export const addMessage = (chatId, setChats, newMessage, sender, buttons = null)
           : chat
       );
       return newChats
-    };
+    }
     return prevChats
   }
   );
@@ -194,7 +193,7 @@ export async function inputLocationWorkflow(chatId,
         }
       }, 100);
     });
-  };
+  }
 
   
   // Handle the user's selected location type
@@ -319,16 +318,6 @@ async function handleConfirmation(
   UserChatData.action = null;
 }
 
-// Create a function that can handle rollbacks
-const rollbackToCheckpoint = (checkpoint, setChatInput) => {
-  // Restore the UserChatData state
-  Object.assign(UserChatData, checkpoint);
-
-  // Restore the chatInput state
-  setChatInput({ ...checkpoint.chatInput });
-
-};
-
 
 // Main Workflow
 // This function orchestrates the chat flow, asking for and processing user inputs
@@ -340,15 +329,8 @@ export const startWorkFlow = async (
   UserChatData,
   ChatLogsData,
   chatsRef,
- // getUserData,
- // getSavedChats,
   access_token
 ) => {
-    // Save initial state as a checkpoint
-    const initialState = {
-      ...UserChatData,
-      chatInput: { ...chatInput },
-    };
   
   console.log("Starting a workflow");
   UserChatData.workflowStarted = true
@@ -389,7 +371,7 @@ export const startWorkFlow = async (
     await updateUserData(access_token, UserChatData, chatsRef.current);
     //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
     
-  };
+  }
 
   if(UserChatData.showInputBar && UserChatData.showStopSlider) { // Checkpoint 2: Input stops
     if(UserChatData.showStopSlider){
@@ -403,11 +385,11 @@ export const startWorkFlow = async (
         }, 100);
       });
       UserChatData.showInputBar = false;
-    };
+    }
 
     await updateUserData(access_token, UserChatData, chatsRef.current);
     //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
-  };
+  }
 
   if (!UserChatData.endConfirmed && !UserChatData.initial){  // Checkpoint 3: Choose an end location
     // Ask for the end location
@@ -448,7 +430,7 @@ export const startWorkFlow = async (
 
     await updateUserData(access_token, UserChatData, chatsRef.current);
     //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
-  };
+  }
 
   if(UserChatData.initial && !UserChatData.route){ // Checkpoint 4: Calculate a budget
     UserChatData.hotelBudget = await calcHotelBudget(UserChatData.initial['duration'], UserChatData.stops); // Get the estimated minimum hotel budget
@@ -480,7 +462,7 @@ export const startWorkFlow = async (
 
     await updateUserData(access_token, UserChatData, chatsRef.current);
     //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
-  };
+  }
 
 
   if(!UserChatData.route && UserChatData.initial){ // Checkpoint 5: Generate the final route
@@ -492,16 +474,31 @@ export const startWorkFlow = async (
     );
     await updateUserData(access_token, UserChatData, chatsRef.current);
     //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
-  };
+  }
 
   if(UserChatData.route && !UserChatData.itinerary){ // Checkpoint 6: End behaviors
     // Generate the itinerary data 
     UserChatData.itinerary = await generateItinerary(UserChatData.route);
-    ChatLogsData.chatdata[UserChatData.chatId-1] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
+    UserChatData.isComplete = true; // Mark the chat as complete
+    
+    const chatIndex = ChatLogsData.chatdata.findIndex(c => c.chatId === UserChatData.chatId);
+    if (chatIndex !== -1) {
+      ChatLogsData.chatdata[chatIndex] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
+    }
 
+    const finalMessageText = `Successfully generated your trip! Based on hotel and gas it should cost $${UserChatData.route['cost'] + UserChatData.carBudget}. Click on the Map and Itinerary buttons to view the details.`;
+    
     // End the workflow with a message
-    addMessage(chatId, setChats, `Successfully generated your trip! Based on hotel and gas it should cost $${UserChatData.route['cost'] + UserChatData.carBudget}. Click on the Map and Itinerary buttons to view the details.`, 'bot');
-    await updateUserData(access_token, UserChatData, chatsRef.current);
+    addMessage(chatId, setChats, finalMessageText, 'bot');
+    
+    // Create a copy of the current chats to include the final message for the database update
+    const updatedChats = chatsRef.current.map(chat =>
+      chat.id === chatId
+        ? { ...chat, messages: [...chat.messages, { text: finalMessageText, sender: 'bot' }] }
+        : chat
+    );
+    
+    await updateUserData(access_token, UserChatData, updatedChats);
     //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
   }
   else if (!UserChatData.route){
@@ -530,5 +527,5 @@ export const startWorkFlow = async (
     );
     await updateUserData(access_token, UserChatData, chatsRef.current);
     //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
-  };
+  }
 };

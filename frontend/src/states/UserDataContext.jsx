@@ -66,6 +66,7 @@ class ChatData {
     carBudget = 0,
     carDetails = new Array(3).fill(""),
     budget = 0,
+    isComplete = false
   ) {
     this.chatId = chatId;
     this.action = action;
@@ -90,6 +91,7 @@ class ChatData {
     this.carBudget = carBudget;
     this.carDetails = carDetails;
     this.budget = budget;
+    this.isComplete = isComplete;
   }
 }
 
@@ -125,6 +127,7 @@ export const UserDataProvider = ({ children }) => {
         chat.carBudget,
         chat.carDetails,
         chat.budget,
+        chat.isComplete
       ));
       const chatlogs = new ChatLogs(chatdata, parsedData.chatlogs.currentId);
       const UserData = new Data(chatlogs);
@@ -137,9 +140,10 @@ export const UserDataProvider = ({ children }) => {
 
   // initializes gloval instance of UserData
   const [UserData, setUserData] = useState(getUserData());
+  const [chats, setChats] = useState([]);
 
   return (
-    <UserDataContext.Provider value={{UserData, setUserData, getUserData}}>
+    <UserDataContext.Provider value={{UserData, setUserData, getUserData, chats, setChats}}>
       {children}
     </UserDataContext.Provider>
   );

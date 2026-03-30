@@ -69,6 +69,7 @@ export const initializeUserData = async(auth_token) => {
                 chat_d['carBudget'],
                 chat_d['carDetails'],
                 chat_d['budget'],
+                chat_d['isComplete'] || false,
             ));
         }
         const logs = new ChatLogs(chatdata);

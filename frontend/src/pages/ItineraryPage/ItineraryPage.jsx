@@ -17,7 +17,9 @@ const ItineraryPage = () => {
   const { UserData } = useContext(UserDataContext);
   // Grab the chat logs and make sure everything is defined
   const ChatLogsData = UserData?.chatlogs || {};
-  const UserChatData = ChatLogsData?.chatdata?.[ChatLogsData.currentId - 1];
+  const UserChatData = ChatLogsData?.chatdata?.length > 0
+    ? (ChatLogsData.getChatDataById(ChatLogsData.currentId) || ChatLogsData.chatdata[0])
+    : null;
   console.log(ChatLogsData);
   console.log(UserChatData);
 
