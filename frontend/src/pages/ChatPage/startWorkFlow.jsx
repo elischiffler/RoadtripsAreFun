@@ -51,11 +51,25 @@ const replacePreviousMessage = (chatId, setChats, newMessage) => {
   
 };
 
+// Removes the loading animation
+export const removeLoader = (chatId, setChats) => {
+  setChats((prevChats) =>
+    prevChats.map((chat) =>
+      chat.id === chatId
+        ? {
+            ...chat,
+            messages: (chat.messages || []).filter((msg) => !(msg.type === 'loading-chat')),
+          }
+        : chat
+    )
+  );
+};
+
 // Adds a new message to the chat with optional buttons
 export const addMessage = (chatId, setChats, newMessage, sender, buttons = null) => {
   // Ensure the newMessage is a string, optionally with buttons
   const message = newMessage === "loading" 
-    ? <loading-chat size="30" color="black"></loading-chat>
+    ? { type: 'loading-chat' }
     : buttons
     ? {
         text: newMessage,
@@ -129,9 +143,10 @@ function locationTypeResponse(
   UserChatData,
 ) {
   if (UserChatData.action === "Current Location") {
-    UserChatData.loading = true
+    addMessage(chatId, setChats, "loading", 'bot');
     // If the user chose 'Current Location'
     getCurrentLocation(async (latitude, longitude) => {
+      removeLoader(chatId, setChats);
       // Update the previous message to include the location coordinates
       replacePreviousMessage(chatId, setChats, `I would like to use: Current Location`);
       // Save the coordinates to UserChatData
@@ -334,6 +349,8 @@ export const startWorkFlow = async (
   
   console.log("Starting a workflow");
   UserChatData.workflowStarted = true
+  let preFetchedFinalRoute = null; // Prepare a variable to store our background API call
+
   if(!UserChatData.showStopSlider && !UserChatData.startConfirmed) { // Checkpoint 1: Choose a start location
     UserChatData.showInputBar = false
 
@@ -368,9 +385,9 @@ export const startWorkFlow = async (
     UserChatData.showInputBar = true;
     UserChatData.showStopSlider = true;
 
+    addMessage(chatId, setChats, "loading", 'bot');
     await updateUserData(access_token, UserChatData, chatsRef.current);
-    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
-    
+    removeLoader(chatId, setChats);
   }
 
   if(UserChatData.showInputBar && UserChatData.showStopSlider) { // Checkpoint 2: Input stops
@@ -387,8 +404,9 @@ export const startWorkFlow = async (
       UserChatData.showInputBar = false;
     }
 
+    addMessage(chatId, setChats, "loading", 'bot');
     await updateUserData(access_token, UserChatData, chatsRef.current);
-    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    removeLoader(chatId, setChats);
   }
 
   if (!UserChatData.endConfirmed && !UserChatData.initial){  // Checkpoint 3: Choose an end location
@@ -420,6 +438,7 @@ export const startWorkFlow = async (
     );
     
 
+    addMessage(chatId, setChats, "loading", 'bot'); // Start loading animation
 
     //Get the users initial route duration
     UserChatData.initial  = await getInitialRoute(UserChatData.startConfirmed['latitude'],
@@ -429,7 +448,7 @@ export const startWorkFlow = async (
     );
 
     await updateUserData(access_token, UserChatData, chatsRef.current);
-    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    removeLoader(chatId, setChats); // Stop loading animation
   }
 
   if(UserChatData.initial && !UserChatData.route){ // Checkpoint 4: Calculate a budget
@@ -452,34 +471,54 @@ export const startWorkFlow = async (
       console.log(`hotel budget: ${UserChatData.hotelBudget}`)
     }
 
+    // --- OPTIMIZATION: PRE-FETCH FINAL ROUTE ---
+    // At this point we have all the info required to generate the final route.
+    // We can kick it off in the background right now while the user is typing their car details!
+    preFetchedFinalRoute = getFinalRoute(
+      UserChatData.initial,
+      UserChatData.hotelBudget,
+      UserChatData.stops
+    ).catch(error => {
+      console.error("Background final route failed:", error);
+      return null;
+    });
+
     // Handle getting the car info from the user and estimating a gas budget
     await handlePromptCarInfo(chatId, setChats, UserChatData); 
 
     // Calculate the total budget
     UserChatData.budget  = UserChatData.hotelBudget + UserChatData.carBudget
-
     addMessage(chatId, setChats, `In total, we estimate your budget to be $${UserChatData.budget}:\nHotel Budget: $${UserChatData.hotelBudget}\nGas Budget: $${UserChatData.carBudget}`, 'bot',)
 
+    addMessage(chatId, setChats, "loading", 'bot');
     await updateUserData(access_token, UserChatData, chatsRef.current);
-    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    removeLoader(chatId, setChats);
   }
 
 
   if(!UserChatData.route && UserChatData.initial){ // Checkpoint 5: Generate the final route
     // Final Route Checkpoint
-    // Generate the final route account for budget
-    UserChatData.route = await getFinalRoute(UserChatData.initial,
-      UserChatData.hotelBudget,
-      UserChatData.stops
-    );
+    addMessage(chatId, setChats, "loading", 'bot'); // Start the loading chat animation
+    
+    if (preFetchedFinalRoute) {
+      UserChatData.route = await preFetchedFinalRoute;
+    } else {
+      UserChatData.route = await getFinalRoute(UserChatData.initial,
+        UserChatData.hotelBudget,
+        UserChatData.stops
+      );
+    }
+    
     await updateUserData(access_token, UserChatData, chatsRef.current);
-    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    removeLoader(chatId, setChats); // Stop the loading chat animation AFTER database update
   }
 
   if(UserChatData.route && !UserChatData.itinerary){ // Checkpoint 6: End behaviors
+    addMessage(chatId, setChats, "loading", 'bot'); // Start loading while generating itinerary
     // Generate the itinerary data 
     UserChatData.itinerary = await generateItinerary(UserChatData.route);
     UserChatData.isComplete = true; // Mark the chat as complete
+    removeLoader(chatId, setChats); // Stop loading
     
     const chatIndex = ChatLogsData.chatdata.findIndex(c => c.chatId === UserChatData.chatId);
     if (chatIndex !== -1) {
@@ -488,7 +527,6 @@ export const startWorkFlow = async (
 
     const finalMessageText = `Successfully generated your trip! Based on hotel and gas it should cost $${UserChatData.route['cost'] + UserChatData.carBudget}. Click on the Map and Itinerary buttons to view the details.`;
     
-    // End the workflow with a message
     addMessage(chatId, setChats, finalMessageText, 'bot');
     
     // Create a copy of the current chats to include the final message for the database update
@@ -498,10 +536,13 @@ export const startWorkFlow = async (
         : chat
     );
     
+    addMessage(chatId, setChats, "loading", 'bot');
     await updateUserData(access_token, UserChatData, updatedChats);
-    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    removeLoader(chatId, setChats);
   }
   else if (!UserChatData.route){
+    removeLoader(chatId, setChats);
+
     // Send a message prompting the user to resend their information
     addMessage(UserChatData.chatId, setChats, "Error creating route. Please re-enter how you would like to choose your starting location.", 'bot');
 
@@ -520,12 +561,12 @@ export const startWorkFlow = async (
         chatInput,
         UserChatData,
         ChatLogsData,
-        // getUserData,
-        // getSavedChats,
         chatsRef,
         access_token,
     );
+
+    addMessage(chatId, setChats, "loading", 'bot');
     await updateUserData(access_token, UserChatData, chatsRef.current);
-    //saveUserData(setChats, UserChatData, getUserData, getSavedChats);
+    removeLoader(chatId, setChats);
   }
 };

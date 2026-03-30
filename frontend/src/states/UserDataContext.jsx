@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import { createContext, useState } from "react";
 
 const UserDataContext = createContext();
 
@@ -27,12 +27,13 @@ class ChatLogs {
   // Method to create and add a new ChatData instance
   createChatData(chatId) {
     const newChatData = new ChatData(chatId);
-    if(this.getChatDataById(chatId)){ // check if there alread is this chatId
-      this.chatdata[chatId-1] = newChatData; // replace the outdated version
+    const index = this.chatdata.findIndex(chat => chat.chatId === chatId);
+    if(index !== -1){ // check if there already is this chatId
+      this.chatdata[index] = newChatData; // replace the outdated version
     }
     else{
       this.addChatData(newChatData); // add a new instance to the end of the chat list
-    };
+    }
     return newChatData;
   }
 
@@ -51,7 +52,7 @@ class ChatData {
     endCoords = null,
     endAddress = new Array(4).fill(""),
     stops = 1,
-    showInputBar = true,
+    showInputBar = false,
     showStopSlider = false,
     showBudgetSlider = false,
     showAddressInput = false,
@@ -97,53 +98,14 @@ class ChatData {
 
 export {Data, ChatLogs, ChatData};
 
+// eslint-disable-next-line react/prop-types
 export const UserDataProvider = ({ children }) => {
-  // Function to retrieve UserData from the sessionStorage
-  const getUserData = () => {
-    const savedData = sessionStorage.getItem("UserData");
-    if (savedData) {
-      const parsedData = JSON.parse(savedData);
-      const chatdata = parsedData.chatlogs.chatdata.map(chat => new ChatData(
-        chat.chatId,
-        chat.action,
-        chat.locationType,
-        chat.startCoords,
-        chat.startAddress,
-        chat.endCoords,
-        chat.endAddress,
-        chat.stops,
-        chat.showInputBar,
-        chat.showStopSlider,
-        chat.showBudgetSlider,
-        chat.showAddressInput,
-        false,
-        chat.startConfirmed,
-        chat.endConfirmed,
-        chat.initial,
-        chat.route,
-        chat.itinerary,
-        false, 
-        chat.hotelBudget,
-        chat.carBudget,
-        chat.carDetails,
-        chat.budget,
-        chat.isComplete
-      ));
-      const chatlogs = new ChatLogs(chatdata, parsedData.chatlogs.currentId);
-      const UserData = new Data(chatlogs);
-      console.log('Loaded saved data from sessionStorage: ', UserData);
-      return UserData
-    }
-    console.log('Created a new UserData instance');
-    return new Data();
-  };
-
-  // initializes gloval instance of UserData
-  const [UserData, setUserData] = useState(getUserData());
+  // Initializes global instance of UserData
+  const [UserData, setUserData] = useState(new Data());
   const [chats, setChats] = useState([]);
 
   return (
-    <UserDataContext.Provider value={{UserData, setUserData, getUserData, chats, setChats}}>
+    <UserDataContext.Provider value={{UserData, setUserData, chats, setChats}}>
       {children}
     </UserDataContext.Provider>
   );

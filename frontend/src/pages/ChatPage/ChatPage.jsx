@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import customTheme from "../../components/Theme";
 import LogoButton from "../../components/LogoButton";
@@ -8,7 +8,6 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { startWorkFlow, addMessage } from "./startWorkFlow";
 import CarInputBar from "./InputCar";
-import { Data } from "../../states/UserDataContext";
 import BudgetSlider from "./InputBudget";
 import StopSlider from "./InputStops";
 import AddressBar from "./InputAddress";
@@ -33,15 +32,15 @@ const ChatPage = () => {
   const [UserChatData, setUserChatData] = useState(initialUserChatData);
 
   // Initial message displayed in a new chat
-  const initialMessage = [
+  const initialMessage = useMemo(() => [
     {
       text: "Hello there! I’m Journey Genie, and I’m excited to help you with your trip planning. To get started, could you please tell me how you would like to enter your trip's starting point?",
       sender: 'bot' // either bot or user
     },
-  ];
+  ], []);
 
   //Retrieve the authorization token
-  const accessToken = sessionStorage.getItem("refreshToken");
+  const accessToken = sessionStorage.getItem("accessToken");
 
   // State to manage the list of chats
   const chatsRef = useRef(chats);
@@ -54,8 +53,6 @@ const ChatPage = () => {
     name: "Type a Message",
     message: "",
   });
-
-  const [loading, setLoading] = useState(true); // Loading state to manage rendering
 
   // Ref to scroll the chat to the bottom
   const chatEndRef = useRef(null);
@@ -86,7 +83,15 @@ const ChatPage = () => {
         setWorkflowStarted(true);
       }
     }
-  }, [selectedChat, workflowStarted, UserChatData]);
+  }, [
+    selectedChat,
+    workflowStarted,
+    UserChatData,
+    ChatLogsData,
+    accessToken,
+    chatInput,
+    setChats
+  ]);
 
   // Automatically load chats from Database or create a chat during initial mount TODO change to be load from the database and if there isn't entries then make one
   useEffect( () => {
@@ -111,24 +116,27 @@ const ChatPage = () => {
             console.log("Initialized chats with default:", initialChats);
             setChats(initialChats);
             createChat(accessToken, UserChatData, initialChats[0]);
-          };
+          }
 
           for (let i = 0; i < ChatLogsData.chatdata.length; i++) {
             ChatLogsData.chatdata[i].workflowStarted = false; // Reset the workflows for all saved chats on mount
-          };}
+          }}
         catch(error){
           console.log('Error loading data from database');
         }
-        finally{
-          setLoading(false);
-        };
-      } else {
-        setLoading(false);
-      };
+      }
     };
 
     fetchData();
-  }, []);
+  }, [
+    ChatLogsData.chatdata,
+    UserChatData,
+    accessToken,
+    chats.length,
+    initialMessage,
+    setChats,
+    setUserData,
+  ]);
 
 
   // Automatically setSelected chat on initial mount
@@ -237,44 +245,6 @@ const ChatPage = () => {
 
     }
   };
-
-  // Create a ref to store the previous chatid
- const previousChatIdRef = useRef(UserChatData.chatId);
-
-  // Effect to handle adding and removing loaders
-  useEffect(() => {
-    // Check if the chatid has changed
-    if (UserChatData.chatId !== previousChatIdRef.current) {
-      // Update the ref with the new chatid
-      previousChatIdRef.current = UserChatData.chatId;
-      return; // Exit early to avoid running the effect when chatid changes
-    }
-
-    // Handle loading state
-    if (UserChatData.loading) {
-      // Add a loading message if not already added
-      addMessage(UserChatData.chatId, setChats, "loading", 'bot');
-    } else {
-      // Remove the loading message when loading is false
-      deleteLoader();
-    }
-  }, [UserChatData.loading, UserChatData.chatId]);
-
-    // Function to delete the loader message
-    const deleteLoader = () => {
-      setChats((prevChats) =>
-        prevChats.map((chat) =>
-          chat.id === UserChatData.chatId
-            ? {
-                ...chat,
-                messages: chat.messages.filter(
-                  (message) => !(message.type === 'loading-chat')
-                ),
-              }
-            : chat
-        )
-      );
-    };
 
   const handleNewChat = async () => {
     const maxId = chats.reduce((max, chat) => Math.max(max, chat.id), 0);
@@ -431,7 +401,7 @@ const ChatPage = () => {
                       </Box>
                     </Box>
                   );
-                }  else if (UserChatData.loading) {
+                }  else if (message.type === 'loading-chat') {
                   // Render a React component if 'message' is a React element
                   return (
                     <Box key={index} className="message-container">

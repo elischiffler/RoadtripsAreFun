@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { addMessage, handlePromptCarInfo, } from './startWorkFlow';
+import { addMessage, removeLoader, handlePromptCarInfo, } from './startWorkFlow';
 
 export const calcHotelBudget = async (route_duration, stops) => {
     // Generate the initial route and grab the routes duration
@@ -28,7 +28,7 @@ export const calcGasBudget = async (distanceInMeters, year, make, model, chatId,
     return UserChatData;
   }else{
     await handlePromptCarInfo(chatId, setChats, UserChatData); // Loop through getting car info again
-  };
+  }
 }
 
 const getCarInfo = async (year, make, model, chatId, setChats, UserChatData) => {
@@ -38,12 +38,15 @@ const getCarInfo = async (year, make, model, chatId, setChats, UserChatData) => 
     'make': make,
     'year': year
   }
+  addMessage(chatId, setChats, "loading", 'bot');
   const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}get-car-details`, { params: params });
+  removeLoader(chatId, setChats);
   const carInfo = response.data
   console.log(`Car Details: ${carInfo}`)
   return carInfo
   }
   catch(error){
+    removeLoader(chatId, setChats);
     // Log any errors encountered during the request
     console.error("Error getting car info:", error);
 

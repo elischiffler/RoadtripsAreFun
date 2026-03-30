@@ -90,11 +90,17 @@ export const updateUserData = async(access_token, UserChatData, chats) => {
             Chat.id === UserChatData.chatId
             );
 
-        console.log('new ChatLog is:', newChat);
+        // Sanitize the chat log to ensure no loading animations are sent to the backend
+        const sanitizedChat = {
+            ...newChat,
+            messages: newChat.messages.filter(msg => msg.type !== 'loading-chat')
+        };
+
+        console.log('new ChatLog is:', sanitizedChat);
         const data = {
             'PartitionKey': access_token,
             'ChatData': UserChatData,
-            'ChatLog': newChat,
+            'ChatLog': sanitizedChat,
         };
         console.log('Updating with data:', UserChatData);
         const response = await axios.put(`${import.meta.env.VITE_BACKEND_SERVER}chats/update/${UserChatData.chatId}`, data);
