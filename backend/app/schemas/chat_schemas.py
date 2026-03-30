@@ -7,9 +7,9 @@ class ChatDataSchema(BaseModel):
     chatId: int
     action: Optional[str] = None
     locationType: str
-    startCoords: List[float] | None
+    startCoords: Optional[List[float]]
     startAddress: Optional[List[str]] = []
-    endCoords: List[float] | None
+    endCoords: Optional[List[float]]
     endAddress: Optional[List[str]] = []
     stops: int
     showInputBar: bool
@@ -19,11 +19,11 @@ class ChatDataSchema(BaseModel):
     workflowStarted: bool
     startConfirmed: Optional[Any] = None #TODO make schema for these
     endConfirmed: Optional[Any] = None
-    initial: Optional[MapBox.MapBox_Route] = []
+    initial: Optional[MapBox.MapBox_Route] = None
     route: Optional[Route] = None
-    itinerary: Optional[Any] = []
+    itinerary: Optional[Any] = None
     loading: bool
-    hotelBudget: Optional[int] = []
+    hotelBudget: Optional[int] = None
     carDetails: List[str]
     budget: int
 

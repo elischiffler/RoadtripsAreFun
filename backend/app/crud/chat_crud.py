@@ -1,188 +1,132 @@
-import boto3
-import boto3.dynamodb
-from boto3.dynamodb.conditions import Key
-import boto3.dynamodb.types
+from supabase import create_client, Client
 from app.schemas import chat_schemas
 from app.core.config import settings
 from pydantic import BaseModel
 from typing import Any, Dict
-from ..utils.crud_helpers import convert_floats_to_decimal, deserialize_response,segment_route,store_legs
+from ..utils.crud_helpers import segment_route
 
-session = boto3.Session(profile_name=settings.AWS_NAME)
-dynamodb = session.resource('dynamodb', region_name=settings.AWS_REGION)
+supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
 
-table = dynamodb.Table(settings.DYNAMODB_TABLE_NAME)
-route_table = dynamodb.Table(settings.DYNAMODB_ROUTE_TABLE)
-step_table = dynamodb.Table(settings.STEP_TABLE)
-
-
+def _store_legs_supabase(auth_token: str, chat_id: str, route_id: str, legs: list):
+    """Helper to store steps inside Supabase"""
+    for i, leg in enumerate(legs):
+        leg_id = f"{route_id}-leg-{i}"
+        steps = leg.get('steps', [])
+        
+        step_inserts = []
+        for step_idx, step in enumerate(steps):
+            coords = step['geometry']['coordinates']
+            step_inserts.append({
+                'user_id': auth_token,
+                'chat_id': chat_id,
+                'leg_id': leg_id,
+                'step_id': step_idx,
+                'coordinates': coords
+            })
+            step['geometry']['coordinates'] = leg_id
+            
+        if step_inserts:
+            supabase.table('steps').upsert(step_inserts).execute()
+    return legs
             
 def create_chat(auth_token: str,
                 chat_id: str,
                 chat_data: Dict[str, Any],
                 chat_logs: Dict[str, Any]):
     """Create a new chat instance in the database"""
-
-    coords = [chat_data['startCoords'], chat_data['endCoords']]
-    if len(coords) > 0:
-        for coord in coords:
-            if coords[0]:
-                coord[0] = convert_floats_to_decimal(coords[0])
-            if coords[1]:
-                coord[1] = convert_floats_to_decimal(coords[1])
-    chat_data['startCoords'] = coords[0]
-    chat_data['endCoords'] = coords[1]
-    response = table.put_item(
-        Item={
-            'UserId': auth_token,
-            'ChatId': chat_id,
-            'ChatData': chat_data,
-            'ChatLog': chat_logs,
-        }
-    )
-    return response
+    response = supabase.table('chats').insert({
+        'user_id': auth_token,
+        'chat_id': chat_id,
+        'chat_data': chat_data,
+        'chat_log': chat_logs
+    }).execute()
+    return response.data
 
 
 def get_chat(auth_token: str, chat_id: str) -> chat_schemas.ChatSchema:
     """Get an individual chat from the database"""
-    response = table.get_item(
-        Key={
-            'UserId': auth_token,
-            'ChatId': chat_id
-        }
-    )
-    return response
+    response = supabase.table('chats').select('*').eq('user_id', auth_token).eq('chat_id', chat_id).execute()
+    return response.data[0] if response.data else None
 
 
 def get_all_chats(auth_token: str):
     """Get all chats for a given authentication token."""
-    # Query all chat items for a give authentication token
-    response = table.query(
-        KeyConditionExpression=Key('UserId').eq(auth_token)
-    )
-    items = response.get('Items', [])
-    for i in range(len(items)):
-        items[i] = deserialize_response(items[i])
+    response = supabase.table('chats').select('*').eq('user_id', auth_token).execute()
+    # Format the data into the exact Capitalized structure your API endpoints expect
+    items = []
+    for row in response.data:
+        items.append({
+            'UserId': row['user_id'],
+            'ChatId': row['chat_id'],
+            'ChatData': row['chat_data'],
+            'ChatLog': row['chat_log']
+        })
     return items
 
 def get_segments(route_id: str):
     """Get all the segments associated with a single route_id"""
-    # Query for all segments for a given route id
-    response = route_table.query(
-        KeyConditionExpression=Key('route_id').eq(route_id)
-    )
-    segments = response.get('Items')
-    sorted_segs = sorted(segments, key=lambda x: x['segment_id'])
+    response = supabase.table('route_segments').select('*').eq('route_id', route_id).execute()
+    sorted_segs = sorted(response.data, key=lambda x: int(x['segment_id']))
     segs = []
     for seg in sorted_segs:
-        seg = deserialize_response(seg)
         segs.extend(seg['coords'])
     return segs
 
 
 def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
     """Update a component of a user's chat in the database"""
-
     # Convert the schema to a dictionary
     comp_dict = chat_schema.model_dump()
-
-    # Initialize placeholders for attribute names and values
-    expression_attribute_names = {}
-    expression_attribute_values = {}
-
-    # Prepare the update expression and attribute values
-    update_expression = 'SET '
-    update_clauses = []
-
-    use_expression_attribute_names = False
+    
+    # Fetch existing data from Supabase
+    col_name = 'chat_data' if prefix == 'ChatData' else 'chat_log'
+    existing_resp = supabase.table('chats').select(col_name).eq('user_id', auth_token).eq('chat_id', chat_id).execute()
+    if not existing_resp.data:
+        return None
+        
+    current_val = existing_resp.data[0].get(col_name) or {}
     empty_vals = [[], {}, None, False, '']
-
     route_id = f'{auth_token}-{chat_id}'
 
     for key, value in comp_dict.items():
         route = None
         if value not in empty_vals:
-
-            # Ensure that all values are converted to their correct data types for storage
-            if isinstance(value, (float, list, dict)):
-                value = convert_floats_to_decimal(value)
-
-            # Handle reserved keywords by creating placeholders for attribute names
             if key == 'initial':
                 route = value['geometry']['coordinates']
                 value['geometry'] = route_id
-                value['legs'] = store_legs(auth_token=auth_token,
-                                           legs=value['legs'],
-                                           s_table=step_table)
+                value['legs'] = _store_legs_supabase(auth_token, chat_id, route_id, value['legs'])
 
             if key == 'route':
                 route = value['geometry']['coordinates']
                 value['geometry']['coordinates'] = route_id
-            if key == 'action':
-                placeholder_name = '#action'
-                expression_attribute_names[placeholder_name] = key
-                use_expression_attribute_names = True
-            else:
-                placeholder_name = key
             if route:
                 segments = segment_route(route)
-                with route_table.batch_writer() as batch:
-                    for seg_id, segment in enumerate(segments):
-                        batch.put_item({
-                            'route_id': route_id,
-                            'segment_id': str(seg_id),
-                            'coords': segment
-                        })
-                print('Modified route:', value)
+                seg_inserts = [{'user_id': auth_token, 'chat_id': chat_id, 'route_id': route_id, 'segment_id': str(seg_id), 'coords': segment} for seg_id, segment in enumerate(segments)]
+                if seg_inserts:
+                    supabase.table('route_segments').upsert(seg_inserts).execute()
 
-            update_clauses.append(f"{prefix}.{placeholder_name} = :{key}")
-            expression_attribute_values[f":{key}"] = {'S': value}  # Adjust type if necessary
+            # Apply the update to our dictionary mapping
+            current_val[key] = value
 
-    # Join update clauses
-    update_expression += ', '.join(update_clauses)
-
-    # Update the items in the database
-    kwargs = {
-        'Key': {
-            'UserId': auth_token,
-            'ChatId': chat_id,
-        },
-        'UpdateExpression': update_expression,
-        'ExpressionAttributeValues': expression_attribute_values,
-        'ReturnValues': 'UPDATED_NEW'
-    }
-
-    if use_expression_attribute_names:
-        kwargs['ExpressionAttributeNames'] = expression_attribute_names
-
-    response = table.update_item(**kwargs)
-    return response
+    # Upload the modified JSON back to Supabase
+    response = supabase.table('chats').update({col_name: current_val}).eq('user_id', auth_token).eq('chat_id', chat_id).execute()
+    return response.data
 
 
 def delete_chat(auth_token: str, chat_id: str) -> chat_schemas.ChatSchema:
     """Delete a desired chat from the database"""
-    # Delete the desired chat
-    response = table.delete_item(
-        Key={
-            'UserId': auth_token,
-            'ChatId': chat_id
-        }
-    )
-    return response
+    response = supabase.table('chats').delete().eq('user_id', auth_token).eq('chat_id', chat_id).execute()
+    return response.data
 
 def restore_legs(legs: list[Any]):
     """Restore the coordinates of all the steps to their proper values"""
     rest_legs = []
     for leg in legs:
         leg_id = leg['steps'][0]['geometry']['coordinates']
-        response = step_table.query(
-            KeyConditionExpression = Key('leg_id').eq(leg_id)
-        )
-        steps_coords = response.get('Items')
-        print(steps_coords)
+        response = supabase.table('steps').select('*').eq('leg_id', leg_id).execute()
+        steps_coords = response.data
         steps_coords = sorted(steps_coords, key=lambda x: x['step_id'])
         for i in range(len(steps_coords)):
-            leg['steps'][i]['geometry']['coordinates'] = deserialize_response(steps_coords[i]['coordinates'])
+            leg['steps'][i]['geometry']['coordinates'] = steps_coords[i]['coordinates']
         rest_legs.append(leg)
     return rest_legs
-        

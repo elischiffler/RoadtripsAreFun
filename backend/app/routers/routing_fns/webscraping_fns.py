@@ -4,10 +4,11 @@ import random
 import requests
 from lxml import html
 from app.utils.geolocation_helpers import get_location
+from geopy.distance import geodesic
 
 
-def find_google_hotels(query: str, price_range: Tuple[float, float], coords: Tuple[float, float], radius: int, geolocator: Any) -> Dict[
-                                                                                                                      str, Any] | None:
+def find_google_hotels(query: str, price_range: Tuple[float, float], coords: Tuple[float, float], radius: int, geolocator: Any) -> Optional[Dict[
+                                                                                                                      str, Any]]:
     """
     Handles the parsing of a Google hotels for the best hotel given the users preferences
 
@@ -34,7 +35,7 @@ def find_google_hotels(query: str, price_range: Tuple[float, float], coords: Tup
                 print("advanced search...", valid_hotels)
 
                 # Get detailed information on the highest rated hotel
-                ideal_hotel = _get_advanced_listing(valid_hotels.pop())
+                ideal_hotel = _get_advanced_listing(valid_hotels.pop(), geolocator)
 
                 # Ensure advanced information was found and its within the search radius
                 if ideal_hotel is not None and geodesic((ideal_hotel['coordinates'][0], ideal_hotel['coordinates'][1]),
@@ -110,7 +111,7 @@ def _parse_google_response(response: str) -> List[Dict[str, Any]]:
     return listings
 
 
-def _get_advanced_listing(hotel: Dict[str, Any], geolocator) -> Dict[str, Any] | None:
+def _get_advanced_listing(hotel: Dict[str, Any], geolocator) -> Optional[Dict[str, Any]]:
     """
     Scrapes a given hotel listing for an accurate website url and location info
     Args:
@@ -130,11 +131,9 @@ def _get_advanced_listing(hotel: Dict[str, Any], geolocator) -> Dict[str, Any] |
                 0]  # Exact container that will always have location
             address = hotel_location_path.xpath(".//span[@class='CFH2De']/text()")[
                 0]  # Get the full address from the website page
-            print('made it here')
             location = get_location(geocoder=geolocator, address=address)  # Geolocate for additional area info
             coordinates = [location.latitude, location.longitude]  # Get the coordinates of the hotel
             # Add new values to the dictionary
-            print("finna return")
             hotel['coordinates'], hotel['address'] = coordinates, address
             return hotel  # Return the updated data
         return None

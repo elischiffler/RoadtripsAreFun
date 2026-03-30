@@ -3,8 +3,6 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from app.crud.chat_crud import update_chat_component, create_chat, delete_chat, get_all_chats, get_segments, restore_legs
 from app.schemas.chat_schemas import ChatSchema
-from botocore.exceptions import ClientError, DataNotFoundError, ConnectionError
-from boto3.dynamodb.types import TypeDeserializer
 
 router = APIRouter()
 
@@ -34,10 +32,6 @@ async def initialize_chats(partition_key: str):
 
     except KeyError as exception:
         raise HTTPException(status_code=500, detail=f'Stored data was missing a value: {exception}')
-    except ConnectionError as exception:
-        raise HTTPException(status_code=500, detail=f"Error connecting to the database: {exception}")
-    except ClientError as exception:
-        raise HTTPException(status_code=500, detail=f"Client error processing request: {exception}")
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f"Error validating request: {exception}")
 
@@ -52,10 +46,6 @@ async def chat_add(chat_id: str, request: ChatSchema):
         # Create a new item in the database for the given chat data and log
         response = create_chat(request.PartitionKey, chat_id, chat_data.model_dump(), chat_log.model_dump())
         return response
-    except ConnectionError as exception:
-        raise HTTPException(status_code=500, detail=f"Error connecting to the database: {exception}")
-    except ClientError as exception:
-        raise HTTPException(status_code=500, detail=f"Client error processing request: {exception}")
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f"Error validating request: {exception}")
 
@@ -78,12 +68,8 @@ async def chat_update(chat_id: int, request: ChatSchema):
         if chat_log:
             responses.append(update_chat_component(request.PartitionKey, str(chat_id), chat_log, 'ChatLog'))
         return responses
-    except DataNotFoundError as exception:
-        raise HTTPException(status_code=404, detail=f"Chat was not found: {exception}")
-    except ConnectionError as exception:
-        raise HTTPException(status_code=500, detail=f"Error connecting to the database: {exception}")
-    except ClientError as exception:
-        raise HTTPException(status_code=500, detail=f"Client error processing request: {exception}")
+    except Exception as exception:
+        raise HTTPException(status_code=500, detail=f"Error updating chat: {exception}")
 
 
 @router.delete("/chats/delete/{chat_id}")
@@ -94,9 +80,5 @@ async def delete_chat_component(chat_id: int, partition_key: str):
         delete_chat(partition_key, str(chat_id))
         return JSONResponse(status_code=200,
                             content={'status': 'success', 'message': f'Chat {chat_id} deleted successfully'})
-    except ConnectionError as exception:
-        raise HTTPException(status_code=500, detail=f"Error connecting to the database: {exception}")
-    except ClientError as exception:
-        raise HTTPException(status_code=500, detail=f"Client error processing request: {exception}")
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f"Error validating request: {exception}")

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 
 
 class LatLngLiteral(BaseModel):
@@ -59,9 +59,9 @@ class GooglePlaces(BaseModel):
 
         class PlaceReview(BaseModel):
             author_name: str
-            rating: int | float
+            rating: Union[int, float]
             relative_time_description: str
-            time: int | float
+            time: Union[int, float]
             author_url: Optional[str] = None
             language: Optional[str] = None
             original_language: Optional[str] = None
@@ -105,7 +105,7 @@ class GooglePlaces(BaseModel):
         types: Optional[List[str]] = []
         url: Optional[str] = None
         user_ratings_total: Optional[int] = None
-        utc_offset: Optional[int | float] = None
+        utc_offset: Optional[Union[int, float]] = None
         vicinity: Optional[str] = None
         website: Optional[str] = None
         wheelchair_accessible_entrance: Optional[bool] = None
