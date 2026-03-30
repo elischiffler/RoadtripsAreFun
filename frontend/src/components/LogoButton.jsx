@@ -1,4 +1,3 @@
-import React from "react";
 import { IconButton } from "@mui/material";
 import MinorCrashIcon from "@mui/icons-material/MinorCrash";
 import { useNavigate } from "react-router-dom";

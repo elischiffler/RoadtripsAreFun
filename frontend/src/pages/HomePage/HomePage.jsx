@@ -60,7 +60,7 @@ export default function HomePage() {
 
       <Box className="main-content-box">
         <Typography variant="h2" component="h1">
-          Journey Genie
+          MyRoadtrip
         </Typography>
         <Typography variant="h5" component="h2">
           Plan a trip in minutes!
