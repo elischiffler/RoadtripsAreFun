@@ -39,7 +39,7 @@ router = APIRouter()
 
 open_cage_key = os.getenv('OPENCAGE_KEY')
 
-geolocator = OpenCage(api_key=open_cage_key, user_agent="RP-Hotels")  # Initialize a global geolocator
+geolocator = OpenCage(api_key=open_cage_key, user_agent="RP-Hotels", timeout=10)  # Initialize a global geolocator
 
 
 @router.get('/get-initial-route')
@@ -118,12 +118,12 @@ async def get_final_route(request: Request) -> Route:
                     if location:
                         stopping_points[idx]['address'] = location.address  # Add the address to each
             else:
-                location = geolocator.reverse(f"{end_lat}, {end_lon}")
+                location = get_location(geocoder=geolocator, coords=[end_lat, end_lon])
                 # Include the duration to get to the end
                 stopping_points.append({'name': 'Arrive at your destination',
                                         'duration': leg.duration,
                                         'type': 'end',
-                                        'address': location.address})
+                                        'address': location.address if location else None})
             idx += 1
             # for step in leg.steps:  # Not really doing anything
             #     # Each step has a distance, duration, instruction, and location
