@@ -1,9 +1,16 @@
 version: 0.2
 
+eb_codebuild_settings:
+  artifacts:
+    files:
+      - "**/*"
+  commands:
+    - echo "Preparing the build for Elastic Beanstalk..."
+
 phases:
   install:
     runtime-versions:
-      python: 3.9
+      python: 3.9 # Specify the Python version to use
     commands:
       - echo "Installing dependencies..."
       - pip install --upgrade pip
@@ -12,7 +19,7 @@ phases:
   pre_build:
     commands:
       - echo "Running pre-build phase..."
-      - python -m unittest discover tests
+      - python -m unittest discover tests # Run tests (optional)
 
   build:
     commands:
@@ -21,10 +28,6 @@ phases:
   post_build:
     commands:
       - echo "Post build actions..."
-
-artifacts:
-  files:
-    - "**/*"
 
 cache:
   paths:
