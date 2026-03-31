@@ -34,7 +34,7 @@ def create_chat(auth_token: str,
                 chat_data: Dict[str, Any],
                 chat_logs: Dict[str, Any]):
     """Create a new chat instance in the database"""
-    response = supabase.table('chats').insert({
+    response = supabase.table('chats').upsert({
         'user_id': auth_token,
         'chat_id': chat_id,
         'chat_data': chat_data,
