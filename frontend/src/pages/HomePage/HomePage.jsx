@@ -7,7 +7,6 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import LogoButton from "../../components/LogoButton";
 import InfoIcon from "@mui/icons-material/Info";
-import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import "./HomePage.css";
 
 const isAuthenticated = () => {
@@ -27,6 +26,13 @@ export default function HomePage() {
     }
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("idToken");
+    sessionStorage.removeItem("refreshToken");
+    navigate("/"); // Navigate to home to reflect logged-out state
+  };
+
 
   return (
     <Container className="home-page" maxWidth={false} disableGutters>
@@ -34,7 +40,13 @@ export default function HomePage() {
         <LogoButton />
         <Box>
           {authenticated ? (
-            <VerifiedUserIcon />
+            <Button
+              variant="contained"
+              onClick={handleLogout}
+              className="logout-button"
+            >
+              Logout
+            </Button>
           ) : (
             <>
               <Button

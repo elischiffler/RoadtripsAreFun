@@ -23,7 +23,8 @@
 
 /* Button Styles */
 .top-box .login-button,
-.top-box .signup-button {
+.top-box .signup-button,
+.top-box .logout-button {
   margin-right: 16px;
   background-color: var(--green-main); /* Darker button background */
   color: var(--white-light); /* Text color */
@@ -34,7 +35,8 @@
 
 /* Prevent default blue hover color */
 .top-box .login-button:hover,
-.top-box .signup-button:hover {
+.top-box .signup-button:hover,
+.top-box .logout-button:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Shadow on hover */
   background-color: var(--green-main);
 }
