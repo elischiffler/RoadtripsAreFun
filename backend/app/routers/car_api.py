@@ -133,3 +133,22 @@ def _get_full_model_name(model: str, make: str, year: int) -> str:
             # Check if the provided model name is in the full_model
             if model.lower() in full_model.lower(): # Ensure they have the same capitalization
                 return full_model
+
+@router.get('/get-gas-price')
+async def get_gas_price() -> float:
+    """
+    Retrieves the current national average price for regular gas from FuelEconomy.gov.
+    """
+    api_url = 'https://www.fueleconomy.gov/ws/rest/fuelprices'
+    
+    try:
+        response = requests.get(api_url)
+        if response.status_code == requests.codes.ok:
+            root = ET.fromstring(response.content)
+            regular_price = root.find('regular').text
+            return float(regular_price)
+        else:
+            return 3.317  # Fallback to hardcoded average if the API fails
+    except Exception as exception:
+        print(f"Error fetching gas price: {str(exception)}")
+        return 3.317  # Fallback if an exception occurs
