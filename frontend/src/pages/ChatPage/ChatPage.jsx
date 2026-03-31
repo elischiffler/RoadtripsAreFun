@@ -100,7 +100,7 @@ const ChatPage = () => {
         try{
           const prevChats = await initializeUserData(accessToken);
           console.log(prevChats)
-          if (prevChats) {
+          if (prevChats && prevChats.chats && prevChats.chats.length > 0) {
             setChats(prevChats['chats']);
             setUserData(prevChats['UserData']);
             const currentId = prevChats['UserData'].chatlogs.currentId;
@@ -114,8 +114,13 @@ const ChatPage = () => {
               },
             ];
             console.log("Initialized chats with default:", initialChats);
+            const NewChatData = ChatLogsData.createChatData(1);
+            setUserChatData(NewChatData);
             setChats(initialChats);
-            createChat(accessToken, UserChatData, initialChats[0]);
+            chatsRef.current = initialChats;
+            setSelectedChat(initialChats[0]);
+            setWorkflowStarted(false);
+            await createChat(accessToken, NewChatData, initialChats[0]);
           }
 
           for (let i = 0; i < ChatLogsData.chatdata.length; i++) {
@@ -274,11 +279,31 @@ const ChatPage = () => {
 
   // Handle the deletion of a chat
   const handleDeleteChat = async (chatId) => {
-    setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
+    const remainingChats = chatsRef.current.filter((chat) => chat.id !== chatId);
     ChatLogsData.removeChatData(chatId);
-    await deleteChat(accessToken, chatId);
-    if (selectedChat?.id === chatId) {
-      setSelectedChat(null); // Deselect the chat if it's the one being deleted
+    
+    if (remainingChats.length === 0) {
+      // If the user deleted their last chat, instantly scaffold a fresh one
+      const newChatId = 1;
+      const NewChatData = ChatLogsData.createChatData(newChatId);
+      const newChat = {
+        id: newChatId,
+        title: `Chat ${newChatId}`,
+        messages: initialMessage,
+      };
+      setUserChatData(NewChatData);
+      setChats([newChat]);
+      chatsRef.current = [newChat];
+      setSelectedChat(newChat);
+      setWorkflowStarted(false);
+      await deleteChat(accessToken, chatId);
+      await createChat(accessToken, NewChatData, newChat);
+    } else {
+      setChats(remainingChats);
+      await deleteChat(accessToken, chatId);
+      if (selectedChat?.id === chatId) {
+        setSelectedChat(null); // Deselect the chat if it's the one being deleted
+      }
     }
   };
   
