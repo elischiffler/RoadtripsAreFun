@@ -1,7 +1,7 @@
-import React from "react";
 import { Button, Box, Typography, Tooltip } from "@mui/material";
 import MapIcon from "@mui/icons-material/Map";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 // MapButton component that conditionally renders a link to the map page
 const MapButton = ({ route }) => {
@@ -41,6 +41,10 @@ const MapButton = ({ route }) => {
       )}
     </Link>
   );
+};
+
+MapButton.propTypes = {
+  route: PropTypes.object,
 };
 
 export default MapButton;

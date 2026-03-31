@@ -59,14 +59,18 @@ const ChatPage = () => {
   
   // State to track workflow status
   const [workflowStarted, setWorkflowStarted] = useState(UserChatData?.workflowStarted || false);
+
+  // State to track if chats are currently being fetched from the database
+  const [isFetchingChats, setIsFetchingChats] = useState(chats.length === 0);
+
   // Trigger workflow when a chat is selected, ensuring it only starts once
   useEffect(() => {
     setWorkflowStarted(UserChatData?.workflowStarted || false); // ensure the accurate workflowStarted is set
-    if (selectedChat && !workflowStarted && UserChatData) {
+    if (selectedChat && !UserChatData?.workflowStarted && UserChatData) {
+      UserChatData.workflowStarted = true;
       if (UserChatData.isComplete) {
         // Chat is finished, bypass workflow entirely
         setWorkflowStarted(true);
-        UserChatData.workflowStarted = true;
       } else {
         // Start the workflow for the newly selected chat
         startWorkFlow(
@@ -97,6 +101,7 @@ const ChatPage = () => {
   useEffect( () => {
     const fetchData = async () => {
       if (chats.length === 0) {
+        setIsFetchingChats(true);
         try{
           const prevChats = await initializeUserData(accessToken);
           console.log(prevChats)
@@ -105,6 +110,12 @@ const ChatPage = () => {
             setUserData(prevChats['UserData']);
             const currentId = prevChats['UserData'].chatlogs.currentId;
             setSelectedChat(prevChats['chats'].find((chat) => chat.id === currentId));
+
+            const fetchedChatData = prevChats['UserData'].chatlogs.chatdata.find((c) => c.chatId === currentId) || prevChats['UserData'].chatlogs.chatdata[0];
+            setUserChatData(fetchedChatData);
+            for (let i = 0; i < prevChats['UserData'].chatlogs.chatdata.length; i++) {
+              prevChats['UserData'].chatlogs.chatdata[i].workflowStarted = false; // Reset the workflows for all fetched chats
+            }
           } else {
             const initialChats = [
               {
@@ -121,20 +132,25 @@ const ChatPage = () => {
             setSelectedChat(initialChats[0]);
             setWorkflowStarted(false);
             await createChat(accessToken, NewChatData, initialChats[0]);
-          }
 
-          for (let i = 0; i < ChatLogsData.chatdata.length; i++) {
-            ChatLogsData.chatdata[i].workflowStarted = false; // Reset the workflows for all saved chats on mount
-          }}
+            for (let i = 0; i < ChatLogsData.chatdata.length; i++) {
+              ChatLogsData.chatdata[i].workflowStarted = false; // Reset the workflows for all saved chats on mount
+            }
+          }
+        }
         catch(error){
           console.log('Error loading data from database');
+        } finally {
+          setIsFetchingChats(false);
         }
+      } else {
+        setIsFetchingChats(false);
       }
     };
 
     fetchData();
   }, [
-    ChatLogsData.chatdata,
+    ChatLogsData,
     UserChatData,
     accessToken,
     chats.length,
@@ -335,7 +351,12 @@ const ChatPage = () => {
 
         {/* Display list of chats in the sidebar */}
         <Box className="chat-logs">
-          {chats.map((chat) => (
+          {isFetchingChats ? (
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+              <loading-chat size="30" color="black"></loading-chat>
+            </Box>
+          ) : (
+            chats.map((chat) => (
             <Box
               key={chat.id}
               className={`chat-item ${
@@ -361,7 +382,8 @@ const ChatPage = () => {
                 />
               </Box>
             </Box>
-          ))}
+            ))
+          )}
         </Box>
 
         {/* Sidebar bottom buttons for map and itinerary */}
@@ -387,7 +409,12 @@ const ChatPage = () => {
 
         {/* Chat box area */}
         <Box className="chat-box">
-          {selectedChat ? (
+          {isFetchingChats ? (
+            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%" }}>
+              <loading-chat size="50" color="black"></loading-chat>
+              <Typography variant="body1" sx={{ mt: 2 }}>Loading your chats...</Typography>
+            </Box>
+          ) : selectedChat ? (
             <Box className="chat-messages">
               {/* Display messages in the selected chat */}
               {selectedChat.messages.map((message, index) => {

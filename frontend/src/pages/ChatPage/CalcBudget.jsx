@@ -23,7 +23,16 @@ export const calcGasBudget = async (distanceInMeters, year, make, model, chatId,
     const mpg = carInfo['combination_mpg'];  // Grab the miles per gallon of the car
     const distanceInMiles = distanceInMeters * 0.000621371; // Turns the distance into miles
     const gasUsed = distanceInMiles / mpg;  // Calculate how much gas was used
-    const gasBudget = gasUsed * 3.317; // 3.317 is the average price of gas in the US. Switch to a more specific number using api and user location in future
+    
+    let liveGasPrice = 3.317; // Fallback average price
+    try {
+      const priceResponse = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}get-gas-price`);
+      liveGasPrice = priceResponse.data;
+    } catch (error) {
+      console.error("Error fetching live gas price, using fallback.", error);
+    }
+
+    const gasBudget = gasUsed * liveGasPrice; 
     UserChatData.carBudget = Math.round(gasBudget);
     return UserChatData;
   }else{

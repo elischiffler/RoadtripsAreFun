@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import PropTypes from "prop-types";
 
 const UserDataContext = createContext();
 
@@ -98,7 +99,6 @@ class ChatData {
 
 export {Data, ChatLogs, ChatData};
 
-// eslint-disable-next-line react/prop-types
 export const UserDataProvider = ({ children }) => {
   // Initializes global instance of UserData
   const [UserData, setUserData] = useState(new Data());
@@ -109,6 +109,10 @@ export const UserDataProvider = ({ children }) => {
       {children}
     </UserDataContext.Provider>
   );
+};
+
+UserDataProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export { UserDataContext };

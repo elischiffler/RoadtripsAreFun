@@ -1,7 +1,7 @@
-import React from "react";
 import { TextField, InputAdornment, IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import PropTypes from "prop-types";
 
 const PasswordField = ({
   label,
@@ -32,5 +32,13 @@ const PasswordField = ({
     {...props}
   />
 );
+
+PasswordField.propTypes = {
+  label: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  showPassword: PropTypes.bool.isRequired,
+  onTogglePasswordVisibility: PropTypes.func.isRequired,
+};
 
 export default PasswordField;

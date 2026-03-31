@@ -1,4 +1,5 @@
 import Slider from "@mui/material/Slider";
+import PropTypes from "prop-types";
 
 const StopSlider = ({ UserChatData, handleKeyDown }) => {
 
@@ -19,6 +20,11 @@ const StopSlider = ({ UserChatData, handleKeyDown }) => {
       onKeyDown={handleKeyDown}
     />
   );
+};
+
+StopSlider.propTypes = {
+  UserChatData: PropTypes.object.isRequired,
+  handleKeyDown: PropTypes.func.isRequired,
 };
 
 export default StopSlider;

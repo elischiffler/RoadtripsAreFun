@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, TextField } from "@mui/material";
+import PropTypes from "prop-types";
 import "./ChatPage.css";
 
 const CarInputBar = ({ UserChatData, handleKeyDown }) => {
@@ -47,6 +48,11 @@ const CarInputBar = ({ UserChatData, handleKeyDown }) => {
       ))}
     </Box>
   );
+};
+
+CarInputBar.propTypes = {
+  UserChatData: PropTypes.object.isRequired,
+  handleKeyDown: PropTypes.func.isRequired,
 };
 
 export default CarInputBar;

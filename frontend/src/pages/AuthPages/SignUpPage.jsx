@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { signUp, confirmSignUp } from "../../services/authService";
 import {
   Box,
@@ -31,7 +31,7 @@ const SignUpPage = () => {
     { fulfilled: /[A-Z]/.test(password), text: "At least one uppercase letter" },
     { fulfilled: /[a-z]/.test(password), text: "At least one lowercase letter" },
     { fulfilled: /[0-9]/.test(password), text: "At least one number" },
-    { fulfilled: /[!@#$%^&*()_+{}\[\]:;"'<>,.?~`-]/.test(password), text: "At least one special character" },
+    { fulfilled: /[!@#$%^&*()_+{}[\]:;"'<>,.?~`-]/.test(password), text: "At least one special character" },
     { fulfilled: password.length >= 8, text: "At least 8 characters long" },
   ];
 
@@ -46,9 +46,9 @@ const SignUpPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
-    {/* Determine whether the password has an outstanding confirmation request */}
+    // Determine whether the password has an outstanding confirmation request
     if (!isConfirmed) {
-      {/* ensure password and confirmation password match then send information to AWS */}
+      // ensure password and confirmation password match then send information to AWS
       if (password !== confirmPassword) {
         alert("Passwords do not match!");
         setIsSubmitting(false);
@@ -63,7 +63,7 @@ const SignUpPage = () => {
         alert("Error signing up. Please try again.");
       }
     } else {
-      {/* If user is partially signed up send the users confirmation code to finalize account creation and navigate to login */}
+      // If user is partially signed up send the users confirmation code to finalize account creation and navigate to login
       try {
         await confirmSignUp(username, confirmationCode);
         alert("Account confirmed successfully!");

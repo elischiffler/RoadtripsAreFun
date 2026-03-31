@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
+import PropTypes from "prop-types";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -57,6 +58,10 @@ const Map = ({UserChatData}) => {
       className="map-container"
     ></div>
   );
+};
+
+Map.propTypes = {
+  UserChatData: PropTypes.object.isRequired,
 };
 
 export default Map;

@@ -373,6 +373,10 @@ export const startWorkFlow = async (
       UserChatData,
     );
   
+    addMessage(chatId, setChats, "loading", 'bot');
+    await updateUserData(access_token, UserChatData, chatsRef.current);
+    removeLoader(chatId, setChats);
+
     // Ask how many stops the user wants to take
     addMessage(
       chatId,
@@ -384,10 +388,6 @@ export const startWorkFlow = async (
     // Show a slider for the user to select the number of stops
     UserChatData.showInputBar = true;
     UserChatData.showStopSlider = true;
-
-    addMessage(chatId, setChats, "loading", 'bot');
-    await updateUserData(access_token, UserChatData, chatsRef.current);
-    removeLoader(chatId, setChats);
   }
 
   if(UserChatData.showInputBar && UserChatData.showStopSlider) { // Checkpoint 2: Input stops
@@ -516,29 +516,22 @@ export const startWorkFlow = async (
   if(UserChatData.route && !UserChatData.itinerary){ // Checkpoint 6: End behaviors
     addMessage(chatId, setChats, "loading", 'bot'); // Start loading while generating itinerary
     // Generate the itinerary data 
-    UserChatData.itinerary = await generateItinerary(UserChatData.route);
-    UserChatData.isComplete = true; // Mark the chat as complete
-    removeLoader(chatId, setChats); // Stop loading
-    
+    const itineraryData = await generateItinerary(UserChatData.route);
+    const finalMessageText = `Successfully generated your trip! Based on hotel and gas it should cost $${UserChatData.route['cost'] + UserChatData.carBudget}. Click on the Map and Itinerary buttons to view the details.`;
+
+    // Now that all data is ready, update the state that drives the UI
+    UserChatData.itinerary = itineraryData;
+    UserChatData.isComplete = true; // This will make the Map/Itinerary buttons appear
+
+    removeLoader(chatId, setChats); // Remove the loading animation
+    addMessage(chatId, setChats, finalMessageText, 'bot'); // Add the final message
+
     const chatIndex = ChatLogsData.chatdata.findIndex(c => c.chatId === UserChatData.chatId);
     if (chatIndex !== -1) {
       ChatLogsData.chatdata[chatIndex] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
     }
-
-    const finalMessageText = `Successfully generated your trip! Based on hotel and gas it should cost $${UserChatData.route['cost'] + UserChatData.carBudget}. Click on the Map and Itinerary buttons to view the details.`;
-    
-    addMessage(chatId, setChats, finalMessageText, 'bot');
-    
-    // Create a copy of the current chats to include the final message for the database update
-    const updatedChats = chatsRef.current.map(chat =>
-      chat.id === chatId
-        ? { ...chat, messages: [...chat.messages, { text: finalMessageText, sender: 'bot' }] }
-        : chat
-    );
-    
-    addMessage(chatId, setChats, "loading", 'bot');
-    await updateUserData(access_token, UserChatData, updatedChats);
-    removeLoader(chatId, setChats);
+    // Save the final state to the database in the background.
+    await updateUserData(access_token, UserChatData, chatsRef.current);
   }
   else if (!UserChatData.route){
     removeLoader(chatId, setChats);

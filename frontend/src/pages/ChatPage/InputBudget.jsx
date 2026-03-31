@@ -1,4 +1,5 @@
 import Slider from "@mui/material/Slider";
+import PropTypes from "prop-types";
 
 const BudgetSlider = ({ UserChatData, handleKeyDown }) => {
 
@@ -25,6 +26,11 @@ const formatValue = (value) => {
       onKeyDown={handleKeyDown}
     />
   );
+};
+
+BudgetSlider.propTypes = {
+  UserChatData: PropTypes.object.isRequired,
+  handleKeyDown: PropTypes.func.isRequired,
 };
 
 export default BudgetSlider;

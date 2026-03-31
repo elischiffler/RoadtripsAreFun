@@ -1,7 +1,7 @@
-import React from "react";
 import { Button, Box, Typography, Tooltip } from "@mui/material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 // ItineraryButton component that conditionally renders a link to the itinerary page
 const ItineraryButton = ({ itinerary }) => {
@@ -41,6 +41,10 @@ const ItineraryButton = ({ itinerary }) => {
       )}
     </Link>
   );
+};
+
+ItineraryButton.propTypes = {
+  itinerary: PropTypes.array,
 };
 
 export default ItineraryButton;

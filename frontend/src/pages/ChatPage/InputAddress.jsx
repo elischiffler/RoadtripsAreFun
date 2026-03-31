@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, TextField } from "@mui/material";
+import PropTypes from "prop-types";
 import "./ChatPage.css";
 
 const AddressBar = ({ UserChatData, handleKeyDown }) => {
@@ -69,6 +70,11 @@ const AddressBar = ({ UserChatData, handleKeyDown }) => {
       ))}
     </Box>
   );
+};
+
+AddressBar.propTypes = {
+  UserChatData: PropTypes.object.isRequired,
+  handleKeyDown: PropTypes.func.isRequired,
 };
 
 export default AddressBar;

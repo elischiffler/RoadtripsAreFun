@@ -1,4 +1,4 @@
-import { React, useContext } from "react";
+import { useContext } from "react";
 import { Box, Typography } from "@mui/material";
 import LogoButton from "../../components/LogoButton";
 import ItineraryButton from "../../components/buttons/ItineraryButton";

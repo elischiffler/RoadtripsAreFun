@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Box, Typography } from "@mui/material";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import { Link } from "react-router-dom";
