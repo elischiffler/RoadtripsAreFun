@@ -9,6 +9,8 @@
 
 /* Top Box Styles */
 .top-box {
+  position: fixed;
+  top: 0;
   width: 100%;
   height: 10%;
   background-color: var(--white-light);
@@ -21,7 +23,8 @@
 
 /* Button Styles */
 .top-box .login-button,
-.top-box .signup-button {
+.top-box .signup-button,
+.top-box .logout-button {
   margin-right: 16px;
   background-color: var(--green-main); /* Darker button background */
   color: var(--white-light); /* Text color */
@@ -32,7 +35,8 @@
 
 /* Prevent default blue hover color */
 .top-box .login-button:hover,
-.top-box .signup-button:hover {
+.top-box .signup-button:hover,
+.top-box .logout-button:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Shadow on hover */
   background-color: var(--green-main);
 }
@@ -40,16 +44,17 @@
 /* Main Content Box Styles */
 .main-content-box {
   background-color: var(--white-main);
-  height: 45%;
+  top: 10%;
+  height: 50%;
   width: 100%;
   display: flex;
+  position: fixed;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   color: var(--white-black);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  border-radius: 8px; /* Rounded corners */
 }
 
 /* Button Styles in Main Content */
@@ -70,14 +75,15 @@
 /* Bottom Section Styles */
 .bottom-section {
   width: 100%;
-  height: 45%;
+  height: 50%;
+  bottom: 0;
   background-color: var(--white-main);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  position: relative;
+  position: fixed;
 }
 
 /* Info Container Styles */

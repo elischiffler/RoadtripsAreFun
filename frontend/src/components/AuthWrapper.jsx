@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const AuthWrapper = ({ children }) => {
   const navigate = useNavigate();
@@ -19,6 +20,10 @@ const AuthWrapper = ({ children }) => {
   }, [navigate, location]);
 
   return <>{children}</>;
+};
+
+AuthWrapper.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export default AuthWrapper;

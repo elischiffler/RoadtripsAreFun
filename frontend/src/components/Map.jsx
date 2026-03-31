@@ -1,20 +1,25 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
+import PropTypes from "prop-types";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
-const MapboxExample = () => {
+const Map = ({UserChatData}) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
 
+
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+    const latitude = (UserChatData.startConfirmed['latitude'] + UserChatData.endConfirmed['latitude'])/2; // central latitude
+    const longitude = (UserChatData.startConfirmed['longitude'] + UserChatData.endConfirmed['longitude'])/2; // central longitude
+    const zoom_factor = Math.pow(UserChatData.route['duration'], 1/(3.5)); // Formula somewhat accurate
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v12",
-      center: [-122.486052, 37.830348],
-      zoom: 14,
+      center: [longitude, latitude],
+      zoom: 100/zoom_factor, // As duration increases the zoom decreases
     });
 
     mapRef.current.on("load", () => {
@@ -25,29 +30,7 @@ const MapboxExample = () => {
           properties: {},
           geometry: {
             type: "LineString",
-            coordinates: [
-              [-122.483696, 37.833818],
-              [-122.483482, 37.833174],
-              [-122.483396, 37.8327],
-              [-122.483568, 37.832056],
-              [-122.48404, 37.831141],
-              [-122.48404, 37.830497],
-              [-122.483482, 37.82992],
-              [-122.483568, 37.829548],
-              [-122.48507, 37.829446],
-              [-122.4861, 37.828802],
-              [-122.486958, 37.82931],
-              [-122.487001, 37.830802],
-              [-122.487516, 37.831683],
-              [-122.488031, 37.832158],
-              [-122.488889, 37.832971],
-              [-122.489876, 37.832632],
-              [-122.490434, 37.832937],
-              [-122.49125, 37.832429],
-              [-122.491636, 37.832564],
-              [-122.492237, 37.833378],
-              [-122.493782, 37.833683],
-            ],
+            coordinates: UserChatData.route['geometry']['coordinates'],
           },
         },
       });
@@ -66,7 +49,7 @@ const MapboxExample = () => {
         },
       });
     });
-  });
+  }, [UserChatData]); // Rerender the map if UserChatData changes
 
   return (
     <div
@@ -77,4 +60,8 @@ const MapboxExample = () => {
   );
 };
 
-export default MapboxExample;
+Map.propTypes = {
+  UserChatData: PropTypes.object.isRequired,
+};
+
+export default Map;

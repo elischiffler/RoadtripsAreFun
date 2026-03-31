@@ -1,4 +1,3 @@
-import React from "react";
 import { useState } from "react";
 import { signIn } from "../../services/authService";
 import {
@@ -60,7 +59,7 @@ const LoginPage = () => {
           {/* Actual form components design and functionality */}
           <form onSubmit={handleSubmit}>
             <TextField
-              label="Username or Email"
+              label="Email"
               variant="outlined"
               fullWidth
               margin="normal"
@@ -69,9 +68,9 @@ const LoginPage = () => {
               onChange={(e) => setUsername(e.target.value)}
               className="text-field"
             />
-            <PasswordField 
-              label = "Password"
-              password= {password}
+            <PasswordField
+              label="Password"
+              password={password}
               onChange={(e) => setPassword(e.target.value)}
               showPassword={showPassword}
               onTogglePasswordVisibility={handleTogglePasswordVisibility}
@@ -97,7 +96,7 @@ const LoginPage = () => {
           </form>
           {/* Sign up redirection */}
           <Typography variant="body2" align="center" className="link-text">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link to="/signup" style={{ textDecoration: "underline" }}>
               Sign up
             </Link>
