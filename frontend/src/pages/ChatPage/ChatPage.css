@@ -14,16 +14,15 @@
   position: fixed;
   display: flex;
   flex-direction: column;
-  padding-left: 16px;
-  padding-bottom: 16px;
-  padding-top: 16px;
+  padding: 16px;
   box-shadow: var(--mui-shadow-1);
   border-right: 2px solid var(--white-dark);
   box-sizing: border-box;
 }
 
 .sidebar-top {
-  width: 95%;
+  width: 100%;
+  box-sizing: border-box;
   padding: 8px;
   border-radius: 8px;
   cursor: pointer;
@@ -40,7 +39,6 @@
 .chat-logs {
   flex: 1;
   margin-top: 16px;
-  margin-right: 2px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -69,7 +67,6 @@
   cursor: pointer;
   position: relative;
   margin-bottom: 8px;
-  margin-right: 4px;
   border: 2px solid var(--white-black);
 }
 
@@ -116,7 +113,6 @@
   align-items: center;
   box-sizing: border-box;
   width: 100%;
-  padding-right: 16px;
   background-color: var(--white-light);
   position: sticky;
   bottom: 0;
