@@ -1,12 +1,18 @@
+import os
 from fastapi import APIRouter, HTTPException, Request
-from geopy.geocoders import Nominatim
+from geopy.geocoders import OpenCage
 from app.models.location_models import location_payload, location_model
 from pydantic import ValidationError
 from app.utils.geolocation_helpers import get_location
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 # Initialize FastAPI
 router = APIRouter()
 
+open_cage_key = os.getenv('OPENCAGE_KEY')
+geolocator = OpenCage(api_key=open_cage_key, user_agent="rp-routing", timeout=10)
 
 @router.post("/validate-location")
 async def validate_location(request: Request) -> location_model:
@@ -28,14 +34,11 @@ async def validate_location(request: Request) -> location_model:
         json_data = await request.json()
         data = location_payload.model_validate(json_data)
 
-        # initialize an open street map geolocator
-        geolocator = Nominatim(user_agent="rp-routing")
-
         # geolocate by either a string describing an address or exact coordinates
         if data.is_coordinates:
-            location = get_location(geolocator, coords=data.location.coordinates)
+            location = get_location(geocoder=geolocator, coords=data.location.coordinates)
         else:
-            location = get_location(geolocator, address=data.location.address)
+            location = get_location(geocoder=geolocator, address=data.location.address)
 
         # return the str address if location is valid
         if location is None:
