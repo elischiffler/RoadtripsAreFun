@@ -422,9 +422,13 @@ async def _find_stop(category: str, lat: str, lon: str, radius: int) -> Dict[str
         'radiusUnit': 'mi',
         'language': 'en'
     }
+    
+    headers = {
+        "Referer": "https://rp-routing.onrender.com/"
+    }
 
     try:
-        response = requests.get(nearby_search_url, params=params)
+        response = requests.get(nearby_search_url, params=params, headers=headers)
         json_data = response.json()
         locations = Trip_Advisor_Location_Search.model_validate(json_data)
         lowest_rank = 999  # Set to be unrealistically high
@@ -468,8 +472,12 @@ async def _get_details(location_id: str) -> Tuple[int, Dict[str, Any]]:
         'language': 'en',
         'currency': 'USD'
     }
+    
+    headers = {
+        "Referer": "https://rp-routing.onrender.com/"
+    }
 
-    response = requests.get(location_details_url, params=params)
+    response = requests.get(location_details_url, params=params, headers=headers)
     json_data = response.json()
     details = Trip_Advisor_Information.model_validate(json_data)
 
