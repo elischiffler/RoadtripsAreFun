@@ -107,4 +107,5 @@ npm run lint       # ESLint
 - **GitHub Actions** – path-filtered workflows in `.github/workflows/`:
   - `backend-ci.yml` – triggers on `backend/**` changes; runs `pytest`
   - `frontend-ci.yml` – triggers on `frontend/**` changes; runs `npm run build`
-- **AWS CodeBuild** → **AWS Elastic Beanstalk** – backend deployment, sourced from `https://github.com/elischiffler/MyRoadtrip`
+- **Render** – backend web service deployed from `https://github.com/elischiffler/MyRoadtrip`
+- **Vercel** – frontend deployed from `https://github.com/elischiffler/MyRoadtrip`

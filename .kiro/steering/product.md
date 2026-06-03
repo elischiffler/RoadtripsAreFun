@@ -21,4 +21,5 @@ End users plan road trips through the `frontend/` React app. The backend is cons
 
 ## Deployment
 
-Backend is deployed on AWS Elastic Beanstalk via AWS CodeBuild, sourced from `https://github.com/elischiffler/MyRoadtrip`. The service runs on port 8000.
+- **Backend** — deployed on [Render](https://dashboard.render.com/web/srv-cqvu44jv2p9s739hhb60) (web service). Runs on port 8000.
+- **Frontend** — deployed on [Vercel](https://vercel.com/eli-schifflers-projects/rp-ui).
