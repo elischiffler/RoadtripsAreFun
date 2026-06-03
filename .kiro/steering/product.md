@@ -1,6 +1,9 @@
-# Product: JourneyGenie – RP Routing Service
+# Product: MyRoadtrip – JourneyGenie
 
-This is the backend routing microservice for **JourneyGenie**, a road trip planning application. It generates optimized multi-stop driving routes and itineraries for users.
+**MyRoadtrip** is a road trip planning application hosted at [github.com/elischiffler/MyRoadtrip](https://github.com/elischiffler/MyRoadtrip). It is a personal monorepo containing two services:
+
+- `backend/` — Python/FastAPI routing microservice (formerly `rp-routing`)
+- `frontend/` — React/Vite UI (formerly `rp-ui`)
 
 ## Core Capabilities
 
@@ -14,8 +17,8 @@ This is the backend routing microservice for **JourneyGenie**, a road trip plann
 
 ## Users
 
-End users plan road trips through a separate frontend. This service is consumed exclusively via REST API. Authentication uses AWS Cognito JWT tokens (decoded without signature verification to extract the `sub` claim).
+End users plan road trips through the `frontend/` React app. The backend is consumed exclusively via REST API. Authentication uses AWS Cognito JWT tokens (decoded without signature verification to extract the `sub` claim).
 
 ## Deployment
 
-Deployed on AWS Elastic Beanstalk via CodeBuild (`buildspec.yml`). The service runs on port 8000.
+Backend is deployed on AWS Elastic Beanstalk via AWS CodeBuild, sourced from `https://github.com/elischiffler/MyRoadtrip`. The service runs on port 8000.
