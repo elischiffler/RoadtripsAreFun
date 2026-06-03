@@ -39,7 +39,6 @@ cd backend
 python3.9 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-make run          # starts at http://localhost:8000
 ```
 
 ### 4. Frontend
@@ -47,7 +46,21 @@ make run          # starts at http://localhost:8000
 ```bash
 cd frontend
 npm install
-npm run dev       # starts at http://localhost:5173
+```
+
+From the repo root:
+
+```bash
+make run
+```
+
+This starts the backend at `http://localhost:8000` and the frontend at `http://localhost:5173` concurrently. Ctrl+C stops both.
+
+Or run them individually:
+
+```bash
+make run-backend
+make run-frontend
 ```
 
 ---
@@ -96,3 +109,24 @@ GitHub Actions runs on every PR, path-filtered per service:
 
 - `backend/**` changes → runs `pytest` ([workflow](.github/workflows/backend-ci.yml))
 - `frontend/**` changes → runs `npm run build` ([workflow](.github/workflows/frontend-ci.yml))
+
+---
+
+## Running Tests
+
+All tests use mocks — no real API keys or database connection needed.
+
+**From the repo root:**
+
+```bash
+make test
+```
+
+**From `backend/` directly:**
+
+```bash
+cd backend
+pytest
+```
+
+Tests live in `backend/tests/`. Configuration is in `backend/pytest.ini`.

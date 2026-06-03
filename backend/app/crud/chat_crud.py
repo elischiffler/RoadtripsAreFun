@@ -1,17 +1,46 @@
 import json
 import psycopg2
 import psycopg2.extras
+import psycopg2.pool
 from app.schemas import chat_schemas
 from app.core.config import settings
 from pydantic import BaseModel
 from typing import Any, Dict
 from ..utils.crud_helpers import segment_route
 
+# Module-level connection pool — created once on first import.
+# minconn=1 keeps one connection warm; maxconn=5 handles burst traffic.
+_pool: psycopg2.pool.SimpleConnectionPool = None
+
+
+def _get_pool() -> psycopg2.pool.SimpleConnectionPool:
+    global _pool
+    if _pool is None or _pool.closed:
+        url = (settings.DATABASE_URL or "").strip()
+        _pool = psycopg2.pool.SimpleConnectionPool(1, 5, url, sslmode="require")
+    return _pool
+
 
 def _get_conn():
-    """Return a new psycopg2 connection to Neon."""
-    url = (settings.DATABASE_URL or "").strip()
-    return psycopg2.connect(url, sslmode="require")
+    """Check out a connection from the pool, replacing it if Neon dropped it."""
+    pool = _get_pool()
+    conn = pool.getconn()
+    try:
+        # Lightweight check — if Neon closed the connection while idle this will fail
+        conn.cursor().execute("SELECT 1")
+    except psycopg2.OperationalError:
+        # Connection is dead; close it, open a fresh one, and put that in the pool
+        try:
+            conn.close()
+        except Exception:
+            pass
+        conn = psycopg2.connect((settings.DATABASE_URL or "").strip(), sslmode="require")
+    return conn
+
+
+def _put_conn(conn):
+    """Return a connection to the pool."""
+    _get_pool().putconn(conn)
 
 
 def _store_legs(conn, auth_token: str, chat_id: str, route_id: str, legs: list):
@@ -20,7 +49,6 @@ def _store_legs(conn, auth_token: str, chat_id: str, route_id: str, legs: list):
         for i, leg in enumerate(legs):
             leg_id = f"{route_id}-leg-{i}"
             steps = leg.get('steps', [])
-
             for step_idx, step in enumerate(steps):
                 coords = step['geometry']['coordinates']
                 cur.execute(
@@ -32,7 +60,6 @@ def _store_legs(conn, auth_token: str, chat_id: str, route_id: str, legs: list):
                     (auth_token, chat_id, leg_id, step_idx, json.dumps(coords))
                 )
                 step['geometry']['coordinates'] = leg_id
-
     return legs
 
 
@@ -41,7 +68,8 @@ def create_chat(auth_token: str,
                 chat_data: Dict[str, Any],
                 chat_logs: Dict[str, Any]):
     """Create a new chat instance in the database."""
-    with _get_conn() as conn:
+    conn = _get_conn()
+    try:
         with conn.cursor() as cur:
             cur.execute(
                 """
@@ -56,56 +84,68 @@ def create_chat(auth_token: str,
             )
             row = cur.fetchone()
         conn.commit()
-    return row
+        return row
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        _put_conn(conn)
 
 
 def get_chat(auth_token: str, chat_id: str) -> chat_schemas.ChatSchema:
     """Get an individual chat from the database."""
-    with _get_conn() as conn:
+    conn = _get_conn()
+    try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
                 "SELECT * FROM chats WHERE user_id = %s AND chat_id = %s",
                 (auth_token, chat_id)
             )
             row = cur.fetchone()
-    return dict(row) if row else None
+        return dict(row) if row else None
+    finally:
+        _put_conn(conn)
 
 
 def get_all_chats(auth_token: str):
     """Get all chats for a given authentication token."""
-    with _get_conn() as conn:
+    conn = _get_conn()
+    try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
                 "SELECT * FROM chats WHERE user_id = %s",
                 (auth_token,)
             )
             rows = cur.fetchall()
-
-    return [
-        {
-            'UserId':  row['user_id'],
-            'ChatId':  row['chat_id'],
-            'ChatData': row['chat_data'],
-            'ChatLog':  row['chat_log'],
-        }
-        for row in rows
-    ]
+        return [
+            {
+                'UserId':   row['user_id'],
+                'ChatId':   row['chat_id'],
+                'ChatData': row['chat_data'],
+                'ChatLog':  row['chat_log'],
+            }
+            for row in rows
+        ]
+    finally:
+        _put_conn(conn)
 
 
 def get_segments(route_id: str):
     """Get all segments associated with a single route_id."""
-    with _get_conn() as conn:
+    conn = _get_conn()
+    try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
                 "SELECT * FROM route_segments WHERE route_id = %s ORDER BY segment_id::int",
                 (route_id,)
             )
             rows = cur.fetchall()
-
-    segs = []
-    for row in rows:
-        segs.extend(row['coords'])
-    return segs
+        segs = []
+        for row in rows:
+            segs.extend(row['coords'])
+        return segs
+    finally:
+        _put_conn(conn)
 
 
 def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
@@ -113,7 +153,8 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
     comp_dict = chat_schema.model_dump()
     col_name = 'chat_data' if prefix == 'ChatData' else 'chat_log'
 
-    with _get_conn() as conn:
+    conn = _get_conn()
+    try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
                 f"SELECT {col_name} FROM chats WHERE user_id = %s AND chat_id = %s",
@@ -134,11 +175,9 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                         route = value['geometry']['coordinates']
                         value['geometry'] = route_id
                         value['legs'] = _store_legs(conn, auth_token, chat_id, route_id, value['legs'])
-
                     if key == 'route':
                         route = value['geometry']['coordinates']
                         value['geometry']['coordinates'] = route_id
-
                     if route:
                         segments = segment_route(route)
                         for seg_id, segment in enumerate(segments):
@@ -150,7 +189,6 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                                 """,
                                 (auth_token, chat_id, route_id, str(seg_id), json.dumps(segment))
                             )
-
                     current_val[key] = value
 
             cur.execute(
@@ -159,13 +197,18 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
             )
             result = cur.fetchall()
         conn.commit()
-
-    return result
+        return result
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        _put_conn(conn)
 
 
 def delete_chat(auth_token: str, chat_id: str):
     """Delete a desired chat from the database."""
-    with _get_conn() as conn:
+    conn = _get_conn()
+    try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
                 "DELETE FROM chats WHERE user_id = %s AND chat_id = %s RETURNING *",
@@ -173,12 +216,18 @@ def delete_chat(auth_token: str, chat_id: str):
             )
             result = cur.fetchall()
         conn.commit()
-    return result
+        return result
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        _put_conn(conn)
 
 
 def restore_legs(legs: list[Any]):
     """Restore the coordinates of all steps to their proper values."""
-    with _get_conn() as conn:
+    conn = _get_conn()
+    try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             rest_legs = []
             for leg in legs:
@@ -191,4 +240,6 @@ def restore_legs(legs: list[Any]):
                 for i, step_row in enumerate(steps_coords):
                     leg['steps'][i]['geometry']['coordinates'] = step_row['coordinates']
                 rest_legs.append(leg)
-    return rest_legs
+        return rest_legs
+    finally:
+        _put_conn(conn)

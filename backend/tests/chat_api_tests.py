@@ -41,21 +41,22 @@ CHAT_LOG = {
 }
 
 
-def _make_mock_conn(fetchone_val=None, fetchall_val=None):
-    """Return a mock psycopg2 connection whose cursor returns given values."""
+def _make_mock_pool(fetchone_val=None, fetchall_val=None):
+    """Return a mock pool whose getconn/putconn work with a mock connection."""
     mock_cursor = MagicMock()
     mock_cursor.fetchone.return_value = fetchone_val
     mock_cursor.fetchall.return_value = fetchall_val or []
-
-    # Support both context-manager and non-context-manager cursor usage
     mock_cursor.__enter__ = lambda s: s
     mock_cursor.__exit__ = MagicMock(return_value=False)
 
     mock_conn = MagicMock()
     mock_conn.cursor.return_value = mock_cursor
-    mock_conn.__enter__ = lambda s: s
-    mock_conn.__exit__ = MagicMock(return_value=False)
-    return mock_conn
+
+    mock_pool = MagicMock()
+    mock_pool.getconn.return_value = mock_conn
+    mock_pool.putconn = MagicMock()  # no-op return to pool
+    mock_pool.closed = False
+    return mock_pool, mock_conn, mock_cursor
 
 
 # ---------------------------------------------------------------------------
@@ -64,10 +65,9 @@ def _make_mock_conn(fetchone_val=None, fetchall_val=None):
 
 def test_create_chat():
     """Returns 200 when a valid chat payload is posted."""
-    # cursor.fetchone returns the inserted row tuple
-    mock_conn = _make_mock_conn(fetchone_val=("user123", "1", {}, {}))
+    mock_pool, _, mock_cursor = _make_mock_pool(fetchone_val=("user123", "1", {}, {}))
 
-    with patch("app.crud.chat_crud._get_conn", return_value=mock_conn), \
+    with patch("app.crud.chat_crud._get_pool", return_value=mock_pool), \
          patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
         response = client.post(
             "/chats/create/1",
@@ -82,9 +82,9 @@ def test_create_chat():
 
 def test_delete_chat():
     """Returns 200 and a success message when a chat is deleted."""
-    mock_conn = _make_mock_conn(fetchall_val=[("user123", "2", {}, {})])
+    mock_pool, _, _ = _make_mock_pool(fetchall_val=[("user123", "2", {}, {})])
 
-    with patch("app.crud.chat_crud._get_conn", return_value=mock_conn), \
+    with patch("app.crud.chat_crud._get_pool", return_value=mock_pool), \
          patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
         response = client.delete(
             "/chats/delete/2",
@@ -100,7 +100,6 @@ def test_delete_chat():
 
 def test_update_chat():
     """Returns 200 when a valid update payload is sent."""
-    # First cursor call (SELECT) returns existing row; second (UPDATE) returns updated row
     mock_cursor = MagicMock()
     mock_cursor.__enter__ = lambda s: s
     mock_cursor.__exit__ = MagicMock(return_value=False)
@@ -109,8 +108,11 @@ def test_update_chat():
 
     mock_conn = MagicMock()
     mock_conn.cursor.return_value = mock_cursor
-    mock_conn.__enter__ = lambda s: s
-    mock_conn.__exit__ = MagicMock(return_value=False)
+
+    mock_pool = MagicMock()
+    mock_pool.getconn.return_value = mock_conn
+    mock_pool.putconn = MagicMock()
+    mock_pool.closed = False
 
     updated_chat_data = {**CHAT_DATA, "action": "Address"}
     updated_chat_log = {
@@ -118,7 +120,7 @@ def test_update_chat():
         "messages": CHAT_LOG["messages"] + [{"text": "LA to NYC", "sender": "user", "buttons": []}],
     }
 
-    with patch("app.crud.chat_crud._get_conn", return_value=mock_conn), \
+    with patch("app.crud.chat_crud._get_pool", return_value=mock_pool), \
          patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
         response = client.put(
             "/chats/update/3?partition_key=user123",
@@ -133,9 +135,9 @@ def test_update_chat():
 
 def test_get_all_chats_empty():
     """Returns 200 and an empty list when the user has no chats."""
-    mock_conn = _make_mock_conn(fetchall_val=[])
+    mock_pool, _, _ = _make_mock_pool(fetchall_val=[])
 
-    with patch("app.crud.chat_crud._get_conn", return_value=mock_conn), \
+    with patch("app.crud.chat_crud._get_pool", return_value=mock_pool), \
          patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
         response = client.get("/chats", params={"partition_key": "user123"})
     assert response.status_code == 200
@@ -148,9 +150,9 @@ def test_get_all_chats_returns_list():
         {"user_id": "88", "chat_id": str(i), "chat_data": {"initial": None, "route": None}, "chat_log": {}}
         for i in range(1, 4)
     ]
-    mock_conn = _make_mock_conn(fetchall_val=rows)
+    mock_pool, _, _ = _make_mock_pool(fetchall_val=rows)
 
-    with patch("app.crud.chat_crud._get_conn", return_value=mock_conn), \
+    with patch("app.crud.chat_crud._get_pool", return_value=mock_pool), \
          patch("app.routers.chat_api.get_user_id_from_token", return_value="88"):
         response = client.get("/chats", params={"partition_key": "88"})
     assert response.status_code == 200

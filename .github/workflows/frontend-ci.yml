@@ -33,4 +33,9 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          VITE_BACKEND_SERVER: ${{ secrets.VITE_BACKEND_SERVER }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
+          VITE_USERPOOL_ID: ${{ secrets.VITE_USERPOOL_ID }}
+          VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
         run: npm run build
