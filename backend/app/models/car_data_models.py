@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
 class Car(BaseModel):
@@ -15,5 +15,4 @@ class Car(BaseModel):
     transmission: str
     year: int
 
-    class Config:
-        allow_population_by_field_name = True  # Allow the use of aliases when creating instances
+    model_config = ConfigDict(populate_by_name=True)  # Allow use of aliases when creating instances

@@ -1,6 +1,7 @@
 from typing import Any, Optional, Dict
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 class Trip_Advisor_Error(BaseModel):
     message: str
     type: str
@@ -124,5 +125,4 @@ class Trip_Advisor_Information(BaseModel):
     awards: Optional[list[Trip_Advisor_Award]] = None
     error: Optional[Trip_Advisor_Error] = None
 
-    class Config:
-        extra = 'allow'  # This will ignore any extra fields not defined in the model
+    model_config = ConfigDict(extra='allow')  # Ignore any extra fields not defined in the model

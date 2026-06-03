@@ -1,6 +1,7 @@
 from typing import Any, Optional, Dict
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 
 
 class Amadeus_Meta(BaseModel):
@@ -47,8 +48,7 @@ class Amadeus_Hotel_Offers(BaseModel):
             dupeId: Optional[str] = None
             name: str
             cityCode: Optional[str] = None
-            class Config:
-                extra = 'allow' # Poor documentation is available
+            model_config = ConfigDict(extra='allow')  # Poor documentation is available
 
         class Offer(BaseModel):
             class Rate_Family(BaseModel):
