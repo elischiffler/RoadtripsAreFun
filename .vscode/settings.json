@@ -1,11 +1,12 @@
 {
+    // Python (backend)
     "python.testing.pytestArgs": [
-        "tests"
+        "backend/tests"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.autoComplete.extraPaths": [
-        "./"
+        "./backend"
     ],
     "python.terminal.useEnvFile": true
 }

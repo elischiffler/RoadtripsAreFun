@@ -1,55 +1,60 @@
-# rp-routing
+# MyRoadtrip
 
-Backend routing microservice for **JourneyGenie** — a road trip planning application. Generates optimized multi-stop driving routes, finds attractions and hotels along the way, and persists user chat sessions.
+A road trip planning application. This monorepo contains two services:
 
-Built with **FastAPI** + **Python 3.9**, backed by **Neon Postgres**.
-
----
-
-## Prerequisites
-
-- Python 3.9
-- [Neon](https://neon.tech) account with a project set up
+| Service | Stack | Deployed at |
+|---|---|---|
+| [`backend/`](./backend) | Python 3.9 / FastAPI / Neon Postgres | [Render](https://dashboard.render.com/web/srv-cqvu44jv2p9s739hhb60) |
+| [`frontend/`](./frontend) | React 18 / Vite / MUI | [Vercel](https://rp-ui.vercel.app) |
 
 ---
 
 ## Local Setup
 
-### 1. Clone and create a virtual environment
+### Prerequisites
+- Python 3.9
+- Node.js (LTS)
+- A [Neon](https://neon.tech) Postgres database
+
+### 1. Clone the repo
 
 ```bash
-git clone <repo-url>
-cd rp-routing
-python3.9 -m venv venv
-source venv/bin/activate
+git clone https://github.com/elischiffler/MyRoadtrip.git
+cd MyRoadtrip
 ```
 
-### 2. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Configure environment variables
-
-Copy `.env.example` to `.env` and fill in your values:
+### 2. Configure environment variables
 
 ```bash
 cp .env.example .env
+# Fill in your values
 ```
 
-The `.env` file is gitignored and should never be committed. Required keys:
+See `.env.example` for all required keys. The `.env` at the repo root is shared by both services.
 
-- `DATABASE_URL` — get from [console.neon.tech](https://console.neon.tech) → your project → Connection string
-- `MAPBOX_API` — [Mapbox](https://mapbox.com) access token
-- `TRIPADVISOR_API` — [TripAdvisor Content API](https://tripadvisor-content-api.readme.io) key
-- `GOOGLE_PLACES_API` — [Google Places API](https://developers.google.com/maps/documentation/places/web-service) key
-- `OPENCAGE_KEY` — [OpenCage](https://opencagedata.com) geocoding key
-- `AMADEUS_KEY` / `AMADEUS_SECRET` — [Amadeus](https://developers.amadeus.com) API credentials (hotel search fallback)
+### 3. Backend
 
-### 4. Set up the database schema
+```bash
+cd backend
+python3.9 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+make run          # starts at http://localhost:8000
+```
 
-Run this once against your Neon database using `psql` or the Neon SQL editor:
+### 4. Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev       # starts at http://localhost:5173
+```
+
+---
+
+## Database Schema
+
+Run once against your Neon database (via `psql` or the Neon SQL editor):
 
 ```sql
 CREATE TABLE IF NOT EXISTS chats (
@@ -85,102 +90,9 @@ CREATE INDEX IF NOT EXISTS idx_steps_leg_id ON steps(leg_id);
 
 ---
 
-## Running the Server
+## CI
 
-```bash
-make run
-```
+GitHub Actions runs on every PR, path-filtered per service:
 
-This starts the dev server at `http://localhost:8000` with hot-reload enabled.
-
-Equivalent to:
-
-```bash
-uvicorn app.main:app --reload --reload-dir app
-```
-
----
-
-## API Endpoints
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/` | Health check |
-| POST | `/get-initial-route` | Generate an initial driving route |
-| POST | `/generate-final-route` | Generate final route with stops |
-| GET | `/location` | Resolve coordinates to address |
-| POST | `/itinerary` | Build day-by-day itinerary from a route |
-| GET | `/car` | Get car data for trip planning |
-| GET | `/chats` | Get all chats for a user |
-| POST | `/chats/create` | Create a new chat session |
-| PUT | `/chats/update` | Update a chat session |
-| DELETE | `/chats/delete` | Delete a chat session |
-
-Interactive docs available at `http://localhost:8000/docs` when the server is running.
-
----
-
-## Running Tests
-
-```bash
-pytest
-```
-
-Or as CI does:
-
-```bash
-python -m unittest discover tests
-```
-
----
-
-## Project Structure
-
-```
-rp-routing/
-├── app/
-│   ├── main.py               # FastAPI entry point; registers routers and CORS
-│   ├── core/
-│   │   └── config.py         # Settings; loads DATABASE_URL from .env
-│   ├── routers/              # One file per domain
-│   │   ├── routing_api.py
-│   │   ├── location_api.py
-│   │   ├── itinerary_api.py
-│   │   ├── car_api.py
-│   │   └── chat_api.py
-│   ├── models/               # Pydantic response/domain models
-│   ├── schemas/              # Pydantic request body schemas
-│   ├── crud/
-│   │   └── chat_crud.py      # All database operations (Neon/Postgres)
-│   └── utils/
-│       ├── auth.py           # JWT decode → user_id extraction
-│       ├── crud_helpers.py   # Route segmentation helper
-│       └── geolocation_helpers.py
-├── tests/
-├── .env                      # Local secrets (never commit)
-├── requirements.txt
-├── Makefile
-└── .travis.yml               # Travis CI — runs tests on pull requests
-```
-
----
-
-## CI/CD
-
-**Travis CI** runs tests automatically on every pull request (see `.travis.yml`). Builds are skipped on direct pushes to main.
-
-## Deployment
-
-Deployed to **[Render](https://render.com)** as a web service.
-
-### Render setup
-
-1. Create a new **Web Service** in Render and connect your GitHub repo
-2. Configure the service:
-   - **Runtime**: Python 3
-   - **Build command**: `pip install -r requirements.txt`
-   - **Start command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-3. Add all keys from `.env.example` as **Environment Variables** in the Render dashboard
-4. Deploy — Render will build and start the service automatically on every push to your main branch
-
-Authentication uses **AWS Cognito** JWT tokens — the `sub` claim is extracted as the `user_id` for all database operations.
+- `backend/**` changes → runs `pytest` ([workflow](.github/workflows/backend-ci.yml))
+- `frontend/**` changes → runs `npm run build` ([workflow](.github/workflows/frontend-ci.yml))
