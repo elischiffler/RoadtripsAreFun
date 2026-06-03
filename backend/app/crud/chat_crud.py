@@ -1,132 +1,193 @@
-from supabase import create_client, Client
+import json
+import psycopg2
+import psycopg2.extras
 from app.schemas import chat_schemas
 from app.core.config import settings
 from pydantic import BaseModel
 from typing import Any, Dict
 from ..utils.crud_helpers import segment_route
 
-supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
 
-def _store_legs_supabase(auth_token: str, chat_id: str, route_id: str, legs: list):
-    """Helper to store steps inside Supabase"""
-    for i, leg in enumerate(legs):
-        leg_id = f"{route_id}-leg-{i}"
-        steps = leg.get('steps', [])
-        
-        step_inserts = []
-        for step_idx, step in enumerate(steps):
-            coords = step['geometry']['coordinates']
-            step_inserts.append({
-                'user_id': auth_token,
-                'chat_id': chat_id,
-                'leg_id': leg_id,
-                'step_id': step_idx,
-                'coordinates': coords
-            })
-            step['geometry']['coordinates'] = leg_id
-            
-        if step_inserts:
-            supabase.table('steps').upsert(step_inserts).execute()
+def _get_conn():
+    """Return a new psycopg2 connection to Neon."""
+    return psycopg2.connect(settings.DATABASE_URL)
+
+
+def _store_legs(conn, auth_token: str, chat_id: str, route_id: str, legs: list):
+    """Store step coordinates for each leg into the steps table."""
+    with conn.cursor() as cur:
+        for i, leg in enumerate(legs):
+            leg_id = f"{route_id}-leg-{i}"
+            steps = leg.get('steps', [])
+
+            for step_idx, step in enumerate(steps):
+                coords = step['geometry']['coordinates']
+                cur.execute(
+                    """
+                    INSERT INTO steps (user_id, chat_id, leg_id, step_id, coordinates)
+                    VALUES (%s, %s, %s, %s, %s)
+                    ON CONFLICT (leg_id, step_id) DO UPDATE SET coordinates = EXCLUDED.coordinates
+                    """,
+                    (auth_token, chat_id, leg_id, step_idx, json.dumps(coords))
+                )
+                step['geometry']['coordinates'] = leg_id
+
     return legs
-            
+
+
 def create_chat(auth_token: str,
                 chat_id: str,
                 chat_data: Dict[str, Any],
                 chat_logs: Dict[str, Any]):
-    """Create a new chat instance in the database"""
-    response = supabase.table('chats').upsert({
-        'user_id': auth_token,
-        'chat_id': chat_id,
-        'chat_data': chat_data,
-        'chat_log': chat_logs
-    }).execute()
-    return response.data
+    """Create a new chat instance in the database."""
+    with _get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO chats (user_id, chat_id, chat_data, chat_log)
+                VALUES (%s, %s, %s, %s)
+                ON CONFLICT (user_id, chat_id) DO UPDATE
+                  SET chat_data = EXCLUDED.chat_data,
+                      chat_log  = EXCLUDED.chat_log
+                RETURNING *
+                """,
+                (auth_token, chat_id, json.dumps(chat_data), json.dumps(chat_logs))
+            )
+            row = cur.fetchone()
+        conn.commit()
+    return row
 
 
 def get_chat(auth_token: str, chat_id: str) -> chat_schemas.ChatSchema:
-    """Get an individual chat from the database"""
-    response = supabase.table('chats').select('*').eq('user_id', auth_token).eq('chat_id', chat_id).execute()
-    return response.data[0] if response.data else None
+    """Get an individual chat from the database."""
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                "SELECT * FROM chats WHERE user_id = %s AND chat_id = %s",
+                (auth_token, chat_id)
+            )
+            row = cur.fetchone()
+    return dict(row) if row else None
 
 
 def get_all_chats(auth_token: str):
     """Get all chats for a given authentication token."""
-    response = supabase.table('chats').select('*').eq('user_id', auth_token).execute()
-    # Format the data into the exact Capitalized structure your API endpoints expect
-    items = []
-    for row in response.data:
-        items.append({
-            'UserId': row['user_id'],
-            'ChatId': row['chat_id'],
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                "SELECT * FROM chats WHERE user_id = %s",
+                (auth_token,)
+            )
+            rows = cur.fetchall()
+
+    return [
+        {
+            'UserId':  row['user_id'],
+            'ChatId':  row['chat_id'],
             'ChatData': row['chat_data'],
-            'ChatLog': row['chat_log']
-        })
-    return items
+            'ChatLog':  row['chat_log'],
+        }
+        for row in rows
+    ]
+
 
 def get_segments(route_id: str):
-    """Get all the segments associated with a single route_id"""
-    response = supabase.table('route_segments').select('*').eq('route_id', route_id).execute()
-    sorted_segs = sorted(response.data, key=lambda x: int(x['segment_id']))
+    """Get all segments associated with a single route_id."""
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                "SELECT * FROM route_segments WHERE route_id = %s ORDER BY segment_id::int",
+                (route_id,)
+            )
+            rows = cur.fetchall()
+
     segs = []
-    for seg in sorted_segs:
-        segs.extend(seg['coords'])
+    for row in rows:
+        segs.extend(row['coords'])
     return segs
 
 
 def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
-    """Update a component of a user's chat in the database"""
-    # Convert the schema to a dictionary
+    """Update a component of a user's chat in the database."""
     comp_dict = chat_schema.model_dump()
-    
-    # Fetch existing data from Supabase
     col_name = 'chat_data' if prefix == 'ChatData' else 'chat_log'
-    existing_resp = supabase.table('chats').select(col_name).eq('user_id', auth_token).eq('chat_id', chat_id).execute()
-    if not existing_resp.data:
-        return None
-        
-    current_val = existing_resp.data[0].get(col_name) or {}
-    empty_vals = [[], {}, None, False, '']
-    route_id = f'{auth_token}-{chat_id}'
 
-    for key, value in comp_dict.items():
-        route = None
-        if value not in empty_vals:
-            if key == 'initial':
-                route = value['geometry']['coordinates']
-                value['geometry'] = route_id
-                value['legs'] = _store_legs_supabase(auth_token, chat_id, route_id, value['legs'])
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                f"SELECT {col_name} FROM chats WHERE user_id = %s AND chat_id = %s",
+                (auth_token, chat_id)
+            )
+            row = cur.fetchone()
+            if not row:
+                return None
 
-            if key == 'route':
-                route = value['geometry']['coordinates']
-                value['geometry']['coordinates'] = route_id
-            if route:
-                segments = segment_route(route)
-                seg_inserts = [{'user_id': auth_token, 'chat_id': chat_id, 'route_id': route_id, 'segment_id': str(seg_id), 'coords': segment} for seg_id, segment in enumerate(segments)]
-                if seg_inserts:
-                    supabase.table('route_segments').upsert(seg_inserts).execute()
+            current_val = row[col_name] or {}
+            empty_vals = [[], {}, None, False, '']
+            route_id = f'{auth_token}-{chat_id}'
 
-            # Apply the update to our dictionary mapping
-            current_val[key] = value
+            for key, value in comp_dict.items():
+                route = None
+                if value not in empty_vals:
+                    if key == 'initial':
+                        route = value['geometry']['coordinates']
+                        value['geometry'] = route_id
+                        value['legs'] = _store_legs(conn, auth_token, chat_id, route_id, value['legs'])
 
-    # Upload the modified JSON back to Supabase
-    response = supabase.table('chats').update({col_name: current_val}).eq('user_id', auth_token).eq('chat_id', chat_id).execute()
-    return response.data
+                    if key == 'route':
+                        route = value['geometry']['coordinates']
+                        value['geometry']['coordinates'] = route_id
+
+                    if route:
+                        segments = segment_route(route)
+                        for seg_id, segment in enumerate(segments):
+                            cur.execute(
+                                """
+                                INSERT INTO route_segments (user_id, chat_id, route_id, segment_id, coords)
+                                VALUES (%s, %s, %s, %s, %s)
+                                ON CONFLICT (route_id, segment_id) DO UPDATE SET coords = EXCLUDED.coords
+                                """,
+                                (auth_token, chat_id, route_id, str(seg_id), json.dumps(segment))
+                            )
+
+                    current_val[key] = value
+
+            cur.execute(
+                f"UPDATE chats SET {col_name} = %s WHERE user_id = %s AND chat_id = %s RETURNING *",
+                (json.dumps(current_val), auth_token, chat_id)
+            )
+            result = cur.fetchall()
+        conn.commit()
+
+    return result
 
 
-def delete_chat(auth_token: str, chat_id: str) -> chat_schemas.ChatSchema:
-    """Delete a desired chat from the database"""
-    response = supabase.table('chats').delete().eq('user_id', auth_token).eq('chat_id', chat_id).execute()
-    return response.data
+def delete_chat(auth_token: str, chat_id: str):
+    """Delete a desired chat from the database."""
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                "DELETE FROM chats WHERE user_id = %s AND chat_id = %s RETURNING *",
+                (auth_token, chat_id)
+            )
+            result = cur.fetchall()
+        conn.commit()
+    return result
+
 
 def restore_legs(legs: list[Any]):
-    """Restore the coordinates of all the steps to their proper values"""
-    rest_legs = []
-    for leg in legs:
-        leg_id = leg['steps'][0]['geometry']['coordinates']
-        response = supabase.table('steps').select('*').eq('leg_id', leg_id).execute()
-        steps_coords = response.data
-        steps_coords = sorted(steps_coords, key=lambda x: x['step_id'])
-        for i in range(len(steps_coords)):
-            leg['steps'][i]['geometry']['coordinates'] = steps_coords[i]['coordinates']
-        rest_legs.append(leg)
+    """Restore the coordinates of all steps to their proper values."""
+    with _get_conn() as conn:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            rest_legs = []
+            for leg in legs:
+                leg_id = leg['steps'][0]['geometry']['coordinates']
+                cur.execute(
+                    "SELECT * FROM steps WHERE leg_id = %s ORDER BY step_id",
+                    (leg_id,)
+                )
+                steps_coords = cur.fetchall()
+                for i, step_row in enumerate(steps_coords):
+                    leg['steps'][i]['geometry']['coordinates'] = step_row['coordinates']
+                rest_legs.append(leg)
     return rest_legs
