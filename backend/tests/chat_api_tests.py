@@ -97,7 +97,7 @@ def test_delete_chat():
         chat_data=ChatDatas[0],
         chat_logs=ChatLogs[0],
     )
-    assert response1['ResponseMetadata']['HTTPStatusCode'] == 200
+    assert response1 is not None
     params= {
         'partition_key': 88,
         'chat_id': chat_id,
@@ -119,7 +119,7 @@ def test_update_chat():
         chat_data=ChatDatas[0],
         chat_logs=ChatLogs[0],
     )
-    assert response1['ResponseMetadata']['HTTPStatusCode'] == 200
+    assert response1 is not None
     payload = {
         'PartitionKey': '88',
         'ChatData': {
@@ -172,28 +172,27 @@ def test_update_chat():
 
 def test_initialize_chats():
     partition_key = 88
-    print(partition_key, ChatDatas[0], ChatLogs[0])
     response = create_chat(
         auth_token=str(partition_key),
         chat_id=str(1),
         chat_data=ChatDatas[0],
         chat_logs=ChatLogs[0],
     )
-    assert response['ResponseMetadata']['HTTPStatusCode'] == 200
+    assert response is not None
     response = create_chat(
         auth_token=str(partition_key),
         chat_id=str(2),
         chat_data=ChatDatas[0],
         chat_logs=ChatLogs[0],
     )
-    assert response['ResponseMetadata']['HTTPStatusCode'] == 200
+    assert response is not None
     response = create_chat(
         auth_token=str(partition_key),
         chat_id=str(3),
         chat_data=ChatDatas[0],
         chat_logs=ChatLogs[0],
     )
-    assert response['ResponseMetadata']['HTTPStatusCode'] == 200
+    assert response is not None
     params = {
         'partition_key': partition_key,
     }

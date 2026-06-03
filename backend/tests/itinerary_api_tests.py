@@ -5,8 +5,8 @@ from app.main import app
 client = TestClient(app)
 
 def test_generate_itinerary_LA_NYC():
-    response = client.get("/generate-final-route", params={"start_lat": 33.710521, "start_lon": -117.763716,
-                                                "end_lat": 40.647306, "end_lon": -74.157289, 'num_stops': 1})
+    response = client.get("/get-initial-route", params={"start_lat": 33.710521, "start_lon": -117.763716,
+                                                "end_lat": 40.647306, "end_lon": -74.157289})
     assert response.status_code == 200
     payload = {'route': response.json()
             }
