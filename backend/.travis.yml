@@ -20,14 +20,3 @@ script:
 
 # Run builds only on PRs
 if: type = pull_request
-
-# Notifications (optional)
-notifications:
-  email:
-    recipients:
-      - joeymarenin13@gmail.com
-      - eschiffler1122@gmail.com
-      - apfreela@calpoly.edu
-
-    on_success: change
-    on_failure: always
