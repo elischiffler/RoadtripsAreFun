@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from fastapi import APIRouter, HTTPException, Request
 from geopy.geocoders import OpenCage
 from app.models.location_models import location_payload, location_model
@@ -6,7 +7,7 @@ from pydantic import ValidationError
 from app.utils.geolocation_helpers import get_location
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+load_dotenv(Path(__file__).resolve().parents[3] / ".env", override=True)
 
 # Initialize FastAPI
 router = APIRouter()

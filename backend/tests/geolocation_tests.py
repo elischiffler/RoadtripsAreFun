@@ -1,11 +1,12 @@
 import pytest
 from geopy import Location
 from dotenv import load_dotenv
+from pathlib import Path
 import os
 from app.utils.geolocation_helpers import get_location
 from geopy.geocoders import OpenCage
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 open_cage_key = os.getenv('OPENCAGE_KEY')
 

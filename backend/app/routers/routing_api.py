@@ -12,6 +12,7 @@ from app.models.routing_models.google_places_models import GooglePlaces
 from app.utils.geolocation_helpers import get_location
 from geopy.distance import geodesic
 from dotenv import load_dotenv
+from pathlib import Path
 from typing import Dict, Any, List, Tuple, Optional, Union
 import os
 import logging
@@ -23,7 +24,7 @@ Mapbox_step = MapBox.MapBox_Route.Mapbox_leg.Mapbox_step
 MapBox_route = MapBox.MapBox_Route
 
 # Load environment variables
-load_dotenv(override=True)
+load_dotenv(Path(__file__).resolve().parents[3] / ".env", override=True)
 
 # Setup logging (for debugging)
 logging.basicConfig(level=logging.INFO)

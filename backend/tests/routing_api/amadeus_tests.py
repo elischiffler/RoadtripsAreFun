@@ -4,18 +4,16 @@ from datetime import datetime, timedelta
 from app.routers.routing_api import _get_amadeus_token, _find_hotel
 import pytest
 from dotenv import load_dotenv
+from pathlib import Path
 from app.utils.geolocation_helpers import get_location
 from geopy.geocoders import OpenCage
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 open_cage_key = os.getenv('OPENCAGE_KEY')
 
 print(open_cage_key)
 geocoder= OpenCage(open_cage_key, user_agent='rp-testing')
-
-
-load_dotenv()
 
 @pytest.mark.asyncio
 async def test_get_amadeus_token():
