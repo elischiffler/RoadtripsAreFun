@@ -10,7 +10,8 @@ from ..utils.crud_helpers import segment_route
 
 def _get_conn():
     """Return a new psycopg2 connection to Neon."""
-    return psycopg2.connect(settings.DATABASE_URL)
+    url = (settings.DATABASE_URL or "").strip()
+    return psycopg2.connect(url, sslmode="require")
 
 
 def _store_legs(conn, auth_token: str, chat_id: str, route_id: str, legs: list):

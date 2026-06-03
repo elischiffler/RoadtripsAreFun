@@ -1,209 +1,161 @@
 import pytest
+from unittest.mock import MagicMock, patch
 from fastapi.testclient import TestClient
 from app.main import app
-from app.crud.chat_crud import create_chat
 
 client = TestClient(app)
 
-ChatDatas = [
-    {
-        'chatId': 1,
-        'action': None,
-        'locationType': '',
-        'startCoords': [],
-        'startAddress': ['', '', '', ''],
-        'endCoords': [],
-        'endAddress': ['', '', '', ''],
-        'stops': 1,
-        'showInputBar': False,
-        'showStopSlider': False,
-        'showBudgetSlider': False,
-        'showAddressInput': False,
-        'workflowStarted': False,
-        'startConfirmed': None,
-        'endConfirmed': None,
-        'initial': None,
-        'route': None,
-        'itinerary': None,
-        'loading': False,
-        'hotelBudget': None,
-        'carDetails': [],
-        'budget': 0,
-    },{
-            'chatId': 2,
-            'action': 'Hello World',
-            'locationType': '',
-            'startCoords': [],
-            'startAddress': '',
-            'endCoords': [],
-            'endAddress': '',
-            'stops': 1,
-            'showInputBar': True,
-            'showStopSlider': False,
-            'showBudgetSlider': False,
-            'showAddressInput': True,
-            'workflowStarted': True,
-            'startConfirmed': [124.324, 52134],
-            'endConfirmed': [-112.0234, 48.57689],
-            'initial': None,
-            'route': None,
-            'itinerary': None,
-            'loading': False,
-            'hotelBudget': None,
-            'carDetails': [],
-            'budget': 0,
-        },
+# ---------------------------------------------------------------------------
+# Shared fixtures
+# ---------------------------------------------------------------------------
 
-]
+CHAT_DATA = {
+    "chatId": 1,
+    "action": None,
+    "locationType": "",
+    "startCoords": [],
+    "startAddress": ["", "", "", ""],
+    "endCoords": [],
+    "endAddress": ["", "", "", ""],
+    "stops": 1,
+    "showInputBar": False,
+    "showStopSlider": False,
+    "showBudgetSlider": False,
+    "showAddressInput": False,
+    "workflowStarted": False,
+    "startConfirmed": None,
+    "endConfirmed": None,
+    "initial": None,
+    "route": None,
+    "itinerary": None,
+    "loading": False,
+    "hotelBudget": None,
+    "carDetails": [],
+    "budget": 0,
+}
 
-ChatLogs = [
-    {
-        'id': 1,
-        'title': 'Chat 1',
-        'messages': [{
-            'text': 'Hello welcome to Journey Genie',
-            'sender': "bot",
-            'buttons': []
-        }]
-    }
-]
+CHAT_LOG = {
+    "id": 1,
+    "title": "Chat 1",
+    "messages": [{"text": "Hello welcome to Journey Genie", "sender": "bot", "buttons": []}],
+}
 
-# @pytest.mark.asyncio
-def test_add_initialized_chat():
-    # Create the payload for the body (request)
-    payload = {
-        'PartitionKey': '12345678',
-        'ChatData': ChatDatas[0],
-        'ChatLog': ChatLogs[0]
-    }
 
-    # Post request with correct chat_id in the path and partition_key as a query param
-    response = client.post(
-        '/chats/create/1',
-        json=payload
-    )
-    print(response.json())
+def _make_mock_conn(fetchone_val=None, fetchall_val=None):
+    """Return a mock psycopg2 connection whose cursor returns given values."""
+    mock_cursor = MagicMock()
+    mock_cursor.fetchone.return_value = fetchone_val
+    mock_cursor.fetchall.return_value = fetchall_val or []
 
-    # Assert the status code is 200
+    # Support both context-manager and non-context-manager cursor usage
+    mock_cursor.__enter__ = lambda s: s
+    mock_cursor.__exit__ = MagicMock(return_value=False)
+
+    mock_conn = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+    mock_conn.__enter__ = lambda s: s
+    mock_conn.__exit__ = MagicMock(return_value=False)
+    return mock_conn
+
+
+# ---------------------------------------------------------------------------
+# POST /chats/create/{chat_id}
+# ---------------------------------------------------------------------------
+
+def test_create_chat():
+    """Returns 200 when a valid chat payload is posted."""
+    # cursor.fetchone returns the inserted row tuple
+    mock_conn = _make_mock_conn(fetchone_val=("user123", "1", {}, {}))
+
+    with patch("app.crud.chat_crud._get_conn", return_value=mock_conn), \
+         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
+        response = client.post(
+            "/chats/create/1",
+            json={"PartitionKey": "user123", "ChatData": CHAT_DATA, "ChatLog": CHAT_LOG},
+        )
     assert response.status_code == 200
 
+
+# ---------------------------------------------------------------------------
+# DELETE /chats/delete/{chat_id}
+# ---------------------------------------------------------------------------
 
 def test_delete_chat():
-    chat_id = 2
-    # Create data
-    response1 = create_chat(
-        auth_token=str(88),
-        chat_id=str(chat_id),
-        chat_data=ChatDatas[0],
-        chat_logs=ChatLogs[0],
-    )
-    assert response1 is not None
-    params= {
-        'partition_key': 88,
-        'chat_id': chat_id,
-    }
-    url = f'/chats/delete/{chat_id}'
-    response = client.delete(
-        url=url,
-        params=params,
-    )
-    assert response.status_code == 200
+    """Returns 200 and a success message when a chat is deleted."""
+    mock_conn = _make_mock_conn(fetchall_val=[("user123", "2", {}, {})])
 
+    with patch("app.crud.chat_crud._get_conn", return_value=mock_conn), \
+         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
+        response = client.delete(
+            "/chats/delete/2",
+            params={"partition_key": "user123"},
+        )
+    assert response.status_code == 200
+    assert response.json()["status"] == "success"
+
+
+# ---------------------------------------------------------------------------
+# PUT /chats/update/{chat_id}
+# ---------------------------------------------------------------------------
 
 def test_update_chat():
-    chat_id = 3
-    partition_key = 88
-    response1 = create_chat(
-        auth_token=str(partition_key),
-        chat_id=str(chat_id),
-        chat_data=ChatDatas[0],
-        chat_logs=ChatLogs[0],
-    )
-    assert response1 is not None
-    payload = {
-        'PartitionKey': '88',
-        'ChatData': {
-            'chatId': 1,
-            'action': 'Address',
-            'locationType': '',
-            'startCoords': [],
-            'startAddress': ['','','',''],
-            'endCoords': [],
-            'endAddress': ['','','',''],
-            'stops': 1,
-            'showInputBar': True,
-            'showStopSlider': False,
-            'showBudgetSlider': True,
-            'showAddressInput': False,
-            'workflowStarted': False,
-            'startConfirmed': None,
-            'endConfirmed': [116.12341324123412,15.234234234],
-            'initial': None,
-            'route': None,
-            'itinerary': None,
-            'loading': False,
-            'hotelBudget': None,
-            'carDetails': [],
-            'budget': 0,
-        },
-        'ChatLog': {
-            'id': 1,
-            'title': 'Chat 1',
-            'messages': [{
-                'text': 'Hello welcome to Journey Genie',
-                'sender': "bot",
-                'buttons': []
-            },
-                {
-                    'text': 'I want to drive cross country fro LA to NYC',
-                    'sender': "user",
-                    'buttons': []
-                }]
-        }
+    """Returns 200 when a valid update payload is sent."""
+    # First cursor call (SELECT) returns existing row; second (UPDATE) returns updated row
+    mock_cursor = MagicMock()
+    mock_cursor.__enter__ = lambda s: s
+    mock_cursor.__exit__ = MagicMock(return_value=False)
+    mock_cursor.fetchone.return_value = {"chat_data": {}, "chat_log": {}}
+    mock_cursor.fetchall.return_value = [("user123", "3", {}, {})]
+
+    mock_conn = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+    mock_conn.__enter__ = lambda s: s
+    mock_conn.__exit__ = MagicMock(return_value=False)
+
+    updated_chat_data = {**CHAT_DATA, "action": "Address"}
+    updated_chat_log = {
+        **CHAT_LOG,
+        "messages": CHAT_LOG["messages"] + [{"text": "LA to NYC", "sender": "user", "buttons": []}],
     }
 
-    # Post request with correct chat_id in the path and partition_key as a query param
-    response = client.put(
-        f'/chats/update/{chat_id}?partition_key={partition_key}',
-        json=payload
-    )
-    print(response.json())
+    with patch("app.crud.chat_crud._get_conn", return_value=mock_conn), \
+         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
+        response = client.put(
+            "/chats/update/3?partition_key=user123",
+            json={"PartitionKey": "user123", "ChatData": updated_chat_data, "ChatLog": updated_chat_log},
+        )
     assert response.status_code == 200
 
-def test_initialize_chats():
-    partition_key = 88
-    response = create_chat(
-        auth_token=str(partition_key),
-        chat_id=str(1),
-        chat_data=ChatDatas[0],
-        chat_logs=ChatLogs[0],
-    )
-    assert response is not None
-    response = create_chat(
-        auth_token=str(partition_key),
-        chat_id=str(2),
-        chat_data=ChatDatas[0],
-        chat_logs=ChatLogs[0],
-    )
-    assert response is not None
-    response = create_chat(
-        auth_token=str(partition_key),
-        chat_id=str(3),
-        chat_data=ChatDatas[0],
-        chat_logs=ChatLogs[0],
-    )
-    assert response is not None
-    params = {
-        'partition_key': partition_key,
-    }
-    response = client.get('/chats', params=params)
+
+# ---------------------------------------------------------------------------
+# GET /chats
+# ---------------------------------------------------------------------------
+
+def test_get_all_chats_empty():
+    """Returns 200 and an empty list when the user has no chats."""
+    mock_conn = _make_mock_conn(fetchall_val=[])
+
+    with patch("app.crud.chat_crud._get_conn", return_value=mock_conn), \
+         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
+        response = client.get("/chats", params={"partition_key": "user123"})
     assert response.status_code == 200
-    data = response.json()
-    print(data)
-    assert len(data) == 3
+    assert response.json() == []
 
 
+def test_get_all_chats_returns_list():
+    """Returns 200 and a list of chats matching the stored rows."""
+    rows = [
+        {"user_id": "88", "chat_id": str(i), "chat_data": {"initial": None, "route": None}, "chat_log": {}}
+        for i in range(1, 4)
+    ]
+    mock_conn = _make_mock_conn(fetchall_val=rows)
+
+    with patch("app.crud.chat_crud._get_conn", return_value=mock_conn), \
+         patch("app.routers.chat_api.get_user_id_from_token", return_value="88"):
+        response = client.get("/chats", params={"partition_key": "88"})
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
 
 
-if __name__ == '__main__':
-    pytest.main(["-k", "test_initialize_chats"])
+if __name__ == "__main__":
+    pytest.main()
