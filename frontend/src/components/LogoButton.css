@@ -1,0 +1,117 @@
+/* ── Wrapper ── */
+.logo-btn {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.logo-btn:hover {
+  transform: scale(1.06);
+  border-color: var(--cream-dark);
+}
+
+.logo-svg {
+  overflow: visible;
+  display: block;
+}
+
+/* ── Mountains ── */
+.logo-mountain--back {
+  fill: var(--sand-light);
+}
+
+.logo-mountain--front {
+  fill: var(--sand-main);
+}
+
+/* ── Road ── */
+.logo-road {
+  fill: var(--bark-main);
+  opacity: 0.35;
+}
+
+.logo-dash {
+  fill: var(--cream-light);
+  opacity: 0.7;
+}
+
+/* Road dashes at rest — no animation */
+.logo-road-dashes {
+  transform: translateX(0);
+}
+
+/* ── Car ── */
+.logo-car-body {
+  fill: var(--amber-main);
+}
+
+.logo-car-cabin {
+  fill: var(--amber-dark, #9E6420);
+}
+
+.logo-window {
+  fill: var(--cream-light);
+  opacity: 0.6;
+}
+
+.logo-bumper {
+  fill: var(--bark-main);
+  opacity: 0.5;
+}
+
+.logo-headlight {
+  fill: #fff8c0;
+}
+
+/* ── Wheels ── */
+.logo-wheel {
+  fill: var(--soil-main);
+  stroke: var(--bark-main);
+  stroke-width: 0.5;
+}
+
+.logo-hub {
+  fill: var(--amber-light);
+}
+
+.logo-spoke--rear,
+.logo-spoke--front {
+  stroke: var(--bark-main);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+/* ── Hover animations ── */
+
+/* Road scrolls left */
+@keyframes scrollRoad {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-64px); }
+}
+
+/* Wheels spin */
+@keyframes spinWheel {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.logo-btn:hover .logo-road-dashes {
+  animation: scrollRoad 0.6s linear infinite;
+}
+
+/* Rear wheel spokes */
+.logo-btn:hover .logo-spoke--rear {
+  transform-origin: 17px 31px;
+  animation: spinWheel 0.5s linear infinite;
+}
+
+/* Front wheel spokes */
+.logo-btn:hover .logo-spoke--front {
+  transform-origin: 31px 31px;
+  animation: spinWheel 0.5s linear infinite;
+}

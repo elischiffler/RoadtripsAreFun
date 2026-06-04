@@ -1,0 +1,113 @@
+.global-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  z-index: 9999;
+  background-color: var(--cream-light);
+  border-bottom: 1px solid var(--cream-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 0 8px;
+  box-sizing: border-box;
+}
+
+.global-header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--soil-main) !important;
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.global-header-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--amber-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid var(--amber-light);
+  transition: opacity 0.15s ease;
+}
+
+.avatar-placeholder:hover {
+  opacity: 0.85;
+}
+
+.avatar-initials {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  color: #1e1208 !important;
+  line-height: 1 !important;
+}
+
+.header-login-btn {
+  background-color: var(--amber-main) !important;
+  color: #1e1208 !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  padding: 6px 18px !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.header-login-btn:hover {
+  background-color: var(--amber-light) !important;
+}
+
+/* ── Profile dropdown ── */
+.profile-menu-paper {
+  background-color: var(--cream-light) !important;
+  border: 1px solid var(--cream-dark) !important;
+  border-radius: 10px !important;
+  min-width: 160px;
+  margin-top: 6px;
+}
+
+.profile-menu-header {
+  padding: 10px 16px 6px;
+}
+
+.profile-menu-label {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  color: var(--sand-main) !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+}
+
+.profile-menu-item {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: var(--soil-main) !important;
+  gap: 10px;
+  padding: 10px 16px !important;
+  transition: background-color 0.15s ease;
+}
+
+.profile-menu-item:hover {
+  background-color: var(--cream-dark) !important;
+}
+
+.profile-menu-icon {
+  font-size: 18px !important;
+  color: var(--bark-main) !important;
+}

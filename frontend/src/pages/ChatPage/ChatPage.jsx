@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import customTheme from "../../components/Theme";
-import LogoButton from "../../components/LogoButton";
 import ItineraryButton from "../../components/buttons/ItineraryButton";
 import MapButton from "../../components/buttons/MapButton";
 import AddIcon from "@mui/icons-material/Add";
@@ -394,18 +393,11 @@ const ChatPage = () => {
           <Box sx={{ mb: -1, width: "100%" }}>
             <ItineraryButton itinerary={UserChatData.itinerary} />
           </Box>
-          <LogoButton />
         </Box>
       </Box>
 
       {/* Main content area displaying the chat messages */}
       <Box className="main-content">
-        {/* Header with app title */}
-        <Box className="header">
-          <Typography variant="h6" color="white">
-            RoadtripsAreFun
-          </Typography>
-        </Box>
 
         {/* Chat box area */}
         <Box className="chat-box">

@@ -12,17 +12,9 @@
   overflow: hidden;
 }
 
-/* ── Navbar ── */
+/* ── Navbar — hidden, replaced by GlobalHeader ── */
 .navbar {
-  height: 68px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 48px;
-  background-color: var(--cream-light);
-  border-bottom: 1px solid var(--cream-dark);
-  box-sizing: border-box;
+  display: none;
 }
 
 .navbar-actions {

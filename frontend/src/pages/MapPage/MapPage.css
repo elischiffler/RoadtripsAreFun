@@ -1,6 +1,5 @@
 /* MapPage.css */
 
-/* MapPage container styles */
 .map-page-container {
   display: flex;
   height: 100vh;
@@ -10,12 +9,13 @@
 
 .left-sidebar {
   width: 17%;
-  background-color: var(--white-light);
+  height: calc(100vh - 56px);
+  margin-top: 56px;
+  background-color: var(--cream-light);
   display: flex;
   flex-direction: column;
   padding: 16px;
-  box-shadow: var(--mui-shadow-1);
-  border-right: 2px solid var(--white-dark);
+  border-right: 1px solid var(--cream-dark);
   box-sizing: border-box;
 }
 

@@ -31,8 +31,7 @@ const GlobalStyles = () => {
     root.style.setProperty("--soil-main", customTheme.palette.soil.main);
     root.style.setProperty("--forest-main", customTheme.palette.forest.main);
     root.style.setProperty("--forest-light", customTheme.palette.forest.light);
-    root.style.setProperty("--forest-dark", customTheme.palette.forest.dark);
-    root.style.setProperty("--amber-main", customTheme.palette.amber.main);
+    root.style.setProperty("--forest-dark", customTheme.palette.forest.dark);    root.style.setProperty("--amber-main", customTheme.palette.amber.main);
     root.style.setProperty("--amber-light", customTheme.palette.amber.light);
   }, []);
 

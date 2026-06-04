@@ -34,22 +34,22 @@ const customTheme = createTheme({
 
     // --- action colors ---
     forest: {
-      main: "#4A6741",   // muted deep olive green
-      light: "#6B8E5E",  // lighter forest green
-      dark: "#2E4228",   // dark forest
+      main: "#C4873A",   // amber (sole accent)
+      light: "#D9A55E",
+      dark: "#9E6420",
       contrastText: "#FBF8F3",
     },
     amber: {
-      main: "#C4873A",   // warm golden amber
+      main: "#C4873A",
       light: "#D9A55E",
       dark: "#9E6420",
     },
 
     // --- MUI semantic aliases ---
     primary: {
-      main: "#4A6741",
-      light: "#6B8E5E",
-      dark: "#2E4228",
+      main: "#C4873A",
+      light: "#D9A55E",
+      dark: "#9E6420",
       contrastText: "#FBF8F3",
     },
     background: {
@@ -70,7 +70,7 @@ const customTheme = createTheme({
       black: "#5C3D2E",  // maps to former --white-black → deep brown
     },
     green: {
-      main: "#4A6741",   // maps to former --green-main  → forest green
+      main: "#C4873A",   // maps to --green-main → amber
     },
   },
 
@@ -138,10 +138,10 @@ const customTheme = createTheme({
           },
         },
         containedPrimary: {
-          backgroundColor: "#4A6741",
+          backgroundColor: "#C4873A",
           color: "#FBF8F3",
           "&:hover": {
-            backgroundColor: "#2E4228",
+            backgroundColor: "#9E6420",
           },
         },
       },
