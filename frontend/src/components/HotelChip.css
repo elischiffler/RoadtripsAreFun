@@ -1,0 +1,105 @@
+/* ── Wrapper ── */
+.hotel-chip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 88px;
+  cursor: default;
+}
+
+/* ── Resting pill ── */
+.hotel-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background-color: var(--cream-main);
+  border: 1px solid var(--cream-dark);
+  box-shadow: 0 1px 4px rgba(58, 42, 26, 0.08);
+  white-space: nowrap;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hotel-pill--hidden {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.hotel-pill-icon {
+  display: flex;
+  align-items: center;
+  color: var(--forest-main);
+  font-size: 18px;
+}
+
+.hotel-pill-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--bark-main);
+}
+
+/* ── Building ── */
+.hotel-building {
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.5) translateY(10px);
+  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+  pointer-events: none;
+}
+
+.hotel-building--visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.hotel-svg {
+  overflow: visible;
+}
+
+.hotel-ground {
+  fill: var(--bark-main);
+  opacity: 0.3;
+}
+
+.hotel-body {
+  fill: var(--cream-dark);
+  stroke: var(--sand-main);
+  stroke-width: 1;
+}
+
+.hotel-roof {
+  fill: var(--bark-main);
+}
+
+.hotel-sign {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 8px;
+  font-weight: 700;
+  fill: var(--cream-light);
+}
+
+.hotel-door {
+  fill: var(--bark-dark);
+  opacity: 0.7;
+}
+
+/* ── Windows ── */
+.hotel-window {
+  fill: var(--cream-main);
+  opacity: 0.3;
+  transition: fill 0.15s ease, opacity 0.15s ease;
+}
+
+.hotel-window--lit {
+  fill: var(--amber-main);
+  opacity: 1;
+  filter: drop-shadow(0 0 2px rgba(196, 135, 58, 0.6));
+}

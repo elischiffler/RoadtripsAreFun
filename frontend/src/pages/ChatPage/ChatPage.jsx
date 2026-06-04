@@ -403,7 +403,7 @@ const ChatPage = () => {
         {/* Header with app title */}
         <Box className="header">
           <Typography variant="h6" color="white">
-            MyRoadtrip
+            RoadtripsAreFun
           </Typography>
         </Box>
 
