@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { Box, TextField } from "@mui/material";
-import PropTypes from "prop-types";
-import "./ChatPage.css";
+import { useState, useEffect } from 'react';
+import { Box, TextField } from '@mui/material';
+import PropTypes from 'prop-types';
+import './ChatPage.css';
 
 const CarInputBar = ({ UserChatData, handleKeyDown }) => {
   // Initialize state with the values from UserChatData
-  const [carInfo, setCarInfo] = useState(UserChatData.carDetails || ["", "", ""]);
+  const [carInfo, setCarInfo] = useState(UserChatData.carDetails || ['', '', '']);
 
   // Sync the carInfo state with UserChatData on initial render or when UserChatData changes
   useEffect(() => {
@@ -29,9 +29,9 @@ const CarInputBar = ({ UserChatData, handleKeyDown }) => {
 
   // Define the placeholders and values for each car info input field
   const carInfoFields = [
-    { placeholder: "Year", value: carInfo[0] },
-    { placeholder: "Make", value: carInfo[1] },
-    { placeholder: "Model", value: carInfo[2] },
+    { placeholder: 'Year', value: carInfo[0] },
+    { placeholder: 'Make', value: carInfo[1] },
+    { placeholder: 'Model', value: carInfo[2] },
   ];
 
   return (

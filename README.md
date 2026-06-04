@@ -1,11 +1,45 @@
-# MyRoadtrip
+# RoadtripsAreFun
 
 A road trip planning application. This monorepo contains two services:
 
 | Service | Stack | Deployed at |
 |---|---|---|
 | [`backend/`](./backend) | Python 3.9 / FastAPI / Neon Postgres | [Render](https://dashboard.render.com/web/srv-cqvu44jv2p9s739hhb60) |
-| [`frontend/`](./frontend) | React 18 / Vite / MUI | [Vercel](https://rp-ui.vercel.app) |
+| [`frontend/`](./frontend) | React 18 / Vite / MUI | [Vercel](https://roadtripsarefun.vercel.app) |
+
+---
+
+## Frontend UI
+
+The frontend uses an earthy design system (cream, sand, bark, amber) with Playfair Display headings and Inter body text.
+
+### Key pages
+
+| Route | Description |
+|---|---|
+| `/` | Landing page — app name, CTA, three interactive feature chips |
+| `/chat` | Main chat interface for planning a trip |
+| `/map` | Interactive Mapbox route view |
+| `/itinerary` | Day-by-day trip itinerary |
+| `/login` | Auth — AWS Cognito sign in |
+| `/signup` | Auth — new account |
+
+### Global header
+
+A fixed `GlobalHeader` component renders on every page (hidden on `/login` and `/signup`). It contains:
+- **Left** — custom SVG logo: a car driving over mountains. Hover plays a driving animation (scrolling road + spinning wheels). Clicking navigates home.
+- **Right** — amber login button when logged out; amber avatar circle when logged in. Clicking the avatar opens a dropdown with a sign-out option.
+
+### Feature chips (landing page)
+
+Three interactive pills on the landing page each have a unique hover animation:
+- **Route generation** — pill transforms into a spinning wagon wheel with the label text on the rim
+- **Hotel finder** — pill becomes a hotel building with windows that randomly flicker on/off
+- **Itinerary builder** — pill becomes an analog clock with hands that sweep forward and back continuously
+
+### Design tokens
+
+All colours are defined in `frontend/src/components/Theme.jsx` and exposed as CSS custom properties via `frontend/src/index.css`. Amber (`#C4873A`) is the sole accent colour throughout the UI.
 
 ---
 

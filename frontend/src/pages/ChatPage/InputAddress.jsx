@@ -1,18 +1,17 @@
-import { useState, useEffect } from "react";
-import { Box, TextField } from "@mui/material";
-import PropTypes from "prop-types";
-import "./ChatPage.css";
+import { useState, useEffect } from 'react';
+import { Box, TextField } from '@mui/material';
+import PropTypes from 'prop-types';
+import './ChatPage.css';
 
 const AddressBar = ({ UserChatData, handleKeyDown }) => {
-
   // Initialize the address based on the type of location (start or end)
   let initialAddress;
-  if (UserChatData.locationType === "start") {
+  if (UserChatData.locationType === 'start') {
     // Default to an empty array if startAddress is not defined
-    initialAddress = UserChatData?.startAddress || ["", "", "", ""];
-  } else if (UserChatData.locationType === "end") {
+    initialAddress = UserChatData?.startAddress || ['', '', '', ''];
+  } else if (UserChatData.locationType === 'end') {
     // Default to an empty array if endAddress is not defined
-    initialAddress = UserChatData?.endAddress || ["", "", "", ""];
+    initialAddress = UserChatData?.endAddress || ['', '', '', ''];
   }
 
   // Initialize state with the values from UserChatData
@@ -21,10 +20,10 @@ const AddressBar = ({ UserChatData, handleKeyDown }) => {
   // Sync the address state with UserChatData on initial render or when UserChatData changes
   useEffect(() => {
     if (UserChatData) {
-      if (UserChatData.locationType === "start") {
+      if (UserChatData.locationType === 'start') {
         // Update state with the start address from UserChatData
         setAddress(UserChatData.startAddress);
-      } else if (UserChatData.locationType === "end") {
+      } else if (UserChatData.locationType === 'end') {
         // Update state with the end address from UserChatData
         setAddress(UserChatData.endAddress);
       }
@@ -40,9 +39,9 @@ const AddressBar = ({ UserChatData, handleKeyDown }) => {
 
     // Update the corresponding address in UserChatData based on location type
     if (UserChatData) {
-      if (UserChatData.locationType === "start") {
+      if (UserChatData.locationType === 'start') {
         UserChatData.startAddress = updatedAddress;
-      } else if (UserChatData.locationType === "end") {
+      } else if (UserChatData.locationType === 'end') {
         UserChatData.endAddress = updatedAddress;
       }
     }
@@ -50,10 +49,10 @@ const AddressBar = ({ UserChatData, handleKeyDown }) => {
 
   // Define the placeholders and values for each address input field
   const addressFields = [
-    { placeholder: "Street Address", value: address[0] },
-    { placeholder: "City", value: address[1] },
-    { placeholder: "State", value: address[2] },
-    { placeholder: "ZIP Code", value: address[3] },
+    { placeholder: 'Street Address', value: address[0] },
+    { placeholder: 'City', value: address[1] },
+    { placeholder: 'State', value: address[2] },
+    { placeholder: 'ZIP Code', value: address[3] },
   ];
 
   return (

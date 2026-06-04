@@ -9,6 +9,7 @@ from app.routers.routing_api import _get_amadeus_token, _find_hotel
 # Mock helpers
 # ---------------------------------------------------------------------------
 
+
 def _amadeus_token_response():
     return {
         "type": "amadeusOAuth2Token",
@@ -35,6 +36,7 @@ def _mock_location(address="South Holland, IL, United States", lat=41.583, lon=-
 # _get_amadeus_token
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.asyncio
 async def test_get_amadeus_token():
     """Returns the access_token string from a mocked Amadeus auth response."""
@@ -52,6 +54,7 @@ async def test_get_amadeus_token():
 # _find_hotel  (via Google Hotels scraping path)
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.asyncio
 async def test_find_hotel_returns_dict():
     """_find_hotel returns a dict with expected keys when scraping succeeds."""
@@ -65,10 +68,11 @@ async def test_find_hotel_returns_dict():
         "type": "hotel",
     }
 
-    with patch("app.routers.routing_api.get_location", return_value=_mock_location()), \
-         patch("app.routers.routing_api.find_google_hotels", return_value=mock_hotel), \
-         patch("app.routers.routing_api._get_nearby_city", return_value="San Diego"):
-
+    with (
+        patch("app.routers.routing_api.get_location", return_value=_mock_location()),
+        patch("app.routers.routing_api.find_google_hotels", return_value=mock_hotel),
+        patch("app.routers.routing_api._get_nearby_city", return_value="San Diego"),
+    ):
         hotel_info = await _find_hotel(
             lat=33.319952,
             lon=-117.482767,

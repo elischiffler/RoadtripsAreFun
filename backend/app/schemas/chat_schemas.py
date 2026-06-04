@@ -17,7 +17,7 @@ class ChatDataSchema(BaseModel):
     showBudgetSlider: bool
     showAddressInput: bool
     workflowStarted: bool
-    startConfirmed: Optional[Any] = None #TODO make schema for these
+    startConfirmed: Optional[Any] = None  # TODO make schema for these
     endConfirmed: Optional[Any] = None
     initial: Optional[MapBox.MapBox_Route] = None
     route: Optional[Route] = None
@@ -33,6 +33,7 @@ class ChatLogSchema(BaseModel):
         text: str
         sender: str
         buttons: Optional[List[Any]] = None
+
     id: int
     title: str
     messages: List[ChatMessage]

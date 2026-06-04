@@ -22,7 +22,9 @@
   white-space: nowrap;
   opacity: 1;
   transform: scale(1);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
   pointer-events: none;
   z-index: 1;
 }
@@ -51,7 +53,9 @@
   position: absolute;
   opacity: 0;
   transform: scale(0.5) translateY(10px);
-  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+  transition:
+    opacity 0.25s ease,
+    transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
   pointer-events: none;
 }
 
@@ -95,7 +99,9 @@
 .hotel-window {
   fill: var(--cream-main);
   opacity: 0.3;
-  transition: fill 0.15s ease, opacity 0.15s ease;
+  transition:
+    fill 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .hotel-window--lit {

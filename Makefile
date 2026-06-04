@@ -21,3 +21,18 @@ test:
 ## Run only backend tests
 test-backend:
 	cd backend && python3.9 -m pytest
+
+## Format all code (backend: ruff, frontend: prettier)
+format:
+	cd backend && ruff format .
+	cd frontend && npm run format
+
+## Lint all code (backend: ruff check, frontend: eslint)
+lint:
+	cd backend && ruff check .
+	cd frontend && npm run lint
+
+## Fix auto-fixable lint issues
+lint-fix:
+	cd backend && ruff check --fix .
+	cd frontend && npm run lint -- --fix

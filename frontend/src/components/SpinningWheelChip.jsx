@@ -1,5 +1,5 @@
-import { Box } from "@mui/material";
-import "./SpinningWheelChip.css";
+import { Box } from '@mui/material';
+import './SpinningWheelChip.css';
 
 /**
  * SpinningWheelChip
@@ -25,23 +25,22 @@ export default function SpinningWheelChip({ label, icon }) {
 
       {/* ── Hover wheel state ── */}
       <Box className="swc-wheel" aria-hidden="true">
-        <svg
-          width="88"
-          height="88"
-          viewBox="0 0 88 88"
-          className="swc-svg"
-        >
+        <svg width="88" height="88" viewBox="0 0 88 88" className="swc-svg">
           {/* Spoke cross */}
           <line x1={cx} y1={cy - R} x2={cx} y2={cy + R} className="swc-spoke" />
           <line x1={cx - R} y1={cy} x2={cx + R} y2={cy} className="swc-spoke" />
           <line
-            x1={cx - R * 0.707} y1={cy - R * 0.707}
-            x2={cx + R * 0.707} y2={cy + R * 0.707}
+            x1={cx - R * 0.707}
+            y1={cy - R * 0.707}
+            x2={cx + R * 0.707}
+            y2={cy + R * 0.707}
             className="swc-spoke"
           />
           <line
-            x1={cx + R * 0.707} y1={cy - R * 0.707}
-            x2={cx - R * 0.707} y2={cy + R * 0.707}
+            x1={cx + R * 0.707}
+            y1={cy - R * 0.707}
+            x2={cx - R * 0.707}
+            y2={cy + R * 0.707}
             className="swc-spoke"
           />
 

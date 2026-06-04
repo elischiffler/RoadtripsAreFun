@@ -6,7 +6,9 @@
   padding: 4px;
   border-radius: 8px;
   border: 1px solid transparent;
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
   flex-shrink: 0;
 }
 
@@ -51,7 +53,7 @@
 }
 
 .logo-car-cabin {
-  fill: var(--amber-dark, #9E6420);
+  fill: var(--amber-dark, #9e6420);
 }
 
 .logo-window {
@@ -90,14 +92,22 @@
 
 /* Road scrolls left */
 @keyframes scrollRoad {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-64px); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-64px);
+  }
 }
 
 /* Wheels spin */
 @keyframes spinWheel {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .logo-btn:hover .logo-road-dashes {

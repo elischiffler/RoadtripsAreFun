@@ -36,10 +36,10 @@ This repo contains two services: `backend/` (Python/FastAPI) and `frontend/` (Re
 - `httpx` – async HTTP (available but requests is predominantly used)
 - `geopy` / `geographiclib` – geodesic distance calculations and geocoding
 - `python-dotenv` – loads `.env` for local development; `load_dotenv(override=True)` is used in routers
-- `boto3` – AWS SDK (available for future use)
 - `PyJWT` – decodes Cognito JWTs in `app/utils/auth.py`
 - `pandas` / `numpy` – data utilities
 - `lxml` – HTML parsing for web scraping
+- `typer` / `rich` – CLI utilities pulled in as FastAPI CLI dependencies
 
 ### Testing
 - **pytest 8.2.2** + **pytest-asyncio 0.23.8**
@@ -87,8 +87,12 @@ All secrets are loaded from `.env` (never committed). Required keys:
 - `axios` – HTTP client for backend API calls
 - `@aws-sdk/client-cognito-identity-provider` – Cognito auth
 - `mapbox-gl` – interactive map rendering
-- `@mui/material` – Material UI component library
+- `@mui/material` + `@mui/icons-material` – Material UI components and icons
+- `@emotion/react` + `@emotion/styled` – CSS-in-JS styling engine (MUI peer deps)
+- `@fontsource/roboto` – self-hosted Roboto font (MUI default)
 - `bootstrap` – utility CSS
+- `ldrs` – loading animation components
+- `@react-login-page/page11` – pre-built login page layout
 
 ### Common Commands
 

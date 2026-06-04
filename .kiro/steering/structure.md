@@ -7,13 +7,14 @@ MyRoadtrip/
 ├── backend/                  # Python/FastAPI routing microservice (formerly rp-routing)
 │   ├── app/
 │   │   ├── main.py               # FastAPI app entry point; registers all routers and CORS middleware
+│   │   ├── dependencies.py       # Shared FastAPI dependency functions
 │   │   ├── core/
 │   │   │   └── config.py         # Settings class; loads DATABASE_URL from .env
 │   │   ├── routers/              # Route handlers (one file per domain)
 │   │   │   ├── routing_api.py    # Core route generation: /get-initial-route, /generate-final-route
-│   │   │   ├── location_api.py   # Location resolution endpoints
-│   │   │   ├── itinerary_api.py  # Itinerary generation from a finalized route
-│   │   │   ├── car_api.py        # Car data endpoints
+│   │   │   ├── location_api.py   # Location resolution: /validate-location
+│   │   │   ├── itinerary_api.py  # Itinerary generation: /generate-itinerary
+│   │   │   ├── car_api.py        # Car data: /get-car-details, /get-gas-price (FuelEconomy.gov)
 │   │   │   ├── chat_api.py       # Chat CRUD: /chats, /chats/create, /chats/update, /chats/delete
 │   │   │   └── routing_fns/
 │   │   │       └── webscraping_fns.py  # Google Hotels scraping logic
@@ -46,7 +47,51 @@ MyRoadtrip/
 │   └── Makefile                  # `make run` starts the dev server
 │
 ├── frontend/                 # React/Vite UI (formerly rp-ui)
-│   ├── src/                  # React source files
+│   ├── src/
+│   │   ├── main.jsx              # Vite entry point; mounts React app
+│   │   ├── App.jsx               # Root component
+│   │   ├── Router.jsx            # react-router-dom route definitions
+│   │   ├── index.css             # Global CSS custom properties (design tokens)
+│   │   ├── components/           # Shared/global UI components
+│   │   │   ├── GlobalHeader.jsx  # Fixed top nav bar (logo + auth actions)
+│   │   │   ├── LogoButton.jsx    # Animated SVG logo linking to home
+│   │   │   ├── Map.jsx           # Mapbox GL map wrapper
+│   │   │   ├── AuthWrapper.jsx   # Cognito auth session guard
+│   │   │   ├── Theme.jsx         # MUI theme definition and design tokens
+│   │   │   ├── SpinningWheelChip.jsx  # Landing page feature chip – route animation
+│   │   │   ├── HotelChip.jsx          # Landing page feature chip – hotel animation
+│   │   │   ├── ClockChip.jsx          # Landing page feature chip – clock animation
+│   │   │   └── buttons/          # Reusable icon nav buttons
+│   │   │       ├── ChatButton.jsx
+│   │   │       ├── MapButton.jsx
+│   │   │       └── ItineraryButton.jsx
+│   │   ├── pages/
+│   │   │   ├── HomePage/         # Landing page (hero, feature chips)
+│   │   │   ├── ChatPage/         # Main trip-planning chat flow
+│   │   │   │   ├── ChatPage.jsx
+│   │   │   │   ├── InputAddress.jsx
+│   │   │   │   ├── InputBudget.jsx
+│   │   │   │   ├── InputCar.jsx
+│   │   │   │   ├── InputStops.jsx
+│   │   │   │   ├── ValidateLocation.jsx
+│   │   │   │   ├── getRoute.jsx
+│   │   │   │   ├── CalcBudget.jsx
+│   │   │   │   ├── startWorkFlow.jsx
+│   │   │   │   └── DatabaseUtils.jsx
+│   │   │   ├── MapPage/          # Interactive Mapbox route view
+│   │   │   ├── ItineraryPage/    # Day-by-day itinerary display
+│   │   │   │   └── generateItinerary.jsx  # Calls /generate-itinerary endpoint
+│   │   │   ├── AuthPages/        # Login and sign-up pages
+│   │   │   │   ├── LoginPage.jsx
+│   │   │   │   ├── SignUpPage.jsx
+│   │   │   │   ├── PasswordField.jsx
+│   │   │   │   └── PasswordRequirement.jsx
+│   │   │   ├── SettingsPage.jsx  # User settings page
+│   │   │   └── NotFoundPage.jsx  # 404 fallback
+│   │   ├── services/
+│   │   │   └── authService.ts    # Cognito auth helpers (TypeScript)
+│   │   └── states/
+│   │       └── UserDataContext.jsx  # React context for shared trip/user state
 │   ├── public/               # Static assets
 │   ├── index.html
 │   ├── package.json

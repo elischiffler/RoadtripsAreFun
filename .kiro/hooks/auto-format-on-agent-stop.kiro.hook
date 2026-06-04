@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Auto Format After Agent Response",
+  "description": "Runs make format from the repo root after every agent turn to keep Python (ruff) and frontend (prettier) code consistently formatted",
+  "version": "1",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "make format",
+    "timeout": 60
+  }
+}

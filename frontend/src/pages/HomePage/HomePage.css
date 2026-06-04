@@ -80,7 +80,9 @@
   padding: 13px 36px !important;
   border-radius: 8px !important;
   box-shadow: 0 4px 16px rgba(196, 135, 58, 0.35) !important;
-  transition: background-color 0.2s ease, transform 0.15s ease !important;
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease !important;
 }
 
 .hero-cta:hover {
@@ -107,7 +109,9 @@
   border: 1px solid var(--cream-dark);
   box-shadow: 0 1px 4px rgba(58, 42, 26, 0.08);
   cursor: default;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .feature-chip:hover {
@@ -129,8 +133,12 @@
 
 /* Route: wheel roll */
 @keyframes roll {
-  from { transform: rotate(0deg) translateX(0); }
-  to   { transform: rotate(360deg) translateX(4px); }
+  from {
+    transform: rotate(0deg) translateX(0);
+  }
+  to {
+    transform: rotate(360deg) translateX(4px);
+  }
 }
 
 .feature-chip--route:hover .chip-icon-wrapper svg {
@@ -139,11 +147,23 @@
 
 /* Hotel: pin drop bounce */
 @keyframes pinDrop {
-  0%   { transform: translateY(-8px); opacity: 0.4; }
-  55%  { transform: translateY(3px);  opacity: 1; }
-  72%  { transform: translateY(-3px); }
-  85%  { transform: translateY(1px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(-8px);
+    opacity: 0.4;
+  }
+  55% {
+    transform: translateY(3px);
+    opacity: 1;
+  }
+  72% {
+    transform: translateY(-3px);
+  }
+  85% {
+    transform: translateY(1px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .feature-chip--hotel:hover .chip-icon-wrapper svg {
@@ -152,10 +172,18 @@
 
 /* Itinerary: page flip */
 @keyframes pageFlip {
-  0%   { transform: rotateY(0deg); }
-  40%  { transform: rotateY(-70deg); }
-  60%  { transform: rotateY(-70deg); }
-  100% { transform: rotateY(0deg); }
+  0% {
+    transform: rotateY(0deg);
+  }
+  40% {
+    transform: rotateY(-70deg);
+  }
+  60% {
+    transform: rotateY(-70deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
 }
 
 .feature-chip--itinerary:hover .chip-icon-wrapper svg {

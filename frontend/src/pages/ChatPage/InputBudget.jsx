@@ -1,15 +1,14 @@
-import Slider from "@mui/material/Slider";
-import PropTypes from "prop-types";
+import Slider from '@mui/material/Slider';
+import PropTypes from 'prop-types';
 
 const BudgetSlider = ({ UserChatData, handleKeyDown }) => {
-
   const handleChange = (event, newValue) => {
     // Update the stops value in UserChatData
     UserChatData.hotelBudget = newValue;
   };
 
-// Function to format the value with a dollar sign
-const formatValue = (value) => {
+  // Function to format the value with a dollar sign
+  const formatValue = (value) => {
     return `$${value}`;
   };
 

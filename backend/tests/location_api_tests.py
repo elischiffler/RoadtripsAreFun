@@ -18,11 +18,13 @@ def _mock_location(address: str, lat: float = 34.05, lon: float = -118.24) -> Ma
 # Happy-path: address lookup
 # ---------------------------------------------------------------------------
 
+
 def test_post_location_by_address():
     """Returns 200 and the geocoded address when given a valid place name."""
     mock_loc = _mock_location(
         "Los Angeles, Los Angeles County, California, United States",
-        34.0522, -118.2437,
+        34.0522,
+        -118.2437,
     )
     with patch("app.routers.location_api.get_location", return_value=mock_loc):
         response = client.post(
@@ -40,11 +42,13 @@ def test_post_location_by_address():
 # Happy-path: coordinate reverse-geocode
 # ---------------------------------------------------------------------------
 
+
 def test_post_location_by_coordinates():
     """Returns 200 and an address when given valid lat/lon coordinates."""
     mock_loc = _mock_location(
         "Mount Lee Drive, Los Angeles, CA 90068, United States",
-        34.1338, -118.3217,
+        34.1338,
+        -118.3217,
     )
     with patch("app.routers.location_api.get_location", return_value=mock_loc):
         response = client.post(
@@ -64,6 +68,7 @@ def test_post_location_by_coordinates():
 # 404: geocoder returns None (unrecognised address)
 # ---------------------------------------------------------------------------
 
+
 def test_post_location_not_found():
     """Returns 404 when the geocoder cannot resolve the address."""
     with patch("app.routers.location_api.get_location", return_value=None):
@@ -77,6 +82,7 @@ def test_post_location_not_found():
 # ---------------------------------------------------------------------------
 # 400: malformed payloads (no external call needed)
 # ---------------------------------------------------------------------------
+
 
 def test_post_location_missing_location_key():
     """Returns 400 when the required 'location' key is absent."""

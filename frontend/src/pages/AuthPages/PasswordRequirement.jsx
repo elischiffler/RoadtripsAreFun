@@ -1,16 +1,12 @@
-import { Box, Typography } from "@mui/material";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
-import "./AuthPage.css";
-import PropTypes from "prop-types";
+import { Box, Typography } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import './AuthPage.css';
+import PropTypes from 'prop-types';
 
 const PasswordRequirement = ({ fulfilled, text }) => (
   <Box className="requirement">
-    {fulfilled ? (
-      <CheckIcon sx={{ color: "green" }} />
-    ) : (
-      <CloseIcon sx={{ color: "gray" }} />
-    )}
+    {fulfilled ? <CheckIcon sx={{ color: 'green' }} /> : <CloseIcon sx={{ color: 'gray' }} />}
     <Typography variant="body2">{text}</Typography>
   </Box>
 );

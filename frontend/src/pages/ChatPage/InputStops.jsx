@@ -1,8 +1,7 @@
-import Slider from "@mui/material/Slider";
-import PropTypes from "prop-types";
+import Slider from '@mui/material/Slider';
+import PropTypes from 'prop-types';
 
 const StopSlider = ({ UserChatData, handleKeyDown }) => {
-
   const handleChange = (event, newValue) => {
     // Update the stops value in UserChatData
     UserChatData.stops = newValue;

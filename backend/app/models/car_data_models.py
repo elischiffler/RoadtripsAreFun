@@ -1,9 +1,10 @@
 from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
+
 class Car(BaseModel):
     city_mpg: int
-    car_class: str = Field(alias='class') #Create an alias for class to be car_class
+    car_class: str = Field(alias="class")  # Create an alias for class to be car_class
     combination_mpg: int
     cylinders: Optional[int] = None
     displacement: Optional[float] = None

@@ -1,28 +1,27 @@
-import { Box, Button, Typography } from "@mui/material";import { Link, useNavigate } from "react-router-dom";
-import LogoButton from "../../components/LogoButton";
-import RouteIcon from "@mui/icons-material/Route";
-import SpinningWheelChip from "../../components/SpinningWheelChip";
-import HotelChip from "../../components/HotelChip";
-import ClockChip from "../../components/ClockChip";
-import "./HomePage.css";
+import { Box, Button, Typography } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import LogoButton from '../../components/LogoButton';
+import RouteIcon from '@mui/icons-material/Route';
+import SpinningWheelChip from '../../components/SpinningWheelChip';
+import HotelChip from '../../components/HotelChip';
+import ClockChip from '../../components/ClockChip';
+import './HomePage.css';
 
-const isAuthenticated = () => !!sessionStorage.getItem("accessToken");
-
-
+const isAuthenticated = () => !!sessionStorage.getItem('accessToken');
 
 export default function HomePage() {
   const navigate = useNavigate();
   const authenticated = isAuthenticated();
 
   const handleGetStartedClick = () => {
-    navigate(authenticated ? "/chat" : "/login");
+    navigate(authenticated ? '/chat' : '/login');
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem("accessToken");
-    sessionStorage.removeItem("idToken");
-    sessionStorage.removeItem("refreshToken");
-    navigate("/");
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('idToken');
+    sessionStorage.removeItem('refreshToken');
+    navigate('/');
   };
 
   return (
@@ -35,16 +34,12 @@ export default function HomePage() {
             <>
               <Button
                 variant="outlined"
-                onClick={() => navigate("/chat")}
+                onClick={() => navigate('/chat')}
                 className="nav-btn nav-btn--outline"
               >
                 Open App
               </Button>
-              <Button
-                variant="contained"
-                onClick={handleLogout}
-                className="nav-btn nav-btn--solid"
-              >
+              <Button variant="contained" onClick={handleLogout} className="nav-btn nav-btn--solid">
                 Logout
               </Button>
             </>
@@ -88,10 +83,7 @@ export default function HomePage() {
 
         {/* ── Feature chips ── */}
         <Box className="chip-row">
-          <SpinningWheelChip
-            label="Route generation"
-            icon={<RouteIcon fontSize="small" />}
-          />
+          <SpinningWheelChip label="Route generation" icon={<RouteIcon fontSize="small" />} />
           <HotelChip label="Hotel finder" />
           <ClockChip label="Itinerary builder" />
         </Box>

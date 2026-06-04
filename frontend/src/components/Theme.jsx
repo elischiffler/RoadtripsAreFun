@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from '@mui/material';
 
 /**
  * Earthy adventure palette
@@ -14,63 +14,63 @@ const customTheme = createTheme({
   palette: {
     // --- surface neutrals ---
     cream: {
-      main: "#F5EFE6",   // warm off-white
-      light: "#FBF8F3",  // near-white page background
-      dark: "#E8DDD0",   // slightly deeper warm tone
+      main: '#F5EFE6', // warm off-white
+      light: '#FBF8F3', // near-white page background
+      dark: '#E8DDD0', // slightly deeper warm tone
     },
     sand: {
-      main: "#C4A882",   // warm tan / medium sand
-      light: "#D9C4A8",  // lighter sand
-      dark: "#A08060",   // deeper sand / bark edge
+      main: '#C4A882', // warm tan / medium sand
+      light: '#D9C4A8', // lighter sand
+      dark: '#A08060', // deeper sand / bark edge
     },
     bark: {
-      main: "#7A5C44",   // rich medium brown
-      light: "#9C7A5E",  // lighter bark
-      dark: "#5C3D2E",   // deep espresso brown
+      main: '#7A5C44', // rich medium brown
+      light: '#9C7A5E', // lighter bark
+      dark: '#5C3D2E', // deep espresso brown
     },
     soil: {
-      main: "#3B2A1A",   // near-black warm brown (text)
+      main: '#3B2A1A', // near-black warm brown (text)
     },
 
     // --- action colors ---
     forest: {
-      main: "#C4873A",   // amber (sole accent)
-      light: "#D9A55E",
-      dark: "#9E6420",
-      contrastText: "#FBF8F3",
+      main: '#C4873A', // amber (sole accent)
+      light: '#D9A55E',
+      dark: '#9E6420',
+      contrastText: '#FBF8F3',
     },
     amber: {
-      main: "#C4873A",
-      light: "#D9A55E",
-      dark: "#9E6420",
+      main: '#C4873A',
+      light: '#D9A55E',
+      dark: '#9E6420',
     },
 
     // --- MUI semantic aliases ---
     primary: {
-      main: "#C4873A",
-      light: "#D9A55E",
-      dark: "#9E6420",
-      contrastText: "#FBF8F3",
+      main: '#C4873A',
+      light: '#D9A55E',
+      dark: '#9E6420',
+      contrastText: '#FBF8F3',
     },
     background: {
-      default: "#FBF8F3",
-      paper: "#F5EFE6",
+      default: '#FBF8F3',
+      paper: '#F5EFE6',
     },
     text: {
-      primary: "#3B2A1A",
-      secondary: "#7A5C44",
-      disabled: "#A08060",
+      primary: '#3B2A1A',
+      secondary: '#7A5C44',
+      disabled: '#A08060',
     },
 
     // --- legacy aliases so existing CSS vars still resolve ---
     white: {
-      main: "#E8DDD0",   // maps to former --white-main  → warm light tan
-      light: "#FBF8F3",  // maps to former --white-light → near-white cream
-      dark: "#C4A882",   // maps to former --white-dark  → mid sand
-      black: "#5C3D2E",  // maps to former --white-black → deep brown
+      main: '#E8DDD0', // maps to former --white-main  → warm light tan
+      light: '#FBF8F3', // maps to former --white-light → near-white cream
+      dark: '#C4A882', // maps to former --white-dark  → mid sand
+      black: '#5C3D2E', // maps to former --white-black → deep brown
     },
     green: {
-      main: "#C4873A",   // maps to --green-main → amber
+      main: '#C4873A', // maps to --green-main → amber
     },
   },
 
@@ -80,12 +80,12 @@ const customTheme = createTheme({
     h1: {
       fontFamily: "'Playfair Display', Georgia, serif",
       fontWeight: 700,
-      letterSpacing: "-0.02em",
+      letterSpacing: '-0.02em',
     },
     h2: {
       fontFamily: "'Playfair Display', Georgia, serif",
       fontWeight: 700,
-      letterSpacing: "-0.01em",
+      letterSpacing: '-0.01em',
     },
     h3: {
       fontFamily: "'Playfair Display', Georgia, serif",
@@ -98,7 +98,7 @@ const customTheme = createTheme({
     h5: {
       fontFamily: "'Inter', sans-serif",
       fontWeight: 500,
-      letterSpacing: "0.01em",
+      letterSpacing: '0.01em',
     },
     h6: {
       fontFamily: "'Inter', sans-serif",
@@ -117,8 +117,8 @@ const customTheme = createTheme({
     button: {
       fontFamily: "'Inter', sans-serif",
       fontWeight: 600,
-      letterSpacing: "0.04em",
-      textTransform: "none",
+      letterSpacing: '0.04em',
+      textTransform: 'none',
     },
   },
 
@@ -130,18 +130,18 @@ const customTheme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: "8px",
-          padding: "10px 24px",
-          boxShadow: "none",
-          "&:hover": {
-            boxShadow: "0 4px 12px rgba(58, 42, 26, 0.2)",
+          borderRadius: '8px',
+          padding: '10px 24px',
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(58, 42, 26, 0.2)',
           },
         },
         containedPrimary: {
-          backgroundColor: "#C4873A",
-          color: "#FBF8F3",
-          "&:hover": {
-            backgroundColor: "#9E6420",
+          backgroundColor: '#C4873A',
+          color: '#FBF8F3',
+          '&:hover': {
+            backgroundColor: '#9E6420',
           },
         },
       },
@@ -149,17 +149,17 @@ const customTheme = createTheme({
     MuiTextField: {
       styleOverrides: {
         root: {
-          "& .MuiOutlinedInput-root": {
-            borderRadius: "8px",
-            backgroundColor: "#FBF8F3",
-            "& fieldset": {
-              borderColor: "#C4A882",
+          '& .MuiOutlinedInput-root': {
+            borderRadius: '8px',
+            backgroundColor: '#FBF8F3',
+            '& fieldset': {
+              borderColor: '#C4A882',
             },
-            "&:hover fieldset": {
-              borderColor: "#7A5C44",
+            '&:hover fieldset': {
+              borderColor: '#7A5C44',
             },
-            "&.Mui-focused fieldset": {
-              borderColor: "#4A6741",
+            '&.Mui-focused fieldset': {
+              borderColor: '#4A6741',
             },
           },
         },
@@ -168,7 +168,7 @@ const customTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: "#F5EFE6",
+          backgroundColor: '#F5EFE6',
         },
       },
     },

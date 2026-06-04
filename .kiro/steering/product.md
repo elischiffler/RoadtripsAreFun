@@ -13,7 +13,7 @@
 - **Itinerary building**: Converts a finalized route into a day-by-day itinerary with times and addresses.
 - **Chat persistence**: Stores and retrieves user chat sessions (route state + message history) in Neon Postgres.
 - **Location utilities**: Resolves coordinates to addresses and vice versa using OpenCage geocoding and Google Places.
-- **Car data**: Provides car-related data for trip planning (fuel estimates, etc.).
+- **Car data**: Fetches fuel efficiency (MPG) and current national average gas prices from the FuelEconomy.gov API to support budget calculations.
 
 ## Users
 

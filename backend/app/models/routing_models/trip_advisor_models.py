@@ -2,6 +2,8 @@ from typing import Any, Optional, Dict
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
+
+
 class Trip_Advisor_Error(BaseModel):
     message: str
     type: str
@@ -100,7 +102,9 @@ class Trip_Advisor_Information(BaseModel):
 
     groups: Optional[list[Trip_Advisor_Group]] = None
     styles: Optional[list[str]] = None
-    neighborhood_info: Optional[list[Trip_Advisor_Subcategory]] = None  # List of nearby neighborhoods
+    neighborhood_info: Optional[list[Trip_Advisor_Subcategory]] = (
+        None  # List of nearby neighborhoods
+    )
 
     class Trip_Advisor_TripType(BaseModel):
         name: str
@@ -125,4 +129,4 @@ class Trip_Advisor_Information(BaseModel):
     awards: Optional[list[Trip_Advisor_Award]] = None
     error: Optional[Trip_Advisor_Error] = None
 
-    model_config = ConfigDict(extra='allow')  # Ignore any extra fields not defined in the model
+    model_config = ConfigDict(extra="allow")  # Ignore any extra fields not defined in the model

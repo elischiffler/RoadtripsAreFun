@@ -1,30 +1,22 @@
-import { useState } from "react";
-import { signIn } from "../../services/authService";
-import {
-  Box,
-  Container,
-  TextField,
-  Button,
-  Typography,
-} from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
-import LogoButton from "../../components/LogoButton";
-import "./AuthPage.css";
-import PasswordField from "./PasswordField";
+import { useState } from 'react';
+import { signIn } from '../../services/authService';
+import { Box, Container, TextField, Button, Typography } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import LogoButton from '../../components/LogoButton';
+import './AuthPage.css';
+import PasswordField from './PasswordField';
 
 const LoginPage = () => {
-
   // initializes all login dynamic state variable
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   // visibility toggle helper function
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
 
   // navigation helper function
   const navigate = useNavigate();
@@ -35,13 +27,11 @@ const LoginPage = () => {
     try {
       const authResult = await signIn(username, password);
       if (authResult) {
-        navigate("/");
+        navigate('/');
       }
     } catch (error) {
-      setError(
-        "Failed to sign in. Please check your credentials and try again."
-      );
-      console.error("Error signing in: ", error);
+      setError('Failed to sign in. Please check your credentials and try again.');
+      console.error('Error signing in: ', error);
     }
   };
 
@@ -77,27 +67,18 @@ const LoginPage = () => {
               className="text-field"
             />
             {error && (
-              <Typography
-                color="error"
-                variant="body2"
-                className="error-message"
-              >
+              <Typography color="error" variant="body2" className="error-message">
                 {error}
               </Typography>
             )}
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              className="submit-button"
-            >
+            <Button type="submit" variant="contained" fullWidth className="submit-button">
               Log In
             </Button>
           </form>
           {/* Sign up redirection */}
           <Typography variant="body2" align="center" className="link-text">
-            Don&apos;t have an account?{" "}
-            <Link to="/signup" style={{ textDecoration: "underline" }}>
+            Don&apos;t have an account?{' '}
+            <Link to="/signup" style={{ textDecoration: 'underline' }}>
               Sign up
             </Link>
           </Typography>

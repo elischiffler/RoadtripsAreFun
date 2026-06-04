@@ -1,5 +1,5 @@
-import { createContext, useState } from "react";
-import PropTypes from "prop-types";
+import { createContext, useState } from 'react';
+import PropTypes from 'prop-types';
 
 const UserDataContext = createContext();
 
@@ -10,14 +10,14 @@ class Data {
 }
 
 class ChatLogs {
-  constructor(chatdata = [], currentId = 1,) {
+  constructor(chatdata = [], currentId = 1) {
     this.chatdata = chatdata; // Start with an empty array
     this.currentId = currentId;
   }
 
   // Method to find a specific ChatData by chatId
   getChatDataById(chatId) {
-    return this.chatdata.find(chat => chat.chatId === chatId);
+    return this.chatdata.find((chat) => chat.chatId === chatId);
   }
 
   // Method to add a new ChatData instance
@@ -28,30 +28,30 @@ class ChatLogs {
   // Method to create and add a new ChatData instance
   createChatData(chatId) {
     const newChatData = new ChatData(chatId);
-    const index = this.chatdata.findIndex(chat => chat.chatId === chatId);
-    if(index !== -1){ // check if there already is this chatId
+    const index = this.chatdata.findIndex((chat) => chat.chatId === chatId);
+    if (index !== -1) {
+      // check if there already is this chatId
       this.chatdata[index] = newChatData; // replace the outdated version
-    }
-    else{
+    } else {
       this.addChatData(newChatData); // add a new instance to the end of the chat list
     }
     return newChatData;
   }
 
-  removeChatData(chatId){
-    this.chatdata = this.chatdata.filter(ChatData => ChatData.chatId !== chatId);
+  removeChatData(chatId) {
+    this.chatdata = this.chatdata.filter((ChatData) => ChatData.chatId !== chatId);
   }
 }
 
-
 class ChatData {
-  constructor(chatId = null, // Constructor gives initial values if not provided/ defines possible input parameters
+  constructor(
+    chatId = null, // Constructor gives initial values if not provided/ defines possible input parameters
     action = null,
-    locationType = "start",
+    locationType = 'start',
     startCoords = null,
-    startAddress = new Array(4).fill(""),
+    startAddress = new Array(4).fill(''),
     endCoords = null,
-    endAddress = new Array(4).fill(""),
+    endAddress = new Array(4).fill(''),
     stops = 1,
     showInputBar = false,
     showStopSlider = false,
@@ -66,7 +66,7 @@ class ChatData {
     loading = false,
     hotelBudget = null,
     carBudget = 0,
-    carDetails = new Array(3).fill(""),
+    carDetails = new Array(3).fill(''),
     budget = 0,
     isComplete = false
   ) {
@@ -97,7 +97,7 @@ class ChatData {
   }
 }
 
-export {Data, ChatLogs, ChatData};
+export { Data, ChatLogs, ChatData };
 
 export const UserDataProvider = ({ children }) => {
   // Initializes global instance of UserData
@@ -105,7 +105,7 @@ export const UserDataProvider = ({ children }) => {
   const [chats, setChats] = useState([]);
 
   return (
-    <UserDataContext.Provider value={{UserData, setUserData, chats, setChats}}>
+    <UserDataContext.Provider value={{ UserData, setUserData, chats, setChats }}>
       {children}
     </UserDataContext.Provider>
   );

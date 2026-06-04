@@ -1,0 +1,19 @@
+# Ruff config for backend/
+target-version = "py39"
+line-length = 100
+
+[lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes (unused imports, undefined names, etc.)
+    "I",   # isort (import sorting)
+    "UP",  # pyupgrade (modernize syntax)
+]
+ignore = [
+    "E501",  # line too long — handled by formatter
+]
+
+[format]
+quote-style = "double"
+indent-style = "space"

@@ -1,7 +1,7 @@
-import { Button, Box, Typography, Tooltip } from "@mui/material";
-import MapIcon from "@mui/icons-material/Map";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
+import { Button, Box, Typography, Tooltip } from '@mui/material';
+import MapIcon from '@mui/icons-material/Map';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 // MapButton component that conditionally renders a link to the map page
 const MapButton = ({ route }) => {
@@ -23,7 +23,7 @@ const MapButton = ({ route }) => {
 
   return (
     <Link
-      to={route ? "/map" : "#"} // Prevent navigation if 'route' is not provided
+      to={route ? '/map' : '#'} // Prevent navigation if 'route' is not provided
       className="link"
       onClick={(e) => {
         if (!route) e.preventDefault(); // Disable link if no route
@@ -32,9 +32,7 @@ const MapButton = ({ route }) => {
       {/* Conditionally wrap the button in a Tooltip if the button is disabled */}
       {!route ? (
         <Tooltip title="Please answer the questions first" placement="right" arrow>
-          <span>
-          {button}
-          </span>
+          <span>{button}</span>
         </Tooltip>
       ) : (
         button

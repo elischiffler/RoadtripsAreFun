@@ -1,14 +1,14 @@
-import { createBrowserRouter, Outlet } from "react-router-dom";
-import AuthWrapper from "./components/AuthWrapper";
-import GlobalHeader from "./components/GlobalHeader";
-import HomePage from "./pages/HomePage/HomePage";
-import ItineraryPage from "./pages/ItineraryPage/ItineraryPage";
-import LoginPage from "./pages/AuthPages/LoginPage";
-import ChatPage from "./pages/ChatPage/ChatPage";
-import MapPage from "./pages/MapPage/MapPage";
-import SettingsPage from "./pages/SettingsPage";
-import SignUpPage from "./pages/AuthPages/SignUpPage";
-import NotFoundPage from "./pages/NotFoundPage";
+import { createBrowserRouter, Outlet } from 'react-router-dom';
+import AuthWrapper from './components/AuthWrapper';
+import GlobalHeader from './components/GlobalHeader';
+import HomePage from './pages/HomePage/HomePage';
+import ItineraryPage from './pages/ItineraryPage/ItineraryPage';
+import LoginPage from './pages/AuthPages/LoginPage';
+import ChatPage from './pages/ChatPage/ChatPage';
+import MapPage from './pages/MapPage/MapPage';
+import SettingsPage from './pages/SettingsPage';
+import SignUpPage from './pages/AuthPages/SignUpPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 // Root layout — GlobalHeader overlays every page
 function RootLayout() {
@@ -25,11 +25,11 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       {
-        path: "/",
+        path: '/',
         element: <HomePage />,
       },
       {
-        path: "itinerary",
+        path: 'itinerary',
         element: (
           <AuthWrapper>
             <ItineraryPage />
@@ -37,11 +37,11 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "login",
+        path: 'login',
         element: <LoginPage />,
       },
       {
-        path: "map",
+        path: 'map',
         element: (
           <AuthWrapper>
             <MapPage />
@@ -49,7 +49,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "settings",
+        path: 'settings',
         element: (
           <AuthWrapper>
             <SettingsPage />
@@ -57,7 +57,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "chat",
+        path: 'chat',
         element: (
           <AuthWrapper>
             <ChatPage />
@@ -65,11 +65,11 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "signup",
+        path: 'signup',
         element: <SignUpPage />,
       },
       {
-        path: "*",
+        path: '*',
         element: <NotFoundPage />,
       },
     ],

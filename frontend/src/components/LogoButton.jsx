@@ -1,17 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import { Box } from "@mui/material";
-import "./LogoButton.css";
+import { useNavigate } from 'react-router-dom';
+import { Box } from '@mui/material';
+import './LogoButton.css';
 
 export default function LogoButton() {
   const navigate = useNavigate();
 
   return (
-    <Box
-      className="logo-btn"
-      onClick={() => navigate("/")}
-      role="button"
-      aria-label="Go to home"
-    >
+    <Box className="logo-btn" onClick={() => navigate('/')} role="button" aria-label="Go to home">
       <svg
         className="logo-svg"
         width="64"
@@ -21,14 +16,8 @@ export default function LogoButton() {
         xmlns="http://www.w3.org/2000/svg"
       >
         {/* ── Mountain ── */}
-        <polygon
-          points="10,32 24,10 38,32"
-          className="logo-mountain logo-mountain--back"
-        />
-        <polygon
-          points="28,32 44,14 60,32"
-          className="logo-mountain logo-mountain--front"
-        />
+        <polygon points="10,32 24,10 38,32" className="logo-mountain logo-mountain--back" />
+        <polygon points="28,32 44,14 60,32" className="logo-mountain logo-mountain--front" />
 
         {/* ── Scrolling road (clipped) ── */}
         <clipPath id="road-clip">
@@ -39,7 +28,7 @@ export default function LogoButton() {
           <rect x="0" y="30" width="64" height="6" className="logo-road" />
           {/* Dashed centre line — two copies side by side so the scroll loops */}
           <g className="logo-road-dashes">
-            <rect x="2"  y="32" width="8" height="2" rx="1" className="logo-dash" />
+            <rect x="2" y="32" width="8" height="2" rx="1" className="logo-dash" />
             <rect x="18" y="32" width="8" height="2" rx="1" className="logo-dash" />
             <rect x="34" y="32" width="8" height="2" rx="1" className="logo-dash" />
             <rect x="50" y="32" width="8" height="2" rx="1" className="logo-dash" />

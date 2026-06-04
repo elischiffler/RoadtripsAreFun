@@ -40,10 +40,19 @@
   top: 104px;
   overflow-y: auto;
   height: calc(100vh - 112px);
-  &::-webkit-scrollbar { width: 8px; }
-  &::-webkit-scrollbar-track { background: var(--cream-main); }
-  &::-webkit-scrollbar-thumb { background: var(--sand-main); border-radius: 10px; }
-  &::-webkit-scrollbar-thumb:hover { background: var(--bark-main); }
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: var(--cream-main);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--sand-main);
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--bark-main);
+  }
 }
 
 .day-box {
