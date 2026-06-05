@@ -98,8 +98,8 @@ export const stepToProgress = (step) => {
     fetching_budget: 4,
     budget_input: 4,
     car_input: 4,
-    prefetching_route: 4,
-    generating_route: 4,
+    prefetching_route: 5,
+    generating_route: 5,
     done: 5,
     error: 1,
   };
@@ -117,6 +117,7 @@ export const stepToProgress = (step) => {
  * @param {object}   opts.chatsRef      – ref to live chats array
  * @param {string}   opts.accessToken
  * @param {object}   opts.ChatLogsData  – ChatLogs instance
+ * @param {function} [opts.onChatReady] – called with (chatId, title) when destination confirmed
  */
 export function useTripWorkflow({
   chatId,
@@ -126,6 +127,7 @@ export function useTripWorkflow({
   chatsRef,
   accessToken,
   ChatLogsData,
+  onChatReady,
 }) {
   // ── Derived initial step from savedData (resume support) ─────────────────
   const deriveInitialStep = () => {
@@ -278,8 +280,17 @@ export function useTripWorkflow({
         setEndConfirmed(result);
         bot(`Destination: ${result.address}`);
 
-        // Rename the chat in the list — do this before persisting so the title is correct
-        renameChatToRoute(chatIdRef.current, startConfirmed, result, setChats);
+        const endCity = result.address?.split(',').map((p) => p.trim())[1] ?? result.address;
+        const chatTitle = `Trip to ${endCity}`;
+
+        // Notify ChatPage that this chat is now real (adds it to the sidebar if pending,
+        // or updates the title if it was already there)
+        if (onChatReady) {
+          onChatReady(chatIdRef.current, chatTitle);
+        } else {
+          // Fallback: rename directly (e.g. when used without ChatPage wrapper)
+          renameChatToRoute(chatIdRef.current, startConfirmed, result, setChats);
+        }
 
         // Build snapshot with the validated result directly (don't rely on state update timing)
         const snap = buildSnapshot();
@@ -287,14 +298,18 @@ export function useTripWorkflow({
         snap.endCoords = [result.latitude, result.longitude];
         snap.startConfirmed = startConfirmed; // ensure we have the validated object
 
-        // Find the chat log — check chatsRef first, fall back to updated title
-        const chatLog = chatsRef.current.find((c) => c.id === chatIdRef.current) ?? null;
+        // Find the chat log in chatsRef (it's already there since we add to chats on creation)
+        const chatLog = chatsRef.current.find((c) => c.id === chatIdRef.current) ?? {
+          id: chatIdRef.current,
+          title: chatTitle,
+          messages: [],
+        };
 
         if (chatLog) {
-          // Fire-and-forget — don't block the workflow on the DB write
-          const endCity = result.address?.split(',').map((p) => p.trim())[1] ?? result.address;
-          const namedLog = { ...chatLog, title: `Trip to ${endCity}` };
-          createChat(accessToken, snap, namedLog).catch(() => {});
+          // Await the DB write before advancing — fetching_initial calls updateUserData
+          // immediately, which will 404 if createChat hasn't landed yet.
+          const namedLog = { ...chatLog, title: chatTitle };
+          await createChat(accessToken, snap, namedLog);
         }
 
         setStep('fetching_initial');

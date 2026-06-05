@@ -29,6 +29,7 @@ const WorkflowPanel = ({
   activeMessages,
   chatEndRef,
   savedData,
+  onChatReady,
 }) => {
   const { step, inputMode, locationVariant, submit, route, itinerary, hotelBudget } =
     useTripWorkflow({
@@ -39,6 +40,7 @@ const WorkflowPanel = ({
       chatsRef,
       accessToken,
       ChatLogsData,
+      onChatReady,
     });
 
   const handleLocationSubmit = (text) =>
@@ -221,13 +223,19 @@ const ChatPage = () => {
   const [isFetchingChats, setIsFetchingChats] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const chatEndRef = useRef(null);
+  // Holds a { id, title, messages } for a new trip that hasn't had its destination confirmed yet.
+  // It lives outside `chats` until onChatReady fires so it doesn't appear in the sidebar prematurely.
+  const pendingChatRef = useRef(null);
 
   // Live messages always read from `chats` — never a stale snapshot
   const activeMessages = chats.find((c) => c.id === selectedChatId)?.messages ?? initialMessage;
 
   // Seed chats state on mount
   useEffect(() => {
-    setChats((prev) => (prev.length === 0 ? [freshChat] : prev));
+    if (chats.length === 0) {
+      setChats([freshChat]);
+      pendingChatRef.current = freshChat;
+    }
     // Re-sync chatsRef from context on every mount (covers navigation remounts)
     chatsRef.current = chats.length > 0 ? chats : [freshChat];
     // Keep currentId in sync so MapPage/ItineraryPage can find the right chat
@@ -283,6 +291,8 @@ const ChatPage = () => {
             freshChatData.chatId = newId;
             const updatedFreshChat = { ...freshChat, id: newId, title: 'New Trip' };
             prevChats.UserData.chatlogs.createChatData(newId);
+            // Mark the fresh chat as pending — it won't appear in TripSearch until destination confirmed
+            pendingChatRef.current = updatedFreshChat;
             setChats([...completeChats, updatedFreshChat]);
             chatsRef.current = [...completeChats, updatedFreshChat];
 
@@ -345,8 +355,23 @@ const ChatPage = () => {
     const isVirgin = (chat) =>
       chat.title === 'New Trip' && !chat.messages?.some((m) => m.sender === 'user');
 
-    // If any trip in the list is already virgin, switch to it
-    const existingVirgin = chatsRef.current.find(isVirgin);
+    // If there's already a pending (unconfirmed) trip, reuse it if still virgin
+    if (pendingChatRef.current) {
+      const pending = pendingChatRef.current;
+      // Already on it and it's still fresh — nothing to do
+      if (isVirgin(pending) && pending.id === selectedChatId) return;
+      if (isVirgin(pending)) {
+        setSavedData(null);
+        setSelectedChatIdPersisted(pending.id);
+        setWorkflowKey((k) => k + 1);
+        return;
+      }
+    }
+
+    // If any confirmed trip in the list is still virgin, switch to it
+    const existingVirgin = chatsRef.current.find(
+      (c) => isVirgin(c) && c.id !== (pendingChatRef.current?.id ?? -1)
+    );
     if (existingVirgin) {
       setSavedData(null);
       setSelectedChatIdPersisted(existingVirgin.id);
@@ -354,10 +379,15 @@ const ChatPage = () => {
       return;
     }
 
-    const maxId = chatsRef.current.reduce((max, c) => Math.max(max, c.id), 0);
+    const maxId = Math.max(
+      chatsRef.current.reduce((max, c) => Math.max(max, c.id), 0),
+      pendingChatRef.current?.id ?? 0
+    );
     const newId = maxId + 1;
     ChatLogsData.createChatData(newId);
     const newChat = { id: newId, title: 'New Trip', messages: initialMessage };
+    // Add to chats so messages render, but mark as pending so TripSearch hides it
+    pendingChatRef.current = newChat;
     setChats((prev) => [...prev, newChat]);
     chatsRef.current = [...chatsRef.current, newChat];
     setSavedData(null);
@@ -365,29 +395,35 @@ const ChatPage = () => {
     setWorkflowKey((k) => k + 1);
   };
 
+  // Called by useTripWorkflow when the end destination is confirmed.
+  // At that point the chat has a real title and should appear in the TripSearch sidebar.
+  const handleChatReady = (chatId, chatTitle) => {
+    // Clear the pending ref — this chat is now confirmed and visible in TripSearch
+    if (pendingChatRef.current?.id === chatId) {
+      pendingChatRef.current = null;
+    }
+    // Update the title (it was 'New Trip' until now)
+    if (chatTitle) {
+      setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, title: chatTitle } : c)));
+    }
+  };
+
   const handleDeleteChat = async (chatId) => {
     const remaining = chatsRef.current.filter((c) => c.id !== chatId);
     ChatLogsData.removeChatData(chatId);
 
-    if (remaining.length === 0) {
-      const newId = 1;
-      ChatLogsData.createChatData(newId);
-      const newChat = { id: newId, title: 'New Trip', messages: initialMessage };
-      setChats([newChat]);
-      chatsRef.current = [newChat];
-      setSelectedChatIdPersisted(newId);
-      setWorkflowKey((k) => k + 1);
-      await deleteChat(accessToken, chatId);
-      // No createChat here — the workflow will create the row when the user confirms their destination
-    } else {
-      setChats(remaining);
-      chatsRef.current = remaining;
-      await deleteChat(accessToken, chatId);
-      if (selectedChatIdRef.current === chatId) {
-        const next = remaining[remaining.length - 1];
-        setSelectedChatIdPersisted(next.id);
-        setWorkflowKey((k) => k + 1);
-      }
+    // If we're deleting the pending (unconfirmed) chat, clear the ref
+    if (pendingChatRef.current?.id === chatId) {
+      pendingChatRef.current = null;
+    }
+
+    setChats(remaining);
+    chatsRef.current = remaining;
+    await deleteChat(accessToken, chatId);
+
+    if (selectedChatIdRef.current === chatId) {
+      // The active chat was deleted — redirect to a new virgin trip
+      handleNewChat();
     }
   };
 
@@ -395,7 +431,7 @@ const ChatPage = () => {
     <Box className="page-container">
       {searchOpen && (
         <TripSearch
-          chats={chats}
+          chats={chats.filter((c) => c.id !== pendingChatRef.current?.id)}
           selectedChatId={selectedChatId}
           isFetchingChats={isFetchingChats}
           getChatInfo={(cid) => {
@@ -464,6 +500,7 @@ const ChatPage = () => {
         activeMessages={activeMessages}
         chatEndRef={chatEndRef}
         savedData={savedData}
+        onChatReady={handleChatReady}
       />
     </Box>
   );

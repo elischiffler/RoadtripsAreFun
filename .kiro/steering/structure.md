@@ -67,7 +67,8 @@ MyRoadtrip/
 │   │   │   └── buttons/          # Reusable icon nav buttons
 │   │   │       ├── ChatButton.jsx
 │   │   │       ├── MapButton.jsx
-│   │   │       └── ItineraryButton.jsx
+│   │   │       ├── ItineraryButton.jsx
+│   │   │       └── ProgressRevealIcon.jsx  # Circular sweep overlay; reveals icon as progress 0→1
 │   │   ├── pages/
 │   │   │   ├── HomePage/         # Landing page (hero, feature chips)
 │   │   │   ├── ChatPage/         # Main trip-planning chat flow
@@ -86,6 +87,7 @@ MyRoadtrip/
 │   │   │   │   └── DatabaseUtils.jsx     # createChat / updateUserData / initializeUserData
 │   │   │   ├── MapPage/          # Interactive Mapbox route view
 │   │   │   ├── ItineraryPage/    # Day-by-day itinerary display
+│   │   │   │   ├── ItineraryPage.jsx      # Renders day/stop cards from itinerary context; floating nav buttons
 │   │   │   │   └── generateItinerary.jsx  # Calls /generate-itinerary endpoint
 │   │   │   ├── AuthPages/        # Login and sign-up pages
 │   │   │   │   ├── LoginPage.jsx

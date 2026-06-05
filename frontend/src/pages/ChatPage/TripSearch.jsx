@@ -7,19 +7,12 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import PropTypes from 'prop-types';
 import './TripSearch.css';
 
-// Thin 5-segment bar — no labels, just colour
-const TripBar = ({ step }) => (
-  <Box className="ts-bar">
-    {[1, 2, 3, 4, 5].map((s) => (
-      <Box
-        key={s}
-        className={`ts-seg${s < step ? ' ts-seg--done' : ''}${s === step ? ' ts-seg--active' : ''}`}
-      />
-    ))}
-  </Box>
+// Single-dot progress light — color shifts from sand → amber as trip advances
+const ProgressLight = ({ step }) => (
+  <Box className={`ts-light ts-light--step-${step}`} title={`Progress: ${step} / 5`} />
 );
 
-TripBar.propTypes = { step: PropTypes.number.isRequired };
+ProgressLight.propTypes = { step: PropTypes.number.isRequired };
 
 const TripSearch = ({
   chats,
@@ -115,18 +108,18 @@ const TripSearch = ({
                       {isCurrentTrip && <Box className="ts-current-dot" title="Current trip" />}
                     </Box>
 
-                    {/* Route or progress bar */}
-                    {startCity || endCity ? (
+                    {/* Route row */}
+                    {(startCity || endCity) && (
                       <Box className="ts-route-row">
                         <Typography className="ts-city">{startCity ?? '…'}</Typography>
                         <ArrowForwardIcon className="ts-arrow" />
                         <Typography className="ts-city">{endCity ?? '…'}</Typography>
-                        <TripBar step={step} />
                       </Box>
-                    ) : (
-                      <TripBar step={step} />
                     )}
                   </Box>
+
+                  {/* Progress light — direct child of ts-result so it's vertically centred */}
+                  <ProgressLight step={step} />
 
                   <IconButton
                     size="small"

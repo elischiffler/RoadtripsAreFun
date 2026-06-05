@@ -252,8 +252,19 @@ def restore_legs(legs: list[Any]):
                 leg_id = leg["steps"][0]["geometry"]["coordinates"]
                 cur.execute("SELECT * FROM steps WHERE leg_id = %s ORDER BY step_id", (leg_id,))
                 steps_coords = cur.fetchall()
-                for i, step_row in enumerate(steps_coords):
-                    leg["steps"][i]["geometry"]["coordinates"] = step_row["coordinates"]
+                num_steps = len(leg["steps"])
+                for step_row in steps_coords:
+                    idx = step_row["step_id"]
+                    # Guard: only restore if the step index still exists in the leg
+                    if idx < num_steps:
+                        leg["steps"][idx]["geometry"]["coordinates"] = step_row["coordinates"]
+                    else:
+                        logger.warning(
+                            "restore_legs: DB has step_id=%s for leg_id=%s but leg only has %d steps — skipping",
+                            idx,
+                            leg_id,
+                            num_steps,
+                        )
                 rest_legs.append(leg)
         return rest_legs
     finally:

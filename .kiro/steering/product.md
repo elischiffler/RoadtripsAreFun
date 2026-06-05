@@ -1,4 +1,4 @@
-# Product: MyRoadtrip – JourneyGenie
+# Product: MyRoadtrip – RoadtripsAreFun
 
 **MyRoadtrip** is a road trip planning application hosted at [github.com/elischiffler/MyRoadtrip](https://github.com/elischiffler/MyRoadtrip). It is a personal monorepo containing two services:
 
@@ -22,4 +22,4 @@ End users plan road trips through the `frontend/` React app. The backend is cons
 ## Deployment
 
 - **Backend** — deployed on [Render](https://dashboard.render.com/web/srv-cqvu44jv2p9s739hhb60) (web service). Runs on port 8000.
-- **Frontend** — deployed on [Vercel](https://vercel.com/eli-schifflers-projects/rp-ui).
+- **Frontend** — deployed on [Vercel](https://roadtripsarefun.vercel.app).

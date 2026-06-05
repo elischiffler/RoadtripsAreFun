@@ -34,7 +34,9 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 24px max(20px, calc(50% - 380px));
+  /* Left padding always clears the FAB column (20px left + 40px button + 12px gap = 72px).
+     Right padding stays symmetric until the centering formula takes over. */
+  padding: 24px max(72px, calc(50% - 380px)) 24px max(72px, calc(50% - 380px));
   overflow-y: auto;
   box-sizing: border-box;
   max-width: 100%;

@@ -65,12 +65,20 @@ pytest
 
 ### Environment Variables
 All secrets are loaded from `.env` (never committed). Required keys:
+
+**Backend:**
 - `DATABASE_URL`
 - `MAPBOX_API`
 - `TRIPADVISOR_API`
 - `OPENCAGE_KEY`
 - `AMADEUS_KEY`, `AMADEUS_SECRET`
 - `CAR_DATA_API`
+
+**Frontend (Vite):**
+- `VITE_BACKEND_SERVER` – base URL of the backend API
+- `VITE_CLIENT_ID` – Cognito app client ID
+- `VITE_USERPOOL_ID` – Cognito user pool ID
+- `VITE_MAPBOX_TOKEN` – Mapbox public access token
 
 > Note: `GOOGLE_PLACES_API` is no longer listed in `.env.example` — it may be embedded in the scraping logic or removed.
 
@@ -96,6 +104,11 @@ All secrets are loaded from `.env` (never committed). Required keys:
 - `ldrs` – loading animation components
 - `@react-login-page/page11` – pre-built login page layout
 
+### Dev Dependencies
+- `prettier` + `eslint-config-prettier` + `eslint-plugin-prettier` – code formatting; enforced via `npm run format` and `npm run format:check`
+- `eslint` + `eslint-plugin-react` + `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh` – linting
+- `@vitejs/plugin-react` – Vite React plugin (Babel fast-refresh)
+
 ### Chat Workflow Architecture
 The trip-planning flow is implemented as a **React state machine** in `useTripWorkflow.js`. Steps advance via `submit(action, payload)` — no polling loops, no class mutations. Each step change triggers a `useEffect` that does one unit of async work. See `structure.md` for the full step list and conventions.
 
@@ -108,6 +121,8 @@ npm install        # Install dependencies
 npm run dev        # Start dev server (Vite HMR)
 npm run build      # Production build
 npm run lint       # ESLint
+npm run format     # Prettier auto-format
+npm run format:check  # Prettier check (CI-safe, no writes)
 ```
 
 ---

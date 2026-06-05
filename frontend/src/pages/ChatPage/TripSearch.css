@@ -175,35 +175,56 @@
   opacity: 0.6;
 }
 
-/* ── Progress bar ── */
-.ts-bar {
-  display: flex;
-  gap: 2px;
-  margin-top: 4px;
-  flex: 1;
-  min-width: 48px;
+/* ── Progress light ── */
+.ts-light {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-/* when inline with route, bar takes remaining space */
-.ts-route-row .ts-bar {
-  margin-top: 0;
-  margin-left: 4px;
-}
-
-.ts-seg {
-  height: 2px;
-  flex: 1;
-  border-radius: 2px;
+/* step 1 — just started, dim neutral */
+.ts-light--step-1 {
   background-color: var(--cream-dark);
+  box-shadow: none;
 }
 
-.ts-seg--done {
-  background-color: var(--amber-main);
-  opacity: 0.45;
+/* step 2 — location entered */
+.ts-light--step-2 {
+  background-color: var(--sand-main);
+  box-shadow: 0 0 3px 1px rgba(196, 135, 58, 0.15);
 }
 
-.ts-seg--active {
+/* step 3 — route fetched */
+.ts-light--step-3 {
   background-color: var(--amber-main);
+  box-shadow: 0 0 4px 1px rgba(196, 135, 58, 0.25);
+}
+
+/* step 4 — budget / car */
+.ts-light--step-4 {
+  background-color: var(--amber-main);
+  box-shadow: 0 0 5px 2px rgba(196, 135, 58, 0.35);
+}
+
+/* step 5 — complete, subtle pulse */
+.ts-light--step-5 {
+  background-color: #6aab5a;
+  box-shadow: 0 0 5px 2px rgba(106, 171, 90, 0.35);
+  animation: ts-light-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes ts-light-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 5px 2px rgba(106, 171, 90, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 7px 3px rgba(106, 171, 90, 0.5);
+  }
 }
 
 .ts-delete-btn {
