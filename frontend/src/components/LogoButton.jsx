@@ -1,12 +1,36 @@
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { Box } from '@mui/material';
 import './LogoButton.css';
 
-export default function LogoButton() {
+/**
+ * LogoButton — the top-left logo / home button.
+ *
+ * Props:
+ *   driving  {boolean} – when true the car drives based on `progress`
+ *                        (road scrolls, wheels spin continuously)
+ *   progress {number}  – 0..1  how far along the road the car sits
+ *                        (only meaningful when driving=true)
+ */
+export default function LogoButton({ driving = false, progress = 0 }) {
   const navigate = useNavigate();
 
+  // The car group sits at x=10 in the SVG by default (chassis x="10").
+  // We shift it LEFT by 10px at progress=0 so it starts flush with the road edge,
+  // then drive it RIGHT by up to 24px so the front bumper reaches near x=64 at progress=1.
+  const CAR_START = -10; // flush with left road edge
+  const CAR_END = 20; // near right edge without clipping
+  const carOffset = CAR_START + (CAR_END - CAR_START) * Math.min(Math.max(progress, 0), 1);
+
+  const drivingClass = driving ? ' logo-btn--driving' : '';
+
   return (
-    <Box className="logo-btn" onClick={() => navigate('/')} role="button" aria-label="Go to home">
+    <Box
+      className={`logo-btn${drivingClass}`}
+      onClick={() => navigate('/')}
+      role="button"
+      aria-label="Go to home"
+    >
       <svg
         className="logo-svg"
         width="64"
@@ -40,32 +64,44 @@ export default function LogoButton() {
           </g>
         </g>
 
-        {/* ── Car body ── */}
-        {/* Main chassis */}
-        <rect x="10" y="22" width="28" height="8" rx="2" className="logo-car-body" />
-        {/* Cabin */}
-        <rect x="16" y="16" width="16" height="8" rx="2" className="logo-car-cabin" />
-        {/* Windshields */}
-        <rect x="17" y="17" width="6" height="6" rx="1" className="logo-window" />
-        <rect x="25" y="17" width="6" height="6" rx="1" className="logo-window" />
-        {/* Bumper detail */}
-        <rect x="36" y="24" width="3" height="3" rx="1" className="logo-bumper" />
-        {/* Headlight */}
-        <rect x="37" y="24" width="2" height="2" rx="0.5" className="logo-headlight" />
+        {/* ── Car (translate along road based on progress) ── */}
+        <g
+          className="logo-car-group"
+          style={{
+            transform: `translateX(${carOffset}px)`,
+            transition: driving ? 'transform 0.8s cubic-bezier(0.4,0,0.2,1)' : 'none',
+          }}
+        >
+          {/* Main chassis */}
+          <rect x="10" y="22" width="28" height="8" rx="2" className="logo-car-body" />
+          {/* Cabin */}
+          <rect x="16" y="16" width="16" height="8" rx="2" className="logo-car-cabin" />
+          {/* Windshields */}
+          <rect x="17" y="17" width="6" height="6" rx="1" className="logo-window" />
+          <rect x="25" y="17" width="6" height="6" rx="1" className="logo-window" />
+          {/* Bumper detail */}
+          <rect x="36" y="24" width="3" height="3" rx="1" className="logo-bumper" />
+          {/* Headlight */}
+          <rect x="37" y="24" width="2" height="2" rx="0.5" className="logo-headlight" />
 
-        {/* ── Wheels (spin on hover) ── */}
-        {/* Rear wheel */}
-        <circle cx="17" cy="31" r="4" className="logo-wheel" />
-        <circle cx="17" cy="31" r="1.2" className="logo-hub" />
-        <line x1="17" y1="27.2" x2="17" y2="34.8" className="logo-spoke logo-spoke--rear" />
-        <line x1="13.2" y1="31" x2="20.8" y2="31" className="logo-spoke logo-spoke--rear" />
+          {/* Rear wheel */}
+          <circle cx="17" cy="31" r="4" className="logo-wheel" />
+          <circle cx="17" cy="31" r="1.2" className="logo-hub" />
+          <line x1="17" y1="27.2" x2="17" y2="34.8" className="logo-spoke logo-spoke--rear" />
+          <line x1="13.2" y1="31" x2="20.8" y2="31" className="logo-spoke logo-spoke--rear" />
 
-        {/* Front wheel */}
-        <circle cx="31" cy="31" r="4" className="logo-wheel" />
-        <circle cx="31" cy="31" r="1.2" className="logo-hub" />
-        <line x1="31" y1="27.2" x2="31" y2="34.8" className="logo-spoke logo-spoke--front" />
-        <line x1="27.2" y1="31" x2="34.8" y2="31" className="logo-spoke logo-spoke--front" />
+          {/* Front wheel */}
+          <circle cx="31" cy="31" r="4" className="logo-wheel" />
+          <circle cx="31" cy="31" r="1.2" className="logo-hub" />
+          <line x1="31" y1="27.2" x2="31" y2="34.8" className="logo-spoke logo-spoke--front" />
+          <line x1="27.2" y1="31" x2="34.8" y2="31" className="logo-spoke logo-spoke--front" />
+        </g>
       </svg>
     </Box>
   );
 }
+
+LogoButton.propTypes = {
+  driving: PropTypes.bool,
+  progress: PropTypes.number,
+};

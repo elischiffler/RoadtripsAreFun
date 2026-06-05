@@ -103,9 +103,12 @@ export const UserDataProvider = ({ children }) => {
   // Initializes global instance of UserData
   const [UserData, setUserData] = useState(new Data());
   const [chats, setChats] = useState([]);
+  const [currentStep, setCurrentStep] = useState(1);
 
   return (
-    <UserDataContext.Provider value={{ UserData, setUserData, chats, setChats }}>
+    <UserDataContext.Provider
+      value={{ UserData, setUserData, chats, setChats, currentStep, setCurrentStep }}
+    >
       {children}
     </UserDataContext.Provider>
   );

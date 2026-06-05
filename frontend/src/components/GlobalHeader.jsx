@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Box, Button, Typography, Menu, MenuItem, Divider } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LogoButton from './LogoButton';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { UserDataContext } from '../states/UserDataContext';
 import './GlobalHeader.css';
 
 const HIDDEN_ON = ['/login', '/signup'];
@@ -13,6 +14,7 @@ export default function GlobalHeader() {
   const location = useLocation();
   const navigate = useNavigate();
   const authed = isAuthenticated();
+  const { currentStep } = useContext(UserDataContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -30,9 +32,14 @@ export default function GlobalHeader() {
 
   if (HIDDEN_ON.includes(location.pathname)) return null;
 
+  const onChatPage = location.pathname === '/chat';
+  const chatProgress = Math.min((currentStep - 1) / 4, 1);
+  // Animate from step 1 onwards; stop only when the trip is complete (step 5)
+  const isDriving = onChatPage && currentStep < 5;
+
   return (
     <Box className="global-header">
-      <LogoButton />
+      <LogoButton driving={isDriving} progress={onChatPage ? chatProgress : 0} />
 
       <Box className="global-header-right">
         {authed ? (

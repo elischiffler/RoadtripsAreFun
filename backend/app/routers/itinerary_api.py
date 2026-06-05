@@ -81,7 +81,6 @@ async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
         if len(stop_list) >= 2:
             # Organize the stops by date
             itinerary = await _day_itinerary(stop_list)
-            print(itinerary)
             return itinerary
         else:
             raise HTTPException(status_code=400, detail="Incomplete route provided")

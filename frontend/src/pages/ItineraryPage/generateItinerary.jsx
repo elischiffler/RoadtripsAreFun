@@ -11,7 +11,6 @@ export const generateItinerary = async (route) => {
     );
 
     const itinerary = response.data;
-    console.log('Generated itinerary: ', itinerary);
     return itinerary;
   } catch (error) {
     // Log any errors encountered during the request

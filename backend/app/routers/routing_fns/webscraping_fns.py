@@ -43,8 +43,6 @@ def find_google_hotels(
             # Check only the top 20% of hotels found
             attempts = round(len(valid_hotels) * 0.2)
             while attempts > 0:  # Search through all hotel offerings
-                print("advanced search...", valid_hotels)
-
                 # Get detailed information on the highest rated hotel
                 ideal_hotel = _get_advanced_listing(valid_hotels.pop(), geolocator)
 
@@ -87,7 +85,6 @@ def _get_html_response(url: str, query: Optional[str] = None) -> requests.Respon
         "DNT": "1",  # Do not track the request header
     }
 
-    print("search query:", query)
     response = requests.get(url, params=params, headers=headers)
     return response
 

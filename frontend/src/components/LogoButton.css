@@ -88,7 +88,7 @@
   stroke-linecap: round;
 }
 
-/* ── Hover animations ── */
+/* ── Animations ── */
 
 /* Road scrolls left */
 @keyframes scrollRoad {
@@ -110,18 +110,36 @@
   }
 }
 
-.logo-btn:hover .logo-road-dashes {
+/* ── Driving mode — always animating ── */
+.logo-btn--driving .logo-road-dashes {
   animation: scrollRoad 0.6s linear infinite;
 }
 
-/* Rear wheel spokes */
-.logo-btn:hover .logo-spoke--rear {
-  transform-origin: 17px 31px;
+.logo-btn--driving .logo-spoke--rear {
+  transform-box: fill-box;
+  transform-origin: center;
   animation: spinWheel 0.5s linear infinite;
 }
 
-/* Front wheel spokes */
-.logo-btn:hover .logo-spoke--front {
-  transform-origin: 31px 31px;
+.logo-btn--driving .logo-spoke--front {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: spinWheel 0.5s linear infinite;
+}
+
+/* ── Hover (static logo, not driving mode) ── */
+.logo-btn:not(.logo-btn--driving):hover .logo-road-dashes {
+  animation: scrollRoad 0.6s linear infinite;
+}
+
+.logo-btn:not(.logo-btn--driving):hover .logo-spoke--rear {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: spinWheel 0.5s linear infinite;
+}
+
+.logo-btn:not(.logo-btn--driving):hover .logo-spoke--front {
+  transform-box: fill-box;
+  transform-origin: center;
   animation: spinWheel 0.5s linear infinite;
 }

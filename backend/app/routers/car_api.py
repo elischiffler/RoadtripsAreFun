@@ -77,7 +77,6 @@ def _handle_car_identifier(response: Response) -> List[str]:
     Returns:
         - List[str]: List of car identifiers
     """
-    print("finding id...")
     # Convert the response content to an element tree for parsing
     root = ET.fromstring(response.content)
     # Get ids list from the response
@@ -153,5 +152,4 @@ async def get_gas_price() -> float:
         else:
             return 3.317  # Fallback to hardcoded average if the API fails
     except Exception as exception:
-        print(f"Error fetching gas price: {str(exception)}")
         return 3.317  # Fallback if an exception occurs

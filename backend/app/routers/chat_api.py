@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
+import logging
 from app.crud.chat_crud import (
     update_chat_component,
     create_chat,
@@ -13,6 +14,7 @@ from app.schemas.chat_schemas import ChatSchema
 from app.utils.auth import get_user_id_from_token
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.get("/chats")
@@ -56,11 +58,19 @@ async def chat_add(chat_id: str, request: ChatSchema):
     chat_data = request.ChatData
     chat_log = request.ChatLog
     user_id = get_user_id_from_token(request.PartitionKey)
+    logger.info("CREATE chat_id=%s user_id=%s", chat_id, user_id)
     try:
         # Create a new item in the database for the given chat data and log
         response = create_chat(user_id, chat_id, chat_data.model_dump(), chat_log.model_dump())
+        if response is None:
+            logger.warning(
+                "CREATE returned None for chat_id=%s — row may not have been inserted", chat_id
+            )
+        else:
+            logger.info("CREATE success chat_id=%s", chat_id)
         return response
     except ValidationError as exception:
+        logger.error("CREATE validation error chat_id=%s: %s", chat_id, exception)
         raise HTTPException(status_code=500, detail=f"Error validating request: {exception}")
 
 
@@ -71,6 +81,13 @@ async def chat_update(chat_id: int, request: ChatSchema):
     chat_data = request.ChatData
     chat_log = request.ChatLog
     user_id = get_user_id_from_token(request.PartitionKey)
+    logger.info(
+        "UPDATE chat_id=%s user_id=%s has_data=%s has_log=%s",
+        chat_id,
+        user_id,
+        chat_data is not None,
+        chat_log is not None,
+    )
     responses = []
     try:
         # Ensure there is data to add
@@ -78,12 +95,31 @@ async def chat_update(chat_id: int, request: ChatSchema):
             raise ValueError("Chat data or logs data is required")
         # Check if chat data was sent to be updated in the database
         if chat_data:
-            responses.append(update_chat_component(user_id, str(chat_id), chat_data, "ChatData"))
+            result = update_chat_component(user_id, str(chat_id), chat_data, "ChatData")
+            if result is None:
+                logger.warning(
+                    "UPDATE chat_data: no row found for chat_id=%s user_id=%s — chat may not exist yet",
+                    chat_id,
+                    user_id,
+                )
+            else:
+                logger.info("UPDATE chat_data success chat_id=%s", chat_id)
+            responses.append(result)
         # Check if a chat log was sent to be updated in the database
         if chat_log:
-            responses.append(update_chat_component(user_id, str(chat_id), chat_log, "ChatLog"))
+            result = update_chat_component(user_id, str(chat_id), chat_log, "ChatLog")
+            if result is None:
+                logger.warning(
+                    "UPDATE chat_log: no row found for chat_id=%s user_id=%s — chat may not exist yet",
+                    chat_id,
+                    user_id,
+                )
+            else:
+                logger.info("UPDATE chat_log success chat_id=%s", chat_id)
+            responses.append(result)
         return responses
     except Exception as exception:
+        logger.error("UPDATE failed chat_id=%s: %s", chat_id, exception)
         raise HTTPException(status_code=500, detail=f"Error updating chat: {exception}")
 
 

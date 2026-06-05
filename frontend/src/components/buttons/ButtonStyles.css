@@ -48,3 +48,38 @@
   font-weight: 600;
   flex: 1;
 }
+
+/* ── Icon-only buttons (Map & Itinerary) ── */
+.icon-btn-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--cream-main);
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background-color: var(--cream-dark);
+  transform: scale(1.08);
+}
+
+.icon-btn--disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
+.icon-btn--disabled:hover {
+  transform: none;
+  background-color: var(--cream-main);
+}

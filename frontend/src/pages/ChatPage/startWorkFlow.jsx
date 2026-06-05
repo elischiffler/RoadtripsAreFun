@@ -2,49 +2,31 @@ import { validateLocation } from './ValidateLocation';
 import { getInitialRoute, getFinalRoute } from './getRoute';
 import { generateItinerary } from '../ItineraryPage/generateItinerary';
 import { calcHotelBudget, calcGasBudget } from './CalcBudget';
-import { updateUserData } from './DatabaseUtils';
-// Helper Function
+import { updateUserData, createChat } from './DatabaseUtils';
 
-// Function that gets the user's current location
-// It takes a callback function as an argument, which is called with the latitude and longitude once the location is obtained.
-const getCurrentLocation = (callback) => {
-  if (navigator.geolocation) {
-    // If the browser supports geolocation, get the current position
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        // Call the callback with the latitude and longitude
-        callback(position.coords.latitude, position.coords.longitude);
-      },
-      (error) => {
-        // Log an error if there is an issue getting the location
-        console.error('Error getting location:', error);
-      }
-    );
-  } else {
-    // Log an error if geolocation is not supported by the browser
-    console.error('Geolocation is not supported by this browser.');
-  }
+/**
+ * Extracts the city name from a full address string returned by the backend.
+ * The address format is typically: "Street, City, State, ZIP, Country"
+ * Falls back to the raw address string if parsing fails.
+ */
+const extractCity = (fullAddress) => {
+  if (!fullAddress) return null;
+  const parts = fullAddress.split(',').map((p) => p.trim());
+  if (parts.length >= 3) return parts[1];
+  if (parts.length >= 2) return parts[0];
+  return parts[0] || null;
 };
 
-// Updates the previous message with a new one based on a dynamic match condition
-const replacePreviousMessage = (chatId, setChats, newMessage) => {
+/**
+ * Renames the chat in the sidebar once both start and end cities are known.
+ */
+export const renameChatToRoute = (chatId, startConfirmed, endConfirmed, setChats) => {
+  const startCity = extractCity(startConfirmed?.address);
+  const endCity = extractCity(endConfirmed?.address);
+  if (!startCity || !endCity) return;
+  const newTitle = `Trip to ${endCity}`;
   setChats((prevChats) =>
-    prevChats.map((chat) =>
-      chat.id === chatId
-        ? {
-            ...chat,
-            messages: (chat.messages || []).map((message, index, array) =>
-              index === array.length - 1 // Target the last message in the array
-                ? {
-                    ...message,
-                    text: newMessage, // Replace the text with the new message
-                    buttons: [], // Optionally clear buttons
-                  }
-                : message
-            ),
-          }
-        : chat
-    )
+    prevChats.map((chat) => (chat.id === chatId ? { ...chat, title: newTitle } : chat))
   );
 };
 
@@ -64,197 +46,74 @@ export const removeLoader = (chatId, setChats) => {
 
 // Adds a new message to the chat with optional buttons
 export const addMessage = (chatId, setChats, newMessage, sender, buttons = null) => {
-  // Ensure the newMessage is a string, optionally with buttons
   const message =
     newMessage === 'loading'
       ? { type: 'loading-chat' }
       : buttons
-        ? {
-            text: newMessage,
-            sender: sender,
-            buttons: buttons,
-          }
+        ? { text: newMessage, sender, buttons }
         : typeof newMessage === 'string'
-          ? {
-              text: newMessage,
-              sender: sender,
-            }
-          : {
-              text: String(newMessage),
-              sender: sender,
-            };
+          ? { text: newMessage, sender }
+          : { text: String(newMessage), sender };
 
   setChats((prevChats) => {
-    const idx = prevChats.findIndex((chat) => chat.id === chatId); // get index of current chat
+    const idx = prevChats.findIndex((chat) => chat.id === chatId);
+    // If the chat isn't in state yet (race on first render), create a minimal entry for it
+    if (idx === -1) {
+      return [...prevChats, { id: chatId, title: 'New Trip', messages: [message] }];
+    }
     const prevLength = prevChats[idx]?.messages?.length - 1;
-    const prevMessage = prevChats[idx]?.messages[prevLength];
-    if (prevMessage.text !== message.text) {
-      // Determine if the last message is the same as the previous
-      const newChats = prevChats.map(
-        (
-          chat // Create a new chats with the newMessage at the end
-        ) =>
-          chat.id === chatId
-            ? {
-                ...chat,
-                messages: [...chat.messages, message], // Append the new message to the chat
-              }
-            : chat
+    const prevMessage = prevChats[idx]?.messages?.[prevLength];
+    if (!prevMessage || prevMessage.text !== message.text) {
+      return prevChats.map((chat) =>
+        chat.id === chatId ? { ...chat, messages: [...chat.messages, message] } : chat
       );
-      return newChats;
     }
     return prevChats;
   });
 };
 
-// Changes the input bar to show the address input field
-function changeBar(chatInput, setChatInput) {
-  setChatInput({
-    ...chatInput,
-    showAddressInput: true, // Show the address input field
-  });
-}
-
-// Predefined object representing the location type options presented to the user
-const askForLocationType = {
-  text: 'I would like to use:',
-  buttons: [
-    { label: 'Address', action: 'Address' },
-    { label: 'City Name', action: 'City Name' },
-    { label: 'Current Location', action: 'Current Location' },
-  ],
+// Updates the last message in the chat
+const replacePreviousMessage = (chatId, setChats, newMessage) => {
+  setChats((prevChats) =>
+    prevChats.map((chat) =>
+      chat.id === chatId
+        ? {
+            ...chat,
+            messages: (chat.messages || []).map((message, index, array) =>
+              index === array.length - 1 ? { ...message, text: newMessage, buttons: [] } : message
+            ),
+          }
+        : chat
+    )
+  );
 };
 
-const askForConfirmation = {
-  text: 'The address is:',
-  buttons: [
-    { label: 'Correct', action: 'Correct' },
-    { label: 'Incorrect', action: 'Incorrect' },
-  ],
-};
+/**
+ * Direct location input — no method picker, no confirmation dialog.
+ * Signals ChatPage to show LocationInput, then waits for startConfirmed/endConfirmed to be set.
+ * ChatPage handles the actual validateLocation call via onSubmit / onGeolocate callbacks.
+ */
+export async function inputLocationDirect(chatId, setChats, setChatInput, chatInput, UserChatData) {
+  // Signal ChatPage to show the LocationInput component
+  UserChatData.showInputBar = true;
+  UserChatData.action = 'Location Input';
+  // Force a re-render: update chatInput with a distinct value so React sees a state change
+  setChatInput({ name: 'Location Input', message: '' });
+  // Also prod setChats so the input bar appears even if setChatInput batches
+  setChats((prev) => [...prev]);
 
-// Handles the user's response based on their chosen location type
-function locationTypeResponse(chatId, setChats, setChatInput, chatInput, UserChatData) {
-  if (UserChatData.action === 'Current Location') {
-    addMessage(chatId, setChats, 'loading', 'bot');
-    // If the user chose 'Current Location'
-    getCurrentLocation(async (latitude, longitude) => {
-      removeLoader(chatId, setChats);
-      // Update the previous message to include the location coordinates
-      replacePreviousMessage(chatId, setChats, `I would like to use: Current Location`);
-      // Save the coordinates to UserChatData
-      if (UserChatData.locationType === 'start') {
-        UserChatData.startCoords = [latitude, longitude];
-        UserChatData.startConfirmed = await validateLocation(
-          [latitude, longitude],
-          true,
-          UserChatData,
-          setChats,
-          setChatInput,
-          chatInput
-        );
-      } else {
-        UserChatData.endCoords = [latitude, longitude];
-        UserChatData.endConfirmed = await validateLocation(
-          [latitude, longitude],
-          true,
-          UserChatData,
-          setChats,
-          setChatInput,
-          chatInput
-        );
-      }
-    });
-  } else if (UserChatData.action === 'Address') {
-    // Allow user access to the input bar
-    UserChatData.showInputBar = true;
-    UserChatData.showAddressInput = true;
-    // If the user chose 'Address'
-    replacePreviousMessage(chatId, setChats, `I would like to use: Address`);
-    addMessage(chatId, setChats, 'Sounds good! Please enter your address information.', 'bot');
-
-    // Change the input bar to show the address input field
-    changeBar(chatInput, setChatInput);
-  } else if (UserChatData.action === 'City Name') {
-    // Allow user access to the input bar
-    UserChatData.showInputBar = true;
-    // If the user chose 'City Name'
-    replacePreviousMessage(chatId, setChats, 'I would like to use: City Name');
-    addMessage(chatId, setChats, 'Sounds good! Please enter your city name.', 'bot');
-  }
-}
-
-// Workflow for allowing a user to input a location
-export async function inputLocationWorkflow(
-  chatId,
-  setChats,
-  setChatInput,
-  chatInput,
-  UserChatData
-) {
-  if (!UserChatData.action) {
-    // Ask user for location type
-    addMessage(chatId, setChats, askForLocationType.text, 'user', askForLocationType.buttons);
-    // Wait for the user to select a location type
-    await new Promise((resolve) => {
-      const interval = setInterval(() => {
-        if (UserChatData.action) {
-          clearInterval(interval);
-          resolve();
-        }
-      }, 100);
-    });
-  }
-
-  // Handle the user's selected location type
-  locationTypeResponse(chatId, setChats, setChatInput, chatInput, UserChatData);
-
-  // Wait for the user to submit the location data
-  if (UserChatData.locationType === 'end') {
-    await new Promise((resolve) => {
-      const interval = setInterval(() => {
-        if (UserChatData.endConfirmed) {
-          UserChatData.action = null;
-          clearInterval(interval);
-          resolve();
-        }
-      }, 100);
-    });
-  } else {
-    await new Promise((resolve) => {
-      const interval = setInterval(() => {
-        if (UserChatData.startConfirmed) {
-          UserChatData.action = null;
-          clearInterval(interval);
-          resolve();
-        }
-      }, 100);
-    });
-  }
-}
-
-// Displays the backend address to user and asks for the confirmation
-async function displayConfirmationDetails(chatId, setChats, UserChatData) {
-  const address = UserChatData.endConfirmed
-    ? UserChatData.endConfirmed['address']
-    : UserChatData.startConfirmed['address'];
-
-  // Display address from backend
-  addMessage(chatId, setChats, `Is this the correct address? ${address}`, 'bot');
-
-  // Ask for user to confirm the backend address
-  addMessage(chatId, setChats, askForConfirmation.text, 'user', askForConfirmation.buttons);
-
-  // Wait for user to confirm the address
+  const isEnd = UserChatData.locationType === 'end';
   await new Promise((resolve) => {
     const interval = setInterval(() => {
-      if (UserChatData.action) {
+      const confirmed = isEnd ? UserChatData.endConfirmed : UserChatData.startConfirmed;
+      if (confirmed) {
+        UserChatData.action = null;
+        UserChatData.showInputBar = false;
         clearInterval(interval);
         resolve();
       }
     }, 100);
   });
-  replacePreviousMessage(chatId, setChats, `The address is: ${UserChatData.action}`);
 }
 
 export async function handlePromptCarInfo(chatId, setChats, UserChatData) {
@@ -267,7 +126,6 @@ export async function handlePromptCarInfo(chatId, setChats, UserChatData) {
   UserChatData.action = 'Car Details';
   UserChatData.showInputBar = true;
 
-  // Wait for the user to input there car details
   await new Promise((resolve) => {
     const interval = setInterval(() => {
       if (!UserChatData.showInputBar) {
@@ -289,35 +147,7 @@ export async function handlePromptCarInfo(chatId, setChats, UserChatData) {
   );
 }
 
-// Loops confirmation of location until it is successfully validated
-async function handleConfirmation(chatId, setChats, setChatInput, chatInput, UserChatData) {
-  await displayConfirmationDetails(chatId, setChats, UserChatData);
-
-  // Loop until the user sends a correct response
-  while (UserChatData.action !== 'Correct') {
-    UserChatData.action = null;
-    if (UserChatData.endConfirmed) {
-      UserChatData.endConfirmed = null;
-    } else {
-      UserChatData.startConfirmed = null;
-    }
-    // Message prompting re-entry of address
-    addMessage(
-      chatId,
-      setChats,
-      'My apologies, how would you like to re-enter the location?',
-      'bot'
-    );
-    // Have them repeat inputting their location
-    await inputLocationWorkflow(chatId, setChats, setChatInput, chatInput, UserChatData);
-    // Have the user confirmed the newly generated address
-    await displayConfirmationDetails(chatId, setChats, UserChatData);
-  }
-  UserChatData.action = null;
-}
-
 // Main Workflow
-// This function orchestrates the chat flow, asking for and processing user inputs
 export const startWorkFlow = async (
   setChats,
   chatId,
@@ -326,48 +156,27 @@ export const startWorkFlow = async (
   UserChatData,
   ChatLogsData,
   chatsRef,
-  access_token
+  access_token,
+  setCurrentStep,
+  getTripStep
 ) => {
+  const syncStep = () => {
+    if (setCurrentStep && getTripStep) setCurrentStep(getTripStep(UserChatData));
+  };
+
   console.log('Starting a workflow');
   UserChatData.workflowStarted = true;
-  let preFetchedFinalRoute = null; // Prepare a variable to store our background API call
+  let preFetchedFinalRoute = null;
 
   if (!UserChatData.showStopSlider && !UserChatData.startConfirmed) {
-    // Checkpoint 1: Choose a start location
+    // Checkpoint 1: Enter start location
     UserChatData.showInputBar = false;
+    addMessage(chatId, setChats, 'Where are you starting from?', 'bot');
 
-    // Ask for the starting location preferences
-    await inputLocationWorkflow(chatId, setChats, setChatInput, chatInput, UserChatData);
+    await inputLocationDirect(chatId, setChats, setChatInput, chatInput, UserChatData);
 
-    // Confirm the users starting address with the backend
-    await handleConfirmation(chatId, setChats, setChatInput, chatInput, UserChatData);
-
-    addMessage(chatId, setChats, 'loading', 'bot');
-    await updateUserData(access_token, UserChatData, chatsRef.current);
-    removeLoader(chatId, setChats);
-
-    // Ask how many stops the user wants to take
-    addMessage(chatId, setChats, 'Perfect! How many attractions would you like to see?', 'bot');
-
-    // Show a slider for the user to select the number of stops
-    UserChatData.showInputBar = true;
-    UserChatData.showStopSlider = true;
-  }
-
-  if (UserChatData.showInputBar && UserChatData.showStopSlider) {
-    // Checkpoint 2: Input stops
-    if (UserChatData.showStopSlider) {
-      // Wait for the user to submit the number of stops
-      await new Promise((resolve) => {
-        const interval = setInterval(() => {
-          if (!UserChatData.showStopSlider) {
-            clearInterval(interval);
-            resolve();
-          }
-        }, 100);
-      });
-      UserChatData.showInputBar = false;
-    }
+    addMessage(chatId, setChats, `Starting from: ${UserChatData.startConfirmed.address}`, 'bot');
+    syncStep();
 
     addMessage(chatId, setChats, 'loading', 'bot');
     await updateUserData(access_token, UserChatData, chatsRef.current);
@@ -375,40 +184,66 @@ export const startWorkFlow = async (
   }
 
   if (!UserChatData.endConfirmed && !UserChatData.initial) {
-    // Checkpoint 3: Choose an end location
-    // Ask for the end location
-    addMessage(chatId, setChats, 'How would you like to enter your end location?', 'bot');
-
+    // Checkpoint 2: Enter end location
+    addMessage(chatId, setChats, 'Where are you headed?', 'bot');
     UserChatData.locationType = 'end';
 
-    // Ask for ending location preferences
-    await inputLocationWorkflow(chatId, setChats, setChatInput, chatInput, UserChatData);
+    await inputLocationDirect(chatId, setChats, setChatInput, chatInput, UserChatData);
 
-    // Confirm the users ending address with the backend
-    await handleConfirmation(chatId, setChats, setChatInput, chatInput, UserChatData);
+    addMessage(chatId, setChats, `Destination: ${UserChatData.endConfirmed.address}`, 'bot');
+    syncStep();
 
-    addMessage(chatId, setChats, 'loading', 'bot'); // Start loading animation
+    renameChatToRoute(chatId, UserChatData.startConfirmed, UserChatData.endConfirmed, setChats);
 
-    //Get the users initial route duration
+    const currentChats = chatsRef.current;
+    const chatLog = currentChats.find((c) => c.id === chatId);
+    if (chatLog) {
+      await createChat(access_token, UserChatData, chatLog);
+    }
+
+    addMessage(chatId, setChats, 'loading', 'bot');
     UserChatData.initial = await getInitialRoute(
       UserChatData.startConfirmed['latitude'],
       UserChatData.startConfirmed['longitude'],
       UserChatData.endConfirmed['latitude'],
       UserChatData.endConfirmed['longitude']
     );
+    syncStep();
 
     await updateUserData(access_token, UserChatData, chatsRef.current);
-    removeLoader(chatId, setChats); // Stop loading animation
+    removeLoader(chatId, setChats);
+
+    // Checkpoint 3: How many attractions?
+    addMessage(chatId, setChats, 'How many attractions would you like to stop at?', 'bot');
+    UserChatData.showInputBar = true;
+    UserChatData.showStopSlider = true;
+    syncStep();
+  }
+
+  if (UserChatData.showInputBar && UserChatData.showStopSlider) {
+    // Checkpoint 3 cont: wait for stops input
+    await new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (!UserChatData.showStopSlider) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+    UserChatData.showInputBar = false;
+
+    addMessage(chatId, setChats, 'loading', 'bot');
+    await updateUserData(access_token, UserChatData, chatsRef.current);
+    removeLoader(chatId, setChats);
   }
 
   if (UserChatData.initial && !UserChatData.route) {
-    // Checkpoint 4: Calculate a budget
+    // Checkpoint 4: Budget
     UserChatData.hotelBudget = await calcHotelBudget(
       UserChatData.initial['duration'],
       UserChatData.stops
-    ); // Get the estimated minimum hotel budget
+    );
     if (UserChatData.hotelBudget) {
-      //If the user has to go to a hotel
       addMessage(
         chatId,
         setChats,
@@ -416,9 +251,8 @@ export const startWorkFlow = async (
         'bot'
       );
       UserChatData.showInputBar = true;
-      UserChatData.showBudgetSlider = true; // Allow user to customize their budget preference
+      UserChatData.showBudgetSlider = true;
 
-      // Wait for the user to input there hotel budget
       await new Promise((resolve) => {
         const interval = setInterval(() => {
           if (!UserChatData.showBudgetSlider) {
@@ -427,13 +261,8 @@ export const startWorkFlow = async (
           }
         }, 100);
       });
-
-      console.log(`hotel budget: ${UserChatData.hotelBudget}`);
     }
 
-    // --- OPTIMIZATION: PRE-FETCH FINAL ROUTE ---
-    // At this point we have all the info required to generate the final route.
-    // We can kick it off in the background right now while the user is typing their car details!
     preFetchedFinalRoute = getFinalRoute(
       UserChatData.initial,
       UserChatData.hotelBudget,
@@ -443,10 +272,8 @@ export const startWorkFlow = async (
       return null;
     });
 
-    // Handle getting the car info from the user and estimating a gas budget
     await handlePromptCarInfo(chatId, setChats, UserChatData);
 
-    // Calculate the total budget
     UserChatData.budget = UserChatData.hotelBudget + UserChatData.carBudget;
     addMessage(
       chatId,
@@ -461,9 +288,8 @@ export const startWorkFlow = async (
   }
 
   if (!UserChatData.route && UserChatData.initial) {
-    // Checkpoint 5: Generate the final route
-    // Final Route Checkpoint
-    addMessage(chatId, setChats, 'loading', 'bot'); // Start the loading chat animation
+    // Checkpoint 5: Generate final route
+    addMessage(chatId, setChats, 'loading', 'bot');
 
     if (preFetchedFinalRoute) {
       UserChatData.route = await preFetchedFinalRoute;
@@ -474,43 +300,34 @@ export const startWorkFlow = async (
         UserChatData.stops
       );
     }
+    syncStep();
 
     await updateUserData(access_token, UserChatData, chatsRef.current);
-    removeLoader(chatId, setChats); // Stop the loading chat animation AFTER database update
+    removeLoader(chatId, setChats);
   }
 
   if (UserChatData.route && !UserChatData.itinerary) {
-    // Checkpoint 6: End behaviors
-    addMessage(chatId, setChats, 'loading', 'bot'); // Start loading while generating itinerary
-    // Generate the itinerary data
+    // Checkpoint 6: Itinerary
+    addMessage(chatId, setChats, 'loading', 'bot');
     const itineraryData = await generateItinerary(UserChatData.route);
     const finalMessageText = `Successfully generated your trip! Based on hotel and gas it should cost $${UserChatData.route['cost'] + UserChatData.carBudget}. Click on the Map and Itinerary buttons to view the details.`;
 
-    // Now that all data is ready, update the state that drives the UI
     UserChatData.itinerary = itineraryData;
-    UserChatData.isComplete = true; // This will make the Map/Itinerary buttons appear
+    UserChatData.isComplete = true;
+    syncStep();
 
-    removeLoader(chatId, setChats); // Remove the loading animation
-    addMessage(chatId, setChats, finalMessageText, 'bot'); // Add the final message
+    removeLoader(chatId, setChats);
+    addMessage(chatId, setChats, finalMessageText, 'bot');
 
     const chatIndex = ChatLogsData.chatdata.findIndex((c) => c.chatId === UserChatData.chatId);
     if (chatIndex !== -1) {
-      ChatLogsData.chatdata[chatIndex] = UserChatData; // save the current chat data to the ChatLogs at end of workflow
+      ChatLogsData.chatdata[chatIndex] = UserChatData;
     }
-    // Save the final state to the database in the background.
     await updateUserData(access_token, UserChatData, chatsRef.current);
   } else if (!UserChatData.route) {
     removeLoader(chatId, setChats);
+    addMessage(UserChatData.chatId, setChats, 'Error creating route. Please try again.', 'bot');
 
-    // Send a message prompting the user to resend their information
-    addMessage(
-      UserChatData.chatId,
-      setChats,
-      'Error creating route. Please re-enter how you would like to choose your starting location.',
-      'bot'
-    );
-
-    // Reset values
     UserChatData.action = null;
     UserChatData.locationType = 'start';
     UserChatData.endConfirmed = null;
@@ -518,7 +335,6 @@ export const startWorkFlow = async (
     UserChatData.initial = null;
     UserChatData.budget = null;
 
-    // Restart workflow for another route
     await startWorkFlow(
       setChats,
       UserChatData.chatId,
@@ -527,7 +343,9 @@ export const startWorkFlow = async (
       UserChatData,
       ChatLogsData,
       chatsRef,
-      access_token
+      access_token,
+      setCurrentStep,
+      getTripStep
     );
 
     addMessage(chatId, setChats, 'loading', 'bot');

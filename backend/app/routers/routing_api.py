@@ -96,7 +96,6 @@ async def get_final_route(request: Request) -> Route:
         num_stops = payload.num_stops
         start = payload.start
         budget = payload.budget
-        print(budget)
 
         # Check for num_stops positive or zero
         if not isinstance(num_stops, int) or num_stops < 0:
@@ -106,7 +105,6 @@ async def get_final_route(request: Request) -> Route:
         stopping_points, total_cost = await _add_stops(
             initial_route, num_stops, date=start, budget=budget
         )
-        print("got stopping points")
 
         coordinates = []
         for stop in stopping_points:
@@ -154,7 +152,6 @@ async def get_final_route(request: Request) -> Route:
             #                             location=step.maneuver.location))
         # Add all stopping coordinates to a single variable
         coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
-        print("Route budget:", total_cost)
         return Route(
             coordinates=coordinates,
             distance=distance,
@@ -166,15 +163,12 @@ async def get_final_route(request: Request) -> Route:
         )
 
     except HTTPException as exception:
-        print(f"\nHTTP EXCEPTION TRIGGERED {exception.status_code}: {exception.detail}\n")
         raise exception
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
     except ValidationError as exception:
-        print(f"VALIDATION ERROR: {exception}")
         raise HTTPException(status_code=502, detail=f"Improper Mapbox response: {str(exception)}")
     except (KeyError, ValueError) as exception:
-        print(f"KEY/VALUE ERROR: {exception}")
         raise HTTPException(status_code=502, detail=f"Unexpected value or key: {str(exception)}")
 
 
@@ -267,9 +261,6 @@ async def _add_stops(
 
     # Add stopping places until the trip is over
     for _ in range(num_stops + 1):
-        print(f"Loop number {_}")
-        print(f"Still within range for searchin hotels: {total_time < end_hotel_search}")
-        print(f"Stop comes after the hotel: {current_time + time_till_stop >= (daily_end * 3600)}")
         # Check whether the daily end or the next stop comes first
         while total_time < end_hotel_search and current_time + time_till_stop >= (daily_end * 3600):
             time_traveled = (daily_end * 3600) - current_time  # Calculate time traveled that day
@@ -289,7 +280,6 @@ async def _add_stops(
             )
             while attempts > 0:
                 try:
-                    print(f"finding hotel at {hotel_lat, hotel_lon} at the time {total_time}")
                     stopping_points.append(
                         await _find_hotel(hotel_lat, hotel_lon, price_range, date)
                     )  # Append a found hotel
@@ -300,7 +290,6 @@ async def _add_stops(
                         if attempts == 0:
                             raise exception  # Raise an error after 3 tries
                         total_time += 1800  # Increase total drive time by 30 minutes
-                        print(total_time)
                         time_till_stop -= 3600  # Decrease time till stop by 30 minutes
                         date += timedelta(seconds=1800)  # Increase the datetime
                         current_time += 1800
@@ -309,11 +298,7 @@ async def _add_stops(
                         )  # Find the new position after driving
                     else:
                         raise exception
-            print("found hotel!")
             total_cost += stopping_points[-1]["price"]  # Add the cost of the hotel to the total
-            print(f"budget - total cost: {budget}-{total_cost} = {budget - total_cost}")
-            print(f"remaining duration: {route.duration - total_time}")
-            print(f"number of stops left: {num_stops}")
             # Recalculate a price range for the next hotel
             price_range = _get_price_range(
                 remaining_budget=budget - total_cost,
@@ -321,7 +306,6 @@ async def _add_stops(
                 stops_left=num_stops,
                 daily_drive_time=driving_interval,
             )
-            print(price_range)
             current_day += 1  # increment the days that have passed
             current_time = (
                 3600 * daily_start
@@ -349,11 +333,9 @@ async def _add_stops(
                     current_lat, current_lon = _find_position(
                         coordinates, steps, total_time
                     )  # Find the next stop position
-                    print(f"finding stop at {current_lat, current_lon} at the time {total_time}")
                     stopping_points.append(  # Add the stop to the list
                         await _find_stop("attractions", current_lat, current_lon, search_radius)
                     )
-                    print("found stop!")
                     break  # Exit the loop
                 except HTTPException as exception:
                     if exception.status_code == 404:
@@ -369,8 +351,6 @@ async def _add_stops(
                     else:
                         raise exception
             num_stops -= 1  # Decrement the number of stops
-            print(date)
-            print(f"The next stop will be in {current_time + time_till_stop} seconds")
     return stopping_points, total_cost
 
 
@@ -598,7 +578,6 @@ async def _find_hotel(
     # Ensure we could geolocate the provided coordinates
     if location is None:
         raise HTTPException(status_code=404, detail="No location found")
-    print(price_range)
 
     # Split the location string into its components
     location_array = location.address.split(", ")
@@ -610,7 +589,6 @@ async def _find_hotel(
             raise HTTPException(status_code=404, detail="No cities found")
         # Add state and country information to the returned city address
         query += f", {location_array[-2]}, {location_array[-1]}"
-        print(f"Using google's query {query}")
 
     # Catch all possible exceptions when using the Google API
     except (ValidationError, HTTPException, AttributeError):
@@ -822,7 +800,6 @@ async def _get_amadeus_ratings(hotel_ids: list[str]) -> tuple:
                 rating = hotel.overallRating
                 ratings.append((hotel_id, rating))
             ratings.sort(key=lambda x: x[1], reverse=True)
-            print(ratings)
             return ratings[0]
         else:
             raise HTTPException(status_code=404, detail="No hotels found for the provided ids")
@@ -891,7 +868,6 @@ async def _get_nearby_city(lat: float, lon: float, radius: Optional[float] = 500
         if len(places) > 0:
             # Iterate through all the returned places
             for place in places:
-                print(place.place_id)
                 # Check if a nearby location name is found
                 if place.vicinity:
                     return place.vicinity

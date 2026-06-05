@@ -1,4 +1,5 @@
 import json
+import logging
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
@@ -7,6 +8,8 @@ from app.core.config import settings
 from pydantic import BaseModel
 from typing import Any, Dict
 from ..utils.crud_helpers import segment_route
+
+logger = logging.getLogger(__name__)
 
 # Module-level connection pool — created once on first import.
 # minconn=1 keeps one connection warm; maxconn=5 handles burst traffic.
@@ -83,8 +86,11 @@ def create_chat(
             )
             row = cur.fetchone()
         conn.commit()
+        if row is None:
+            logger.warning("create_chat INSERT RETURNING returned no row — chat_id=%s", chat_id)
         return row
-    except Exception:
+    except Exception as exc:
+        logger.error("create_chat DB error chat_id=%s: %s", chat_id, exc)
         conn.rollback()
         raise
     finally:
@@ -157,6 +163,12 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
             )
             row = cur.fetchone()
             if not row:
+                logger.warning(
+                    "update_chat_component: no row found for chat_id=%s prefix=%s — "
+                    "createChat was never called or used a different chat_id",
+                    chat_id,
+                    prefix,
+                )
                 return None
 
             current_val = row[col_name] or {}
@@ -193,9 +205,18 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                 (json.dumps(current_val), auth_token, chat_id),
             )
             result = cur.fetchall()
+            if not result:
+                logger.warning(
+                    "update_chat_component: UPDATE RETURNING empty for chat_id=%s prefix=%s",
+                    chat_id,
+                    prefix,
+                )
         conn.commit()
         return result
-    except Exception:
+    except Exception as exc:
+        logger.error(
+            "update_chat_component DB error chat_id=%s prefix=%s: %s", chat_id, prefix, exc
+        )
         conn.rollback()
         raise
     finally:

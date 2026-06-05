@@ -94,6 +94,9 @@ All secrets are loaded from `.env` (never committed). Required keys:
 - `ldrs` – loading animation components
 - `@react-login-page/page11` – pre-built login page layout
 
+### Chat Workflow Architecture
+The trip-planning flow is implemented as a **React state machine** in `useTripWorkflow.js`. Steps advance via `submit(action, payload)` — no polling loops, no class mutations. Each step change triggers a `useEffect` that does one unit of async work. See `structure.md` for the full step list and conventions.
+
 ### Common Commands
 
 ```bash

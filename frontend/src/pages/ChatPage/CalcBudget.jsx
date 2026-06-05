@@ -63,14 +63,12 @@ const getCarInfo = async (year, make, model, chatId, setChats, UserChatData) => 
     });
     removeLoader(chatId, setChats);
     const carInfo = response.data;
-    console.log(`Car Details: ${carInfo}`);
     return carInfo;
   } catch (error) {
     removeLoader(chatId, setChats);
-    // Log any errors encountered during the request
     console.error('Error getting car info:', error);
 
-    if (error.response.status === 500) {
+    if (error.response?.status === 500) {
       handleElectricCar(chatId, setChats);
     } else {
       addMessage(

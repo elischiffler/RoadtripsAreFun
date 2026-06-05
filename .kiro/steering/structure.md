@@ -68,16 +68,16 @@ MyRoadtrip/
 │   │   ├── pages/
 │   │   │   ├── HomePage/         # Landing page (hero, feature chips)
 │   │   │   ├── ChatPage/         # Main trip-planning chat flow
-│   │   │   │   ├── ChatPage.jsx
-│   │   │   │   ├── InputAddress.jsx
-│   │   │   │   ├── InputBudget.jsx
-│   │   │   │   ├── InputCar.jsx
-│   │   │   │   ├── InputStops.jsx
-│   │   │   │   ├── ValidateLocation.jsx
-│   │   │   │   ├── getRoute.jsx
-│   │   │   │   ├── CalcBudget.jsx
-│   │   │   │   ├── startWorkFlow.jsx
-│   │   │   │   └── DatabaseUtils.jsx
+│   │   │   │   ├── ChatPage.jsx          # Page shell: sidebar rail, message list, input area
+│   │   │   │   ├── useTripWorkflow.js    # State-machine hook driving the full workflow
+│   │   │   │   ├── LocationInput.jsx     # Single-field address bar + 📍 geolocation button
+│   │   │   │   ├── InputBudget.jsx       # Number field for hotel budget override
+│   │   │   │   ├── InputCar.jsx          # Three-field car input (year / make / model)
+│   │   │   │   ├── InputStops.jsx        # Scrollable pill carousel (1–10 stops)
+│   │   │   │   ├── TripSearch.jsx        # ⌘K spotlight-style trip search modal
+│   │   │   │   ├── getRoute.jsx          # getInitialRoute / getFinalRoute API calls
+│   │   │   │   ├── CalcBudget.jsx        # calcHotelBudget / calcGasBudget helpers
+│   │   │   │   └── DatabaseUtils.jsx     # createChat / updateUserData / initializeUserData
 │   │   │   ├── MapPage/          # Interactive Mapbox route view
 │   │   │   ├── ItineraryPage/    # Day-by-day itinerary display
 │   │   │   │   └── generateItinerary.jsx  # Calls /generate-itinerary endpoint
@@ -118,3 +118,14 @@ MyRoadtrip/
 - **Environment variables**: loaded with `load_dotenv(override=True)` at the top of each router that needs them; accessed via `os.getenv()`.
 - **Coordinates** are consistently stored and passed as `[lat, lon]` lists, except where an external API (e.g. Mapbox, GeoJSON) uses `[lon, lat]` order — be explicit about which convention is in use.
 - **CI**: GitHub Actions workflows are path-filtered — backend changes only trigger the backend workflow, and vice versa.
+
+## Frontend Chat Workflow
+
+The trip-planning chat uses a **state machine** implemented in `useTripWorkflow.js`:
+
+- `step` is a string enum stored in React state (`start_input` → `start_validating` → `end_input` → … → `done`)
+- Each step transition triggers a `useEffect` that performs exactly one unit of async work (API call, message append, or step advance)
+- User input calls `submit(action, payload)` which validates the action against the current step and advances the machine
+- **No `setInterval` polling.** No mutable class instance mutations. No stale closures over chat IDs.
+- `inputMode` returned by the hook tells `ChatPage` which input component to render (`'location'` | `'stops'` | `'budget'` | `'car'` | `'none'`)
+- Chat messages are always read live from the `chats` context array using `selectedChatId` — never from a stale snapshot state variable

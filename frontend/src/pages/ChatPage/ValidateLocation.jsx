@@ -1,50 +1,38 @@
 import axios from 'axios';
-import { addMessage, removeLoader, inputLocationWorkflow } from './startWorkFlow';
+import { addMessage, removeLoader, inputLocationDirect } from './startWorkFlow';
 
 // Sends an API request to our backend to validate the location
-// It takes a starting location and a flag indicating whether the location is a coordinate or an address
 export const validateLocation = async (
   input,
   isCoordinate,
   UserChatData,
   setChats,
   setChatInput,
-  chatInput
+  chatInput,
+  overrideChatId = null // use this when UserChatData.chatId may be stale
 ) => {
+  const chatId = overrideChatId ?? UserChatData.chatId;
   try {
-    // Construct the query parameter based on whether the input is a coordinate or an address
     const data = isCoordinate
       ? { location: { coordinates: input }, is_coordinates: isCoordinate }
       : { location: { address: input }, is_coordinates: isCoordinate };
 
-    addMessage(UserChatData.chatId, setChats, 'loading', 'bot'); // Start a loading chat animation
-    // Send the a post request to the backend server
+    addMessage(chatId, setChats, 'loading', 'bot');
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_SERVER}validate-location`,
       data
     );
-    removeLoader(UserChatData.chatId, setChats); // Delete the loading chat animation
+    removeLoader(chatId, setChats);
 
-    // Get the exact address
     const location = response.data;
     console.log('Validated Location:', location);
-
-    // Return the location data
     return location;
   } catch (error) {
-    removeLoader(UserChatData.chatId, setChats);
-    // Log any errors encountered during the request
+    removeLoader(chatId, setChats);
     console.error('Error validating location:', error);
-    addMessage(
-      UserChatData.chatId,
-      setChats,
-      'Error finding the location. Please try again.',
-      'bot'
-    );
+    addMessage(chatId, setChats, 'Error finding the location. Please try again.', 'bot');
 
-    //Set values back to regular
     UserChatData.action = null;
-    // Re-trigger the workflow
-    inputLocationWorkflow(UserChatData.chatId, setChats, setChatInput, chatInput, UserChatData);
+    inputLocationDirect(chatId, setChats, setChatInput, chatInput, UserChatData);
   }
 };

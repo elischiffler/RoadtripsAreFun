@@ -17,8 +17,6 @@ const MapPage = () => {
     ChatLogsData?.chatdata?.length > 0
       ? ChatLogsData.getChatDataById(ChatLogsData.currentId) || ChatLogsData.chatdata[0]
       : null;
-  console.log(UserChatData);
-
   if (!UserChatData || !UserChatData.route) {
     return (
       <Box className="map-page-container">

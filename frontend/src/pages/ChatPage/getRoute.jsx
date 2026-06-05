@@ -11,7 +11,6 @@ export const getInitialRoute = async (start_lat, start_lon, end_lat, end_lon) =>
       params: params,
     });
     const route = response.data;
-    console.log('Initial route', route);
     return route;
   } catch (error) {
     // Log any errors encountered during the request
@@ -37,7 +36,6 @@ export const getFinalRoute = async (initial_route, budget, stops) => {
     const route = response.data;
 
     // Return route structure
-    console.log('Specified route:', route);
     return route;
   } catch (error) {
     // Log any errors encountered during the request

@@ -1,0 +1,93 @@
+/* InputStops.css — scrolling pill carousel */
+
+.stop-carousel-wrapper {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  /* Clip the fade masks cleanly */
+  border-radius: 10px;
+}
+
+/* Horizontal scrolling track */
+.stop-carousel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 32px; /* padding so pills aren't hidden under fades */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.stop-carousel::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Individual pill */
+.stop-pill {
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  min-width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 22px;
+  border: 1.5px solid var(--cream-dark);
+  background-color: var(--cream-light);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+  user-select: none;
+}
+
+.stop-pill:hover {
+  background-color: var(--cream-dark);
+  border-color: var(--sand-main);
+  transform: scale(1.08);
+}
+
+.stop-pill--selected {
+  background-color: var(--amber-main);
+  border-color: var(--amber-main);
+  transform: scale(1.12);
+}
+
+.stop-pill--selected:hover {
+  background-color: var(--amber-main);
+}
+
+.stop-pill-label {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  color: var(--bark-main) !important;
+  line-height: 1 !important;
+}
+
+.stop-pill--selected .stop-pill-label {
+  color: #1e1208 !important;
+}
+
+/* Fade-out masks on left and right edges */
+.stop-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.stop-fade--left {
+  left: 0;
+  background: linear-gradient(to right, var(--cream-light), transparent);
+}
+
+.stop-fade--right {
+  right: 0;
+  background: linear-gradient(to left, var(--cream-light), transparent);
+}
