@@ -8,38 +8,33 @@
 }
 
 .fixed-top-box {
+  display: none;
+}
+
+.no-itinerary-message {
   position: fixed;
   top: 56px;
   width: 100%;
-  height: 48px;
-  background-color: var(--cream-light);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  border-bottom: 1px solid var(--cream-dark);
-  z-index: 1000;
-}
-
-.fixed-top-box .title {
-  flex-grow: 1;
-  text-align: center;
+  justify-content: center;
+  padding: 20px;
   color: var(--bark-main);
 }
 
 .scrollable-main-content {
   background-color: var(--cream-main);
   color: var(--soil-main);
-  padding: 20px;
+  padding: 20px 20px 20px 84px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   position: fixed;
   left: 0;
   right: 0;
-  top: 104px;
+  top: 56px;
   overflow-y: auto;
-  height: calc(100vh - 112px);
+  height: calc(100vh - 56px);
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -83,26 +78,18 @@
   color: var(--bark-main);
 }
 
-.fixed-bottom-buttons {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  height: 56px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  background-color: var(--cream-light);
-  border-top: 1px solid var(--cream-dark);
-  z-index: 1000;
-}
-
-.fixed-bottom-buttons .button-container {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
-
 .activity-link {
   color: var(--forest-main);
+}
+
+/* Floating nav buttons — bottom-left, mirrors chat page fab-group--bottom */
+.itinerary-fab-group {
+  position: fixed;
+  left: 20px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
 }

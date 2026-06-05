@@ -42,6 +42,8 @@ MyRoadtrip/
 │   │   ├── location_api_tests.py
 │   │   ├── geolocation_tests.py
 │   │   └── routing_api/
+│   │       ├── routing_api_tests.py
+│   │       └── amadeus_tests.py
 │   ├── .env                      # Local secrets (never commit)
 │   ├── requirements.txt          # Pinned Python dependencies
 │   └── Makefile                  # `make run` starts the dev server
@@ -58,6 +60,7 @@ MyRoadtrip/
 │   │   │   ├── Map.jsx           # Mapbox GL map wrapper
 │   │   │   ├── AuthWrapper.jsx   # Cognito auth session guard
 │   │   │   ├── Theme.jsx         # MUI theme definition and design tokens
+│   │   │   ├── ThemedTooltip.jsx # Styled MUI Tooltip matching the earthy palette
 │   │   │   ├── SpinningWheelChip.jsx  # Landing page feature chip – route animation
 │   │   │   ├── HotelChip.jsx          # Landing page feature chip – hotel animation
 │   │   │   ├── ClockChip.jsx          # Landing page feature chip – clock animation
@@ -70,7 +73,10 @@ MyRoadtrip/
 │   │   │   ├── ChatPage/         # Main trip-planning chat flow
 │   │   │   │   ├── ChatPage.jsx          # Page shell: sidebar rail, message list, input area
 │   │   │   │   ├── useTripWorkflow.js    # State-machine hook driving the full workflow
+│   │   │   │   ├── startWorkFlow.jsx     # Async orchestrator: runs the full multi-step trip workflow
+│   │   │   │   ├── ValidateLocation.jsx  # Calls /validate-location and retries on failure
 │   │   │   │   ├── LocationInput.jsx     # Single-field address bar + 📍 geolocation button
+│   │   │   │   ├── InputAddress.jsx      # Four-field structured address form (street/city/state/zip)
 │   │   │   │   ├── InputBudget.jsx       # Number field for hotel budget override
 │   │   │   │   ├── InputCar.jsx          # Three-field car input (year / make / model)
 │   │   │   │   ├── InputStops.jsx        # Scrollable pill carousel (1–10 stops)

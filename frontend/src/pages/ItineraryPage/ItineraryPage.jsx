@@ -1,6 +1,5 @@
 import { useContext } from 'react';
 import { Box, Typography, Container } from '@mui/material';
-import LogoButton from '../../components/LogoButton';
 import ChatButton from '../../components/buttons/ChatButton';
 import MapButton from '../../components/buttons/MapButton';
 import { UserDataContext } from '../../states/UserDataContext';
@@ -19,13 +18,10 @@ const ItineraryPage = () => {
   if (!UserChatData || !UserChatData.itinerary) {
     return (
       <Container className="itinerary-page" maxWidth={false} disableGutters>
-        <Box className="fixed-top-box">
-          <LogoButton />
-          <Box className="title">
-            <Typography variant="h6" color="white.black">
-              No Itinerary Available
-            </Typography>
-          </Box>
+        <Box className="no-itinerary-message">
+          <Typography variant="h6" color="white.black">
+            No Itinerary Available
+          </Typography>
         </Box>
       </Container>
     );
@@ -33,16 +29,6 @@ const ItineraryPage = () => {
 
   return (
     <Container className="itinerary-page" maxWidth={false} disableGutters>
-      {/* Fixed Top Box */}
-      <Box className="fixed-top-box">
-        <LogoButton />
-        <Box className="title">
-          <Typography variant="h6" color="white.black">
-            Trip Itinerary
-          </Typography>
-        </Box>
-      </Box>
-
       {/* Scrollable Main Content Box */}
       <Box className="scrollable-main-content">
         {UserChatData.itinerary.map((day, index) => (
@@ -93,14 +79,10 @@ const ItineraryPage = () => {
         ))}
       </Box>
 
-      {/* Fixed Bottom Button Container */}
-      <Box className="fixed-bottom-buttons">
-        <Box className="button-container">
-          <ChatButton />
-        </Box>
-        <Box className="button-container">
-          <MapButton route={UserChatData.route} />
-        </Box>
+      {/* Floating nav buttons — bottom-left, same position as chat page */}
+      <Box className="itinerary-fab-group">
+        <MapButton route={UserChatData.route} showRing={false} />
+        <ChatButton />
       </Box>
     </Container>
   );

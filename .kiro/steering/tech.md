@@ -68,9 +68,11 @@ All secrets are loaded from `.env` (never committed). Required keys:
 - `DATABASE_URL`
 - `MAPBOX_API`
 - `TRIPADVISOR_API`
-- `GOOGLE_PLACES_API`
 - `OPENCAGE_KEY`
 - `AMADEUS_KEY`, `AMADEUS_SECRET`
+- `CAR_DATA_API`
+
+> Note: `GOOGLE_PLACES_API` is no longer listed in `.env.example` — it may be embedded in the scraping logic or removed.
 
 ---
 

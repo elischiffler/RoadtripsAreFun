@@ -33,13 +33,18 @@ export default function GlobalHeader() {
   if (HIDDEN_ON.includes(location.pathname)) return null;
 
   const onChatPage = location.pathname === '/chat';
+  const onItineraryPage = location.pathname === '/itinerary';
+  const onMapPage = location.pathname === '/map';
   const chatProgress = Math.min((currentStep - 1) / 4, 1);
   // Animate from step 1 onwards; stop only when the trip is complete (step 5)
   const isDriving = onChatPage && currentStep < 5;
 
+  // On the itinerary page the trip is fully planned — show the car at the end
+  const logoProgress = onItineraryPage || onMapPage ? 1 : onChatPage ? chatProgress : 0;
+
   return (
-    <Box className="global-header">
-      <LogoButton driving={isDriving} progress={onChatPage ? chatProgress : 0} />
+    <Box className={`global-header${onMapPage ? ' global-header--transparent' : ''}`}>
+      <LogoButton driving={isDriving} progress={logoProgress} />
 
       <Box className="global-header-right">
         {authed ? (

@@ -71,7 +71,15 @@
   background-color: var(--amber-light) !important;
 }
 
-/* ── Profile dropdown ── */
+/* ── Transparent variant (map page) ── */
+.global-header--transparent {
+  background-color: transparent !important;
+  border-bottom-color: transparent !important;
+  /* subtle shadow so logo/avatar read over light map tiles */
+  filter: drop-shadow(0 1px 4px rgba(58, 42, 26, 0.3));
+}
+
+/* Profile dropdown */
 .profile-menu-paper {
   background-color: var(--cream-light) !important;
   border: 1px solid var(--cream-dark) !important;

@@ -1,19 +1,20 @@
-import { Button, Box, Typography } from '@mui/material';
-import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import { Box } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
+import ThemedTooltip from '../ThemedTooltip';
 import './ButtonStyles.css';
 
+// ChatButton — plain outlined circular back-to-chat button (no progress ring)
 const ChatButton = () => {
   return (
-    <Link to="/chat" className="link">
-      <Button variant="contained" className="button">
-        <Box className="button-content">
-          <KeyboardReturnIcon className="button-icon" />
-          <Typography variant="body1" className="typography">
-            Chat
-          </Typography>
-        </Box>
-      </Button>
+    <Link to="/chat" className="icon-btn-link">
+      <ThemedTooltip title="Back to Chat" placement="right" arrow>
+        <span>
+          <Box className="icon-btn icon-btn--outlined" role="button" aria-label="Back to Chat">
+            <ArrowBackIcon sx={{ fontSize: 20, color: 'var(--bark-main)' }} />
+          </Box>
+        </span>
+      </ThemedTooltip>
     </Link>
   );
 };

@@ -21,10 +21,13 @@ const Map = ({ UserChatData }) => {
 
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: 'mapbox://styles/mapbox/light-v11',
       center: [longitude, latitude],
       zoom: 100 / zoom_factor,
+      attributionControl: false,
     });
+
+    mapRef.current.addControl(new mapboxgl.AttributionControl({ compact: true }));
 
     mapRef.current.on('load', () => {
       if (!mapRef.current.getSource('route')) {
@@ -51,8 +54,9 @@ const Map = ({ UserChatData }) => {
             'line-cap': 'round',
           },
           paint: {
-            'line-color': '#888',
-            'line-width': 8,
+            'line-color': '#C4873A', // --amber-main / --forest-main
+            'line-width': 6,
+            'line-opacity': 0.9,
           },
         });
       }
@@ -64,7 +68,13 @@ const Map = ({ UserChatData }) => {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <div style={{ height: '100%' }} ref={mapContainerRef} className="map-container"></div>;
+  return (
+    <div
+      style={{ position: 'absolute', inset: 0 }}
+      ref={mapContainerRef}
+      className="map-container"
+    ></div>
+  );
 };
 
 Map.propTypes = {

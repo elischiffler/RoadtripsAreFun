@@ -1,43 +1,54 @@
 /* MapPage.css */
 
 .map-page-container {
-  display: flex;
-  height: 100vh;
+  position: relative;
+  height: calc(100vh + 50px);
+  width: 100%;
   overflow: hidden;
-  box-sizing: border-box;
 }
 
-.left-sidebar {
-  width: 17%;
-  height: calc(100vh - 56px);
-  margin-top: 56px;
-  background-color: var(--cream-light);
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  border-right: 1px solid var(--cream-dark);
-  box-sizing: border-box;
+/* Full-bleed map fills the entire viewport */
+.map-page-container .map-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.logo-button-container {
-  margin-bottom: auto;
+/* Move Mapbox logo up so it doesn't sit on the bottom edge */
+.map-page-container .mapboxgl-ctrl-bottom-left {
+  bottom: 8px;
+}
+
+/* Compact attribution button — keep it tidy */
+.map-page-container .mapboxgl-ctrl-bottom-right {
+  bottom: 8px;
+}
+
+/* Empty-state centred message */
+.map-empty {
+  position: absolute;
+  inset: 0;
+  background-color: var(--cream-main);
   display: flex;
   justify-content: center;
   align-items: center;
+  color: var(--soil-main);
 }
 
-.itinerary-button-container {
-  margin-bottom: -8px;
-  width: 100%;
-}
-
-.chat-button-container {
-  width: 100%;
-}
-
-.main-content {
-  flex: 1;
+/* Floating button cluster — bottom-left, mirrors chat/itinerary page position */
+.map-overlay-buttons {
+  position: absolute;
+  bottom: 70px;
+  left: 20px;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  gap: 8px;
+  z-index: 100;
+}
+
+/* Give each button a frosted-glass card so it reads over the map */
+.map-overlay-buttons .link,
+.map-overlay-buttons .icon-btn-link {
+  filter: drop-shadow(0 2px 8px rgba(58, 42, 26, 0.25));
 }
