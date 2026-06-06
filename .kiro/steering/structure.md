@@ -31,6 +31,7 @@ MyRoadtrip/
 │   │   │   └── chat_schemas.py   # ChatSchema, ChatDataSchema, ChatLogSchema
 │   │   ├── crud/                 # Database access layer (Neon/Postgres)
 │   │   │   └── chat_crud.py      # All chat/route/segment read-write operations
+│   │   ├── external services/    # Placeholder package for future third-party service wrappers
 │   │   └── utils/                # Shared helpers
 │   │       ├── auth.py           # JWT decode → user_id extraction
 │   │       ├── crud_helpers.py   # Route segmentation for storage
@@ -56,23 +57,32 @@ MyRoadtrip/
 │   │   ├── index.css             # Global CSS custom properties (design tokens)
 │   │   ├── components/           # Shared/global UI components
 │   │   │   ├── GlobalHeader.jsx  # Fixed top nav bar (logo + auth actions)
+│   │   │   ├── GlobalHeader.css
 │   │   │   ├── LogoButton.jsx    # Animated SVG logo linking to home
+│   │   │   ├── LogoButton.css
 │   │   │   ├── Map.jsx           # Mapbox GL map wrapper
 │   │   │   ├── AuthWrapper.jsx   # Cognito auth session guard
 │   │   │   ├── Theme.jsx         # MUI theme definition and design tokens
 │   │   │   ├── ThemedTooltip.jsx # Styled MUI Tooltip matching the earthy palette
 │   │   │   ├── SpinningWheelChip.jsx  # Landing page feature chip – route animation
+│   │   │   ├── SpinningWheelChip.css
 │   │   │   ├── HotelChip.jsx          # Landing page feature chip – hotel animation
+│   │   │   ├── HotelChip.css
 │   │   │   ├── ClockChip.jsx          # Landing page feature chip – clock animation
+│   │   │   ├── ClockChip.css
 │   │   │   └── buttons/          # Reusable icon nav buttons
+│   │   │       ├── ButtonStyles.css
 │   │   │       ├── ChatButton.jsx
 │   │   │       ├── MapButton.jsx
 │   │   │       ├── ItineraryButton.jsx
 │   │   │       └── ProgressRevealIcon.jsx  # Circular sweep overlay; reveals icon as progress 0→1
 │   │   ├── pages/
 │   │   │   ├── HomePage/         # Landing page (hero, feature chips)
+│   │   │   │   ├── HomePage.jsx
+│   │   │   │   └── HomePage.css
 │   │   │   ├── ChatPage/         # Main trip-planning chat flow
 │   │   │   │   ├── ChatPage.jsx          # Page shell: sidebar rail, message list, input area
+│   │   │   │   ├── ChatPage.css
 │   │   │   │   ├── useTripWorkflow.js    # State-machine hook driving the full workflow
 │   │   │   │   ├── startWorkFlow.jsx     # Async orchestrator: runs the full multi-step trip workflow
 │   │   │   │   ├── ValidateLocation.jsx  # Calls /validate-location and retries on failure
@@ -81,15 +91,21 @@ MyRoadtrip/
 │   │   │   │   ├── InputBudget.jsx       # Number field for hotel budget override
 │   │   │   │   ├── InputCar.jsx          # Three-field car input (year / make / model)
 │   │   │   │   ├── InputStops.jsx        # Scrollable pill carousel (1–10 stops)
+│   │   │   │   ├── InputStops.css
 │   │   │   │   ├── TripSearch.jsx        # ⌘K spotlight-style trip search modal
+│   │   │   │   ├── TripSearch.css
 │   │   │   │   ├── getRoute.jsx          # getInitialRoute / getFinalRoute API calls
 │   │   │   │   ├── CalcBudget.jsx        # calcHotelBudget / calcGasBudget helpers
 │   │   │   │   └── DatabaseUtils.jsx     # createChat / updateUserData / initializeUserData
 │   │   │   ├── MapPage/          # Interactive Mapbox route view
+│   │   │   │   ├── MapPage.jsx
+│   │   │   │   └── MapPage.css
 │   │   │   ├── ItineraryPage/    # Day-by-day itinerary display
 │   │   │   │   ├── ItineraryPage.jsx      # Renders day/stop cards from itinerary context; floating nav buttons
+│   │   │   │   ├── ItineraryPage.css
 │   │   │   │   └── generateItinerary.jsx  # Calls /generate-itinerary endpoint
 │   │   │   ├── AuthPages/        # Login and sign-up pages
+│   │   │   │   ├── AuthPage.css
 │   │   │   │   ├── LoginPage.jsx
 │   │   │   │   ├── SignUpPage.jsx
 │   │   │   │   ├── PasswordField.jsx
