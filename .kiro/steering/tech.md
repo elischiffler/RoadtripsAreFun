@@ -42,8 +42,9 @@ This repo contains two services: `backend/` (Python/FastAPI) and `frontend/` (Re
 - `typer` / `rich` – CLI utilities pulled in as FastAPI CLI dependencies
 
 ### Testing
-- **pytest 8.2.2** + **pytest-asyncio 0.23.8**
+- **pytest 8.2.2** + **pytest-asyncio 0.23.8** + **pytest-cov 5.0.0**
 - Tests live in `backend/tests/` and use `fastapi.testclient.TestClient`
+- Configuration in `backend/pytest.ini`
 - CI runs via `pytest` (GitHub Actions) from the `backend/` directory
 
 ### Common Commands
@@ -103,11 +104,18 @@ All secrets are loaded from `.env` (never committed). Required keys:
 - `bootstrap` – utility CSS
 - `ldrs` – loading animation components
 - `@react-login-page/page11` – pre-built login page layout
+- `prop-types` – runtime prop type checking for React components
+
+### Testing
+- **Vitest 2.1.9** + **@testing-library/react 16.2.0** + **@testing-library/user-event 14.5.2**
+- Tests live in `frontend/src/tests/`; config uses `jsdom` as the environment
+- Run with `npm run test` (single pass) or `npm run test:watch`; coverage via `npm run test:coverage`
 
 ### Dev Dependencies
 - `prettier` + `eslint-config-prettier` + `eslint-plugin-prettier` – code formatting; enforced via `npm run format` and `npm run format:check`
 - `eslint` + `eslint-plugin-react` + `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh` – linting
 - `@vitejs/plugin-react` – Vite React plugin (Babel fast-refresh)
+- `vitest` + `@vitest/coverage-v8` + `jsdom` + `@testing-library/*` – unit/component test stack
 
 ### Chat Workflow Architecture
 The trip-planning flow is implemented as a **React state machine** in `useTripWorkflow.js`. Steps advance via `submit(action, payload)` — no polling loops, no class mutations. Each step change triggers a `useEffect` that does one unit of async work. See `structure.md` for the full step list and conventions.
@@ -123,6 +131,9 @@ npm run build      # Production build
 npm run lint       # ESLint
 npm run format     # Prettier auto-format
 npm run format:check  # Prettier check (CI-safe, no writes)
+npm run test       # Vitest (single pass)
+npm run test:watch # Vitest watch mode
+npm run test:coverage  # Vitest with v8 coverage report
 ```
 
 ---

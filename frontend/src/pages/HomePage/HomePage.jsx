@@ -5,9 +5,8 @@ import RouteIcon from '@mui/icons-material/Route';
 import SpinningWheelChip from '../../components/SpinningWheelChip';
 import HotelChip from '../../components/HotelChip';
 import ClockChip from '../../components/ClockChip';
+import { isAuthenticated } from '../../services/authService';
 import './HomePage.css';
-
-const isAuthenticated = () => !!sessionStorage.getItem('accessToken');
 
 export default function HomePage() {
   const navigate = useNavigate();

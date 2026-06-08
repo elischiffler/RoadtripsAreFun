@@ -59,11 +59,11 @@ export const initializeUserData = async (auth_token) => {
       params: params,
     });
     const user_data = response.data;
-    var chats = [];
-    var chatdata = [];
-    for (var i = 0; i < user_data.length; i++) {
-      chats.push(user_data[i][1]);
-      var chat_d = user_data[i][0];
+    const chats = [];
+    const chatdata = [];
+    for (const entry of user_data) {
+      chats.push(entry[1]);
+      const chat_d = entry[0];
       chatdata.push(
         new ChatData(
           chat_d['chatId'],

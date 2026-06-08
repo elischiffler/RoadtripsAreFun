@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useContext, useMemo } from 'react';
 import { Box, Button, Typography } from '@mui/material';
+import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import { UserDataContext } from '../../states/UserDataContext';
@@ -167,7 +168,26 @@ const WorkflowPanel = ({
   );
 };
 
-// eslint-disable-next-line react/prop-types
+WorkflowPanel.propTypes = {
+  chatId: PropTypes.number.isRequired,
+  setChats: PropTypes.func.isRequired,
+  setCurrentStep: PropTypes.func.isRequired,
+  chatsRef: PropTypes.shape({ current: PropTypes.array }).isRequired,
+  accessToken: PropTypes.string,
+  ChatLogsData: PropTypes.object.isRequired,
+  activeMessages: PropTypes.arrayOf(
+    PropTypes.shape({
+      text: PropTypes.string,
+      sender: PropTypes.string,
+      type: PropTypes.string,
+      buttons: PropTypes.arrayOf(PropTypes.shape({ label: PropTypes.string })),
+    })
+  ).isRequired,
+  chatEndRef: PropTypes.shape({ current: PropTypes.any }).isRequired,
+  savedData: PropTypes.object,
+  onChatReady: PropTypes.func.isRequired,
+};
+
 WorkflowPanel.displayName = 'WorkflowPanel';
 
 const ChatPage = () => {

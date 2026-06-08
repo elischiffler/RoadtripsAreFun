@@ -15,5 +15,6 @@ export const generateItinerary = async (route) => {
   } catch (error) {
     // Log any errors encountered during the request
     console.error('Error generating the itinerary:', error);
+    return null;
   }
 };

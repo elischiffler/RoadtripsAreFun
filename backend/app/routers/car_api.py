@@ -1,4 +1,5 @@
 from typing import Dict, List
+import logging
 import requests
 from requests import Response
 from requests.exceptions import RequestException
@@ -8,6 +9,7 @@ import xml.etree.ElementTree as ET
 
 # Grab app from APIRouter
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.get("/get-car-details")
@@ -152,4 +154,7 @@ async def get_gas_price() -> float:
         else:
             return 3.317  # Fallback to hardcoded average if the API fails
     except Exception as exception:
+        logger.error(
+            "get_gas_price: FuelEconomy.gov request failed, using fallback $3.317: %s", exception
+        )
         return 3.317  # Fallback if an exception occurs

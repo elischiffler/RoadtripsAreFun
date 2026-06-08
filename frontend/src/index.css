@@ -1,3 +1,19 @@
+/* Design tokens */
+:root {
+  --header-height: 56px;
+}
+
+/*
+ * Z-index scale
+ * ─────────────────────────────────────────────
+ *   1    – local decorative overlays (chip fade edges, stops gradient)
+ *   100  – in-page floating controls (nav button groups on map/chat/itinerary)
+ *   200  – global header (fixed, above page controls)
+ *   1000 – modal backdrops (TripSearch overlay)
+ *   1100 – tooltips / popovers (MUI defaults to ~1500; keep above modals)
+ * ─────────────────────────────────────────────
+ */
+
 /* Global resets — ensure the flex chain reaches the viewport */
 html,
 body,

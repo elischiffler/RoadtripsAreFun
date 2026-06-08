@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { addMessage, removeLoader, handlePromptCarInfo } from './startWorkFlow';
+import { addMessage, removeLoader } from './useTripWorkflow';
 
 export const calcHotelBudget = async (route_duration, stops) => {
   // Generate the initial route and grab the routes duration
@@ -45,8 +45,6 @@ export const calcGasBudget = async (
     const gasBudget = gasUsed * liveGasPrice;
     UserChatData.carBudget = Math.round(gasBudget);
     return UserChatData;
-  } else {
-    await handlePromptCarInfo(chatId, setChats, UserChatData); // Loop through getting car info again
   }
 };
 

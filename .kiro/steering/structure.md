@@ -55,6 +55,7 @@ MyRoadtrip/
 │   │   ├── App.jsx               # Root component
 │   │   ├── Router.jsx            # react-router-dom route definitions
 │   │   ├── index.css             # Global CSS custom properties (design tokens)
+│   │   ├── assets/               # Static assets bundled by Vite (images, SVGs)
 │   │   ├── components/           # Shared/global UI components
 │   │   │   ├── GlobalHeader.jsx  # Fixed top nav bar (logo + auth actions)
 │   │   │   ├── GlobalHeader.css
@@ -114,8 +115,28 @@ MyRoadtrip/
 │   │   │   └── NotFoundPage.jsx  # 404 fallback
 │   │   ├── services/
 │   │   │   └── authService.ts    # Cognito auth helpers (TypeScript)
-│   │   └── states/
-│   │       └── UserDataContext.jsx  # React context for shared trip/user state
+│   │   ├── states/
+│   │   │   └── UserDataContext.jsx  # React context for shared trip/user state
+│   │   └── tests/                # Vitest + Testing Library unit/component tests
+│   │       ├── setup.js              # Global test setup (jest-dom matchers)
+│   │       ├── testUtils.jsx         # Shared render helpers and mock providers
+│   │       ├── AuthWrapper.test.jsx
+│   │       ├── CalcBudget.test.js
+│   │       ├── DatabaseUtils.test.js
+│   │       ├── GlobalHeader.test.jsx
+│   │       ├── HomePage.test.jsx
+│   │       ├── InputBudget.test.jsx
+│   │       ├── InputCar.test.jsx
+│   │       ├── InputStops.test.jsx
+│   │       ├── ItineraryPage.test.jsx
+│   │       ├── LocationInput.test.jsx
+│   │       ├── LoginPage.test.jsx
+│   │       ├── MapPage.test.jsx
+│   │       ├── PasswordRequirement.test.jsx
+│   │       ├── SignUpPage.test.jsx
+│   │       ├── TripSearch.test.jsx
+│   │       ├── UserDataContext.test.jsx
+│   │       └── useTripWorkflow.helpers.test.js
 │   ├── public/               # Static assets
 │   ├── index.html
 │   ├── package.json

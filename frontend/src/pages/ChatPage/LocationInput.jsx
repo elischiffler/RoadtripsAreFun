@@ -46,7 +46,8 @@ const LocationInput = ({ placeholder, onSubmit, onGeolocate, disabled }) => {
       () => {
         setGeoLoading(false);
         setGeoError(true);
-      }
+      },
+      { timeout: 10000, maximumAge: 0, enableHighAccuracy: false }
     );
   };
 

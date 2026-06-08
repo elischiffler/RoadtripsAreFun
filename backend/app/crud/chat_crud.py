@@ -152,7 +152,16 @@ def get_segments(route_id: str):
 def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
     """Update a component of a user's chat in the database."""
     comp_dict = chat_schema.model_dump()
-    col_name = "chat_data" if prefix == "ChatData" else "chat_log"
+
+    _ALLOWED_PREFIXES = {
+        "ChatData": "chat_data",
+        "ChatLog": "chat_log",
+    }
+    if prefix not in _ALLOWED_PREFIXES:
+        raise ValueError(
+            f"update_chat_component: invalid prefix {prefix!r}; must be one of {list(_ALLOWED_PREFIXES)}"
+        )
+    col_name = _ALLOWED_PREFIXES[prefix]
 
     conn = _get_conn()
     try:

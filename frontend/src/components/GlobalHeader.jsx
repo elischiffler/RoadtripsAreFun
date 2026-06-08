@@ -4,11 +4,10 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LogoButton from './LogoButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { UserDataContext } from '../states/UserDataContext';
+import { isAuthenticated } from '../services/authService';
 import './GlobalHeader.css';
 
 const HIDDEN_ON = ['/login', '/signup'];
-
-const isAuthenticated = () => !!sessionStorage.getItem('accessToken');
 
 export default function GlobalHeader() {
   const location = useLocation();
@@ -69,6 +68,11 @@ export default function GlobalHeader() {
                 paper: {
                   className: 'profile-menu-paper',
                   elevation: 3,
+                  sx: {
+                    backgroundColor: 'var(--cream-light)',
+                    border: '1px solid var(--cream-dark)',
+                    borderRadius: '10px',
+                  },
                 },
               }}
               transformOrigin={{ horizontal: 'right', vertical: 'top' }}
@@ -85,7 +89,24 @@ export default function GlobalHeader() {
             </Menu>
           </>
         ) : (
-          <Button variant="contained" component={Link} to="/login" className="header-login-btn">
+          <Button
+            variant="contained"
+            component={Link}
+            to="/login"
+            sx={{
+              backgroundColor: 'var(--amber-main)',
+              color: '#1e1208',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              padding: '6px 18px',
+              borderRadius: '8px',
+              boxShadow: 'none',
+              '&:hover': {
+                backgroundColor: 'var(--amber-light)',
+                boxShadow: 'none',
+              },
+            }}
+          >
             Login
           </Button>
         )}

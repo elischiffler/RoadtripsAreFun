@@ -16,20 +16,14 @@ describe('PasswordRequirement', () => {
   });
 
   it('shows a check icon when fulfilled', () => {
-    const { container } = renderWithProviders(
-      <PasswordRequirement fulfilled={true} text="One uppercase letter" />
-    );
-    // MUI CheckIcon renders an SVG with data-testid or aria role; just assert the container
-    // has the green check by checking an icon element exists
-    const svg = container.querySelector('svg');
-    expect(svg).toBeInTheDocument();
+    renderWithProviders(<PasswordRequirement fulfilled={true} text="One uppercase letter" />);
+    expect(screen.getByTestId('password-requirement-check')).toBeInTheDocument();
+    expect(screen.queryByTestId('password-requirement-close')).not.toBeInTheDocument();
   });
 
   it('shows a close icon when not fulfilled', () => {
-    const { container } = renderWithProviders(
-      <PasswordRequirement fulfilled={false} text="One special character" />
-    );
-    const svg = container.querySelector('svg');
-    expect(svg).toBeInTheDocument();
+    renderWithProviders(<PasswordRequirement fulfilled={false} text="One special character" />);
+    expect(screen.getByTestId('password-requirement-close')).toBeInTheDocument();
+    expect(screen.queryByTestId('password-requirement-check')).not.toBeInTheDocument();
   });
 });

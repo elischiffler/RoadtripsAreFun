@@ -30,6 +30,7 @@ async def initialize_chats(partition_key: str):
         if items and len(items) > 0:
             # Iterate through all the items returned
             for item in items:
+                sorted_segments = None
                 if item["ChatData"]["initial"]:
                     sorted_segments = get_segments(route_id=item["ChatData"]["initial"]["geometry"])
                     item["ChatData"]["initial"]["geometry"] = {}
@@ -37,8 +38,7 @@ async def initialize_chats(partition_key: str):
                     item["ChatData"]["initial"]["legs"] = restore_legs(
                         legs=item["ChatData"]["initial"]["legs"]
                     )
-                if item["ChatData"]["route"]:
-                    item["ChatData"]["route"]["geometry"]
+                if item["ChatData"]["route"] and sorted_segments is not None:
                     item["ChatData"]["route"]["geometry"]["coordinates"] = sorted_segments
                 # Add a complete chat entry tuple with a chat log and chat data to chats
                 chats.append((item["ChatData"], item["ChatLog"]))

@@ -17,9 +17,8 @@
 
 /* ── Trip message area ── */
 .chat-box {
-  flex: 1;
   overflow-y: auto;
-  top: 56px;
+  top: var(--header-height);
   bottom: 0;
   left: 0;
   right: 0;
@@ -196,9 +195,9 @@
   z-index: 100;
 }
 
-/* Trip management — sits just below the 56px header */
+/* Trip management — sits just below the header */
 .fab-group--top {
-  top: 68px;
+  top: calc(var(--header-height) + 12px);
 }
 
 /* Nav buttons — bottom-left */

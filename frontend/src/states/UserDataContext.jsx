@@ -65,9 +65,9 @@ class ChatData {
     itinerary = null,
     loading = false,
     hotelBudget = null,
-    carBudget = 0,
+    carBudget = null,
     carDetails = new Array(3).fill(''),
-    budget = 0,
+    budget = null,
     isComplete = false
   ) {
     this.chatId = chatId;

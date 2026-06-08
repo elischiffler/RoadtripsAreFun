@@ -7,9 +7,17 @@ import { createTheme } from '@mui/material';
  * sand     – mid-tone warm neutral, cards / sidebars
  * bark     – rich brown, borders and dividers
  * soil     – deep warm brown, text / heavy accents
- * forest   – muted olive green, primary action color
+ * forest   – golden amber, primary action color (buttons, CTAs, links)
  * amber    – golden ochre, highlights / hover states
  */
+
+// Primary palette constants — single source of truth referenced by both
+// palette.primary and component styleOverrides.
+const PRIMARY_MAIN = '#C4873A';
+const PRIMARY_LIGHT = '#D9A55E';
+const PRIMARY_DARK = '#9E6420';
+const PRIMARY_CONTRAST = '#FBF8F3';
+
 const customTheme = createTheme({
   palette: {
     // --- surface neutrals ---
@@ -34,23 +42,23 @@ const customTheme = createTheme({
 
     // --- action colors ---
     forest: {
-      main: '#C4873A', // amber (sole accent)
-      light: '#D9A55E',
-      dark: '#9E6420',
-      contrastText: '#FBF8F3',
+      main: PRIMARY_MAIN, // golden amber – primary action color
+      light: PRIMARY_LIGHT,
+      dark: PRIMARY_DARK,
+      contrastText: PRIMARY_CONTRAST,
     },
     amber: {
-      main: '#C4873A',
-      light: '#D9A55E',
-      dark: '#9E6420',
+      main: PRIMARY_MAIN, // alias of forest; used by GlobalHeader login button
+      light: PRIMARY_LIGHT,
+      dark: PRIMARY_DARK,
     },
 
     // --- MUI semantic aliases ---
     primary: {
-      main: '#C4873A',
-      light: '#D9A55E',
-      dark: '#9E6420',
-      contrastText: '#FBF8F3',
+      main: PRIMARY_MAIN,
+      light: PRIMARY_LIGHT,
+      dark: PRIMARY_DARK,
+      contrastText: PRIMARY_CONTRAST,
     },
     background: {
       default: '#FBF8F3',
@@ -138,10 +146,10 @@ const customTheme = createTheme({
           },
         },
         containedPrimary: {
-          backgroundColor: '#C4873A',
-          color: '#FBF8F3',
+          backgroundColor: PRIMARY_MAIN,
+          color: PRIMARY_CONTRAST,
           '&:hover': {
-            backgroundColor: '#9E6420',
+            backgroundColor: PRIMARY_DARK,
           },
         },
       },

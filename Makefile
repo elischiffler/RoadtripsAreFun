@@ -1,3 +1,6 @@
+.PHONY: run run-backend run-frontend test test-backend test-frontend \
+        coverage coverage-backend coverage-frontend format lint lint-fix
+
 ## Run both backend and frontend dev servers concurrently
 run:
 	@echo "Starting backend (http://localhost:8000) and frontend (http://localhost:5173)..."

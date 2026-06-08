@@ -29,10 +29,9 @@ describe('BudgetSlider', () => {
 
   it('renders quick-add buttons for +$50, +$100, +$500 and Reset', () => {
     render();
-    // Use getAllByRole since MUI may split the button text across nodes
-    expect(screen.getAllByRole('button', { name: /\+\$50/i })[0]).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: /\+\$100/i })[0]).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: /\+\$500/i })[0]).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^\+\$50$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^\+\$100$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^\+\$500$/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument();
   });
 
@@ -44,7 +43,7 @@ describe('BudgetSlider', () => {
   it('adds $50 to the current value when +$50 is clicked', async () => {
     const user = userEvent.setup();
     render(100);
-    await user.click(screen.getAllByRole('button', { name: /\+\$50/i })[0]);
+    await user.click(screen.getByRole('button', { name: /^\+\$50$/i }));
     // Field should now be 150
     expect(screen.getByLabelText(/hotel budget/i)).toHaveValue(150);
     expect(onValueChange).toHaveBeenCalledWith(150);
@@ -53,7 +52,7 @@ describe('BudgetSlider', () => {
   it('resets to minimum on Reset click', async () => {
     const user = userEvent.setup();
     render(100);
-    await user.click(screen.getAllByRole('button', { name: /\+\$500/i })[0]);
+    await user.click(screen.getByRole('button', { name: /^\+\$500$/i }));
     await user.click(screen.getByRole('button', { name: /reset/i }));
     expect(screen.getByLabelText(/hotel budget/i)).toHaveValue(100);
   });

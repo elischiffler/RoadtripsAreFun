@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import PropTypes from 'prop-types';
 import './SpinningWheelChip.css';
 
 /**
@@ -71,3 +72,8 @@ export default function SpinningWheelChip({ label, icon }) {
     </Box>
   );
 }
+
+SpinningWheelChip.propTypes = {
+  label: PropTypes.string.isRequired,
+  icon: PropTypes.node,
+};

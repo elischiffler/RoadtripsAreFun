@@ -12,6 +12,8 @@ export const cognitoClient = new CognitoIdentityProviderClient({
   region: config.region,
 });
 
+export const isAuthenticated = (): boolean => !!sessionStorage.getItem('accessToken');
+
 export const signIn = async (username: string, password: string) => {
   const params: InitiateAuthCommandInput = {
     AuthFlow: 'USER_PASSWORD_AUTH',

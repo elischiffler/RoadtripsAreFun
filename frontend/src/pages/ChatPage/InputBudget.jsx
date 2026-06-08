@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, TextField, InputAdornment, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 
@@ -7,6 +7,15 @@ const QUICK_STEPS = [50, 100, 500];
 const BudgetSlider = ({ UserChatData, handleKeyDown, onValueChange }) => {
   const min = UserChatData?.hotelBudget ?? 0;
   const [value, setValue] = useState(min);
+
+  // Keep value in sync when the calculated minimum rises (e.g. hotelBudget
+  // is recalculated after route or car data changes).
+  useEffect(() => {
+    setValue((prev) => {
+      const prevNum = typeof prev === 'number' ? prev : parseInt(prev, 10);
+      return isNaN(prevNum) ? min : Math.max(prevNum, min);
+    });
+  }, [min]);
 
   const update = (next) => {
     const clamped = Math.max(min, next);
@@ -57,7 +66,10 @@ const BudgetSlider = ({ UserChatData, handleKeyDown, onValueChange }) => {
             key={step}
             size="small"
             variant="outlined"
-            onClick={() => update((parseInt(value, 10) || min) + step)}
+            onClick={() => {
+              const parsed = parseInt(value, 10);
+              update((isNaN(parsed) ? min : parsed) + step);
+            }}
             sx={{
               flex: 1,
               fontSize: '0.72rem',

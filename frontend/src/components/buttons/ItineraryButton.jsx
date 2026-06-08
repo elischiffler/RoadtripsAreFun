@@ -18,11 +18,7 @@ const ItineraryButton = ({ itinerary, currentStep = 1, showRing = true }) => {
   );
 
   const button = (
-    <Box
-      className={`icon-btn${disabled ? ' icon-btn--disabled' : ''}`}
-      role="button"
-      aria-label="View Itinerary"
-    >
+    <Box className={`icon-btn${disabled ? ' icon-btn--disabled' : ''}`} aria-label="View Itinerary">
       {showRing ? <ProgressRevealIcon progress={progress}>{icon}</ProgressRevealIcon> : icon}
     </Box>
   );

@@ -10,7 +10,7 @@ const ChatButton = () => {
     <Link to="/chat" className="icon-btn-link">
       <ThemedTooltip title="Back to Chat" placement="right" arrow>
         <span>
-          <Box className="icon-btn icon-btn--outlined" role="button" aria-label="Back to Chat">
+          <Box className="icon-btn icon-btn--outlined" aria-label="Back to Chat">
             <ArrowBackIcon sx={{ fontSize: 20, color: 'var(--bark-main)' }} />
           </Box>
         </span>

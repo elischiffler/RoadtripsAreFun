@@ -290,7 +290,7 @@ async def _add_stops(
                         if attempts == 0:
                             raise exception  # Raise an error after 3 tries
                         total_time += 1800  # Increase total drive time by 30 minutes
-                        time_till_stop -= 3600  # Decrease time till stop by 30 minutes
+                        time_till_stop -= 1800  # Decrease time till stop by 30 minutes
                         date += timedelta(seconds=1800)  # Increase the datetime
                         current_time += 1800
                         hotel_lat, hotel_lon = _find_position(
@@ -310,7 +310,9 @@ async def _add_stops(
             current_time = (
                 3600 * daily_start
             )  # set the current time to be the desired start time the next day
-            date = datetime(date.year, date.month, date.day + 1, daily_start, 0, 0)  # New day
+            date = (date + timedelta(days=1)).replace(
+                hour=daily_start, minute=0, second=0, microsecond=0
+            )  # New day
 
         # Ensure we are within the route duration and not looking past 9 pm for a stop
         if (
@@ -785,7 +787,7 @@ async def _get_amadeus_ratings(hotel_ids: list[str]) -> tuple:
         access_token = await _get_amadeus_token(
             os.getenv("AMADEUS_KEY"), os.getenv("AMADEUS_SECRET")
         )
-        hotels_list_url = "https://test.api.amadeus.com/v2"
+        hotels_list_url = "https://test.api.amadeus.com/v2/e-reputation/hotel-sentiments"
         headers = {"Authorization": f"Bearer {access_token}"}
         params = {"hotelIds": hotel_ids}
         response = requests.get(hotels_list_url, params=params, headers=headers)
