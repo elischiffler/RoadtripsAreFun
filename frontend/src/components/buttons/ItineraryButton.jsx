@@ -1,50 +1,51 @@
-import { Button, Box, Typography, Tooltip } from "@mui/material";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
+import { Box } from '@mui/material';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import ThemedTooltip from '../ThemedTooltip';
+import ProgressRevealIcon from './ProgressRevealIcon';
+import './ButtonStyles.css';
 
-// ItineraryButton component that conditionally renders a link to the itinerary page
-const ItineraryButton = ({ itinerary }) => {
+// ItineraryButton — icon-only, with reveal overlay on chat page, plain outlined elsewhere
+const ItineraryButton = ({ itinerary, currentStep = 1, showRing = true }) => {
+  const progress = Math.min((currentStep - 1) / 4, 1);
+  const disabled = !itinerary;
+
+  const icon = (
+    <FormatListBulletedIcon
+      sx={{ fontSize: 20, color: disabled ? 'var(--sand-main)' : 'var(--bark-main)' }}
+    />
+  );
+
   const button = (
-    <Button
-    variant="contained"
-    color="green"
-    startIcon={<FormatListBulletedIcon className="button-icon" />} // Add itinerary icon to the button
-    className="button"
-    disabled={!itinerary} // Disable button if no itinerary
-  >
-    <Box className="button-content">
-      <Typography variant="body1" className="typography">
-        Itinerary
-      </Typography>
+    <Box className={`icon-btn${disabled ? ' icon-btn--disabled' : ''}`} aria-label="View Itinerary">
+      {showRing ? <ProgressRevealIcon progress={progress}>{icon}</ProgressRevealIcon> : icon}
     </Box>
-  </Button>
   );
 
   return (
     <Link
-      to={itinerary ? "/itinerary" : "#"} // Prevent navigation if itinerary is not provided
-      className="link"
+      to={itinerary ? '/itinerary' : '#'}
+      className="icon-btn-link"
       onClick={(e) => {
-        if (!itinerary) e.preventDefault(); // Disable link if no itinerary
+        if (!itinerary) e.preventDefault();
       }}
     >
-      {/* Conditionally wrap the button in a Tooltip if the button is disabled */}
-      {!itinerary ? (
-      <Tooltip title="Please answer the questions first" placement="right" arrow>
-        <span>
-        {button}
-        </span>
-      </Tooltip>
-      ) : (
-        button
-      )}
+      <ThemedTooltip
+        title={itinerary ? 'View Itinerary' : 'Complete your trip first'}
+        placement="right"
+        arrow
+      >
+        <span>{button}</span>
+      </ThemedTooltip>
     </Link>
   );
 };
 
 ItineraryButton.propTypes = {
   itinerary: PropTypes.array,
+  currentStep: PropTypes.number,
+  showRing: PropTypes.bool,
 };
 
 export default ItineraryButton;

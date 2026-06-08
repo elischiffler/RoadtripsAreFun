@@ -30,6 +30,7 @@ env/
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+frontend/coverage/
 
 # ── OS / Editor ───────────────────────────────────────────────────────────────
 .DS_Store

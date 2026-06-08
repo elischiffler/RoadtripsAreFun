@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Refresh Steering Docs",
+  "description": "Manually triggered hook that analyzes the current codebase and rewrites the steering docs (tech.md, structure.md, product.md) to reflect any changes before committing to GitHub.",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyze the current state of this monorepo and update the three steering files to reflect any changes since they were last written. Here is what to check and update for each file:\n\n**`.kiro/steering/tech.md`**\n- Scan `backend/requirements.txt` for version changes to FastAPI, Uvicorn, Starlette, Pydantic, pytest, psycopg2, etc.\n- Check `frontend/package.json` for version changes to React, Vite, and key libraries (react-router-dom, axios, mapbox-gl, @mui/material, bootstrap, @aws-sdk/client-cognito-identity-provider).\n- Check if any new key libraries were added to either requirements.txt or package.json that aren't documented.\n- Check `.env.example` for any new or removed environment variable keys.\n- Update any outdated version numbers, add new libraries, remove ones that no longer exist.\n\n**`.kiro/steering/structure.md`**\n- Scan the actual directory tree of `backend/app/` (routers, models, schemas, crud, utils) and `frontend/src/` for new or deleted files.\n- Update the ASCII tree to match the real file structure.\n- If any new router files exist, add a one-line description based on reading the file's docstring or top-level routes.\n- If any new model or schema files exist, add them with a brief description.\n- Keep the Conventions section unchanged unless you find a clear pattern in the code that contradicts it.\n\n**`.kiro/steering/product.md`**\n- Read `README.md` for any updated feature descriptions or deployment info.\n- Check `backend/app/routers/` for any new endpoints or capabilities that aren't listed under Core Capabilities.\n- Only update if something meaningful has changed — don't rewrite for style.\n\nAfter making all updates, briefly summarize what changed in each file (or say \"no changes needed\" for files that were already accurate)."
+  }
+}

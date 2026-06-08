@@ -48,7 +48,7 @@ class Amadeus_Hotel_Offers(BaseModel):
             dupeId: Optional[str] = None
             name: str
             cityCode: Optional[str] = None
-            model_config = ConfigDict(extra='allow')  # Poor documentation is available
+            model_config = ConfigDict(extra="allow")  # Poor documentation is available
 
         class Offer(BaseModel):
             class Rate_Family(BaseModel):
@@ -98,7 +98,6 @@ class Amadeus_Hotel_Offers(BaseModel):
                 cancellations: Optional[list[Any]] = None
                 checkInOut: Optional[checkInPolicy] = None
 
-
             type: Optional[str] = None
             id: str
             checkInDate: Optional[str] = None
@@ -121,6 +120,7 @@ class Amadeus_Hotel_Offers(BaseModel):
         self: str
         hotel: Hotel
         offers: list[Offer] = []
+
     data: list[Amadeus_Hotel_Offer]
 
 

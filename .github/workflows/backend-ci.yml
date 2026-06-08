@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run tests
+      - name: Run tests with coverage
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           MAPBOX_API: ${{ secrets.MAPBOX_API }}
@@ -41,4 +41,4 @@ jobs:
           OPENCAGE_KEY: ${{ secrets.OPENCAGE_KEY }}
           AMADEUS_KEY: ${{ secrets.AMADEUS_KEY }}
           AMADEUS_SECRET: ${{ secrets.AMADEUS_SECRET }}
-        run: pytest
+        run: pytest --cov=app --cov-report=term-missing --cov-fail-under=63

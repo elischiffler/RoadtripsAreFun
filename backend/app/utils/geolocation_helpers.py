@@ -4,9 +4,9 @@ from geopy.exc import GeopyError
 from fastapi import HTTPException
 
 
-def get_location(geocoder: geopy.geocoders,
-                 coords: Optional[List[float]] = None,
-                 address: Optional[str] = None) -> geopy.location.Location:
+def get_location(
+    geocoder: geopy.geocoders, coords: Optional[List[float]] = None, address: Optional[str] = None
+) -> geopy.location.Location:
     try:
         location = None
         if coords:

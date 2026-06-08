@@ -1,123 +1,13 @@
 /* ChatPage.css */
 
+/* ── Layout shell ── */
 .page-container {
   display: flex;
   height: 100vh;
   box-sizing: border-box;
 }
 
-.sidebar {
-  width: 17%;
-  height: 100vh;
-  background-color: var(--white-light);
-  z-index: 1000;
-  position: fixed;
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  box-shadow: var(--mui-shadow-1);
-  border-right: 2px solid var(--white-dark);
-  box-sizing: border-box;
-}
-
-.sidebar-top {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 8px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 8px;
-  background-color: var(--white-main) !important;
-  border: 2px dashed var(--white-black) !important;
-  color: black !important;
-}
-
-.sidebar-top:hover {
-  background-color: var(--white-dark) !important;
-}
-
-.chat-logs {
-  flex: 1;
-  margin-top: 16px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.chat-logs::-webkit-scrollbar {
-  width: 8px;
-}
-
-.chat-logs::-webkit-scrollbar-track {
-  background: #f2f0ef;
-}
-
-.chat-logs::-webkit-scrollbar-thumb {
-  background: #949392;
-  border-radius: 10px;
-}
-
-.chat-logs::-webkit-scrollbar-thumb:hover {
-  background: #66615e;
-}
-
-.chat-item {
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  position: relative;
-  margin-bottom: 8px;
-  border: 2px solid var(--white-black);
-}
-
-.chat-item:hover {
-  background-color: var(--white-dark);
-}
-
-/* Circle around the icon */
-.close-icon-wrapper {
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background-color: transparent;
-  transition: background-color 0.3s, opacity 0.3s;
-}
-
-/* Icon styles */
-.close-icon {
-  font-size: 18px;
-  top: 8px;
-  color: var(--white-black);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-/* Show icon and circle on hover */
-.chat-item:hover .close-icon-wrapper:hover {
-  background-color: #85827f;
-}
-
-.chat-item:hover .close-icon {
-  opacity: 1;
-}
-
-.sidebar-bottom {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-  width: 100%;
-  background-color: var(--white-light);
-  position: sticky;
-  bottom: 0;
-}
-
+/* ── Main content — full width, no sidebar ── */
 .main-content {
   flex: 1;
   display: flex;
@@ -125,87 +15,75 @@
   box-sizing: border-box;
 }
 
-.header {
-  width: 83%;
-  position: fixed;
-  left: 17%;
-  height:8%;
-  top:0;
-  background-color: var(--white-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--mui-shadow-1);
-}
-
+/* ── Trip message area ── */
 .chat-box {
-  flex: 1;
   overflow-y: auto;
-  top: 8%;
-  bottom: 10%;
-  left: 17%;
+  top: var(--header-height);
+  bottom: 0;
+  left: 0;
   right: 0;
-  background-color: var(--white-main);
+  background-color: var(--cream-main);
   display: flex;
-  position:fixed;
+  position: fixed;
   flex-direction: column;
-  gap: 16px;
   box-sizing: border-box;
 }
 
 .chat-messages {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px;
+  gap: 12px;
+  /* Left padding always clears the FAB column (20px left + 40px button + 12px gap = 72px).
+     Right padding stays symmetric until the centering formula takes over. */
+  padding: 24px max(72px, calc(50% - 380px)) 24px max(72px, calc(50% - 380px));
   overflow-y: auto;
   box-sizing: border-box;
+  max-width: 100%;
 }
 
 .chat-messages::-webkit-scrollbar {
-  width: 12px;
+  width: 6px;
 }
-
 .chat-messages::-webkit-scrollbar-track {
-  background: #c9c8c7;
+  background: transparent;
 }
-
 .chat-messages::-webkit-scrollbar-thumb {
-  background: #949392;
+  background: var(--sand-main);
   border-radius: 10px;
 }
-
 .chat-messages::-webkit-scrollbar-thumb:hover {
-  background: #66615e;
+  background: var(--bark-main);
 }
 
+/* ── Messages ── */
 .message {
-  padding: 16px;
-  border-radius: 16px;
-  max-width: 75%;
+  padding: 12px 16px;
+  border-radius: 14px;
+  max-width: 72%;
   box-sizing: border-box;
-  margin-bottom: 8px; /* Add margin for spacing between messages */
   white-space: pre-wrap;
 }
 
 .message.bot {
   align-self: flex-start;
-  background-color: #94939271;
+  background-color: var(--cream-light);
+  border: 1px solid var(--cream-dark);
 }
 
 .message.user {
   align-self: flex-end;
-  background-color: var(--white-dark);
+  background-color: var(--bark-main);
+  color: var(--cream-light);
 }
 
 .message-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Align to the start for bot messages */
+  align-items: flex-start;
 }
 
 .message-container.user {
-  align-items: flex-end; /* Align to the end for user messages */
+  align-items: flex-end;
 }
 
 .button-container {
@@ -217,69 +95,152 @@
 }
 
 .chat-buttons {
-  background-color: var(--white-dark) !important;
-  width: 100%;
-  padding: 8px;
-  border: 2px solid var(--white-black) !important;
-  border-radius: 10px !important;
-  text-align: center;
-  color: black !important;
+  background-color: var(--cream-main) !important;
+  padding: 8px 16px;
+  border: 1.5px solid var(--sand-main) !important;
+  border-radius: 8px !important;
+  color: var(--bark-main) !important;
+  box-shadow: none !important;
 }
 
-.input-area {
-  width: 83%;
-  display: flex;
-  gap: 20px;
-  padding: 16px;
-  box-shadow: var(--mui-shadow-1);
-  position: fixed;
-  height: 10% !important;
-  bottom: 0;
-  right: 0;
-  left: 17%;
-  background-color: var(--white-main);
+.chat-buttons:hover {
+  background-color: var(--cream-dark) !important;
+}
+
+/* ── Inline floating input — appears in the message stream ── */
+.inline-input-area {
+  align-self: center;
+  width: 100%;
+  max-width: 560px;
+  margin: 8px 0 24px;
+  background-color: var(--cream-light);
+  border: 1px solid var(--cream-dark);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(58, 42, 26, 0.1);
+  padding: 14px 16px;
   box-sizing: border-box;
-  border-top: 2px solid var(--white-dark);
+  animation: input-float-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes input-float-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.inline-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .split-input-bar {
-  flex: 1; /* Splits up bar into # equal parts*/
+  flex: 1;
   box-sizing: border-box;
-  width: 265px;
 }
 
-.input-slider {
-  margin-top: 15px;
+/* ── Location input bar ── */
+.location-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
 }
 
-.input-slider .MuiSlider-thumb {
-  background-color: var(--white-dark); /* Thumb color */
-  border: 2px solid var(--white-dark); /* Thumb border color */
+.location-input-field {
+  flex: 1;
 }
 
-.input-slider .MuiSlider-rail {
-  background-color: var(--white-black); /* Rail color */
+.geo-btn {
+  flex-shrink: 0;
+  border-radius: 8px !important;
+  padding: 8px !important;
+  transition: background-color 0.15s ease !important;
 }
 
-.input-slider .MuiSlider-track {
-  background-color: var(--white-black); /* Track color */
-  border: none;
+.geo-btn:hover {
+  background-color: var(--cream-dark) !important;
 }
 
-.input-slider .MuiSlider-root {
-  height: 8px; /* Height of the track */
-}
-
-.input-slider .MuiSlider-thumb:hover {
-  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.16); /* Thumb hover shadow */
+.geo-btn--error {
+  background-color: rgba(180, 40, 40, 0.08) !important;
 }
 
 .send-button {
-  background-color: var(--green-main) !important;
-  color: var(--white-light) !important;
-  height: 55px;
+  background-color: var(--forest-main) !important;
+  color: var(--cream-light) !important;
+  height: 44px;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
 }
 
 .send-button:hover {
-  background: var(--green-main) !important;
+  background-color: var(--forest-dark) !important;
+}
+
+/* ── Floating action button groups ── */
+.fab-group {
+  position: fixed;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
+}
+
+/* Trip management — sits just below the header */
+.fab-group--top {
+  top: calc(var(--header-height) + 12px);
+}
+
+/* Nav buttons — bottom-left */
+.fab-group--bottom {
+  bottom: 24px;
+}
+
+/* Generic FAB */
+.fab {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--cream-light);
+  border: 1px solid var(--cream-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--sand-dark, #a08060);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.fab:hover {
+  background-color: var(--cream-dark);
+  color: var(--bark-main);
+  transform: scale(1.08);
+}
+
+/* New-trip FAB — dashed border */
+.fab--new {
+  border-style: dashed;
+  border-color: var(--sand-main);
+  color: var(--bark-main);
+}
+
+.fab--new:hover {
+  border-color: var(--bark-main);
+}
+
+.fab-icon {
+  font-size: 18px !important;
 }

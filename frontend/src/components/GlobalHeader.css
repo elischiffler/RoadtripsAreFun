@@ -1,0 +1,106 @@
+.global-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  z-index: 200;
+  background-color: var(--cream-light);
+  border-bottom: 1px solid var(--cream-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 0 8px;
+  box-sizing: border-box;
+}
+
+.global-header .global-header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--soil-main);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.global-header-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--amber-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid var(--amber-light);
+  transition: opacity 0.15s ease;
+}
+
+.avatar-placeholder:hover {
+  opacity: 0.85;
+}
+
+.avatar-placeholder .avatar-initials {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1e1208;
+  line-height: 1;
+}
+
+/* .header-login-btn — moved to sx prop on the Button component in GlobalHeader.jsx */
+
+/* ── Transparent variant (map page) ── */
+.global-header.global-header--transparent {
+  background-color: transparent;
+  border-bottom-color: transparent;
+  /* subtle shadow so logo/avatar read over light map tiles */
+  filter: drop-shadow(0 1px 4px rgba(58, 42, 26, 0.3));
+}
+
+/* Profile dropdown */
+.profile-menu-paper {
+  min-width: 160px;
+  margin-top: 6px;
+}
+
+.profile-menu-header {
+  padding: 10px 16px 6px;
+}
+
+.profile-menu-paper .profile-menu-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--sand-main);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-menu-paper .profile-menu-item {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--soil-main);
+  gap: 10px;
+  padding: 10px 16px;
+  transition: background-color 0.15s ease;
+}
+
+.profile-menu-paper .profile-menu-item:hover {
+  background-color: var(--cream-dark);
+}
+
+.profile-menu-paper .profile-menu-icon {
+  font-size: 18px;
+  color: var(--bark-main);
+}

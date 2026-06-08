@@ -1,36 +1,127 @@
-import Slider from "@mui/material/Slider";
-import PropTypes from "prop-types";
+import { useState, useEffect } from 'react';
+import { Box, TextField, InputAdornment, Button } from '@mui/material';
+import PropTypes from 'prop-types';
 
-const BudgetSlider = ({ UserChatData, handleKeyDown }) => {
+const QUICK_STEPS = [50, 100, 500];
 
-  const handleChange = (event, newValue) => {
-    // Update the stops value in UserChatData
-    UserChatData.hotelBudget = newValue;
+const BudgetSlider = ({ UserChatData, handleKeyDown, onValueChange }) => {
+  const min = UserChatData?.hotelBudget ?? 0;
+  const [value, setValue] = useState(min);
+
+  // Keep value in sync when the calculated minimum rises (e.g. hotelBudget
+  // is recalculated after route or car data changes).
+  useEffect(() => {
+    setValue((prev) => {
+      const prevNum = typeof prev === 'number' ? prev : parseInt(prev, 10);
+      return isNaN(prevNum) ? min : Math.max(prevNum, min);
+    });
+  }, [min]);
+
+  const update = (next) => {
+    const clamped = Math.max(min, next);
+    setValue(clamped);
+    if (onValueChange) onValueChange(clamped);
   };
 
-// Function to format the value with a dollar sign
-const formatValue = (value) => {
-    return `$${value}`;
+  const handleChange = (e) => {
+    // Allow free typing — only clamp on blur so the user can clear and retype
+    const raw = e.target.value;
+    if (raw === '' || raw === '-') {
+      setValue(raw);
+      return;
+    }
+    const num = parseInt(raw, 10);
+    if (!isNaN(num)) {
+      setValue(num);
+      if (onValueChange) onValueChange(Math.max(min, num));
+    }
+  };
+
+  const handleBlur = () => {
+    const num = parseInt(value, 10);
+    update(isNaN(num) ? min : num);
   };
 
   return (
-    <Slider
-      className="input-slider"
-      defaultValue={UserChatData.hotelBudget}
-      aria-label="Stop slider"
-      valueLabelDisplay="auto"
-      min={UserChatData.hotelBudget}
-      max={UserChatData.hotelBudget * 2}
-      onChange={handleChange}
-      valueLabelFormat={formatValue}
-      onKeyDown={handleKeyDown}
-    />
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+      <TextField
+        type="number"
+        value={value}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        inputProps={{ min }}
+        size="small"
+        label="Hotel budget"
+        InputProps={{
+          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        }}
+        sx={{ backgroundColor: 'var(--cream-light)', borderRadius: '8px' }}
+      />
+
+      {/* Quick-add buttons */}
+      <Box sx={{ display: 'flex', gap: '6px' }}>
+        {QUICK_STEPS.map((step) => (
+          <Button
+            key={step}
+            size="small"
+            variant="outlined"
+            onClick={() => {
+              const parsed = parseInt(value, 10);
+              update((isNaN(parsed) ? min : parsed) + step);
+            }}
+            sx={{
+              flex: 1,
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              padding: '3px 0',
+              borderColor: 'var(--cream-dark)',
+              color: 'var(--bark-main)',
+              backgroundColor: 'var(--cream-light)',
+              borderRadius: '8px',
+              minWidth: 0,
+              textTransform: 'none',
+              '&:hover': {
+                borderColor: 'var(--bark-main)',
+                backgroundColor: 'var(--cream-dark)',
+              },
+            }}
+          >
+            +${step}
+          </Button>
+        ))}
+        <Button
+          size="small"
+          variant="outlined"
+          onClick={() => update(min)}
+          sx={{
+            flex: 1,
+            fontSize: '0.72rem',
+            fontWeight: 600,
+            padding: '3px 0',
+            borderColor: 'var(--cream-dark)',
+            color: 'var(--sand-main)',
+            backgroundColor: 'var(--cream-light)',
+            borderRadius: '8px',
+            minWidth: 0,
+            textTransform: 'none',
+            '&:hover': {
+              borderColor: 'var(--sand-main)',
+              backgroundColor: 'var(--cream-dark)',
+            },
+          }}
+        >
+          Reset
+        </Button>
+      </Box>
+    </Box>
   );
 };
 
 BudgetSlider.propTypes = {
-  UserChatData: PropTypes.object.isRequired,
-  handleKeyDown: PropTypes.func.isRequired,
+  UserChatData: PropTypes.object,
+  handleKeyDown: PropTypes.func,
+  onValueChange: PropTypes.func,
 };
 
 export default BudgetSlider;

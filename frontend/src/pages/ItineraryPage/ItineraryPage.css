@@ -1,116 +1,91 @@
 /* ItineraryPage.css */
 
-/* Overall Container Styles */
 .itinerary-page {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Full viewport height */
-  overflow: hidden; /* Prevent any overflow that could cause extra scrollbars */
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* Fixed Top Box Styles */
-.fixed-top-box {
+.no-itinerary-message {
   position: fixed;
-  top: 0;
+  top: var(--header-height);
   width: 100%;
-  height: 7%;
-  background-color: var(--white-main); /* Green */
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  z-index: 1000;
+  justify-content: center;
+  padding: 20px;
+  color: var(--bark-main);
 }
 
-/* Fixed Top Box Typography Styles */
-.fixed-top-box .title {
-  flex-grow: 1;
-  text-align: center;
-  color: var(--white-light); /* Light White */
-}
-
-/* Scrollable Main Content Box Styles */
 .scrollable-main-content {
-  background-color: var(--white-main); /* White */
-  color: var(--white-black); /* Dark Text */
-  padding: 16px;
+  background-color: var(--cream-main);
+  color: var(--soil-main);
+  padding: 20px 20px 20px 84px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   position: fixed;
   left: 0;
   right: 0;
-  top: 7%;
+  top: var(--header-height);
   overflow-y: auto;
-  height: calc(100vh - 13.8%);
+  height: calc(100vh - var(--header-height));
   &::-webkit-scrollbar {
-    width: 12px;
+    width: 8px;
   }
   &::-webkit-scrollbar-track {
-    background: #c9c8c7;
+    background: var(--cream-main);
   }
   &::-webkit-scrollbar-thumb {
-    background: #949392;
+    background: var(--sand-main);
     border-radius: 10px;
   }
   &::-webkit-scrollbar-thumb:hover {
-    background: #66615e;
+    background: var(--bark-main);
   }
 }
 
-/* Day Box Styles */
 .day-box {
-  background-color: var(--white-light); /* Light White */
-  border-radius: 8px;
+  background-color: var(--cream-light);
+  border: 1px solid var(--cream-dark);
+  border-radius: 10px;
   padding: 16px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(58, 42, 26, 0.07);
 }
 
-/* Day Header Styles */
 .day-header {
-  background-color: var(--white-black); /* Green */
-  color: var(--white-light); /* White */
-  border-radius: 8px;
-  padding: 8px;
-  margin-bottom: 16px;
+  background-color: var(--bark-main);
+  color: var(--cream-light);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
 }
 
-/* Activity Box Styles */
 .activity-box {
-  background-color: var(--white-main);
+  background-color: var(--cream-main);
+  border: 1px solid var(--cream-dark);
   border-radius: 8px;
-  padding: 8px;
+  padding: 10px 12px;
   margin-bottom: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Activity Time Styles */
 .activity-time {
-  color: var(--white-black); /* Dark Text */
-}
-
-/* Fixed Bottom Button Container Styles */
-.fixed-bottom-buttons {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  height: 7%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 16px;
-  background-color: var(--white-main);
-  z-index: 1000;
-}
-
-/* Button Container Styles */
-.fixed-bottom-buttons .button-container {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  margin-bottom: 18px;
+  color: var(--bark-main);
 }
 
 .activity-link {
-  color: inherit;
+  color: var(--forest-main);
+}
+
+/* Floating nav buttons — bottom-left, mirrors chat page fab-group--bottom */
+.itinerary-fab-group {
+  position: fixed;
+  left: 20px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
 }

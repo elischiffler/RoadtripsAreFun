@@ -7,13 +7,14 @@ MyRoadtrip/
 ├── backend/                  # Python/FastAPI routing microservice (formerly rp-routing)
 │   ├── app/
 │   │   ├── main.py               # FastAPI app entry point; registers all routers and CORS middleware
+│   │   ├── dependencies.py       # Shared FastAPI dependency functions
 │   │   ├── core/
 │   │   │   └── config.py         # Settings class; loads DATABASE_URL from .env
 │   │   ├── routers/              # Route handlers (one file per domain)
 │   │   │   ├── routing_api.py    # Core route generation: /get-initial-route, /generate-final-route
-│   │   │   ├── location_api.py   # Location resolution endpoints
-│   │   │   ├── itinerary_api.py  # Itinerary generation from a finalized route
-│   │   │   ├── car_api.py        # Car data endpoints
+│   │   │   ├── location_api.py   # Location resolution: /validate-location
+│   │   │   ├── itinerary_api.py  # Itinerary generation: /generate-itinerary
+│   │   │   ├── car_api.py        # Car data: /get-car-details, /get-gas-price (FuelEconomy.gov)
 │   │   │   ├── chat_api.py       # Chat CRUD: /chats, /chats/create, /chats/update, /chats/delete
 │   │   │   └── routing_fns/
 │   │   │       └── webscraping_fns.py  # Google Hotels scraping logic
@@ -30,6 +31,7 @@ MyRoadtrip/
 │   │   │   └── chat_schemas.py   # ChatSchema, ChatDataSchema, ChatLogSchema
 │   │   ├── crud/                 # Database access layer (Neon/Postgres)
 │   │   │   └── chat_crud.py      # All chat/route/segment read-write operations
+│   │   ├── external services/    # Placeholder package for future third-party service wrappers
 │   │   └── utils/                # Shared helpers
 │   │       ├── auth.py           # JWT decode → user_id extraction
 │   │       ├── crud_helpers.py   # Route segmentation for storage
@@ -41,12 +43,98 @@ MyRoadtrip/
 │   │   ├── location_api_tests.py
 │   │   ├── geolocation_tests.py
 │   │   └── routing_api/
+│   │       ├── routing_api_tests.py
+│   │       └── amadeus_tests.py
 │   ├── .env                      # Local secrets (never commit)
 │   ├── requirements.txt          # Pinned Python dependencies
 │   └── Makefile                  # `make run` starts the dev server
 │
 ├── frontend/                 # React/Vite UI (formerly rp-ui)
-│   ├── src/                  # React source files
+│   ├── src/
+│   │   ├── main.jsx              # Vite entry point; mounts React app
+│   │   ├── App.jsx               # Root component
+│   │   ├── Router.jsx            # react-router-dom route definitions
+│   │   ├── index.css             # Global CSS custom properties (design tokens)
+│   │   ├── assets/               # Static assets bundled by Vite (images, SVGs)
+│   │   ├── components/           # Shared/global UI components
+│   │   │   ├── GlobalHeader.jsx  # Fixed top nav bar (logo + auth actions)
+│   │   │   ├── GlobalHeader.css
+│   │   │   ├── LogoButton.jsx    # Animated SVG logo linking to home
+│   │   │   ├── LogoButton.css
+│   │   │   ├── Map.jsx           # Mapbox GL map wrapper
+│   │   │   ├── AuthWrapper.jsx   # Cognito auth session guard
+│   │   │   ├── Theme.jsx         # MUI theme definition and design tokens
+│   │   │   ├── ThemedTooltip.jsx # Styled MUI Tooltip matching the earthy palette
+│   │   │   ├── SpinningWheelChip.jsx  # Landing page feature chip – route animation
+│   │   │   ├── SpinningWheelChip.css
+│   │   │   ├── HotelChip.jsx          # Landing page feature chip – hotel animation
+│   │   │   ├── HotelChip.css
+│   │   │   ├── ClockChip.jsx          # Landing page feature chip – clock animation
+│   │   │   ├── ClockChip.css
+│   │   │   └── buttons/          # Reusable icon nav buttons
+│   │   │       ├── ButtonStyles.css
+│   │   │       ├── ChatButton.jsx
+│   │   │       ├── MapButton.jsx
+│   │   │       ├── ItineraryButton.jsx
+│   │   │       └── ProgressRevealIcon.jsx  # Circular sweep overlay; reveals icon as progress 0→1
+│   │   ├── pages/
+│   │   │   ├── HomePage/         # Landing page (hero, feature chips)
+│   │   │   │   ├── HomePage.jsx
+│   │   │   │   └── HomePage.css
+│   │   │   ├── ChatPage/         # Main trip-planning chat flow
+│   │   │   │   ├── ChatPage.jsx          # Page shell: sidebar rail, message list, input area
+│   │   │   │   ├── ChatPage.css
+│   │   │   │   ├── useTripWorkflow.js    # State-machine hook driving the full workflow
+│   │   │   │   ├── LocationInput.jsx     # Single-field address bar + 📍 geolocation button
+│   │   │   │   ├── InputAddress.jsx      # Four-field structured address form (street/city/state/zip)
+│   │   │   │   ├── InputBudget.jsx       # Number field for hotel budget override
+│   │   │   │   ├── InputCar.jsx          # Three-field car input (year / make / model)
+│   │   │   │   ├── InputStops.jsx        # Scrollable pill carousel (1–10 stops)
+│   │   │   │   ├── InputStops.css
+│   │   │   │   ├── TripSearch.jsx        # ⌘K spotlight-style trip search modal
+│   │   │   │   ├── TripSearch.css
+│   │   │   │   ├── getRoute.jsx          # getInitialRoute / getFinalRoute API calls
+│   │   │   │   ├── CalcBudget.jsx        # calcHotelBudget / calcGasBudget helpers
+│   │   │   │   └── DatabaseUtils.jsx     # createChat / updateUserData / initializeUserData
+│   │   │   ├── MapPage/          # Interactive Mapbox route view
+│   │   │   │   ├── MapPage.jsx
+│   │   │   │   └── MapPage.css
+│   │   │   ├── ItineraryPage/    # Day-by-day itinerary display
+│   │   │   │   ├── ItineraryPage.jsx      # Renders day/stop cards from itinerary context; floating nav buttons
+│   │   │   │   ├── ItineraryPage.css
+│   │   │   │   └── generateItinerary.jsx  # Calls /generate-itinerary endpoint
+│   │   │   ├── AuthPages/        # Login and sign-up pages
+│   │   │   │   ├── AuthPage.css
+│   │   │   │   ├── LoginPage.jsx
+│   │   │   │   ├── SignUpPage.jsx
+│   │   │   │   ├── PasswordField.jsx
+│   │   │   │   └── PasswordRequirement.jsx
+│   │   │   ├── SettingsPage.jsx  # User settings page
+│   │   │   └── NotFoundPage.jsx  # 404 fallback
+│   │   ├── services/
+│   │   │   └── authService.ts    # Cognito auth helpers (TypeScript)
+│   │   ├── states/
+│   │   │   └── UserDataContext.jsx  # React context for shared trip/user state
+│   │   └── tests/                # Vitest + Testing Library unit/component tests
+│   │       ├── setup.js              # Global test setup (jest-dom matchers)
+│   │       ├── testUtils.jsx         # Shared render helpers and mock providers
+│   │       ├── AuthWrapper.test.jsx
+│   │       ├── CalcBudget.test.js
+│   │       ├── DatabaseUtils.test.js
+│   │       ├── GlobalHeader.test.jsx
+│   │       ├── HomePage.test.jsx
+│   │       ├── InputBudget.test.jsx
+│   │       ├── InputCar.test.jsx
+│   │       ├── InputStops.test.jsx
+│   │       ├── ItineraryPage.test.jsx
+│   │       ├── LocationInput.test.jsx
+│   │       ├── LoginPage.test.jsx
+│   │       ├── MapPage.test.jsx
+│   │       ├── PasswordRequirement.test.jsx
+│   │       ├── SignUpPage.test.jsx
+│   │       ├── TripSearch.test.jsx
+│   │       ├── UserDataContext.test.jsx
+│   │       └── useTripWorkflow.helpers.test.js
 │   ├── public/               # Static assets
 │   ├── index.html
 │   ├── package.json
@@ -73,3 +161,14 @@ MyRoadtrip/
 - **Environment variables**: loaded with `load_dotenv(override=True)` at the top of each router that needs them; accessed via `os.getenv()`.
 - **Coordinates** are consistently stored and passed as `[lat, lon]` lists, except where an external API (e.g. Mapbox, GeoJSON) uses `[lon, lat]` order — be explicit about which convention is in use.
 - **CI**: GitHub Actions workflows are path-filtered — backend changes only trigger the backend workflow, and vice versa.
+
+## Frontend Chat Workflow
+
+The trip-planning chat uses a **state machine** implemented in `useTripWorkflow.js`:
+
+- `step` is a string enum stored in React state (`start_input` → `start_validating` → `end_input` → … → `done`)
+- Each step transition triggers a `useEffect` that performs exactly one unit of async work (API call, message append, or step advance)
+- User input calls `submit(action, payload)` which validates the action against the current step and advances the machine
+- **No `setInterval` polling.** No mutable class instance mutations. No stale closures over chat IDs.
+- `inputMode` returned by the hook tells `ChatPage` which input component to render (`'location'` | `'stops'` | `'budget'` | `'car'` | `'none'`)
+- Chat messages are always read live from the `chats` context array using `selectedChatId` — never from a stale snapshot state variable

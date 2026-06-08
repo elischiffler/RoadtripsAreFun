@@ -63,12 +63,15 @@ def _make_mock_pool(fetchone_val=None, fetchall_val=None):
 # POST /chats/create/{chat_id}
 # ---------------------------------------------------------------------------
 
+
 def test_create_chat():
     """Returns 200 when a valid chat payload is posted."""
     mock_pool, _, mock_cursor = _make_mock_pool(fetchone_val=("user123", "1", {}, {}))
 
-    with patch("app.crud.chat_crud._get_pool", return_value=mock_pool), \
-         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
+    with (
+        patch("app.crud.chat_crud._get_pool", return_value=mock_pool),
+        patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
+    ):
         response = client.post(
             "/chats/create/1",
             json={"PartitionKey": "user123", "ChatData": CHAT_DATA, "ChatLog": CHAT_LOG},
@@ -80,12 +83,15 @@ def test_create_chat():
 # DELETE /chats/delete/{chat_id}
 # ---------------------------------------------------------------------------
 
+
 def test_delete_chat():
     """Returns 200 and a success message when a chat is deleted."""
     mock_pool, _, _ = _make_mock_pool(fetchall_val=[("user123", "2", {}, {})])
 
-    with patch("app.crud.chat_crud._get_pool", return_value=mock_pool), \
-         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
+    with (
+        patch("app.crud.chat_crud._get_pool", return_value=mock_pool),
+        patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
+    ):
         response = client.delete(
             "/chats/delete/2",
             params={"partition_key": "user123"},
@@ -97,6 +103,7 @@ def test_delete_chat():
 # ---------------------------------------------------------------------------
 # PUT /chats/update/{chat_id}
 # ---------------------------------------------------------------------------
+
 
 def test_update_chat():
     """Returns 200 when a valid update payload is sent."""
@@ -120,11 +127,17 @@ def test_update_chat():
         "messages": CHAT_LOG["messages"] + [{"text": "LA to NYC", "sender": "user", "buttons": []}],
     }
 
-    with patch("app.crud.chat_crud._get_pool", return_value=mock_pool), \
-         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
+    with (
+        patch("app.crud.chat_crud._get_pool", return_value=mock_pool),
+        patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
+    ):
         response = client.put(
             "/chats/update/3?partition_key=user123",
-            json={"PartitionKey": "user123", "ChatData": updated_chat_data, "ChatLog": updated_chat_log},
+            json={
+                "PartitionKey": "user123",
+                "ChatData": updated_chat_data,
+                "ChatLog": updated_chat_log,
+            },
         )
     assert response.status_code == 200
 
@@ -133,12 +146,15 @@ def test_update_chat():
 # GET /chats
 # ---------------------------------------------------------------------------
 
+
 def test_get_all_chats_empty():
     """Returns 200 and an empty list when the user has no chats."""
     mock_pool, _, _ = _make_mock_pool(fetchall_val=[])
 
-    with patch("app.crud.chat_crud._get_pool", return_value=mock_pool), \
-         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"):
+    with (
+        patch("app.crud.chat_crud._get_pool", return_value=mock_pool),
+        patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
+    ):
         response = client.get("/chats", params={"partition_key": "user123"})
     assert response.status_code == 200
     assert response.json() == []
@@ -147,13 +163,20 @@ def test_get_all_chats_empty():
 def test_get_all_chats_returns_list():
     """Returns 200 and a list of chats matching the stored rows."""
     rows = [
-        {"user_id": "88", "chat_id": str(i), "chat_data": {"initial": None, "route": None}, "chat_log": {}}
+        {
+            "user_id": "88",
+            "chat_id": str(i),
+            "chat_data": {"initial": None, "route": None},
+            "chat_log": {},
+        }
         for i in range(1, 4)
     ]
     mock_pool, _, _ = _make_mock_pool(fetchall_val=rows)
 
-    with patch("app.crud.chat_crud._get_pool", return_value=mock_pool), \
-         patch("app.routers.chat_api.get_user_id_from_token", return_value="88"):
+    with (
+        patch("app.crud.chat_crud._get_pool", return_value=mock_pool),
+        patch("app.routers.chat_api.get_user_id_from_token", return_value="88"),
+    ):
         response = client.get("/chats", params={"partition_key": "88"})
     assert response.status_code == 200
     assert isinstance(response.json(), list)

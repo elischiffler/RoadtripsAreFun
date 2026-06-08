@@ -1,0 +1,106 @@
+/* ── Wrapper ── */
+.clock-chip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 88px;
+  cursor: default;
+}
+
+/* ── Resting pill ── */
+.clock-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background-color: var(--cream-main);
+  border: 1px solid var(--cream-dark);
+  box-shadow: 0 1px 4px rgba(58, 42, 26, 0.08);
+  white-space: nowrap;
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.clock-pill--hidden {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.clock-pill-icon {
+  display: flex;
+  align-items: center;
+  color: var(--forest-main);
+  font-size: 18px;
+}
+
+.clock-pill-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--bark-main);
+}
+
+/* ── Clock face ── */
+.clock-face {
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity 0.25s ease,
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.clock-face--visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── SVG elements ── */
+.clock-rim {
+  fill: none;
+  stroke: var(--bark-main);
+  stroke-width: 2.5;
+}
+
+.clock-bg {
+  fill: var(--cream-light);
+}
+
+.clock-marker {
+  stroke: var(--sand-main);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.clock-marker-qt {
+  stroke: var(--bark-main);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.clock-hand-hour {
+  stroke: var(--bark-dark);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.clock-hand-min {
+  stroke: var(--bark-main);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.clock-pin {
+  fill: var(--amber-main);
+  stroke: var(--bark-dark);
+  stroke-width: 1;
+}

@@ -12,6 +12,7 @@ class location_payload(BaseModel):
 
     location: payload_data
 
+
 class location_model(BaseModel):
     address: str
     latitude: float

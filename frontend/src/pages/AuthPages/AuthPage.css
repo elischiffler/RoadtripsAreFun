@@ -37,12 +37,12 @@
 
 /* Submit Button Styles */
 .submit-button {
-  background-color: var(
-    --green-main
-  ) !important; /* Ensure green background for button */
+  background-color: var(--green-main) !important; /* Ensure green background for button */
   color: var(--white-light);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
   margin-top: 16px !important;
 }
 
@@ -68,7 +68,7 @@
 /* Banner styling */
 .banner {
   flex: 1; /* Occupies the remaining space */
-  background-image: url("../../assets/LoginBanner.jpg"); /* Update the image path if necessary */
+  background-image: url('../../assets/LoginBanner.jpg'); /* Update the image path if necessary */
   background-size: cover;
   background-position: center;
   height: 100vh; /* Full viewport height */

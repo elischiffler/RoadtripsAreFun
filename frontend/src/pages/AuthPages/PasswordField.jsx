@@ -1,7 +1,7 @@
-import { TextField, InputAdornment, IconButton } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import PropTypes from "prop-types";
+import { TextField, InputAdornment, IconButton } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import PropTypes from 'prop-types';
 
 const PasswordField = ({
   label,
@@ -13,7 +13,7 @@ const PasswordField = ({
 }) => (
   <TextField
     label={label}
-    type={showPassword ? "text" : "password"}
+    type={showPassword ? 'text' : 'password'}
     variant="outlined"
     fullWidth
     margin="normal"

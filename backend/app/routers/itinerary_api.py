@@ -33,42 +33,54 @@ async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
 
         # initialize a list of stops with a generic message and specified start time
         stop_list = [
-            {'date': current_time.strftime('%A, %B %d %Y'),
-             'time': current_time.strftime('%I:%M %p'),
-             'name': 'Depart from your starting location'}]
+            {
+                "date": current_time.strftime("%A, %B %d %Y"),
+                "time": current_time.strftime("%I:%M %p"),
+                "name": "Depart from your starting location",
+            }
+        ]
         # loop through the stops and get the time for each
         for stop in data.route.stops:
             # Add the time to get to the stop to the current time
-            current_time += timedelta(seconds=stop['duration'])
-            destination = {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
-                           'time': current_time.strftime('%I:%M %p'),  # Hour:Minutes
-                           'name': stop['name'],
-                           'url': stop.get('url'),
-                           'price': stop.get('price'),
-                           'address': stop.get('address'),}
+            current_time += timedelta(seconds=stop["duration"])
+            destination = {
+                "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
+                "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
+                "name": stop["name"],
+                "url": stop.get("url"),
+                "price": stop.get("price"),
+                "address": stop.get("address"),
+            }
             # Add the stop to stop_list
             stop_list.append(destination)
-            if stop['type'] == 'hotel':  # If the stop is a hotel
-                current_time = datetime(current_time.year,  # set current time to be next day at 9AM
-                                        current_time.month,
-                                        current_time.day + 1,
-                                        9,  # TODO Make the start time a parameter
-                                        0,
-                                        0)
+            if stop["type"] == "hotel":  # If the stop is a hotel
+                current_time = datetime(
+                    current_time.year,  # set current time to be next day at 9AM
+                    current_time.month,
+                    current_time.day + 1,
+                    9,  # TODO Make the start time a parameter
+                    0,
+                    0,
+                )
                 stop_list.append(
-                    {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
-                     'time': current_time.strftime('%I:%M %p'),  # Hour:Minutes
-                     'name': 'Depart from your hotel'})
-            elif stop['type'] == 'stop':
+                    {
+                        "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
+                        "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
+                        "name": "Depart from your hotel",
+                    }
+                )
+            elif stop["type"] == "stop":
                 current_time += timedelta(hours=2)  # Increment two hours for time at the stop
                 stop_list.append(
-                    {'date': current_time.strftime('%A, %B %d %Y'),  # Weekday, Month Day Year
-                     'time': current_time.strftime('%I:%M %p'),  # Hour:Minutes
-                     'name': 'Depart from the stop'})
+                    {
+                        "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
+                        "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
+                        "name": "Depart from the stop",
+                    }
+                )
         if len(stop_list) >= 2:
             # Organize the stops by date
             itinerary = await _day_itinerary(stop_list)
-            print(itinerary)
             return itinerary
         else:
             raise HTTPException(status_code=400, detail="Incomplete route provided")
@@ -96,23 +108,26 @@ async def _day_itinerary(itinerary: List[Dict[str, Any]]) -> List[Itinerary_Day]
     """
     try:
         day_itinerary = []
-        curr_day = {'date': itinerary[0]['date'], 'stops': []}
+        curr_day = {"date": itinerary[0]["date"], "stops": []}
         # iterate through all stops
         for stop in itinerary:
-            point = {'name': stop['name'],
-                     'time': stop['time'],
-                     'address': stop.get('address'),
-                     'url': stop.get('url'),
-                     'price': stop.get('price')}
+            point = {
+                "name": stop["name"],
+                "time": stop["time"],
+                "address": stop.get("address"),
+                "url": stop.get("url"),
+                "price": stop.get("price"),
+            }
             # Check if the date matches and if so add stop to the same day
-            if stop['date'] == curr_day['date']:
-                curr_day['stops'].append(point)
+            if stop["date"] == curr_day["date"]:
+                curr_day["stops"].append(point)
             # If date doesn't match it is a new day
             else:
-                day_itinerary.append(Itinerary_Day.model_validate(curr_day))  # Add the validated itinerary day to the itinerary list
+                day_itinerary.append(
+                    Itinerary_Day.model_validate(curr_day)
+                )  # Add the validated itinerary day to the itinerary list
                 # change the current day to be a new day with the information of the current stop
-                curr_day = {'date': stop['date'],
-                            'stops': [point]}
+                curr_day = {"date": stop["date"], "stops": [point]}
 
         day_itinerary.append(Itinerary_Day.model_validate(curr_day))
         return day_itinerary

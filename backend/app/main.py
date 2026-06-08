@@ -13,6 +13,7 @@ async def lifespan(app: FastAPI):
     # user request doesn't pay the cold-start penalty.
     try:
         from app.crud.chat_crud import _get_pool
+
         pool = _get_pool()
         conn = pool.getconn()
         with conn.cursor() as cur:
@@ -42,10 +43,13 @@ app.include_router(itinerary_api.router)
 app.include_router(car_api.router)
 app.include_router(chat_api.router)
 
+
 @app.get("/")
 async def root() -> str:
     return "Hello world"
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

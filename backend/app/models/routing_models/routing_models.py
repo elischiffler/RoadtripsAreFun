@@ -2,6 +2,8 @@ from datetime import datetime
 from typing import Any, Optional, Dict
 
 from pydantic import BaseModel
+
+
 class Mapbox_geo(BaseModel):
     coordinates: list[list[float]]
     type: Optional[str] = None
@@ -19,7 +21,7 @@ class Route(BaseModel):
     distance: float
     duration: float
     steps: list[Route_Step]
-    stops: Optional [list[Dict[str, Any]]] = None # TODO use or remove this
+    stops: Optional[list[Dict[str, Any]]] = None  # TODO use or remove this
     geometry: Mapbox_geo
     cost: float
 
@@ -77,7 +79,7 @@ class MapBox(BaseModel):
 
             notifications: Optional[list[Mapbox_notification]] = []
             via_waypoints: Optional[list[Any]] = []
-            admins: Optional[list[Mapbox_admin]] =[]
+            admins: Optional[list[Mapbox_admin]] = []
             weight: float
             duration: float
             steps: list[Mapbox_step]

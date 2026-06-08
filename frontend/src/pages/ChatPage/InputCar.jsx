@@ -1,42 +1,27 @@
-import { useState, useEffect } from "react";
-import { Box, TextField } from "@mui/material";
-import PropTypes from "prop-types";
-import "./ChatPage.css";
+import { useState } from 'react';
+import { Box, TextField } from '@mui/material';
+import PropTypes from 'prop-types';
+import './ChatPage.css';
 
-const CarInputBar = ({ UserChatData, handleKeyDown }) => {
-  // Initialize state with the values from UserChatData
-  const [carInfo, setCarInfo] = useState(UserChatData.carDetails || ["", "", ""]);
+const CarInputBar = ({ handleKeyDown, onValueChange }) => {
+  const [carInfo, setCarInfo] = useState(['', '', '']);
 
-  // Sync the carInfo state with UserChatData on initial render or when UserChatData changes
-  useEffect(() => {
-    if (UserChatData && UserChatData.carDetails) {
-      setCarInfo(UserChatData.carDetails);
-    }
-  }, [UserChatData]);
-
-  // Handles the change of car info input fields
   const handleCarInfoChange = (index, value) => {
-    // Create a copy of the carInfo array and update the specific index
-    const updatedCarInfo = [...carInfo];
-    updatedCarInfo[index] = value;
-    setCarInfo(updatedCarInfo);
-
-    // Update the corresponding car info in UserChatData
-    if (UserChatData) {
-      UserChatData.carDetails = updatedCarInfo;
-    }
+    const updated = [...carInfo];
+    updated[index] = value;
+    setCarInfo(updated);
+    if (onValueChange) onValueChange(updated);
   };
 
-  // Define the placeholders and values for each car info input field
-  const carInfoFields = [
-    { placeholder: "Year", value: carInfo[0] },
-    { placeholder: "Make", value: carInfo[1] },
-    { placeholder: "Model", value: carInfo[2] },
+  const fields = [
+    { placeholder: 'Year', value: carInfo[0] },
+    { placeholder: 'Make', value: carInfo[1] },
+    { placeholder: 'Model', value: carInfo[2] },
   ];
 
   return (
-    <Box>
-      {carInfoFields.map((field, index) => (
+    <Box sx={{ display: 'flex', gap: 1, flex: 1 }}>
+      {fields.map((field, index) => (
         <TextField
           key={index}
           className="split-input-bar"
@@ -44,6 +29,7 @@ const CarInputBar = ({ UserChatData, handleKeyDown }) => {
           value={field.value}
           onChange={(e) => handleCarInfoChange(index, e.target.value)}
           onKeyDown={handleKeyDown}
+          size="small"
         />
       ))}
     </Box>
@@ -51,8 +37,8 @@ const CarInputBar = ({ UserChatData, handleKeyDown }) => {
 };
 
 CarInputBar.propTypes = {
-  UserChatData: PropTypes.object.isRequired,
-  handleKeyDown: PropTypes.func.isRequired,
+  handleKeyDown: PropTypes.func,
+  onValueChange: PropTypes.func,
 };
 
 export default CarInputBar;

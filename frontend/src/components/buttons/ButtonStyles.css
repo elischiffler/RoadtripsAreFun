@@ -1,44 +1,95 @@
 /* ButtonStyles.css */
 
-:root {
-  --green-main: #4caf50;
-  --white-light: #ffffff;
+.link {
+  text-decoration: none;
+  width: 100%;
+  display: block;
 }
-  .link {
-    text-decoration: none;
-    width: 100%;
-    display: block;
-  }
 
-  .link .button {
-    margin-top: 16px; 
-    margin-bottom: 8px; 
-    width: 100%;
-    display: flex;
-    align-items: center;
-    background-color: var(--green-main); 
-  }
+.link .button {
+  margin-top: 8px;
+  margin-bottom: 4px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background-color: var(--forest-main) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  padding: 8px 12px !important;
+  transition: background-color 0.15s ease !important;
+}
 
-  .link .button:hover {
-    background-color: var(--green-main); /* Ensure hover color is the same as default */
-    box-shadow: none; 
-  }
+.link .button:hover {
+  background-color: var(--forest-dark) !important;
+  box-shadow: none !important;
+}
 
-  .link .button .button-icon {
-    color: var(--white-light); 
-    margin-right: 8px; 
-  }
+.link .button.Mui-disabled {
+  background-color: var(--cream-dark) !important;
+  color: var(--sand-main) !important;
+}
 
-  .link .button .button-content {
-    display: flex;
-    align-items: center;
-    width: 100%;
-  }
+.link .button .button-icon {
+  color: var(--cream-light);
+  margin-right: 8px;
+}
 
-  .link .button .typography {
-    margin-left: 8px;
-    width: 100%;
-    text-align: center;
-    color: var(--white-light); 
-    flex: 1;
-  }
+.link .button .button-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.link .button .typography {
+  margin-left: 4px;
+  width: 100%;
+  text-align: center;
+  color: var(--cream-light);
+  font-weight: 600;
+  flex: 1;
+}
+
+/* ── Icon-only buttons (Map & Itinerary) ── */
+.icon-btn-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid var(--bark-main);
+  background-color: var(--cream-main);
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background-color: var(--cream-dark);
+  border-color: var(--bark-dark);
+  transform: scale(1.08);
+}
+
+.icon-btn--disabled {
+  cursor: default;
+  pointer-events: none;
+  border-color: var(--sand-main);
+}
+
+.icon-btn--disabled:hover {
+  transform: none;
+  background-color: var(--cream-main);
+}
+
+/* Outlined variant — same base style, kept for backwards compat */
+.icon-btn--outlined {
+  /* size and border already on .icon-btn */
+}

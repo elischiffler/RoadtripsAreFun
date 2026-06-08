@@ -31,7 +31,7 @@ MOCK_ROUTE = {
         {
             "name": "The Strip, Las Vegas",
             "coordinates": [36.1672, -115.1485],
-            "duration": 57600.0,   # 16 hours drive
+            "duration": 57600.0,  # 16 hours drive
             "type": "hotel",
             "address": "Las Vegas, NV",
             "price": 120.0,
