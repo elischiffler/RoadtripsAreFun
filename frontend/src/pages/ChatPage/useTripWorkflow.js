@@ -530,7 +530,6 @@ export function useTripWorkflow({
           addMessage(id, setChats, `${year} ${make} ${model}`, USER);
           carSubmittedRef.current = true; // hide the input bar immediately
 
-          loading();
           try {
             const snap = buildSnapshot();
             snap.carDetails = [year, make, model];
@@ -543,7 +542,6 @@ export function useTripWorkflow({
               setChats,
               snap
             );
-            noLoader();
             const cb = updated?.carBudget ?? 0;
             setCarBudget(cb);
             const total = hotelBudget + cb;
@@ -555,7 +553,6 @@ export function useTripWorkflow({
             await updateUserData(accessToken, carSnap, chatsRef.current);
             setStep('generating_route');
           } catch {
-            noLoader();
             carSubmittedRef.current = false; // allow retry
             bot('Could not look up that vehicle. Please try again.');
           }
@@ -564,7 +561,7 @@ export function useTripWorkflow({
         submitInFlightRef.current = false;
       }
     },
-    [step, hotelBudget, initial, bot, loading, noLoader, buildSnapshot, persist, setChats]
+    [step, hotelBudget, initial, bot, buildSnapshot, persist, setChats]
   );
 
   // ── Which input the UI should render ─────────────────────────────────────

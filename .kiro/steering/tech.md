@@ -115,7 +115,7 @@ All secrets are loaded from `.env` (never committed). Required keys:
 - `prettier` + `eslint-config-prettier` + `eslint-plugin-prettier` – code formatting; enforced via `npm run format` and `npm run format:check`
 - `eslint` + `eslint-plugin-react` + `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh` – linting
 - `@vitejs/plugin-react` – Vite React plugin (Babel fast-refresh)
-- `vitest` + `@vitest/coverage-v8` + `jsdom` + `@testing-library/*` – unit/component test stack
+- `vitest` + `@vitest/coverage-v8` + `jsdom` + `@testing-library/react` + `@testing-library/user-event` + `@testing-library/jest-dom` – unit/component test stack
 
 ### Chat Workflow Architecture
 The trip-planning flow is implemented as a **React state machine** in `useTripWorkflow.js`. Steps advance via `submit(action, payload)` — no polling loops, no class mutations. Each step change triggers a `useEffect` that does one unit of async work. See `structure.md` for the full step list and conventions.

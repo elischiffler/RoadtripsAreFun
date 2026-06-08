@@ -85,8 +85,6 @@ MyRoadtrip/
 │   │   │   │   ├── ChatPage.jsx          # Page shell: sidebar rail, message list, input area
 │   │   │   │   ├── ChatPage.css
 │   │   │   │   ├── useTripWorkflow.js    # State-machine hook driving the full workflow
-│   │   │   │   ├── startWorkFlow.jsx     # Async orchestrator: runs the full multi-step trip workflow
-│   │   │   │   ├── ValidateLocation.jsx  # Calls /validate-location and retries on failure
 │   │   │   │   ├── LocationInput.jsx     # Single-field address bar + 📍 geolocation button
 │   │   │   │   ├── InputAddress.jsx      # Four-field structured address form (street/city/state/zip)
 │   │   │   │   ├── InputBudget.jsx       # Number field for hotel budget override
