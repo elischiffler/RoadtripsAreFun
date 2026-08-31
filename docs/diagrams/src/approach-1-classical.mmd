@@ -1,0 +1,35 @@
+---
+title: "Approach 1: Classical Constrained Optimization (1a library / 1b custom)"
+---
+flowchart TD
+    A([Start, End, num_stops, budget, prefs]) --> B[Get raw driving route]
+    B --> C[Gather candidate POIs + hotels<br/>along a corridor around the route]
+    C --> D["Build model (shared):<br/>decision vars (visit? sleep-here?),<br/>constraints (time windows, budget,<br/>daily drive cap), objective function"]
+
+    D --> SPLIT{Which solver?}
+
+    SPLIT -->|"1a — library"| LA["Feed model to OR-Tools<br/>(MILP, branch-and-bound)"]
+    LA --> LA2{"Optimal / feasible<br/>within time budget?"}
+    LA2 -->|Yes| G
+    LA2 -->|"No / timeout"| LA3[Relax constraints or<br/>return best-so-far]
+    LA3 --> G
+
+    SPLIT -->|"1b — custom"| CB["Build a random valid trip<br/>(the starting solution)"]
+    CB --> CB2["Tweak it: swap an attraction,<br/>move a hotel, add/drop a stop"]
+    CB2 --> CB3{"New trip better?<br/>(higher objective score)"}
+    CB3 -->|Yes| CB4[Keep it]
+    CB3 -->|"No"| CB5["Keep it anyway with a<br/>shrinking probability<br/>(temperature cools each round)"]
+    CB4 --> CB6{"Cooled down /<br/>time budget spent?"}
+    CB5 --> CB6
+    CB6 -->|No| CB2
+    CB6 -->|Yes| G[Take best trip found]
+
+    G --> I[Order chosen stops,<br/>re-route through them]
+    I --> J([Optimized multi-day trip])
+
+    subgraph legend [Characteristics]
+        L1["1a: exact + provably optimal on the model"]
+        L2["1b: approximate; quality vs speed tradeoff"]
+        L3[Same model + objective feeds both]
+        L4[Only as good as objective + candidate set]
+    end

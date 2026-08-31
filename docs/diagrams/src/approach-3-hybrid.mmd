@@ -1,0 +1,31 @@
+---
+title: "Approach 3: Hybrid (AI Generation + Validation + Optimizer, 3a library / 3b custom)"
+---
+flowchart TD
+    A([Start, End, num_stops, budget, prefs]) --> B[Get raw driving route]
+    B --> P["Build prompt:<br/>route context + user preferences<br/>+ budget / time constraints"]
+    P --> D["LLM generates candidate stops<br/>(attractions + hotels)<br/>from preferences"]
+
+    D --> V{"Validate each spot:<br/>does it exist? real coords?<br/>near the route? in price range?"}
+    V -->|"Invalid / hallucinated"| RF["Feedback: tell the LLM<br/>exactly which spots failed<br/>and why"]
+    RF --> R{"Tried 3 times?<br/>(attempt cap)"}
+    R -->|"No — retry"| D
+    R -->|"Yes — give up"| FB[Fill gaps from the<br/>TripAdvisor corridor search]
+    V -->|"All valid"| C
+    FB --> C[Validated candidate set<br/>tagged with value + position + detour]
+
+    C --> SPLIT{Which optimizer?}
+    SPLIT -->|"3a — library"| OA["OR-Tools:<br/>select + schedule to satisfy<br/>budget, time windows, drive cap"]
+    SPLIT -->|"3b — custom"| OB["Our solver:<br/>select + schedule to satisfy<br/>budget, time windows, drive cap"]
+    OA --> G[Accept optimized plan]
+    OB --> G
+
+    G --> I[Re-route through chosen stops]
+    I --> J([Optimized + preference-aware trip])
+
+    subgraph legend [Characteristics]
+        L1[LLM generates from fuzzy preferences]
+        L2[Validation loop catches hallucinations]
+        L3[Optimizer guarantees hard constraints]
+        L4[Most moving parts to build + tune]
+    end

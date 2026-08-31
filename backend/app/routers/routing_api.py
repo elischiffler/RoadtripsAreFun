@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Request
 import requests
 from requests.exceptions import RequestException
 from pydantic import ValidationError
-from app.models.routing_models.routing_models import MapBox, Route, Route_Step, Route_Payload
+from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
 from app.models.routing_models.trip_advisor_models import (
     Trip_Advisor_Location_Search,
     Trip_Advisor_Information,
@@ -41,6 +41,11 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 mapbox_access_token = os.getenv("MAPBOX_API")
 tripadvisor_access_token = os.getenv("TRIPADVISOR_API")
 google_places_access_token = os.getenv("GOOGLE_PLACES_API")
+
+# The Amadeus hotel API is currently nonfunctional, so the fallback is disabled by
+# default. Set AMADEUS_ENABLED=true in the environment to re-enable the fallback path
+# in _find_hotel once the upstream API is working again.
+amadeus_enabled = os.getenv("AMADEUS_ENABLED", "false").lower() == "true"
 
 # Grab app from APIRouter
 router = APIRouter()
@@ -144,12 +149,10 @@ async def get_final_route(request: Request) -> Route:
                     }
                 )
             idx += 1
-            # for step in leg.steps:  # Not really doing anything
-            #     # Each step has a distance, duration, instruction, and location
-            #     steps.append(Route_Step(distance=step.distance,
-            #                             duration=step.duration,
-            #                             instruction=step.maneuver.instruction,
-            #                             location=step.maneuver.location))
+        # NOTE: `steps` is intentionally left empty. Turn-by-turn Route_Step data is
+        # not consumed by any client (the frontend and itinerary endpoint read `stops`
+        # and `geometry`, never `steps`), so we skip building it. Populate this from
+        # `leg.steps` here if a client ever needs per-maneuver instructions.
         # Add all stopping coordinates to a single variable
         coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
         return Route(
@@ -617,8 +620,9 @@ async def _find_hotel(
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
     except HTTPException as exception:
-        # Disabling Amadeus for now the API appears to be nonfunctional
-        if exception.status_code == 600:
+        # Only fall back to Amadeus when it is explicitly enabled and the scraper
+        # returned "not found" (404). Any other error propagates unchanged.
+        if amadeus_enabled and exception.status_code == 404:
             try:
                 # If scraping fails use the Amadeus API
                 access_token = await _get_amadeus_token(
@@ -666,9 +670,11 @@ async def _find_hotel(
                         access_token=access_token,
                         hotel_ids=id_list,
                         check_in=check_in,
-                        check_out=datetime(
-                            check_in.year, check_in.month, check_in.day + 1, 9, 0, 0
-                        ),  # The next day at 9 AM
+                        # Check out the next day at 9 AM. Use timedelta so month/year
+                        # boundaries (e.g. Jan 31 -> Feb 1) don't raise a ValueError.
+                        check_out=(check_in + timedelta(days=1)).replace(
+                            hour=9, minute=0, second=0, microsecond=0
+                        ),
                         price_range=price_range[1],
                     )
 
@@ -757,6 +763,7 @@ async def _get_amadeus_offers(
                     if total < min_offer:
                         min_offer = total  # Track the cheapest offer that fits the user's criteria per hotel
                 temp_offer = {
+                    "hotel_id": hotel_id,
                     "name": hotel_name,
                     "price": min_offer,
                 }

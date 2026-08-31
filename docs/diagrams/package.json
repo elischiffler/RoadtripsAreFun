@@ -1,0 +1,16 @@
+{
+  "name": "myroadtrip-docs-diagrams",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mermaid diagram sources for the MyRoadtrip docs, plus validation and rendering scripts.",
+  "type": "module",
+  "scripts": {
+    "validate": "node validate.mjs",
+    "render": "for f in src/*.mmd; do mmdc -i \"$f\" -o \"rendered/$(basename \"${f%.mmd}\").svg\" -b white; done"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.16.0",
+    "jsdom": "^25.0.0",
+    "mermaid": "^11.4.0"
+  }
+}

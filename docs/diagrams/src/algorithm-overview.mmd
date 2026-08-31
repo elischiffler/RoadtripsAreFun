@@ -1,0 +1,25 @@
+---
+title: "Current: Greedy Single-Pass Heuristic"
+---
+flowchart TD
+    A([Start + End]) --> B[Get raw driving route]
+    B --> C["Split total drive time into<br/>num_stops + 1 equal segments<br/>(interval = duration / (num_stops + 1))"]
+    C --> D["Begin driving in simulated time<br/>(day window 09:00–16:00)"]
+
+    D --> E{Reached the<br/>destination?}
+    E -->|Yes| Z
+
+    E -->|No| F{"Would today's driving<br/>run past 16:00?<br/>(and > 4h of trip left)"}
+
+    F -->|"Yes — day is over"| G["Find a hotel near<br/>where you'd stop<br/>(up to 12 tries, +30 min each)"]
+    G --> H[Sleep, resume next<br/>morning at 09:00]
+    H --> E
+
+    F -->|"No — still driving today"| I{"Segment boundary reached?<br/>(and num_stops > 0,<br/>> 30 min of trip left)"}
+    I -->|Yes| J["Find a popular attraction<br/>(2 tries, radius doubles on miss)"]
+    J --> K["Add ~2h detour,<br/>num_stops -= 1, keep driving"]
+    K --> E
+    I -->|No| K2[Keep driving]
+    K2 --> E
+
+    Z["Re-route through every<br/>chosen attraction + hotel"] --> Y([Final multi-day trip:<br/>route + stops + cost])

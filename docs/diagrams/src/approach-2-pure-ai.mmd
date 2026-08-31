@@ -1,0 +1,30 @@
+---
+title: "Approach 2: Pure AI (LLM builds the whole itinerary)"
+---
+flowchart TD
+    A([Start, End, num_stops, budget, prefs]) --> B[Get raw driving route]
+    B --> D["Build prompt:<br/>route context + constraints<br/>+ user preferences in natural language"]
+    D --> E["LLM produces the FULL itinerary:<br/>which stops, their order, hotels,<br/>day-by-day timing, cost"]
+
+    E --> V1{"Check 1 — do the places exist?<br/>real POIs / hotels, real coords,<br/>near the route?"}
+    V1 -->|"Fail"| FIX
+    V1 -->|"Pass"| V2{"Check 2 — is it feasible?<br/>each day within drive window,<br/>stops in a sensible order"}
+    V2 -->|"Fail"| FIX
+    V2 -->|"Pass"| V3{"Check 3 — does it fit budget<br/>+ requested stop count?"}
+    V3 -->|"Fail"| FIX
+    V3 -->|"Pass"| G[Accept itinerary]
+
+    FIX["Re-prompt with the<br/>exact violation(s)"] --> R{"Tried 3 times?<br/>(attempt cap)"}
+    R -->|"No — retry"| E
+    R -->|"Yes — give up"| I["Fall back to a safe default<br/>(classical planner) or fail gracefully"]
+
+    G --> J[Re-route through chosen stops]
+    I --> J
+    J --> K([Preference-aware trip])
+
+    subgraph legend [Characteristics]
+        L1[AI does everything: pick, order, schedule]
+        L2[Validation checks at every stage]
+        L3[Non-deterministic; may hallucinate]
+        L4[Hard constraints only hold via validation]
+    end
