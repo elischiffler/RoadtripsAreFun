@@ -9,6 +9,7 @@ Amadeus fallback (disabled by default via ``AMADEUS_ENABLED``).
 
 from __future__ import annotations
 
+import logging
 import os
 from datetime import datetime, timedelta
 from typing import Any
@@ -28,6 +29,8 @@ from app.models.routing_models.google_places_models import GooglePlaces
 from app.routers.routing_fns.webscraping_fns import find_google_hotels
 from app.routing import config
 from app.utils.geolocation_helpers import get_location
+
+logger = logging.getLogger(__name__)
 
 
 async def find_hotel(
@@ -128,7 +131,9 @@ async def _find_hotel_amadeus(
             "radiusUnit": "MILE",
             "ratings": ["2", "3", "4", "5"],  # Indicates hotel star level
         }
-        response = requests.get(hotels_list_url, params=params, headers=headers)
+        response = requests.get(
+            hotels_list_url, params=params, headers=headers, timeout=config.HTTP_TIMEOUT
+        )
         json_data = response.json()
         # If no hotel is found search for one with a larger radius
         if response.status_code == 400 and json_data["errors"][0]["code"] == 895:
@@ -180,9 +185,11 @@ async def _find_hotel_amadeus(
         else:
             raise HTTPException(status_code=404, detail="No hotels found")
     except RequestException as exception:
-        raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
+        logger.error("_find_hotel_amadeus: Amadeus request failed: %s", exception)
+        raise HTTPException(status_code=502, detail="Amadeus request failed")
     except ValidationError as exception:
-        raise HTTPException(status_code=502, detail=f"Improper Amadeus response: {str(exception)}")
+        logger.error("_find_hotel_amadeus: improper Amadeus response: %s", exception)
+        raise HTTPException(status_code=502, detail="Improper Amadeus response")
 
 
 async def get_amadeus_offers(
@@ -224,7 +231,9 @@ async def get_amadeus_offers(
         "currency": "USD",
     }
     try:
-        response = requests.get(hotel_price_url, params=params, headers=headers)
+        response = requests.get(
+            hotel_price_url, params=params, headers=headers, timeout=config.HTTP_TIMEOUT
+        )
         json_data = response.json()
         offers = Amadeus_Hotel_Offers.model_validate(json_data)
         if len(offers.data) > 0:  # Ensure at least one hotel is returned
@@ -248,11 +257,11 @@ async def get_amadeus_offers(
         else:
             raise HTTPException(status_code=404, detail="No offers found for this price range")
     except ValidationError as exception:
-        raise HTTPException(
-            status_code=502, detail=f"Error validating Amadeus offer response: {str(exception)}"
-        )
+        logger.error("get_amadeus_offers: improper Amadeus offer response: %s", exception)
+        raise HTTPException(status_code=502, detail="Error validating Amadeus offer response")
     except RequestException as exception:
-        raise HTTPException(status_code=500, detail=f"Amadeus request failed: {str(exception)}")
+        logger.error("get_amadeus_offers: Amadeus request failed: %s", exception)
+        raise HTTPException(status_code=502, detail="Amadeus request failed")
 
 
 async def get_amadeus_ratings(hotel_ids: list[str]) -> tuple:
@@ -273,7 +282,9 @@ async def get_amadeus_ratings(hotel_ids: list[str]) -> tuple:
         hotels_list_url = "https://test.api.amadeus.com/v2/e-reputation/hotel-sentiments"
         headers = {"Authorization": f"Bearer {access_token}"}
         params = {"hotelIds": hotel_ids}
-        response = requests.get(hotels_list_url, params=params, headers=headers)
+        response = requests.get(
+            hotels_list_url, params=params, headers=headers, timeout=config.HTTP_TIMEOUT
+        )
         json_data = response.json()
         sentiments = Amadeus_Hotel_Ratings.model_validate(
             json_data
@@ -289,9 +300,11 @@ async def get_amadeus_ratings(hotel_ids: list[str]) -> tuple:
         else:
             raise HTTPException(status_code=404, detail="No hotels found for the provided ids")
     except ValidationError as exception:
-        raise HTTPException(status_code=502, detail=f"Improper Amadeus response: {str(exception)}")
+        logger.error("get_amadeus_ratings: improper Amadeus response: %s", exception)
+        raise HTTPException(status_code=502, detail="Improper Amadeus response")
     except (KeyError, ValueError) as exception:
-        raise HTTPException(status_code=500, detail=f"Unable to parse response: {str(exception)}")
+        logger.error("get_amadeus_ratings: unable to parse response: %s", exception)
+        raise HTTPException(status_code=502, detail="Unable to parse Amadeus response")
 
 
 async def get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
@@ -312,7 +325,7 @@ async def get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {"grant_type": "client_credentials", "client_id": API_KEY, "client_secret": API_SECRET}
     try:
-        response = requests.post(url, headers=headers, data=data)
+        response = requests.post(url, headers=headers, data=data, timeout=config.HTTP_TIMEOUT)
         json_data = response.json()
         response_data = Amadeus_Access.model_validate(json_data)
         if response_data.access_token is not None:
@@ -320,7 +333,8 @@ async def get_amadeus_token(API_KEY: str, API_SECRET: str) -> str:
         else:
             raise HTTPException(status_code=404, detail="No Amadeus access token returned")
     except ValidationError as exception:
-        raise HTTPException(status_code=502, detail=f"Improper Amadeus response: {str(exception)}")
+        logger.error("get_amadeus_token: improper Amadeus response: %s", exception)
+        raise HTTPException(status_code=502, detail="Improper Amadeus response")
 
 
 async def get_nearby_city(lat: float, lon: float, radius: float | None = 50000) -> str:
@@ -347,7 +361,7 @@ async def get_nearby_city(lat: float, lon: float, radius: float | None = 50000) 
         "key": config.GOOGLE_PLACES_API,
     }
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, timeout=config.HTTP_TIMEOUT)
         json_data = response.json()
         places = GooglePlaces.model_validate(json_data).results
         if len(places) > 0:
@@ -360,10 +374,9 @@ async def get_nearby_city(lat: float, lon: float, radius: float | None = 50000) 
             raise HTTPException(status_code=404, detail="No places found for the provided location")
 
     except ValidationError as exception:
-        raise HTTPException(
-            status_code=500, detail=f"Improper Google Places response: {str(exception)}"
-        )
+        logger.error("get_nearby_city: improper Google Places response: %s", exception)
+        raise HTTPException(status_code=502, detail="Improper Google Places response")
     except RequestException as exception:
-        raise HTTPException(
-            status_code=502, detail=f"Google Places request failed: {str(exception)}"
-        )
+        # The request URL carries the Google Places API key; log it, don't leak it.
+        logger.error("get_nearby_city: Google Places request failed: %s", exception)
+        raise HTTPException(status_code=502, detail="Google Places request failed")

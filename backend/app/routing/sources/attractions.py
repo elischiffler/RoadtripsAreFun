@@ -8,6 +8,7 @@ its along-route ``elapsed_time`` so a scheduler can place it later.
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import requests
@@ -24,6 +25,8 @@ from app.routing import config
 from app.routing.geometry import find_position
 
 MapBox_route = MapBox.MapBox_Route
+
+logger = logging.getLogger(__name__)
 
 _REFERER = "https://rp-routing.onrender.com/"
 
@@ -57,7 +60,9 @@ async def find_stop(category: str, lat: str, lon: str, radius: int) -> dict[str,
     headers = {"Referer": _REFERER}
 
     try:
-        response = requests.get(nearby_search_url, params=params, headers=headers)
+        response = requests.get(
+            nearby_search_url, params=params, headers=headers, timeout=config.HTTP_TIMEOUT
+        )
         json_data = response.json()
         locations = Trip_Advisor_Location_Search.model_validate(json_data)
         lowest_rank = 999  # Set to be unrealistically high
@@ -73,14 +78,21 @@ async def find_stop(category: str, lat: str, lon: str, radius: int) -> dict[str,
                 if rank == 1:  # End loop early if highest rank is found
                     break
             if ideal_stop is not None:
+                # Record the winning popularity rank on the returned stop so batch
+                # callers (gather_candidates -> the knapsack objective) can weight
+                # by it. The greedy planner simply ignores this extra key.
+                ideal_stop["rank"] = lowest_rank
                 return ideal_stop
         raise HTTPException(status_code=404, detail="No locations found")
     except RequestException as exception:
-        raise HTTPException(status_code=500, detail=f"TripAdvisor request failed: {str(exception)}")
+        # Log the full exception for debugging, but never surface str(exception) to
+        # the client: it can contain the request URL, which carries the TripAdvisor
+        # API key as a query param.
+        logger.error("find_stop: TripAdvisor request failed: %s", exception)
+        raise HTTPException(status_code=502, detail="TripAdvisor request failed")
     except ValidationError as exception:
-        raise HTTPException(
-            status_code=502, detail=f"Improper TripAdvisor response: {str(exception)}"
-        )
+        logger.error("find_stop: improper TripAdvisor response: %s", exception)
+        raise HTTPException(status_code=502, detail="Improper TripAdvisor response")
 
 
 async def get_details(location_id: str) -> tuple[int, dict[str, Any]]:
@@ -104,7 +116,9 @@ async def get_details(location_id: str) -> tuple[int, dict[str, Any]]:
 
     headers = {"Referer": _REFERER}
 
-    response = requests.get(location_details_url, params=params, headers=headers)
+    response = requests.get(
+        location_details_url, params=params, headers=headers, timeout=config.HTTP_TIMEOUT
+    )
     json_data = response.json()
     details = Trip_Advisor_Information.model_validate(json_data)
 

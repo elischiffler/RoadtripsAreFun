@@ -46,7 +46,7 @@ async def call_route(
         "access_token": config.MAPBOX_API,
     }
 
-    response = requests.get(call_route_url, params=params)
+    response = requests.get(call_route_url, params=params, timeout=config.HTTP_TIMEOUT)
     json_data = response.json()
     data = MapBox.model_validate(json_data)
     route = data.routes[

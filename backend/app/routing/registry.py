@@ -15,6 +15,11 @@ DEFAULT_ALGORITHM = "greedy"
 
 _REGISTRY: dict[str, RoutePlanner] = {}
 
+# Tracks whether the built-in planners have been imported/registered. A dedicated
+# flag (rather than "is _REGISTRY non-empty?") ensures a caller that registers its
+# own planner first cannot accidentally suppress built-in loading.
+_BUILTINS_LOADED = False
+
 
 def register_planner(planner: RoutePlanner) -> None:
     """Register a planner instance under its ``name``."""
@@ -52,10 +57,15 @@ def _ensure_loaded() -> None:
     router also imports) and to keep OR-Tools import cost off the hot path until
     a planner is actually requested.
     """
-    if _REGISTRY:
+    global _BUILTINS_LOADED
+    if _BUILTINS_LOADED:
         return
     # Importing each module triggers its register_planner(...) call.
     from app.routing.planners import (
         greedy,  # noqa: F401
         ortools_knapsack,  # noqa: F401
     )
+
+    # Set only after the built-ins have registered, so an earlier user
+    # register_planner(...) can't cause this to short-circuit.
+    _BUILTINS_LOADED = True

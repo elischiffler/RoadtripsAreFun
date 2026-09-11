@@ -12,6 +12,10 @@ from requests.exceptions import RequestException
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+# Explicit (connect, read) timeouts in seconds for outbound FuelEconomy.gov calls so
+# a slow or unresponsive upstream can't hang the request (and the event loop).
+_HTTP_TIMEOUT = (5, 15)
+
 
 def _normalize(text: str) -> str:
     """Normalize a model/make string for forgiving comparison.
@@ -68,8 +72,9 @@ async def get_car_details(model: str, make: str, year: int) -> dict[str, float]:
             "year": year,
         }
 
-        # Send a request to the API
-        response = requests.get(api_url, params=params)
+        # Send a request to the API. Explicit (connect, read) timeouts so a slow or
+        # hung FuelEconomy.gov can't stall the request indefinitely.
+        response = requests.get(api_url, params=params, timeout=_HTTP_TIMEOUT)
         if response.status_code != requests.codes.ok:
             logger.warning(
                 "get_car_details: options lookup returned %s for %s %s %s",
@@ -89,7 +94,7 @@ async def get_car_details(model: str, make: str, year: int) -> dict[str, float]:
         statistics_url = f"https://www.fueleconomy.gov/ws/rest/vehicle/{car_id}"
 
         # Get the car statistics xml response
-        car_info_response = requests.get(statistics_url)
+        car_info_response = requests.get(statistics_url, timeout=_HTTP_TIMEOUT)
         if car_info_response.status_code != requests.codes.ok:
             logger.warning(
                 "get_car_details: stats lookup returned %s for car_id=%s",
@@ -110,7 +115,10 @@ async def get_car_details(model: str, make: str, year: int) -> dict[str, float]:
         raise
     except RequestException as exception:
         logger.error("get_car_details: FuelEconomy request failed: %s", exception)
-        raise HTTPException(status_code=500, detail=f"Car data request failed: {str(exception)}")
+        # 502: the upstream FuelEconomy.gov request failed. 500 is reserved for the
+        # electric-vehicle contract raised in _handle_car_info (the frontend maps 500
+        # to its "electric car" message), so it must not leak from transport failures.
+        raise HTTPException(status_code=502, detail=f"Car data request failed: {str(exception)}")
     except ET.ParseError as exception:
         logger.error("get_car_details: could not parse FuelEconomy XML: %s", exception)
         raise HTTPException(status_code=502, detail="Could not parse FuelEconomy.gov response")
@@ -191,7 +199,9 @@ def _get_full_model_name(model: str, make: str, year: int) -> Optional[str]:
         "year": year,
     }
 
-    response = requests.get(models_url, params=params)  # Get the response from the API
+    response = requests.get(
+        models_url, params=params, timeout=_HTTP_TIMEOUT
+    )  # Get the response from the API
     if response.status_code != requests.codes.ok:
         logger.warning(
             "_get_full_model_name: model list returned %s for make=%r year=%s",
@@ -199,7 +209,11 @@ def _get_full_model_name(model: str, make: str, year: int) -> Optional[str]:
             make,
             year,
         )
-        return None
+        # A non-200 upstream response is an upstream failure, not "no such model".
+        # Raise 502 so it isn't confused with a successful empty result (None -> 404).
+        raise HTTPException(
+            status_code=502, detail="FuelEconomy.gov returned an unexpected response"
+        )
 
     models = _handle_car_identifier(response)  # Get the list of models from xml response
     target = _normalize(model)
@@ -212,11 +226,30 @@ def _get_full_model_name(model: str, make: str, year: int) -> Optional[str]:
             return full_model
 
     # 2. Substring match in either direction (user typed a prefix, or a
-    #    superset of the DB name).
-    for full_model in models:
-        norm = _normalize(full_model)
-        if target in norm or norm in target:
-            return full_model
+    #    superset of the DB name). Collect ALL matches: a single match is used,
+    #    but multiple matches are ambiguous and must not silently resolve to the
+    #    first one (that would query an arbitrary model).
+    matches = [
+        full_model
+        for full_model in models
+        if (norm := _normalize(full_model)) and (target in norm or norm in target)
+    ]
+    if len(matches) == 1:
+        return matches[0]
+    if len(matches) > 1:
+        logger.info(
+            "_get_full_model_name: %r ambiguous across %d models for %s %s: %s",
+            model,
+            len(matches),
+            year,
+            make,
+            matches,
+        )
+        raise HTTPException(
+            status_code=400,
+            detail=f"'{make} {model}' is ambiguous for {year}. Matches: "
+            f"{', '.join(matches)}. Please be more specific.",
+        )
 
     logger.info(
         "_get_full_model_name: %r not among %d models for %s %s",
@@ -236,7 +269,7 @@ async def get_gas_price() -> float:
     api_url = "https://www.fueleconomy.gov/ws/rest/fuelprices"
 
     try:
-        response = requests.get(api_url)
+        response = requests.get(api_url, timeout=_HTTP_TIMEOUT)
         if response.status_code == requests.codes.ok:
             root = ET.fromstring(response.content)
             regular_price = root.find("regular").text

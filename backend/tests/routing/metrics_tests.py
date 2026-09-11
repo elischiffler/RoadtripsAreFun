@@ -57,9 +57,13 @@ async def test_counting_services_counts_only_io(route, start_date, fake_services
         remaining_budget=100, duration_left=3600, stops_left=1, daily_drive_time=7
     )
     assert services.api_calls == 0
-    # An attraction lookup should.
+    # Each I/O method increments the counter exactly once per call.
     await services.find_stop("attractions", 33.0, -117.0, 30)
     assert services.api_calls == 1
+    await services.find_hotel(33.0, -117.0, ((0, 200), "0-200"), start_date)
+    assert services.api_calls == 2
+    await services.gather_candidates(route, 3)
+    assert services.api_calls == 3
 
 
 @pytest.mark.asyncio

@@ -14,6 +14,12 @@ attractions one at a time as it walks the route, it:
    This is the "select + schedule under a budget/knapsack constraint" framing
    from docs/algorithm-analysis.md — the ordering stays fixed by geography, so
    the solver only decides *which* attractions to keep.
+
+   Note on dimension 1: a knapsack solver has no native "choose at most N items"
+   constraint, so the stop count is *encoded* as an artificial weight dimension
+   (every item weighs 1, capacity = num_stops). It's a modeling workaround, not a
+   real resource — see the detailed comment in ``_select`` and the CP-SAT
+   follow-up in docs/pluggable-routing-refactor.md.
 3. **Schedules** the chosen attractions in along-route order and inserts
    overnight hotels using the same day-window rules as the greedy planner,
    reusing the injected hotel service.
@@ -115,8 +121,23 @@ class ORToolsKnapsackPlanner(RoutePlanner):
             return list(candidates)
 
         profits = [self._value(c) for c in candidates]
-        # Detour weight per attraction (uniform ~2h today; kept as a dimension so a
-        # future model can vary it per candidate). Budget = num_stops * per-stop.
+
+        # --- Encoding "at most num_stops attractions" as a knapsack dimension ---
+        # A knapsack solver only understands "items have weights, the bag has
+        # capacities" — it has no native "choose at most N items" constraint. So we
+        # model the stop count as a second, artificial weight dimension: every
+        # attraction "weighs" exactly 1 unit of a made-up "count" resource, and that
+        # resource's capacity is num_stops. The solver then physically cannot pack
+        # more than num_stops items, which is exactly the cap we want.
+        #
+        # dimension 0 (detour_weights): a real-ish resource — each stop costs a
+        #   uniform detour today; the budget is num_stops * per-stop detour. Kept as
+        #   its own dimension so a future model can vary detour per candidate.
+        # dimension 1 (count_weights): the count hack described above.
+        #
+        # NOTE: this only expresses a HARD "<= N" cap. It cannot express a soft
+        # target ("about N, fewer if not worth it") — that needs a solver with real
+        # constraints (CP-SAT). See docs/pluggable-routing-refactor.md.
         detour_weights = [_INT_SCALE for _ in candidates]
         count_weights = [1 for _ in candidates]
         capacities = [num_stops * _INT_SCALE, num_stops]
@@ -134,11 +155,11 @@ class ORToolsKnapsackPlanner(RoutePlanner):
     def _value(candidate: dict[str, Any]) -> int:
         """Integer profit for the solver, derived from popularity.
 
-        TripAdvisor rank (1 = best) isn't stored on the candidate dict, so use a
-        flat positive value; lower-ranked de-prioritization already happened in
-        ``find_stop`` (it returns the best-ranked nearby attraction per point).
-        Kept as a hook: a future candidate that carries a ``rank`` or preference
-        score can weight it here.
+        Each candidate carries the TripAdvisor popularity ``rank`` (1 = best) that
+        ``find_stop`` recorded, so better-ranked attractions get a higher profit
+        (``1/rank`` scaled to an integer). If the rank is missing or invalid
+        (e.g. an attraction with no ranking data), fall back to a flat baseline
+        value so the candidate is still selectable, just not prioritized.
         """
         rank = candidate.get("rank")
         if isinstance(rank, int) and rank > 0:
@@ -149,10 +170,12 @@ class _PreselectedStopProvider:
     """Dispenses OR-Tools' pre-selected attractions to the shared scheduler.
 
     The scheduler calls this like ``find_stop(category, lat, lon, radius)`` at
-    each attraction segment boundary. Instead of searching, it returns the next
-    knapsack-chosen attraction, re-stamped with the scheduler's computed
-    ``[lat, lon]`` so the actual routing position matches where the scheduler
-    placed the stop (mirroring how greedy's stops land on the driven line).
+    each attraction segment boundary, using ``elapsed_time`` for *scheduling*.
+    Instead of searching, it returns the next knapsack-chosen attraction with its
+    own recorded ``coordinates`` intact — mirroring the greedy planner, whose
+    ``find_stop`` also returns the attraction's real coordinates (from
+    ``get_details``), not the search position. Overwriting them with the search
+    boundary would route to the wrong place and diverge from greedy.
 
     If the scheduler asks for more attractions than were selected (the trip has
     room for more boundaries than we chose to fill), it raises ``HTTPException``
@@ -168,10 +191,9 @@ class _PreselectedStopProvider:
         if not self._remaining:
             raise HTTPException(status_code=404, detail="No more selected attractions")
         chosen = self._remaining.pop(0)
-        # Strip the internal scheduling key and pin to the scheduler's position.
-        stop = {k: v for k, v in chosen.items() if k != "elapsed_time"}
-        stop["coordinates"] = [lat, lon]
-        return stop
+        # Strip the internal scheduling key but keep the attraction's own
+        # coordinates so routing targets the real attraction location.
+        return {k: v for k, v in chosen.items() if k != "elapsed_time"}
 
 
 register_planner(ORToolsKnapsackPlanner())

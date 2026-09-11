@@ -80,7 +80,9 @@ async def schedule_route(
     end_stop_search = (
         route.duration - 1800
     )  # Stop looking for attractions within the last 30 minutes of trip
-    current_time = date.hour * 3600  # Initialize the current time of the day in seconds
+    # Initialize the current time of day in seconds, including minutes and seconds
+    # so a start like 09:30:00 isn't truncated to 09:00:00 for daily_end checks.
+    current_time = date.hour * 3600 + date.minute * 60 + date.second
     steps = route.legs[0].steps  # Only one leg in the initial route
     coordinates = route.geometry.coordinates  # Get all coordinates of the route
     current_day = 1  # Initialize number of days in route
@@ -181,8 +183,11 @@ async def schedule_route(
                             raise exception
                         search_radius += search_radius  # Double the search radius
                         total_time += 3600  # Redo the search an hour later
-                        # Decrement the time until the next stop by an hour (next stop comes sooner)
-                        time_till_stop -= 3600
+                        # Decrement the time until the next stop by an hour (next stop
+                        # comes sooner). Clamp at zero so a short interval (< 1h) can't
+                        # push the remaining route time negative and corrupt total_time
+                        # on the next iteration.
+                        time_till_stop = max(0, time_till_stop - 3600)
                         date += timedelta(seconds=3600)  # Increase the datetime
                         current_time += 3600  # Increment the current time counter
                     else:

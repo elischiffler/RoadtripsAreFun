@@ -19,6 +19,20 @@ import { ROUTING_ALGORITHM_KEY, getRoutingAlgorithm } from '../pages/ChatPage/ge
 // Default algorithm when nothing has been picked yet.
 const DEFAULT_ALGORITHM = 'greedy';
 
+/**
+ * Persist the selected routing algorithm, tolerating a failing localStorage
+ * (private mode, quota, storage disabled). A write failure is non-fatal: the
+ * picker keeps working in-memory, and getFinalRoute() still falls back to the
+ * backend default when nothing is stored.
+ */
+function writeRoutingAlgorithm(algo) {
+  try {
+    localStorage.setItem(ROUTING_ALGORITHM_KEY, algo);
+  } catch (err) {
+    console.warn('Could not persist routing algorithm to localStorage:', err);
+  }
+}
+
 export default function AlgorithmSettings() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [algorithms, setAlgorithms] = useState([]);
@@ -29,7 +43,7 @@ export default function AlgorithmSettings() {
     // Persist the default on first load so what the UI shows matches what gets
     // sent (getFinalRoute reads localStorage).
     if (!getRoutingAlgorithm()) {
-      localStorage.setItem(ROUTING_ALGORITHM_KEY, DEFAULT_ALGORITHM);
+      writeRoutingAlgorithm(DEFAULT_ALGORITHM);
     }
   }, []);
 
@@ -44,7 +58,7 @@ export default function AlgorithmSettings() {
   }, [open, algorithms.length]);
 
   const choose = (algo) => {
-    localStorage.setItem(ROUTING_ALGORITHM_KEY, algo);
+    writeRoutingAlgorithm(algo);
     setSelected(algo);
     setAnchorEl(null);
   };
