@@ -1,9 +1,24 @@
 # Route-Finding Algorithm
 
 How MyRoadtrip turns a start and end point into a multi-day road trip with
-attractions and overnight hotels. All of this lives in the backend
-(`backend/app/routers/routing_api.py`), with hotel scraping factored out into
-`backend/app/routers/routing_fns/webscraping_fns.py`.
+attractions and overnight hotels.
+
+> **Architecture note (pluggable planners).** The route-planning *algorithm* now
+> lives behind a swappable interface in the `backend/app/routing/` package, not
+> inline in the router. `backend/app/routers/routing_api.py` is a thin controller
+> that picks a planner by name and assembles the response. Two planners ship
+> today: `greedy` (the algorithm described below) and `ortools` (an OR-Tools
+> knapsack selector). See
+> [pluggable-routing-refactor.md](./pluggable-routing-refactor.md) for the layer
+> layout and how to add a new algorithm. The rest of this document describes the
+> **greedy** planner's behavior, which is unchanged by that refactor.
+
+The greedy algorithm below is defined by its *selection* logic in
+`backend/app/routing/planners/greedy.py`. The day-by-day *scheduling* loop it
+uses (formerly the body of `_add_stops`) now lives in the shared
+`backend/app/routing/scheduler.py`, which the OR-Tools planner also uses so both
+schedule identically. Candidate sourcing lives in `backend/app/routing/sources/`
+and hotel scraping in `backend/app/routers/routing_fns/webscraping_fns.py`.
 
 > The overview diagram below uses [Mermaid](https://mermaid.js.org/), which
 > GitHub renders natively. The source and a rendered SVG also live in

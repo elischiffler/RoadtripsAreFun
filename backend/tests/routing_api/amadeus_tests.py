@@ -2,7 +2,11 @@ import pytest
 from unittest.mock import MagicMock, patch
 from datetime import datetime
 
-from app.routers.routing_api import _get_amadeus_token, _find_hotel
+# These are re-exported from app.routers.routing_api, but their real
+# implementations live in app.routing.sources.hotels — patch there so the
+# functions' own module-level lookups (requests, get_location, ...) are affected.
+from app.routing.sources.hotels import get_amadeus_token as _get_amadeus_token
+from app.routing.sources.hotels import find_hotel as _find_hotel
 
 
 # ---------------------------------------------------------------------------
@@ -43,7 +47,7 @@ async def test_get_amadeus_token():
     mock_resp = MagicMock()
     mock_resp.json.return_value = _amadeus_token_response()
 
-    with patch("app.routers.routing_api.requests.post", return_value=mock_resp):
+    with patch("app.routing.sources.hotels.requests.post", return_value=mock_resp):
         token = await _get_amadeus_token("fake_key", "fake_secret")
 
     assert isinstance(token, str)
@@ -69,9 +73,9 @@ async def test_find_hotel_returns_dict():
     }
 
     with (
-        patch("app.routers.routing_api.get_location", return_value=_mock_location()),
-        patch("app.routers.routing_api.find_google_hotels", return_value=mock_hotel),
-        patch("app.routers.routing_api._get_nearby_city", return_value="San Diego"),
+        patch("app.routing.sources.hotels.get_location", return_value=_mock_location()),
+        patch("app.routing.sources.hotels.find_google_hotels", return_value=mock_hotel),
+        patch("app.routing.sources.hotels.get_nearby_city", return_value="San Diego"),
     ):
         hotel_info = await _find_hotel(
             lat=33.319952,
@@ -91,7 +95,7 @@ async def test_find_hotel_no_location_raises_404():
     """_find_hotel raises HTTPException 404 when geolocation returns None."""
     from fastapi import HTTPException
 
-    with patch("app.routers.routing_api.get_location", return_value=None):
+    with patch("app.routing.sources.hotels.get_location", return_value=None):
         with pytest.raises(HTTPException) as exc_info:
             await _find_hotel(
                 lat=0.0,

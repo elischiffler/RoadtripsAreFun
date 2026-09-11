@@ -5,7 +5,12 @@ import LogoButton from './LogoButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { UserDataContext } from '../states/UserDataContext';
 import { isAuthenticated } from '../services/authService';
+import AlgorithmSettings from './AlgorithmSettings';
 import './GlobalHeader.css';
+
+// Show the dev-mode algorithm picker only in local dev (npm run dev), or when
+// VITE_DEV_TOOLS=true is set. It's hidden in a normal production build.
+const SHOW_DEV_TOOLS = import.meta.env.DEV || import.meta.env.VITE_DEV_TOOLS === 'true';
 
 const HIDDEN_ON = ['/login', '/signup'];
 
@@ -46,6 +51,7 @@ export default function GlobalHeader() {
       <LogoButton driving={isDriving} progress={logoProgress} />
 
       <Box className="global-header-right">
+        {SHOW_DEV_TOOLS && <AlgorithmSettings />}
         {authed ? (
           <>
             <Box

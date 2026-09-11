@@ -105,3 +105,5 @@ class Route_Payload(BaseModel):
     num_stops: int
     budget: float
     start: Optional[datetime] = datetime(2024, 9, 21, 9, 0, 0)
+    # Which routing algorithm to run. None -> the ROUTING_ALGORITHM env / default.
+    algorithm: Optional[str] = None

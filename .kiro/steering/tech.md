@@ -39,11 +39,18 @@ This repo contains two services: `backend/` (Python/FastAPI) and `frontend/` (Re
 - `PyJWT` – decodes Cognito JWTs in `app/utils/auth.py`
 - `pandas` / `numpy` – data utilities
 - `lxml` – HTML parsing for web scraping
+- `ortools` (9.10.4067) – Google OR-Tools; the knapsack solver backs the `ortools` route planner in `app/routing/planners/`
 - `typer` / `rich` – CLI utilities pulled in as FastAPI CLI dependencies
+
+### Routing Algorithm Layer
+- Route planning lives in **`app/routing/`** as a **pluggable-algorithm** layer behind a single `RoutePlanner` interface. Two planners ship: `greedy` (original heuristic) and `ortools` (OR-Tools knapsack). Selection is per-request (`Route_Payload.algorithm`), via `ROUTING_ALGORITHM` env, or the `greedy` default.
+- Planners share one scheduler and reach external APIs only through an injected `RoutingServices` bundle, so they differ only in *selection*.
+- `python -m app.routing.benchmark` (or `GET /benchmark` with `BENCHMARK_ENABLED=true`) compares planners on cached inputs. See `docs/pluggable-routing-refactor.md` and `docs/routing-localhost-testing.md`.
 
 ### Testing
 - **pytest 8.2.2** + **pytest-asyncio 0.23.8** + **pytest-cov 5.0.0**
-- Tests live in `backend/tests/` and use `fastapi.testclient.TestClient`
+- Endpoint tests live in `backend/tests/` and use `fastapi.testclient.TestClient`
+- Planner-level tests live in `backend/tests/routing/` and inject a fake `RoutingServices` (no network) — the template for testing any new algorithm
 - Configuration in `backend/pytest.ini`
 - CI runs via `pytest` (GitHub Actions) from the `backend/` directory
 
@@ -74,6 +81,13 @@ All secrets are loaded from `.env` (never committed). Required keys:
 - `OPENCAGE_KEY`
 - `AMADEUS_KEY`, `AMADEUS_SECRET`
 - `CAR_DATA_API`
+
+Optional (routing layer, all have safe defaults):
+- `ROUTING_ALGORITHM` – default planner when the request omits `algorithm` (defaults to `greedy`)
+- `AMADEUS_ENABLED` – enable the Amadeus hotel fallback (`false` by default)
+- `BENCHMARK_ENABLED` – expose the `/benchmark` debug endpoint (`false` by default)
+
+> The `.env` lives at the **repo root**. `app/core/config.py` and `app/routing/config.py` both load it via `parents[3]`; the routing layer centralizes its tokens in `app/routing/config.py`.
 
 **Frontend (Vite):**
 - `VITE_BACKEND_SERVER` – base URL of the backend API

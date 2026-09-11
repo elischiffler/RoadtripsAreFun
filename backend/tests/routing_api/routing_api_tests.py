@@ -132,7 +132,7 @@ def _mock_requests_get(url, **kwargs):
 )
 def test_get_initial_route(params):
     """Returns 200 with a valid route shape for any origin/destination pair."""
-    with patch("app.routers.routing_api.requests.get", side_effect=_mock_requests_get):
+    with patch("app.routing.sources.mapbox.requests.get", side_effect=_mock_requests_get):
         response = client.get("/get-initial-route", params=params)
     assert response.status_code == 200
     data = response.json()
@@ -150,7 +150,7 @@ def test_get_initial_route_returns_steps():
         "end_lat": 40.647306,
         "end_lon": -74.157289,
     }
-    with patch("app.routers.routing_api.requests.get", side_effect=_mock_requests_get):
+    with patch("app.routing.sources.mapbox.requests.get", side_effect=_mock_requests_get):
         response = client.get("/get-initial-route", params=params)
     assert response.status_code == 200
     assert len(response.json()["legs"][0]["steps"]) > 0
@@ -178,7 +178,7 @@ def test_generate_final_route_zero_stops():
     mock_location.address = "Somewhere, USA"
 
     with (
-        patch("app.routers.routing_api.requests.get", return_value=mock_resp),
+        patch("app.routing.sources.mapbox.requests.get", return_value=mock_resp),
         patch("app.routers.routing_api.get_location", return_value=mock_location),
     ):
         init_resp = client.get(
@@ -211,6 +211,69 @@ def test_generate_final_route_invalid_payload():
         "/generate-final-route", json={"initial_route": {}, "num_stops": 1, "budget": 200}
     )
     assert response.status_code == 502
+
+
+def test_generate_final_route_unknown_algorithm_returns_400():
+    """An unrecognized algorithm name is rejected with 400."""
+    short_trip_mapbox = _mapbox_response()
+    short_trip_mapbox["routes"][0]["duration"] = 7200.0
+    short_trip_mapbox["routes"][0]["legs"][0]["duration"] = 7200.0
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = short_trip_mapbox
+    mock_location = MagicMock()
+    mock_location.address = "Somewhere, USA"
+
+    with (
+        patch("app.routing.sources.mapbox.requests.get", return_value=mock_resp),
+        patch("app.routers.routing_api.get_location", return_value=mock_location),
+    ):
+        init_resp = client.get(
+            "/get-initial-route",
+            params={
+                "start_lat": 33.7186,
+                "start_lon": -117.9286,
+                "end_lat": 34.0522,
+                "end_lon": -118.2437,
+            },
+        )
+        response = client.post(
+            "/generate-final-route",
+            json={
+                "initial_route": init_resp.json(),
+                "num_stops": 0,
+                "budget": 400,
+                "algorithm": "does-not-exist",
+            },
+        )
+    assert response.status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# GET /benchmark  (debug endpoint, gated by BENCHMARK_ENABLED)
+# ---------------------------------------------------------------------------
+
+
+def test_benchmark_disabled_by_default():
+    """The benchmark endpoint 404s unless explicitly enabled."""
+    with patch.dict("os.environ", {}, clear=False):
+        import os
+
+        os.environ.pop("BENCHMARK_ENABLED", None)
+        response = client.get("/benchmark")
+    assert response.status_code == 404
+
+
+def test_benchmark_enabled_returns_table():
+    """With BENCHMARK_ENABLED=true, returns the comparison payload."""
+    import os
+
+    with patch.dict(os.environ, {"BENCHMARK_ENABLED": "true"}):
+        response = client.get("/benchmark", params={"algorithms": "greedy,ortools"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["algorithms"] == ["greedy", "ortools"]
+    assert len(data["cases"]) >= 1
 
 
 if __name__ == "__main__":
