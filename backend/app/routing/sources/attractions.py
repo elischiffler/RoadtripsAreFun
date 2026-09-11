@@ -13,6 +13,7 @@ from typing import Any
 
 import requests
 from fastapi import HTTPException
+from geopy.distance import geodesic
 from pydantic import ValidationError
 from requests.exceptions import RequestException
 
@@ -184,5 +185,36 @@ async def gather_candidates(
                 continue  # No attraction near this point; skip it.
             raise
         candidate["elapsed_time"] = elapsed
+        # Attach a cheap off-route detour estimate (a geodesic proxy, no extra API
+        # call): the straight-line distance from the on-route sample point to the
+        # attraction, doubled for the out-and-back leg. It is only an approximation
+        # of true driving detour, but it is monotonic with it — enough for a solver
+        # to prefer closer stops and drop far ones under a detour budget. A future
+        # pass can replace this with a real Mapbox re-route cost behind the same key.
+        candidate["detour_meters"] = _detour_proxy_meters(
+            (lat, lon), candidate.get("coordinates")
+        )
         candidates.append(candidate)
     return candidates
+
+
+def _detour_proxy_meters(
+    route_point: tuple[float, float], attraction_coords: list[float] | None
+) -> float:
+    """Out-and-back geodesic detour proxy in meters.
+
+    ``route_point`` is ``(lat, lon)`` on the driven line; ``attraction_coords`` is
+    the attraction's own ``[lat, lon]``. Returns twice the straight-line distance
+    (leave the route and rejoin). Returns ``0.0`` when coordinates are missing so a
+    candidate without a usable location isn't penalized arbitrarily.
+    """
+    if not attraction_coords or len(attraction_coords) < 2:
+        return 0.0
+    try:
+        one_way = geodesic(
+            (route_point[0], route_point[1]),
+            (attraction_coords[0], attraction_coords[1]),
+        ).meters
+    except (ValueError, TypeError):
+        return 0.0
+    return 2.0 * one_way

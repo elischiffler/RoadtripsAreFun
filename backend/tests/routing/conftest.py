@@ -78,6 +78,8 @@ class FakeServices:
         self.num_attractions = num_attractions
         self.find_stop_calls = 0
         self.find_hotel_calls = 0
+        # Optional per-candidate-index (1-based) detour_meters overrides for tests.
+        self.detour_overrides: dict[int, float] = {}
 
     async def find_stop(self, category: str, lat: float, lon: float, radius: int) -> dict[str, Any]:
         self.find_stop_calls += 1
@@ -102,6 +104,8 @@ class FakeServices:
 
     async def gather_candidates(self, route, num_candidates: int, radius: int = 30):
         # Return `num_attractions` candidates spread across the route duration.
+        # `detour_overrides` lets a test set a specific detour_meters per candidate
+        # index (1-based); anything unset defaults to a small, cheap detour.
         out: list[dict[str, Any]] = []
         duration = route.duration
         n = min(self.num_attractions, max(num_candidates, 0))
@@ -117,6 +121,7 @@ class FakeServices:
                     "address": f"{i} Candidate St",
                     "elapsed_time": elapsed,
                     "rank": i,  # lower i = better rank
+                    "detour_meters": self.detour_overrides.get(i, 1000.0),
                 }
             )
         return out

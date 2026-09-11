@@ -50,6 +50,16 @@ _CANDIDATE_MULTIPLIER = 3
 # Scale factor to turn fractional values/weights into the integers OR-Tools wants.
 _INT_SCALE = 1000
 
+# Per-stop detour budget (meters of out-and-back off-route travel the trip will
+# tolerate for each requested stop). The knapsack's detour capacity is
+# ``num_stops * _DETOUR_BUDGET_PER_STOP_M``, so on average a selected attraction may
+# sit up to ~this far off the route; the solver can spend the pooled budget unevenly
+# (one closer stop leaves room for one farther, more popular stop). ~30 mi -> meters.
+_DETOUR_BUDGET_PER_STOP_M = 30 * 1609.34
+# Fallback detour (meters) for a candidate missing/!invalid ``detour_meters`` — half a
+# per-stop budget, so it's selectable but not treated as free.
+_DEFAULT_DETOUR_M = _DETOUR_BUDGET_PER_STOP_M / 2
+
 
 class ORToolsKnapsackPlanner(RoutePlanner):
     name = "ortools"
@@ -116,6 +126,16 @@ class ORToolsKnapsackPlanner(RoutePlanner):
         """
         if num_stops <= 0 or not candidates:
             return []
+
+        detour_budget = int(num_stops * _DETOUR_BUDGET_PER_STOP_M)
+
+        # Drop candidates whose own detour already exceeds the whole pooled budget:
+        # they can never be part of a feasible selection, and feeding an item heavier
+        # than the capacity to the solver is undefined. Filtering here keeps the
+        # solver input well-formed and the "too far off route" rejection explicit.
+        candidates = [c for c in candidates if self._detour_weight(c) <= detour_budget]
+        if not candidates:
+            return []
         # If we found no more than requested, keep them all (nothing to optimize).
         if len(candidates) <= num_stops:
             return list(candidates)
@@ -130,17 +150,19 @@ class ORToolsKnapsackPlanner(RoutePlanner):
         # resource's capacity is num_stops. The solver then physically cannot pack
         # more than num_stops items, which is exactly the cap we want.
         #
-        # dimension 0 (detour_weights): a real-ish resource — each stop costs a
-        #   uniform detour today; the budget is num_stops * per-stop detour. Kept as
-        #   its own dimension so a future model can vary detour per candidate.
+        # dimension 0 (detour_weights): a REAL resource now — each candidate weighs
+        #   its own off-route detour (from gather_candidates' geodesic proxy), and the
+        #   bag holds a pooled budget of num_stops per-stop tolerances. This is what
+        #   lets the solver trade a farther, higher-ranked stop for a closer one, or
+        #   drop an attraction that's too far off route.
         # dimension 1 (count_weights): the count hack described above.
         #
         # NOTE: this only expresses a HARD "<= N" cap. It cannot express a soft
         # target ("about N, fewer if not worth it") — that needs a solver with real
         # constraints (CP-SAT). See docs/pluggable-routing-refactor.md.
-        detour_weights = [_INT_SCALE for _ in candidates]
+        detour_weights = [self._detour_weight(c) for c in candidates]
         count_weights = [1 for _ in candidates]
-        capacities = [num_stops * _INT_SCALE, num_stops]
+        capacities = [detour_budget, num_stops]
 
         solver = knapsack_solver.KnapsackSolver(
             knapsack_solver.SolverType.KNAPSACK_MULTIDIMENSION_BRANCH_AND_BOUND_SOLVER,
@@ -165,6 +187,20 @@ class ORToolsKnapsackPlanner(RoutePlanner):
         if isinstance(rank, int) and rank > 0:
             return max(1, int((1.0 / rank) * _INT_SCALE))
         return _INT_SCALE
+
+    @staticmethod
+    def _detour_weight(candidate: dict[str, Any]) -> int:
+        """Integer detour cost (meters) for the solver's detour dimension.
+
+        Uses the ``detour_meters`` proxy that ``gather_candidates`` attaches. A
+        missing or invalid value falls back to ``_DEFAULT_DETOUR_M`` so a candidate
+        without a usable detour estimate is still selectable, just charged a nominal
+        cost rather than treated as free.
+        """
+        detour = candidate.get("detour_meters")
+        if isinstance(detour, (int, float)) and detour >= 0:
+            return int(detour)
+        return int(_DEFAULT_DETOUR_M)
 
 class _PreselectedStopProvider:
     """Dispenses OR-Tools' pre-selected attractions to the shared scheduler.
