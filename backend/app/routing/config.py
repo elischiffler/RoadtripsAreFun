@@ -12,8 +12,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 from geopy.geocoders import OpenCage
 
-# app/routing/config.py -> parents[2] == backend/, so the .env at repo backend root.
-load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=True)
+# app/routing/config.py -> parents[3] == the repo root, where .env lives (matches
+# app/core/config.py and the routers). parents[2] would be backend/, which has no .env.
+load_dotenv(Path(__file__).resolve().parents[3] / ".env", override=True)
 
 # API tokens
 MAPBOX_API = os.getenv("MAPBOX_API")

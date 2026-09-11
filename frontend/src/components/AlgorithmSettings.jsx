@@ -16,11 +16,22 @@ import { ROUTING_ALGORITHM_KEY, getRoutingAlgorithm } from '../pages/ChatPage/ge
  * This is a developer/demo tool — it doesn't change production behavior unless a
  * non-default algorithm is explicitly selected.
  */
+// Default algorithm when nothing has been picked yet.
+const DEFAULT_ALGORITHM = 'greedy';
+
 export default function AlgorithmSettings() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [algorithms, setAlgorithms] = useState([]);
-  const [selected, setSelected] = useState(getRoutingAlgorithm());
+  const [selected, setSelected] = useState(getRoutingAlgorithm() || DEFAULT_ALGORITHM);
   const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    // Persist the default on first load so what the UI shows matches what gets
+    // sent (getFinalRoute reads localStorage).
+    if (!getRoutingAlgorithm()) {
+      localStorage.setItem(ROUTING_ALGORITHM_KEY, DEFAULT_ALGORITHM);
+    }
+  }, []);
 
   useEffect(() => {
     // Load the available algorithms once, when the popup is first opened.
@@ -33,11 +44,7 @@ export default function AlgorithmSettings() {
   }, [open, algorithms.length]);
 
   const choose = (algo) => {
-    if (algo) {
-      localStorage.setItem(ROUTING_ALGORITHM_KEY, algo);
-    } else {
-      localStorage.removeItem(ROUTING_ALGORITHM_KEY);
-    }
+    localStorage.setItem(ROUTING_ALGORITHM_KEY, algo);
     setSelected(algo);
     setAnchorEl(null);
   };
@@ -81,11 +88,6 @@ export default function AlgorithmSettings() {
         </Box>
         <Divider sx={{ borderColor: 'var(--cream-dark)' }} />
 
-        <MenuItem onClick={() => choose(null)} sx={{ fontSize: '0.85rem' }}>
-          {selected === null && <CheckIcon fontSize="small" sx={{ mr: 1 }} />}
-          <span style={{ marginLeft: selected === null ? 0 : 28 }}>Default (backend chooses)</span>
-        </MenuItem>
-
         {algorithms.map((algo) => (
           <MenuItem key={algo} onClick={() => choose(algo)} sx={{ fontSize: '0.85rem' }}>
             {selected === algo && <CheckIcon fontSize="small" sx={{ mr: 1 }} />}
@@ -93,15 +95,13 @@ export default function AlgorithmSettings() {
           </MenuItem>
         ))}
 
-        {selected && (
-          <Box sx={{ px: 2, py: 1 }}>
-            <Chip
-              label={`active: ${selected}`}
-              size="small"
-              sx={{ backgroundColor: 'var(--amber-light)', fontSize: '0.7rem' }}
-            />
-          </Box>
-        )}
+        <Box sx={{ px: 2, py: 1 }}>
+          <Chip
+            label={`active: ${selected}`}
+            size="small"
+            sx={{ backgroundColor: 'var(--amber-light)', fontSize: '0.7rem' }}
+          />
+        </Box>
       </Menu>
     </>
   );
