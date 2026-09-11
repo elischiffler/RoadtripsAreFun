@@ -18,6 +18,19 @@ export const getInitialRoute = async (start_lat, start_lon, end_lat, end_lon) =>
     return null;
   }
 };
+// Dev-mode: which routing algorithm to request. Stored in localStorage by the
+// settings popup (see AlgorithmSettings.jsx). When unset, the backend uses its
+// default, so production behavior is unchanged.
+export const ROUTING_ALGORITHM_KEY = 'devRoutingAlgorithm';
+
+export const getRoutingAlgorithm = () => {
+  try {
+    return localStorage.getItem(ROUTING_ALGORITHM_KEY) || null;
+  } catch {
+    return null;
+  }
+};
+
 export const getFinalRoute = async (initial_route, budget, stops) => {
   try {
     const data = {
@@ -25,6 +38,12 @@ export const getFinalRoute = async (initial_route, budget, stops) => {
       num_stops: stops,
       budget: budget,
     };
+
+    // Dev-mode algorithm override: only sent when explicitly chosen.
+    const algorithm = getRoutingAlgorithm();
+    if (algorithm) {
+      data.algorithm = algorithm;
+    }
 
     // Send request for a route given the user inputs
     const response = await axios.post(
