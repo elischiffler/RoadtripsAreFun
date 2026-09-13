@@ -49,7 +49,10 @@ async def find_stop(category: str, lat: str, lon: str, radius: int) -> dict[str,
     """
     nearby_search_url = "https://api.content.tripadvisor.com/api/v1/location/nearby_search"
     params = {
-        "latLong": f"{lat}%2C{lon}",
+        # Pass a literal comma; ``requests`` percent-encodes it once. Pre-encoding
+        # as ``%2C`` here caused a double-encode (``%252C``), which TripAdvisor
+        # rejects — surfacing later as a 502 "Improper TripAdvisor response".
+        "latLong": f"{lat},{lon}",
         "key": config.TRIPADVISOR_API,
         "category": category,
         "radius": radius,
