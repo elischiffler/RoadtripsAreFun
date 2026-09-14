@@ -27,69 +27,86 @@ async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
         # Convert json payload back to route
         json_data = await request.json()
         data = Itinerary_Payload.model_validate(json_data)  # Validate the frontend payload
-
-        # initialize current_time to be the specified start_time
-        current_time = data.start_time
-
-        # initialize a list of stops with a generic message and specified start time
-        stop_list = [
-            {
-                "date": current_time.strftime("%A, %B %d %Y"),
-                "time": current_time.strftime("%I:%M %p"),
-                "name": "Depart from your starting location",
-            }
-        ]
-        # loop through the stops and get the time for each
-        for stop in data.route.stops:
-            # Add the time to get to the stop to the current time
-            current_time += timedelta(seconds=stop["duration"])
-            destination = {
-                "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
-                "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
-                "name": stop["name"],
-                "url": stop.get("url"),
-                "price": stop.get("price"),
-                "address": stop.get("address"),
-            }
-            # Add the stop to stop_list
-            stop_list.append(destination)
-            if stop["type"] == "hotel":  # If the stop is a hotel
-                current_time = datetime(
-                    current_time.year,  # set current time to be next day at 9AM
-                    current_time.month,
-                    current_time.day + 1,
-                    9,  # TODO Make the start time a parameter
-                    0,
-                    0,
-                )
-                stop_list.append(
-                    {
-                        "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
-                        "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
-                        "name": "Depart from your hotel",
-                    }
-                )
-            elif stop["type"] == "stop":
-                current_time += timedelta(hours=2)  # Increment two hours for time at the stop
-                stop_list.append(
-                    {
-                        "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
-                        "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
-                        "name": "Depart from the stop",
-                    }
-                )
-        if len(stop_list) >= 2:
-            # Organize the stops by date
-            itinerary = await _day_itinerary(stop_list)
-            return itinerary
-        else:
-            raise HTTPException(status_code=400, detail="Incomplete route provided")
+        return await build_itinerary(data)
     except ValidationError as error:
         raise HTTPException(status_code=400, detail=f"Invalid payload: {error}")
     except KeyError as error:
         raise HTTPException(status_code=501, detail=f"Missing expected data: {error}")
     except ValueError as error:
         raise HTTPException(status_code=502, detail=f"Error processing data: {error}")
+
+
+async def build_itinerary(data: Itinerary_Payload) -> List[Itinerary_Day]:
+    """Build a day-by-day itinerary from a validated :class:`Itinerary_Payload`.
+
+    The core itinerary logic, factored out of :func:`generate_itinerary` so both
+    the HTTP router and the chat-agent tool (``generate_itinerary``) share one
+    implementation and the same stop-dict expectations. Callers are responsible
+    for validating the payload and mapping any raised exceptions.
+
+    Args:
+        data: A validated payload with a route (its ``stops``) and a start time.
+
+    Returns:
+        List[Itinerary_Day]: the itinerary organized by date.
+
+    Raises:
+        HTTPException: if the route is incomplete or the data can't be processed.
+    """
+    # initialize current_time to be the specified start_time
+    current_time = data.start_time
+
+    # initialize a list of stops with a generic message and specified start time
+    stop_list = [
+        {
+            "date": current_time.strftime("%A, %B %d %Y"),
+            "time": current_time.strftime("%I:%M %p"),
+            "name": "Depart from your starting location",
+        }
+    ]
+    # loop through the stops and get the time for each
+    for stop in data.route.stops:
+        # Add the time to get to the stop to the current time
+        current_time += timedelta(seconds=stop["duration"])
+        destination = {
+            "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
+            "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
+            "name": stop["name"],
+            "url": stop.get("url"),
+            "price": stop.get("price"),
+            "address": stop.get("address"),
+        }
+        # Add the stop to stop_list
+        stop_list.append(destination)
+        if stop["type"] == "hotel":  # If the stop is a hotel
+            current_time = datetime(
+                current_time.year,  # set current time to be next day at 9AM
+                current_time.month,
+                current_time.day + 1,
+                9,  # TODO Make the start time a parameter
+                0,
+                0,
+            )
+            stop_list.append(
+                {
+                    "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
+                    "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
+                    "name": "Depart from your hotel",
+                }
+            )
+        elif stop["type"] == "stop":
+            current_time += timedelta(hours=2)  # Increment two hours for time at the stop
+            stop_list.append(
+                {
+                    "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
+                    "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
+                    "name": "Depart from the stop",
+                }
+            )
+    if len(stop_list) >= 2:
+        # Organize the stops by date
+        return await _day_itinerary(stop_list)
+    raise HTTPException(status_code=400, detail="Incomplete route provided")
 
 
 async def _day_itinerary(itinerary: List[Dict[str, Any]]) -> List[Itinerary_Day]:

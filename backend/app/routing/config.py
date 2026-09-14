@@ -31,6 +31,31 @@ TRIPADVISOR_API = os.getenv("TRIPADVISOR_API")
 GOOGLE_PLACES_API = os.getenv("GOOGLE_PLACES_API")
 OPENCAGE_KEY = os.getenv("OPENCAGE_KEY")
 
+# --- Tripadvisor Terra (Partner API) -----------------------------------------
+# Terra replaced the deprecated Content API. Base URL and auth confirmed from the
+# Terra OpenAPI spec: the old ``api.content.tripadvisor.com/api/v1`` host is gone,
+# auth moved from a ``key`` query param to the ``X-API-Key`` request header, and
+# ``TRIPADVISOR_API`` now holds a UUID rather than the old 32-char key.
+TRIPADVISOR_BASE_URL = os.getenv("TRIPADVISOR_BASE_URL", "https://terra.tripadvisor.com/api")
+TRIPADVISOR_API_KEY_HEADER = "X-API-Key"
+
+# Terra caps the nearby-search radius at 5.0 miles (400 constraint-violation past
+# that), where the old Content API accepted 25-30. Requested radii are clamped to
+# this ceiling in the sourcing layer.
+TRIPADVISOR_MAX_RADIUS_MI = 5.0
+
+# Terra's ``category`` filter is an enum (RESTAURANT/ATTRACTION/HOTEL), replacing
+# the old lowercase strings ("attractions", "restaurants", ...). Callers still pass
+# the old-style value; the sourcing layer maps it through this table.
+TRIPADVISOR_CATEGORY_MAP = {
+    "attractions": "ATTRACTION",
+    "attraction": "ATTRACTION",
+    "restaurants": "RESTAURANT",
+    "restaurant": "RESTAURANT",
+    "hotels": "HOTEL",
+    "hotel": "HOTEL",
+}
+
 # The Amadeus hotel API is currently nonfunctional, so the fallback is disabled by
 # default. Set AMADEUS_ENABLED=true in the environment to re-enable the fallback path
 # in find_hotel once the upstream API is working again.

@@ -102,83 +102,10 @@ async def get_final_route(request: Request) -> Route:
     """
 
     try:
-        # Validate provided payload and use data to initialize variables
+        # Validate provided payload and delegate to the shared planning core.
         json_data = await request.json()
         payload = Route_Payload.model_validate(json_data)
-        initial_route = payload.initial_route
-        start_lon, start_lat = initial_route.geometry.coordinates[0]
-        end_lon, end_lat = initial_route.geometry.coordinates[-1]
-        num_stops = payload.num_stops
-        start = payload.start
-        budget = payload.budget
-
-        # Check for num_stops positive or zero
-        if not isinstance(num_stops, int) or num_stops < 0:
-            raise ValueError("Number of stops must be a non-negative integer")
-
-        # Select the routing algorithm: request field > env var > default.
-        algorithm = payload.algorithm or os.getenv("ROUTING_ALGORITHM", DEFAULT_ALGORITHM)
-        planner = get_planner(algorithm)
-        services = _build_services()
-        options = PlanOptions(num_stops=num_stops, budget=budget, start=start)
-
-        # Run the planner to find stopping points.
-        result = await planner.plan(initial_route, options, services)
-        stopping_points, total_cost = result.stopping_points, result.total_cost
-
-        coordinates = []
-        for stop in stopping_points:
-            coordinates.append(stop["coordinates"])
-
-        # Construct waypoints string and make new route with stopping points
-        waypoints = ";".join([f"{lon},{lat}" for lat, lon in coordinates])
-        route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
-        distance, duration = route.distance, route.duration
-        geometry = route.geometry
-        steps = []
-
-        idx = 0
-        for leg in route.legs:
-            # Add the duration to each stop
-            if idx < len(stopping_points) and stopping_points[idx]["type"] != "generic":
-                stopping_points[idx]["duration"] = (
-                    leg.duration
-                )  # For each stopping point add the duration to each
-                if stopping_points[idx].get("address") is None:
-                    location = get_location(
-                        geocoder=geolocator, coords=stopping_points[idx]["coordinates"]
-                    )
-                    if location:
-                        stopping_points[idx]["address"] = (
-                            location.address
-                        )  # Add the address to each
-            else:
-                location = get_location(geocoder=geolocator, coords=[end_lat, end_lon])
-                # Include the duration to get to the end
-                stopping_points.append(
-                    {
-                        "name": "Arrive at your destination",
-                        "duration": leg.duration,
-                        "type": "end",
-                        "address": location.address if location else None,
-                    }
-                )
-            idx += 1
-        # NOTE: `steps` is intentionally left empty. Turn-by-turn Route_Step data is
-        # not consumed by any client (the frontend and itinerary endpoint read `stops`
-        # and `geometry`, never `steps`), so we skip building it. Populate this from
-        # `leg.steps` here if a client ever needs per-maneuver instructions.
-        # Add all stopping coordinates to a single variable
-        coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
-        return Route(
-            coordinates=coordinates,
-            distance=distance,
-            duration=duration,
-            steps=steps,
-            stops=stopping_points,
-            geometry=geometry,
-            cost=total_cost,
-        )
+        return await plan_final_route(payload)
 
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail)
@@ -190,6 +117,105 @@ async def get_final_route(request: Request) -> Route:
         raise HTTPException(status_code=502, detail=f"Improper Mapbox response: {str(exception)}")
     except (KeyError, ValueError) as exception:
         raise HTTPException(status_code=502, detail=f"Unexpected value or key: {str(exception)}")
+
+
+async def plan_final_route(payload: Route_Payload) -> Route:
+    """Plan and shape the full multi-day route from a validated payload.
+
+    The core of :func:`get_final_route`, factored out so both the HTTP endpoint
+    and the chat-agent tool (``generate_final_route``) share one implementation
+    of planner selection, the Mapbox re-route through the chosen waypoints, and
+    the final :class:`Route` shaping. This keeps the fixed stop-dict contract
+    (``name`` / ``type`` / ``coordinates`` ``[lat, lon]`` / ``price``) in one
+    place. Callers validate the payload and map raised exceptions.
+
+    Args:
+        payload: A validated :class:`Route_Payload` (initial route, num_stops,
+            budget, start, optional algorithm).
+
+    Returns:
+        Route: the shaped multi-day route with ``stops`` and ``cost``.
+
+    Raises:
+        PlanningError: When a feasible trip cannot be produced.
+        ValueError: When ``num_stops`` is not a non-negative integer.
+        requests.exceptions.RequestException / pydantic.ValidationError: On
+            Mapbox transport / response failures.
+    """
+    initial_route = payload.initial_route
+    start_lon, start_lat = initial_route.geometry.coordinates[0]
+    end_lon, end_lat = initial_route.geometry.coordinates[-1]
+    num_stops = payload.num_stops
+    start = payload.start
+    budget = payload.budget
+
+    # Check for num_stops positive or zero
+    if not isinstance(num_stops, int) or num_stops < 0:
+        raise ValueError("Number of stops must be a non-negative integer")
+
+    # Select the routing algorithm: request field > env var > default.
+    algorithm = payload.algorithm or os.getenv("ROUTING_ALGORITHM", DEFAULT_ALGORITHM)
+    planner = get_planner(algorithm)
+    services = _build_services()
+    options = PlanOptions(num_stops=num_stops, budget=budget, start=start)
+
+    # Run the planner to find stopping points.
+    result = await planner.plan(initial_route, options, services)
+    stopping_points, total_cost = result.stopping_points, result.total_cost
+
+    coordinates = []
+    for stop in stopping_points:
+        coordinates.append(stop["coordinates"])
+
+    # Construct waypoints string and make new route with stopping points
+    waypoints = ";".join([f"{lon},{lat}" for lat, lon in coordinates])
+    route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
+    distance, duration = route.distance, route.duration
+    geometry = route.geometry
+    steps = []
+
+    idx = 0
+    for leg in route.legs:
+        # Add the duration to each stop
+        if idx < len(stopping_points) and stopping_points[idx]["type"] != "generic":
+            stopping_points[idx]["duration"] = (
+                leg.duration
+            )  # For each stopping point add the duration to each
+            if stopping_points[idx].get("address") is None:
+                location = get_location(
+                    geocoder=geolocator, coords=stopping_points[idx]["coordinates"]
+                )
+                if location:
+                    stopping_points[idx]["address"] = (
+                        location.address
+                    )  # Add the address to each
+        else:
+            location = get_location(geocoder=geolocator, coords=[end_lat, end_lon])
+            # Include the duration to get to the end
+            stopping_points.append(
+                {
+                    "name": "Arrive at your destination",
+                    "duration": leg.duration,
+                    "type": "end",
+                    "address": location.address if location else None,
+                }
+            )
+        idx += 1
+    # NOTE: `steps` is intentionally left empty. Turn-by-turn Route_Step data is
+    # not consumed by any client (the frontend and itinerary endpoint read `stops`
+    # and `geometry`, never `steps`), so we skip building it. Populate this from
+    # `leg.steps` here if a client ever needs per-maneuver instructions.
+    # Add all stopping coordinates to a single variable
+    coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
+    return Route(
+        coordinates=coordinates,
+        distance=distance,
+        duration=duration,
+        steps=steps,
+        stops=stopping_points,
+        geometry=geometry,
+        cost=total_cost,
+    )
 
 
 @router.get("/algorithms")

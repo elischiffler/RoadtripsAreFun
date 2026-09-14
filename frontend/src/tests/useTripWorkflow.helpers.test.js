@@ -2,16 +2,18 @@
  * useTripWorkflow — pure helper unit tests
  *
  * These test the exported helper functions (addMessage, removeLoader,
- * extractCity, renameChatToRoute, stepToProgress) in complete isolation
+ * extractCity, renameChatToRoute, deriveProgress) in complete isolation
  * — no React rendering required.
  */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   addMessage,
   removeLoader,
   extractCity,
   renameChatToRoute,
-  stepToProgress,
+  deriveProgress,
+  logTripProfileChanges,
+  logTripToolActivity,
 } from '../pages/ChatPage/useTripWorkflow';
 
 // ─── addMessage ──────────────────────────────────────────────────────────────
@@ -140,37 +142,157 @@ describe('renameChatToRoute', () => {
   });
 });
 
-// ─── stepToProgress ──────────────────────────────────────────────────────────
+// ─── deriveProgress ──────────────────────────────────────────────────────────
 
-describe('stepToProgress', () => {
-  it('returns 1 for idle and start_input', () => {
-    expect(stepToProgress('idle')).toBe(1);
-    expect(stepToProgress('start_input')).toBe(1);
+describe('deriveProgress', () => {
+  it('returns 5 when the chat has a route', () => {
+    expect(deriveProgress({ route: { duration: 100 } })).toBe(5);
   });
 
-  it('returns 2 for start_validating / end_input', () => {
-    expect(stepToProgress('start_validating')).toBe(2);
-    expect(stepToProgress('end_input')).toBe(2);
+  it('returns 1 when there is no route', () => {
+    expect(deriveProgress({ route: null })).toBe(1);
+    expect(deriveProgress({})).toBe(1);
+    expect(deriveProgress(null)).toBe(1);
+  });
+});
+
+// ─── logTripProfileChanges ───────────────────────────────────────────────────
+
+describe('logTripProfileChanges', () => {
+  beforeEach(() => {
+    // Trace output goes to console.log (default level, not the hidden Verbose
+    // console.debug) so it's visible in DevTools without changing log-level filters.
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
-  it('returns 3 for end_validating / fetching_initial / stops_input', () => {
-    expect(stepToProgress('end_validating')).toBe(3);
-    expect(stepToProgress('fetching_initial')).toBe(3);
-    expect(stepToProgress('stops_input')).toBe(3);
+  it('reports ADDED fields when going from empty to populated', () => {
+    const changes = logTripProfileChanges(
+      {},
+      { start_address: '482 Luneta Dr', start_coords: [35.28, -120.66] }
+    );
+    expect(changes).toEqual([
+      { field: 'start_address', kind: 'ADDED', from: undefined, to: '482 Luneta Dr' },
+      { field: 'start_coords', kind: 'ADDED', from: undefined, to: [35.28, -120.66] },
+    ]);
   });
 
-  it('returns 4 for fetching_budget / budget_input / car_input', () => {
-    expect(stepToProgress('fetching_budget')).toBe(4);
-    expect(stepToProgress('budget_input')).toBe(4);
-    expect(stepToProgress('car_input')).toBe(4);
+  it('reports a CHANGED field when a scalar value differs', () => {
+    const changes = logTripProfileChanges({ num_stops: 2 }, { num_stops: 4 });
+    expect(changes).toEqual([{ field: 'num_stops', kind: 'CHANGED', from: 2, to: 4 }]);
   });
 
-  it('returns 5 for generating_route and done', () => {
-    expect(stepToProgress('generating_route')).toBe(5);
-    expect(stepToProgress('done')).toBe(5);
+  it('reports a CHANGED field when a coordinate array differs', () => {
+    const changes = logTripProfileChanges(
+      { start_coords: [35.28, -120.66] },
+      { start_coords: [39.74, -104.99] }
+    );
+    expect(changes).toEqual([
+      { field: 'start_coords', kind: 'CHANGED', from: [35.28, -120.66], to: [39.74, -104.99] },
+    ]);
   });
 
-  it('returns 1 for unknown steps', () => {
-    expect(stepToProgress('some_unknown_step')).toBe(1);
+  it('reports a REMOVED field when a value goes away', () => {
+    const changes = logTripProfileChanges({ budget: 200 }, {});
+    expect(changes).toEqual([{ field: 'budget', kind: 'REMOVED', from: 200, to: undefined }]);
+  });
+
+  it('reports no changes when nothing differs (deep-equal arrays)', () => {
+    const changes = logTripProfileChanges(
+      { start_coords: [1, 2], num_stops: 3 },
+      { start_coords: [1, 2], num_stops: 3 }
+    );
+    expect(changes).toEqual([]);
+  });
+
+  it('tolerates null/undefined prev and logs everything as ADDED', () => {
+    const changes = logTripProfileChanges(null, { budget: 150 });
+    expect(changes).toEqual([{ field: 'budget', kind: 'ADDED', from: undefined, to: 150 }]);
+  });
+
+  it('always logs the full current state of the trip profile', () => {
+    const next = { start_address: '482 Luneta Dr', num_stops: 3 };
+    logTripProfileChanges({ start_address: '482 Luneta Dr' }, next);
+    // The complete current object is logged (so you can watch it fill in),
+    // regardless of what changed.
+    const loggedState = console.log.mock.calls.some(
+      (args) => args[0] === '[TripProfile] current state:' && args[1] === next
+    );
+    expect(loggedState).toBe(true);
+  });
+
+  it('logs the full current state even when nothing changed', () => {
+    const same = { num_stops: 3 };
+    logTripProfileChanges(same, same);
+    const loggedState = console.log.mock.calls.some(
+      (args) => args[0] === '[TripProfile] current state:' && args[1] === same
+    );
+    expect(loggedState).toBe(true);
+  });
+});
+
+// ─── logTripToolActivity ─────────────────────────────────────────────────────
+
+describe('logTripToolActivity', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'debug').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('flags a validation failure when update ran but no action applied', () => {
+    const failed = logTripToolActivity(
+      ['validate_location', 'update_trip_profile'],
+      [] // no trip_profile_updated action came back
+    );
+    expect(failed).toBe(true);
+    expect(console.warn).toHaveBeenCalled();
+  });
+
+  it('includes the backend error detail in the validation-failure warning', () => {
+    logTripToolActivity(
+      ['update_trip_profile'],
+      [],
+      [{ name: 'update_trip_profile', error: 'num_stops must be between 1 and 10' }]
+    );
+    // The warning carries the actual backend validation message.
+    const warned = console.warn.mock.calls.some((args) =>
+      args.some((a) => typeof a === 'string' && a.includes('num_stops must be between 1 and 10'))
+    );
+    expect(warned).toBe(true);
+  });
+
+  it('logs each tool error the backend surfaced', () => {
+    logTripToolActivity(
+      ['validate_location', 'update_trip_profile'],
+      [{ type: 'trip_profile_updated', payload: {} }],
+      [{ name: 'validate_location', error: 'Location not found' }]
+    );
+    const warned = console.warn.mock.calls.some((args) =>
+      args.some((a) => typeof a === 'string' && a.includes('Location not found'))
+    );
+    expect(warned).toBe(true);
+  });
+
+  it('does not flag when the update applied (action present)', () => {
+    const failed = logTripToolActivity(
+      ['update_trip_profile'],
+      [{ type: 'trip_profile_updated', payload: { trip_profile: { num_stops: 3 } } }]
+    );
+    expect(failed).toBe(false);
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it('does not flag when update_trip_profile was never attempted', () => {
+    const failed = logTripToolActivity(['validate_location'], []);
+    expect(failed).toBe(false);
+  });
+
+  it('tolerates missing/undefined inputs', () => {
+    expect(logTripToolActivity(undefined, undefined, undefined)).toBe(false);
   });
 });

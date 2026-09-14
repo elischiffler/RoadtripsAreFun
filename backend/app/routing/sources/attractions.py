@@ -1,4 +1,19 @@
-"""Attraction discovery via the TripAdvisor Content API.
+"""Attraction discovery via the Tripadvisor **Terra** Partner API.
+
+Terra replaced the deprecated Content API. The key differences this module
+absorbs so the rest of the routing layer is unaffected:
+
+* Base URL ``terra.tripadvisor.com/api`` (the old ``api.content.tripadvisor.com``
+  host no longer resolves) and header auth (``X-API-Key``) instead of a ``key``
+  query param.
+* ``GET /locations/nearby`` returns the *full* Location inline, so ``find_stop``
+  no longer needs a per-result details fanout — one call gives name,
+  coordinates, address, and url. This is both simpler and far fewer API calls.
+* Terra has no per-location popularity *rank* integer; results come pre-sorted by
+  rating (``sort=rating,desc``). ``find_stop`` therefore derives the ``rank`` key
+  downstream depends on from the result's position (1 = best), preserving the
+  "lower is better" semantics of the objective/knapsack.
+* Terra caps the nearby radius at 5 miles; requested radii are clamped.
 
 ``find_stop`` is the per-point lookup the greedy planner uses. ``gather_candidates``
 is the batch corridor collection the optimizer planners use — it samples points
@@ -18,8 +33,8 @@ from requests.exceptions import RequestException
 
 from app.models.routing_models.routing_models import MapBox
 from app.models.routing_models.trip_advisor_models import (
-    Trip_Advisor_Information,
-    Trip_Advisor_Location_Search,
+    Terra_Location,
+    Terra_Page_Nearby_Location,
 )
 from app.routing import config
 from app.routing.geometry import find_position
@@ -28,124 +43,194 @@ MapBox_route = MapBox.MapBox_Route
 
 logger = logging.getLogger(__name__)
 
-_REFERER = "https://rp-routing.onrender.com/"
+
+def _auth_headers() -> dict[str, str]:
+    """Standard Terra request headers: header-based API key + JSON accept."""
+    return {
+        config.TRIPADVISOR_API_KEY_HEADER: config.TRIPADVISOR_API or "",
+        "accept": "application/json",
+    }
+
+
+def _clamp_radius(radius: float) -> float:
+    """Clamp a requested radius (miles) to Terra's 5-mile nearby-search ceiling.
+
+    The old Content API accepted 25-30mi; Terra rejects anything over 5.0 with a
+    400 constraint violation, so we cap rather than let the request fail.
+    """
+    try:
+        value = float(radius)
+    except (TypeError, ValueError):
+        return config.TRIPADVISOR_MAX_RADIUS_MI
+    return min(value, config.TRIPADVISOR_MAX_RADIUS_MI)
+
+
+def _raise_for_status(response: requests.Response) -> None:
+    """Turn a non-2xx Terra response into a clear HTTPException before parsing.
+
+    Terra returns errors as ``application/problem+json`` with a 2xx-shaped body
+    the (permissive) Location models would otherwise swallow into an empty result.
+    Guarding here means an unauthorized key or a bad request surfaces a real error
+    instead of a silent "no attraction found".
+
+    * 401/403 -> a clear "key unauthorized" message. A dead/unauthorized key was
+      the true root cause of the old generic 502 "Improper TripAdvisor response".
+    * any other non-2xx -> a generic upstream 502. The response body is not echoed
+      to the client (it can restate request params).
+    """
+    if 200 <= response.status_code < 300:
+        return
+    if response.status_code in (401, 403):
+        logger.error(
+            "Tripadvisor Terra auth failure (%s): key unauthorized", response.status_code
+        )
+        raise HTTPException(status_code=502, detail="TripAdvisor API key unauthorized")
+    logger.error("Tripadvisor Terra request returned %s", response.status_code)
+    raise HTTPException(status_code=502, detail="TripAdvisor request failed")
+
+
+def _location_to_stop(location: Terra_Location) -> dict[str, Any] | None:
+    """Map a Terra Location to the fixed stop-dict contract, or ``None`` if it
+    lacks usable coordinates.
+
+    The returned shape is exactly what the scheduler, itinerary endpoint, CRUD,
+    and frontend expect: ``name``, ``type`` ("stop"), ``coordinates`` [lat, lon],
+    plus ``url`` and ``address``. (``rank`` is stamped on by the caller.)
+    """
+    coords = location.coordinates
+    if coords is None or coords.latitude is None or coords.longitude is None:
+        return None
+    return {
+        "coordinates": [coords.latitude, coords.longitude],
+        "name": location.primary_name(),
+        "type": "stop",
+        "url": location.web_url(),
+        "address": location.formatted_address(),
+    }
 
 
 async def find_stop(category: str, lat: str, lon: str, radius: int) -> dict[str, Any]:
     """
-    Finds a nearby location of a specific category using the TripAdvisor API and returns its coordinates.
+    Finds a nearby location of a specific category using the Tripadvisor Terra API
+    and returns it as a stop dict.
+
+    Terra's nearby search returns the full Location inline and pre-sorted by rating
+    (best first), so this makes a single request and takes the top result — no
+    per-result details fanout as the old Content API required.
 
     Parameters:
-    - category (str): Category of the location to search for (e.g., 'attractions').
-    - lat (str): Latitude of the search location.
-    - lon (str): Longitude of the search location.
-    - radius (str): Search radius in miles.
+    - category (str): Old-style category (e.g. 'attractions'); mapped to Terra's
+      enum (ATTRACTION/RESTAURANT/HOTEL).
+    - lat (str): Latitude of the search center.
+    - lon (str): Longitude of the search center.
+    - radius (int): Search radius in miles (clamped to Terra's 5-mile max).
 
     Returns:
-    - Dict[str, Any]: Details of an attraction with a name and location.
+    - Dict[str, Any]: An attraction stop dict (name, type, coordinates, url,
+      address, rank).
 
     Raises:
-    - HTTPException: For errors related to TripAdvisor requests or response processing.
+    - HTTPException: 404 if no location is found; 502 for upstream/parse failures
+      or an unauthorized key.
     """
-    nearby_search_url = "https://api.content.tripadvisor.com/api/v1/location/nearby_search"
+    nearby_search_url = f"{config.TRIPADVISOR_BASE_URL}/locations/nearby"
     params = {
-        # Pass a literal comma; ``requests`` percent-encodes it once. Pre-encoding
-        # as ``%2C`` here caused a double-encode (``%252C``), which TripAdvisor
-        # rejects — surfacing later as a 502 "Improper TripAdvisor response".
-        "latLong": f"{lat},{lon}",
-        "key": config.TRIPADVISOR_API,
-        "category": category,
-        "radius": radius,
-        "radiusUnit": "mi",
-        "language": "en",
+        "lat": lat,
+        "lon": lon,
+        "radius": _clamp_radius(radius),
+        "unit": "MI",
+        "category": config.TRIPADVISOR_CATEGORY_MAP.get(category.lower(), category),
+        # Terra defaults to rating,desc, but be explicit so best-first ordering
+        # (which we rely on to derive rank) is deterministic.
+        "sort": "rating,desc",
     }
-
-    headers = {"Referer": _REFERER}
+    headers = _auth_headers()
 
     try:
         response = requests.get(
             nearby_search_url, params=params, headers=headers, timeout=config.HTTP_TIMEOUT
         )
+        _raise_for_status(response)
         json_data = response.json()
-        locations = Trip_Advisor_Location_Search.model_validate(json_data)
-        lowest_rank = 999  # Set to be unrealistically high
-        ideal_stop = None
-        if len(locations.data) > 0:
-            for location in locations.data:
-                location_id = location.location_id
-                rank, details = await get_details(location_id)
-                # Check to see if a lower ranked
-                if rank < lowest_rank:
-                    lowest_rank = rank
-                    ideal_stop = details
-                if rank == 1:  # End loop early if highest rank is found
-                    break
-            if ideal_stop is not None:
-                # Record the winning popularity rank on the returned stop so batch
-                # callers (gather_candidates -> the knapsack objective) can weight
-                # by it. The greedy planner simply ignores this extra key.
-                ideal_stop["rank"] = lowest_rank
-                return ideal_stop
+        page = Terra_Page_Nearby_Location.model_validate(json_data)
+
+        # Results are pre-sorted best-first, so walk in order and take the first
+        # entry with usable coordinates. Its 1-based position becomes the ``rank``
+        # (1 = best) that the objective/knapsack weights by.
+        rank = 0
+        for entry in page.data:
+            if entry.location is None:
+                continue
+            rank += 1
+            stop = _location_to_stop(entry.location)
+            if stop is not None:
+                stop["rank"] = rank
+                return stop
+
         raise HTTPException(status_code=404, detail="No locations found")
     except RequestException as exception:
         # Log the full exception for debugging, but never surface str(exception) to
-        # the client: it can contain the request URL, which carries the TripAdvisor
-        # API key as a query param.
-        logger.error("find_stop: TripAdvisor request failed: %s", exception)
+        # the client: it can contain the request URL and query params.
+        logger.error("find_stop: Terra request failed: %s", exception)
         raise HTTPException(status_code=502, detail="TripAdvisor request failed")
     except ValidationError as exception:
-        logger.error("find_stop: improper TripAdvisor response: %s", exception)
+        logger.error("find_stop: improper Terra response: %s", exception)
         raise HTTPException(status_code=502, detail="Improper TripAdvisor response")
 
 
 async def get_details(location_id: str) -> tuple[int, dict[str, Any]]:
     """
-    Retrieves detailed information about a location from the TripAdvisor API using its location ID.
+    Retrieves a single location's details from the Tripadvisor Terra API by ID.
+
+    Kept for direct by-id lookups and API compatibility. ``find_stop`` no longer
+    calls this — Terra's nearby response already carries the full Location, so the
+    old N+1 details fanout is gone.
 
     Parameters:
-    - location_id (str): The ID of the location to retrieve details for.
+    - location_id (str): The Terra Location ID to retrieve.
 
     Returns:
-    - Tuple[int, Dict[str, Any]]: The popularity rank and details of an attraction.
+    - Tuple[int, Dict[str, Any]]: A popularity rank (from ``rankings`` when
+      present, else a neutral fallback) and the stop dict. Returns
+      ``(999, {})`` if the location lacks usable coordinates.
 
     Raises:
-    - HTTPException: For errors related to TripAdvisor requests or response processing.
-
+    - HTTPException: 502 for upstream/parse failures or an unauthorized key.
     """
-    location_details_url = (
-        f"https://api.content.tripadvisor.com/api/v1/location/{location_id}/details"
-    )
-    params = {"key": config.TRIPADVISOR_API, "language": "en", "currency": "USD"}
-
-    headers = {"Referer": _REFERER}
-
-    response = requests.get(
-        location_details_url, params=params, headers=headers, timeout=config.HTTP_TIMEOUT
-    )
-    json_data = response.json()
-    details = Trip_Advisor_Information.model_validate(json_data)
+    location_details_url = f"{config.TRIPADVISOR_BASE_URL}/locations/{location_id}"
+    # ``locale`` is optional and, when sent, must be a full locale (e.g. "en-US")
+    # not a bare language ("en" 400s). Omit it and let Terra use its default locale,
+    # matching the nearby call.
+    headers = _auth_headers()
 
     try:
-        lat = details.latitude
-        lon = details.longitude
-        name = details.name
-        url = details.web_url
-        address = details.address_obj.address_string
-        ranking = details.ranking_data
-        if ranking is not None:
-            rank = int(ranking.ranking)
-        else:
-            rank = 999  # Rank is unrealistically high
-        return rank, {
-            "coordinates": [lat, lon],
-            "name": name,
-            "type": "stop",
-            "url": url,
-            "address": address,
-        }
-    # Catch any attributes that were not returned values and send back an empty response
-    except AttributeError:
+        response = requests.get(
+            location_details_url, headers=headers, timeout=config.HTTP_TIMEOUT
+        )
+        _raise_for_status(response)
+        json_data = response.json()
+        location = Terra_Location.model_validate(json_data)
+    except RequestException as exception:
+        logger.error("get_details: Terra request failed: %s", exception)
+        raise HTTPException(status_code=502, detail="TripAdvisor request failed")
+    except ValidationError as exception:
+        logger.error("get_details: improper Terra response: %s", exception)
+        raise HTTPException(status_code=502, detail="Improper TripAdvisor response")
+
+    stop = _location_to_stop(location)
+    if stop is None:
+        # Rank is unrealistically high so a coordinate-less result never wins.
         return 999, {}
+
+    # Terra rarely populates ``rankings``; use it when present, else a neutral rank.
+    rank = 999
+    if location.rankings:
+        for ranking in location.rankings:
+            if isinstance(ranking.rank, int) and ranking.rank > 0:
+                rank = ranking.rank
+                break
+    stop["rank"] = rank
+    return rank, stop
 
 
 async def gather_candidates(
@@ -161,7 +246,7 @@ async def gather_candidates(
     Args:
         route: The raw single-leg initial route.
         num_candidates: How many evenly-spaced points to sample.
-        radius: Search radius in miles per point.
+        radius: Search radius in miles per point (clamped to Terra's max).
 
     Returns:
         A list of attraction dicts (possibly shorter than ``num_candidates``),
