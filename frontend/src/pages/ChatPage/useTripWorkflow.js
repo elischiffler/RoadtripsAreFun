@@ -1,24 +1,31 @@
 /**
- * useTripWorkflow — state-machine-based trip planning workflow.
+ * useTripWorkflow — thin agent-chat hook.
  *
- * Replaces the polling-based startWorkFlow.jsx with a React-idiomatic approach:
- *   - `step` is a string enum stored in React state
- *   - Each step change triggers a useEffect that does one unit of work
- *   - User input calls `submit(payload)` which validates and advances the step
- *   - No setInterval, no mutable class mutations, no stale closures
+ * The scripted step-machine is gone. The conversational agent (backend) now
+ * gathers start/destination/stops/budget and calls tools itself; the frontend's
+ * only job is:
+ *   - send the user's free-text message to the agent
+ *   - render the reply through the existing addMessage/loader path
+ *   - when the agent's structured `actions` carry route/itinerary payloads,
+ *     WRITE them into a ChatData snapshot so MapPage/ItineraryPage render.
  *
- * Step order:
- *   idle → start_input → start_validating → end_input → end_validating →
- *   fetching_initial → stops_input → fetching_budget → budget_input →
- *   car_input → prefetching_route → generating_route → done | error
+ * No step enum, no polling, no setInterval, no mutable class mutations. Messages
+ * are read live from the `chats` context array by ChatPage.
+ *
+ * Agent action contract (frozen, verified live):
+ *   action.type === 'route_updated'        → payload = { route, stops, cost }
+ *   action.type === 'itinerary_updated'    → payload = { itinerary: [days...] }
+ *   action.type === 'trip_profile_updated' → payload = { trip_profile: {...} }
+ *     the per-chat TripProfile the agent fills in as it gathers the trip
+ *     (start/destination/stops/budget); reflected into UI + persisted early.
+ * The Route object carries `coordinates` = [[start_lat,start_lon], ...stops,
+ * [end_lat,end_lon]]; startConfirmed/endConfirmed are derived from the first /
+ * last coordinate so Map.jsx (which reads them) doesn't crash.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import axios from 'axios';
-import { getInitialRoute, getFinalRoute } from './getRoute';
-import { calcHotelBudget, calcGasBudget } from './CalcBudget';
-import { generateItinerary } from '../ItineraryPage/generateItinerary';
-import { updateUserData, createChat } from './DatabaseUtils';
+import { updateUserData } from './DatabaseUtils';
+import { sendAgentMessage } from './agentChat';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -72,38 +79,134 @@ export const renameChatToRoute = (chatId, startConfirmed, endConfirmed, setChats
   );
 };
 
-/** Call the backend to geocode / reverse-geocode a location. */
-const validateLocationApi = async (input, isCoordinate) => {
-  const data = isCoordinate
-    ? { location: { coordinates: input }, is_coordinates: true }
-    : { location: { address: input }, is_coordinates: false };
-  const response = await axios.post(
-    `${import.meta.env.VITE_BACKEND_SERVER}validate-location`,
-    data
-  );
-  return response.data; // { address, latitude, longitude }
+/**
+ * Derive a header-car progress value (1–5) from a ChatData-shaped object.
+ * With the scripted machine gone there are only two meaningful states: a trip
+ * with a route (done → 5) or one still being planned (1).
+ */
+export const deriveProgress = (chatData) => (chatData?.route ? 5 : 1);
+
+/**
+ * Derive a confirmed-location object ({latitude, longitude, address}) from a
+ * Route coordinate pair `[lat, lon]`. Map.jsx crashes if startConfirmed /
+ * endConfirmed are null, so we always populate them from the route geometry.
+ * Address is unknown here (the agent validated it server-side) → ''.
+ */
+const confirmedFromCoord = (coord) => {
+  if (!Array.isArray(coord) || coord.length < 2) return null;
+  return { latitude: coord[0], longitude: coord[1], address: '' };
 };
 
-// ─── step → human-readable progress (1–5 for the header car) ────────────────
+// The trip-profile fields we trace, in a stable display order.
+const TRIP_PROFILE_FIELDS = [
+  'start_address',
+  'start_coords',
+  'destination_address',
+  'destination_coords',
+  'num_stops',
+  'budget',
+  'start_date',
+  'car',
+];
 
-export const stepToProgress = (step) => {
-  const map = {
-    idle: 1,
-    start_input: 1,
-    start_validating: 2,
-    end_input: 2,
-    end_validating: 3,
-    fetching_initial: 3,
-    stops_input: 3,
-    fetching_budget: 4,
-    budget_input: 4,
-    car_input: 4,
-    prefetching_route: 5,
-    generating_route: 5,
-    done: 5,
-    error: 1,
-  };
-  return map[step] ?? 1;
+/** Structural equality for trip-profile values (handles arrays/objects/scalars). */
+const tripValuesEqual = (a, b) => {
+  if (a === b) return true;
+  if (a == null || b == null) return a == null && b == null;
+  if (typeof a !== 'object' && typeof b !== 'object') return a === b;
+  return JSON.stringify(a) === JSON.stringify(b);
+};
+
+/**
+ * Diff two trip-profile objects and log per-field ADDED / REMOVED / CHANGED at
+ * the turn level. Pure except for the console output; exported for testing.
+ *
+ * @param {object|null} prev  the trip profile before this turn (may be {}/null)
+ * @param {object|null} next  the trip profile from the trip_profile_updated action
+ * @returns {Array<{field:string, kind:string, from:*, to:*}>} the changes logged
+ */
+export const logTripProfileChanges = (prev, next) => {
+  const before = prev && typeof prev === 'object' ? prev : {};
+  const after = next && typeof next === 'object' ? next : {};
+  const changes = [];
+
+  for (const field of TRIP_PROFILE_FIELDS) {
+    const had = before[field] !== undefined && before[field] !== null;
+    const has = after[field] !== undefined && after[field] !== null;
+
+    if (!had && has) {
+      changes.push({ field, kind: 'ADDED', from: undefined, to: after[field] });
+    } else if (had && !has) {
+      changes.push({ field, kind: 'REMOVED', from: before[field], to: undefined });
+    } else if (had && has && !tripValuesEqual(before[field], after[field])) {
+      changes.push({ field, kind: 'CHANGED', from: before[field], to: after[field] });
+    }
+  }
+
+  // Emit at the default Console level (console.log) — not console.debug, which
+  // Chrome/Edge hide behind the "Verbose" filter — so the trip-profile trace is
+  // visible without changing DevTools log-level settings.
+  if (changes.length === 0) {
+    console.log('[TripProfile] update applied — no field changes');
+  } else {
+    for (const c of changes) {
+      if (c.kind === 'ADDED') {
+        console.log('[TripProfile] + %s = %o', c.field, c.to);
+      } else if (c.kind === 'REMOVED') {
+        console.log('[TripProfile] - %s (was %o)', c.field, c.from);
+      } else {
+        console.log('[TripProfile] ~ %s: %o → %o', c.field, c.from, c.to);
+      }
+    }
+  }
+  // Always log the FULL current state so you can watch the data object fill in.
+  console.log('[TripProfile] current state:', after);
+  return changes;
+};
+
+/**
+ * Turn-level trace of the agent's trip-data tooling. Logs which tools ran, prints
+ * any tool errors the backend surfaced (`toolErrors`), and flags a likely
+ * VALIDATION FAILURE when the agent attempted `update_trip_profile` but no
+ * `trip_profile_updated` action came back (a failed update is fed back to the
+ * model, so it never appears in `actions`). Exported for testing.
+ *
+ * @param {string[]} toolsUsed   response.toolsUsed
+ * @param {Array}    actions      response.actions
+ * @param {Array}    [toolErrors] response.toolErrors — [{ name, error }]
+ * @returns {boolean} true when a probable trip-profile validation failure was detected
+ */
+export const logTripToolActivity = (toolsUsed, actions, toolErrors) => {
+  const tools = Array.isArray(toolsUsed) ? toolsUsed : [];
+  const acts = Array.isArray(actions) ? actions : [];
+  const errors = Array.isArray(toolErrors) ? toolErrors : [];
+  if (tools.length > 0) {
+    console.log('[TripProfile] tools this turn: %s', tools.join(', '));
+  }
+  // Print the exact backend error for every failed tool (e.g. the validation
+  // message from a rejected update_trip_profile) so debugging stays in-browser.
+  for (const e of errors) {
+    if (e?.name && e?.error) {
+      console.warn('[TripProfile] tool %s failed: %s', e.name, e.error);
+    }
+  }
+  const attemptedUpdate = tools.filter((t) => t === 'update_trip_profile').length;
+  const appliedUpdate = acts.filter((a) => a?.type === 'trip_profile_updated').length;
+  if (attemptedUpdate > appliedUpdate) {
+    const detail = errors
+      .filter((e) => e?.name === 'update_trip_profile' && e?.error)
+      .map((e) => e.error)
+      .join(' | ');
+    console.warn(
+      '[TripProfile] VALIDATION FAILURE: update_trip_profile ran %d time(s) but only %d ' +
+        'applied — the agent tried to store a value that failed validation.%s',
+      attemptedUpdate,
+      appliedUpdate,
+      detail ? ` Detail: ${detail}` : ' (no error detail returned; check the backend agent log.)'
+    );
+    return true;
+  }
+  return false;
 };
 
 // ─── hook ────────────────────────────────────────────────────────────────────
@@ -112,15 +215,19 @@ export const stepToProgress = (step) => {
  * @param {object}   opts
  * @param {number}   opts.chatId        – live chat ID (may change after DB fetch)
  * @param {function} opts.setChats      – context setter
- * @param {function} opts.setCurrentStep – header car progress setter
+ * @param {function} opts.setCurrentStep – header car progress setter (kept for compat)
  * @param {object}   opts.savedData     – ChatData loaded from DB (for resuming)
  * @param {object}   opts.chatsRef      – ref to live chats array
  * @param {string}   opts.accessToken
  * @param {object}   opts.ChatLogsData  – ChatLogs instance
- * @param {function} [opts.onChatReady] – called with (chatId, title) when destination confirmed
+ * @param {string}   [opts.agentChatId] – globally-unique agent conversation key
+ *   (a UUID). Sent to the backend as the agent `chatId` so per-chat memory never
+ *   collides with a reused integer chat id. Falls back to the integer chatId.
+ * @param {function} [opts.onChatReady] – called with (chatId, title) once a route lands
  */
 export function useTripWorkflow({
   chatId,
+  agentChatId,
   setChats,
   setCurrentStep,
   savedData,
@@ -129,49 +236,47 @@ export function useTripWorkflow({
   ChatLogsData,
   onChatReady,
 }) {
-  // ── Derived initial step from savedData (resume support) ─────────────────
-  const deriveInitialStep = () => {
-    if (!savedData) return 'start_input';
-    if (savedData.isComplete || savedData.route) return 'done';
-    if (savedData.initial) return 'fetching_budget'; // have initial, need budget
-    if (savedData.endConfirmed) return 'fetching_initial';
-    if (savedData.startConfirmed) return 'end_input';
-    return 'start_input';
-  };
-
-  const [step, setStep] = useState(deriveInitialStep);
-
-  // Trip data — plain React state, no class mutations
+  // Agent-driven trip data — plain React state.
+  const [route, setRoute] = useState(savedData?.route ?? null);
+  const [itinerary, setItinerary] = useState(savedData?.itinerary ?? null);
   const [startConfirmed, setStartConfirmed] = useState(savedData?.startConfirmed ?? null);
   const [endConfirmed, setEndConfirmed] = useState(savedData?.endConfirmed ?? null);
   const [stops, setStops] = useState(savedData?.stops ?? 1);
-  const [initial, setInitial] = useState(savedData?.initial ?? null);
-  const [hotelBudget, setHotelBudget] = useState(savedData?.hotelBudget ?? 0);
-  const [carDetails, setCarDetails] = useState(savedData?.carDetails ?? ['', '', '']);
-  const [carBudget, setCarBudget] = useState(savedData?.carBudget ?? 0);
-  const [route, setRoute] = useState(savedData?.route ?? null);
-  const [itinerary, setItinerary] = useState(savedData?.itinerary ?? null);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [budget, setBudget] = useState(savedData?.budget ?? null);
+  // Hotel budget is only carried through from a resumed trip; the agent reports
+  // total cost via route payloads, so this value is never mutated here.
+  const hotelBudget = savedData?.hotelBudget ?? 0;
 
-  // Pre-fetched final route — kick off in background during car input
-  const preFetchRef = useRef(null);
-  // Tracks whether the car form has been submitted so the input bar hides immediately
-  const carSubmittedRef = useRef(false);
-  // Prevents concurrent submit calls (StrictMode double-invoke guard)
+  // Prevents concurrent submit calls (StrictMode double-invoke / rapid clicks).
   const submitInFlightRef = useRef(false);
+  // Drives the ChatInput disabled state while a turn is in flight, so the send
+  // button can't be used until the agent finishes and the user should type again.
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Keep chatId in a ref so effects always use the live value
+  // Last trip-profile snapshot the agent reported, so we can diff each turn's
+  // trip_profile_updated action and log field-level ADDED/REMOVED/CHANGED.
+  const tripProfileRef = useRef(savedData?.tripProfile ?? {});
+
+  // Keep chatId in a ref so callbacks always use the live value.
   const chatIdRef = useRef(chatId);
   useEffect(() => {
     chatIdRef.current = chatId;
   }, [chatId]);
 
-  // Sync header car position on every step change
+  // The globally-unique agent conversation key sent to the backend. Falls back
+  // to the integer chatId if none was provided (keeps the hook usable standalone
+  // / in tests). Kept in a ref so callbacks read the live value.
+  const agentChatIdRef = useRef(agentChatId ?? String(chatId));
   useEffect(() => {
-    setCurrentStep(stepToProgress(step));
-  }, [step, setCurrentStep]);
+    agentChatIdRef.current = agentChatId ?? String(chatId);
+  }, [agentChatId, chatId]);
 
-  // ── Helper: bot message shorthand ────────────────────────────────────────
+  // Header car position — a route means the trip is planned (5), else 1.
+  useEffect(() => {
+    setCurrentStep(deriveProgress({ route }));
+  }, [route, setCurrentStep]);
+
+  // ── Message shorthands ───────────────────────────────────────────────────
   const bot = useCallback((text) => addMessage(chatIdRef.current, setChats, text, BOT), [setChats]);
   const loading = useCallback(
     () => addMessage(chatIdRef.current, setChats, 'loading', BOT),
@@ -179,418 +284,227 @@ export function useTripWorkflow({
   );
   const noLoader = useCallback(() => removeLoader(chatIdRef.current, setChats), [setChats]);
 
-  // ── Build a ChatData-like snapshot for DB persistence ────────────────────
+  // ── Build a ChatData-shaped snapshot for DB persistence ──────────────────
+  // Same 24 positional fields the ChatData constructor / DatabaseUtils expect.
+  // Populated from agent-derived state; legacy UI-flag fields stay false/empty.
   const buildSnapshot = useCallback(
-    () => ({
-      chatId: chatIdRef.current,
-      action: null,
-      locationType: 'start',
-      startCoords: startConfirmed ? [startConfirmed.latitude, startConfirmed.longitude] : null,
-      startAddress: new Array(4).fill(''),
-      endCoords: endConfirmed ? [endConfirmed.latitude, endConfirmed.longitude] : null,
-      endAddress: new Array(4).fill(''),
-      stops,
-      showInputBar: false,
-      showStopSlider: false,
-      showBudgetSlider: false,
-      showAddressInput: false,
-      workflowStarted: true,
-      startConfirmed,
-      endConfirmed,
-      initial,
-      route,
-      itinerary,
-      loading: false,
-      hotelBudget,
-      carBudget,
-      carDetails,
-      budget: hotelBudget + carBudget,
-      isComplete: step === 'done',
-    }),
-    [
-      startConfirmed,
-      endConfirmed,
-      stops,
-      initial,
-      route,
-      itinerary,
-      hotelBudget,
-      carBudget,
-      carDetails,
-      step,
-    ]
+    (overrides = {}) => {
+      const r = overrides.route !== undefined ? overrides.route : route;
+      const start =
+        overrides.startConfirmed !== undefined ? overrides.startConfirmed : startConfirmed;
+      const end = overrides.endConfirmed !== undefined ? overrides.endConfirmed : endConfirmed;
+      const stopCount = overrides.stops !== undefined ? overrides.stops : stops;
+      const b = overrides.budget !== undefined ? overrides.budget : budget;
+      return {
+        chatId: chatIdRef.current,
+        action: null,
+        locationType: 'start',
+        startCoords: start ? [start.latitude, start.longitude] : null,
+        startAddress: new Array(4).fill(''),
+        endCoords: end ? [end.latitude, end.longitude] : null,
+        endAddress: new Array(4).fill(''),
+        stops: stopCount,
+        showInputBar: false,
+        showStopSlider: false,
+        showBudgetSlider: false,
+        showAddressInput: false,
+        workflowStarted: true,
+        startConfirmed: start,
+        endConfirmed: end,
+        initial: null,
+        route: r,
+        itinerary: overrides.itinerary !== undefined ? overrides.itinerary : itinerary,
+        loading: false,
+        hotelBudget: overrides.hotelBudget !== undefined ? overrides.hotelBudget : hotelBudget,
+        carBudget: 0,
+        carDetails: new Array(3).fill(''),
+        budget: b,
+        isComplete: !!r,
+      };
+    },
+    [route, startConfirmed, endConfirmed, stops, budget, itinerary, hotelBudget]
   );
 
-  const persist = useCallback(async () => {
-    await updateUserData(accessToken, buildSnapshot(), chatsRef.current);
-  }, [accessToken, buildSnapshot, chatsRef]);
+  // ── Persist a snapshot everywhere Map/Itinerary read from ────────────────
+  // Writes into ChatLogsData.chatdata[idx] + chatsRef and the backend, so
+  // ChatLogsData.getChatDataById(currentId) reflects the new route/itinerary.
+  const persistSnapshot = useCallback(
+    async (snap) => {
+      const idx = ChatLogsData.chatdata.findIndex((c) => c.chatId === snap.chatId);
+      if (idx !== -1) ChatLogsData.chatdata[idx] = snap;
+      else ChatLogsData.chatdata.push(snap);
+      await updateUserData(accessToken, snap, chatsRef.current);
+    },
+    [ChatLogsData, accessToken, chatsRef]
+  );
 
-  // ── Step: start_input ─────────────────────────────────────────────────────
-  useEffect(() => {
-    if (step !== 'start_input') return;
-    bot('Where are you starting from?');
-  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
+  // ── Apply structured agent actions ────────────────────────────────────────
+  // route_updated  → payload.route drives route + derived start/end confirmed
+  // itinerary_updated → payload.itinerary drives the itinerary
+  // Then persist a ChatData snapshot so Map/Itinerary/DB see it.
+  const applyAgentActions = useCallback(
+    async (actions) => {
+      if (!Array.isArray(actions) || actions.length === 0) return;
 
-  // ── Step: start_validating ────────────────────────────────────────────────
-  useEffect(() => {
-    if (step !== 'start_validating') return;
-    let cancelled = false;
-    const run = async () => {
-      loading();
-      try {
-        const result = await validateLocationApi(
-          startConfirmed,
-          Array.isArray(startConfirmed) // coords vs string
-        );
-        if (cancelled) return;
-        noLoader();
-        setStartConfirmed(result);
-        bot(`Starting from: ${result.address}`);
-        setStep('end_input');
-      } catch {
-        if (cancelled) return;
-        noLoader();
-        bot('Could not find that location. Please try again.');
-        setStartConfirmed(null);
-        setStep('start_input');
-      }
-    };
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
+      const overrides = {};
+      let sawRoute = false;
 
-  // ── Step: end_input ───────────────────────────────────────────────────────
-  useEffect(() => {
-    if (step !== 'end_input') return;
-    bot('Where are you headed?');
-  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
+      for (const action of actions) {
+        if (!action || typeof action !== 'object') continue;
 
-  // ── Step: end_validating ──────────────────────────────────────────────────
-  useEffect(() => {
-    if (step !== 'end_validating') return;
-    let cancelled = false;
-    const run = async () => {
-      loading();
-      try {
-        const result = await validateLocationApi(endConfirmed, Array.isArray(endConfirmed));
-        if (cancelled) return;
-        noLoader();
-        setEndConfirmed(result);
-        bot(`Destination: ${result.address}`);
+        if (action.type === 'route_updated' && action.payload?.route) {
+          const newRoute = action.payload.route;
+          setRoute(newRoute);
+          overrides.route = newRoute;
+          sawRoute = true;
 
-        const endCity = result.address?.split(',').map((p) => p.trim())[1] ?? result.address;
-        const chatTitle = `Trip to ${endCity}`;
+          const coords = newRoute.coordinates;
+          if (Array.isArray(coords) && coords.length >= 2) {
+            const start = confirmedFromCoord(coords[0]);
+            const end = confirmedFromCoord(coords[coords.length - 1]);
+            if (start) {
+              setStartConfirmed(start);
+              overrides.startConfirmed = start;
+            }
+            if (end) {
+              setEndConfirmed(end);
+              overrides.endConfirmed = end;
+            }
+          }
 
-        // Notify ChatPage that this chat is now real (adds it to the sidebar if pending,
-        // or updates the title if it was already there)
-        if (onChatReady) {
-          onChatReady(chatIdRef.current, chatTitle);
-        } else {
-          // Fallback: rename directly (e.g. when used without ChatPage wrapper)
-          renameChatToRoute(chatIdRef.current, startConfirmed, result, setChats);
+          if (typeof action.payload.cost === 'number') {
+            setBudget(action.payload.cost);
+            overrides.budget = action.payload.cost;
+          }
+          if (Array.isArray(action.payload.stops)) {
+            const n = action.payload.stops.length;
+            setStops(n);
+            overrides.stops = n;
+          } else if (typeof action.payload.stops === 'number') {
+            setStops(action.payload.stops);
+            overrides.stops = action.payload.stops;
+          }
+        } else if (
+          action.type === 'itinerary_updated' &&
+          Array.isArray(action.payload?.itinerary)
+        ) {
+          setItinerary(action.payload.itinerary);
+          overrides.itinerary = action.payload.itinerary;
+        } else if (
+          action.type === 'trip_profile_updated' &&
+          action.payload?.trip_profile &&
+          typeof action.payload.trip_profile === 'object'
+        ) {
+          // The agent gathered a trip detail (start/destination/stops/budget)
+          // into this chat's TripProfile. Reflect the fields the UI tracks so
+          // Map/derived state and the persisted snapshot stay in sync — even
+          // before a full route exists.
+          const tp = action.payload.trip_profile;
+          // Turn-level trace: what was added / removed / changed this turn.
+          logTripProfileChanges(tripProfileRef.current, tp);
+          tripProfileRef.current = tp;
+          if (Array.isArray(tp.start_coords) && tp.start_coords.length >= 2) {
+            const start = confirmedFromCoord(tp.start_coords);
+            if (start) {
+              if (tp.start_address) start.address = tp.start_address;
+              setStartConfirmed(start);
+              overrides.startConfirmed = start;
+            }
+          }
+          if (Array.isArray(tp.destination_coords) && tp.destination_coords.length >= 2) {
+            const end = confirmedFromCoord(tp.destination_coords);
+            if (end) {
+              if (tp.destination_address) end.address = tp.destination_address;
+              setEndConfirmed(end);
+              overrides.endConfirmed = end;
+            }
+          }
+          if (typeof tp.num_stops === 'number') {
+            setStops(tp.num_stops);
+            overrides.stops = tp.num_stops;
+          }
+          if (typeof tp.budget === 'number') {
+            setBudget(tp.budget);
+            overrides.budget = tp.budget;
+          }
         }
-
-        // Build snapshot with the validated result directly (don't rely on state update timing)
-        const snap = buildSnapshot();
-        snap.endConfirmed = result;
-        snap.endCoords = [result.latitude, result.longitude];
-        snap.startConfirmed = startConfirmed; // ensure we have the validated object
-
-        // Find the chat log in chatsRef (it's already there since we add to chats on creation)
-        const chatLog = chatsRef.current.find((c) => c.id === chatIdRef.current) ?? {
-          id: chatIdRef.current,
-          title: chatTitle,
-          messages: [],
-        };
-
-        if (chatLog) {
-          // Await the DB write before advancing — fetching_initial calls updateUserData
-          // immediately, which will 404 if createChat hasn't landed yet.
-          const namedLog = { ...chatLog, title: chatTitle };
-          await createChat(accessToken, snap, namedLog);
-        }
-
-        setStep('fetching_initial');
-      } catch {
-        if (cancelled) return;
-        noLoader();
-        bot('Could not find that location. Please try again.');
-        setEndConfirmed(null);
-        setStep('end_input');
       }
-    };
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Step: fetching_initial ────────────────────────────────────────────────
-  useEffect(() => {
-    if (step !== 'fetching_initial') return;
-    let cancelled = false;
-    const run = async () => {
-      loading();
-      try {
-        const result = await getInitialRoute(
-          startConfirmed.latitude,
-          startConfirmed.longitude,
-          endConfirmed.latitude,
-          endConfirmed.longitude
-        );
-        if (cancelled) return;
-        noLoader();
-        setInitial(result);
-        // Build snapshot with result directly — setInitial() is async, don't rely on closure
-        const snap = buildSnapshot();
-        snap.initial = result;
-        await updateUserData(accessToken, snap, chatsRef.current);
-        bot('How many attractions would you like to stop at?');
-        setStep('stops_input');
-      } catch {
-        if (cancelled) return;
-        noLoader();
-        bot('Error fetching route. Please try again.');
-        setStep('error');
+      if (Object.keys(overrides).length === 0) return;
+
+      const snap = buildSnapshot(overrides);
+
+      // Title the chat once a route first lands (agent gathered the destination).
+      if (sawRoute && onChatReady) {
+        const endCity = extractCity(snap.endConfirmed?.address);
+        onChatReady(chatIdRef.current, endCity ? `Trip to ${endCity}` : null);
       }
-    };
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Step: stops_input — handled by UI (StopSlider submits via submit()) ───
+      await persistSnapshot(snap);
+    },
+    [buildSnapshot, persistSnapshot, onChatReady]
+  );
 
-  // ── Step: fetching_budget ─────────────────────────────────────────────────
-  useEffect(() => {
-    if (step !== 'fetching_budget') return;
-    let cancelled = false;
-    const run = async () => {
-      loading();
-      try {
-        const budget = await calcHotelBudget(initial.duration, stops);
-        if (cancelled) return;
-        noLoader();
-        setHotelBudget(budget);
-        if (budget > 0) {
-          bot(
-            `We estimate your minimum hotel cost to be $${budget}. Would you like to adjust your budget?`
-          );
-          setStep('budget_input');
-        } else {
-          // No overnight stay needed — skip budget input
-          setStep('car_input');
-          bot(
-            'No overnight stays needed! Now, what car will you be driving? Enter year, make, and model (e.g. 2020 Mazda CX-3).'
-          );
-        }
-        // Kick off final route pre-fetch in the background
-        preFetchRef.current = getFinalRoute(initial, budget, stops).catch(() => null);
-      } catch {
-        if (cancelled) return;
-        noLoader();
-        setStep('car_input');
-      }
-    };
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Step: budget_input — UI submits via submit('budget', value) ───────────
-
-  // ── Step: car_input prompt ────────────────────────────────────────────────
-  useEffect(() => {
-    if (step !== 'car_input') return;
-    // Message already added by fetching_budget if no hotel needed; skip if budget_input just ran
-  }, [step]);
-
-  // ── Step: generating_route ────────────────────────────────────────────────
-  useEffect(() => {
-    if (step !== 'generating_route') return;
-    let cancelled = false;
-    const run = async () => {
-      loading();
-      try {
-        let finalRoute = preFetchRef.current ? await preFetchRef.current : null;
-        if (!finalRoute) {
-          finalRoute = await getFinalRoute(initial, hotelBudget, stops);
-        }
-        if (cancelled) return;
-        if (!finalRoute) throw new Error('No route returned');
-
-        setRoute(finalRoute);
-
-        // Generate itinerary
-        const itin = await generateItinerary(finalRoute);
-        if (cancelled) return;
-        setItinerary(itin);
-        noLoader();
-
-        const totalCost = (finalRoute.cost ?? 0) + carBudget;
-        const completionMsg = `Your trip is ready! Estimated cost: $${totalCost} (hotel + gas). Use the Map and Itinerary buttons to explore.`;
-        bot(completionMsg);
-
-        // Build final snapshot explicitly — never rely on stale state closures
-        const snap = buildSnapshot();
-        snap.route = finalRoute;
-        snap.itinerary = itin;
-        snap.isComplete = true;
-
-        // Manually add the completion message to chatsRef so it's included in the DB write.
-        // setChats (called by bot()) is async — chatsRef won't reflect it yet.
-        chatsRef.current = chatsRef.current.map((c) =>
-          c.id === chatIdRef.current
-            ? {
-                ...c,
-                messages: [
-                  ...c.messages.filter((m) => m.type !== 'loading-chat'),
-                  { text: completionMsg, sender: BOT },
-                ],
-              }
-            : c
-        );
-
-        // Save to ChatLogsData in-memory and persist to DB
-        const chatIdx = ChatLogsData.chatdata.findIndex((c) => c.chatId === chatIdRef.current);
-        if (chatIdx !== -1) ChatLogsData.chatdata[chatIdx] = snap;
-        await updateUserData(accessToken, snap, chatsRef.current);
-
-        setStep('done');
-      } catch {
-        if (cancelled) return;
-        noLoader();
-        bot('Error generating your route. Please try again.');
-        setStep('error');
-      }
-    };
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Public: submit user input ─────────────────────────────────────────────
-
-  /**
-   * Call this from UI event handlers.
-   *
-   * Actions:
-   *   'start_text'   payload: string — free-text location
-   *   'start_coords' payload: [lat,lon] — from geolocation API
-   *   'end_text'     payload: string
-   *   'end_coords'   payload: [lat,lon]
-   *   'stops'        payload: number (1–10)
-   *   'budget'       payload: number ($)
-   *   'car'          payload: [year, make, model]
-   */
+  // ── Public: submit user input (agent chat only) ───────────────────────────
   const submit = useCallback(
     async (action, payload) => {
-      // Guard against StrictMode double-invoke or rapid double-clicks
+      if (action !== 'chat_message') return;
+
+      // Guard against StrictMode double-invoke or rapid double-clicks.
       if (submitInFlightRef.current) return;
       submitInFlightRef.current = true;
+      setIsLoading(true);
 
       const id = chatIdRef.current;
-
       try {
-        if (action === 'start_text' && step === 'start_input') {
-          addMessage(id, setChats, payload, USER);
-          setStartConfirmed(payload);
-          setStep('start_validating');
-        } else if (action === 'start_coords' && step === 'start_input') {
-          addMessage(id, setChats, 'Using current location…', USER);
-          setStartConfirmed(payload);
-          setStep('start_validating');
-        } else if (action === 'end_text' && step === 'end_input') {
-          addMessage(id, setChats, payload, USER);
-          setEndConfirmed(payload);
-          setStep('end_validating');
-        } else if (action === 'end_coords' && step === 'end_input') {
-          addMessage(id, setChats, 'Using current location…', USER);
-          setEndConfirmed(payload);
-          setStep('end_validating');
-        } else if (action === 'stops' && step === 'stops_input') {
-          const n = Math.min(10, Math.max(1, Number(payload)));
-          setStops(n);
-          addMessage(id, setChats, `${n} stop${n !== 1 ? 's' : ''}`, USER);
-          setStep('fetching_budget');
-        } else if (action === 'budget' && step === 'budget_input') {
-          const b = Math.max(hotelBudget, Number(payload));
-          setHotelBudget(b);
-          addMessage(id, setChats, `$${b}`, USER);
-          bot('What car will you be driving? Enter year, make, and model (e.g. 2020 Mazda CX-3).');
-          setStep('car_input');
-        } else if (action === 'car' && step === 'car_input') {
-          const [year, make, model] = payload;
-          setCarDetails([year, make, model]);
-          addMessage(id, setChats, `${year} ${make} ${model}`, USER);
-          carSubmittedRef.current = true; // hide the input bar immediately
+        const text = typeof payload === 'string' ? payload.trim() : '';
+        if (!text) return;
 
-          try {
-            const snap = buildSnapshot();
-            snap.carDetails = [year, make, model];
-            const updated = await calcGasBudget(
-              initial.distance,
-              year,
-              make,
-              model,
-              id,
-              setChats,
-              snap
-            );
-            const cb = updated?.carBudget ?? 0;
-            setCarBudget(cb);
-            const total = hotelBudget + cb;
-            bot(`Total estimated budget: $${total} (hotel: $${hotelBudget}, gas: $${cb})`);
-            const carSnap = buildSnapshot();
-            carSnap.carDetails = [year, make, model];
-            carSnap.carBudget = cb;
-            carSnap.budget = hotelBudget + cb;
-            await updateUserData(accessToken, carSnap, chatsRef.current);
-            setStep('generating_route');
-          } catch {
-            carSubmittedRef.current = false; // allow retry
-            bot('Could not look up that vehicle. Please try again.');
-          }
+        addMessage(id, setChats, text, USER);
+        loading();
+        const response = await sendAgentMessage({
+          accessToken,
+          // Use the globally-unique agent conversation key (a UUID), NOT the
+          // reused integer chat id, so per-chat memory never collides.
+          chatId: agentChatIdRef.current,
+          message: text,
+          clientContext: { hasRoute: !!route, stops, hotelBudget },
+        });
+        noLoader();
+
+        if (response && typeof response.reply === 'string') {
+          bot(response.reply);
+          // Turn-level trace: tools run, any tool errors, and a flag for a probable
+          // trip-profile validation failure (attempted update with no applied action).
+          logTripToolActivity(response.toolsUsed, response.actions, response.toolErrors);
+          await applyAgentActions(response.actions);
+        } else {
+          // The turn produced NO reply (network / 503 / other). This is not an
+          // agent-recoverable tool error — those are fed back within the turn and
+          // come back as a normal reply. A 503 is transient (provider/gateway),
+          // so nudge a retry; anything else is a generic failure.
+          const status = response?.status ?? null;
+          bot(
+            status === 503
+              ? "I'm having trouble reaching my planning service right now. Give it another try in a moment."
+              : 'Something went wrong on my end. Please try sending that again.'
+          );
         }
       } finally {
         submitInFlightRef.current = false;
+        setIsLoading(false);
       }
     },
-    [step, hotelBudget, initial, bot, buildSnapshot, persist, setChats]
+    [accessToken, route, stops, hotelBudget, bot, loading, noLoader, setChats, applyAgentActions]
   );
 
-  // ── Which input the UI should render ─────────────────────────────────────
-  const inputMode =
-    step === 'start_input'
-      ? 'location'
-      : step === 'end_input'
-        ? 'location'
-        : step === 'stops_input'
-          ? 'stops'
-          : step === 'budget_input'
-            ? 'budget'
-            : step === 'car_input' && !carSubmittedRef.current
-              ? 'car'
-              : 'none';
-
-  const locationVariant = step === 'start_input' ? 'start' : 'end';
-
   return {
-    step,
-    inputMode,
-    locationVariant,
     submit,
-    // trip data (for MapButton / ItineraryButton)
     route,
     itinerary,
-    stops,
-    hotelBudget,
-    carDetails,
-    setCarDetails,
+    // true while a turn is in flight — drives the ChatInput disabled state.
+    isLoading,
+    // kept for potential compatibility; the persistent ChatInput is the only input now.
+    inputMode: 'none',
   };
 }

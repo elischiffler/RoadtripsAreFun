@@ -17,7 +17,7 @@
 
 /* ── Trip message area ── */
 .chat-box {
-  overflow-y: auto;
+  overflow: hidden;
   top: var(--header-height);
   bottom: 0;
   left: 0;
@@ -39,6 +39,9 @@
   overflow-y: auto;
   box-sizing: border-box;
   max-width: 100%;
+  /* Grow to fill the chat-box so the input bar below stays pinned to the bottom. */
+  flex: 1;
+  min-height: 0;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -107,12 +110,14 @@
   background-color: var(--cream-dark) !important;
 }
 
-/* ── Inline floating input — appears in the message stream ── */
+/* ── Persistent input — pinned to the bottom of the chat area, never scrolls ── */
 .inline-input-area {
-  align-self: center;
-  width: 100%;
-  max-width: 560px;
-  margin: 8px 0 24px;
+  flex-shrink: 0;
+  align-self: stretch;
+  box-sizing: border-box;
+  /* Span the full message column: from the left edge of the bot messages to the
+     right edge of the user messages, matching .chat-messages' horizontal padding. */
+  margin: 8px max(72px, calc(50% - 380px)) 24px;
   background-color: var(--cream-light);
   border: 1px solid var(--cream-dark);
   border-radius: 16px;
@@ -182,6 +187,13 @@
 
 .send-button:hover {
   background-color: var(--forest-dark) !important;
+}
+
+.send-button.Mui-disabled {
+  background-color: var(--sand-main) !important;
+  color: var(--cream-dark) !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
 }
 
 /* ── Floating action button groups ── */

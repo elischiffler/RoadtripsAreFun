@@ -1,5 +1,5 @@
 # Ruff config for backend/
-target-version = "py39"
+target-version = "py312"
 line-length = 100
 
 [lint]

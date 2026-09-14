@@ -92,5 +92,20 @@ def test_generate_itinerary_invalid_payload():
     assert response.status_code == 400
 
 
+def test_generate_itinerary_hotel_rolls_over_month_end():
+    """A hotel night starting on the last day of a month must advance to the 1st
+    of the next month, not crash. Regression: the old ``day + 1`` raised
+    ValueError (day out of range) on month-end dates."""
+    response = client.post(
+        "/generate-itinerary",
+        json={"route": MOCK_ROUTE, "start_time": "2024-01-31T09:00:00"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    # The day after the Jan 31 hotel night must be Feb 01, 2024.
+    all_dates = [day["date"] for day in data]
+    assert any("February 01 2024" in d for d in all_dates), all_dates
+
+
 if __name__ == "__main__":
     pytest.main()

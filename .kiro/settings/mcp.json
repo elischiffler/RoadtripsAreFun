@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "tripadvisor-content": {
+      "type": "http",
+      "url": "https://docs.terra.tripadvisor.com/mcp"
+    }
+  }
+}

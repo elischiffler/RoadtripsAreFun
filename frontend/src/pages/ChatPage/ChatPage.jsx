@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useContext, useMemo } from 'react';
+import { useState, useRef, useEffect, useContext, useMemo, useCallback } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
@@ -9,12 +9,9 @@ import ThemedTooltip from '../../components/ThemedTooltip';
 import ItineraryButton from '../../components/buttons/ItineraryButton';
 import MapButton from '../../components/buttons/MapButton';
 import TripSearch from './TripSearch';
-import LocationInput from './LocationInput';
-import StopSlider from './InputStops';
-import BudgetSlider from './InputBudget';
-import CarInputBar from './InputCar';
-import { useTripWorkflow, stepToProgress, renameChatToRoute } from './useTripWorkflow';
-import { deleteChat, createChat, initializeUserData } from './DatabaseUtils';
+import ChatInput from './ChatInput';
+import { useTripWorkflow, deriveProgress, renameChatToRoute } from './useTripWorkflow';
+import { deleteChat, initializeUserData } from './DatabaseUtils';
 import './ChatPage.css';
 
 ring.register('loading-chat');
@@ -22,6 +19,7 @@ ring.register('loading-chat');
 // ── WorkflowPanel: isolated component so `key` can reset the workflow hook ──
 const WorkflowPanel = ({
   chatId,
+  agentChatId,
   setChats,
   setCurrentStep,
   chatsRef,
@@ -32,42 +30,21 @@ const WorkflowPanel = ({
   savedData,
   onChatReady,
 }) => {
-  const { step, inputMode, locationVariant, submit, route, itinerary, hotelBudget } =
-    useTripWorkflow({
-      chatId,
-      setChats,
-      setCurrentStep,
-      savedData,
-      chatsRef,
-      accessToken,
-      ChatLogsData,
-      onChatReady,
-    });
+  const { submit, route, itinerary, isLoading } = useTripWorkflow({
+    chatId,
+    agentChatId,
+    setChats,
+    setCurrentStep,
+    savedData,
+    chatsRef,
+    accessToken,
+    ChatLogsData,
+    onChatReady,
+  });
 
-  const handleLocationSubmit = (text) =>
-    submit(locationVariant === 'start' ? 'start_text' : 'end_text', text);
-  const handleLocationGeolocate = (coords) =>
-    submit(locationVariant === 'start' ? 'start_coords' : 'end_coords', coords);
-  const handleStopsSubmit = (n) => submit('stops', n);
+  const handleChatSubmit = (text) => submit('chat_message', text);
 
-  const [budgetValue, setBudgetValue] = useState(hotelBudget);
-  const handleBudgetSubmit = () => submit('budget', budgetValue);
-
-  const [carInputValue, setCarInputValue] = useState(['', '', '']);
-  const handleCarSubmit = () => {
-    if (carInputValue.some((v) => !v.trim())) return;
-    submit('car', carInputValue);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (inputMode === 'budget') handleBudgetSubmit();
-      else if (inputMode === 'car') handleCarSubmit();
-    }
-  };
-
-  const currentProgress = stepToProgress(step);
+  const currentProgress = deriveProgress({ route });
 
   return (
     <>
@@ -79,7 +56,12 @@ const WorkflowPanel = ({
 
       <Box className="main-content">
         <Box className="chat-box">
-          <Box className="chat-messages">
+          <Box
+            className="chat-messages"
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions text"
+          >
             {activeMessages.map((message, index) => {
               if (message.type === 'loading-chat') {
                 return (
@@ -119,48 +101,14 @@ const WorkflowPanel = ({
               return null;
             })}
 
-            {/* Floating input — renders inline at the bottom of the message list */}
-            {inputMode !== 'none' && (
-              <Box className="inline-input-area">
-                {inputMode === 'location' ? (
-                  <LocationInput
-                    placeholder={
-                      locationVariant === 'start'
-                        ? 'Enter your starting city or address…'
-                        : 'Enter your destination city or address…'
-                    }
-                    onSubmit={handleLocationSubmit}
-                    onGeolocate={handleLocationGeolocate}
-                  />
-                ) : inputMode === 'stops' ? (
-                  <StopSlider onSelect={handleStopsSubmit} />
-                ) : inputMode === 'budget' ? (
-                  <Box className="inline-input-row">
-                    <BudgetSlider
-                      UserChatData={{ hotelBudget }}
-                      handleKeyDown={handleKeyDown}
-                      onValueChange={setBudgetValue}
-                    />
-                    <Button
-                      variant="contained"
-                      className="send-button"
-                      onClick={handleBudgetSubmit}
-                    >
-                      Confirm
-                    </Button>
-                  </Box>
-                ) : inputMode === 'car' ? (
-                  <Box className="inline-input-row">
-                    <CarInputBar handleKeyDown={handleKeyDown} onValueChange={setCarInputValue} />
-                    <Button variant="contained" className="send-button" onClick={handleCarSubmit}>
-                      Send
-                    </Button>
-                  </Box>
-                ) : null}
-              </Box>
-            )}
-
             <div ref={chatEndRef} />
+          </Box>
+
+          {/* Persistent free-text agent input — pinned to the bottom so it never
+              scrolls away. While a turn is in flight the send button is disabled
+              (isLoading) until the agent finishes and the user should type again. */}
+          <Box className="inline-input-area">
+            <ChatInput onSubmit={handleChatSubmit} disabled={isLoading} />
           </Box>
         </Box>
       </Box>
@@ -170,6 +118,7 @@ const WorkflowPanel = ({
 
 WorkflowPanel.propTypes = {
   chatId: PropTypes.number.isRequired,
+  agentChatId: PropTypes.string.isRequired,
   setChats: PropTypes.func.isRequired,
   setCurrentStep: PropTypes.func.isRequired,
   chatsRef: PropTypes.shape({ current: PropTypes.array }).isRequired,
@@ -246,6 +195,27 @@ const ChatPage = () => {
   // Holds a { id, title, messages } for a new trip that hasn't had its destination confirmed yet.
   // It lives outside `chats` until onChatReady fires so it doesn't appear in the sidebar prematurely.
   const pendingChatRef = useRef(null);
+
+  // ── Agent conversation ids (B2: globally-unique keys) ─────────────────────
+  // The integer chat `id` is reused across sessions (maxId+1, reset per load), so
+  // it can't safely key the backend's per-chat agent memory. We map each integer
+  // chat id to a stable UUID and send THAT as the agent `chatId`, guaranteeing a
+  // brand-new chat never inherits a prior chat's trip profile / conversation.
+  const agentChatIdMapRef = useRef(new Map());
+  const getAgentChatId = useCallback((chatId) => {
+    const map = agentChatIdMapRef.current;
+    let agentId = map.get(chatId);
+    if (!agentId) {
+      // crypto.randomUUID is available in all supported browsers; fall back to a
+      // random string in the rare environment without it.
+      agentId =
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `agent-${chatId}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      map.set(chatId, agentId);
+    }
+    return agentId;
+  }, []);
 
   // Live messages always read from `chats` — never a stale snapshot
   const activeMessages = chats.find((c) => c.id === selectedChatId)?.messages ?? initialMessage;
@@ -404,6 +374,8 @@ const ChatPage = () => {
       pendingChatRef.current?.id ?? 0
     );
     const newId = maxId + 1;
+    // A brand-new chat gets a fresh UUID agent key (see getAgentChatId), so it can
+    // never inherit a prior chat's trip profile / conversation.
     ChatLogsData.createChatData(newId);
     const newChat = { id: newId, title: 'New Trip', messages: initialMessage };
     // Add to chats so messages render, but mark as pending so TripSearch hides it
@@ -456,19 +428,7 @@ const ChatPage = () => {
           isFetchingChats={isFetchingChats}
           getChatInfo={(cid) => {
             const cd = ChatLogsData.getChatDataById(cid);
-            const s = stepToProgress(
-              cd?.isComplete
-                ? 'done'
-                : cd?.route
-                  ? 'done'
-                  : cd?.initial
-                    ? 'fetching_budget'
-                    : cd?.endConfirmed
-                      ? 'fetching_initial'
-                      : cd?.startConfirmed
-                        ? 'end_input'
-                        : 'start_input'
-            );
+            const s = deriveProgress(cd);
             const city = (addr) => {
               if (!addr) return null;
               const p = addr.split(',').map((x) => x.trim());
@@ -512,6 +472,7 @@ const ChatPage = () => {
       <WorkflowPanel
         key={workflowKey}
         chatId={selectedChatId}
+        agentChatId={getAgentChatId(selectedChatId)}
         setChats={setChats}
         setCurrentStep={setCurrentStep}
         chatsRef={chatsRef}
