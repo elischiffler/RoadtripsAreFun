@@ -6,18 +6,31 @@ This is a monorepo. Two services live under the root:
 MyRoadtrip/
 ├── backend/                  # Python/FastAPI routing microservice (formerly rp-routing)
 │   ├── app/
-│   │   ├── main.py               # FastAPI app entry point; registers all routers and CORS middleware
+│   │   ├── main.py               # FastAPI app entry point; registers all routers, CORS, app-logger config
 │   │   ├── dependencies.py       # Shared FastAPI dependency functions
 │   │   ├── core/
-│   │   │   └── config.py         # Settings class; loads DATABASE_URL from .env
+│   │   │   └── config.py         # Settings class; DATABASE_URL + chat-agent (Mentro/Supabase) config from .env
 │   │   ├── routers/              # Route handlers (one file per domain) — thin controllers
 │   │   │   ├── routing_api.py    # /get-initial-route, /generate-final-route, /algorithms, /benchmark
 │   │   │   ├── location_api.py   # Location resolution: /validate-location
 │   │   │   ├── itinerary_api.py  # Itinerary generation: /generate-itinerary
 │   │   │   ├── car_api.py        # Car data: /get-car-details, /get-gas-price (FuelEconomy.gov)
 │   │   │   ├── chat_api.py       # Chat CRUD: /chats, /chats/create, /chats/update, /chats/delete
+│   │   │   ├── agent_api.py      # Chat agent: POST /agent/chat (thin controller over app/agent/)
 │   │   │   └── routing_fns/
 │   │   │       └── webscraping_fns.py  # Google Hotels scraping logic
+│   │   ├── agent/               # Conversational chat-agent layer (see below)
+│   │   │   ├── agent.py             # run_turn — the injected-dependency agent loop
+│   │   │   ├── schemas.py           # AgentChatRequest/Response, AgentAction + shared tool primitives (ToolSpec/Call/Result)
+│   │   │   ├── providers.py         # SupabaseServiceAuth + MentroGatewayProvider + FallbackChain + build_default_chain
+│   │   │   ├── prompt.py            # build_messages — assembles the ordered LLM message list for a turn
+│   │   │   ├── tools.py             # ToolContext, ToolDispatcher Protocol, per-turn ArtifactStore
+│   │   │   ├── tool_dispatcher.py   # AppToolDispatcher — real tools = thin adapters over existing capabilities
+│   │   │   ├── toolcall_parser.py   # Owns the text ```tool wire format: parse_tool_calls / strip_tool_blocks
+│   │   │   ├── memory.py            # MemoryStore Protocol + MemoryFact / ConversationMemory payload models
+│   │   │   ├── trip_profile.py      # TripProfile / TripProfileUpdate — structured per-chat trip state
+│   │   │   ├── routing_remote.py    # Proxies IP-whitelisted routing calls to the deployed backend (local dev)
+│   │   │   └── debug.py             # Opt-in (AGENT_DEBUG) per-turn console trace
 │   │   ├── routing/              # Pluggable route-planning algorithm layer (see below)
 │   │   │   ├── base.py               # RoutePlanner interface, PlanOptions/PlanResult, PlanningError, PlanMetrics
 │   │   │   ├── registry.py           # name -> planner ("greedy", "ortools"); get_planner()
@@ -32,21 +45,22 @@ MyRoadtrip/
 │   │   │   │   └── ortools_knapsack.py   # OR-Tools knapsack selection
 │   │   │   └── sources/              # Candidate sourcing (all external API calls)
 │   │   │       ├── mapbox.py             # call_route (Mapbox Directions)
-│   │   │       ├── attractions.py        # find_stop / get_details / gather_candidates (TripAdvisor)
+│   │   │       ├── attractions.py        # find_stop / get_details / gather_candidates (TripAdvisor Terra)
 │   │   │       └── hotels.py             # find_hotel + Google Places + Amadeus fallback
 │   │   ├── models/               # Pydantic response/domain models (not DB schemas)
 │   │   │   ├── routing_models/
 │   │   │   │   ├── routing_models.py       # Core types: Route, MapBox, Route_Payload, etc.
 │   │   │   │   ├── amadeus_models.py       # Amadeus API response models
 │   │   │   │   ├── google_places_models.py # Google Places response models
-│   │   │   │   └── trip_advisor_models.py  # TripAdvisor response models
+│   │   │   │   └── trip_advisor_models.py  # TripAdvisor **Terra** models (Terra_Location, Terra_Page_Nearby_Location, ...)
 │   │   │   ├── itinerary_models.py         # Itinerary_Payload, Itinerary_Day
 │   │   │   ├── location_models.py          # location_payload, location_model
 │   │   │   └── car_data_models.py
 │   │   ├── schemas/              # Pydantic request/body schemas (API input contracts)
 │   │   │   └── chat_schemas.py   # ChatSchema, ChatDataSchema, ChatLogSchema
 │   │   ├── crud/                 # Database access layer (Neon/Postgres)
-│   │   │   └── chat_crud.py      # All chat/route/segment read-write operations
+│   │   │   ├── chat_crud.py      # All chat/route/segment read-write operations
+│   │   │   └── memory_crud.py    # Agent memory store (chat_memory table): facts, summary, trip profile
 │   │   ├── external services/    # Legacy placeholder package (superseded by app/routing/sources/)
 │   │   └── utils/                # Shared helpers
 │   │       ├── auth.py           # JWT decode → user_id extraction
@@ -60,15 +74,29 @@ MyRoadtrip/
 │   │   ├── geolocation_tests.py
 │   │   ├── routing_api/
 │   │   │   ├── routing_api_tests.py
+│   │   │   ├── attractions_tests.py  # TripAdvisor Terra sourcing tests
 │   │   │   └── amadeus_tests.py
-│   │   └── routing/              # Planner-level tests (inject fake RoutingServices, no network)
-│   │       ├── conftest.py           # Route fixture + FakeServices
-│   │       ├── greedy_planner_tests.py
-│   │       ├── ortools_planner_tests.py
-│   │       ├── scheduler_tests.py
-│   │       ├── registry_tests.py
-│   │       ├── metrics_tests.py
-│   │       └── benchmark_tests.py
+│   │   ├── routing/              # Planner-level tests (inject fake RoutingServices, no network)
+│   │   │   ├── conftest.py           # Route fixture + FakeServices
+│   │   │   ├── greedy_planner_tests.py
+│   │   │   ├── ortools_planner_tests.py
+│   │   │   ├── scheduler_tests.py
+│   │   │   ├── registry_tests.py
+│   │   │   ├── metrics_tests.py
+│   │   │   └── benchmark_tests.py
+│   │   └── agent/               # Chat-agent tests (inject fake MemoryStore/ToolDispatcher + stub provider, no network/DB)
+│   │       ├── conftest.py
+│   │       ├── agent_api_tests.py
+│   │       ├── agent_loop_tests.py
+│   │       ├── prompt_tests.py
+│   │       ├── providers_tests.py
+│   │       ├── tool_dispatcher_tests.py
+│   │       ├── toolcall_parser_tests.py
+│   │       ├── artifact_tests.py
+│   │       ├── memory_tests.py
+│   │       ├── trip_profile_tests.py
+│   │       ├── routing_remote_tests.py
+│   │       └── leak_monitor_tests.py
 │   ├── .env                      # Local secrets (never commit)
 │   ├── requirements.txt          # Pinned Python dependencies
 │   └── Makefile                  # `make run` starts the dev server
@@ -119,6 +147,7 @@ MyRoadtrip/
 │   │   │   │   ├── TripSearch.jsx        # ⌘K spotlight-style trip search modal
 │   │   │   │   ├── TripSearch.css
 │   │   │   │   ├── getRoute.jsx          # getInitialRoute / getFinalRoute API calls
+│   │   │   │   ├── agentChat.js          # sendAgentMessage — POST /agent/chat wrapper for the chat agent
 │   │   │   │   ├── CalcBudget.jsx        # calcHotelBudget / calcGasBudget helpers
 │   │   │   │   └── DatabaseUtils.jsx     # createChat / updateUserData / initializeUserData
 │   │   │   ├── MapPage/          # Interactive Mapbox route view
@@ -159,6 +188,8 @@ MyRoadtrip/
 │   │       ├── SignUpPage.test.jsx
 │   │       ├── TripSearch.test.jsx
 │   │       ├── UserDataContext.test.jsx
+│   │       ├── agentChat.test.js
+│   │       ├── useTripWorkflow.chat.test.jsx
 │   │       └── useTripWorkflow.helpers.test.js
 │   ├── public/               # Static assets
 │   ├── index.html
@@ -177,11 +208,12 @@ MyRoadtrip/
 
 ## Conventions
 
-- **Routers** use `APIRouter()` and are registered in `main.py` via `app.include_router()`. Routers are **thin controllers** — `routing_api.py` no longer contains the planning algorithm; it selects a planner, builds `RoutingServices`, calls it, and shapes the response.
+- **Routers** use `APIRouter()` and are registered in `main.py` via `app.include_router()`. Routers are **thin controllers** — `routing_api.py` selects a planner, builds `RoutingServices`, calls it, and shapes the response; `agent_api.py` builds the agent's injected deps, calls `run_turn`, and maps errors.
+- **Injected-dependency layers.** Both the routing layer (`RoutingServices`) and the agent layer (provider chain + `MemoryStore` + `ToolDispatcher`) follow the same pattern: business logic depends only on injected abstractions, so it is unit-testable with fakes (no network/DB).
 - **Models vs Schemas**: `app/models/` holds domain/response models; `app/schemas/` holds request body schemas. Keep these separate.
 - **Private helpers** inside a module are prefixed with `_` (e.g. `_call_route`, `_find_hotel`).
-- **CRUD functions** in `app/crud/` take `auth_token: str` (the decoded `user_id`) as their first argument.
-- **External API calls** use `requests.get()` synchronously, followed by `Model.model_validate(response.json())`.
+- **CRUD functions** in `app/crud/` take `auth_token: str` (the decoded `user_id`) as their first argument. `memory_crud.py` follows this exactly and reuses `chat_crud`'s connection pool — it does NOT open a second pool.
+- **External API calls** use `requests.get()` synchronously, followed by `Model.model_validate(response.json())`. TripAdvisor Terra sends its key as the `X-API-Key` header (not a query param); the agent's Mentro/Supabase calls use `httpx` instead of `requests`.
 - **Error handling**: routers catch `RequestException`, `ValidationError`, `KeyError/ValueError` and re-raise as `HTTPException` with appropriate status codes (500 for upstream failures, 502 for bad upstream responses, 404 for not found).
 - **Environment variables**: loaded with `load_dotenv(override=True)` at the top of each router that needs them; accessed via `os.getenv()`.
 - **Coordinates** are consistently stored and passed as `[lat, lon]` lists, except where an external API (e.g. Mapbox, GeoJSON) uses `[lon, lat]` order — be explicit about which convention is in use.
@@ -227,6 +259,57 @@ planners can be swapped without touching the endpoint, DB layer, or frontend.
   The planned next planner is CP-SAT (`ortools.sat`) for soft stop-count + budget
   + hotel-aware selection. See `docs/pluggable-routing-refactor.md`.
 
+## Chat Agent Layer (`app/agent/`)
+
+A conversational trip-planning agent, exposed by `agent_api.py` as
+`POST /agent/chat`, built as an **injected-dependency loop** so it stays testable
+with fakes (mirroring the routing layer).
+
+- **The loop.** `run_turn(request, providers, memory, tools)` in `agent.py`:
+  resolve identity (decode `partitionKey` → `user_id`), load memory, assemble the
+  prompt (`prompt.build_messages`), call the provider, run a capped tool loop,
+  strip tool blocks from the reply, and best-effort write memory back.
+- **LLM provider.** A self-hosted **Mentro gateway** (SSE) at
+  `{MENTRO_GATEWAY_URL}/api/chat/stream-full`, called server-to-server with a
+  Supabase service-account JWT (`SupabaseServiceAuth`). Providers sit behind a
+  `FallbackChain`; when none is configured/available it raises
+  `ProvidersExhausted` → the router returns 503.
+- **Text tool protocol.** The gateway has **no native function-calling**, so the
+  agent advertises tools in the system prompt and the model requests them as
+  fenced ` ```tool ` JSON blocks. `toolcall_parser` owns that wire format; the
+  loop parses, dispatches (`await tools.dispatch(...)`), feeds results back, and
+  re-asks — capped at `MAX_TOOL_ITERATIONS = 5` so it always terminates.
+- **Tools are thin adapters.** `AppToolDispatcher` (`tool_dispatcher.py`) wraps the
+  app's *existing* capabilities (routing via `plan_final_route`, itinerary via
+  `build_itinerary`, location, car, memory/trip-profile) — no reimplementation, so
+  the fixed stop-dict contract lives in one place. Coordinates are `[lat, lon]` at
+  this boundary. Handlers never raise out of `dispatch`; failures become
+  `ToolResult(ok=False, error=...)` and are fed back to the model.
+- **Size management.** A per-turn `ArtifactStore` stashes heavy objects (full
+  route/geometry) and hands the model a short `route_handle`; `_MODEL_HIDDEN_KEYS`
+  strips bulky keys from tool results fed back to the LLM (avoids the gateway 413).
+  Full payloads still reach the frontend via `AgentAction.payload`.
+- **Remote routing proxy.** External routing APIs are IP-whitelisted to the
+  deployed backend. When `ROUTING_REMOTE_URL` is set (local dev),
+  `routing_remote.py` proxies routing tool calls through the deployed backend's
+  HTTP endpoints and re-validates into the same Pydantic models; unset (on the
+  deployed backend) the tools run routing locally.
+- **Memory: three tiers, one table.** `memory_crud.py` (`MemoryCrudStore`) persists
+  to `chat_memory` keyed by `(user_id, chat_id, mem_type, mem_key)`:
+  durable cross-chat `fact`s (sentinel `chat_id=''`), a rolling per-chat
+  conversation `summary`, and a single per-chat `trip` profile. Durable facts are
+  captured **tool-driven** (the model calls a tool), not via a separate extraction
+  pass. The verbatim `ChatLog` stays frontend-owned — `load_recent_turns` only
+  *reads* it and must never rewrite it.
+- **Leak monitor.** `_scan_reply_for_leaks` observes (logs, never rewrites) when
+  internal context — the client UI hint, trip-profile internals, raw coords, tool
+  syntax — surfaces in the user-facing reply. Detection over mutation.
+- **Config.** Agent settings live on the `Settings` class in `app/core/config.py`
+  (`MENTRO_GATEWAY_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`,
+  `MENTRO_SERVICE_EMAIL`, `MENTRO_SERVICE_PASSWORD`, `ROUTING_REMOTE_URL`). Set
+  `AGENT_DEBUG=true` for a per-turn console trace. No new third-party deps were
+  added. See `docs/chat-agent-design.md`.
+
 ## Frontend Chat Workflow
 
 The trip-planning chat uses a **state machine** implemented in `useTripWorkflow.js`:
@@ -237,3 +320,10 @@ The trip-planning chat uses a **state machine** implemented in `useTripWorkflow.
 - **No `setInterval` polling.** No mutable class instance mutations. No stale closures over chat IDs.
 - `inputMode` returned by the hook tells `ChatPage` which input component to render (`'location'` | `'stops'` | `'budget'` | `'car'` | `'none'`)
 - Chat messages are always read live from the `chats` context array using `selectedChatId` — never from a stale snapshot state variable
+- **Conversational agent.** Free-text messages go to `agentChat.js`
+  (`sendAgentMessage` → `POST /agent/chat`). The agent conversation is keyed by a
+  **globally-unique UUID** (`agentChatId`), NOT the reused integer chat id, so
+  per-chat agent memory can never collide across chats — `ChatPage` maps each
+  integer chat id to a stable UUID and sends that as the backend `chatId`. Agent
+  `actions` in the response are applied to `ChatData` (e.g. a new route/itinerary)
+  since there is no GET-by-chat endpoint to re-read.
