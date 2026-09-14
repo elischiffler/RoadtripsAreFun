@@ -58,7 +58,16 @@ def test_address_paraphrase_is_not_flagged():
 
 
 def test_leak_is_logged_as_warning(caplog):
+    # NOTE: app/main.py sets the "app" logger's propagate=False, so records from
+    # the "app.agent.agent" child never reach the root logger caplog attaches to.
+    # Attach caplog's handler directly to that logger so capture is reliable
+    # regardless of whether app.main has been imported (test-order independent).
     trip = TripProfile(start_coords=[35.28, -120.66])
-    with caplog.at_level(logging.WARNING, logger="app.agent.agent"):
-        _scan_reply_for_leaks("The client UI hint had 1 stop.", trip)
-    assert any("leak internal context" in r.message.lower() for r in caplog.records)
+    agent_logger = logging.getLogger("app.agent.agent")
+    agent_logger.addHandler(caplog.handler)
+    try:
+        with caplog.at_level(logging.WARNING, logger="app.agent.agent"):
+            _scan_reply_for_leaks("The client UI hint had 1 stop.", trip)
+    finally:
+        agent_logger.removeHandler(caplog.handler)
+    assert any("leak internal context" in r.getMessage().lower() for r in caplog.records)
