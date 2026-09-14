@@ -56,7 +56,12 @@ const WorkflowPanel = ({
 
       <Box className="main-content">
         <Box className="chat-box">
-          <Box className="chat-messages">
+          <Box
+            className="chat-messages"
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions text"
+          >
             {activeMessages.map((message, index) => {
               if (message.type === 'loading-chat') {
                 return (

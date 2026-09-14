@@ -129,8 +129,12 @@ async def test_find_stop_returns_contract_shape_and_best_first_rank(monkeypatch)
 
 @pytest.mark.asyncio
 async def test_find_stop_skips_entries_without_coordinates(monkeypatch):
-    """Entries missing coordinates are skipped; rank counts position among
-    coordinate-bearing results so the first usable one wins."""
+    """Entries missing coordinates are skipped for selection, but ``rank`` counts
+    every location-bearing entry (including coordinate-less ones) by position.
+
+    So with a coordinate-less entry first, the usable second entry is returned
+    with rank 2 — matching find_stop, which increments rank before checking
+    coordinates."""
 
     def _fake_get(url, params=None, headers=None, timeout=None):
         entry_no_coords = {"location": {"id": 1, "names": [{"value": "No Coords"}]}}
@@ -144,6 +148,7 @@ async def test_find_stop_skips_entries_without_coordinates(monkeypatch):
 
     assert stop["name"] == "Has Coords"
     assert stop["coordinates"] == [40.0, -105.0]
+    assert stop["rank"] == 2  # rank counts the skipped no-coords entry ahead of it
 
 
 @pytest.mark.asyncio

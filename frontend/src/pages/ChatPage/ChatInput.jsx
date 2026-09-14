@@ -44,6 +44,7 @@ const ChatInput = ({ onSubmit, disabled }) => {
         fullWidth
         autoComplete="off"
         size="small"
+        inputProps={{ 'aria-label': 'Chat message' }}
         sx={{
           '& .MuiOutlinedInput-root': {
             borderRadius: '10px',

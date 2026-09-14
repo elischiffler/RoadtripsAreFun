@@ -79,13 +79,15 @@ async def build_itinerary(data: Itinerary_Payload) -> List[Itinerary_Day]:
         # Add the stop to stop_list
         stop_list.append(destination)
         if stop["type"] == "hotel":  # If the stop is a hotel
-            current_time = datetime(
-                current_time.year,  # set current time to be next day at 9AM
-                current_time.month,
-                current_time.day + 1,
-                9,  # TODO Make the start time a parameter
-                0,
-                0,
+            # Advance to 9AM the NEXT calendar day. Use timedelta so month/year
+            # roll over correctly — ``current_time.day + 1`` raises ValueError on
+            # the last day of a month (e.g. Jan 31 -> day 32).
+            next_day = current_time + timedelta(days=1)
+            current_time = next_day.replace(
+                hour=9,  # TODO Make the start time a parameter
+                minute=0,
+                second=0,
+                microsecond=0,
             )
             stop_list.append(
                 {

@@ -102,7 +102,7 @@ def _load_trip(memory: MemoryStore, user_id: str, chat_id: str) -> TripProfile:
         return TripProfile()
 
 
-def _scan_reply_for_leaks(reply: str, trip: TripProfile) -> list[str]:
+def _scan_reply_for_leaks(reply: str, trip: TripProfile, chat_id: str = "") -> list[str]:
     """Monitor: detect INTERNAL context that leaked into the user-facing reply.
 
     "Directions we send to the AI" — the client UI hint, the trip-profile
@@ -131,11 +131,14 @@ def _scan_reply_for_leaks(reply: str, trip: TripProfile) -> list[str]:
                 hits.append(f"raw_coords({lat},{lon})")
 
     if hits:
+        # Log only the detected marker NAMES and the chat correlation id — never
+        # the reply text itself, which is user-facing content that may include
+        # the very coordinates/PII we're flagging.
         logger.warning(
-            "Reply may leak internal context to the user (markers=%s). The model "
-            "recited directions meant only for it; reply left unchanged: %r",
+            "Reply may leak internal context to the user for chat_id=%s (markers=%s). "
+            "The model recited directions meant only for it; reply left unchanged.",
+            chat_id or "?",
             hits,
-            reply[:200],
         )
     return hits
 
@@ -309,7 +312,7 @@ async def run_turn(
 
     # Monitor: flag (don't rewrite) any INTERNAL context that leaked into the
     # reply — the client hint, trip-profile internals, raw coords, tool syntax.
-    _scan_reply_for_leaks(reply, trip)
+    _scan_reply_for_leaks(reply, trip, chat_id)
 
     # 6. Persist memory (best-effort). Fact extraction + rolling summary go
     # through the injected MemoryStore. We do NOT write the verbatim ChatLog —

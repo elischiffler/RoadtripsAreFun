@@ -3,8 +3,10 @@ import axios from 'axios';
 /**
  * agentChat — API helper for the conversational chat agent.
  *
- * Mirrors getRoute.jsx: a thin axios wrapper that POSTs to the backend and
- * returns the response data, or null on error (logged via console.error).
+ * Mirrors getRoute.jsx: a thin axios wrapper that POSTs to the backend. On
+ * success it returns the AgentChatResponse. On error it logs (console.error)
+ * and returns a structured failure — { ok: false, status: <http status|null> }
+ * — so callers can distinguish a transient 503 ("try again") from other faults.
  *
  * Contract (chat-agent-design.md §3, frozen):
  *
@@ -30,7 +32,8 @@ import axios from 'axios';
  * @param {string|number} opts.chatId  – chat id; always coerced to String
  * @param {string}  opts.message       – the user's free-text message
  * @param {object}  [opts.clientContext] – optional best-effort UI state hint
- * @returns {Promise<object|null>} the AgentChatResponse, or null on error
+ * @returns {Promise<object>} the AgentChatResponse on success, or a structured
+ *   failure { ok: false, status: number|null } on error.
  */
 export const sendAgentMessage = async ({ accessToken, chatId, message, clientContext }) => {
   try {

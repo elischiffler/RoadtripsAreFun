@@ -67,6 +67,14 @@ def test_malformed_json_is_skipped_not_raised():
     assert parse_tool_calls(text) == []
 
 
+def test_non_object_json_is_skipped_not_raised():
+    """Valid JSON that isn't an object (array / string / number / null) has no
+    ``tool`` name — it must be skipped, never crash on ``.get``."""
+    for body in ("[1, 2, 3]", '"just a string"', "42", "null"):
+        text = f"```tool\n{body}\n```"
+        assert parse_tool_calls(text) == []
+
+
 def test_block_without_tool_name_is_skipped():
     text = '```tool\n{"arguments": {"x": 1}}\n```'
     assert parse_tool_calls(text) == []

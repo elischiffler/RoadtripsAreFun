@@ -5,7 +5,8 @@
  * Contract under test (chat-agent-design.md §3):
  *   POST {VITE_BACKEND_SERVER}agent/chat
  *   body: { partitionKey, chatId (string), message, clientContext? }
- *   returns AgentChatResponse or null on error.
+ *   returns the AgentChatResponse on success, or a structured failure
+ *   { ok: false, status } on error.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';

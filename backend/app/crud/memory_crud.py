@@ -7,8 +7,9 @@ first argument, reads through ``RealDictCursor``, and commits / rolls back on
 writes — mirroring the ``chat_crud`` conventions exactly.
 
 All memory rows live in one ``chat_memory`` table with a ``mem_type``
-discriminator (``'fact'`` | ``'summary'``). Facts are cross-chat
-(``chat_id = NULL``); the summary is per ``(user_id, chat_id)``.
+discriminator (``'fact'`` | ``'summary'``). Facts are cross-chat and use the
+empty-string sentinel ``chat_id = ''`` (``_CROSS_CHAT``) — NOT NULL, so it works
+as a composite-PK / ON CONFLICT target; the summary is per ``(user_id, chat_id)``.
 """
 
 from __future__ import annotations

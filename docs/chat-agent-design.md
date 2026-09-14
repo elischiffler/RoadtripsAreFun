@@ -37,10 +37,11 @@ trip-planning **state machine**:
   it persists a chat's `ChatData` (trip snapshot) and `ChatLog` (message list) to
   Neon Postgres. No LLM is involved anywhere.
 
-The agent is **additive**. It does not replace the scripted machine; it runs
-alongside it as a new capability the user can talk to. The scripted flow remains
-the fast path for structured trip building; the agent handles everything the
-script can't (questions, preferences, "actually make it cheaper", "add a stop in
+The agent is now the primary chat interface. The earlier scripted state machine
+and its structured input widgets (location / stops / budget / car fields) were
+removed; the agent handles the whole conversation — structured trip building
+(start, destination, stops, budget) as well as everything the old script
+couldn't (questions, preferences, "actually make it cheaper", "add a stop in
 Denver").
 
 ---
@@ -227,7 +228,7 @@ table with a small type discriminator keeps the migration trivial:
 ```sql
 CREATE TABLE IF NOT EXISTS chat_memory (
     user_id     TEXT        NOT NULL,
-    chat_id     TEXT,                    -- NULL for cross-chat facts
+    chat_id     TEXT        NOT NULL,    -- '' (empty-string sentinel) for cross-chat facts
     mem_type    TEXT        NOT NULL,    -- 'fact' | 'summary'
     mem_key     TEXT        NOT NULL,    -- fact key, or 'summary' for the summary row
     mem_value   JSONB       NOT NULL,    -- MemoryFact / ConversationMemory payload
@@ -502,8 +503,9 @@ stops / budget and calls the tools itself.
     endpoint.
 - Header/TripSearch progress derives from `ChatData` via `deriveProgress`
   (route present → done) instead of a step enum.
-- Loading uses the existing loader bubble; the friendly-fallback message shows if
-  the agent returns null.
+- Loading uses the existing loader bubble; a friendly-fallback message shows when
+  the agent call fails (the client returns `{ ok: false, status }`, and a 503 is
+  messaged as a transient "try again").
 
 ---
 

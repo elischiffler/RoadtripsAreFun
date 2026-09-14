@@ -19,8 +19,9 @@ import os
 
 logger = logging.getLogger("app.agent.debug")
 
-# On by default for local dev; set AGENT_DEBUG=false to silence.
-_ENABLED = os.getenv("AGENT_DEBUG", "true").strip().lower() not in ("false", "0", "no", "")
+# OFF by default — this trace prints user messages, coordinates, and tool
+# args/results, so it must be opt-in. Set AGENT_DEBUG=true for local debugging.
+_ENABLED = os.getenv("AGENT_DEBUG", "false").strip().lower() in ("true", "1", "yes")
 
 # Fields whose values are huge / noisy and get summarized instead of dumped.
 _BULKY_KEYS = {"route", "coordinates", "geometry", "legs", "steps", "itinerary"}
