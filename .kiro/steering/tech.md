@@ -8,7 +8,9 @@ This repo contains two services: `backend/` (Python/FastAPI) and `frontend/` (Re
 ## Backend (`backend/`)
 
 ### Language & Runtime
-- **Python 3.9**
+- **Python 3.12** (CI runs 3.12; Render pinned via `backend/runtime.txt`). Modern
+  syntax like PEP 604 unions (`X | None`) is used throughout, including in
+  Pydantic model fields — do not reintroduce `Optional[...]` for style.
 
 ### Framework
 - **FastAPI 0.111.1** – async REST API framework

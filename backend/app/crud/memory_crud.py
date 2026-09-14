@@ -11,9 +11,11 @@ discriminator (``'fact'`` | ``'summary'``). Facts are cross-chat
 (``chat_id = NULL``); the summary is per ``(user_id, chat_id)``.
 """
 
+from __future__ import annotations
+
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import psycopg2.extras
 from pydantic import ValidationError
@@ -30,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 def _utcnow() -> datetime:
     """Timezone-aware UTC now for row timestamps / empty-memory defaults."""
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _empty_conversation(chat_id: str) -> ConversationMemory:

@@ -20,7 +20,7 @@ verbatim ``ChatLog`` is owned by the frontend and is NOT written here.
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.agent import debug
 from app.agent.memory import ConversationMemory, MemoryStore
@@ -164,7 +164,7 @@ def _roll_summary(
         update={
             "summary": summary,
             "summary_turn_count": conversation.summary_turn_count + 1,
-            "updated_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(UTC),
         }
     )
 
