@@ -9,13 +9,16 @@ From `frontend/`: `npm ci`, `npm run format:check`, `npm run lint`,
 `npm run test:coverage`, `npm run build`. From `backend/`: install requirements,
 then `ruff format --check .`, `ruff check .`, and
 `pytest --cov=app --cov-report=term-missing --cov-fail-under=63`.
-From root: `node --test tests/container-smoke.test.mjs` tests running containers.
+From root: `node --test tests/container-smoke.test.mjs` tests running containers;
+`node tests/postgres/run.mjs` runs disposable real PostgreSQL CRUD and recovery.
 
 [Container runbook](docs/container-runbook.md) owns local config and commands;
-[PostgreSQL notes](docs/self-hosted-postgres.md) own TLS behavior. Database schema
-documentation is incomplete: do not invent a schema or use production data to
-clear local integration gates. [Validation](docs/container-validation.md) records
-failures and blocked checks. Preserve thresholds and baseline failures.
+[PostgreSQL notes](docs/self-hosted-postgres.md) own TLS behavior. The exact
+checked-in README and memory CRUD DDL supports disposable local PostgreSQL
+tests. The production schema and migration history remain unverified; never
+infer them from the local test or use production data to clear local gates.
+[Validation](docs/container-validation.md) records passed and blocked checks.
+Preserve thresholds and baseline failures.
 
 Use task branches and PRs, never merge or push main. Draft PRs are appropriate
 while required verification is blocked. CI runs on every PR/main change without

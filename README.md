@@ -2,8 +2,9 @@
 
 Local Docker preview: [runbook](docs/container-runbook.md) and
 [validation/blockers](docs/container-validation.md). The container work does not
-change production hosting. Full trip/database acceptance is blocked pending a
-reviewed schema and isolated services; the PR remains draft.
+change production hosting. Disposable PostgreSQL CRUD/recovery checks pass; the
+full trip journey, live-schema compatibility and isolated Auth/provider checks
+remain open. The PR remains draft.
 
 A road trip planning application. This monorepo contains two services:
 

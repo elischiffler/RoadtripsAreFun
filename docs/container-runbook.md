@@ -1,7 +1,9 @@
 # Local container preview
 
-This is a partial, isolated preview pending a reviewed complete database schema.
-It serves the production frontend and FastAPI process without production keys.
+This is a partial, isolated preview. A separate disposable stack verifies the
+checked-in local PostgreSQL schema and real CRUD; the primary browser preview
+still has no database or isolated Auth/provider fixtures. It serves the
+production frontend and FastAPI process without production keys.
 Do not use it as a working trip planner yet. The original PostgreSQL TLS changes
 remain in this PR; hosted connections still require TLS by default.
 
@@ -22,8 +24,10 @@ POSIX: `export ROADTRIPS_REVISION=$(git rev-parse HEAD)` before Compose.
 Frontend <http://127.0.0.1:8082>; API <http://127.0.0.1:8002>. `/health` means
 process liveness; `/ready` checks database connectivity and the four documented
 table names with 5-second connect/query deadlines. It deliberately returns 503
-while database/schema prerequisites are missing. Table presence is not complete
-schema/migration validation. Acceptance deadlines chosen before container runs:
+in the primary preview because no database is attached there. The separate
+database test stack returns 200 after initializing the four documented tables.
+Table presence does not validate the live production schema or migration history.
+Acceptance deadlines chosen before container runs:
 startup/recovery60s, HTTP10s, APIstop15s (uvicorn10s), nginxstop10s.
 
 Compose uses a private internal network plus a bridge for Docker Desktop's
@@ -65,16 +69,51 @@ Quality commands and runtime versions are in AGENTS.md. Public frontend build
 configuration is fixed in Compose for preview; future actual Auth/Mapbox setup
 requires reviewed build inputs and separate isolated acceptance evidence.
 
-## Persistence and recovery prerequisites
+## Disposable PostgreSQL CRUD and recovery test
 
-No PostgreSQL volume is created or guessed schema installed. README DDL covers
-three tables and chat-agent-design covers another, but neither is a reviewed
-complete schema. Obtain an authoritative reviewed export, initialize a disposable
-volume, and complete API persistence and recovery checks before enabling a DB.
-The [local schema proposal](local-schema-proposal.md) records the exact checked-in
-DDL and unresolved identifier-scope questions; it has not been applied.
-Reuse `hosting-ops` PostgreSQL backup/restore tooling and its restore refusal
-checks. Never restore over production or delete volumes during routine restart.
+From repository root with Docker Desktop running and Node 24 installed:
+
+```sh
+node tests/postgres/run.mjs
+```
+
+The script assigns a unique `roadtrips-crud-<id>` Compose project. Its private
+network has no published database port. The source and restore PostgreSQL 18.6
+containers use distinct named volumes; both are separate from the primary
+`roadtrips-local` preview and `hosting-ops` data stack. The source initializes
+from [`tests/postgres/schema.sql`](../tests/postgres/schema.sql), an exact
+transcription of README's three tables/indexes and `memory_crud.py`'s table.
+This is a disposable **local test schema**, not evidence of the live database.
+
+The runner builds the backend test and production API images, seeds records via
+real `chat_crud` and `memory_crud`, and verifies two-owner reads, route/step
+conflict rejection, geometry, memory and deletion. It recreates the API and
+source database containers, checks `/ready`, and reads the same records from a
+fresh Python process. It saves a private custom-format `pg_dump` under
+`tests/postgres/.artifacts/`, starts an empty restore volume, uses the same
+application-object count refusal rule and safe `pg_restore` flags as
+`hosting-ops/postgres/restore.sh`, and verifies restored records. This is a
+disposable test driver mirroring the safety checks, not a second production
+recovery tool; the production procedure remains in `hosting-ops`. A second
+restore attempt must refuse the populated target. The script stops containers
+but **never deletes either volume or backup**. Startup/recovery waits are 60
+seconds; individual probe/backup/restore calls are bounded at 120 seconds.
+
+The final output names the source and restore volumes. To inspect or restart a
+specific completed run, set `DB_TEST_RUN_ID` to its printed ID and use its
+project name with `docker compose -f tests/postgres/compose.yaml -p
+roadtrips-crud-<id> ps` or `start`. Do not rerun the `seed` driver against a
+populated test volume. To remove stopped containers and network while keeping
+evidence, run `docker compose -f tests/postgres/compose.yaml -p
+roadtrips-crud-<id> --profile api --profile restore down`.
+Only after the data and backup are no longer needed, explicitly remove the two
+printed volumes with `docker volume rm <source-volume> <restore-volume>` and
+the private dump file; routine recovery never uses `down -v`.
+
+The [local schema proposal](local-schema-proposal.md) records unresolved
+production identifier-scope/migration questions. The primary browser preview
+still deliberately returns 503 for business routes. Actual isolated Cognito,
+route/map/provider fixtures and representative UI/API journeys remain separate.
 
 The Mentro server contract can be tested over its separate internal pilot
 network once that gate passes; do not point at hosted Fly or a production Auth

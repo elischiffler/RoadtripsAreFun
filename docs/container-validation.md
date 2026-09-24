@@ -1,5 +1,49 @@
 # Container migration evidence
 
+## Disposable PostgreSQL follow-up, 2026-09-24
+
+`node tests/postgres/run.mjs` from the repository root ran against a separate
+`roadtrips-crud-6d2065bfb8` Compose project using the digest-pinned PostgreSQL
+18.6 image. The source and restore volumes were
+`roadtrips-crud-6d2065bfb8_source-data` and
+`roadtrips-crud-6d2065bfb8_restore-data`; both remain intact with containers
+stopped. The production API test image was
+`sha256:8f7252ed4a594837e3ae1efa1cbdbccbc8d8d2417b4b1dfe46cf77b0b18bcbe7` and
+the Python test image was
+`sha256:352bed1be593dff8abe5276c12781b99e17371fcecc49d77e3f4759fd671f035`.
+This is local image identity before the follow-up commit; the PR CI run tests
+the committed version separately. Neither database port was published, and no
+hosted database, Auth service or provider was contacted.
+
+The test initialized only README's three tables/indexes and `memory_crud.py`'s
+exact `chat_memory` definition. Real CRUD calls created two owners with the same
+chat ID, saved and reread chat data/messages, route segments, leg steps, memory
+facts/summary/trip profile, and verified owner-specific reads. Existing
+foreign-owned route/step primary keys caused `PermissionError` and transaction
+rollback, leaving the other owner's rows and the caller's chat unchanged. A
+test-owned chat deletion did not delete the other owner's same-ID chat. Fresh
+Python processes verified records after API recreation and source PostgreSQL
+container recreation. API `/ready` returned 200 before/after, 503 during
+database loss, then 200 after recovery. The custom format backup was 6,224
+bytes, restored transactionally into a separate empty
+volume, and the same records were verified twice. A second restore was refused
+because the target contained four application objects, matching the
+`hosting-ops/postgres/restore.sh` refusal policy. Both volumes and the private
+dump were preserved.
+
+This closes the **local data-layer** parts of S3, R2, R5 and R6. It does not
+close their full application criteria: the primary preview still has a
+`LOCAL_PREVIEW` business-route 503 guard; no authenticated browser trip, API
+read of restored trips, or actual Cognito session was exercised. The live Neon
+schema/migration history is unverified. For local R1 and C1, the missing work is
+a bounded safe simulator: enable business routes only in an isolated test app,
+provide locally signed Cognito/JWKS verification without weakening production
+verification, and supply controlled Mapbox/itinerary/geocoding and Mentro
+responses. A representative virtual-user driver would then assert route,
+itinerary, map, chat persistence and pacing. This is fixture implementation
+work, not an unavailable production credential. Actual isolated Cognito R4 and
+any live external provider checks remain separate external-service gates.
+
 ## Follow-up verification, 2026-09-24
 
 The earlier baseline snapshot below is retained as historical evidence. The
@@ -32,10 +76,10 @@ without changed lint rules or lowered coverage thresholds. The generated
 frontend coverage directory is now ignored by format/lint checks.
 
 The [local schema proposal](local-schema-proposal.md) transcribes checked-in
-README and CRUD DDL, with identifier-scope risks called out. It has not been
-approved or applied. Database readiness, persistence, recovery, authenticated
-browser journeys, and production-schema compatibility remain blocked. The
-owner guards are locally tested with mocks, not against real PostgreSQL data.
+README and CRUD DDL, with identifier-scope risks called out. The later
+disposable PostgreSQL follow-up above applied that DDL to local test volumes
+and exercised owner guards against real rows; it did not verify production
+schema or authenticated browser journeys.
 
 Pre-PR snapshot, 2026-09-24. Existing PR20/branch `feat/self-hosted-postgres` is
 reused; baseline `af1cb97ef907d4588c655838a245e11ce2afc57d` includes the existing
