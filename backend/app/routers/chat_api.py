@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Header, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
@@ -13,17 +13,17 @@ from app.crud.chat_crud import (
     update_chat_component,
 )
 from app.schemas.chat_schemas import ChatSchema
-from app.utils.auth import get_user_id_from_token
+from app.utils.auth import bearer_token, get_user_id_from_token
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
 @router.get("/chats")
-async def initialize_chats(partition_key: str):
+async def initialize_chats(authorization: str | None = Header(default=None)):
     """Initialize all the previously stored chats in the database."""
     # Decode the permanent user ID from the temporary access token
-    user_id = get_user_id_from_token(partition_key)
+    user_id = get_user_id_from_token(bearer_token(authorization))
     try:
         # Get all stored items for a users unique partition key
         items = get_all_chats(user_id)
@@ -34,11 +34,17 @@ async def initialize_chats(partition_key: str):
             for item in items:
                 sorted_segments = None
                 if item["ChatData"]["initial"]:
-                    sorted_segments = get_segments(route_id=item["ChatData"]["initial"]["geometry"])
+                    sorted_segments = get_segments(
+                        user_id=user_id,
+                        chat_id=item["ChatId"],
+                        route_id=item["ChatData"]["initial"]["geometry"],
+                    )
                     item["ChatData"]["initial"]["geometry"] = {}
                     item["ChatData"]["initial"]["geometry"]["coordinates"] = sorted_segments
                     item["ChatData"]["initial"]["legs"] = restore_legs(
-                        legs=item["ChatData"]["initial"]["legs"]
+                        user_id=user_id,
+                        chat_id=item["ChatId"],
+                        legs=item["ChatData"]["initial"]["legs"],
                     )
                 if item["ChatData"]["route"] and sorted_segments is not None:
                     item["ChatData"]["route"]["geometry"]["coordinates"] = sorted_segments
@@ -126,9 +132,9 @@ async def chat_update(chat_id: int, request: ChatSchema):
 
 
 @router.delete("/chats/delete/{chat_id}")
-async def delete_chat_component(chat_id: int, partition_key: str):
+async def delete_chat_component(chat_id: int, authorization: str | None = Header(default=None)):
     """Delete a particular chat component from the database."""
-    user_id = get_user_id_from_token(partition_key)
+    user_id = get_user_id_from_token(bearer_token(authorization))
     try:
         # Delete the chat and send a success response if no errors are raised
         delete_chat(user_id, str(chat_id))

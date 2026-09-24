@@ -1,6 +1,8 @@
 """Cognito access-token verification with a locally signed, offline JWKS."""
 
+from copy import deepcopy
 from datetime import UTC, datetime, timedelta
+from unittest.mock import patch
 
 import jwt
 import pytest
@@ -84,6 +86,35 @@ def test_rejects_hs256_algorithm(signed_token):
     assert error.value.status_code == 401
 
 
+def test_rejects_future_issued_at(signed_token):
+    with pytest.raises(HTTPException) as error:
+        get_user_id_from_token(signed_token(iat=datetime.now(UTC) + timedelta(days=1)))
+    assert error.value.status_code == 401
+
+
+def test_rejects_token_without_key_id(signed_token):
+    token = signed_token()
+    # The local token body is valid, but a keyless header must never select a key.
+    header, body, signature = token.split(".")
+    keyless_header = jwt.utils.base64url_encode(b'{"alg":"RS256","typ":"JWT"}').decode()
+    with pytest.raises(HTTPException) as error:
+        get_user_id_from_token(f"{keyless_header}.{body}.{signature}")
+    assert error.value.status_code == 401
+
+
+def test_rejects_when_jwks_unavailable(signed_token, monkeypatch):
+    token = signed_token()
+    _jwks_client.cache_clear()
+
+    def unavailable(self):
+        raise jwt.PyJWKClientConnectionError("offline fixture")
+
+    monkeypatch.setattr(jwt.PyJWKClient, "fetch_data", unavailable)
+    with pytest.raises(HTTPException) as error:
+        get_user_id_from_token(token)
+    assert error.value.status_code == 401
+
+
 def test_rejects_tampered_signature_and_raw_user_id(signed_token):
     valid = signed_token()
     header, payload, signature = valid.split(".")
@@ -123,8 +154,60 @@ def test_rejects_without_configuration(signed_token, monkeypatch):
 
 def test_unverified_token_cannot_reach_chat_or_agent(signed_token):
     client = TestClient(app)
-    assert client.get("/chats", params={"partition_key": "cognito-user-123"}).status_code == 401
-    response = client.post(
-        "/agent/chat", json={"partitionKey": "cognito-user-123", "chatId": "42", "message": "hi"}
-    )
-    assert response.status_code == 401
+    with patch("app.routers.chat_api.get_all_chats") as db_read:
+        assert (
+            client.get("/chats", headers={"Authorization": "Bearer cognito-user-123"}).status_code
+            == 401
+        )
+        db_read.assert_not_called()
+    with patch("app.crud.memory_crud.MemoryCrudStore.load_facts") as memory_read:
+        response = client.post(
+            "/agent/chat",
+            json={"partitionKey": "cognito-user-123", "chatId": "42", "message": "hi"},
+        )
+        assert response.status_code == 401
+        memory_read.assert_not_called()
+
+
+def test_query_tokens_cannot_authorize_chat_reads_or_deletes(signed_token):
+    token = signed_token()
+    client = TestClient(app)
+    with (
+        patch("app.routers.chat_api.get_all_chats") as db_read,
+        patch("app.routers.chat_api.delete_chat") as db_delete,
+    ):
+        assert client.get("/chats", params={"partition_key": token}).status_code == 401
+        assert client.delete("/chats/delete/1", params={"partition_key": token}).status_code == 401
+        db_read.assert_not_called()
+        db_delete.assert_not_called()
+
+
+def test_two_signed_users_reach_only_their_scoped_chat_segments(signed_token):
+    row = {
+        "ChatId": "chat-1",
+        "ChatData": {"initial": {"geometry": "shared-route", "legs": []}, "route": None},
+        "ChatLog": {},
+    }
+    client = TestClient(app)
+    with (
+        patch(
+            "app.routers.chat_api.get_all_chats", side_effect=lambda user: [deepcopy(row)]
+        ) as chats,
+        patch(
+            "app.routers.chat_api.get_segments",
+            side_effect=lambda user_id, chat_id, route_id: (
+                [[1, 2]] if user_id == "alice" else [[9, 9]]
+            ),
+        ) as segments,
+        patch("app.routers.chat_api.restore_legs", return_value=[]),
+    ):
+        alice = client.get(
+            "/chats", headers={"Authorization": f"Bearer {signed_token(sub='alice')}"}
+        )
+        bob = client.get("/chats", headers={"Authorization": f"Bearer {signed_token(sub='bob')}"})
+
+    assert alice.status_code == bob.status_code == 200
+    assert alice.json()[0][0]["initial"]["geometry"]["coordinates"] == [[1, 2]]
+    assert bob.json()[0][0]["initial"]["geometry"]["coordinates"] == [[9, 9]]
+    assert [call.args[0] for call in chats.call_args_list] == ["alice", "bob"]
+    assert [call.kwargs["user_id"] for call in segments.call_args_list] == ["alice", "bob"]

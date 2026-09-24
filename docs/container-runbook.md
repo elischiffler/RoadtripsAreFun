@@ -38,9 +38,11 @@ Cognito service is supplied. No Mapbox token is supplied. Do not add real keys
 to this diagnostic preview.
 
 Protected chat and agent routes require `COGNITO_USER_POOL_ID` and
-`COGNITO_APP_CLIENT_ID` in the API container. Empty values in this preview
-cause a fail-closed 503; an invalid access token with verifier configuration
-returns 401. The verifier fetches the pool's JWKS and checks RS256 signature,
+`COGNITO_APP_CLIENT_ID` in the API container. A request with a token returns
+a fail-closed 503 if these are absent; an invalid access token with verifier
+configuration returns 401. GET/DELETE chat calls require an Authorization
+Bearer header; URL query tokens are not accepted. The verifier fetches the
+pool's JWKS and checks RS256 signature,
 issuer, expiry, token use and app client ID. Offline tests supply a locally
 signed JWKS; no real Cognito integration is claimed. These variables must be
 reviewed and supplied with isolated Cognito before an authenticated preview.

@@ -96,7 +96,7 @@ def test_delete_chat():
     ):
         response = client.delete(
             "/chats/delete/2",
-            params={"partition_key": "user123"},
+            headers={"Authorization": "Bearer fixture-token"},
         )
     assert response.status_code == 200
     assert response.json()["status"] == "success"
@@ -134,7 +134,7 @@ def test_update_chat():
         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
     ):
         response = client.put(
-            "/chats/update/3?partition_key=user123",
+            "/chats/update/3",
             json={
                 "PartitionKey": "user123",
                 "ChatData": updated_chat_data,
@@ -157,7 +157,7 @@ def test_get_all_chats_empty():
         patch("app.crud.chat_crud._get_pool", return_value=mock_pool),
         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
     ):
-        response = client.get("/chats", params={"partition_key": "user123"})
+        response = client.get("/chats", headers={"Authorization": "Bearer fixture-token"})
     assert response.status_code == 200
     assert response.json() == []
 
@@ -179,7 +179,7 @@ def test_get_all_chats_returns_list():
         patch("app.crud.chat_crud._get_pool", return_value=mock_pool),
         patch("app.routers.chat_api.get_user_id_from_token", return_value="88"),
     ):
-        response = client.get("/chats", params={"partition_key": "88"})
+        response = client.get("/chats", headers={"Authorization": "Bearer fixture-token"})
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 

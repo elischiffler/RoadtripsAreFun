@@ -7,19 +7,25 @@ subsequent branch changes replace unsigned/raw-token user IDs with Cognito
 RS256/JWKS access-token verification. Offline tests use a locally generated RSA
 key and monkeypatched JWKS fetch; no Cognito endpoint or live token was used.
 They cover valid signature, tampering, another signing key, HS256, wrong issuer,
-wrong client ID, ID token, expired token, missing claim, raw ID, absent verifier
-configuration, and rejection at chat/agent routes. The backend now requires
-`COGNITO_USER_POOL_ID` and `COGNITO_APP_CLIENT_ID` for those routes; without them
-it fails closed with 503; an invalid token under configured verification returns
-401. Supplying and validating isolated Cognito resources is
-still blocked, so R4 is **PASS for local verifier fixtures; BLOCKED end-to-end**.
+wrong client ID, ID token, expired/future-issued token, missing claim, raw ID,
+JWKS failure, absent verifier configuration, and rejection before DB access at
+chat/agent routes. The backend now requires
+`COGNITO_USER_POOL_ID` and `COGNITO_APP_CLIENT_ID` for those routes; a request
+with a token fails closed with 503 if they are absent, while an invalid token
+under configured verification returns 401. GET/DELETE chat calls now carry the
+token in an Authorization header; query tokens are rejected. Segment/step reads
+include verified user and chat IDs, and identifier conflicts from another chat
+abort writes. Two signed local users are checked at the router boundary, and
+mocked SQL tests check ownership predicates and rollback. Supplying and
+validating isolated Cognito resources is still blocked, so R4 is **PASS for local
+verifier fixtures; BLOCKED end-to-end**.
 
 After the quality cleanup, `ruff check .`, `ruff format --check .`, frontend
 `npm run lint`, `npm run format:check`, `npm run test:coverage`, and `npm run build`
 pass on the host. Backend `pytest --cov=app --cov-report=term-missing
---cov-fail-under=63` passes **264 tests, 76.16% coverage** on host Python 3.14;
-frontend Vitest passes **106 tests** with all configured thresholds. Final
-Python 3.12 image tests passed **264 tests, 77.15% coverage** under Docker
+--cov-fail-under=63` passes **272 tests, 77.77% coverage** on host Python 3.14;
+frontend Vitest passes **108 tests** with all configured thresholds. The Python
+3.12 image suite passes **272 tests, 78.68% coverage** under Docker
 `--network none`. Remote PR CI results must be recorded separately. The
 previously reported Ruff/ESLint baseline failures are fixed,
 without changed lint rules or lowered coverage thresholds. The generated
@@ -28,7 +34,8 @@ frontend coverage directory is now ignored by format/lint checks.
 The [local schema proposal](local-schema-proposal.md) transcribes checked-in
 README and CRUD DDL, with identifier-scope risks called out. It has not been
 approved or applied. Database readiness, persistence, recovery, authenticated
-browser journeys, and production-schema compatibility remain blocked.
+browser journeys, and production-schema compatibility remain blocked. The
+owner guards are locally tested with mocks, not against real PostgreSQL data.
 
 Pre-PR snapshot, 2026-09-24. Existing PR20/branch `feat/self-hosted-postgres` is
 reused; baseline `af1cb97ef907d4588c655838a245e11ce2afc57d` includes the existing

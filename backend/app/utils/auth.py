@@ -31,6 +31,14 @@ def _jwks_client(issuer: str) -> jwt.PyJWKClient:
     return jwt.PyJWKClient(f"{issuer}/.well-known/jwks.json", timeout=5, lifespan=300)
 
 
+def bearer_token(authorization: str | None) -> str:
+    """Extract exactly one Bearer token from an Authorization header."""
+    scheme, separator, token = (authorization or "").partition(" ")
+    if not separator or scheme.lower() != "bearer" or not token or " " in token:
+        raise HTTPException(status_code=401, detail="Invalid authentication token")
+    return token
+
+
 def get_user_id_from_token(token: str) -> str:
     """Return the verified access token subject, or reject the request."""
     if not isinstance(token, str) or not token:
