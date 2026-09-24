@@ -41,3 +41,16 @@ lowering thresholds. CORS is now explicit, retaining the known hosted frontend;
 additional approved origins require CORS_ORIGINS. No hosting settings changed.
 The combined15-minute workload remains blocked pending usable local journeys;
 these idle/smoke measurements do not establish production capacity.
+
+## Real Mentro provider contract follow-up
+
+The checked-in `tests/mentro_container_probe.py` ran inside the actual Roadtrips
+runtime image on Mentro's isolated pilot network. It consumed streamed content
+and parsed the expected `validate_location` text-tool with `Denver, CO` arguments
+and expected usage. Initial response 0.19 seconds. Stopping Mentro produced the
+expected bounded ProviderError in 0.037 seconds; restarting restored the same
+probe in 0.239 seconds, within the 60-second recovery deadline. Other preview
+health endpoints remained responsive. This closes the provider-contract portion
+of R3; full trip/database-dependent recovery remains BLOCKED, and this is not the
+combined C3 workload. Live upstream inference was replaced only by Mentro's
+controlled fixture; no real provider call or database mutation occurred.

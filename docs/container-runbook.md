@@ -69,6 +69,22 @@ network once that gate passes; do not point at hosted Fly or a production Auth
 project. A partial provider test cannot replace the full route/chat persistence
 journey. Actual Cognito and map/provider evidence remains separate.
 
+After starting the Mentro fixture stack, this PowerShell probe runs the actual
+Roadtrips runtime image against the actual Mentro server image. It injects only
+the disposable token into the provider's existing test seam, not the API auth
+boundary. It verifies the streamed text-tool protocol without executing a
+location/provider lookup. Expected dependency-failure deadline is 15 seconds;
+recovery deadline is 60 seconds.
+
+```powershell
+$probeDir = (Resolve-Path tests).Path
+docker run --rm --network mentro-server-local_pilot -e PYTHONPATH=/app --mount "type=bind,source=$probeDir,target=/checks,readonly" --entrypoint python "roadtrips-api-local:$env:ROADTRIPS_REVISION" /checks/mentro_container_probe.py
+```
+
+For the separate failure exercise stop only `mentro-server-local-mentro-server-1`,
+repeat with `--expect-down`, restart that same container, and repeat the normal
+probe. Leave it healthy; do not delete another stack's volumes or configuration.
+
 Production host, DNS, data migration and cutover are deferred. Existing hosting
 automation is unchanged. A future release needs approved merge, current main
 checks, immutable images, serialized deployment, readiness and documented
