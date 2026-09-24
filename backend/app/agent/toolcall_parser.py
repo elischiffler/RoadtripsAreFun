@@ -70,9 +70,7 @@ def parse_tool_calls(text: str) -> list[ToolCall]:
         # object has no ``tool`` name, so treat it as malformed rather than
         # letting ``.get`` raise AttributeError.
         if not isinstance(payload, dict):
-            logger.warning(
-                "tool-call parse: block JSON is not an object: %r", payload
-            )
+            logger.warning("tool-call parse: block JSON is not an object: %r", payload)
             continue
         name = payload.get("tool") or payload.get("name")
         if not isinstance(name, str) or not name:

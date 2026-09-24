@@ -104,9 +104,7 @@ async def test_run_marks_infeasible_on_planning_error(route, start_date):
     boom.get_price_range = get_price_range
 
     planner = ORToolsKnapsackPlanner()
-    result = await planner.run(
-        route, PlanOptions(num_stops=3, budget=500, start=start_date), boom
-    )
+    result = await planner.run(route, PlanOptions(num_stops=3, budget=500, start=start_date), boom)
     assert result.metrics is not None
     assert result.metrics.feasible is False
     assert result.metrics.error is not None

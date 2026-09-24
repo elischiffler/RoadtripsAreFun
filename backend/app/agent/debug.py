@@ -70,7 +70,9 @@ def trip_snapshot(label: str, trip) -> None:
     logger.info("│  trip %-6s %s", label, json.dumps(data) if data else "(empty)")
 
 
-def tool_fired(name: str, arguments: dict, ok: bool, result: dict | None, error: str | None) -> None:
+def tool_fired(
+    name: str, arguments: dict, ok: bool, result: dict | None, error: str | None
+) -> None:
     if not _ENABLED:
         return
     status = "ok" if ok else "FAIL"

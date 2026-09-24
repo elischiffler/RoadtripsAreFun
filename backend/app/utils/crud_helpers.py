@@ -1,6 +1,3 @@
-from typing import Any
-
-
 def segment_route(geometry: list[float], seg_size: int = 10000) -> list[list[float]]:
     """Split a route geometry into chunks for storage."""
     segments = []

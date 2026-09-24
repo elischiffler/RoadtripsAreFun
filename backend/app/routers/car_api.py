@@ -1,7 +1,6 @@
 import logging
 import re
 import xml.etree.ElementTree as ET
-from typing import Optional
 
 import requests
 from fastapi import APIRouter, HTTPException
@@ -107,7 +106,9 @@ async def get_car_details(model: str, make: str, year: int) -> dict[str, float]:
 
         # Get the combination miles per gallon from the response
         mpg = _handle_car_info(car_info_response)
-        logger.info("get_car_details: success year=%s make=%r model=%r mpg=%s", year, make, model, mpg)
+        logger.info(
+            "get_car_details: success year=%s make=%r model=%r mpg=%s", year, make, model, mpg
+        )
         return {"combination_mpg": float(mpg)}
 
     except HTTPException:
@@ -125,9 +126,7 @@ async def get_car_details(model: str, make: str, year: int) -> dict[str, float]:
     except (AttributeError, ValueError) as exception:
         # Missing expected XML tags, or a non-numeric mpg value.
         logger.error("get_car_details: unexpected car data shape: %s", exception)
-        raise HTTPException(
-            status_code=502, detail="Unexpected car data from FuelEconomy.gov"
-        )
+        raise HTTPException(status_code=502, detail="Unexpected car data from FuelEconomy.gov")
 
 
 def _handle_car_identifier(response: Response) -> list[str]:
@@ -177,7 +176,7 @@ def _handle_car_info(response: Response) -> str:
     return comb.text
 
 
-def _get_full_model_name(model: str, make: str, year: int) -> Optional[str]:
+def _get_full_model_name(model: str, make: str, year: int) -> str | None:
     """
     Get the full model name in the database from the given model name.
 

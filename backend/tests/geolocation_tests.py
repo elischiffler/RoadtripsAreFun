@@ -1,6 +1,8 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 from geopy import Location
+
 from app.utils.geolocation_helpers import get_location
 
 

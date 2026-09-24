@@ -1,10 +1,9 @@
 /**
  * GlobalHeader — top navigation bar tests.
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { renderWithProviders } from './testUtils';
 import GlobalHeader from '../components/GlobalHeader';
 

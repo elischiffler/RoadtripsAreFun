@@ -3,7 +3,6 @@
  */
 import { describe, it, expect } from 'vitest';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { renderWithProviders } from './testUtils';
 import PasswordRequirement from '../pages/AuthPages/PasswordRequirement';
 

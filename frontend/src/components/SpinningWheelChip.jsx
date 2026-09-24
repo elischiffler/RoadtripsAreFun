@@ -14,7 +14,6 @@ export default function SpinningWheelChip({ label, icon }) {
   const R = 36; // circle radius
   const cx = 44;
   const cy = 44;
-  const circleD = 2 * Math.PI * R; // circumference ≈ 226
 
   return (
     <Box className="swc-wrapper">

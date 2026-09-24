@@ -1,14 +1,16 @@
+import logging
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-import logging
+
 from app.crud.chat_crud import (
-    update_chat_component,
     create_chat,
     delete_chat,
     get_all_chats,
     get_segments,
     restore_legs,
+    update_chat_component,
 )
 from app.schemas.chat_schemas import ChatSchema
 from app.utils.auth import get_user_id_from_token
