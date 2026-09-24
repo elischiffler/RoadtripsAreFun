@@ -36,7 +36,9 @@ def test_connection_and_reconnect_use_the_explicit_mode(monkeypatch, mode):
 
     assert chat_crud._get_conn() is connect.return_value
     pool_factory.assert_called_once_with(
-        1, 5, "postgres://test:example@postgres/roadtrips", sslmode=mode
+        1, 5, "postgres://test:example@postgres/roadtrips", sslmode=mode, connect_timeout=5
     )
-    connect.assert_called_once_with("postgres://test:example@postgres/roadtrips", sslmode=mode)
+    connect.assert_called_once_with(
+        "postgres://test:example@postgres/roadtrips", sslmode=mode, connect_timeout=5
+    )
     stale.close.assert_called_once()

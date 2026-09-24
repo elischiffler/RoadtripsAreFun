@@ -1,12 +1,15 @@
 import json
 import logging
+from typing import Any
+
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
-from app.schemas import chat_schemas
-from app.core.config import settings
 from pydantic import BaseModel
-from typing import Any, Dict
+
+from app.core.config import settings
+from app.schemas import chat_schemas
+
 from ..utils.crud_helpers import segment_route
 
 logger = logging.getLogger(__name__)
@@ -20,7 +23,9 @@ def _get_pool() -> psycopg2.pool.SimpleConnectionPool:
     global _pool
     if _pool is None or _pool.closed:
         url = (settings.DATABASE_URL or "").strip()
-        _pool = psycopg2.pool.SimpleConnectionPool(1, 5, url, sslmode=settings.DATABASE_SSLMODE)
+        _pool = psycopg2.pool.SimpleConnectionPool(
+            1, 5, url, sslmode=settings.DATABASE_SSLMODE, connect_timeout=5
+        )
     return _pool
 
 
@@ -38,7 +43,9 @@ def _get_conn():
         except Exception:
             pass
         conn = psycopg2.connect(
-            (settings.DATABASE_URL or "").strip(), sslmode=settings.DATABASE_SSLMODE
+            (settings.DATABASE_URL or "").strip(),
+            sslmode=settings.DATABASE_SSLMODE,
+            connect_timeout=5,
         )
     return conn
 
@@ -69,7 +76,7 @@ def _store_legs(conn, auth_token: str, chat_id: str, route_id: str, legs: list):
 
 
 def create_chat(
-    auth_token: str, chat_id: str, chat_data: Dict[str, Any], chat_logs: Dict[str, Any]
+    auth_token: str, chat_id: str, chat_data: dict[str, Any], chat_logs: dict[str, Any]
 ):
     """Create a new chat instance in the database."""
     conn = _get_conn()
