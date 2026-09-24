@@ -13,7 +13,7 @@ dispatcher — neither requires a change to this router.
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import ValidationError
@@ -43,7 +43,7 @@ class _NullMemory:
         return None
 
     def load_conversation(self, user_id: str, chat_id: str) -> ConversationMemory:
-        return ConversationMemory(chat_id=chat_id, updated_at=datetime.now(timezone.utc))
+        return ConversationMemory(chat_id=chat_id, updated_at=datetime.now(UTC))
 
     def save_conversation(self, user_id: str, chat_id: str, mem: ConversationMemory) -> None:
         return None
@@ -82,6 +82,8 @@ async def agent_chat(
     providers, memory, tools = deps
     try:
         return await run_turn(request, providers, memory, tools)
+    except HTTPException:
+        raise
     except ProvidersExhausted as exception:
         logger.error("All LLM providers exhausted: %s", exception)
         raise HTTPException(
