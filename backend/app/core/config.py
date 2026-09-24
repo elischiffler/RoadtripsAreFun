@@ -7,8 +7,17 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 
+def _database_sslmode() -> str:
+    mode = os.getenv("DATABASE_SSLMODE", "require").strip()
+    if mode not in {"require", "verify-ca", "verify-full", "disable"}:
+        raise ValueError("DATABASE_SSLMODE must be require, verify-ca, verify-full or disable")
+    return mode
+
+
 class Settings:
     DATABASE_URL = os.getenv("DATABASE_URL")
+    # Explicit opt-out only for the dedicated same-host Docker network.
+    DATABASE_SSLMODE = _database_sslmode()
 
     # Chat agent LLM provider — the self-hosted Mentro gateway
     # (POST {MENTRO_GATEWAY_URL}/api/chat/stream-full, SSE). The backend calls it

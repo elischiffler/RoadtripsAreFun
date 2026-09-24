@@ -20,7 +20,7 @@ def _get_pool() -> psycopg2.pool.SimpleConnectionPool:
     global _pool
     if _pool is None or _pool.closed:
         url = (settings.DATABASE_URL or "").strip()
-        _pool = psycopg2.pool.SimpleConnectionPool(1, 5, url, sslmode="require")
+        _pool = psycopg2.pool.SimpleConnectionPool(1, 5, url, sslmode=settings.DATABASE_SSLMODE)
     return _pool
 
 
@@ -37,7 +37,9 @@ def _get_conn():
             conn.close()
         except Exception:
             pass
-        conn = psycopg2.connect((settings.DATABASE_URL or "").strip(), sslmode="require")
+        conn = psycopg2.connect(
+            (settings.DATABASE_URL or "").strip(), sslmode=settings.DATABASE_SSLMODE
+        )
     return conn
 
 
