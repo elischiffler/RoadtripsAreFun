@@ -37,6 +37,14 @@ nonrunning local Cognito endpoint8999. Sign-in is blocked until an isolated
 Cognito service is supplied. No Mapbox token is supplied. Do not add real keys
 to this diagnostic preview.
 
+Protected chat and agent routes require `COGNITO_USER_POOL_ID` and
+`COGNITO_APP_CLIENT_ID` in the API container. Empty values in this preview
+cause a fail-closed 503; an invalid access token with verifier configuration
+returns 401. The verifier fetches the pool's JWKS and checks RS256 signature,
+issuer, expiry, token use and app client ID. Offline tests supply a locally
+signed JWKS; no real Cognito integration is claimed. These variables must be
+reviewed and supplied with isolated Cognito before an authenticated preview.
+
 API: uid10001, read-only root, /tmp64MiB, RAM768MiB/1CPU/128PIDs. Static frontend:
 uid101, read-only root, /tmp16MiB, RAM128MiB/0.5CPU/64PIDs. Both drop capabilities,
 set no-new-privileges, and rotate three10MiB logs. Runtime excludes test source;
@@ -61,6 +69,8 @@ No PostgreSQL volume is created or guessed schema installed. README DDL covers
 three tables and chat-agent-design covers another, but neither is a reviewed
 complete schema. Obtain an authoritative reviewed export, initialize a disposable
 volume, and complete API persistence and recovery checks before enabling a DB.
+The [local schema proposal](local-schema-proposal.md) records the exact checked-in
+DDL and unresolved identifier-scope questions; it has not been applied.
 Reuse `hosting-ops` PostgreSQL backup/restore tooling and its restore refusal
 checks. Never restore over production or delete volumes during routine restart.
 
