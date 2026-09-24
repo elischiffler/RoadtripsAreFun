@@ -1,12 +1,15 @@
 import json
 import logging
+from typing import Any
+
 import psycopg2
 import psycopg2.extras
 import psycopg2.pool
-from app.schemas import chat_schemas
-from app.core.config import settings
 from pydantic import BaseModel
-from typing import Any, Dict
+
+from app.core.config import settings
+from app.schemas import chat_schemas
+
 from ..utils.crud_helpers import segment_route
 
 logger = logging.getLogger(__name__)
@@ -20,7 +23,9 @@ def _get_pool() -> psycopg2.pool.SimpleConnectionPool:
     global _pool
     if _pool is None or _pool.closed:
         url = (settings.DATABASE_URL or "").strip()
-        _pool = psycopg2.pool.SimpleConnectionPool(1, 5, url, sslmode="require")
+        _pool = psycopg2.pool.SimpleConnectionPool(
+            1, 5, url, sslmode=settings.DATABASE_SSLMODE, connect_timeout=5
+        )
     return _pool
 
 
@@ -37,7 +42,11 @@ def _get_conn():
             conn.close()
         except Exception:
             pass
-        conn = psycopg2.connect((settings.DATABASE_URL or "").strip(), sslmode="require")
+        conn = psycopg2.connect(
+            (settings.DATABASE_URL or "").strip(),
+            sslmode=settings.DATABASE_SSLMODE,
+            connect_timeout=5,
+        )
     return conn
 
 
@@ -58,16 +67,22 @@ def _store_legs(conn, auth_token: str, chat_id: str, route_id: str, legs: list):
                     """
                     INSERT INTO steps (user_id, chat_id, leg_id, step_id, coordinates)
                     VALUES (%s, %s, %s, %s, %s)
-                    ON CONFLICT (leg_id, step_id) DO UPDATE SET coordinates = EXCLUDED.coordinates
+                    ON CONFLICT (leg_id, step_id) DO UPDATE
+                      SET coordinates = EXCLUDED.coordinates
+                      WHERE steps.user_id = EXCLUDED.user_id
+                        AND steps.chat_id = EXCLUDED.chat_id
+                    RETURNING user_id
                     """,
                     (auth_token, chat_id, leg_id, step_idx, json.dumps(coords)),
                 )
+                if cur.fetchone() is None:
+                    raise PermissionError("Step identifier belongs to a different chat")
                 step["geometry"]["coordinates"] = leg_id
     return legs
 
 
 def create_chat(
-    auth_token: str, chat_id: str, chat_data: Dict[str, Any], chat_logs: Dict[str, Any]
+    auth_token: str, chat_id: str, chat_data: dict[str, Any], chat_logs: dict[str, Any]
 ):
     """Create a new chat instance in the database."""
     conn = _get_conn()
@@ -131,14 +146,16 @@ def get_all_chats(auth_token: str):
         _put_conn(conn)
 
 
-def get_segments(route_id: str):
-    """Get all segments associated with a single route_id."""
+def get_segments(user_id: str, chat_id: str, route_id: str):
+    """Get segments only from the verified user's chat."""
     conn = _get_conn()
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
-                "SELECT * FROM route_segments WHERE route_id = %s ORDER BY segment_id::int",
-                (route_id,),
+                """SELECT * FROM route_segments
+                   WHERE user_id = %s AND chat_id = %s AND route_id = %s
+                   ORDER BY segment_id::int""",
+                (user_id, chat_id, route_id),
             )
             rows = cur.fetchall()
         segs = []
@@ -203,10 +220,18 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                                 """
                                 INSERT INTO route_segments (user_id, chat_id, route_id, segment_id, coords)
                                 VALUES (%s, %s, %s, %s, %s)
-                                ON CONFLICT (route_id, segment_id) DO UPDATE SET coords = EXCLUDED.coords
+                                ON CONFLICT (route_id, segment_id) DO UPDATE
+                                  SET coords = EXCLUDED.coords
+                                  WHERE route_segments.user_id = EXCLUDED.user_id
+                                    AND route_segments.chat_id = EXCLUDED.chat_id
+                                RETURNING user_id
                                 """,
                                 (auth_token, chat_id, route_id, str(seg_id), json.dumps(segment)),
                             )
+                            if cur.fetchone() is None:
+                                raise PermissionError(
+                                    "Route segment identifier belongs to a different chat"
+                                )
                     current_val[key] = value
 
             cur.execute(
@@ -251,15 +276,20 @@ def delete_chat(auth_token: str, chat_id: str):
         _put_conn(conn)
 
 
-def restore_legs(legs: list[Any]):
-    """Restore the coordinates of all steps to their proper values."""
+def restore_legs(user_id: str, chat_id: str, legs: list[Any]):
+    """Restore step coordinates only from the verified user's chat."""
     conn = _get_conn()
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             rest_legs = []
             for leg in legs:
                 leg_id = leg["steps"][0]["geometry"]["coordinates"]
-                cur.execute("SELECT * FROM steps WHERE leg_id = %s ORDER BY step_id", (leg_id,))
+                cur.execute(
+                    """SELECT * FROM steps
+                       WHERE user_id = %s AND chat_id = %s AND leg_id = %s
+                       ORDER BY step_id""",
+                    (user_id, chat_id, leg_id),
+                )
                 steps_coords = cur.fetchall()
                 num_steps = len(leg["steps"])
                 for step_row in steps_coords:

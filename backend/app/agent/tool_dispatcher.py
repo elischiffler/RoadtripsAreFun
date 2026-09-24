@@ -60,6 +60,7 @@ logger = logging.getLogger(__name__)
 # returns a JSON-serializable result dict. Handlers may raise; dispatch guards.
 Handler = Callable[[dict[str, Any], ToolContext], Awaitable[dict[str, Any]]]
 
+
 def _km(meters: float) -> int:
     """Meters -> whole kilometers, for compact human summaries."""
     return round((meters or 0) / 1000)
@@ -423,9 +424,7 @@ class AppToolDispatcher:
         """Route ``call`` to its handler; never raises (failures -> ok=False)."""
         handler = self._handlers.get(call.name)
         if handler is None:
-            return ToolResult(
-                name=call.name, ok=False, error=f"Unknown tool: {call.name!r}"
-            )
+            return ToolResult(name=call.name, ok=False, error=f"Unknown tool: {call.name!r}")
 
         arguments = call.arguments if isinstance(call.arguments, dict) else {}
         try:
@@ -438,26 +437,20 @@ class AppToolDispatcher:
             logger.warning("tool %s: upstream request failed: %s", call.name, exception)
             return ToolResult(name=call.name, ok=False, error="Upstream request failed.")
         except ValidationError as exception:
-            return ToolResult(
-                name=call.name, ok=False, error=f"Invalid arguments: {exception}"
-            )
+            return ToolResult(name=call.name, ok=False, error=f"Invalid arguments: {exception}")
         except (KeyError, ValueError) as exception:
             return ToolResult(
                 name=call.name, ok=False, error=f"Invalid or missing argument: {exception}"
             )
         except Exception as exception:  # noqa: BLE001 — dispatch must never raise
             logger.exception("tool %s: unexpected failure", call.name)
-            return ToolResult(
-                name=call.name, ok=False, error=f"Tool failed: {exception}"
-            )
+            return ToolResult(name=call.name, ok=False, error=f"Tool failed: {exception}")
 
     # ------------------------------------------------------------------ #
     # Handlers (thin adapters)
     # ------------------------------------------------------------------ #
 
-    async def _validate_location(
-        self, args: dict[str, Any], ctx: ToolContext
-    ) -> dict[str, Any]:
+    async def _validate_location(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         address = args.get("address")
         coordinates = args.get("coordinates")
         if not address and not coordinates:
@@ -539,13 +532,9 @@ class AppToolDispatcher:
         inline = args.get("route")
         if inline is not None:
             return inline
-        raise ValueError(
-            "generate_itinerary needs route_handle (from generate_final_route)."
-        )
+        raise ValueError("generate_itinerary needs route_handle (from generate_final_route).")
 
-    async def _get_initial_route(
-        self, args: dict[str, Any], ctx: ToolContext
-    ) -> dict[str, Any]:
+    async def _get_initial_route(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         start_lat, start_lon, end_lat, end_lon = _extract_endpoints(args)
         # Proxy to the deployed backend (whitelisted IP) in local dev; run
         # locally on the deployed backend itself. Same MapBox_Route either way.
@@ -567,9 +556,7 @@ class AppToolDispatcher:
             ),
         }
 
-    async def _generate_final_route(
-        self, args: dict[str, Any], ctx: ToolContext
-    ) -> dict[str, Any]:
+    async def _generate_final_route(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         # Load the trip profile first — it supplies num_stops/budget defaults AND
         # the coordinates used to rebuild the initial route when the route_handle
         # from an earlier turn is no longer in this turn's artifact store.
@@ -587,17 +574,13 @@ class AppToolDispatcher:
         if num_stops is None:
             num_stops = trip.num_stops
         if num_stops is None:
-            raise ValueError(
-                "num_stops is required (none provided and none recorded on the trip)."
-            )
+            raise ValueError("num_stops is required (none provided and none recorded on the trip).")
 
         budget = args.get("budget")
         if budget is None:
             budget = trip.budget
         if budget is None:
-            raise ValueError(
-                "budget is required (none provided and none recorded on the trip)."
-            )
+            raise ValueError("budget is required (none provided and none recorded on the trip).")
 
         payload_data: dict[str, Any] = {
             "initial_route": initial_route,
@@ -637,9 +620,7 @@ class AppToolDispatcher:
             "stops": route.stops,
         }
 
-    async def _generate_itinerary(
-        self, args: dict[str, Any], ctx: ToolContext
-    ) -> dict[str, Any]:
+    async def _generate_itinerary(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         # Resolve the planned route from its handle (fallback: inline `route`).
         route_obj = self._resolve_route_for_itinerary(args, ctx)
         payload_data: dict[str, Any] = {"route": route_obj}
@@ -657,9 +638,7 @@ class AppToolDispatcher:
             "itinerary": [day.model_dump() for day in days],
         }
 
-    async def _get_car_budget(
-        self, args: dict[str, Any], ctx: ToolContext
-    ) -> dict[str, Any]:
+    async def _get_car_budget(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         # Fall back to the trip's stored car when make/model/year are omitted.
         make, model, year = args.get("make"), args.get("model"), args.get("year")
         if not (make and model and year):
@@ -687,17 +666,13 @@ class AppToolDispatcher:
             result["estimated_fuel_cost"] = round(gallons * gas_price, 2)
         return result
 
-    async def _recall_facts(
-        self, args: dict[str, Any], ctx: ToolContext
-    ) -> dict[str, Any]:
+    async def _recall_facts(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         if ctx.memory is None:
             raise ValueError("No memory store is available.")
         facts = ctx.memory.load_facts(ctx.user_id)
         return {"facts": [fact.model_dump(mode="json") for fact in facts]}
 
-    async def _remember_fact(
-        self, args: dict[str, Any], ctx: ToolContext
-    ) -> dict[str, Any]:
+    async def _remember_fact(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         if ctx.memory is None:
             raise ValueError("No memory store is available.")
         fact = MemoryFact(
@@ -719,15 +694,11 @@ class AppToolDispatcher:
             return TripProfile()
         return TripProfile.from_json(ctx.memory.load_trip_profile(ctx.user_id, ctx.chat_id))
 
-    async def _get_trip_profile(
-        self, args: dict[str, Any], ctx: ToolContext
-    ) -> dict[str, Any]:
+    async def _get_trip_profile(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         trip = self._load_trip_profile(ctx)
         return {"trip_profile": trip.model_dump(mode="json", exclude_none=True)}
 
-    async def _update_trip_profile(
-        self, args: dict[str, Any], ctx: ToolContext
-    ) -> dict[str, Any]:
+    async def _update_trip_profile(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         if ctx.memory is None:
             raise ValueError("No memory store is available.")
         # Validate the partial update (raises ValidationError -> caught by dispatch).

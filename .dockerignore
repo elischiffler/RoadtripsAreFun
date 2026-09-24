@@ -1,0 +1,15 @@
+**
+!backend/
+!backend/**
+!frontend/
+!frontend/**
+**/node_modules
+**/dist
+**/.env*
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/.coverage
+**/coverage
+**/*.md
+**/.git

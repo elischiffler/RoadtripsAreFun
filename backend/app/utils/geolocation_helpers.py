@@ -1,11 +1,10 @@
 import geopy
-from typing import List, Optional
-from geopy.exc import GeopyError
 from fastapi import HTTPException
+from geopy.exc import GeopyError
 
 
 def get_location(
-    geocoder: geopy.geocoders, coords: Optional[List[float]] = None, address: Optional[str] = None
+    geocoder: geopy.geocoders, coords: list[float] | None = None, address: str | None = None
 ) -> geopy.location.Location:
     try:
         location = None

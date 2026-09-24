@@ -1,5 +1,6 @@
 """TestClient tests for the thin agent router (design doc §3)."""
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.agent.providers import FallbackChain
@@ -16,6 +17,12 @@ from .conftest import FakeProvider, FakeTools
 client = TestClient(app)
 
 _BODY = {"partitionKey": "user-123", "chatId": "42", "message": "hello"}
+
+
+@pytest.fixture(autouse=True)
+def _verified_test_user(monkeypatch):
+    # Agent API behavior is covered here; token validation has dedicated tests.
+    monkeypatch.setattr("app.agent.agent.get_user_id_from_token", lambda token: "user-123")
 
 
 def _override(providers, memory=None, tools=None):

@@ -13,7 +13,7 @@ The DB-touching functions in ``memory_crud`` (module-level ``load_facts`` /
 are not exercised at the unit level, but are structured so they'd work.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from app.agent.memory import ConversationMemory, MemoryFact, MemoryStore
 from app.crud.memory_crud import MemoryCrudStore, extract_facts_from_turn
@@ -27,7 +27,7 @@ def _fact(key: str, value: str, confidence: float = 1.0, when: datetime = None) 
         key=key,
         value=value,
         confidence=confidence,
-        updated_at=when or datetime.now(timezone.utc),
+        updated_at=when or datetime.now(UTC),
     )
 
 
@@ -40,7 +40,7 @@ def test_memory_fact_round_trip():
         value="Boston, MA",
         confidence=0.9,
         source_chat_id="42",
-        updated_at=datetime(2025, 6, 1, 12, 0, tzinfo=timezone.utc),
+        updated_at=datetime(2025, 6, 1, 12, 0, tzinfo=UTC),
     )
     restored = MemoryFact.model_validate(fact.model_dump())
     assert restored == fact
@@ -65,14 +65,14 @@ def test_conversation_memory_round_trip():
         chat_id="42",
         summary="User wants a frugal national-parks trip.",
         summary_turn_count=6,
-        updated_at=datetime(2025, 6, 1, tzinfo=timezone.utc),
+        updated_at=datetime(2025, 6, 1, tzinfo=UTC),
     )
     restored = ConversationMemory.model_validate(mem.model_dump())
     assert restored == mem
 
 
 def test_conversation_memory_optional_defaults():
-    mem = ConversationMemory(chat_id="7", updated_at=datetime.now(timezone.utc))
+    mem = ConversationMemory(chat_id="7", updated_at=datetime.now(UTC))
     assert mem.summary == ""
     assert mem.summary_turn_count == 0
 
@@ -125,7 +125,7 @@ def test_save_and_load_conversation(fake_memory):
         chat_id="42",
         summary="rolling summary",
         summary_turn_count=4,
-        updated_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(UTC),
     )
     fake_memory.save_conversation("u1", "42", mem)
     loaded = fake_memory.load_conversation("u1", "42")
@@ -137,7 +137,7 @@ def test_conversation_scoped_by_chat(fake_memory):
     fake_memory.save_conversation(
         "u1",
         "42",
-        ConversationMemory(chat_id="42", summary="a", updated_at=datetime.now(timezone.utc)),
+        ConversationMemory(chat_id="42", summary="a", updated_at=datetime.now(UTC)),
     )
     other = fake_memory.load_conversation("u1", "43")
     assert other.summary == ""
@@ -145,6 +145,6 @@ def test_conversation_scoped_by_chat(fake_memory):
 
 # Keep timedelta import meaningful for future ordering tests without over-asserting
 def test_fact_timestamps_are_comparable():
-    older = _fact("k", "v1", when=datetime(2025, 1, 1, tzinfo=timezone.utc))
-    newer = _fact("k", "v2", when=datetime(2025, 1, 1, tzinfo=timezone.utc) + timedelta(days=1))
+    older = _fact("k", "v1", when=datetime(2025, 1, 1, tzinfo=UTC))
+    newer = _fact("k", "v2", when=datetime(2025, 1, 1, tzinfo=UTC) + timedelta(days=1))
     assert newer.updated_at > older.updated_at

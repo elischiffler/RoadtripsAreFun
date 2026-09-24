@@ -7,10 +7,12 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 const Map = ({ UserChatData }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
+  const localJourney = import.meta.env.VITE_LOCAL_JOURNEY === 'true';
 
   useEffect(() => {
     // Don't reinitialise if the map already exists
     if (mapRef.current) return;
+    if (localJourney) return;
 
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
     const latitude =
@@ -67,6 +69,39 @@ const Map = ({ UserChatData }) => {
       mapRef.current = null;
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (localJourney) {
+    const coordinates = UserChatData.route.geometry.coordinates;
+    const longitudes = coordinates.map(([longitude]) => longitude);
+    const latitudes = coordinates.map(([, latitude]) => latitude);
+    const west = Math.min(...longitudes);
+    const east = Math.max(...longitudes);
+    const south = Math.min(...latitudes);
+    const north = Math.max(...latitudes);
+    const projected = coordinates.map(([longitude, latitude]) => {
+      const x = 15 + (70 * (longitude - west)) / (east - west || 1);
+      const y = 85 - (70 * (latitude - south)) / (north - south || 1);
+      return [x, y];
+    });
+    const points = projected.map(([x, y]) => `${x},${y}`).join(' ');
+    const start = projected[0];
+    const end = projected[projected.length - 1];
+    return (
+      <svg
+        role="img"
+        aria-label={`Local route map from ${UserChatData.startConfirmed?.address || 'start'} to ${UserChatData.endConfirmed?.address || 'destination'}`}
+        viewBox="0 0 100 100"
+        preserveAspectRatio="xMidYMid meet"
+        className="map-container"
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+      >
+        <rect width="100" height="100" fill="#f8f3e9" />
+        <polyline points={points} fill="none" stroke="#C4873A" strokeWidth="2" />
+        <circle cx={start[0]} cy={start[1]} r="2" fill="#234a3c" />
+        <circle cx={end[0]} cy={end[1]} r="2" fill="#234a3c" />
+      </svg>
+    );
+  }
 
   return (
     <div

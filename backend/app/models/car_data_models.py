@@ -1,13 +1,12 @@
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Car(BaseModel):
     city_mpg: int
     car_class: str = Field(alias="class")  # Create an alias for class to be car_class
     combination_mpg: int
-    cylinders: Optional[int] = None
-    displacement: Optional[float] = None
+    cylinders: int | None = None
+    displacement: float | None = None
     drive: str
     fuel_type: str
     highway_mpg: int

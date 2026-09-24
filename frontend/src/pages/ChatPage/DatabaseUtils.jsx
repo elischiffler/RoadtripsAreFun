@@ -39,24 +39,20 @@ export const createChat = async (auth_token, UserChatData, ChatLog) => {
 
 export const deleteChat = async (auth_token, chatId) => {
   try {
-    const params = {
-      partition_key: auth_token,
-    };
-    await axios.delete(`${import.meta.env.VITE_BACKEND_SERVER}chats/delete/${chatId}`, { params });
+    await axios.delete(`${import.meta.env.VITE_BACKEND_SERVER}chats/delete/${chatId}`, {
+      headers: { Authorization: `Bearer ${auth_token}` },
+    });
     return null;
   } catch (error) {
-    console.error('Failed to delete chat:', error);
+    console.error('Failed to delete chat; status=%s', error.response?.status ?? 'network');
     return null;
   }
 };
 
 export const initializeUserData = async (auth_token) => {
   try {
-    const params = {
-      partition_key: auth_token,
-    };
     const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}chats`, {
-      params: params,
+      headers: { Authorization: `Bearer ${auth_token}` },
     });
     const user_data = response.data;
     const chats = [];
@@ -97,7 +93,7 @@ export const initializeUserData = async (auth_token) => {
     const UserData = new Data(logs);
     return { chats: chats, UserData: UserData };
   } catch (error) {
-    console.error('Error retrieving saved chats:', error);
+    console.error('Error retrieving saved chats; status=%s', error.response?.status ?? 'network');
     return null;
   }
 };

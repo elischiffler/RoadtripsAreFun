@@ -1,34 +1,33 @@
-from typing import Any, Optional, Dict
+from typing import Any
 
-from pydantic import BaseModel
-from pydantic import ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 
 class Amadeus_Meta(BaseModel):
     count: int
-    links: Dict[str, str]
-    sort: Optional[str] = None
+    links: dict[str, str]
+    sort: str | None = None
 
 
 class Amadeus_Hotel_Search(BaseModel):
     class Amadeus_Hotel_Data(BaseModel):
-        subtype: Optional[str] = None
+        subtype: str | None = None
         name: str
-        timeZoneName: Optional[str] = None
+        timeZoneName: str | None = None
         iataCode: str
-        address: Dict[str, str]
-        geoCode: Dict[str, float]
+        address: dict[str, str]
+        geoCode: dict[str, float]
         hotelId: str
         chainCode: str
 
         class Amadeus_Distance(BaseModel):
             unit: str
             value: float
-            displayValue: Optional[str] = None
-            isUnlimited: Optional[str] = None
+            displayValue: str | None = None
+            isUnlimited: str | None = None
 
         distance: Amadeus_Distance
-        last_update: Optional[str] = None
+        last_update: str | None = None
 
     data: list[Amadeus_Hotel_Data]
     meta: Amadeus_Meta
@@ -44,10 +43,10 @@ class Amadeus_Hotel_Offers(BaseModel):
         class Hotel(BaseModel):
             hotelId: str
             chainCode: str
-            brandCode: Optional[str] = None
-            dupeId: Optional[str] = None
+            brandCode: str | None = None
+            dupeId: str | None = None
             name: str
-            cityCode: Optional[str] = None
+            cityCode: str | None = None
             model_config = ConfigDict(extra="allow")  # Poor documentation is available
 
         class Offer(BaseModel):
@@ -72,16 +71,16 @@ class Amadeus_Hotel_Offers(BaseModel):
 
             class Hotel_Guest(BaseModel):
                 adults: int
-                childAges: Optional[list[int]] = None
+                childAges: list[int] | None = None
 
             class Hotel_Price(BaseModel):
                 currency: str
-                sellingTotal: Optional[str] = None
+                sellingTotal: str | None = None
                 total: str
                 base: str
-                taxes: Optional[list[Any]] = None
-                markups: Optional[list[Any]] = None
-                variations: Optional[dict[str, Any]]
+                taxes: list[Any] | None = None
+                markups: list[Any] | None = None
+                variations: dict[str, Any] | None
 
             class Hotel_Policy(BaseModel):
                 class checkInPolicy(BaseModel):
@@ -90,33 +89,33 @@ class Amadeus_Hotel_Offers(BaseModel):
                     checkOut: str
                     checkOutDescription: Qualified_Desc
 
-                paymentType: Optional[str] = None
-                guarantee: Optional[Dict[str, Any]] = None
-                deposit: Optional[Dict[str, Any]] = None
-                prepay: Optional[Dict[str, Any]] = None
-                holdTime: Optional[Dict[str, Any]] = None
-                cancellations: Optional[list[Any]] = None
-                checkInOut: Optional[checkInPolicy] = None
+                paymentType: str | None = None
+                guarantee: dict[str, Any] | None = None
+                deposit: dict[str, Any] | None = None
+                prepay: dict[str, Any] | None = None
+                holdTime: dict[str, Any] | None = None
+                cancellations: list[Any] | None = None
+                checkInOut: checkInPolicy | None = None
 
-            type: Optional[str] = None
+            type: str | None = None
             id: str
-            checkInDate: Optional[str] = None
-            checkOutDate: Optional[str] = None
-            roomQuantity: Optional[str] = None
+            checkInDate: str | None = None
+            checkOutDate: str | None = None
+            roomQuantity: str | None = None
             rateCode: str
-            rateFamilyEstimated: Optional[Rate_Family] = None
-            category: Optional[str] = None
-            description: Optional[Qualified_Desc] = None
-            commission: Optional[Commission] = None
-            boardType: Optional[str] = None
+            rateFamilyEstimated: Rate_Family | None = None
+            category: str | None = None
+            description: Qualified_Desc | None = None
+            commission: Commission | None = None
+            boardType: str | None = None
             room: Room
-            guests: Optional[Hotel_Guest] = None
+            guests: Hotel_Guest | None = None
             price: Hotel_Price
-            policies: Optional[Hotel_Policy] = None
-            self: Optional[str] = None
+            policies: Hotel_Policy | None = None
+            self: str | None = None
 
         type: str
-        is_available: Optional[bool] = None
+        is_available: bool | None = None
         self: str
         hotel: Hotel
         offers: list[Offer] = []
@@ -127,22 +126,22 @@ class Amadeus_Hotel_Offers(BaseModel):
 class Amadeus_Hotel_Ratings(BaseModel):
     class Hotel_Sentiment(BaseModel):
         hotelId: str
-        type: Optional[str] = None
+        type: str | None = None
         overallRating: int
         numberOfRatings: int
         numberOfReviews: int
-        sentiments: Optional[dict[str, int]] = None
+        sentiments: dict[str, int] | None = None
 
     class Amadeus_Warning(BaseModel):
         code: int
         title: str
-        detail: Optional[str] = None
-        source: Optional[dict[str, str]] = None
-        documentation: Optional[str] = None
+        detail: str | None = None
+        source: dict[str, str] | None = None
+        documentation: str | None = None
 
     data: list[Hotel_Sentiment]
     meta: Amadeus_Meta
-    warnings: Optional[list[Amadeus_Warning]] = []
+    warnings: list[Amadeus_Warning] | None = []
 
 
 class Amadeus_Access(BaseModel):

@@ -78,9 +78,7 @@ async def test_unknown_tool_returns_error_not_raise():
 
 
 async def test_validate_location_success(monkeypatch):
-    fake_location = SimpleNamespace(
-        address="Boston, MA, USA", latitude=42.36, longitude=-71.06
-    )
+    fake_location = SimpleNamespace(address="Boston, MA, USA", latitude=42.36, longitude=-71.06)
     monkeypatch.setattr(td, "get_location", lambda **kwargs: fake_location)
 
     result = await _dispatcher().dispatch(
@@ -102,9 +100,7 @@ async def test_validate_location_not_found_returns_error(monkeypatch):
 
 
 async def test_validate_location_missing_args_returns_error():
-    result = await _dispatcher().dispatch(
-        ToolCall(name="validate_location", arguments={}), _ctx()
-    )
+    result = await _dispatcher().dispatch(ToolCall(name="validate_location", arguments={}), _ctx())
     assert result.ok is False
     assert "address" in result.error
 
@@ -213,9 +209,7 @@ async def test_generate_final_route_failure_returns_error(monkeypatch):
         raise PlanningError("no feasible trip", status_code=422)
 
     monkeypatch.setattr(td, "plan_final_route", boom)
-    monkeypatch.setattr(
-        td.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v)
-    )
+    monkeypatch.setattr(td.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v))
     monkeypatch.setattr(td.Route_Payload, "model_validate", classmethod(lambda cls, v: v))
 
     result = await _dispatcher().dispatch(
@@ -242,9 +236,7 @@ async def test_generate_itinerary_success_has_action(monkeypatch):
         return [fake_day]
 
     monkeypatch.setattr(td, "build_itinerary", fake_build)
-    monkeypatch.setattr(
-        td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v)
-    )
+    monkeypatch.setattr(td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v))
 
     result = await _dispatcher().dispatch(
         ToolCall(name="generate_itinerary", arguments={"route": {}}), _ctx()
@@ -259,9 +251,7 @@ async def test_generate_itinerary_failure_returns_error(monkeypatch):
         raise HTTPException(status_code=400, detail="Incomplete route provided")
 
     monkeypatch.setattr(td, "build_itinerary", boom)
-    monkeypatch.setattr(
-        td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v)
-    )
+    monkeypatch.setattr(td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v))
 
     result = await _dispatcher().dispatch(
         ToolCall(name="generate_itinerary", arguments={"route": {}}), _ctx()

@@ -26,9 +26,9 @@ attraction set, which is exactly what a fair benchmark should isolate.
 
 from __future__ import annotations
 
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Callable
 from datetime import datetime, timedelta
-from typing import Any, Callable
+from typing import Any
 
 from fastapi import HTTPException
 

@@ -349,9 +349,7 @@ def load_recent_turns(auth_token: str, chat_id: str, limit: int = 10) -> list[LL
 
         return turns[-limit:]
     except Exception as exc:  # best-effort: never raise out of context loading
-        logger.warning(
-            "load_recent_turns: skipping short-term memory chat_id=%s: %s", chat_id, exc
-        )
+        logger.warning("load_recent_turns: skipping short-term memory chat_id=%s: %s", chat_id, exc)
         return []
 
 
@@ -380,9 +378,7 @@ class MemoryCrudStore:
     def save_trip_profile(self, user_id: str, chat_id: str, profile_json: str) -> None:
         save_trip_profile(user_id, chat_id, profile_json)
 
-    def load_recent_turns(
-        self, user_id: str, chat_id: str, limit: int = 10
-    ) -> list[LLMMessage]:
+    def load_recent_turns(self, user_id: str, chat_id: str, limit: int = 10) -> list[LLMMessage]:
         return load_recent_turns(user_id, chat_id, limit)
 
 

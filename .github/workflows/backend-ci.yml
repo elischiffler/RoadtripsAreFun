@@ -2,13 +2,11 @@ name: Backend CI
 
 on:
   pull_request:
-    paths:
-      - "backend/**"
   push:
-    branches:
-      - main
-    paths:
-      - "backend/**"
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -20,7 +18,9 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -29,16 +29,20 @@ jobs:
           cache: "pip"
           cache-dependency-path: backend/requirements.txt
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Install dependencies and pinned Ruff
+        run: pip install -r requirements.txt "ruff==0.16.7"
+
+      - name: Check formatting
+        if: ${{ !cancelled() }}
+        run: ruff format --check .
+
+      - name: Lint
+        if: ${{ !cancelled() }}
+        run: ruff check .
 
       - name: Run tests with coverage
+        if: ${{ !cancelled() }}
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          MAPBOX_API: ${{ secrets.MAPBOX_API }}
-          TRIPADVISOR_API: ${{ secrets.TRIPADVISOR_API }}
-          GOOGLE_PLACES_API: ${{ secrets.GOOGLE_PLACES_API }}
-          OPENCAGE_KEY: ${{ secrets.OPENCAGE_KEY }}
-          AMADEUS_KEY: ${{ secrets.AMADEUS_KEY }}
-          AMADEUS_SECRET: ${{ secrets.AMADEUS_SECRET }}
+          DATABASE_URL: postgresql://fixture:fixture@127.0.0.1:1/roadtrips
+          DATABASE_SSLMODE: disable
         run: pytest --cov=app --cov-report=term-missing --cov-fail-under=63

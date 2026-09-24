@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { afterEach, beforeEach, vi } from 'vitest';
 
 // ── Silence app console output during tests ──────────────────────────────────
 // The app uses console.debug/warn/error for DB logs, auth errors, and router
@@ -49,7 +50,7 @@ vi.mock('ldrs', () => ({
 }));
 
 // Stub navigator.geolocation for LocationInput tests
-Object.defineProperty(global.navigator, 'geolocation', {
+Object.defineProperty(globalThis.navigator, 'geolocation', {
   writable: true,
   value: {
     getCurrentPosition: vi.fn(),

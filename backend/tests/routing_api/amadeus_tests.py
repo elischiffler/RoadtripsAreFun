@@ -1,13 +1,14 @@
-import pytest
-from unittest.mock import MagicMock, patch
 from datetime import datetime
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+from app.routing.sources.hotels import find_hotel as _find_hotel
 
 # These are re-exported from app.routers.routing_api, but their real
 # implementations live in app.routing.sources.hotels — patch there so the
 # functions' own module-level lookups (requests, get_location, ...) are affected.
 from app.routing.sources.hotels import get_amadeus_token as _get_amadeus_token
-from app.routing.sources.hotels import find_hotel as _find_hotel
-
 
 # ---------------------------------------------------------------------------
 # Mock helpers

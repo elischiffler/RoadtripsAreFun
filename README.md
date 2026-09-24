@@ -1,10 +1,16 @@
 # RoadtripsAreFun
 
+Local Docker preview: [runbook](docs/container-runbook.md) and
+[validation/blockers](docs/container-validation.md). The container work does not
+change production hosting. Disposable PostgreSQL CRUD/recovery checks pass; the
+full trip journey, live-schema compatibility and isolated Auth/provider checks
+remain open. The PR remains draft.
+
 A road trip planning application. This monorepo contains two services:
 
 | Service | Stack | Deployed at |
 |---|---|---|
-| [`backend/`](./backend) | Python 3.9 / FastAPI / Neon Postgres | [Render](https://dashboard.render.com/web/srv-cqvu44jv2p9s739hhb60) |
+| [`backend/`](./backend) | Python 3.12 / FastAPI / Neon Postgres | [Render](https://dashboard.render.com/web/srv-cqvu44jv2p9s739hhb60) |
 | [`frontend/`](./frontend) | React 18 / Vite / MUI | [Vercel](https://roadtripsarefun.vercel.app) |
 
 ---

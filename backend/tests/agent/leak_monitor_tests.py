@@ -34,7 +34,7 @@ def test_empty_reply_has_no_leaks():
         "Your trip profile shows you want 3 stops.",
         "I'll pass route_handle to the next tool.",
         "Setting start_coords now.",
-        "```tool\n{\"tool\": \"validate_location\"}\n```",
+        '```tool\n{"tool": "validate_location"}\n```',
         "Here's the Summary of earlier conversation you asked about.",
     ],
 )

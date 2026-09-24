@@ -4,7 +4,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { screen } from '@testing-library/react';
-import React, { useContext } from 'react';
+import PropTypes from 'prop-types';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { MemoryRouter } from 'react-router-dom';
@@ -47,6 +47,8 @@ function renderMapPageWithData(UserData) {
       </UserDataProvider>
     );
   }
+
+  Wrapper.propTypes = { children: PropTypes.node.isRequired };
   return render(<MapPage />, { wrapper: Wrapper });
 }
 

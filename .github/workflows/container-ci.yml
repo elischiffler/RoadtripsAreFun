@@ -1,0 +1,30 @@
+name: Local containers
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      ROADTRIPS_REVISION: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - run: docker compose up --build --detach --wait --wait-timeout 60
+      - run: node --test tests/container-smoke.test.mjs
+      - name: Test Python in an isolated container
+        run: |
+          docker build --target test -f backend/Dockerfile -t roadtrips-tests-local .
+          docker run --rm --network none -e DATABASE_URL=postgresql://fixture:fixture@127.0.0.1:1/roadtrips -e DATABASE_SSLMODE=disable roadtrips-tests-local
+      - run: docker compose logs --no-color
+        if: failure()
+      - run: docker compose down
+        if: always()

@@ -2,9 +2,12 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
+import psycopg2
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from app.core.config import settings
 from app.routers import agent_api, car_api, chat_api, itinerary_api, location_api, routing_api
 
 logger = logging.getLogger(__name__)
@@ -52,15 +55,34 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"DB warm-up failed (non-fatal): {e}")
     yield
+    from app.crud import chat_crud
+
+    if chat_crud._pool is not None and not chat_crud._pool.closed:
+        chat_crud._pool.closeall()
 
 
 # Create the FastAPI instance
 app = FastAPI(lifespan=lifespan)
 
+
+@app.middleware("http")
+async def isolate_incomplete_preview(request, call_next):
+    # Until reviewed schema/provider fixtures exist, fail before any business
+    # route can use hardcoded upstreams (some routes do not require API keys).
+    if settings.LOCAL_PREVIEW and request.url.path not in {"/", "/health", "/ready", "/algorithms"}:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "detail": "Local business flows require reviewed database and provider fixtures"
+            },
+        )
+    return await call_next(request)
+
+
 # Enables support of the front end on a different domain/port
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins; replace with specific origins for production
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],  # Allows all HTTP methods
     allow_headers=["*"],  # Allows all headers
@@ -82,6 +104,36 @@ async def root() -> str:
 @app.api_route("/health", methods=["GET", "HEAD"])
 async def health():
     return {"status": "ok"}
+
+
+@app.get("/ready")
+def ready():
+    """Database readiness is separate from process liveness at /health."""
+    conn = None
+    try:
+        conn = psycopg2.connect(
+            settings.DATABASE_URL or "",
+            sslmode=settings.DATABASE_SSLMODE,
+            connect_timeout=5,
+            options="-c statement_timeout=5000",
+        )
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT to_regclass('public.chats'), to_regclass('public.route_segments'), to_regclass('public.steps'), to_regclass('public.chat_memory')"
+            )
+            if not all(cur.fetchone()):
+                return JSONResponse(
+                    status_code=503,
+                    content={"status": "not_ready", "dependency": "database_schema"},
+                )
+        return {"status": "ready"}
+    except Exception:
+        return JSONResponse(
+            status_code=503, content={"status": "not_ready", "dependency": "database"}
+        )
+    finally:
+        if conn is not None:
+            conn.close()
 
 
 if __name__ == "__main__":

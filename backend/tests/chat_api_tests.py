@@ -1,6 +1,9 @@
-import pytest
 from unittest.mock import MagicMock, patch
+
+import psycopg2
+import pytest
 from fastapi.testclient import TestClient
+
 from app.main import app
 
 client = TestClient(app)
@@ -94,15 +97,41 @@ def test_delete_chat():
     ):
         response = client.delete(
             "/chats/delete/2",
-            params={"partition_key": "user123"},
+            headers={"Authorization": "Bearer fixture-token"},
         )
     assert response.status_code == 200
     assert response.json()["status"] == "success"
 
 
+def test_delete_does_not_claim_success_for_another_users_chat():
+    with (
+        patch("app.routers.chat_api.get_user_id_from_token", return_value="other-user"),
+        patch("app.routers.chat_api.delete_chat", return_value=[]),
+    ):
+        response = client.delete(
+            "/chats/delete/2", headers={"Authorization": "Bearer fixture-token"}
+        )
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Chat not found"}
+
+
 # ---------------------------------------------------------------------------
 # PUT /chats/update/{chat_id}
 # ---------------------------------------------------------------------------
+
+
+def test_update_does_not_claim_success_for_another_users_chat():
+    with (
+        patch("app.routers.chat_api.get_user_id_from_token", return_value="other-user"),
+        patch("app.routers.chat_api.update_chat_component", return_value=None) as update,
+    ):
+        response = client.put(
+            "/chats/update/3",
+            json={"PartitionKey": "fixture-token", "ChatData": CHAT_DATA, "ChatLog": CHAT_LOG},
+        )
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Chat not found"}
+    update.assert_called_once()
 
 
 def test_update_chat():
@@ -132,7 +161,7 @@ def test_update_chat():
         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
     ):
         response = client.put(
-            "/chats/update/3?partition_key=user123",
+            "/chats/update/3",
             json={
                 "PartitionKey": "user123",
                 "ChatData": updated_chat_data,
@@ -147,6 +176,18 @@ def test_update_chat():
 # ---------------------------------------------------------------------------
 
 
+def test_get_chats_reports_database_loss_as_retryable_error():
+    with (
+        patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
+        patch(
+            "app.routers.chat_api.get_all_chats", side_effect=psycopg2.OperationalError("offline")
+        ),
+    ):
+        response = client.get("/chats", headers={"Authorization": "Bearer signed-test-token"})
+    assert response.status_code == 503
+    assert response.json() == {"detail": "Chat storage is temporarily unavailable"}
+
+
 def test_get_all_chats_empty():
     """Returns 200 and an empty list when the user has no chats."""
     mock_pool, _, _ = _make_mock_pool(fetchall_val=[])
@@ -155,7 +196,7 @@ def test_get_all_chats_empty():
         patch("app.crud.chat_crud._get_pool", return_value=mock_pool),
         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
     ):
-        response = client.get("/chats", params={"partition_key": "user123"})
+        response = client.get("/chats", headers={"Authorization": "Bearer fixture-token"})
     assert response.status_code == 200
     assert response.json() == []
 
@@ -177,7 +218,7 @@ def test_get_all_chats_returns_list():
         patch("app.crud.chat_crud._get_pool", return_value=mock_pool),
         patch("app.routers.chat_api.get_user_id_from_token", return_value="88"),
     ):
-        response = client.get("/chats", params={"partition_key": "88"})
+        response = client.get("/chats", headers={"Authorization": "Bearer fixture-token"})
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 

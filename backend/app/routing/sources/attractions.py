@@ -81,9 +81,7 @@ def _raise_for_status(response: requests.Response) -> None:
     if 200 <= response.status_code < 300:
         return
     if response.status_code in (401, 403):
-        logger.error(
-            "Tripadvisor Terra auth failure (%s): key unauthorized", response.status_code
-        )
+        logger.error("Tripadvisor Terra auth failure (%s): key unauthorized", response.status_code)
         raise HTTPException(status_code=502, detail="TripAdvisor API key unauthorized")
     logger.error("Tripadvisor Terra request returned %s", response.status_code)
     raise HTTPException(status_code=502, detail="TripAdvisor request failed")
@@ -204,9 +202,7 @@ async def get_details(location_id: str) -> tuple[int, dict[str, Any]]:
     headers = _auth_headers()
 
     try:
-        response = requests.get(
-            location_details_url, headers=headers, timeout=config.HTTP_TIMEOUT
-        )
+        response = requests.get(location_details_url, headers=headers, timeout=config.HTTP_TIMEOUT)
         _raise_for_status(response)
         json_data = response.json()
         location = Terra_Location.model_validate(json_data)
