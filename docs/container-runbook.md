@@ -1,11 +1,60 @@
 # Local container preview
 
-This is a partial, isolated preview. A separate disposable stack verifies the
-checked-in local PostgreSQL schema and real CRUD; the primary browser preview
-still has no database or isolated Auth/provider fixtures. It serves the
-production frontend and FastAPI process without production keys.
-Do not use it as a working trip planner yet. The original PostgreSQL TLS changes
-remain in this PR; hosted connections still require TLS by default.
+The primary preview remains guarded and returns 503 on business routes. A
+separate disposable journey stack below exercises the application against the
+checked-in local DDL, signed test tokens and controlled providers. Neither
+stack uses production keys or data. Hosted connections still require TLS by
+default.
+
+## Disposable full local journey
+
+Start the existing isolated Mentro pilot fixture first (`mentro-server-local_pilot`
+network with healthy `mentro-server` and `fixture` containers). From the root,
+with Docker Desktop and Python packages `cryptography` and `PyJWT` available:
+
+```powershell
+python tests/journey/run.py
+```
+
+The driver creates a unique `roadtrips-journey-<id>` project and fresh source
+and restore PostgreSQL 18.6 volumes using the checked-in
+[`schema.sql`](../tests/postgres/schema.sql). The API is the normal runtime image
+launched with a **mounted test-only** script; the script is absent from that
+image and never changes the production Cognito verifier. It supplies a local
+RS256 signing key, keeps issuer/client/token-use/expiry checks, allows only
+seeded Mapbox coordinates and geocoding, and calls the real local Mentro
+container for streamed responses. Extra memory-tool responses are clearly
+marked fixture-only. The browser Auth fixture at `127.0.0.1:8999` mints the
+same signed tokens. The local web build uses an SVG map from the saved geometry
+so it makes no Mapbox style or tile request.
+
+The runner asserts the location, 160,000-meter / 7,200-second route, three
+geometry points, 09:00 departure / 11:00 arrival itinerary, saved messages,
+agent fact, owner separation, unauthenticated denial and test-owned deletion.
+It reads the saved trip through HTTP after API/database recreation with the
+source volume, stops Mentro and PostgreSQL separately and requires bounded
+503s/recovery, then restores a private custom-format dump into a separate empty
+volume. A second restore must refuse the populated target. Source and restore
+data remain distinct; both volumes and the ignored backup are retained. The
+normal run stops containers and never uses `down -v`.
+
+To inspect the browser after a successful run, set `JOURNEY_KEEP_RUNNING=1`
+before running. Web: <http://127.0.0.1:18082>, API:
+<http://127.0.0.1:18002>. The fixture users are
+`journey-owner@example.test` and `journey-other@example.test`, both with the
+disposable password `local-only`. Sign in as the owner, use Search trips to
+select Santa Barbara, reload chat/map/itinerary, sign out, then sign in as the
+second user and confirm Search trips reports no trips. These fixture sessions
+do **not** satisfy actual isolated Cognito R4. The current run ID, backup and
+volume IDs are printed by the driver. To stop a kept project, use its printed
+project name with `docker compose -f tests/journey/compose.yaml -p <project>
+--profile restore stop api web auth postgres restore`, and stop its printed
+one-off restore API container; retain both volumes.
+
+The driver requires a fresh run ID. Never rerun it against a populated source
+or restore volume. Production schema compatibility remains unverified; this
+stack deliberately uses only the checked-in disposable DDL. No live provider,
+hosted database, DNS or production deployment is part of this procedure.
 
 From repository root, PowerShell:
 

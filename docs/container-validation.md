@@ -1,5 +1,45 @@
 # Container migration evidence
 
+## Signed local journey follow-up, 2026-09-24
+
+The new [journey driver](../tests/journey/run.py) launched the normal API image
+with a mounted test-only fixture script and the checked-in disposable DDL. A
+fresh `roadtrips-journey-efeb0b195e` run supplied locally signed RS256 access
+tokens, seeded San Luis Obispo/Santa Barbara locations, a 160,000-meter / 7,200-
+second US-101 route with three geometry points, and an itinerary leaving at
+09:00 and arriving at 11:00 on October 1. `POST /chats/create/741` and
+`PUT /chats/update/741` persisted route, steps, itinerary and two messages.
+`GET /chats` returned those exact values after API and source PostgreSQL
+container recreation with the same volume. A memory tool wrote the `quiet
+routes` preference; a signed agent recall returned it before and after
+recreation, while the second signed user had no fact or trip. Unauthenticated
+`GET /chats` returned 401. The real Mentro container supplied a streamed
+`validate_location` text-tool response. Stopping Mentro returned a bounded 503
+and recovery succeeded within 60 seconds. Stopping PostgreSQL returned a
+bounded chat-storage 503, then recovered without repair.
+
+The 6,715-byte custom-format backup
+was restored into the separate `roadtrips-journey-efeb0b195e_restore-data`
+volume. A fresh API process read the same trip and agent fact from that
+restored volume; the original source volume was preserved and checked again.
+The second restore was refused at four application objects. The test-only
+browser Auth fixture signed in the owner, displayed the saved chat, local SVG
+map and itinerary, and preserved each across direct page reload. Sign-out
+cleared client trip state, and a second fixture user saw `No trips found` in the
+same tab. This fixed a cross-session client disclosure uncovered by the run.
+The browser run uses a local SVG map because Mapbox GL requires a hosted token
+even for an inline style; the SVG renders the API's stored geometry without
+live map requests.
+
+These results are **local signed-token and controlled-provider evidence** for
+R1/R2/R3/R5/R6. Actual isolated Cognito R4 remains BLOCKED because no
+authorized isolated pool/test users were identified. Production schema
+compatibility, actual Mapbox/TripAdvisor/OpenCage and hosted inference behavior
+also remain unverified. The normal preview still returns 503 for business
+routes. The final committed-image run and CI are recorded in the PR and shared
+validation report; this section describes the implementation run before that
+commit.
+
 ## Disposable PostgreSQL follow-up, 2026-09-24
 
 `node tests/postgres/run.mjs` from the repository root ran against a separate

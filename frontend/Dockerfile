@@ -5,6 +5,7 @@ COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
 ARG VITE_BACKEND_SERVER
+ARG VITE_LOCAL_JOURNEY=false
 ARG VITE_USERPOOL_ID=us-west-1_fixture
 ARG VITE_CLIENT_ID=localfixture
 ARG VITE_COGNITO_ENDPOINT=http://127.0.0.1:8999

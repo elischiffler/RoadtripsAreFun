@@ -14,7 +14,7 @@ def validate_local_environment(env) -> None:
     if env.get("LOCAL_PREVIEW") != "true":
         return
     allowed = {
-        "DATABASE_URL": {"postgres", "127.0.0.1", "localhost"},
+        "DATABASE_URL": {"postgres", "restore", "127.0.0.1", "localhost"},
         "MENTRO_GATEWAY_URL": {"mentro-server", "127.0.0.1", "localhost"},
         "SUPABASE_URL": {"fixture", "127.0.0.1", "localhost"},
     }

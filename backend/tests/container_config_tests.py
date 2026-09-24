@@ -38,6 +38,9 @@ def test_local_preview_rejects_live_provider_configuration(name):
 
 def test_local_preview_accepts_explicit_local_services():
     validate_local_environment(local_env())
+    restored = local_env()
+    restored["DATABASE_URL"] = "postgresql://test:test@restore/test"
+    validate_local_environment(restored)
 
 
 def test_incomplete_preview_blocks_provider_routes_before_dispatch(monkeypatch):

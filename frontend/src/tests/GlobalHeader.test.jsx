@@ -6,6 +6,26 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from './testUtils';
 import GlobalHeader from '../components/GlobalHeader';
+import { useContext } from 'react';
+import { ChatData, Data, ChatLogs, UserDataContext } from '../states/UserDataContext';
+
+function TripStateProbe() {
+  const { chats, UserData, setChats, setUserData } = useContext(UserDataContext);
+  return (
+    <>
+      <button
+        onClick={() => {
+          setChats([{ id: 741, title: 'Private coastal trip', messages: [] }]);
+          setUserData(new Data(new ChatLogs([new ChatData(741)])));
+          sessionStorage.setItem('selectedChatId', '741');
+        }}
+      >
+        Seed private trip
+      </button>
+      <output>{`${chats.length} chats; ${UserData.chatlogs.chatdata.length} trip records`}</output>
+    </>
+  );
+}
 
 describe('GlobalHeader', () => {
   beforeEach(() => sessionStorage.clear());
@@ -52,5 +72,23 @@ describe('GlobalHeader', () => {
       expect(sessionStorage.getItem('idToken')).toBeNull();
       expect(sessionStorage.getItem('refreshToken')).toBeNull();
     });
+  });
+
+  it('removes the previous owner trip from client state on sign out', async () => {
+    sessionStorage.setItem('accessToken', 'owner-token');
+    const user = userEvent.setup();
+    renderWithProviders(
+      <>
+        <GlobalHeader />
+        <TripStateProbe />
+      </>,
+      { initialPath: '/chat' }
+    );
+    await user.click(screen.getByText('Seed private trip'));
+    expect(screen.getByText('1 chats; 1 trip records')).toBeInTheDocument();
+    await user.click(screen.getByText('U'));
+    await user.click(screen.getByText(/sign out/i));
+    expect(screen.getByText('0 chats; 0 trip records')).toBeInTheDocument();
+    expect(sessionStorage.getItem('selectedChatId')).toBeNull();
   });
 });
