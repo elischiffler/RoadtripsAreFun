@@ -54,7 +54,11 @@ def test_incomplete_preview_blocks_provider_routes_before_dispatch(monkeypatch):
 
 def test_cors_allows_preview_but_not_unapproved_origin():
     client = TestClient(app)
-    for origin, allowed in [("http://127.0.0.1:8082", True), ("https://unapproved.example", False)]:
+    for origin, allowed in [
+        ("http://127.0.0.1:8082", True),
+        ("https://roadtrips.elischiffler.dev", True),
+        ("https://unapproved.example", False),
+    ]:
         response = client.options(
             "/health", headers={"Origin": origin, "Access-Control-Request-Method": "GET"}
         )

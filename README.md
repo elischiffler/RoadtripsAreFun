@@ -11,7 +11,12 @@ A road trip planning application. This monorepo contains two services:
 | Service | Stack | Deployed at |
 |---|---|---|
 | [`backend/`](./backend) | Python 3.12 / FastAPI / Neon Postgres | [Render](https://dashboard.render.com/web/srv-cqvu44jv2p9s739hhb60) |
-| [`frontend/`](./frontend) | React 18 / Vite / MUI | [Vercel](https://roadtripsarefun.vercel.app) |
+| [`frontend/`](./frontend) | React 18 / Vite / MUI | [roadtrips.elischiffler.dev](https://roadtrips.elischiffler.dev) (Vercel) |
+
+The intended AWS API address is `https://api.roadtrips.elischiffler.dev/`.
+Its DNS and deployment are pending; keep the current frontend
+`VITE_BACKEND_SERVER` value until the replacement API passes health, auth, and
+CORS checks. The browser build embeds this value at build time.
 
 ---
 

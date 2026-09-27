@@ -2,7 +2,7 @@
 
 React 18 / Vite UI for the MyRoadtrip road trip planning app.
 
-**Production:** https://rp-ui.vercel.app
+**Production:** https://roadtrips.elischiffler.dev
 
 See the [root README](../README.md) for full setup instructions.
 

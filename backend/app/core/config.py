@@ -53,7 +53,7 @@ class Settings:
         value.strip()
         for value in os.getenv(
             "CORS_ORIGINS",
-            "http://localhost:5173,http://127.0.0.1:8082,https://roadtripsarefun.vercel.app",
+            "http://localhost:5173,http://127.0.0.1:8082,https://roadtrips.elischiffler.dev,https://roadtripsarefun.vercel.app",
         ).split(",")
         if value.strip()
     ]
