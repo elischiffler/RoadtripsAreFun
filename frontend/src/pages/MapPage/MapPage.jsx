@@ -1,9 +1,9 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import ItineraryButton from '../../components/buttons/ItineraryButton';
 import ChatButton from '../../components/buttons/ChatButton';
 import Map from '../../components/Map';
-import { UserDataContext } from '../../states/UserDataContext';
+import { useStoredTrip } from '../useStoredTrip';
 import './MapPage.css';
 
 const MapPage = () => {
@@ -16,10 +16,7 @@ const MapPage = () => {
   }, []);
 
   // Retrieve the the instance of UserData from sessionStorage
-  const { UserData } = useContext(UserDataContext);
-
-  // Grab the chat logs
-  const ChatLogsData = UserData?.chatlogs || {};
+  const ChatLogsData = useStoredTrip();
   const UserChatData =
     ChatLogsData?.chatdata?.length > 0
       ? ChatLogsData.getChatDataById(ChatLogsData.currentId) || ChatLogsData.chatdata[0]

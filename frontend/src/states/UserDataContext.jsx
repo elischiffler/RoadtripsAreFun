@@ -105,9 +105,16 @@ export const UserDataProvider = ({ children }) => {
   const [chats, setChats] = useState([]);
   const [currentStep, setCurrentStep] = useState(1);
 
+  const clearUserData = () => {
+    setUserData(new Data());
+    setChats([]);
+    setCurrentStep(1);
+    sessionStorage.removeItem('selectedChatId');
+  };
+
   return (
     <UserDataContext.Provider
-      value={{ UserData, setUserData, chats, setChats, currentStep, setCurrentStep }}
+      value={{ UserData, setUserData, chats, setChats, currentStep, setCurrentStep, clearUserData }}
     >
       {children}
     </UserDataContext.Provider>

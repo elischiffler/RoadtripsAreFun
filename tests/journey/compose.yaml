@@ -1,0 +1,135 @@
+name: roadtrips-journey
+services:
+  postgres:
+    image: postgres:18.6-bookworm@sha256:3725f4e2499eef5134592b3b4ab79a543ed7f8e533b05b5b637af926630f6650
+    environment:
+      POSTGRES_DB: roadtrips
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: disposable-local-only
+      POSTGRES_INITDB_ARGS: --data-checksums
+    volumes:
+      - source-data:/var/lib/postgresql
+      - ../postgres/schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+    networks: [database]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U postgres -d roadtrips"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 15s
+    mem_limit: 384m
+    cpus: 0.5
+    pids_limit: 128
+
+  restore:
+    image: postgres:18.6-bookworm@sha256:3725f4e2499eef5134592b3b4ab79a543ed7f8e533b05b5b637af926630f6650
+    profiles: [restore]
+    environment:
+      POSTGRES_DB: roadtrips
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: disposable-local-only
+      POSTGRES_INITDB_ARGS: --data-checksums
+    volumes:
+      - restore-data:/var/lib/postgresql
+    networks: [database]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U postgres -d roadtrips"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 15s
+    mem_limit: 384m
+    cpus: 0.5
+    pids_limit: 128
+
+  api:
+    image: roadtrips-api-local:${ROADTRIPS_REVISION:?Set ROADTRIPS_REVISION}
+    build:
+      context: ../..
+      dockerfile: backend/Dockerfile
+      args:
+        VCS_REF: ${ROADTRIPS_REVISION:?Set ROADTRIPS_REVISION}
+    entrypoint: [python, /checks/fixture_app.py]
+    environment:
+      PYTHONPATH: /app
+      LOCAL_PREVIEW: "true"
+      JOURNEY_FIXTURE: isolated-only
+      JOURNEY_RUN_ID: ${JOURNEY_RUN_ID:?Set JOURNEY_RUN_ID}
+      DATABASE_URL: postgresql://postgres:disposable-local-only@postgres/roadtrips
+      DATABASE_SSLMODE: disable
+      MENTRO_GATEWAY_URL: http://mentro-server:3001
+      SUPABASE_URL: http://fixture:3004
+      SUPABASE_ANON_KEY: local-fixture-anon-key
+      CORS_ORIGINS: http://127.0.0.1:18082
+    volumes:
+      - ./fixture_app.py:/checks/fixture_app.py:ro
+      - ./.artifacts/${JOURNEY_RUN_ID:?Set JOURNEY_RUN_ID}.public.pem:/fixtures/${JOURNEY_RUN_ID:?Set JOURNEY_RUN_ID}.public.pem:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [database, ingress, mentro]
+    ports: ["127.0.0.1:18002:8000"]
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    cpus: 1.0
+    mem_limit: 768m
+    stop_grace_period: 15s
+
+  web:
+    image: roadtrips-journey-web:${ROADTRIPS_REVISION:?Set ROADTRIPS_REVISION}
+    build:
+      context: ../..
+      dockerfile: frontend/Dockerfile
+      args:
+        VCS_REF: ${ROADTRIPS_REVISION:?Set ROADTRIPS_REVISION}
+        VITE_BACKEND_SERVER: http://127.0.0.1:18002/
+        VITE_LOCAL_JOURNEY: "true"
+        VITE_USERPOOL_ID: us-west-2_LOCALJOURNEY
+        VITE_CLIENT_ID: localjourneyclient
+    networks: [ingress]
+    ports: ["127.0.0.1:18082:8080"]
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=16m"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    cpus: 0.5
+    mem_limit: 128m
+
+  auth:
+    image: roadtrips-api-local:${ROADTRIPS_REVISION:?Set ROADTRIPS_REVISION}
+    entrypoint: [python, /checks/auth_fixture.py]
+    environment:
+      JOURNEY_FIXTURE: isolated-only
+      JOURNEY_RUN_ID: ${JOURNEY_RUN_ID:?Set JOURNEY_RUN_ID}
+    volumes:
+      - ./auth_fixture.py:/checks/auth_fixture.py:ro
+      - ./.artifacts/${JOURNEY_RUN_ID:?Set JOURNEY_RUN_ID}.private.pem:/fixtures/${JOURNEY_RUN_ID:?Set JOURNEY_RUN_ID}.private.pem:ro
+    networks: [ingress]
+    ports: ["127.0.0.1:8999:8999"]
+    healthcheck:
+      test: [CMD, python, -c, "import socket; socket.create_connection(('127.0.0.1', 8999), 2).close()"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=16m"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    cpus: 0.25
+    mem_limit: 96m
+
+volumes:
+  source-data:
+  restore-data:
+networks:
+  database:
+    internal: true
+  ingress: {}
+  mentro:
+    external: true
+    name: mentro-server-local_pilot

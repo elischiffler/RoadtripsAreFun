@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
+import PropTypes from 'prop-types';
 import HotelIcon from '@mui/icons-material/Hotel';
 import './HotelChip.css';
 
@@ -100,3 +101,7 @@ export default function HotelChip({ label }) {
     </Box>
   );
 }
+
+HotelChip.propTypes = {
+  label: PropTypes.string.isRequired,
+};

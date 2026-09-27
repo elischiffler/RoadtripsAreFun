@@ -21,8 +21,13 @@ from .conftest import FakeMemory, FakeProvider, FakeTools, make_usage
 pytestmark = pytest.mark.asyncio
 
 
+@pytest.fixture(autouse=True)
+def _verified_test_user(monkeypatch):
+    # These tests exercise the agent loop, not Cognito; auth has dedicated tests.
+    monkeypatch.setattr("app.agent.agent.get_user_id_from_token", lambda token: "user-123")
+
+
 def _request(message: str = "plan me a trip") -> AgentChatRequest:
-    # A raw string that isn't a JWT decodes to itself as the user_id — fine here.
     return AgentChatRequest(partitionKey="user-123", chatId="42", message=message)
 
 
@@ -38,9 +43,7 @@ def _tool_block(name: str, arguments: dict | None = None, prose: str = "") -> st
 
 
 async def test_run_turn_simple_no_tool_reply(fake_memory, fake_tools):
-    provider = FakeProvider(
-        responses=[LLMResponse(content="Sure, where to?", usage=make_usage())]
-    )
+    provider = FakeProvider(responses=[LLMResponse(content="Sure, where to?", usage=make_usage())])
     chain = FallbackChain([provider])
 
     result = await run_turn(_request(), chain, fake_memory, fake_tools)
@@ -66,7 +69,9 @@ async def test_run_turn_executes_tool_and_feeds_result_back(fake_memory):
     provider = FakeProvider(
         responses=[
             # First call: request a tool via a ```tool block.
-            LLMResponse(content=_tool_block("generate_final_route", {"route_handle": "initial_route_1"})),
+            LLMResponse(
+                content=_tool_block("generate_final_route", {"route_handle": "initial_route_1"})
+            ),
             # Second call: final textual reply (no tool block).
             LLMResponse(content="Your trip is planned."),
         ]
@@ -284,9 +289,7 @@ async def test_run_turn_feeds_tool_error_back_and_lets_model_recover(fake_memory
             # Turn 1: request the (doomed) tool.
             LLMResponse(content=_tool_block("get_initial_route", {})),
             # Turn 2: the model, having seen the error fed back, recovers with prose.
-            LLMResponse(
-                content="I couldn't map that route yet — what city are you starting from?"
-            ),
+            LLMResponse(content="I couldn't map that route yet — what city are you starting from?"),
         ]
     )
     chain = FallbackChain([provider])

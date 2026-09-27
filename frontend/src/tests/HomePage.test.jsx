@@ -4,7 +4,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { renderPage } from './testUtils';
 import HomePage from '../pages/HomePage/HomePage';
 

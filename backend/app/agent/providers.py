@@ -139,9 +139,7 @@ class SupabaseServiceAuth:
             except ProviderError:
                 # Refresh token may be stale — fall back to a fresh password login.
                 logger.info("Supabase refresh failed; re-authenticating with password grant.")
-        return self._grant(
-            "password", {"email": self._email, "password": self._password}
-        )
+        return self._grant("password", {"email": self._email, "password": self._password})
 
     def _grant(self, grant_type: str, body: dict) -> str:
         token_url = f"{self._url.rstrip('/')}/auth/v1/token"
@@ -156,9 +154,7 @@ class SupabaseServiceAuth:
         except httpx.HTTPError as exc:
             raise ProviderError(f"Supabase auth request failed: {exc}") from exc
         if resp.status_code != httpx.codes.OK:
-            raise ProviderError(
-                f"Supabase auth returned {resp.status_code}: {resp.text[:200]}"
-            )
+            raise ProviderError(f"Supabase auth returned {resp.status_code}: {resp.text[:200]}")
         try:
             data = resp.json()
         except ValueError as exc:
@@ -234,9 +230,7 @@ class MentroGatewayProvider:
     _MAX_ATTEMPTS = 3
 
     def __init__(self, gateway_url: str | None = None, auth: SupabaseServiceAuth | None = None):
-        self._url = (
-            gateway_url if gateway_url is not None else settings.MENTRO_GATEWAY_URL
-        ) or ""
+        self._url = (gateway_url if gateway_url is not None else settings.MENTRO_GATEWAY_URL) or ""
         self._auth = auth if auth is not None else SupabaseServiceAuth()
 
     def configured(self) -> bool:
@@ -284,9 +278,7 @@ class MentroGatewayProvider:
                 # plain-JSON body with a non-2xx status, NOT as SSE.
                 if resp.status_code != httpx.codes.OK:
                     body = resp.read().decode(errors="replace")
-                    raise ProviderError(
-                        f"Mentro gateway returned {resp.status_code}: {body[:200]}"
-                    )
+                    raise ProviderError(f"Mentro gateway returned {resp.status_code}: {body[:200]}")
                 return self._reduce_sse(resp.iter_lines())
 
     def _reduce_sse(self, lines) -> LLMResponse:

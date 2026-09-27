@@ -68,28 +68,35 @@ def test_extract_endpoints_missing_raises():
 
 def test_extract_endpoints_coords_arrays():
     # The model reuses the trip-profile *_coords array naming — accept it.
-    assert _extract_endpoints(
-        {"start_coords": [1.0, 2.0], "end_coords": [3.0, 4.0]}
-    ) == (1.0, 2.0, 3.0, 4.0)
+    assert _extract_endpoints({"start_coords": [1.0, 2.0], "end_coords": [3.0, 4.0]}) == (
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+    )
 
 
 def test_extract_endpoints_destination_coords_alias():
-    assert _extract_endpoints(
-        {"start_coords": [1.0, 2.0], "destination_coords": [3.0, 4.0]}
-    ) == (1.0, 2.0, 3.0, 4.0)
+    assert _extract_endpoints({"start_coords": [1.0, 2.0], "destination_coords": [3.0, 4.0]}) == (
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+    )
 
 
 def test_extract_endpoints_stringified_coords_arrays():
     # A known model quirk: coordinate arrays arrive as JSON strings.
-    assert _extract_endpoints(
-        {"start_coords": "[1.0, 2.0]", "end_coords": "[3.0, 4.0]"}
-    ) == (1.0, 2.0, 3.0, 4.0)
+    assert _extract_endpoints({"start_coords": "[1.0, 2.0]", "end_coords": "[3.0, 4.0]"}) == (
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+    )
 
 
 def test_extract_endpoints_bare_array_under_start_end():
-    assert _extract_endpoints(
-        {"start": [1.0, 2.0], "end": [3.0, 4.0]}
-    ) == (1.0, 2.0, 3.0, 4.0)
+    assert _extract_endpoints({"start": [1.0, 2.0], "end": [3.0, 4.0]}) == (1.0, 2.0, 3.0, 4.0)
 
 
 def test_extract_endpoints_nested_coordinates_key():
@@ -100,9 +107,12 @@ def test_extract_endpoints_nested_coordinates_key():
 
 def test_extract_endpoints_mixed_shapes():
     # Flat start + array end (models mix shapes freely).
-    assert _extract_endpoints(
-        {"start_lat": 1.0, "start_lon": 2.0, "end_coords": [3.0, 4.0]}
-    ) == (1.0, 2.0, 3.0, 4.0)
+    assert _extract_endpoints({"start_lat": 1.0, "start_lon": 2.0, "end_coords": [3.0, 4.0]}) == (
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+    )
 
 
 def test_extract_endpoints_only_start_still_raises():

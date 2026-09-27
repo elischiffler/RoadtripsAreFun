@@ -1,13 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   base: '/',
   // Load .env from the monorepo root instead of frontend/
-  envDir: path.resolve(__dirname, '..'),
+  envDir: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'),
   test: {
     globals: true,
     environment: 'jsdom',

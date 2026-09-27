@@ -5,8 +5,8 @@
  * must be rendered through `renderWithProviders` or one of the page-specific
  * helpers below.
  */
-import React from 'react';
 import { render } from '@testing-library/react';
+import PropTypes from 'prop-types';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
@@ -35,6 +35,8 @@ export function renderWithProviders(ui, { initialPath = '/', renderOptions = {} 
       </UserDataProvider>
     );
   }
+
+  Wrapper.propTypes = { children: PropTypes.node.isRequired };
 
   return render(ui, { wrapper: Wrapper, ...renderOptions });
 }

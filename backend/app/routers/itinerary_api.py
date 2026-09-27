@@ -1,15 +1,17 @@
+from datetime import timedelta
+from typing import Any
+
 from fastapi import APIRouter, HTTPException, Request
-from app.models.itinerary_models import Itinerary_Payload, Itinerary_Day
-from datetime import timedelta, datetime
-from typing import List, Dict, Any
 from pydantic import ValidationError
+
+from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
 
 # Initialize FastAPI
 router = APIRouter()
 
 
 @router.post("/generate-itinerary")
-async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
+async def generate_itinerary(request: Request) -> list[Itinerary_Day]:
     """
     Receives a json payload from the frontend and uses the data to generate an itinerary organized by date
 
@@ -36,7 +38,7 @@ async def generate_itinerary(request: Request) -> List[Itinerary_Day]:
         raise HTTPException(status_code=502, detail=f"Error processing data: {error}")
 
 
-async def build_itinerary(data: Itinerary_Payload) -> List[Itinerary_Day]:
+async def build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
     """Build a day-by-day itinerary from a validated :class:`Itinerary_Payload`.
 
     The core itinerary logic, factored out of :func:`generate_itinerary` so both
@@ -111,7 +113,7 @@ async def build_itinerary(data: Itinerary_Payload) -> List[Itinerary_Day]:
     raise HTTPException(status_code=400, detail="Incomplete route provided")
 
 
-async def _day_itinerary(itinerary: List[Dict[str, Any]]) -> List[Itinerary_Day]:
+async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]:
     """
     Processes a list of stops sorting them into itinerary_day objects using their dates
 

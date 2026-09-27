@@ -7,7 +7,12 @@ import axios from 'axios';
 
 vi.mock('axios');
 
-import { createChat, deleteChat, updateUserData } from '../pages/ChatPage/DatabaseUtils';
+import {
+  createChat,
+  deleteChat,
+  initializeUserData,
+  updateUserData,
+} from '../pages/ChatPage/DatabaseUtils';
 
 // Provide a fake VITE_BACKEND_SERVER so import.meta.env works in tests
 beforeEach(() => {
@@ -60,12 +65,40 @@ describe('deleteChat', () => {
     await deleteChat(AUTH_TOKEN, 1);
     expect(axios.delete).toHaveBeenCalledTimes(1);
     expect(axios.delete.mock.calls[0][0]).toMatch(/chats\/delete\/1/);
+    expect(axios.delete.mock.calls[0][1]).toEqual({
+      headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
+    });
   });
 
   it('returns null and does not throw on error', async () => {
-    axios.delete.mockRejectedValueOnce(new Error('Server error'));
+    axios.delete.mockRejectedValueOnce({
+      response: { status: 403 },
+      config: { headers: { Authorization: `Bearer ${AUTH_TOKEN}` } },
+    });
     const result = await deleteChat(AUTH_TOKEN, 1);
     expect(result).toBeNull();
+    expect(JSON.stringify(console.error.mock.calls)).not.toContain(AUTH_TOKEN);
+  });
+});
+
+describe('initializeUserData', () => {
+  it('sends the token only in Authorization, never URL parameters', async () => {
+    axios.get.mockResolvedValueOnce({ data: [] });
+    const result = await initializeUserData(AUTH_TOKEN);
+    expect(result).not.toBeNull();
+    expect(axios.get.mock.calls[0][0]).toMatch(/\/chats$/);
+    expect(axios.get.mock.calls[0][1]).toEqual({
+      headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
+    });
+  });
+
+  it('does not log Axios request headers on failure', async () => {
+    axios.get.mockRejectedValueOnce({
+      response: { status: 403 },
+      config: { headers: { Authorization: `Bearer ${AUTH_TOKEN}` } },
+    });
+    expect(await initializeUserData(AUTH_TOKEN)).toBeNull();
+    expect(JSON.stringify(console.error.mock.calls)).not.toContain(AUTH_TOKEN);
   });
 });
 

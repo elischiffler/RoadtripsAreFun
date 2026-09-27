@@ -7,7 +7,7 @@ with no network and no DB. This is the fake-injection template for the agent.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -115,12 +115,10 @@ class FakeMemory:
     def load_conversation(self, user_id: str, chat_id: str) -> ConversationMemory:
         return self._conversations.get(
             (user_id, chat_id),
-            ConversationMemory(chat_id=chat_id, updated_at=datetime.now(timezone.utc)),
+            ConversationMemory(chat_id=chat_id, updated_at=datetime.now(UTC)),
         )
 
-    def save_conversation(
-        self, user_id: str, chat_id: str, mem: ConversationMemory
-    ) -> None:
+    def save_conversation(self, user_id: str, chat_id: str, mem: ConversationMemory) -> None:
         if self._raise_on_save:
             raise RuntimeError("simulated save_conversation failure")
         self._conversations[(user_id, chat_id)] = mem
@@ -132,9 +130,7 @@ class FakeMemory:
     def save_trip_profile(self, user_id: str, chat_id: str, profile_json: str) -> None:
         self._trip_profiles[(user_id, chat_id)] = profile_json
 
-    def load_recent_turns(
-        self, user_id: str, chat_id: str, limit: int = 10
-    ) -> list[LLMMessage]:
+    def load_recent_turns(self, user_id: str, chat_id: str, limit: int = 10) -> list[LLMMessage]:
         if self._recent_turns is None:
             return []
         return list(self._recent_turns[-limit:])

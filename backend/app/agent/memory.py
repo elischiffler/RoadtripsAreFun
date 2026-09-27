@@ -70,9 +70,7 @@ class MemoryStore(Protocol):
 
     def load_conversation(self, user_id: str, chat_id: str) -> ConversationMemory: ...
 
-    def save_conversation(
-        self, user_id: str, chat_id: str, mem: ConversationMemory
-    ) -> None: ...
+    def save_conversation(self, user_id: str, chat_id: str, mem: ConversationMemory) -> None: ...
 
     def load_trip_profile(self, user_id: str, chat_id: str) -> str | None:
         """Return the stored trip-profile JSON string for a chat, or ``None``."""

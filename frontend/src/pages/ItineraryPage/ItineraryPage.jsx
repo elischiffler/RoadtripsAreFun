@@ -1,15 +1,12 @@
-import { useContext } from 'react';
 import { Box, Typography, Container } from '@mui/material';
 import ChatButton from '../../components/buttons/ChatButton';
 import MapButton from '../../components/buttons/MapButton';
-import { UserDataContext } from '../../states/UserDataContext';
+import { useStoredTrip } from '../useStoredTrip';
 import './ItineraryPage.css';
 
 const ItineraryPage = () => {
   // Retrieve the global instance of UserData
-  const { UserData } = useContext(UserDataContext);
-  // Grab the chat logs and make sure everything is defined
-  const ChatLogsData = UserData?.chatlogs || {};
+  const ChatLogsData = useStoredTrip();
   const UserChatData =
     ChatLogsData?.chatdata?.length > 0
       ? ChatLogsData.getChatDataById(ChatLogsData.currentId) || ChatLogsData.chatdata[0]

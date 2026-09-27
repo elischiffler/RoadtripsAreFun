@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
 
@@ -7,8 +5,8 @@ class location_payload(BaseModel):
     is_coordinates: bool
 
     class payload_data(BaseModel):
-        coordinates: Optional[list] = []
-        address: Optional[str] = None
+        coordinates: list | None = []
+        address: str | None = None
 
     location: payload_data
 

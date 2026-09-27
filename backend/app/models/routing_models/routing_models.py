@@ -1,12 +1,12 @@
 from datetime import datetime
-from typing import Any, Optional, Dict
+from typing import Any
 
 from pydantic import BaseModel
 
 
 class Mapbox_geo(BaseModel):
     coordinates: list[list[float]]
-    type: Optional[str] = None
+    type: str | None = None
 
 
 class Route_Step(BaseModel):
@@ -21,13 +21,13 @@ class Route(BaseModel):
     distance: float
     duration: float
     steps: list[Route_Step]
-    stops: Optional[list[Dict[str, Any]]] = None  # TODO use or remove this
+    stops: list[dict[str, Any]] | None = None  # TODO use or remove this
     geometry: Mapbox_geo
     cost: float
 
     class Stop(BaseModel):
         name: str
-        coordinates: Optional[list[list[float]]] = []
+        coordinates: list[list[float]] | None = []
         duration: float
         type: str
 
@@ -36,20 +36,20 @@ class Route(BaseModel):
 class Mapbox_waypoint(BaseModel):
     name: str
     location: list[float]
-    distance: Optional[float] = None
-    metadata: Optional[Dict[str, Any]] = None
+    distance: float | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class MapBox(BaseModel):
     class MapBox_Route(BaseModel):
         class Mapbox_leg(BaseModel):
             class Mapbox_notification(BaseModel):
-                details: Optional[Dict[str, str]] = None
-                subtype: Optional[str] = None
+                details: dict[str, str] | None = None
+                subtype: str | None = None
                 type: str
-                geometry_index_end: Optional[int] = None
-                geometry_index_start: Optional[int] = None
-                geometry_index: Optional[int] = None
+                geometry_index_end: int | None = None
+                geometry_index_start: int | None = None
+                geometry_index: int | None = None
 
             class Mapbox_admin(BaseModel):
                 iso_3166_1_alpha3: str
@@ -59,27 +59,27 @@ class MapBox(BaseModel):
                 class Mapbox_Maneuver(BaseModel):
                     type: str
                     instruction: str
-                    modifier: Optional[str] = None
+                    modifier: str | None = None
                     bearing_after: int
                     bearing_before: int
                     location: list[float]
 
                 intersections: list[Any]
-                exits: Optional[str] = None
-                destinations: Optional[str] = None
-                maneuver: Optional[Mapbox_Maneuver] = None
-                name: Optional[str] = None
+                exits: str | None = None
+                destinations: str | None = None
+                maneuver: Mapbox_Maneuver | None = None
+                name: str | None = None
                 duration: float
                 distance: float
-                driving_side: Optional[str] = None
-                weight: Optional[float] = None
-                mode: Optional[str] = None
+                driving_side: str | None = None
+                weight: float | None = None
+                mode: str | None = None
                 geometry: Mapbox_geo
-                ref: Optional[str] = None
+                ref: str | None = None
 
-            notifications: Optional[list[Mapbox_notification]] = []
-            via_waypoints: Optional[list[Any]] = []
-            admins: Optional[list[Mapbox_admin]] = []
+            notifications: list[Mapbox_notification] | None = []
+            via_waypoints: list[Any] | None = []
+            admins: list[Mapbox_admin] | None = []
             weight: float
             duration: float
             steps: list[Mapbox_step]
@@ -91,8 +91,8 @@ class MapBox(BaseModel):
         duration: float  # Total length in seconds
         distance: float  # Total distance in meters
         legs: list[Mapbox_leg]  # A leg represents a route between two destinations of the journey
-        geometry: Optional[Mapbox_geo] = None  # Contains every coordinate of the route
-        waypoints: Optional[list[Mapbox_waypoint]] = []  # Contains start, end, and stops locations
+        geometry: Mapbox_geo | None = None  # Contains every coordinate of the route
+        waypoints: list[Mapbox_waypoint] | None = []  # Contains start, end, and stops locations
 
     routes: list[MapBox_Route]
     waypoints: list[Mapbox_waypoint]
@@ -104,6 +104,6 @@ class Route_Payload(BaseModel):
     initial_route: MapBox.MapBox_Route
     num_stops: int
     budget: float
-    start: Optional[datetime] = datetime(2024, 9, 21, 9, 0, 0)
+    start: datetime | None = datetime(2024, 9, 21, 9, 0, 0)
     # Which routing algorithm to run. None -> the ROUTING_ALGORITHM env / default.
-    algorithm: Optional[str] = None
+    algorithm: str | None = None

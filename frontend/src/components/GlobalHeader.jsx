@@ -18,7 +18,7 @@ export default function GlobalHeader() {
   const location = useLocation();
   const navigate = useNavigate();
   const authed = isAuthenticated();
-  const { currentStep } = useContext(UserDataContext);
+  const { currentStep, clearUserData } = useContext(UserDataContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -31,6 +31,7 @@ export default function GlobalHeader() {
     sessionStorage.removeItem('accessToken');
     sessionStorage.removeItem('idToken');
     sessionStorage.removeItem('refreshToken');
+    clearUserData();
     navigate('/');
   };
 

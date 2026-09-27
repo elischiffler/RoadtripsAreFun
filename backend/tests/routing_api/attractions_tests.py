@@ -60,7 +60,9 @@ async def test_find_stop_uses_header_auth_and_terra_url(monkeypatch):
         captured["params"] = params
         captured["headers"] = headers
         return _FakeResponse(
-            _nearby_payload([_entry(1, "Museum", 39.5, -108.0, url="http://x", formatted="Main St")])
+            _nearby_payload(
+                [_entry(1, "Museum", 39.5, -108.0, url="http://x", formatted="Main St")]
+            )
         )
 
     monkeypatch.setattr(attractions.requests, "get", _capture)

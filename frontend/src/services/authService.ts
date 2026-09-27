@@ -10,6 +10,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const cognitoClient = new CognitoIdentityProviderClient({
   region: config.region,
+  ...(import.meta.env.VITE_COGNITO_ENDPOINT
+    ? { endpoint: import.meta.env.VITE_COGNITO_ENDPOINT }
+    : {}),
 });
 
 export const isAuthenticated = (): boolean => !!sessionStorage.getItem('accessToken');

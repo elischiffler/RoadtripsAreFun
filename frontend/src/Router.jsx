@@ -1,6 +1,6 @@
-import { createBrowserRouter, Outlet } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import AuthWrapper from './components/AuthWrapper';
-import GlobalHeader from './components/GlobalHeader';
+import RootLayout from './components/RootLayout';
 import HomePage from './pages/HomePage/HomePage';
 import ItineraryPage from './pages/ItineraryPage/ItineraryPage';
 import LoginPage from './pages/AuthPages/LoginPage';
@@ -9,16 +9,6 @@ import MapPage from './pages/MapPage/MapPage';
 import SettingsPage from './pages/SettingsPage';
 import SignUpPage from './pages/AuthPages/SignUpPage';
 import NotFoundPage from './pages/NotFoundPage';
-
-// Root layout — GlobalHeader overlays every page
-function RootLayout() {
-  return (
-    <>
-      <GlobalHeader />
-      <Outlet />
-    </>
-  );
-}
 
 const router = createBrowserRouter([
   {

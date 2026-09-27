@@ -19,12 +19,12 @@ run-frontend:
 
 ## Run all tests from the repo root
 test:
-	cd backend && python3.9 -m pytest
+	cd backend && python -m pytest
 	cd frontend && npm test
 
 ## Run only backend tests
 test-backend:
-	cd backend && python3.9 -m pytest
+	cd backend && python -m pytest
 
 ## Run only frontend tests
 test-frontend:
@@ -32,12 +32,12 @@ test-frontend:
 
 ## Run coverage for both (enforces thresholds — fails if below minimums)
 coverage:
-	cd backend && python3.9 -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
+	cd backend && python -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
 	cd frontend && npm run test:coverage
 
 ## Run only backend coverage
 coverage-backend:
-	cd backend && python3.9 -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
+	cd backend && python -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
 
 ## Run only frontend coverage
 coverage-frontend:

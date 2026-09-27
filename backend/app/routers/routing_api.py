@@ -186,9 +186,7 @@ async def plan_final_route(payload: Route_Payload) -> Route:
                     geocoder=geolocator, coords=stopping_points[idx]["coordinates"]
                 )
                 if location:
-                    stopping_points[idx]["address"] = (
-                        location.address
-                    )  # Add the address to each
+                    stopping_points[idx]["address"] = location.address  # Add the address to each
         else:
             location = get_location(geocoder=geolocator, coords=[end_lat, end_lon])
             # Include the duration to get to the end

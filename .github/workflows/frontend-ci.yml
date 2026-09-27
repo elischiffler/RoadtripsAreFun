@@ -2,13 +2,11 @@ name: Frontend CI
 
 on:
   pull_request:
-    paths:
-      - "frontend/**"
   push:
-    branches:
-      - main
-    paths:
-      - "frontend/**"
+    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -20,37 +18,54 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: "lts/*"
+          node-version: "24"
           cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Check formatting
+        if: ${{ !cancelled() }}
+        run: npm run format:check
+
+      - name: Lint
+        if: ${{ !cancelled() }}
+        run: npm run lint
+
       - name: Run tests with coverage
+        if: ${{ !cancelled() }}
         run: npm run test:coverage
 
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: test
     defaults:
       run:
         working-directory: frontend
+    env:
+      VITE_BACKEND_SERVER: http://127.0.0.1:8002/
+      VITE_USERPOOL_ID: us-west-1_fixture
+      VITE_CLIENT_ID: localfixture
+      VITE_COGNITO_ENDPOINT: http://127.0.0.1:8999
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: "lts/*"
+          node-version: "24"
           cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
@@ -58,9 +73,5 @@ jobs:
         run: npm ci
 
       - name: Build
-        env:
-          VITE_BACKEND_SERVER: ${{ secrets.VITE_BACKEND_SERVER }}
-          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
-          VITE_USERPOOL_ID: ${{ secrets.VITE_USERPOOL_ID }}
-          VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
+        if: ${{ !cancelled() }}
         run: npm run build

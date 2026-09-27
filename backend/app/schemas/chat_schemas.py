@@ -1,32 +1,34 @@
+from typing import Any
+
 from pydantic import BaseModel
-from typing import List, Any, Optional
+
 from app.models.routing_models.routing_models import MapBox, Route
 
 
 class ChatDataSchema(BaseModel):
     chatId: int
-    action: Optional[str] = None
+    action: str | None = None
     locationType: str
-    startCoords: Optional[List[float]] = None
-    startAddress: Optional[List[str]] = []
-    endCoords: Optional[List[float]] = None
-    endAddress: Optional[List[str]] = []
+    startCoords: list[float] | None = None
+    startAddress: list[str] | None = []
+    endCoords: list[float] | None = None
+    endAddress: list[str] | None = []
     stops: int
     showInputBar: bool
     showStopSlider: bool
     showBudgetSlider: bool
     showAddressInput: bool
     workflowStarted: bool
-    startConfirmed: Optional[Any] = None
-    endConfirmed: Optional[Any] = None
-    initial: Optional[MapBox.MapBox_Route] = None
-    route: Optional[Route] = None
-    itinerary: Optional[Any] = None
+    startConfirmed: Any | None = None
+    endConfirmed: Any | None = None
+    initial: MapBox.MapBox_Route | None = None
+    route: Route | None = None
+    itinerary: Any | None = None
     loading: bool
-    hotelBudget: Optional[int] = None
-    carBudget: Optional[int] = None
-    carDetails: List[str]
-    budget: Optional[int] = None
+    hotelBudget: int | None = None
+    carBudget: int | None = None
+    carDetails: list[str]
+    budget: int | None = None
     isComplete: bool = False
 
 
@@ -34,11 +36,11 @@ class ChatLogSchema(BaseModel):
     class ChatMessage(BaseModel):
         text: str
         sender: str
-        buttons: Optional[List[Any]] = None
+        buttons: list[Any] | None = None
 
     id: int
     title: str
-    messages: List[ChatMessage]
+    messages: list[ChatMessage]
 
 
 class ChatSchema(BaseModel):

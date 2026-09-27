@@ -150,15 +150,13 @@ def _format_context(facts: list[MemoryFact], trip: TripProfile | None) -> str:
             lines.append(f"- car: {trip.car.year} {trip.car.make} {trip.car.model}")
         sections.append(
             "Trip so far (INTERNAL — this chat's trip profile; for YOUR reference, "
-            "never quote field names or raw coordinates back to the user):\n"
-            + "\n".join(lines)
+            "never quote field names or raw coordinates back to the user):\n" + "\n".join(lines)
         )
 
     if facts:
         sections.append(
             "Other notes about this traveler (INTERNAL — for YOUR reference, do not "
-            "recite verbatim):\n"
-            + "\n".join(f"- {f.key}: {f.value}" for f in facts)
+            "recite verbatim):\n" + "\n".join(f"- {f.key}: {f.value}" for f in facts)
         )
 
     if not sections:
@@ -201,9 +199,7 @@ def build_messages(
     if hint:
         system_sections.append(hint)
 
-    messages: list[LLMMessage] = [
-        LLMMessage(role="system", content="\n\n".join(system_sections))
-    ]
+    messages: list[LLMMessage] = [LLMMessage(role="system", content="\n\n".join(system_sections))]
 
     if conversation is not None and conversation.summary:
         messages.append(

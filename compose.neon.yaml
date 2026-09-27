@@ -1,0 +1,45 @@
+name: roadtrips-neon
+
+# Interim AWS API topology while Neon remains the production database.
+# This stack has no PostgreSQL container or private database network.
+services:
+  api:
+    image: roadtrips-api:${ROADTRIPS_REVISION:?Set ROADTRIPS_REVISION to a checked merged main SHA}
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      args:
+        VCS_REF: ${ROADTRIPS_REVISION:?Set ROADTRIPS_REVISION to a checked merged main SHA}
+    env_file:
+      - path: ./.env.production.neon
+        required: true
+    environment:
+      LOCAL_PREVIEW: 'false'
+      ROADTRIPS_DATABASE_TARGET: neon
+      ROADTRIPS_NEON_WRITES_ENABLED: ${ROADTRIPS_NEON_WRITES_ENABLED:-false}
+      DATABASE_SSLMODE: verify-full
+      PGSSLROOTCERT: /etc/ssl/certs/ca-certificates.crt
+      CORS_ORIGINS: https://roadtrips.elischiffler.dev,https://roadtripsarefun.vercel.app
+      ROUTING_REMOTE_URL: ''
+    ports:
+      - '127.0.0.1:${ROADTRIPS_API_PORT:-8002}:8000'
+    networks:
+      - egress
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    cpus: 1.0
+    mem_limit: 768m
+    restart: unless-stopped
+    stop_grace_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+networks:
+  egress: {}

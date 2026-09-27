@@ -277,9 +277,7 @@ async def run_turn(
         for call in calls:
             result = await tools.dispatch(call, ctx)
             tools_used.append(call.name)
-            debug.tool_fired(
-                call.name, call.arguments, result.ok, result.result, result.error
-            )
+            debug.tool_fired(call.name, call.arguments, result.ok, result.result, result.error)
             # A failed tool is fed back to the model (not raised) and never becomes
             # an action, so record its error for the client to log/debug.
             if not result.ok and result.error:
@@ -359,9 +357,7 @@ def _tool_result_content(result: ToolResult) -> str:
     """
     trimmed = result.model_copy(deep=True)
     if trimmed.result:
-        trimmed.result = {
-            k: v for k, v in trimmed.result.items() if k not in _MODEL_HIDDEN_KEYS
-        }
+        trimmed.result = {k: v for k, v in trimmed.result.items() if k not in _MODEL_HIDDEN_KEYS}
     return trimmed.model_dump_json()
 
 
@@ -386,6 +382,4 @@ def _collect_action(result: ToolResult, chat_id: str, actions: list[AgentAction]
     if not isinstance(action_type, str) or not action_type:
         return
     payload = {k: result.result[k] for k in _ACTION_PAYLOAD_KEYS if k in result.result}
-    actions.append(
-        AgentAction(type=action_type, chatId=chat_id, payload=payload or None)
-    )
+    actions.append(AgentAction(type=action_type, chatId=chat_id, payload=payload or None))

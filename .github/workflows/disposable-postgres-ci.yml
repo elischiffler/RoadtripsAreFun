@@ -1,0 +1,24 @@
+name: Disposable PostgreSQL CRUD
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  crud-recovery:
+    name: Real CRUD, recreate, backup and restore
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Exercise disposable PostgreSQL lifecycle
+        run: node tests/postgres/run.mjs

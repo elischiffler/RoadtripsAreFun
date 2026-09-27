@@ -106,9 +106,7 @@ class ORToolsKnapsackPlanner(RoutePlanner):
         )
         return PlanResult(stopping_points=stopping_points, total_cost=total_cost)
 
-    def _select(
-        self, candidates: list[dict[str, Any]], num_stops: int
-    ) -> list[dict[str, Any]]:
+    def _select(self, candidates: list[dict[str, Any]], num_stops: int) -> list[dict[str, Any]]:
         """Pick at most ``num_stops`` attractions maximizing total value.
 
         Modeled as a 2-D knapsack: dimension 0 bounds total detour time, dimension
@@ -165,6 +163,7 @@ class ORToolsKnapsackPlanner(RoutePlanner):
         if isinstance(rank, int) and rank > 0:
             return max(1, int((1.0 / rank) * _INT_SCALE))
         return _INT_SCALE
+
 
 class _PreselectedStopProvider:
     """Dispenses OR-Tools' pre-selected attractions to the shared scheduler.

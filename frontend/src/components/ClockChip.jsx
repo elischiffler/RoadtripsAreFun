@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
+import PropTypes from 'prop-types';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import './ClockChip.css';
 
@@ -123,3 +124,7 @@ export default function ClockChip({ label }) {
     </Box>
   );
 }
+
+ClockChip.propTypes = {
+  label: PropTypes.string.isRequired,
+};

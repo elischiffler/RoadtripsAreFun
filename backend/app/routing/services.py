@@ -16,10 +16,10 @@ access patterns:
 
 from __future__ import annotations
 
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable
+from typing import Any
 
 from app.models.routing_models.routing_models import MapBox
 

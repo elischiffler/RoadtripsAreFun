@@ -8,7 +8,6 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { renderWithProviders } from './testUtils';
 import AuthWrapper from '../components/AuthWrapper';

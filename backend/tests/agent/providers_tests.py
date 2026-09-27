@@ -356,9 +356,7 @@ def _gateway_seq(monkeypatch, responses):
 
 def test_gateway_retries_empty_then_succeeds(monkeypatch):
     # First two attempts return empty content; the third has real text.
-    provider, client = _gateway_seq(
-        monkeypatch, [_end(""), _end(""), _end("Real answer.")]
-    )
+    provider, client = _gateway_seq(monkeypatch, [_end(""), _end(""), _end("Real answer.")])
     resp = provider.complete([LLMMessage(role="user", content="hi")], tools=[])
     assert resp.content == "Real answer."
     assert client.calls == 3

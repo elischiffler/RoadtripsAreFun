@@ -1,27 +1,30 @@
-from fastapi import APIRouter, HTTPException
+import logging
+
+import psycopg2
+from fastapi import APIRouter, Header, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-import logging
+
 from app.crud.chat_crud import (
-    update_chat_component,
     create_chat,
     delete_chat,
     get_all_chats,
     get_segments,
     restore_legs,
+    update_chat_component,
 )
 from app.schemas.chat_schemas import ChatSchema
-from app.utils.auth import get_user_id_from_token
+from app.utils.auth import bearer_token, get_user_id_from_token
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
 @router.get("/chats")
-async def initialize_chats(partition_key: str):
+async def initialize_chats(authorization: str | None = Header(default=None)):
     """Initialize all the previously stored chats in the database."""
     # Decode the permanent user ID from the temporary access token
-    user_id = get_user_id_from_token(partition_key)
+    user_id = get_user_id_from_token(bearer_token(authorization))
     try:
         # Get all stored items for a users unique partition key
         items = get_all_chats(user_id)
@@ -32,11 +35,17 @@ async def initialize_chats(partition_key: str):
             for item in items:
                 sorted_segments = None
                 if item["ChatData"]["initial"]:
-                    sorted_segments = get_segments(route_id=item["ChatData"]["initial"]["geometry"])
+                    sorted_segments = get_segments(
+                        user_id=user_id,
+                        chat_id=item["ChatId"],
+                        route_id=item["ChatData"]["initial"]["geometry"],
+                    )
                     item["ChatData"]["initial"]["geometry"] = {}
                     item["ChatData"]["initial"]["geometry"]["coordinates"] = sorted_segments
                     item["ChatData"]["initial"]["legs"] = restore_legs(
-                        legs=item["ChatData"]["initial"]["legs"]
+                        user_id=user_id,
+                        chat_id=item["ChatId"],
+                        legs=item["ChatData"]["initial"]["legs"],
                     )
                 if item["ChatData"]["route"] and sorted_segments is not None:
                     item["ChatData"]["route"]["geometry"]["coordinates"] = sorted_segments
@@ -45,6 +54,11 @@ async def initialize_chats(partition_key: str):
         # Return a response indicating a successful query and a list of found chats
         return chats
 
+    except psycopg2.Error as exception:
+        logger.warning("Chat read unavailable: %s", type(exception).__name__)
+        raise HTTPException(
+            status_code=503, detail="Chat storage is temporarily unavailable"
+        ) from None
     except KeyError as exception:
         raise HTTPException(status_code=500, detail=f"Stored data was missing a value: {exception}")
     except ValidationError as exception:
@@ -72,6 +86,10 @@ async def chat_add(chat_id: str, request: ChatSchema):
     except ValidationError as exception:
         logger.error("CREATE validation error chat_id=%s: %s", chat_id, exception)
         raise HTTPException(status_code=500, detail=f"Error validating request: {exception}")
+    except psycopg2.Error:
+        raise HTTPException(
+            status_code=503, detail="Chat storage is temporarily unavailable"
+        ) from None
 
 
 @router.put("/chats/update/{chat_id}")
@@ -97,11 +115,7 @@ async def chat_update(chat_id: int, request: ChatSchema):
         if chat_data:
             result = update_chat_component(user_id, str(chat_id), chat_data, "ChatData")
             if result is None:
-                logger.warning(
-                    "UPDATE chat_data: no row found for chat_id=%s user_id=%s — chat may not exist yet",
-                    chat_id,
-                    user_id,
-                )
+                raise HTTPException(status_code=404, detail="Chat not found")
             else:
                 logger.info("UPDATE chat_data success chat_id=%s", chat_id)
             responses.append(result)
@@ -109,30 +123,37 @@ async def chat_update(chat_id: int, request: ChatSchema):
         if chat_log:
             result = update_chat_component(user_id, str(chat_id), chat_log, "ChatLog")
             if result is None:
-                logger.warning(
-                    "UPDATE chat_log: no row found for chat_id=%s user_id=%s — chat may not exist yet",
-                    chat_id,
-                    user_id,
-                )
+                raise HTTPException(status_code=404, detail="Chat not found")
             else:
                 logger.info("UPDATE chat_log success chat_id=%s", chat_id)
             responses.append(result)
         return responses
+    except HTTPException:
+        raise
+    except psycopg2.Error:
+        raise HTTPException(
+            status_code=503, detail="Chat storage is temporarily unavailable"
+        ) from None
     except Exception as exception:
         logger.error("UPDATE failed chat_id=%s: %s", chat_id, exception)
         raise HTTPException(status_code=500, detail=f"Error updating chat: {exception}")
 
 
 @router.delete("/chats/delete/{chat_id}")
-async def delete_chat_component(chat_id: int, partition_key: str):
+async def delete_chat_component(chat_id: int, authorization: str | None = Header(default=None)):
     """Delete a particular chat component from the database."""
-    user_id = get_user_id_from_token(partition_key)
+    user_id = get_user_id_from_token(bearer_token(authorization))
     try:
         # Delete the chat and send a success response if no errors are raised
-        delete_chat(user_id, str(chat_id))
+        if not delete_chat(user_id, str(chat_id)):
+            raise HTTPException(status_code=404, detail="Chat not found")
         return JSONResponse(
             status_code=200,
             content={"status": "success", "message": f"Chat {chat_id} deleted successfully"},
         )
+    except psycopg2.Error:
+        raise HTTPException(
+            status_code=503, detail="Chat storage is temporarily unavailable"
+        ) from None
     except ValidationError as exception:
         raise HTTPException(status_code=500, detail=f"Error validating request: {exception}")

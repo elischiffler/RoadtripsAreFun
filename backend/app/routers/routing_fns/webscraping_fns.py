@@ -1,19 +1,21 @@
-from typing import List, Tuple, Dict, Any, Optional
-from fastapi import HTTPException
 import random
+from typing import Any
+
 import requests
-from lxml import html
-from app.utils.geolocation_helpers import get_location
+from fastapi import HTTPException
 from geopy.distance import geodesic
+from lxml import html
+
+from app.utils.geolocation_helpers import get_location
 
 
 def find_google_hotels(
     query: str,
-    price_range: Tuple[float, float],
-    coords: Tuple[float, float],
+    price_range: tuple[float, float],
+    coords: tuple[float, float],
     radius: int,
     geolocator: Any,
-) -> Optional[Dict[str, Any]]:
+) -> dict[str, Any] | None:
     """
     Handles the parsing of a Google hotels for the best hotel given the users preferences
 
@@ -61,7 +63,7 @@ def find_google_hotels(
         )  # To handle research
 
 
-def _get_html_response(url: str, query: Optional[str] = None) -> requests.Response:
+def _get_html_response(url: str, query: str | None = None) -> requests.Response:
     user_agents = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0",
@@ -89,7 +91,7 @@ def _get_html_response(url: str, query: Optional[str] = None) -> requests.Respon
     return response
 
 
-def _parse_google_response(response: str) -> List[Dict[str, Any]]:
+def _parse_google_response(response: str) -> list[dict[str, Any]]:
     """
     Parses an HTML response for hotel information
     Parameters
@@ -134,7 +136,7 @@ def _parse_google_response(response: str) -> List[Dict[str, Any]]:
     return listings
 
 
-def _get_advanced_listing(hotel: Dict[str, Any], geolocator) -> Optional[Dict[str, Any]]:
+def _get_advanced_listing(hotel: dict[str, Any], geolocator) -> dict[str, Any] | None:
     """
     Scrapes a given hotel listing for an accurate website url and location info
     Args:
@@ -171,7 +173,7 @@ def _get_advanced_listing(hotel: Dict[str, Any], geolocator) -> Optional[Dict[st
         return None
 
 
-def _str_to_rating(rating: str) -> Tuple[float, int]:
+def _str_to_rating(rating: str) -> tuple[float, int]:
     """
     Parses scraped rating information for relevant number
 

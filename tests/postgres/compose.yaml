@@ -1,0 +1,86 @@
+name: roadtrips-crud-test
+
+x-postgres: &postgres
+  image: postgres:18.6-bookworm@sha256:3725f4e2499eef5134592b3b4ab79a543ed7f8e533b05b5b637af926630f6650
+  environment:
+    POSTGRES_DB: roadtrips
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: disposable-local-only
+    POSTGRES_INITDB_ARGS: --data-checksums
+  networks: [database]
+  healthcheck:
+    test: [CMD-SHELL, "pg_isready -U postgres -d roadtrips"]
+    interval: 5s
+    timeout: 3s
+    retries: 12
+    start_period: 15s
+  mem_limit: 384m
+  cpus: 0.5
+  pids_limit: 128
+  logging:
+    driver: json-file
+    options: { max-size: 5m, max-file: "2" }
+
+services:
+  postgres:
+    <<: *postgres
+    volumes:
+      - source-data:/var/lib/postgresql
+      - ./schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+
+  restore:
+    <<: *postgres
+    profiles: [restore]
+    volumes:
+      - restore-data:/var/lib/postgresql
+
+  api:
+    build:
+      context: ../..
+      dockerfile: backend/Dockerfile
+      target: runtime
+      args:
+        VCS_REF: ${ROADTRIPS_REVISION:-local-crud-test}
+    image: roadtrips-crud-api:local
+    environment:
+      LOCAL_PREVIEW: "true"
+      DATABASE_URL: postgresql://postgres:disposable-local-only@postgres/roadtrips
+      DATABASE_SSLMODE: disable
+      MENTRO_GATEWAY_URL: http://mentro-server:3001
+      SUPABASE_URL: http://fixture:3004
+      SUPABASE_ANON_KEY: local-fixture-anon-key
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [database]
+    profiles: [api]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 768m
+    cpus: 1.0
+    pids_limit: 128
+
+  test:
+    build:
+      context: ../..
+      dockerfile: backend/Dockerfile
+      target: test
+    image: roadtrips-crud-test-runner:local
+    environment:
+      PYTHONPATH: /app
+      DATABASE_URL: postgresql://postgres:disposable-local-only@postgres/roadtrips
+      DATABASE_SSLMODE: disable
+      DB_TEST_RUN_ID: ${DB_TEST_RUN_ID:?Set DB_TEST_RUN_ID}
+    networks: [database]
+    profiles: [test]
+    command: [python, tests/db_integration_probe.py, seed]
+
+volumes:
+  source-data:
+  restore-data:
+
+networks:
+  database:
+    internal: true
