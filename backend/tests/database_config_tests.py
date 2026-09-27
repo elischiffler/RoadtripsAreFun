@@ -3,8 +3,32 @@ from unittest.mock import MagicMock
 import psycopg2
 import pytest
 
-from app.core.config import _database_sslmode, settings
+from app.core.config import _database_sslmode, settings, validate_neon_environment
 from app.crud import chat_crud
+
+
+def test_neon_deployment_requires_verified_tls_and_neon_database():
+    env = {
+        "ROADTRIPS_DATABASE_TARGET": "neon",
+        "DATABASE_URL": "postgresql://app:dummy@ep-example.us-west-2.aws.neon.tech/neondb?channel_binding=require",
+        "DATABASE_SSLMODE": "verify-full",
+        "PGSSLROOTCERT": "/etc/ssl/certs/ca-certificates.crt",
+        "ROADTRIPS_NEON_WRITES_ENABLED": "false",
+    }
+    validate_neon_environment(env)
+    for name, value in (
+        ("DATABASE_SSLMODE", "require"),
+        ("PGSSLROOTCERT", "/tmp/untrusted.crt"),
+        ("ROADTRIPS_NEON_WRITES_ENABLED", ""),
+        ("DATABASE_URL", "postgresql://app:dummy@postgres/neondb"),
+        ("DATABASE_URL", "postgresql://app:dummy@ep-example.us-west-2.aws.neon.tech/other"),
+        (
+            "DATABASE_URL",
+            "postgresql://app:dummy@ep-example.us-west-2.aws.neon.tech/neondb?host=postgres",
+        ),
+    ):
+        with pytest.raises(ValueError):
+            validate_neon_environment(env | {name: value})
 
 
 def test_hosted_database_still_requires_tls_by_default(monkeypatch):

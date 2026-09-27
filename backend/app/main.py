@@ -68,6 +68,16 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.middleware("http")
+async def guard_neon_writes(request, call_next):
+    if settings.NEON_READ_ONLY and request.method not in {"GET", "HEAD", "OPTIONS"}:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Neon write routes are disabled pending provider acceptance"},
+        )
+    return await call_next(request)
+
+
+@app.middleware("http")
 async def isolate_incomplete_preview(request, call_next):
     # Until reviewed schema/provider fixtures exist, fail before any business
     # route can use hardcoded upstreams (some routes do not require API keys).

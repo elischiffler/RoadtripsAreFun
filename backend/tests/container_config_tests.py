@@ -65,6 +65,23 @@ def test_cors_allows_preview_but_not_unapproved_origin():
         assert (response.headers.get("access-control-allow-origin") == origin) == allowed
 
 
+def test_neon_private_stage_rejects_write_routes(monkeypatch):
+    monkeypatch.setattr(settings, "NEON_READ_ONLY", True)
+    client = TestClient(app)
+    response = client.post("/chats/create/1", json={})
+    assert response.status_code == 503
+    assert "disabled" in response.json()["detail"]
+    assert client.get("/health").status_code == 200
+    preflight = client.options(
+        "/chats/create/1",
+        headers={
+            "Origin": "https://roadtrips.elischiffler.dev",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+    assert preflight.status_code == 200
+
+
 def test_readiness_tracks_database_failure_and_recovery(monkeypatch):
     client = TestClient(app)
     conn = MagicMock()

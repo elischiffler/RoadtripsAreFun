@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 from dotenv import load_dotenv
 
@@ -40,6 +40,33 @@ def validate_local_environment(env) -> None:
 validate_local_environment(os.environ)
 
 
+def validate_neon_environment(env) -> None:
+    """Reject an accidental non-Neon or unverified production database target."""
+    if env.get("ROADTRIPS_DATABASE_TARGET") != "neon":
+        return
+    url = urlparse(env.get("DATABASE_URL", ""))
+    if (
+        url.scheme not in {"postgres", "postgresql"}
+        or not url.hostname
+        or not url.hostname.endswith(".neon.tech")
+        or url.path != "/neondb"
+        or any(
+            name != "channel_binding" or values != ["require"]
+            for name, values in parse_qs(url.query).items()
+        )
+    ):
+        raise ValueError("Neon deployment requires a neondb connection on a Neon host")
+    if env.get("DATABASE_SSLMODE") != "verify-full":
+        raise ValueError("Neon deployment requires DATABASE_SSLMODE=verify-full")
+    if env.get("PGSSLROOTCERT") != "/etc/ssl/certs/ca-certificates.crt":
+        raise ValueError("Neon deployment requires the runtime CA bundle")
+    if env.get("ROADTRIPS_NEON_WRITES_ENABLED") not in {"true", "false"}:
+        raise ValueError("Neon deployment requires an explicit write gate")
+
+
+validate_neon_environment(os.environ)
+
+
 def _database_sslmode() -> str:
     mode = os.getenv("DATABASE_SSLMODE", "require").strip()
     if mode not in {"require", "verify-ca", "verify-full", "disable"}:
@@ -49,6 +76,10 @@ def _database_sslmode() -> str:
 
 class Settings:
     LOCAL_PREVIEW = os.getenv("LOCAL_PREVIEW") == "true"
+    NEON_READ_ONLY = (
+        os.getenv("ROADTRIPS_DATABASE_TARGET") == "neon"
+        and os.getenv("ROADTRIPS_NEON_WRITES_ENABLED") != "true"
+    )
     CORS_ORIGINS = [
         value.strip()
         for value in os.getenv(
