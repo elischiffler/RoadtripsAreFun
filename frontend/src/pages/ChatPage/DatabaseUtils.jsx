@@ -12,10 +12,7 @@ export const createChat = async (auth_token, UserChatData, ChatLog) => {
       ChatData: UserChatData,
       ChatLog: sanitizedLog,
     };
-    console.debug('[DB] createChat chatId=%s', UserChatData.chatId, {
-      ChatData: UserChatData,
-      ChatLog: sanitizedLog,
-    });
+    console.debug('[DB] createChat chatId=%s', UserChatData.chatId);
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_SERVER}chats/create/${UserChatData.chatId}`,
       data
@@ -25,15 +22,14 @@ export const createChat = async (auth_token, UserChatData, ChatLog) => {
       UserChatData.chatId,
       response.status
     );
-    return null;
+    return true;
   } catch (error) {
     console.error(
-      '[DB] createChat failed chatId=%s status=%s:',
+      '[DB] createChat failed chatId=%s status=%s',
       UserChatData.chatId,
-      error.response?.status,
-      JSON.stringify(error.response?.data ?? error.message, null, 2)
+      error.response?.status ?? 'network'
     );
-    return null;
+    return false;
   }
 };
 
@@ -99,38 +95,38 @@ export const initializeUserData = async (auth_token) => {
 };
 
 export const updateUserData = async (access_token, UserChatData, chats) => {
-  try {
-    let newChat = chats.find(
-      (
-        Chat // Find the currently selected chat in chats
-      ) => Chat.id === UserChatData.chatId
-    );
+  const newChat = chats.find(
+    (
+      Chat // Find the currently selected chat in chats
+    ) => Chat.id === UserChatData.chatId
+  );
 
-    if (!newChat) {
-      console.warn(
-        '[DB] updateUserData: no chat found in chats array for chatId=%s — available ids: %s',
-        UserChatData.chatId,
-        chats.map((c) => c.id).join(', ')
-      );
-      return null;
-    }
-
-    // Sanitize the chat log to ensure no loading animations are sent to the backend
-    const sanitizedChat = {
-      ...newChat,
-      messages: newChat.messages.filter((msg) => msg.type !== 'loading-chat'),
-    };
-
-    console.debug(
-      '[DB] updateUserData chatId=%s messages=%d',
+  if (!newChat) {
+    console.warn(
+      '[DB] updateUserData: no chat found in chats array for chatId=%s — available ids: %s',
       UserChatData.chatId,
-      sanitizedChat.messages.length
+      chats.map((c) => c.id).join(', ')
     );
-    const data = {
-      PartitionKey: access_token,
-      ChatData: UserChatData,
-      ChatLog: sanitizedChat,
-    };
+    return false;
+  }
+
+  // Sanitize the chat log to ensure no loading animations are sent to the backend
+  const sanitizedChat = {
+    ...newChat,
+    messages: newChat.messages.filter((msg) => msg.type !== 'loading-chat'),
+  };
+
+  console.debug(
+    '[DB] updateUserData chatId=%s messages=%d',
+    UserChatData.chatId,
+    sanitizedChat.messages.length
+  );
+  const data = {
+    PartitionKey: access_token,
+    ChatData: UserChatData,
+    ChatLog: sanitizedChat,
+  };
+  try {
     const response = await axios.put(
       `${import.meta.env.VITE_BACKEND_SERVER}chats/update/${UserChatData.chatId}`,
       data
@@ -140,14 +136,18 @@ export const updateUserData = async (access_token, UserChatData, chats) => {
       UserChatData.chatId,
       response.status
     );
-    return null;
+    return true;
   } catch (error) {
+    if (error.response?.status === 404) {
+      // A new trip is only local until the first agent action supplies data.
+      // The update endpoint correctly rejects that missing owner-scoped row.
+      return createChat(access_token, UserChatData, sanitizedChat);
+    }
     console.error(
-      '[DB] updateUserData failed chatId=%s status=%s:',
+      '[DB] updateUserData failed chatId=%s status=%s',
       UserChatData.chatId,
-      error.response?.status,
-      error.response?.data ?? error.message
+      error.response?.status ?? 'network'
     );
-    return null;
+    return false;
   }
 };

@@ -27,7 +27,7 @@ vi.mock('../pages/ChatPage/agentChat', () => ({
   sendAgentMessage: vi.fn(),
 }));
 vi.mock('../pages/ChatPage/DatabaseUtils', () => ({
-  updateUserData: vi.fn().mockResolvedValue(null),
+  updateUserData: vi.fn().mockResolvedValue(true),
 }));
 
 import { sendAgentMessage } from '../pages/ChatPage/agentChat';
@@ -78,6 +78,7 @@ Harness.propTypes = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  updateUserData.mockResolvedValue(true);
   import.meta.env.VITE_BACKEND_SERVER = 'http://localhost:8000/';
 });
 
@@ -151,6 +152,25 @@ describe("submit('chat_message')", () => {
 });
 
 describe('applyAgentActions', () => {
+  it('warns in the chat when the trip snapshot was not saved', async () => {
+    updateUserData.mockResolvedValueOnce(false);
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Trip details updated.',
+      toolsUsed: ['update_trip_profile'],
+      actions: [
+        {
+          type: 'trip_profile_updated',
+          chatId: String(CHAT_ID),
+          payload: { trip_profile: { num_stops: 2 } },
+        },
+      ],
+    });
+
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    expect(await screen.findByText(/couldn't save this trip/i)).toBeInTheDocument();
+  });
+
   it('writes a route_updated payload into the persisted ChatData snapshot', async () => {
     const routeObj = {
       duration: 3600,

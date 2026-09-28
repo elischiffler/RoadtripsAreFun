@@ -33,12 +33,12 @@ const CHAT_DATA = {
 const CHAT_LOG = { id: 1, title: 'Test Trip', messages: [{ text: 'Hello', sender: 'bot' }] };
 
 describe('createChat', () => {
-  it('posts to chats/create/:chatId and returns null on success', async () => {
+  it('posts to chats/create/:chatId and returns true on success', async () => {
     axios.post.mockResolvedValueOnce({ status: 201, data: {} });
     const result = await createChat(AUTH_TOKEN, CHAT_DATA, CHAT_LOG);
     expect(axios.post).toHaveBeenCalledTimes(1);
     expect(axios.post.mock.calls[0][0]).toMatch(/chats\/create\/1/);
-    expect(result).toBeNull();
+    expect(result).toBe(true);
   });
 
   it('strips loading bubbles before posting', async () => {
@@ -52,10 +52,10 @@ describe('createChat', () => {
     expect(body.ChatLog.messages.every((m) => m.type !== 'loading-chat')).toBe(true);
   });
 
-  it('returns null and does not throw on network error', async () => {
+  it('returns false and does not throw on network error', async () => {
     axios.post.mockRejectedValueOnce(new Error('Network error'));
     const result = await createChat(AUTH_TOKEN, CHAT_DATA, CHAT_LOG);
-    expect(result).toBeNull();
+    expect(result).toBe(false);
   });
 });
 
@@ -103,17 +103,53 @@ describe('initializeUserData', () => {
 });
 
 describe('updateUserData', () => {
+  it('creates the owner-scoped chat when the first update finds no row', async () => {
+    axios.put.mockRejectedValueOnce({
+      response: { status: 404, data: { detail: 'Chat not found' } },
+    });
+    axios.post.mockResolvedValueOnce({ status: 200, data: {} });
+    const chats = [
+      {
+        ...CHAT_LOG,
+        messages: [...CHAT_LOG.messages, { type: 'loading-chat' }],
+      },
+    ];
+
+    expect(await updateUserData(AUTH_TOKEN, CHAT_DATA, chats)).toBe(true);
+    expect(axios.put).toHaveBeenCalledTimes(1);
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.post.mock.calls[0][0]).toMatch(/chats\/create\/1/);
+    expect(axios.post.mock.calls[0][1]).toEqual({
+      PartitionKey: AUTH_TOKEN,
+      ChatData: CHAT_DATA,
+      ChatLog: CHAT_LOG,
+    });
+  });
+
   it('puts to chats/update/:chatId when the chat is found', async () => {
     axios.put.mockResolvedValueOnce({ status: 200, data: {} });
     const chats = [CHAT_LOG];
-    await updateUserData(AUTH_TOKEN, CHAT_DATA, chats);
+    expect(await updateUserData(AUTH_TOKEN, CHAT_DATA, chats)).toBe(true);
     expect(axios.put).toHaveBeenCalledTimes(1);
     expect(axios.put.mock.calls[0][0]).toMatch(/chats\/update\/1/);
+    expect(axios.post).not.toHaveBeenCalled();
   });
 
-  it('returns null without calling put when chat is not found in array', async () => {
+  it('does not create on authorization failures', async () => {
+    axios.put.mockRejectedValueOnce({ response: { status: 403 } });
+    expect(await updateUserData(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG])).toBe(false);
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it('reports a failed create after a missing-row update', async () => {
+    axios.put.mockRejectedValueOnce({ response: { status: 404 } });
+    axios.post.mockRejectedValueOnce({ response: { status: 503 } });
+    expect(await updateUserData(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG])).toBe(false);
+  });
+
+  it('returns false without calling put when chat is not found in array', async () => {
     const result = await updateUserData(AUTH_TOKEN, CHAT_DATA, []); // empty chats
     expect(axios.put).not.toHaveBeenCalled();
-    expect(result).toBeNull();
+    expect(result).toBe(false);
   });
 });

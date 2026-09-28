@@ -333,9 +333,10 @@ export function useTripWorkflow({
       const idx = ChatLogsData.chatdata.findIndex((c) => c.chatId === snap.chatId);
       if (idx !== -1) ChatLogsData.chatdata[idx] = snap;
       else ChatLogsData.chatdata.push(snap);
-      await updateUserData(accessToken, snap, chatsRef.current);
+      const saved = await updateUserData(accessToken, snap, chatsRef.current);
+      if (!saved) bot("I couldn't save this trip. Please try again before leaving this page.");
     },
-    [ChatLogsData, accessToken, chatsRef]
+    [ChatLogsData, accessToken, chatsRef, bot]
   );
 
   // ── Apply structured agent actions ────────────────────────────────────────
