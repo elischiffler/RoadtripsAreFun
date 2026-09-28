@@ -9,7 +9,13 @@ into the JS bundle. The AWS switch is
 build and then Production after the journey passes. The browser's Cognito
 `VITE_USERPOOL_ID` and `VITE_CLIENT_ID` must match backend
 `COGNITO_USER_POOL_ID` and `COGNITO_APP_CLIENT_ID` in `us-west-1`. The backend
-must allow the actual Preview and Production origins in `CORS_ORIGINS`.
+must allow the actual Preview and Production origins in `CORS_ORIGINS`. For the
+current PR Preview deployment, the stable branch alias is
+`https://roadtripsarefun-git-fix-public-a-261cfb-eli-schifflers-projects.vercel.app`.
+The Neon Compose template accepts an explicit `ROADTRIPS_CORS_ORIGINS` host
+interpolation value so the operator can add that exact origin for the controlled
+Preview test and later remove it without changing the default production
+allowlist. Do not use `*` or an unreviewed wildcard.
 
 Public provider-backed route, geocoding, itinerary, and car requests now require
 a verified Cognito access token in `Authorization: Bearer`; the signed-in chat

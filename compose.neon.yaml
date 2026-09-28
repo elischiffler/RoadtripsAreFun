@@ -19,7 +19,7 @@ services:
       ROADTRIPS_NEON_WRITES_ENABLED: ${ROADTRIPS_NEON_WRITES_ENABLED:-false}
       DATABASE_SSLMODE: verify-full
       PGSSLROOTCERT: /etc/ssl/certs/ca-certificates.crt
-      CORS_ORIGINS: https://roadtrips.elischiffler.dev,https://roadtripsarefun.vercel.app
+      CORS_ORIGINS: ${ROADTRIPS_CORS_ORIGINS:-https://roadtrips.elischiffler.dev,https://roadtripsarefun.vercel.app}
       ROUTING_REMOTE_URL: ''
     ports:
       - '127.0.0.1:${ROADTRIPS_API_PORT:-8002}:8000'
