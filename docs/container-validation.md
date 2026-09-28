@@ -1,5 +1,27 @@
 # Container migration evidence
 
+## Public route authorization follow-up, 2026-09-27
+
+The browser-direct API path needs an authenticated Cognito access token for
+provider-backed routing, geocoding, itinerary, and car endpoints. Local HTTP
+tests now assert that all seven protected paths reject missing tokens before
+provider work and that the static `/algorithms` inventory remains public. The
+frontend tests assert the route requests send the session access token in the
+Authorization header. Existing Cognito RS256 verifier tests still check issuer,
+expiry, token use, app client and subject. Local backend suite: **PASS**, 282
+tests and 78.19% coverage on the Windows Python 3.14 interpreter; the isolated
+Python 3.12.14 container test image also passed all 282 tests with 79.05%
+coverage. Frontend format, lint, 111 tests/coverage thresholds, and build:
+**PASS**. This is local/fixture evidence only.
+
+Off-host Neon backup/restore, actual two-user Cognito ownership, provider-backed
+route/map/chat persistence, HTTPS/CORS on the public API, Vercel Preview
+rebuild, and Production frontend switch remain **BLOCKED** pending their
+separate acceptance. See [the off-host proposal](off-host-neon-recovery.md)
+and [the public API gate](aws-api-readiness.md). The live website still points
+at Render as of this inspection; no provider data or public traffic was
+changed by this PR.
+
 ## Signed local journey follow-up, 2026-09-24
 
 The new [journey driver](../tests/journey/run.py) launched the normal API image

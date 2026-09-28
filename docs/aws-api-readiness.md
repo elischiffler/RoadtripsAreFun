@@ -1,5 +1,38 @@
 # Roadtrips API production template
 
+## Public browser API gate
+
+The deployed Vercel frontend currently embeds
+`VITE_BACKEND_SERVER=https://rp-routing.onrender.com/`; Vite bakes this value
+into the JS bundle. The AWS switch is
+`https://api.roadtrips.elischiffler.dev/` (trailing slash), first in a Preview
+build and then Production after the journey passes. The browser's Cognito
+`VITE_USERPOOL_ID` and `VITE_CLIENT_ID` must match backend
+`COGNITO_USER_POOL_ID` and `COGNITO_APP_CLIENT_ID` in `us-west-1`. The backend
+must allow the actual Preview and Production origins in `CORS_ORIGINS`. For the
+current PR Preview deployment, the stable branch alias is
+`https://roadtripsarefun-git-fix-public-a-261cfb-eli-schifflers-projects.vercel.app`.
+The Neon Compose template accepts an explicit `ROADTRIPS_CORS_ORIGINS` host
+interpolation value so the operator can add that exact origin for the controlled
+Preview test and later remove it without changing the default production
+allowlist. Do not use `*` or an unreviewed wildcard.
+
+Public provider-backed route, geocoding, itinerary, and car requests now require
+a verified Cognito access token in `Authorization: Bearer`; the signed-in chat
+UI sends its session token. `/health`, `/ready`, and the static `/algorithms`
+inventory remain public. `/benchmark` is disabled unless explicitly enabled
+and is authenticated when enabled. This preserves the existing signed-in trip
+flow; an anonymous planner would need a separate abuse-control design. CORS is
+not an authorization control. Deploy the backend and frontend from matching
+reviewed commits before a public business journey.
+
+The [off-host recovery proposal](off-host-neon-recovery.md) defines the
+specific S3 destination, 30-day retention, cost estimate, and restore proof
+needed before enabling Neon writes. The current same-disk dump alone does not
+clear that gate. Public DNS and TLS can be staged without switching the
+Production frontend, but a healthy `/ready` does not prove authenticated
+route/map/chat persistence.
+
 `compose.prod.yaml` is the API-only template for the proposed same-host
 PostgreSQL cutover. It builds the backend from a reviewed full commit SHA, publishes container port
 8000 on host loopback port 8002, and keeps PostgreSQL private. The host proxy

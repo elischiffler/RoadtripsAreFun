@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
+pytestmark = pytest.mark.usefixtures("allow_provider_auth")
 
 
 def _mock_location(address: str, lat: float = 34.05, lon: float = -118.24) -> MagicMock:

@@ -21,7 +21,7 @@ import logging
 import os
 
 import requests  # noqa: F401  (re-exported: tests patch app.routers.routing_api.requests.get)
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import ValidationError
 from requests.exceptions import RequestException
 
@@ -38,6 +38,7 @@ from app.routing.sources.hotels import find_hotel as _find_hotel  # noqa: F401
 from app.routing.sources.hotels import get_amadeus_token as _get_amadeus_token  # noqa: F401
 from app.routing.sources.hotels import get_nearby_city as _get_nearby_city  # noqa: F401
 from app.routing.sources.mapbox import call_route as _call_route
+from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location  # noqa: F401  (patched in tests)
 
 # Setup logging (for debugging)
@@ -66,7 +67,7 @@ def _build_services() -> RoutingServices:
     )
 
 
-@router.get("/get-initial-route")
+@router.get("/get-initial-route", dependencies=[Depends(require_authenticated_user)])
 async def get_initial_route(
     start_lat: float, start_lon: float, end_lat: float, end_lon: float
 ) -> MapBox_route:
@@ -84,7 +85,11 @@ async def get_initial_route(
         )
 
 
-@router.post("/generate-final-route", response_model=Route)
+@router.post(
+    "/generate-final-route",
+    response_model=Route,
+    dependencies=[Depends(require_authenticated_user)],
+)
 async def get_final_route(request: Request) -> Route:
     """
     Retrieves a route from Mapbox API, adds intermediate stops via the selected
@@ -229,7 +234,7 @@ async def list_algorithms() -> dict:
     return {"algorithms": available_planners(), "default": default}
 
 
-@router.get("/benchmark")
+@router.get("/benchmark", dependencies=[Depends(require_authenticated_user)])
 async def benchmark(algorithms: str = None):
     """Run the offline planner benchmark and return a comparison table (JSON).
 

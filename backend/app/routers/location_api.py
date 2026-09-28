@@ -2,17 +2,18 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from geopy.geocoders import OpenCage
 from pydantic import ValidationError
 
 from app.models.location_models import location_model, location_payload
+from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location
 
 load_dotenv(Path(__file__).resolve().parents[3] / ".env", override=True)
 
 # Initialize FastAPI
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(require_authenticated_user)])
 
 open_cage_key = os.getenv("OPENCAGE_KEY")
 geolocator = OpenCage(api_key=open_cage_key, user_agent="rp-routing", timeout=10)

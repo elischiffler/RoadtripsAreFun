@@ -6,7 +6,7 @@ import re
 from functools import lru_cache
 
 import jwt
-from fastapi import HTTPException
+from fastapi import Header, HTTPException
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +37,11 @@ def bearer_token(authorization: str | None) -> str:
     if not separator or scheme.lower() != "bearer" or not token or " " in token:
         raise HTTPException(status_code=401, detail="Invalid authentication token")
     return token
+
+
+def require_authenticated_user(authorization: str | None = Header(default=None)) -> str:
+    """Authorize browser-facing provider routes with the existing Cognito verifier."""
+    return get_user_id_from_token(bearer_token(authorization))
 
 
 def get_user_id_from_token(token: str) -> str:
