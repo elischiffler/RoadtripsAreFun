@@ -1,22 +1,21 @@
 # RoadtripsAreFun
 
 Local Docker preview: [runbook](docs/container-runbook.md) and
-[validation/blockers](docs/container-validation.md). The container work does not
-change production hosting. Disposable PostgreSQL CRUD/recovery checks pass; the
-full trip journey, live-schema compatibility and isolated Auth/provider checks
-remain open. The PR remains draft.
+[validation/blockers](docs/container-validation.md). Its disposable PostgreSQL
+checks are separate from the production AWS API, which uses external Neon.
+The local preview does not establish production Auth or provider acceptance.
 
 A road trip planning application. This monorepo contains two services:
 
 | Service | Stack | Deployed at |
 |---|---|---|
-| [`backend/`](./backend) | Python 3.12 / FastAPI / Neon Postgres | [Render](https://dashboard.render.com/web/srv-cqvu44jv2p9s739hhb60) |
+| [`backend/`](./backend) | Python 3.12 / FastAPI / Neon Postgres | [api.roadtrips.elischiffler.dev](https://api.roadtrips.elischiffler.dev/health) (AWS EC2) |
 | [`frontend/`](./frontend) | React 18 / Vite / MUI | [roadtrips.elischiffler.dev](https://roadtrips.elischiffler.dev) (Vercel) |
 
-The intended AWS API address is `https://api.roadtrips.elischiffler.dev/`.
-Its DNS and deployment are pending; keep the current frontend
-`VITE_BACKEND_SERVER` value until the replacement API passes health, auth, and
-CORS checks. The browser build embeds this value at build time.
+The production frontend uses `https://api.roadtrips.elischiffler.dev/` as its
+`VITE_BACKEND_SERVER`. The browser build embeds this value at build time. The
+previous `rp-routing` Render web service was retired on 2026-09-28; do not use
+its URL as a deployment or rollback target.
 
 ---
 
