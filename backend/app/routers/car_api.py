@@ -3,12 +3,14 @@ import re
 import xml.etree.ElementTree as ET
 
 import requests
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from requests import Response
 from requests.exceptions import RequestException
 
+from app.utils.auth import require_authenticated_user
+
 # Grab app from APIRouter
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(require_authenticated_user)])
 logger = logging.getLogger(__name__)
 
 # Explicit (connect, read) timeouts in seconds for outbound FuelEconomy.gov calls so

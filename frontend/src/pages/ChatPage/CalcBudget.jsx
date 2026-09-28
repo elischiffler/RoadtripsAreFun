@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { backendAuthConfig } from '../../services/backendAuth';
 import { addMessage, removeLoader } from './useTripWorkflow';
 
 export const calcHotelBudget = async (route_duration, stops) => {
@@ -36,7 +37,10 @@ export const calcGasBudget = async (
 
     let liveGasPrice = 3.317; // Fallback average price
     try {
-      const priceResponse = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}get-gas-price`);
+      const priceResponse = await axios.get(
+        `${import.meta.env.VITE_BACKEND_SERVER}get-gas-price`,
+        backendAuthConfig()
+      );
       liveGasPrice = priceResponse.data;
     } catch (error) {
       console.error('Error fetching live gas price, using fallback.', error);
@@ -58,6 +62,7 @@ const getCarInfo = async (year, make, model, chatId, setChats, UserChatData) => 
     addMessage(chatId, setChats, 'loading', 'bot');
     const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}get-car-details`, {
       params: params,
+      ...backendAuthConfig(),
     });
     removeLoader(chatId, setChats);
     const carInfo = response.data;

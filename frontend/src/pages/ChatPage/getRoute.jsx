@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { backendAuthConfig } from '../../services/backendAuth';
 export const getInitialRoute = async (start_lat, start_lon, end_lat, end_lon) => {
   try {
     const params = {
@@ -9,6 +10,7 @@ export const getInitialRoute = async (start_lat, start_lon, end_lat, end_lon) =>
     };
     const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}get-initial-route`, {
       params: params,
+      ...backendAuthConfig(),
     });
     const route = response.data;
     return route;
@@ -48,7 +50,8 @@ export const getFinalRoute = async (initial_route, budget, stops) => {
     // Send request for a route given the user inputs
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_SERVER}generate-final-route`,
-      data
+      data,
+      backendAuthConfig()
     );
 
     // Access route information returned

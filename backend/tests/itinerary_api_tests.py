@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
+pytestmark = pytest.mark.usefixtures("allow_provider_auth")
 
 # ---------------------------------------------------------------------------
 # A minimal Route payload that satisfies Itinerary_Payload / Route models.

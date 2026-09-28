@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { backendAuthConfig } from '../../services/backendAuth';
 
 export const generateItinerary = async (route) => {
   try {
@@ -7,7 +8,8 @@ export const generateItinerary = async (route) => {
     };
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_SERVER}generate-itinerary`,
-      data
+      data,
+      backendAuthConfig()
     );
 
     const itinerary = response.data;

@@ -1,13 +1,14 @@
 from datetime import timedelta
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import ValidationError
 
 from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
+from app.utils.auth import require_authenticated_user
 
 # Initialize FastAPI
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(require_authenticated_user)])
 
 
 @router.post("/generate-itinerary")

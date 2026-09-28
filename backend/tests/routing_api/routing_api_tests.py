@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
+pytestmark = pytest.mark.usefixtures("allow_provider_auth")
 
 # ---------------------------------------------------------------------------
 # Minimal valid Mapbox Directions API response shape
