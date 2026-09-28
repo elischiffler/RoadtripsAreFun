@@ -7,6 +7,7 @@ from app.models.routing_models.routing_models import MapBox, Route
 
 class ChatDataSchema(BaseModel):
     chatId: int
+    agentChatId: str | None = None
     action: str | None = None
     locationType: str
     startCoords: list[float] | None = None
