@@ -82,6 +82,21 @@ def test_create_chat():
     assert response.status_code == 200
 
 
+def test_create_chat_preserves_agent_conversation_id():
+    """The agent key survives storage so a reload can resume its memory."""
+    data = {**CHAT_DATA, "agentChatId": "agent-uuid-123"}
+    with (
+        patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
+        patch("app.routers.chat_api.create_chat", return_value=("user123", "1")) as create,
+    ):
+        response = client.post(
+            "/chats/create/1",
+            json={"PartitionKey": "fixture-token", "ChatData": data, "ChatLog": CHAT_LOG},
+        )
+    assert response.status_code == 200
+    assert create.call_args.args[2]["agentChatId"] == "agent-uuid-123"
+
+
 # ---------------------------------------------------------------------------
 # DELETE /chats/delete/{chat_id}
 # ---------------------------------------------------------------------------

@@ -196,12 +196,13 @@ describe('applyAgentActions', () => {
     });
 
     const chatLogsData = { chatdata: [{ chatId: CHAT_ID }], currentId: CHAT_ID };
-    render(<Harness chatLogsData={chatLogsData} />);
+    render(<Harness chatLogsData={chatLogsData} agentChatId="uuid-abc-123" />);
     await userEvent.click(screen.getByText('send'));
 
     await waitFor(() => expect(updateUserData).toHaveBeenCalledTimes(1));
 
     const snap = updateUserData.mock.calls[0][1];
+    expect(snap.agentChatId).toBe('uuid-abc-123');
     // Route written verbatim
     expect(snap.route).toBe(routeObj);
     expect(snap.isComplete).toBe(true);

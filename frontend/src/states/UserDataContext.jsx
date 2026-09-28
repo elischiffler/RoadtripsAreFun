@@ -68,7 +68,8 @@ class ChatData {
     carBudget = null,
     carDetails = new Array(3).fill(''),
     budget = null,
-    isComplete = false
+    isComplete = false,
+    agentChatId = null
   ) {
     this.chatId = chatId;
     this.action = action;
@@ -94,6 +95,7 @@ class ChatData {
     this.carDetails = carDetails;
     this.budget = budget;
     this.isComplete = isComplete;
+    this.agentChatId = agentChatId;
   }
 }
 

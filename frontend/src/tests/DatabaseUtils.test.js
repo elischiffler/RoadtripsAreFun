@@ -82,6 +82,14 @@ describe('deleteChat', () => {
 });
 
 describe('initializeUserData', () => {
+  it('restores the agent conversation ID from saved ChatData', async () => {
+    axios.get.mockResolvedValueOnce({
+      data: [[{ chatId: 1, agentChatId: 'saved-agent-id' }, CHAT_LOG]],
+    });
+    const result = await initializeUserData(AUTH_TOKEN);
+    expect(result.UserData.chatlogs.getChatDataById(1).agentChatId).toBe('saved-agent-id');
+  });
+
   it('sends the token only in Authorization, never URL parameters', async () => {
     axios.get.mockResolvedValueOnce({ data: [] });
     const result = await initializeUserData(AUTH_TOKEN);

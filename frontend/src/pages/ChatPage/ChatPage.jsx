@@ -12,6 +12,7 @@ import TripSearch from './TripSearch';
 import ChatInput from './ChatInput';
 import { useTripWorkflow, deriveProgress, renameChatToRoute } from './useTripWorkflow';
 import { deleteChat, initializeUserData } from './DatabaseUtils';
+import { chooseRestoredChatId, forgetAgentChatId, getOrCreateAgentChatId } from './chatSession';
 import './ChatPage.css';
 
 ring.register('loading-chat');
@@ -202,20 +203,15 @@ const ChatPage = () => {
   // chat id to a stable UUID and send THAT as the agent `chatId`, guaranteeing a
   // brand-new chat never inherits a prior chat's trip profile / conversation.
   const agentChatIdMapRef = useRef(new Map());
-  const getAgentChatId = useCallback((chatId) => {
-    const map = agentChatIdMapRef.current;
-    let agentId = map.get(chatId);
-    if (!agentId) {
-      // crypto.randomUUID is available in all supported browsers; fall back to a
-      // random string in the rare environment without it.
-      agentId =
-        typeof crypto !== 'undefined' && crypto.randomUUID
-          ? crypto.randomUUID()
-          : `agent-${chatId}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      map.set(chatId, agentId);
-    }
-    return agentId;
-  }, []);
+  const getAgentChatId = useCallback(
+    (chatId) =>
+      getOrCreateAgentChatId(
+        chatId,
+        ChatLogsData.getChatDataById(chatId),
+        agentChatIdMapRef.current
+      ),
+    [ChatLogsData]
+  );
 
   // Live messages always read from `chats` — never a stale snapshot
   const activeMessages = chats.find((c) => c.id === selectedChatId)?.messages ?? initialMessage;
@@ -256,46 +252,39 @@ const ChatPage = () => {
       setIsFetchingChats(true);
       try {
         const prevChats = await initializeUserData(accessToken);
-        if (prevChats?.chats?.length > 0) {
-          const completeChatData = prevChats.UserData.chatlogs.chatdata.filter(
-            (cd) => cd.endConfirmed
-          );
-          const incompleteChatData = prevChats.UserData.chatlogs.chatdata.filter(
-            (cd) => !cd.endConfirmed
-          );
-          for (const cd of incompleteChatData) {
-            deleteChat(accessToken, cd.chatId).catch(() => {});
-          }
-          const completeChats = prevChats.chats.filter((c) =>
-            completeChatData.some((cd) => cd.chatId === c.id)
-          );
-          prevChats.UserData.chatlogs.chatdata = completeChatData;
-          for (const cd of prevChats.UserData.chatlogs.chatdata) {
-            cd.workflowStarted = false;
-          }
-
-          if (completeChats.length > 0) {
+        if (prevChats) {
+          const savedChats = prevChats.chats ?? [];
+          if (savedChats.length > 0) {
+            for (const cd of prevChats.UserData.chatlogs.chatdata) {
+              cd.workflowStarted = false;
+            }
             setUserData(prevChats.UserData);
-            const maxOldId = completeChats.reduce((max, c) => Math.max(max, c.id), 0);
+            agentChatIdMapRef.current.clear();
+            const maxOldId = savedChats.reduce((max, c) => Math.max(max, c.id), 0);
             const newId = maxOldId + 1;
             freshChatData.chatId = newId;
             const updatedFreshChat = { ...freshChat, id: newId, title: 'New Trip' };
             prevChats.UserData.chatlogs.createChatData(newId);
             // Mark the fresh chat as pending — it won't appear in TripSearch until destination confirmed
             pendingChatRef.current = updatedFreshChat;
-            setChats([...completeChats, updatedFreshChat]);
-            chatsRef.current = [...completeChats, updatedFreshChat];
+            setChats([...savedChats, updatedFreshChat]);
+            chatsRef.current = [...savedChats, updatedFreshChat];
 
             const restoredId = selectedChatIdRef.current;
-            if (restoredId === 1) {
-              // Was on a fresh trip — keep on the new fresh trip
+            const activeId = chooseRestoredChatId(restoredId, savedChats, newId);
+            prevChats.UserData.chatlogs.currentId = activeId;
+            if (activeId === newId) {
               setSelectedChatIdPersisted(newId);
             } else {
-              // Was on a completed trip — restore its savedData so workflow resumes at 'done'
               const restoredData = prevChats.UserData.chatlogs.getChatDataById(restoredId);
               if (restoredData) setSavedData(restoredData);
               setWorkflowKey((k) => k + 1); // remount WorkflowPanel with the restored data
             }
+          } else {
+            // A stored selection can point to a chat removed in another session.
+            forgetAgentChatId(1, agentChatIdMapRef.current);
+            setSelectedChatIdPersisted(1);
+            setWorkflowKey((k) => k + 1);
           }
         }
       } catch {
@@ -403,6 +392,7 @@ const ChatPage = () => {
   const handleDeleteChat = async (chatId) => {
     const remaining = chatsRef.current.filter((c) => c.id !== chatId);
     ChatLogsData.removeChatData(chatId);
+    forgetAgentChatId(chatId, agentChatIdMapRef.current);
 
     // If we're deleting the pending (unconfirmed) chat, clear the ref
     if (pendingChatRef.current?.id === chatId) {

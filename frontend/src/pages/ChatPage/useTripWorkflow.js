@@ -297,6 +297,7 @@ export function useTripWorkflow({
       const b = overrides.budget !== undefined ? overrides.budget : budget;
       return {
         chatId: chatIdRef.current,
+        agentChatId: agentChatIdRef.current,
         action: null,
         locationType: 'start',
         startCoords: start ? [start.latitude, start.longitude] : null,
