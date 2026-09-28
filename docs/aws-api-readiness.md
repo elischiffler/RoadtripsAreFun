@@ -1,12 +1,16 @@
 # Roadtrips API production template
 
+> Current deployment (2026-09-28): the Production Vercel frontend embeds
+> `VITE_BACKEND_SERVER=https://api.roadtrips.elischiffler.dev/`. Caddy proxies
+> that hostname to the AWS API container, which uses external Neon. The prior
+> `rp-routing` Render web service has been deleted. Off-host S3 database backup
+> and isolated restore checks are active; the signed-in chat route has returned
+> successful responses on AWS. The staged gates below record the rollout
+> procedure and do not imply that every two-user provider acceptance test passed.
+
 ## Public browser API gate
 
-The deployed Vercel frontend currently embeds
-`VITE_BACKEND_SERVER=https://rp-routing.onrender.com/`; Vite bakes this value
-into the JS bundle. The AWS switch is
-`https://api.roadtrips.elischiffler.dev/` (trailing slash), first in a Preview
-build and then Production after the journey passes. The browser's Cognito
+Vite bakes `VITE_BACKEND_SERVER` into the JS bundle. The browser's Cognito
 `VITE_USERPOOL_ID` and `VITE_CLIENT_ID` must match backend
 `COGNITO_USER_POOL_ID` and `COGNITO_APP_CLIENT_ID` in `us-west-1`. The backend
 must allow the actual Preview and Production origins in `CORS_ORIGINS`. For the
@@ -26,12 +30,10 @@ flow; an anonymous planner would need a separate abuse-control design. CORS is
 not an authorization control. Deploy the backend and frontend from matching
 reviewed commits before a public business journey.
 
-The [off-host recovery proposal](off-host-neon-recovery.md) defines the
-specific S3 destination, 30-day retention, cost estimate, and restore proof
-needed before enabling Neon writes. The current same-disk dump alone does not
-clear that gate. Public DNS and TLS can be staged without switching the
-Production frontend, but a healthy `/ready` does not prove authenticated
-route/map/chat persistence.
+The [off-host recovery plan](off-host-neon-recovery.md) defines the S3
+destination and restore proof. The host now runs a daily off-host backup, an
+hourly freshness check, and a weekly isolated restore check. A healthy
+`/ready` still does not prove authenticated route/map/chat persistence.
 
 `compose.prod.yaml` is the API-only template for the proposed same-host
 PostgreSQL cutover. It builds the backend from a reviewed full commit SHA, publishes container port
@@ -79,7 +81,9 @@ DNS disconnected during private validation. This HTTP gate is defense in
 depth, not a database privilege boundary: a read-only DB role is preferable
 where available. Set the host interpolation variable to `true` only after the
 write/provider acceptance is explicitly authorized and the public release
-gates below pass. The same-host PostgreSQL template does not use this switch.
+gates below pass. The production host currently sets it to `true` under the
+owner's explicit authorization; the full two-user provider journey remains
+unverified. The same-host PostgreSQL template does not use this switch.
 
 **Private stage gate:** after a user-approved PR merge and successful required
 checks, identify the merged image by full SHA/digest, verify the protected
