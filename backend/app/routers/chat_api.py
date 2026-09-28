@@ -47,8 +47,15 @@ async def initialize_chats(authorization: str | None = Header(default=None)):
                         chat_id=item["ChatId"],
                         legs=item["ChatData"]["initial"]["legs"],
                     )
-                if item["ChatData"]["route"] and sorted_segments is not None:
-                    item["ChatData"]["route"]["geometry"]["coordinates"] = sorted_segments
+                route = item["ChatData"]["route"]
+                if route:
+                    stored_coordinates = route["geometry"]["coordinates"]
+                    if isinstance(stored_coordinates, str):
+                        route["geometry"]["coordinates"] = get_segments(
+                            user_id=user_id,
+                            chat_id=item["ChatId"],
+                            route_id=stored_coordinates,
+                        )
                 # Add a complete chat entry tuple with a chat log and chat data to chats
                 chats.append((item["ChatData"], item["ChatLog"]))
         # Return a response indicating a successful query and a list of found chats

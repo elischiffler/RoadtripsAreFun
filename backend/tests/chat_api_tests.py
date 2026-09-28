@@ -201,6 +201,29 @@ def test_get_all_chats_empty():
     assert response.json() == []
 
 
+def test_get_agent_route_without_legacy_initial_restores_geometry():
+    """An agent-planned route must still render after a fresh page load."""
+    item = {
+        "ChatId": "1",
+        "ChatData": {
+            "initial": None,
+            "route": {"geometry": {"coordinates": "user123-1"}},
+        },
+        "ChatLog": {"id": 1, "title": "Trip", "messages": []},
+    }
+    coordinates = [[-115.0, 36.0], [-74.0, 40.0]]
+    with (
+        patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
+        patch("app.routers.chat_api.get_all_chats", return_value=[item]),
+        patch("app.routers.chat_api.get_segments", return_value=coordinates) as segments,
+    ):
+        response = client.get("/chats", headers={"Authorization": "Bearer fixture-token"})
+
+    assert response.status_code == 200
+    assert response.json()[0][0]["route"]["geometry"]["coordinates"] == coordinates
+    segments.assert_called_once_with(user_id="user123", chat_id="1", route_id="user123-1")
+
+
 def test_get_all_chats_returns_list():
     """Returns 200 and a list of chats matching the stored rows."""
     rows = [
