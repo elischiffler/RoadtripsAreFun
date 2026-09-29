@@ -44,8 +44,14 @@ def _base() -> str:
     return url
 
 
+def _auth(token: str | None) -> dict[str, str]:
+    if not token:
+        raise ValueError("Authenticated token is required for remote routing")
+    return {"Authorization": f"Bearer {token}"}
+
+
 async def call_route_remote(
-    start_lat: float, start_lon: float, end_lat: float, end_lon: float
+    start_lat: float, start_lon: float, end_lat: float, end_lon: float, token: str | None = None
 ) -> MapBox.MapBox_Route:
     """Proxy ``GET /get-initial-route`` and validate into a ``MapBox_Route``."""
     params = {
@@ -55,12 +61,12 @@ async def call_route_remote(
         "end_lon": end_lon,
     }
     async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
-        resp = await client.get(f"{_base()}/get-initial-route", params=params)
+        resp = await client.get(f"{_base()}/get-initial-route", params=params, headers=_auth(token))
     resp.raise_for_status()
     return MapBox.MapBox_Route.model_validate(resp.json())
 
 
-async def plan_final_route_remote(payload: Route_Payload) -> Route:
+async def plan_final_route_remote(payload: Route_Payload, token: str | None = None) -> Route:
     """Proxy ``POST /generate-final-route`` and validate into a ``Route``.
 
     The deployed endpoint runs the planner (and all whitelisted TripAdvisor /
@@ -69,15 +75,17 @@ async def plan_final_route_remote(payload: Route_Payload) -> Route:
     """
     body = payload.model_dump(mode="json")
     async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
-        resp = await client.post(f"{_base()}/generate-final-route", json=body)
+        resp = await client.post(f"{_base()}/generate-final-route", json=body, headers=_auth(token))
     resp.raise_for_status()
     return Route.model_validate(resp.json())
 
 
-async def build_itinerary_remote(data: Itinerary_Payload) -> list[Itinerary_Day]:
+async def build_itinerary_remote(
+    data: Itinerary_Payload, token: str | None = None
+) -> list[Itinerary_Day]:
     """Proxy ``POST /generate-itinerary`` and validate into ``Itinerary_Day``s."""
     body = data.model_dump(mode="json")
     async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
-        resp = await client.post(f"{_base()}/generate-itinerary", json=body)
+        resp = await client.post(f"{_base()}/generate-itinerary", json=body, headers=_auth(token))
     resp.raise_for_status()
     return [Itinerary_Day.model_validate(day) for day in resp.json()]

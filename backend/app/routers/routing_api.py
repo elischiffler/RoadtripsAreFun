@@ -25,6 +25,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import ValidationError
 from requests.exceptions import RequestException
 
+from app.agent.departure import is_upcoming_departure
+from app.agent.persona import effective_weights
+from app.crud.memory_crud import load_account_persona
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
 from app.routing import PlanningError, PlanOptions, RoutingServices, get_planner
@@ -38,6 +41,7 @@ from app.routing.sources.hotels import find_hotel as _find_hotel  # noqa: F401
 from app.routing.sources.hotels import get_amadeus_token as _get_amadeus_token  # noqa: F401
 from app.routing.sources.hotels import get_nearby_city as _get_nearby_city  # noqa: F401
 from app.routing.sources.mapbox import call_route as _call_route
+from app.routing.sources.persona_candidates import attraction_candidates, hotel_candidates
 from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location  # noqa: F401  (patched in tests)
 
@@ -64,6 +68,8 @@ def _build_services() -> RoutingServices:
         find_position=_find_position,
         get_price_range=_get_price_range,
         gather_candidates=_gather_candidates,
+        cp_sat_candidates=attraction_candidates,
+        cp_sat_hotels=hotel_candidates,
     )
 
 
@@ -88,9 +94,10 @@ async def get_initial_route(
 @router.post(
     "/generate-final-route",
     response_model=Route,
-    dependencies=[Depends(require_authenticated_user)],
 )
-async def get_final_route(request: Request) -> Route:
+async def get_final_route(
+    request: Request, user_id: str = Depends(require_authenticated_user)
+) -> Route:
     """
     Retrieves a route from Mapbox API, adds intermediate stops via the selected
     planner, and returns the detailed route information.
@@ -110,7 +117,7 @@ async def get_final_route(request: Request) -> Route:
         # Validate provided payload and delegate to the shared planning core.
         json_data = await request.json()
         payload = Route_Payload.model_validate(json_data)
-        return await plan_final_route(payload)
+        return await plan_final_route(payload, user_id=user_id)
 
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail)
@@ -119,12 +126,12 @@ async def get_final_route(request: Request) -> Route:
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
     except ValidationError as exception:
-        raise HTTPException(status_code=502, detail=f"Improper Mapbox response: {str(exception)}")
+        raise HTTPException(status_code=422, detail=f"Invalid route request: {str(exception)}")
     except (KeyError, ValueError) as exception:
         raise HTTPException(status_code=502, detail=f"Unexpected value or key: {str(exception)}")
 
 
-async def plan_final_route(payload: Route_Payload) -> Route:
+async def plan_final_route(payload: Route_Payload, user_id: str | None = None) -> Route:
     """Plan and shape the full multi-day route from a validated payload.
 
     The core of :func:`get_final_route`, factored out so both the HTTP endpoint
@@ -162,7 +169,19 @@ async def plan_final_route(payload: Route_Payload) -> Route:
     algorithm = payload.algorithm or os.getenv("ROUTING_ALGORITHM", DEFAULT_ALGORITHM)
     planner = get_planner(algorithm)
     services = _build_services()
-    options = PlanOptions(num_stops=num_stops, budget=budget, start=start)
+    weights = None
+    if algorithm.startswith("cp_sat"):
+        if user_id is None:
+            raise PlanningError("Authenticated identity is required for CP-SAT", 401)
+        if (
+            "start" not in payload.model_fields_set
+            or start is None
+            or not is_upcoming_departure(start)
+        ):
+            raise PlanningError("CP-SAT requires an upcoming trip start date", 422)
+        account = load_account_persona(user_id)
+        weights = effective_weights(account.weights, payload.persona_weights)
+    options = PlanOptions(num_stops=num_stops, budget=budget, start=start, weights=weights)
 
     # Run the planner to find stopping points.
     result = await planner.plan(initial_route, options, services)
@@ -175,6 +194,30 @@ async def plan_final_route(payload: Route_Payload) -> Route:
     # Construct waypoints string and make new route with stopping points
     waypoints = ";".join([f"{lon},{lat}" for lat, lon in coordinates])
     route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
+    if algorithm.startswith("cp_sat"):
+        if len(route.legs) != len(coordinates) + 1 or route.duration < 0:
+            raise PlanningError("Mapbox returned an incomplete final route", 502)
+        # The initial route only estimates scheduling. Recheck the actual final
+        # Mapbox legs after detours, including two hours at every attraction.
+        day_seconds = options.daily_end * 3600 - (
+            start.hour * 3600 + start.minute * 60 + start.second
+        )
+        used_seconds = 0.0
+        for index, leg in enumerate(route.legs):
+            if leg.duration < 0:
+                raise PlanningError("Mapbox returned an invalid leg duration", 502)
+            used_seconds += leg.duration
+            if index < len(stopping_points):
+                stop_type = stopping_points[index]["type"]
+                if stop_type == "stop":
+                    used_seconds += 2 * 3600
+                if used_seconds > day_seconds + 1:
+                    raise PlanningError("Final route exceeds the daily driving window", 422)
+                if stop_type == "hotel":
+                    used_seconds = 0.0
+                    day_seconds = (options.daily_end - options.daily_start) * 3600
+            elif used_seconds > day_seconds + 1:
+                raise PlanningError("Final route exceeds the daily driving window", 422)
     distance, duration = route.distance, route.duration
     geometry = route.geometry
     steps = []
@@ -218,6 +261,7 @@ async def plan_final_route(payload: Route_Payload) -> Route:
         stops=stopping_points,
         geometry=geometry,
         cost=total_cost,
+        warnings=[stop["warning"] for stop in stopping_points if stop.get("warning")] or None,
     )
 
 

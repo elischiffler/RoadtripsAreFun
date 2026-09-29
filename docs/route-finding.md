@@ -3,15 +3,12 @@
 How MyRoadtrip turns a start and end point into a multi-day road trip with
 attractions and overnight hotels.
 
-> **Architecture note (pluggable planners).** The route-planning *algorithm* now
-> lives behind a swappable interface in the `backend/app/routing/` package, not
-> inline in the router. `backend/app/routers/routing_api.py` is a thin controller
-> that picks a planner by name and assembles the response. Two planners ship
-> today: `greedy` (the algorithm described below) and `ortools` (an OR-Tools
-> knapsack selector). See
-> [pluggable-routing-refactor.md](./pluggable-routing-refactor.md) for the layer
-> layout and how to add a new algorithm. The rest of this document describes the
-> **greedy** planner's behavior, which is unchanged by that refactor.
+> **Current behavior.** `cp_sat` is the default and the only registered planner.
+> The `/algorithms` selector remains available for future CP-SAT variants.
+> `greedy` and `ortools` remain in the source tree for historical reference but
+> cannot be selected. The rest of this document describes that historical greedy
+> implementation; see [pluggable-routing-refactor.md](./pluggable-routing-refactor.md)
+> for the planner interface.
 
 The greedy algorithm below is defined by its *selection* logic in
 `backend/app/routing/planners/greedy.py`. The day-by-day *scheduling* loop it
@@ -165,7 +162,42 @@ the full polyline (`geometry.coordinates`), a single `leg`, `duration`, and
 
 ## Phase 2: `POST /generate-final-route`
 
-`get_final_route(request)` validates the body into `Route_Payload`, then:
+`get_final_route(request)` validates the body into `Route_Payload` and calls the
+same planning core as the chat tool.
+
+### Persona-aware CP-SAT planner
+
+`algorithm: "cp_sat"` selects the verified-candidate planner, and omitting the
+field uses the same default. The authenticated endpoint loads the account's 14
+preference weights using the verified Cognito subject. Missing account weights
+are equal. A partial `persona_weights` request field changes only that trip;
+it is validated and normalized with the account baseline. The chat agent can
+read or update account weights when the traveler explicitly requests a saved
+preference, and stores trip-only weights in that chat's trip profile.
+
+The planner samples up to 30 points in drive-time order, asks AI for named
+attractions, and matches proposals to TripAdvisor Terra records before using
+their identity or coordinates. It computes utility from the 14 attribute
+ratings and effective weights. CP-SAT selects at most the requested number
+of attractions, with at most one per query point and utility at least 0.60.
+The final route preserves that point order.
+
+For each overnight, hotel proposals must match Amadeus hotel identity and a
+USD offer for the requested check-in date. The nightly budget is advisory:
+an otherwise usable hotel above it is returned with a visible `warnings` list;
+no usable verified hotel fails planning. The final Mapbox reroute must contain
+one leg per selected waypoint plus the destination and fit each day's drive
+window after attraction visits. A detour that breaks the schedule is rejected.
+
+Live CP-SAT needs the AI gateway, Terra credentials, enabled Amadeus hotel
+offers, Mapbox, authenticated Cognito requests, and access to `chat_memory` for
+account persona storage. Fixture tests do not establish provider availability, production
+schema history, or deployment readiness.
+
+CP-SAT requests must include an upcoming `start` date because hotel offers are
+dated; the legacy planner's old default date is not used for CP-SAT.
+
+For the existing planners, the core:
 
 1. Derives start/end coords from the initial route's geometry.
 2. Calls `_add_stops(...)` to get the scheduled stops and total hotel cost.
@@ -306,10 +338,10 @@ Defined in `backend/app/models/routing_models/routing_models.py`.
 
 | Model | Role |
 |---|---|
-| `Route_Payload` | Request body for `/generate-final-route` — `initial_route`, `num_stops`, `budget`, optional `start`. |
+| `Route_Payload` | Request body for `/generate-final-route` — `initial_route`, `num_stops`, `budget`, optional `start`, `algorithm`, and trip-only `persona_weights`. |
 | `MapBox` / `MapBox_Route` | The full Mapbox Directions response. `MapBox_Route` (aliased `MapBox_route`) is what phase 1 returns. Nesting: `MapBox → routes → legs → steps`. |
 | `Mapbox_geo` | `coordinates` (`[lon, lat]`) + `type`. Used for both raw and final geometry. |
-| `Route` | The final response — `coordinates` (`[lat, lon]`), `distance`, `duration`, `steps`, `stops`, `geometry`, `cost`. |
+| `Route` | The final response — `coordinates` (`[lat, lon]`), `distance`, `duration`, `steps`, `stops`, `geometry`, `cost`, and optional `warnings`. |
 | `Route_Step` | `distance`, `duration`, `instruction`, `location` — the shape a turn-by-turn step would take. Not currently emitted (see note below); kept for when a client needs per-maneuver instructions. |
 
 ---

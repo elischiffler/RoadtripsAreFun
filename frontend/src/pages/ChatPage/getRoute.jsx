@@ -27,13 +27,24 @@ export const ROUTING_ALGORITHM_KEY = 'devRoutingAlgorithm';
 
 export const getRoutingAlgorithm = () => {
   try {
-    return localStorage.getItem(ROUTING_ALGORITHM_KEY) || null;
+    const algorithm = localStorage.getItem(ROUTING_ALGORITHM_KEY);
+    if (algorithm === 'greedy' || algorithm === 'ortools') {
+      localStorage.removeItem(ROUTING_ALGORITHM_KEY);
+      return null;
+    }
+    return algorithm || null;
   } catch {
     return null;
   }
 };
 
-export const getFinalRoute = async (initial_route, budget, stops) => {
+export const getFinalRoute = async (
+  initial_route,
+  budget,
+  stops,
+  personaWeights = null,
+  start = null
+) => {
   try {
     const data = {
       initial_route: initial_route,
@@ -46,6 +57,8 @@ export const getFinalRoute = async (initial_route, budget, stops) => {
     if (algorithm) {
       data.algorithm = algorithm;
     }
+    if (personaWeights) data.persona_weights = personaWeights;
+    if (start) data.start = start;
 
     // Send request for a route given the user inputs
     const response = await axios.post(

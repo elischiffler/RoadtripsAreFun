@@ -1,17 +1,21 @@
-.PHONY: run run-backend run-frontend test test-backend test-frontend \
+.PHONY: run debug run-backend run-frontend test test-backend test-frontend \
         coverage coverage-backend coverage-frontend format lint lint-fix
 
 ## Run both backend and frontend dev servers concurrently
 run:
 	@echo "Starting backend (http://localhost:8000) and frontend (http://localhost:5173)..."
 	@trap 'kill 0' SIGINT; \
-	  (cd backend && uvicorn app.main:app --reload --reload-dir app) & \
+	  (cd backend/app && ../.venv/bin/uvicorn app.main:app --app-dir .. --reload --reload-dir .) & \
 	  (cd frontend && PATH="$$(pwd)/node_modules/.bin:$$PATH" npm run dev) & \
 	  wait
 
+## Run both dev servers with per-turn agent tool and trip-profile logs
+debug:
+	@AGENT_DEBUG=true $(MAKE) run
+
 ## Run only backend dev server
 run-backend:
-	cd backend && uvicorn app.main:app --reload --reload-dir app
+	cd backend/app && ../.venv/bin/uvicorn app.main:app --app-dir .. --reload --reload-dir .
 
 ## Run only frontend dev server
 run-frontend:
@@ -19,12 +23,12 @@ run-frontend:
 
 ## Run all tests from the repo root
 test:
-	cd backend && python -m pytest
+	cd backend && .venv/bin/python -m pytest
 	cd frontend && npm test
 
 ## Run only backend tests
 test-backend:
-	cd backend && python -m pytest
+	cd backend && .venv/bin/python -m pytest
 
 ## Run only frontend tests
 test-frontend:
@@ -32,12 +36,12 @@ test-frontend:
 
 ## Run coverage for both (enforces thresholds — fails if below minimums)
 coverage:
-	cd backend && python -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
+	cd backend && .venv/bin/python -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
 	cd frontend && npm run test:coverage
 
 ## Run only backend coverage
 coverage-backend:
-	cd backend && python -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
+	cd backend && .venv/bin/python -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
 
 ## Run only frontend coverage
 coverage-frontend:

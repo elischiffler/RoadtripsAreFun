@@ -19,7 +19,6 @@ from fastapi import HTTPException
 
 from app.models.routing_models.routing_models import MapBox
 from app.routing.base import PlanningError, PlanOptions, PlanResult, RoutePlanner
-from app.routing.registry import register_planner
 from app.routing.scheduler import schedule_route
 from app.routing.services import RoutingServices
 
@@ -56,6 +55,3 @@ class GreedyPlanner(RoutePlanner):
                 status_code=exception.status_code,
             )
         return PlanResult(stopping_points=stopping_points, total_cost=total_cost)
-
-
-register_planner(GreedyPlanner())

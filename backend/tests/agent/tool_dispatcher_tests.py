@@ -24,6 +24,7 @@ from app.agent.memory import MemoryFact
 from app.agent.schemas import ToolCall
 from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.tools import ToolContext
+from app.agent.trip_profile import TripProfile
 
 from .conftest import FakeMemory
 
@@ -31,19 +32,26 @@ pytestmark = pytest.mark.asyncio
 
 
 EXPECTED_TOOLS = {
+    "get_account_persona",
+    "update_account_persona",
     "validate_location",
     "get_initial_route",
     "generate_final_route",
     "generate_itinerary",
+    "complete_trip",
     "get_car_budget",
     "recall_facts",
     "remember_fact",
     "get_trip_profile",
+    "record_trip_details",
     "update_trip_profile",
 }
 
 
-def _ctx(memory=None) -> ToolContext:
+def _ctx(memory=None, *, car_skipped=False) -> ToolContext:
+    if car_skipped:
+        memory = FakeMemory()
+        memory.save_trip_profile("user-1", "42", TripProfile(car_status="skipped").to_json())
     return ToolContext(user_id="user-1", chat_id="42", memory=memory)
 
 
@@ -170,7 +178,7 @@ async def test_generate_final_route_success_has_action(monkeypatch):
         model_dump=lambda: {"cost": 320.0},
     )
 
-    async def fake_plan(payload):
+    async def fake_plan(payload, user_id=None):
         return fake_route
 
     monkeypatch.setattr(td, "plan_final_route", fake_plan)
@@ -181,7 +189,7 @@ async def test_generate_final_route_success_has_action(monkeypatch):
 
     # Seed the artifact store with an initial route + get its handle (mirrors
     # get_initial_route running first).
-    ctx = _ctx()
+    ctx = _ctx(car_skipped=True)
     handle = ctx.artifacts.put("initial_route", {})
 
     result = await _dispatcher().dispatch(
@@ -205,7 +213,7 @@ async def test_generate_final_route_success_has_action(monkeypatch):
 async def test_generate_final_route_failure_returns_error(monkeypatch):
     from app.routing import PlanningError
 
-    async def boom(payload):
+    async def boom(payload, user_id=None):
         raise PlanningError("no feasible trip", status_code=422)
 
     monkeypatch.setattr(td, "plan_final_route", boom)
@@ -217,7 +225,7 @@ async def test_generate_final_route_failure_returns_error(monkeypatch):
             name="generate_final_route",
             arguments={"initial_route": {}, "num_stops": 2, "budget": 400},
         ),
-        _ctx(),
+        _ctx(car_skipped=True),
     )
     # PlanningError is a generic Exception here -> caught, not raised.
     assert result.ok is False
@@ -239,7 +247,10 @@ async def test_generate_itinerary_success_has_action(monkeypatch):
     monkeypatch.setattr(td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v))
 
     result = await _dispatcher().dispatch(
-        ToolCall(name="generate_itinerary", arguments={"route": {}}), _ctx()
+        ToolCall(
+            name="generate_itinerary", arguments={"route": {}, "start_time": "2030-01-01T09:00:00Z"}
+        ),
+        _ctx(),
     )
     assert result.ok is True
     assert result.result["action"] == "itinerary_updated"
@@ -254,7 +265,10 @@ async def test_generate_itinerary_failure_returns_error(monkeypatch):
     monkeypatch.setattr(td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v))
 
     result = await _dispatcher().dispatch(
-        ToolCall(name="generate_itinerary", arguments={"route": {}}), _ctx()
+        ToolCall(
+            name="generate_itinerary", arguments={"route": {}, "start_time": "2030-01-01T09:00:00Z"}
+        ),
+        _ctx(),
     )
     assert result.ok is False
     assert "Incomplete route" in result.error

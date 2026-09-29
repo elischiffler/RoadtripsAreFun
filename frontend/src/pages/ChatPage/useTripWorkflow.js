@@ -26,6 +26,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { updateUserData } from './DatabaseUtils';
 import { sendAgentMessage } from './agentChat';
+import { getRoutingAlgorithm } from './getRoute';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -101,12 +102,15 @@ const confirmedFromCoord = (coord) => {
 const TRIP_PROFILE_FIELDS = [
   'start_address',
   'start_coords',
+  'start_timezone',
   'destination_address',
   'destination_coords',
   'num_stops',
   'budget',
   'start_date',
+  'departure_time',
   'car',
+  'car_status',
 ];
 
 /** Structural equality for trip-profile values (handles arrays/objects/scalars). */
@@ -165,48 +169,34 @@ export const logTripProfileChanges = (prev, next) => {
 };
 
 /**
- * Turn-level trace of the agent's trip-data tooling. Logs which tools ran, prints
- * any tool errors the backend surfaced (`toolErrors`), and flags a likely
- * VALIDATION FAILURE when the agent attempted `update_trip_profile` but no
- * `trip_profile_updated` action came back (a failed update is fed back to the
- * model, so it never appears in `actions`). Exported for testing.
+ * Turn-level trace of the agent's trip-data tooling. Logs every turn, including
+ * turns with no tools, plus backend tool errors and field-specific clarifications.
  *
  * @param {string[]} toolsUsed   response.toolsUsed
- * @param {Array}    actions      response.actions
  * @param {Array}    [toolErrors] response.toolErrors — [{ name, error }]
- * @returns {boolean} true when a probable trip-profile validation failure was detected
+ * @param {object}   [validationIssues] response.validationIssues — field to clarification
+ * @param {string[]} [extractedFields] response.extractedFields — fields identified in this turn
+ * @returns {boolean} true when the backend reported a validation issue or tool error
  */
-export const logTripToolActivity = (toolsUsed, actions, toolErrors) => {
+export const logTripToolActivity = (toolsUsed, toolErrors, validationIssues, extractedFields) => {
   const tools = Array.isArray(toolsUsed) ? toolsUsed : [];
-  const acts = Array.isArray(actions) ? actions : [];
   const errors = Array.isArray(toolErrors) ? toolErrors : [];
-  if (tools.length > 0) {
-    console.log('[TripProfile] tools this turn: %s', tools.join(', '));
-  }
-  // Print the exact backend error for every failed tool (e.g. the validation
-  // message from a rejected update_trip_profile) so debugging stays in-browser.
+  console.log('[TripProfile] tools this turn: %s', tools.length ? tools.join(', ') : 'none');
+  console.log(
+    '[TripProfile] extracted fields this turn: %s',
+    Array.isArray(extractedFields) && extractedFields.length ? extractedFields.join(', ') : 'none'
+  );
+  // Print backend validation errors so debugging stays in-browser.
   for (const e of errors) {
     if (e?.name && e?.error) {
       console.warn('[TripProfile] tool %s failed: %s', e.name, e.error);
     }
   }
-  const attemptedUpdate = tools.filter((t) => t === 'update_trip_profile').length;
-  const appliedUpdate = acts.filter((a) => a?.type === 'trip_profile_updated').length;
-  if (attemptedUpdate > appliedUpdate) {
-    const detail = errors
-      .filter((e) => e?.name === 'update_trip_profile' && e?.error)
-      .map((e) => e.error)
-      .join(' | ');
-    console.warn(
-      '[TripProfile] VALIDATION FAILURE: update_trip_profile ran %d time(s) but only %d ' +
-        'applied — the agent tried to store a value that failed validation.%s',
-      attemptedUpdate,
-      appliedUpdate,
-      detail ? ` Detail: ${detail}` : ' (no error detail returned; check the backend agent log.)'
-    );
-    return true;
+  const issues = validationIssues && typeof validationIssues === 'object' ? validationIssues : {};
+  for (const [field, detail] of Object.entries(issues)) {
+    console.warn('[TripProfile] %s needs clarification: %s', field, detail);
   }
-  return false;
+  return errors.length > 0 || Object.keys(issues).length > 0;
 };
 
 // ─── hook ────────────────────────────────────────────────────────────────────
@@ -295,6 +285,7 @@ export function useTripWorkflow({
       const end = overrides.endConfirmed !== undefined ? overrides.endConfirmed : endConfirmed;
       const stopCount = overrides.stops !== undefined ? overrides.stops : stops;
       const b = overrides.budget !== undefined ? overrides.budget : budget;
+      const plannedItinerary = overrides.itinerary !== undefined ? overrides.itinerary : itinerary;
       return {
         chatId: chatIdRef.current,
         agentChatId: agentChatIdRef.current,
@@ -314,13 +305,13 @@ export function useTripWorkflow({
         endConfirmed: end,
         initial: null,
         route: r,
-        itinerary: overrides.itinerary !== undefined ? overrides.itinerary : itinerary,
+        itinerary: plannedItinerary,
         loading: false,
         hotelBudget: overrides.hotelBudget !== undefined ? overrides.hotelBudget : hotelBudget,
         carBudget: 0,
         carDetails: new Array(3).fill(''),
         budget: b,
-        isComplete: !!r,
+        isComplete: !!r && Array.isArray(plannedItinerary) && plannedItinerary.length > 0,
       };
     },
     [route, startConfirmed, endConfirmed, stops, budget, itinerary, hotelBudget]
@@ -356,9 +347,16 @@ export function useTripWorkflow({
 
         if (action.type === 'route_updated' && action.payload?.route) {
           const newRoute = action.payload.route;
+          if (Array.isArray(newRoute.warnings)) {
+            newRoute.warnings.forEach((warning) => bot(warning));
+          }
           setRoute(newRoute);
           overrides.route = newRoute;
           sawRoute = true;
+          // A newly planned route invalidates any itinerary from an older route.
+          // A following itinerary_updated action in this response replaces it.
+          setItinerary(null);
+          overrides.itinerary = null;
 
           const coords = newRoute.coordinates;
           if (Array.isArray(coords) && coords.length >= 2) {
@@ -444,7 +442,7 @@ export function useTripWorkflow({
 
       await persistSnapshot(snap);
     },
-    [buildSnapshot, persistSnapshot, onChatReady]
+    [buildSnapshot, persistSnapshot, onChatReady, bot]
   );
 
   // ── Public: submit user input (agent chat only) ───────────────────────────
@@ -470,16 +468,32 @@ export function useTripWorkflow({
           // reused integer chat id, so per-chat memory never collides.
           chatId: agentChatIdRef.current,
           message: text,
-          clientContext: { hasRoute: !!route, stops, hotelBudget },
+          clientContext: {
+            hasRoute: !!route,
+            stops,
+            hotelBudget,
+            algorithm: getRoutingAlgorithm(),
+          },
         });
         noLoader();
 
         if (response && typeof response.reply === 'string') {
           bot(response.reply);
-          // Turn-level trace: tools run, any tool errors, and a flag for a probable
-          // trip-profile validation failure (attempted update with no applied action).
-          logTripToolActivity(response.toolsUsed, response.actions, response.toolErrors);
+          // Trace tool activity and the backend's authoritative profile on every turn.
+          logTripToolActivity(
+            response.toolsUsed,
+            response.toolErrors,
+            response.validationIssues,
+            response.extractedFields
+          );
           await applyAgentActions(response.actions);
+          if (
+            response.tripProfile &&
+            !response.actions?.some((action) => action?.type === 'trip_profile_updated')
+          ) {
+            logTripProfileChanges(tripProfileRef.current, response.tripProfile);
+            tripProfileRef.current = response.tripProfile;
+          }
         } else {
           // The turn produced NO reply (network / 503 / other). This is not an
           // agent-recoverable tool error — those are fed back within the turn and

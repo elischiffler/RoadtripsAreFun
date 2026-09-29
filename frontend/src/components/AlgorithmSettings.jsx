@@ -10,14 +10,12 @@ import { ROUTING_ALGORITHM_KEY, getRoutingAlgorithm } from '../pages/ChatPage/ge
  *
  * A gear button that opens a small popup listing the routing algorithms the
  * backend has registered (fetched from GET /algorithms). Selecting one stores it
- * in localStorage; getFinalRoute() then sends it as the `algorithm` field on the
- * next trip. "Default" clears the override so the backend chooses.
+ * in localStorage for the next trip.
  *
- * This is a developer/demo tool — it doesn't change production behavior unless a
- * non-default algorithm is explicitly selected.
+ * This is a developer/demo tool for switching among current and future CP-SAT variants.
  */
 // Default algorithm when nothing has been picked yet.
-const DEFAULT_ALGORITHM = 'greedy';
+const DEFAULT_ALGORITHM = 'cp_sat';
 
 /**
  * Persist the selected routing algorithm, tolerating a failing localStorage
@@ -40,19 +38,19 @@ export default function AlgorithmSettings() {
   const open = Boolean(anchorEl);
 
   useEffect(() => {
-    // Persist the default on first load so what the UI shows matches what gets
-    // sent (getFinalRoute reads localStorage).
-    if (!getRoutingAlgorithm()) {
-      writeRoutingAlgorithm(DEFAULT_ALGORITHM);
-    }
-  }, []);
-
-  useEffect(() => {
     // Load the available algorithms once, when the popup is first opened.
     if (open && algorithms.length === 0) {
       axios
         .get(`${import.meta.env.VITE_BACKEND_SERVER}algorithms`)
-        .then((res) => setAlgorithms(res.data.algorithms || []))
+        .then((res) => {
+          const available = res.data.algorithms || [];
+          setAlgorithms(available);
+          const saved = getRoutingAlgorithm();
+          if (saved && !available.includes(saved)) {
+            localStorage.removeItem(ROUTING_ALGORITHM_KEY);
+          }
+          setSelected(available.includes(saved) ? saved : res.data.default || DEFAULT_ALGORITHM);
+        })
         .catch(() => setAlgorithms([]));
     }
   }, [open, algorithms.length]);

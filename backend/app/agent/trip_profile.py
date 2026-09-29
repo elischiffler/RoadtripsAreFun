@@ -15,7 +15,7 @@ round-trips through a single per-chat row (``mem_type='trip'``, real ``chat_id``
 mirroring how the previous user profile used a single ``fact`` row.
 ``from_json`` / ``to_json`` do the mapping so the DB layer only ever sees JSON.
 
-Updates are partial: the ``update_trip_profile`` tool sends a
+Updates are partial: validated trip details and trip-only persona changes use
 :class:`TripProfileUpdate` (all fields optional); :meth:`TripProfile.merged_with`
 applies only the provided fields and re-validates the result.
 """
@@ -24,14 +24,22 @@ from __future__ import annotations
 
 import json
 import logging
+import math
+from datetime import datetime
+from typing import Literal
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import BaseModel, field_validator, model_validator
+
+from app.agent.persona import validate_weight_update
+from app.agent.trip_dates import normalize_departure_time
 
 logger = logging.getLogger(__name__)
 
 # Bounds mirrored from the routing contract (num_stops is validated 1..10).
 MIN_STOPS = 1
 MAX_STOPS = 10
+CarStatus = Literal["unanswered", "skipped", "provided"]
 
 
 class Car(BaseModel):
@@ -65,6 +73,8 @@ def _validate_coords(v: list[float] | None) -> list[float] | None:
     if len(v) != 2:
         raise ValueError("coordinates must be a [lat, lon] pair")
     lat, lon = float(v[0]), float(v[1])
+    if not (math.isfinite(lat) and math.isfinite(lon)):
+        raise ValueError("coordinates must be finite")
     if not (-90.0 <= lat <= 90.0):
         raise ValueError("latitude must be between -90 and 90")
     if not (-180.0 <= lon <= 180.0):
@@ -79,51 +89,6 @@ def _blank_to_none(v: str | None) -> str | None:
     return v or None
 
 
-# The coordinate fields that may arrive stringified from the model.
-_COORD_FIELDS = ("start_coords", "destination_coords")
-
-
-def _coerce_stringified_coords(data):
-    """Normalize model-supplied coordinate values, in place.
-
-    Two model quirks are handled here (a ``before`` validator):
-
-    1. A JSON-string array — ``"destination_coords": "[36.17, -115.14]"`` — is
-       parsed into a real list so the common case works without a retry.
-    2. A non-numeric PLACEHOLDER string — ``"[await result]"``, ``"<coords>"``,
-       ``"[lat, lon]"`` — which happens when the model tries to fill coords
-       before it has a ``validate_location`` result. There is no correct
-       conversion for these, so we DROP just that field (logged) rather than
-       failing the whole ``update_trip_profile`` call. That way a valid sibling
-       field (e.g. ``start_address``) in the same update still saves, and the
-       model simply hasn't recorded coordinates yet.
-
-    A string that parses to a list but is an invalid coordinate (out of range,
-    wrong length) is left intact so the strict field validator rejects it loudly
-    — we only drop values that are clearly placeholders, never plausible data.
-    """
-    if not isinstance(data, dict):
-        return data
-    for key in _COORD_FIELDS:
-        value = data.get(key)
-        if isinstance(value, str):
-            try:
-                parsed = json.loads(value)
-            except ValueError:
-                # Not JSON at all -> a placeholder, not coordinates. Drop it so
-                # the rest of the update can still apply.
-                logger.warning(
-                    "trip_profile: dropping non-coordinate %s placeholder %r "
-                    "(no validate_location result yet).",
-                    key,
-                    value,
-                )
-                data.pop(key, None)
-                continue
-            data[key] = parsed
-    return data
-
-
 class TripProfile(BaseModel):
     """The complete, validated per-chat trip profile.
 
@@ -133,17 +98,47 @@ class TripProfile(BaseModel):
 
     start_address: str | None = None
     start_coords: list[float] | None = None  # [lat, lon]
+    start_timezone: str | None = None  # IANA name from the start geocode
     destination_address: str | None = None
     destination_coords: list[float] | None = None  # [lat, lon]
     num_stops: int | None = None  # 1..10
     budget: float | None = None  # nightly hotel budget, USD
-    start_date: str | None = None  # ISO-8601 trip start (free-form; validated on use)
+    start_date: str | None = None  # canonical ISO-8601 departure with UTC offset
+    departure_time: str | None = None  # selected local HH:MM, retained before date
     car: Car | None = None
+    persona_weights: dict[str, float] | None = None  # partial, per-trip override
+    car_status: CarStatus = "unanswered"
 
     @model_validator(mode="before")
     @classmethod
     def _coerce_coords(cls, data):
-        return _coerce_stringified_coords(data)
+        # Existing profiles predate the separately saved time choice. Recover
+        # their selected local time from the canonical departure when possible.
+        if isinstance(data, dict) and data.get("start_date") and not data.get("departure_time"):
+            try:
+                departure = datetime.fromisoformat(data["start_date"])
+                data = {**data, "departure_time": departure.strftime("%H:%M")}
+            except (TypeError, ValueError):
+                pass
+        # Profiles saved before car_status existed may already have a car.
+        if isinstance(data, dict) and "car_status" not in data and data.get("car"):
+            data = {**data, "car_status": "provided"}
+        # Older saved profiles may contain coordinates serialized as JSON strings.
+        # New updates must use geocoded numeric arrays and are validated strictly.
+        if isinstance(data, dict):
+            for key in ("start_coords", "destination_coords"):
+                if isinstance(data.get(key), str):
+                    try:
+                        data = {**data, key: json.loads(data[key])}
+                    except ValueError:
+                        pass
+        return data
+
+    @model_validator(mode="after")
+    def _car_consistent(self):
+        if (self.car_status == "provided") != (self.car is not None):
+            raise ValueError("car_status must be provided exactly when car details are present")
+        return self
 
     @field_validator("start_coords", "destination_coords")
     @classmethod
@@ -165,7 +160,7 @@ class TripProfile(BaseModel):
         if v is None:
             return None
         v = float(v)
-        if v < 0:
+        if not math.isfinite(v) or v < 0:
             raise ValueError("budget must be non-negative")
         return v
 
@@ -173,6 +168,27 @@ class TripProfile(BaseModel):
     @classmethod
     def _blanks(cls, v):
         return _blank_to_none(v)
+
+    @field_validator("departure_time")
+    @classmethod
+    def _departure_time(cls, v):
+        return normalize_departure_time(v) if v is not None else None
+
+    @field_validator("persona_weights", mode="before")
+    @classmethod
+    def _persona_weights(cls, v):
+        return validate_weight_update(v) if v is not None else None
+
+    @field_validator("start_timezone")
+    @classmethod
+    def _timezone(cls, v):
+        if v is None:
+            return None
+        try:
+            ZoneInfo(v)
+        except (ZoneInfoNotFoundError, TypeError) as exc:
+            raise ValueError("start_timezone must be a valid IANA timezone") from exc
+        return v
 
     def merged_with(self, update: TripProfileUpdate) -> TripProfile:
         """Return a new trip profile with ``update``'s provided fields applied.
@@ -187,11 +203,18 @@ class TripProfile(BaseModel):
             if value is None:
                 continue
             data[key] = value
+        if "car" in provided and provided["car"] is not None:
+            data["car_status"] = "provided"
+        elif provided.get("car_status") in {"skipped", "unanswered"}:
+            data["car"] = None
         return TripProfile.model_validate(data)
 
     def is_empty(self) -> bool:
         """True when nothing has been gathered for this trip yet."""
+        if self.car_status != "unanswered":
+            return False
         d = self.model_dump(exclude_none=True)
+        d.pop("car_status", None)
         return not any(v for v in d.values())
 
     # --- JSON mapping (stored as one per-chat 'trip' memory row) -----------
@@ -216,7 +239,7 @@ class TripProfile(BaseModel):
 
 
 class TripProfileUpdate(BaseModel):
-    """Partial trip-profile update sent by the ``update_trip_profile`` tool.
+    """Validated partial trip-profile update.
 
     Every field optional; ``model_dump(exclude_unset=True)`` in
     :meth:`TripProfile.merged_with` distinguishes "not provided" from "set to
@@ -235,6 +258,8 @@ class TripProfileUpdate(BaseModel):
     budget: float | None = None
     start_date: str | None = None
     car: Car | None = None
+    persona_weights: dict[str, float] | None = None
+    car_status: CarStatus | None = None
 
     @model_validator(mode="before")
     @classmethod
@@ -242,6 +267,7 @@ class TripProfileUpdate(BaseModel):
         """Fold flat ``car_year`` / ``car_make`` / ``car_model`` into ``car``."""
         if not isinstance(data, dict):
             return data
+        data = data.copy()
         flat = {
             "year": data.get("car_year"),
             "make": data.get("car_make"),
@@ -252,11 +278,11 @@ class TripProfileUpdate(BaseModel):
             data["car"] = {k: v for k, v in flat.items() if v is not None}
         return data
 
-    @model_validator(mode="before")
-    @classmethod
-    def _coerce_coords(cls, data):
-        """Parse stringified coordinate arrays (a common model output) into lists."""
-        return _coerce_stringified_coords(data)
+    @model_validator(mode="after")
+    def _car_update_consistent(self):
+        if self.car is not None and self.car_status in {"skipped", "unanswered"}:
+            raise ValueError("choose either car details or a skipped/unanswered car status")
+        return self
 
     @field_validator("start_coords", "destination_coords")
     @classmethod
@@ -278,9 +304,14 @@ class TripProfileUpdate(BaseModel):
         if v is None:
             return None
         v = float(v)
-        if v < 0:
+        if not math.isfinite(v) or v < 0:
             raise ValueError("budget must be non-negative")
         return v
+
+    @field_validator("persona_weights", mode="before")
+    @classmethod
+    def _persona_weights(cls, v):
+        return validate_weight_update(v) if v is not None else None
 
     @model_validator(mode="after")
     def _at_least_one(self):

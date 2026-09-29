@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 
 import pytest
 
@@ -10,11 +11,14 @@ from app.agent.agent import MAX_TOOL_ITERATIONS, SUMMARY_WINDOW, run_turn
 from app.agent.providers import FallbackChain
 from app.agent.schemas import (
     AgentChatRequest,
+    AgentUsage,
     LLMMessage,
     LLMResponse,
     ToolResult,
     ToolSpec,
 )
+from app.agent.tool_dispatcher import AppToolDispatcher
+from app.agent.trip_profile import TripProfile
 
 from .conftest import FakeMemory, FakeProvider, FakeTools, make_usage
 
@@ -42,6 +46,192 @@ def _tool_block(name: str, arguments: dict | None = None, prose: str = "") -> st
     return f"{prose}\n{block}" if prose else block
 
 
+@pytest.fixture
+def geocoded_locations(monkeypatch):
+    locations = {
+        "las vegas": ("Las Vegas, NV", 36.17, -115.14, "America/Los_Angeles"),
+        "houston": ("Houston, TX", 29.76, -95.37, "America/Chicago"),
+    }
+
+    def geocode(*, geocoder, address):
+        label, latitude, longitude, timezone = locations[address.lower()]
+        return SimpleNamespace(
+            address=label,
+            latitude=latitude,
+            longitude=longitude,
+            raw={"annotations": {"timezone": {"name": timezone}}},
+        )
+
+    monkeypatch.setattr("app.agent.tool_dispatcher.get_location", geocode)
+
+
+async def test_every_turn_extracts_json_and_validates_all_supplied_fields(
+    fake_memory, geocoded_locations, monkeypatch
+):
+    from fastapi import HTTPException
+
+    async def car_not_verified(**kwargs):
+        raise HTTPException(status_code=404, detail="No matching variant")
+
+    monkeypatch.setattr("app.agent.tool_dispatcher.get_car_details", car_not_verified)
+    provider = FakeProvider(
+        responses=[LLMResponse(content="Please clarify your car and departure date.")],
+        extraction_responses=[
+            json.dumps(
+                {
+                    "details": {
+                        "start_address": "las vegas",
+                        "destination_address": "houston",
+                        "num_stops": 8,
+                        "budget": 150,
+                        "departure_time": "11 am",
+                        "car_year": 2023,
+                        "car_make": "Mazda",
+                        "car_model": "CX-5",
+                    }
+                }
+            )
+        ],
+    )
+    result = await run_turn(
+        _request(
+            "I am going from las vegas to houston, leaving at 11 am with a 2023 Mazda CX-5, 8 stops and $150 hotels"
+        ),
+        FallbackChain([provider]),
+        fake_memory,
+        AppToolDispatcher(),
+    )
+    saved = TripProfile.from_json(fake_memory.load_trip_profile("user-123", "42"))
+    assert saved.start_address == "Las Vegas, NV"
+    assert saved.destination_address == "Houston, TX"
+    assert saved.num_stops == 8
+    assert saved.budget == 150
+    assert saved.departure_time == "11:00"
+    assert saved.start_date is None
+    assert saved.car_status == "unanswered"
+    assert "car" in result.validationIssues
+    assert result.toolsUsed == ["record_trip_details"]
+    assert set(result.extractedFields) == {
+        "start_address",
+        "destination_address",
+        "num_stops",
+        "budget",
+        "departure_time",
+        "car_year",
+        "car_make",
+        "car_model",
+    }
+    assert provider.extraction_calls == 1
+    assert result.modelCalls == 2
+
+    skip_provider = FakeProvider(
+        responses=[LLMResponse(content="What date would you like to leave?")],
+        extraction_responses=['{"details":{"car_status":"skipped"}}'],
+    )
+    skip_result = await run_turn(
+        _request("skip"), FallbackChain([skip_provider]), fake_memory, AppToolDispatcher()
+    )
+    saved_after_skip = TripProfile.from_json(fake_memory.load_trip_profile("user-123", "42"))
+    assert saved_after_skip.car_status == "skipped"
+    assert saved_after_skip.budget == 150
+    assert saved_after_skip.departure_time == "11:00"
+    assert "budget: 150.0" in skip_provider.seen_messages[1][0].content
+    assert skip_result.extractedFields == ["car_status"]
+
+
+async def test_later_date_and_skip_use_saved_time(fake_memory, geocoded_locations):
+    first = FakeProvider(
+        responses=[LLMResponse(content="What date would you like to leave?")],
+        extraction_responses=[
+            json.dumps(
+                {
+                    "details": {
+                        "start_address": "las vegas",
+                        "destination_address": "houston",
+                        "departure_time": "11 am",
+                        "budget": 150,
+                    }
+                }
+            )
+        ],
+    )
+    await run_turn(
+        _request("Start in Las Vegas and end in Houston at 11 am, $150 hotels"),
+        FallbackChain([first]),
+        fake_memory,
+        AppToolDispatcher(),
+    )
+    second = FakeProvider(
+        responses=[LLMResponse(content="I have your departure date and car choice.")],
+        extraction_responses=[
+            json.dumps({"details": {"departure_date": "October 3, 2099", "car_status": "skipped"}})
+        ],
+    )
+    result = await run_turn(
+        _request("October 3, 2099. Skip the car."),
+        FallbackChain([second]),
+        fake_memory,
+        AppToolDispatcher(),
+    )
+    saved = TripProfile.from_json(fake_memory.load_trip_profile("user-123", "42"))
+    assert saved.start_date == "2099-10-03T11:00:00-07:00"
+    assert saved.departure_time == "11:00"
+    assert saved.budget == 150
+    assert saved.car_status == "skipped"
+    assert result.validationIssues == {}
+
+
+async def test_provider_outage_does_not_trigger_string_extraction(fake_memory, fake_tools):
+    from app.agent.providers import ProvidersExhausted
+
+    with pytest.raises(ProvidersExhausted):
+        await run_turn(
+            _request("from las vegas to houston"),
+            FallbackChain([FakeProvider(fail=True)]),
+            fake_memory,
+            fake_tools,
+        )
+    assert fake_tools.dispatched == []
+
+
+async def test_malformed_extraction_does_not_claim_data_was_saved(fake_memory, fake_tools):
+    provider = FakeProvider(extraction_responses=["not JSON", "still not JSON"])
+    result = await run_turn(_request("8 stops"), FallbackChain([provider]), fake_memory, fake_tools)
+    assert result.tripProfile == {"car_status": "unanswered"}
+    assert result.toolsUsed == []
+    assert "couldn't read" in result.reply
+    assert result.modelCalls == 2
+
+
+async def test_validated_patch_survives_reply_provider_outage(fake_memory, geocoded_locations):
+    from app.agent.extraction import EXTRACTION_PROMPT
+    from app.agent.providers import ProviderError
+
+    class ExtractThenFail(FakeProvider):
+        def complete(self, messages, tools):
+            if messages[0].content != EXTRACTION_PROMPT:
+                raise ProviderError("gateway unavailable")
+            return super().complete(messages, tools)
+
+    provider = ExtractThenFail(
+        extraction_responses=[
+            json.dumps(
+                {"details": {"start_address": "las vegas", "destination_address": "houston"}}
+            )
+        ]
+    )
+    result = await run_turn(
+        _request("from las vegas to houston"),
+        FallbackChain([provider]),
+        fake_memory,
+        AppToolDispatcher(),
+    )
+    assert result.tripProfile["start_address"] == "Las Vegas, NV"
+    assert [action.type for action in result.actions] == ["trip_profile_updated"]
+    assert "temporarily unavailable" in result.reply
+    assert result.modelCalls == 2
+
+
 async def test_run_turn_simple_no_tool_reply(fake_memory, fake_tools):
     provider = FakeProvider(responses=[LLMResponse(content="Sure, where to?", usage=make_usage())])
     chain = FallbackChain([provider])
@@ -52,7 +242,28 @@ async def test_run_turn_simple_no_tool_reply(fake_memory, fake_tools):
     assert result.toolsUsed == []
     assert result.provider == "fake"
     assert result.usage.promptTokens == 100
+    assert result.modelCalls == 2
     assert provider.calls == 1
+    assert provider.extraction_calls == 1
+
+
+async def test_usage_includes_structured_extraction(fake_memory, fake_tools):
+    from app.agent.extraction import EXTRACTION_PROMPT
+
+    class UsageProvider(FakeProvider):
+        def complete(self, messages, tools):
+            response = super().complete(messages, tools)
+            if messages[0].content == EXTRACTION_PROMPT:
+                response.usage = make_usage(prompt=40, completion=4)
+            return response
+
+    provider = UsageProvider(
+        responses=[LLMResponse(content="What is your starting city?", usage=make_usage())]
+    )
+    result = await run_turn(_request(), FallbackChain([provider]), fake_memory, fake_tools)
+    assert result.modelCalls == 2
+    assert result.usage.promptTokens == 140
+    assert result.usage.completionTokens == 24
 
 
 async def test_run_turn_executes_tool_and_feeds_result_back(fake_memory):
@@ -88,6 +299,29 @@ async def test_run_turn_executes_tool_and_feeds_result_back(fake_memory):
     assert [a.type for a in result.actions] == ["route_updated"]
     assert result.actions[0].chatId == "42"
     assert provider.calls == 2
+    assert result.modelCalls == 3
+
+
+async def test_usage_sums_all_model_calls_even_when_some_fields_are_missing(
+    fake_memory, fake_tools
+):
+    provider = FakeProvider(
+        responses=[
+            LLMResponse(
+                content=_tool_block("noop"),
+                usage=make_usage(prompt=120, completion=12),
+            ),
+            LLMResponse(
+                content=_tool_block("noop"),
+                usage=AgentUsage(completionTokens=8),
+            ),
+            LLMResponse(content="Done.", usage=make_usage(prompt=180, completion=18)),
+        ]
+    )
+    result = await run_turn(_request(), FallbackChain([provider]), fake_memory, fake_tools)
+    assert result.modelCalls == 4
+    assert result.usage.promptTokens == 300
+    assert result.usage.completionTokens == 38
 
 
 async def test_action_carries_trip_payload_to_client(fake_memory):
@@ -124,6 +358,36 @@ async def test_action_carries_trip_payload_to_client(fake_memory):
     assert payload["route"] == route_dict
     assert payload["cost"] == 320
     assert payload["stops"] == [{"name": "Red Rocks"}]
+
+
+async def test_partial_completion_cannot_be_reported_as_ready(fake_memory):
+    route_dict = {"coordinates": [[39.74, -104.99], [35.69, -105.94]]}
+    tools = FakeTools(
+        results={
+            "complete_trip": ToolResult(
+                name="complete_trip",
+                ok=True,
+                result={
+                    "status": "partial",
+                    "itinerary_error": "upstream unavailable",
+                    "actions": [{"action": "route_updated", "route": route_dict}],
+                },
+            )
+        }
+    )
+    provider = FakeProvider(
+        responses=[
+            LLMResponse(content=_tool_block("complete_trip")),
+            LLMResponse(content="Your whole trip is ready!"),
+        ]
+    )
+    result = await run_turn(_request(), FallbackChain([provider]), fake_memory, tools)
+    assert (
+        result.reply
+        == "Your route is ready, but the itinerary could not be created. Please retry it."
+    )
+    assert [action.type for action in result.actions] == ["route_updated"]
+    assert result.actions[0].payload == {"route": route_dict}
 
 
 async def test_tool_loop_terminates_at_cap(fake_memory, fake_tools):
@@ -191,7 +455,9 @@ async def test_write_back_rolls_summary_when_window_exceeds_threshold(fake_tools
     rolled = memory.saved_conversations[0]
     assert rolled.summary_turn_count == 1
     assert rolled.summary  # a truthful note was appended
-    assert "Done." in rolled.summary
+    assert "turn 0" in rolled.summary
+    assert "turn 1" in rolled.summary
+    assert "Done." not in rolled.summary
 
 
 async def test_write_back_skips_summary_below_threshold(fake_tools):
@@ -228,12 +494,12 @@ async def test_recent_turns_are_threaded_into_provider_messages(fake_tools):
     await run_turn(_request("newest question"), chain, memory, fake_tools)
 
     assert provider.seen_messages, "provider should have been called at least once"
-    contents = [m.content for m in provider.seen_messages[0]]
+    contents = [m.content for m in provider.seen_messages[1]]
     # The verbatim recent turns appear in the assembled message list...
     for turn in window:
         assert turn.content in contents
     # ...ahead of the new user message, which is last.
-    assert provider.seen_messages[0][-1].content == "newest question"
+    assert provider.seen_messages[1][-1].content == "newest question"
 
 
 async def test_run_turn_surfaces_failed_tool_in_tool_errors(fake_memory):
@@ -302,7 +568,7 @@ async def test_run_turn_feeds_tool_error_back_and_lets_model_recover(fake_memory
     assert provider.calls == 2
     # A second provider call means the tool error was appended to the history and
     # the model saw it (that assembled message list is captured by FakeProvider).
-    second_call_messages = provider.seen_messages[1]
+    second_call_messages = provider.seen_messages[2]
     assert any(
         m.role == "tool" and "needs start/end coordinates" in m.content
         for m in second_call_messages

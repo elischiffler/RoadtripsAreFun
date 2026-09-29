@@ -87,12 +87,19 @@ def seed():
         OWNER_A, CHAT_ID, ConversationMemory(chat_id=CHAT_ID, summary="Pacific coast")
     )
     memory_crud.save_trip_profile(OWNER_A, CHAT_ID, '{"pace":"slow"}')
+    memory_crud.save_planned_route(
+        OWNER_A,
+        CHAT_ID,
+        {"route": {"stops": [{"name": "Museum"}]}, "departure": "2030-01-01T09:00:00Z"},
+    )
     assert memory_crud.load_facts(OWNER_A)[0].value == "San Luis Obispo"
     assert memory_crud.load_facts(OWNER_B)[0].value == "Boston"
     assert memory_crud.load_conversation(OWNER_A, CHAT_ID).summary == "Pacific coast"
     assert memory_crud.load_conversation(OWNER_B, CHAT_ID).summary == ""
     assert memory_crud.load_trip_profile(OWNER_A, CHAT_ID) == '{"pace":"slow"}'
     assert memory_crud.load_trip_profile(OWNER_B, CHAT_ID) is None
+    assert memory_crud.load_planned_route(OWNER_A, CHAT_ID)["route"]["stops"][0]["name"] == "Museum"
+    assert memory_crud.load_planned_route(OWNER_B, CHAT_ID) is None
 
     chat_crud.create_chat(OWNER_A, DELETE_CHAT, {"temporary": True}, {})
     chat_crud.create_chat(OWNER_B, DELETE_CHAT, {"keeper": True}, {})
@@ -153,6 +160,8 @@ def verify():
     assert memory_crud.load_facts(OWNER_B)[0].value == "Boston"
     assert memory_crud.load_conversation(OWNER_A, CHAT_ID).summary == "Pacific coast"
     assert memory_crud.load_trip_profile(OWNER_A, CHAT_ID) == '{"pace":"slow"}'
+    assert memory_crud.load_planned_route(OWNER_A, CHAT_ID)["departure"] == "2030-01-01T09:00:00Z"
+    assert memory_crud.load_planned_route(OWNER_B, CHAT_ID) is None
     assert chat_crud.get_chat(OWNER_A, DELETE_CHAT) is None
     assert chat_crud.get_chat(OWNER_B, DELETE_CHAT)["chat_data"] == {"keeper": True}
     with _raw_connection() as conn, conn.cursor() as cur:

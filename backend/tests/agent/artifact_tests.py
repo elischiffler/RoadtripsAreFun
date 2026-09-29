@@ -11,6 +11,9 @@ from app.agent.agent import _tool_result_content
 from app.agent.schemas import ToolResult
 from app.agent.tool_dispatcher import AppToolDispatcher, _extract_endpoints
 from app.agent.tools import ArtifactStore, ToolCall, ToolContext
+from app.agent.trip_profile import TripProfile
+
+from .conftest import FakeMemory
 
 # async tests run under pytest-asyncio auto mode — no file-wide marker (which
 # would wrongly tag the sync unit tests below).
@@ -155,13 +158,19 @@ def _ctx(memory=None):
     return ToolContext(user_id="u1", chat_id="42", memory=memory)
 
 
+def _planning_ctx():
+    memory = FakeMemory()
+    memory.save_trip_profile("u1", "42", TripProfile(car_status="skipped").to_json())
+    return _ctx(memory)
+
+
 async def test_full_route_chain_by_handle(monkeypatch):
     from types import SimpleNamespace
 
     async def fake_call_route(a, b, c, d, *args, **kwargs):
         return SimpleNamespace(distance=664000.0, duration=26000.0)
 
-    async def fake_plan(payload):
+    async def fake_plan(payload, user_id=None):
         return SimpleNamespace(
             stops=[{"name": "Stop", "type": "stop"}],
             cost=250.0,
@@ -180,7 +189,7 @@ async def test_full_route_chain_by_handle(monkeypatch):
     monkeypatch.setattr(td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v))
 
     d = AppToolDispatcher()
-    ctx = _ctx()
+    ctx = _planning_ctx()
 
     # 1. get_initial_route -> handle
     r1 = await d.dispatch(
@@ -209,7 +218,10 @@ async def test_full_route_chain_by_handle(monkeypatch):
 
     # 3. generate_itinerary with the route handle
     r3 = await d.dispatch(
-        ToolCall(name="generate_itinerary", arguments={"route_handle": route_handle}),
+        ToolCall(
+            name="generate_itinerary",
+            arguments={"route_handle": route_handle, "start_time": "2030-01-01T09:00:00Z"},
+        ),
         ctx,
     )
     assert r3.ok, r3.error
@@ -227,7 +239,7 @@ async def test_generate_final_route_unresolved_handle_and_no_coords_errors():
             name="generate_final_route",
             arguments={"route_handle": "nope_1", "num_stops": 2, "budget": 300},
         ),
-        _ctx(),
+        _planning_ctx(),
     )
     assert result.ok is False
     assert "initial route" in result.error.lower()
@@ -240,15 +252,13 @@ async def test_generate_final_route_rebuilds_from_trip_coords_across_turns(monke
     # initial route instead of failing with "needs route_handle".
     from types import SimpleNamespace
 
-    from .conftest import FakeMemory
-
     rebuilt = {}
 
     async def fake_call_route(start_lat, start_lon, end_lat, end_lon):
         rebuilt["args"] = (start_lat, start_lon, end_lat, end_lon)
         return SimpleNamespace(distance=100000.0, duration=3600.0)
 
-    async def fake_plan(payload):
+    async def fake_plan(payload, user_id=None):
         return SimpleNamespace(stops=[], cost=0.0, distance=100000.0, model_dump=lambda: {})
 
     # conftest's autouse _routing_local fixture already forces the LOCAL path
@@ -260,19 +270,17 @@ async def test_generate_final_route_rebuilds_from_trip_coords_across_turns(monke
 
     memory = FakeMemory()
     d = AppToolDispatcher()
-    ctx = ToolContext(user_id="u1", chat_id="42", memory=memory)
-    # Record the endpoints on the profile (what update_trip_profile would store).
-    await d.dispatch(
-        ToolCall(
-            name="update_trip_profile",
-            arguments={
-                "start_coords": [40.01, -105.27],
-                "destination_coords": [40.71, -74.0],
-                "num_stops": 8,
-                "budget": 600,
-            },
-        ),
-        ctx,
+    # Seed a previously geocoded profile; this test concerns cross-turn route reuse.
+    memory.save_trip_profile(
+        "u1",
+        "42",
+        TripProfile(
+            start_coords=[40.01, -105.27],
+            destination_coords=[40.71, -74.0],
+            num_stops=8,
+            budget=600,
+            car_status="skipped",
+        ).to_json(),
     )
     # A brand-new turn's context: fresh (empty) artifact store, same memory.
     next_turn_ctx = ToolContext(user_id="u1", chat_id="42", memory=memory)

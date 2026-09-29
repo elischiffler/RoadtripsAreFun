@@ -1,5 +1,9 @@
 # Testing the Routing Algorithms on localhost
 
+> Historical instructions for the retired greedy and OR-Tools planners. The
+> current registered/default planner is `cp_sat`; use `/algorithms` to inspect
+> available choices. CP-SAT requires an authenticated request and a future start.
+
 A hands-on guide for running the two routing planners (`greedy` and `ortools`)
 locally, comparing them, and reading the results. Covers three ways to test,
 from fastest to most realistic:

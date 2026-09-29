@@ -10,10 +10,16 @@ import app.agent.routing_remote as rr
 import app.agent.tool_dispatcher as td
 from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.tools import ToolCall, ToolContext
+from app.agent.trip_profile import TripProfile
+
+from .conftest import FakeMemory
 
 
-def _ctx():
-    return ToolContext(user_id="u1", chat_id="42")
+def _ctx(*, car_skipped=False):
+    memory = FakeMemory() if car_skipped else None
+    if memory:
+        memory.save_trip_profile("u1", "42", TripProfile(car_status="skipped").to_json())
+    return ToolContext(user_id="u1", chat_id="42", auth_token="verified-token", memory=memory)
 
 
 def test_remote_enabled_reflects_config(monkeypatch):
@@ -29,8 +35,8 @@ async def test_get_initial_route_uses_remote_when_enabled(monkeypatch):
 
     called = {}
 
-    async def fake_remote(a, b, c, d):
-        called["args"] = (a, b, c, d)
+    async def fake_remote(a, b, c, d, token):
+        called["args"] = (a, b, c, d, token)
         return SimpleNamespace(distance=664000.0, duration=26000.0)
 
     # The tool calls routing_remote.call_route_remote; the LOCAL call_route must
@@ -51,7 +57,7 @@ async def test_get_initial_route_uses_remote_when_enabled(monkeypatch):
     )
     assert result.ok is True, result.error
     assert result.result["route_handle"].startswith("initial_route_")
-    assert called["args"] == (35.3, -120.4, 36.2, -115.1)
+    assert called["args"] == (35.3, -120.4, 36.2, -115.1, "verified-token")
 
 
 @pytest.mark.asyncio
@@ -84,11 +90,13 @@ async def test_generate_final_route_uses_remote_when_enabled(monkeypatch):
     monkeypatch.setattr(td.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v))
     monkeypatch.setattr(td.Route_Payload, "model_validate", classmethod(lambda cls, v: v))
 
-    async def fake_remote_plan(payload):
+    async def fake_remote_plan(payload, token):
+        assert token == "verified-token"
         return SimpleNamespace(
             stops=[{"name": "S", "type": "stop"}],
             cost=250.0,
             distance=664000.0,
+            warnings=None,
             model_dump=lambda: {"cost": 250.0},
         )
 
@@ -99,7 +107,7 @@ async def test_generate_final_route_uses_remote_when_enabled(monkeypatch):
 
     monkeypatch.setattr(td, "plan_final_route", local_boom)
 
-    ctx = _ctx()
+    ctx = _ctx(car_skipped=True)
     handle = ctx.artifacts.put("initial_route", {})
     result = await AppToolDispatcher().dispatch(
         ToolCall(
@@ -138,14 +146,55 @@ async def test_remote_call_route_hits_expected_endpoint(monkeypatch):
         async def __aexit__(self, *a):
             return False
 
-        async def get(self, url, params=None):
+        async def get(self, url, params=None, headers=None):
             seen["url"] = url
             seen["params"] = params
+            seen["headers"] = headers
             return _Resp()
 
     monkeypatch.setattr(httpx, "AsyncClient", _Client)
     monkeypatch.setattr(rr.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v))
 
-    await rr.call_route_remote(1.0, 2.0, 3.0, 4.0)
+    await rr.call_route_remote(1.0, 2.0, 3.0, 4.0, "verified-token")
     assert seen["url"] == "https://deployed.example/get-initial-route"
     assert seen["params"] == {"start_lat": 1.0, "start_lon": 2.0, "end_lat": 3.0, "end_lon": 4.0}
+    assert seen["headers"] == {"Authorization": "Bearer verified-token"}
+
+
+def test_remote_route_rejects_missing_token():
+    with pytest.raises(ValueError, match="Authenticated token"):
+        rr._auth(None)
+
+
+@pytest.mark.asyncio
+async def test_remote_final_route_forwards_override_and_auth(monkeypatch):
+    import httpx
+
+    monkeypatch.setattr(rr.settings, "ROUTING_REMOTE_URL", "https://deployed.example")
+    seen = {}
+
+    class Client:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        async def post(self, url, json=None, headers=None):
+            seen.update(url=url, body=json, headers=headers)
+            return SimpleNamespace(raise_for_status=lambda: None, json=lambda: {"cost": 1})
+
+    monkeypatch.setattr(httpx, "AsyncClient", Client)
+    monkeypatch.setattr(rr.Route, "model_validate", classmethod(lambda cls, data: data))
+    payload = SimpleNamespace(
+        model_dump=lambda mode: {"algorithm": "cp_sat", "persona_weights": {"nature": 2}}
+    )
+    await rr.plan_final_route_remote(payload, "verified-token")
+    assert seen == {
+        "url": "https://deployed.example/generate-final-route",
+        "body": {"algorithm": "cp_sat", "persona_weights": {"nature": 2}},
+        "headers": {"Authorization": "Bearer verified-token"},
+    }

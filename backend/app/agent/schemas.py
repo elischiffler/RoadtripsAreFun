@@ -73,6 +73,7 @@ class AgentClientContext(BaseModel):
     hasRoute: bool = False
     stops: int | None = None
     hotelBudget: int | None = None
+    algorithm: str | None = None
 
 
 class AgentChatRequest(BaseModel):
@@ -123,8 +124,12 @@ class AgentChatResponse(BaseModel):
     toolsUsed: list[str] = Field(default_factory=list)
     toolErrors: list[AgentToolError] = Field(default_factory=list)
     actions: list[AgentAction] = Field(default_factory=list)
+    tripProfile: dict | None = None
+    validationIssues: dict[str, str] = Field(default_factory=dict)
+    extractedFields: list[str] = Field(default_factory=list)
     provider: str | None = None
     usage: AgentUsage | None = None
+    modelCalls: int = 0
 
 
 # --------------------------------------------------------------------------- #

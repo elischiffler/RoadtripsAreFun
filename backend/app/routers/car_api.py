@@ -226,15 +226,23 @@ def _get_full_model_name(model: str, make: str, year: int) -> str | None:
         if _normalize(full_model) == target:
             return full_model
 
-    # 2. Substring match in either direction (user typed a prefix, or a
-    #    superset of the DB name). Collect ALL matches: a single match is used,
-    #    but multiple matches are ambiguous and must not silently resolve to the
-    #    first one (that would query an arbitrary model).
-    matches = [
-        full_model
-        for full_model in models
-        if (norm := _normalize(full_model)) and (target in norm or norm in target)
+    # A base model may have a suffix such as "4WD". Match the complete first
+    # model token before the broad fallback, so CX-5 does not also match CX-50.
+    base_matches = [
+        full_model for full_model in models if _normalize(full_model.split(maxsplit=1)[0]) == target
     ]
+    if len(base_matches) == 1:
+        return base_matches[0]
+    if len(base_matches) > 1:
+        matches = base_matches
+    else:
+        # Keep the forgiving match for longer descriptions such as
+        # "Wrangler 4dr". Multiple results still require clarification.
+        matches = [
+            full_model
+            for full_model in models
+            if (norm := _normalize(full_model)) and (target in norm or norm in target)
+        ]
     if len(matches) == 1:
         return matches[0]
     if len(matches) > 1:

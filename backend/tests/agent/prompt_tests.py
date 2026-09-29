@@ -1,117 +1,127 @@
-"""Tests for the system prompt + context assembly (``app/agent/prompt.py``).
-
-Focus: internal context (the client UI hint, trip-profile internals, tool
-mechanics) must never be presented to the user. These pin the contract so a
-regression that reintroduces the leak — e.g. the bot reciting "the client UI
-hint had 1 stop and a $0 budget" — fails a test instead of shipping.
-"""
+"""The stage-specific prompt uses validated trip state and bounded history."""
 
 from __future__ import annotations
 
 from app.agent.memory import ConversationMemory, MemoryFact
 from app.agent.prompt import (
-    SYSTEM_PROMPT,
-    _format_client_context,
-    _format_context,
+    RECENT_MESSAGE_CHARS,
+    RECENT_MESSAGE_LIMIT,
+    SUMMARY_CHARS,
+    _stage,
     build_messages,
 )
-from app.agent.schemas import AgentClientContext
+from app.agent.schemas import AgentClientContext, LLMMessage
 from app.agent.trip_profile import TripProfile
 
-# --------------------------------------------------------------------------- #
-# System prompt carries the non-recitation rule
-# --------------------------------------------------------------------------- #
 
-
-def test_system_prompt_forbids_reciting_internal_context():
-    text = SYSTEM_PROMPT.lower()
-    # The agent is told never to quote/recite its internal context to the user.
-    assert "never recite" in text
-    assert "client ui hint" in text
-    # A default/zero hint must not be repeated back as if it were a preference.
-    assert "not a real user preference" in text
-
-
-# --------------------------------------------------------------------------- #
-# The rendered hint is labelled INTERNAL / do-not-quote
-# --------------------------------------------------------------------------- #
-
-
-def test_client_context_hint_is_labelled_internal():
-    hint = _format_client_context(AgentClientContext(hasRoute=True, stops=1, hotelBudget=0))
-    assert hint is not None
-    assert "INTERNAL" in hint
-    # The advisory framing and the actual (advisory) values are still present for
-    # the model to weigh — it just may not read them back to the user.
-    assert "advisory" in hint.lower()
-    assert "stops=1" in hint
-    assert "hotelBudget=0" in hint
-
-
-def test_client_context_none_when_absent():
-    assert _format_client_context(None) is None
-
-
-# --------------------------------------------------------------------------- #
-# Trip-profile + facts blocks are labelled INTERNAL / never-recite
-# --------------------------------------------------------------------------- #
-
-
-def test_trip_profile_block_is_labelled_internal():
-    trip = TripProfile(start_address="482 Luneta Dr", start_coords=[35.28, -120.66], num_stops=3)
-    rendered = _format_context(facts=[], trip=trip)
-    # The block that carries field names + raw coordinates is marked internal so
-    # the model doesn't read it back verbatim.
-    assert "INTERNAL" in rendered
-    assert "never quote field names or raw coordinates" in rendered
-
-
-def test_facts_block_is_labelled_internal():
-    facts = [MemoryFact(key="home_city", value="Boston, MA")]
-    rendered = _format_context(facts=facts, trip=None)
-    assert "INTERNAL" in rendered
-    assert "home_city" in rendered  # still present for the model to use
-
-
-def test_empty_context_is_neutral_and_carries_no_internals():
-    rendered = _format_context(facts=[], trip=None)
-    assert rendered == "Nothing gathered for this trip yet."
-
-
-def test_conversation_summary_is_labelled_internal_in_messages():
-    conversation = ConversationMemory(chat_id="42", summary="User wants a coastal route.")
-    messages = build_messages(
-        facts=[],
-        conversation=conversation,
-        recent_turns=[],
-        user_message="continue",
-        trip=None,
-        client_context=None,
+def _complete_trip() -> TripProfile:
+    return TripProfile(
+        start_address="Denver",
+        start_coords=[39.7, -105.0],
+        destination_address="Moab",
+        destination_coords=[38.6, -109.5],
+        num_stops=3,
+        budget=150,
+        start_date="2099-10-10T09:00:00-06:00",
+        car_status="skipped",
     )
-    system = "\n\n".join(m.content for m in messages if m.role == "system")
-    assert "Summary of earlier conversation" in system
-    assert "INTERNAL" in system
-    assert "do not recite this back to the user" in system
 
 
-# --------------------------------------------------------------------------- #
-# The hint is placed in a SYSTEM message, not surfaced as user-visible content
-# --------------------------------------------------------------------------- #
-
-
-def test_hint_lives_in_system_message_only():
-    messages = build_messages(
+def _messages(trip=None, text="Plan a trip", hint=None, recent=None, summary=""):
+    return build_messages(
         facts=[],
+        trip=trip,
+        user_message=text,
+        client_context=hint,
+        recent_turns=recent or [],
+        conversation=ConversationMemory(chat_id="42", summary=summary),
+    )
+
+
+def test_stage_uses_validated_profile_without_message_pattern_checks():
+    trip = _complete_trip()
+    assert _stage(TripProfile(), None) == "collecting"
+    assert _stage(trip, None) == "completing"
+    assert _stage(trip, AgentClientContext(hasRoute=True)) == "revising"
+    assert _stage(TripProfile(), AgentClientContext(hasRoute=True)) == "collecting"
+
+
+def test_stage_instructions_are_selected_and_other_stages_omitted():
+    scenarios = (
+        (TripProfile(), "Plan a trip", None, "Stage: collect details."),
+        (_complete_trip(), "Actually change the stops", None, "Stage: complete the trip."),
+        (_complete_trip(), "Finish it", None, "Stage: complete the trip."),
+        (
+            _complete_trip(),
+            "Revise this",
+            AgentClientContext(hasRoute=True),
+            "Stage: revise an existing trip.",
+        ),
+    )
+    for trip, message, hint, expected in scenarios:
+        system = _messages(trip, message, hint)[0].content
+        assert expected in system
+        assert (
+            sum(
+                system.count(marker)
+                for marker in (
+                    "Stage: collect",
+                    "Stage: correct",
+                    "Stage: complete",
+                    "Stage: revise",
+                )
+            )
+            == 1
+        )
+        assert "Never recite internal context" in system
+        assert "ok:false" in system
+
+
+def test_profile_is_authoritative_and_ui_defaults_are_not_sent():
+    system = _messages(
+        _complete_trip(),
+        "Continue",
+        AgentClientContext(hasRoute=False, stops=1, hotelBudget=0),
+    )[0].content
+    assert "num_stops: 3" in system
+    assert "budget: 150.0" in system
+    assert "hotelBudget=0" not in system
+    assert "stops=1" not in system
+    assert "INTERNAL" in system
+
+
+def test_optional_car_and_departure_instructions_are_present_without_completing_early():
+    assert _stage(_complete_trip().model_copy(update={"car_status": "unanswered"}), None) == (
+        "collecting"
+    )
+    collecting = _messages(TripProfile(), "Plan")[0].content
+    assert "departure time" in collecting
+    assert "9:00 AM" in collecting
+    assert "year, make, and model" in collecting
+    assert '"skip" or "no car"' in collecting
+    assert "correction or offer to skip" in collecting
+    skipped = _messages(TripProfile(car_status="skipped"), "Continue")[0].content
+    assert "car_status: skipped" in skipped
+
+
+def test_facts_and_history_are_bounded_and_summary_is_conditional():
+    recent = [LLMMessage(role="user", content=f"turn {i} " + "x" * 1000) for i in range(10)]
+    short = _messages(recent=recent[:2], summary="earlier preference")
+    assert not any("Summary of earlier conversation" in m.content for m in short)
+    long = _messages(recent=recent, summary="z" * 2000)
+    history = [m for m in long if m.role == "user"][:-1]
+    assert len(history) == RECENT_MESSAGE_LIMIT
+    assert all(len(m.content) <= RECENT_MESSAGE_CHARS for m in history)
+    assert not any("turn 0" in m.content for m in history)
+    summary = next(m.content for m in long if "Summary of earlier conversation" in m.content)
+    assert len(summary) <= SUMMARY_CHARS + 100
+
+    messages = build_messages(
+        facts=[MemoryFact(key="home_city", value="Boston")],
+        trip=None,
         conversation=None,
         recent_turns=[],
-        user_message="Let's plan a trip",
-        trip=None,
-        client_context=AgentClientContext(hasRoute=False, stops=1, hotelBudget=0),
+        user_message="Hello",
     )
-    # The hint text rides along in the system prompt...
-    system = "\n\n".join(m.content for m in messages if m.role == "system")
-    assert "Client UI hint" in system
-    assert "INTERNAL" in system
-    # ...and never as the user turn the model is answering.
-    user_contents = [m.content for m in messages if m.role == "user"]
-    assert user_contents == ["Let's plan a trip"]
+    assert "home_city: Boston" in messages[0].content
+    assert messages[-1].content == "Hello"

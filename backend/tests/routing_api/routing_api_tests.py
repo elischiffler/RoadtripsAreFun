@@ -1,8 +1,10 @@
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
 
+from app.agent.persona import AccountPersona
 from app.main import app
 
 client = TestClient(app)
@@ -183,6 +185,9 @@ def test_generate_final_route_zero_stops():
     with (
         patch("app.routing.sources.mapbox.requests.get", return_value=mock_resp),
         patch("app.routers.routing_api.get_location", return_value=mock_location),
+        patch(
+            "app.routers.routing_api.load_account_persona", return_value=AccountPersona.default()
+        ),
     ):
         init_resp = client.get(
             "/get-initial-route",
@@ -199,6 +204,7 @@ def test_generate_final_route_zero_stops():
             "initial_route": init_resp.json(),
             "num_stops": 0,
             "budget": 400,
+            "start": (datetime.now() + timedelta(days=1)).replace(hour=9, minute=0).isoformat(),
         }
         response = client.post("/generate-final-route", json=payload)
 
@@ -213,7 +219,7 @@ def test_generate_final_route_invalid_payload():
     response = client.post(
         "/generate-final-route", json={"initial_route": {}, "num_stops": 1, "budget": 200}
     )
-    assert response.status_code == 502
+    assert response.status_code == 422
 
 
 def test_generate_final_route_unknown_algorithm_returns_400():
@@ -272,10 +278,10 @@ def test_benchmark_enabled_returns_table():
     import os
 
     with patch.dict(os.environ, {"BENCHMARK_ENABLED": "true"}):
-        response = client.get("/benchmark", params={"algorithms": "greedy,ortools"})
+        response = client.get("/benchmark", params={"algorithms": "cp_sat"})
     assert response.status_code == 200
     data = response.json()
-    assert data["algorithms"] == ["greedy", "ortools"]
+    assert data["algorithms"] == ["cp_sat"]
     assert len(data["cases"]) >= 1
 
 

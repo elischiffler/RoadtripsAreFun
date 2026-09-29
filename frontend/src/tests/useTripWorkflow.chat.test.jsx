@@ -78,11 +78,31 @@ Harness.propTypes = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  localStorage.clear();
   updateUserData.mockResolvedValue(true);
   import.meta.env.VITE_BACKEND_SERVER = 'http://localhost:8000/';
 });
 
 describe("submit('chat_message')", () => {
+  it('logs the backend profile snapshot even when no action was emitted', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const tripProfile = { car_status: 'unanswered' };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Please tell me your starting city.',
+      toolsUsed: [],
+      actions: [],
+      tripProfile,
+    });
+
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    await screen.findByText('Please tell me your starting city.');
+
+    expect(log).toHaveBeenCalledWith('[TripProfile] tools this turn: %s', 'none');
+    expect(log).toHaveBeenCalledWith('[TripProfile] current state:', tripProfile);
+    log.mockRestore();
+  });
+
   it('appends the user message, calls the agent, and renders the bot reply', async () => {
     sendAgentMessage.mockResolvedValueOnce({
       reply: 'Sure — I lowered your hotel budget.',
@@ -126,6 +146,15 @@ describe("submit('chat_message')", () => {
     expect(sendAgentMessage).toHaveBeenCalledWith(
       expect.objectContaining({ chatId: 'uuid-abc-123' })
     );
+  });
+
+  it('passes the selected CP-SAT variant to the agent', async () => {
+    localStorage.setItem('devRoutingAlgorithm', 'cp_sat_scenic');
+    sendAgentMessage.mockResolvedValueOnce({ reply: 'ok', toolsUsed: [], actions: [] });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    await waitFor(() => expect(sendAgentMessage).toHaveBeenCalledTimes(1));
+    expect(sendAgentMessage.mock.calls[0][0].clientContext.algorithm).toBe('cp_sat_scenic');
   });
 
   it('shows a generic fallback when the agent returns null', async () => {
@@ -174,6 +203,7 @@ describe('applyAgentActions', () => {
   it('writes a route_updated payload into the persisted ChatData snapshot', async () => {
     const routeObj = {
       duration: 3600,
+      warnings: ['Hotel exceeds the $100 nightly target.'],
       geometry: { coordinates: [] },
       coordinates: [
         [40.0, -105.0], // start [lat, lon]
@@ -205,13 +235,14 @@ describe('applyAgentActions', () => {
     expect(snap.agentChatId).toBe('uuid-abc-123');
     // Route written verbatim
     expect(snap.route).toBe(routeObj);
-    expect(snap.isComplete).toBe(true);
+    expect(snap.isComplete).toBe(false);
     expect(snap.budget).toBe(250);
     // startConfirmed / endConfirmed derived from route.coordinates[0] / [-1]
     expect(snap.startConfirmed).toEqual({ latitude: 40.0, longitude: -105.0, address: '' });
     expect(snap.endConfirmed).toEqual({ latitude: 42.5, longitude: -103.5, address: '' });
     // Also mirrored into ChatLogsData so Map/Itinerary read it
     expect(chatLogsData.chatdata[0].route).toBe(routeObj);
+    expect(await screen.findByText('Hotel exceeds the $100 nightly target.')).toBeInTheDocument();
   });
 
   it('writes an itinerary_updated payload into the persisted ChatData snapshot', async () => {
@@ -235,6 +266,95 @@ describe('applyAgentActions', () => {
     const snap = updateUserData.mock.calls[0][1];
     expect(snap.itinerary).toBe(itin);
     expect(chatLogsData.chatdata[0].itinerary).toBe(itin);
+  });
+
+  it('applies both completion actions in one snapshot', async () => {
+    const routeObj = {
+      coordinates: [
+        [40, -105],
+        [42, -104],
+      ],
+      stops: [],
+    };
+    const itin = [{ date: 'Day 1', stops: [] }];
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Your trip is ready.',
+      toolsUsed: ['complete_trip'],
+      actions: [
+        { type: 'route_updated', payload: { route: routeObj, stops: [], cost: 90 } },
+        { type: 'itinerary_updated', payload: { itinerary: itin } },
+      ],
+    });
+    const chatLogsData = { chatdata: [{ chatId: CHAT_ID }], currentId: CHAT_ID };
+    render(<Harness chatLogsData={chatLogsData} />);
+    await userEvent.click(screen.getByText('send'));
+
+    await waitFor(() => expect(updateUserData).toHaveBeenCalledTimes(1));
+    const snap = updateUserData.mock.calls[0][1];
+    expect(snap.route).toBe(routeObj);
+    expect(snap.itinerary).toBe(itin);
+    expect(snap.isComplete).toBe(true);
+    expect(chatLogsData.chatdata[0]).toBe(snap);
+  });
+
+  it('keeps an itinerary failure visibly partial while saving its route', async () => {
+    const routeObj = {
+      coordinates: [
+        [40, -105],
+        [42, -104],
+      ],
+      stops: [],
+    };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'The route is ready, but I could not create the itinerary. Please retry.',
+      toolsUsed: ['complete_trip'],
+      actions: [{ type: 'route_updated', payload: { route: routeObj, stops: [], cost: 90 } }],
+    });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+
+    await waitFor(() => expect(updateUserData).toHaveBeenCalledTimes(1));
+    expect(updateUserData.mock.calls[0][1].route).toBe(routeObj);
+    expect(updateUserData.mock.calls[0][1].isComplete).toBe(false);
+    expect(await screen.findByText(/could not create the itinerary/i)).toBeInTheDocument();
+  });
+
+  it('clears an older itinerary when a later route has no new itinerary', async () => {
+    const firstRoute = {
+      coordinates: [
+        [40, -105],
+        [42, -104],
+      ],
+    };
+    const nextRoute = {
+      coordinates: [
+        [40, -105],
+        [43, -103],
+      ],
+    };
+    const itinerary = [{ date: 'Day 1', stops: [] }];
+    sendAgentMessage
+      .mockResolvedValueOnce({
+        reply: 'First trip ready.',
+        actions: [
+          { type: 'route_updated', payload: { route: firstRoute } },
+          { type: 'itinerary_updated', payload: { itinerary } },
+        ],
+      })
+      .mockResolvedValueOnce({
+        reply: 'New route ready, but the itinerary failed.',
+        actions: [{ type: 'route_updated', payload: { route: nextRoute } }],
+      });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    expect(await screen.findByText('First trip ready.')).toBeInTheDocument();
+    await waitFor(() => expect(updateUserData).toHaveBeenCalledTimes(1));
+    await userEvent.click(screen.getByText('send'));
+    await waitFor(() => expect(updateUserData).toHaveBeenCalledTimes(2));
+    const snap = updateUserData.mock.calls[1][1];
+    expect(snap.route).toBe(nextRoute);
+    expect(snap.itinerary).toBeNull();
+    expect(snap.isComplete).toBe(false);
   });
 
   it('writes a trip_profile_updated payload into the persisted ChatData snapshot', async () => {
