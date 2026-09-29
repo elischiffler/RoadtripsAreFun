@@ -184,6 +184,13 @@ describe('logTripProfileChanges', () => {
     expect(changes).toEqual([{ field: 'num_stops', kind: 'CHANGED', from: 2, to: 4 }]);
   });
 
+  it('logs a pending departure time before the date is known', () => {
+    const changes = logTripProfileChanges({}, { departure_time: '11:00' });
+    expect(changes).toEqual([
+      { field: 'departure_time', kind: 'ADDED', from: undefined, to: '11:00' },
+    ]);
+  });
+
   it('reports a CHANGED field when a coordinate array differs', () => {
     const changes = logTripProfileChanges(
       { start_coords: [35.28, -120.66] },
@@ -304,6 +311,15 @@ describe('logTripToolActivity', () => {
       '[TripProfile] %s needs clarification: %s',
       'departure',
       'Please clarify the date.'
+    );
+  });
+
+  it('logs the keys identified by structured extraction each turn', () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    logTripToolActivity(['record_trip_details'], [], [], {}, ['budget', 'departure_time']);
+    expect(console.log).toHaveBeenCalledWith(
+      '[TripProfile] extracted fields this turn: %s',
+      'budget, departure_time'
     );
   });
 });

@@ -13,6 +13,28 @@ _MONTHS["sept"] = 9
 _MONTH_DAY = re.compile(r"([A-Za-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(\d{4}))?", re.I)
 
 
+def normalize_departure_time(value: str) -> str:
+    """Validate an extracted time and retain it as local HH:MM until a date arrives."""
+    text = value.strip() if isinstance(value, str) else ""
+    if text.lower() == "noon":
+        return "12:00"
+    if text.lower() == "midnight":
+        return "00:00"
+    match = re.fullmatch(r"(\d{1,2})(?::(\d{2}))?\s*(am|pm)", text, re.I)
+    if match:
+        hour, minute = int(match.group(1)), int(match.group(2) or 0)
+        if not 1 <= hour <= 12 or minute > 59:
+            raise ValueError("Please provide a valid departure time, such as 11:00 AM")
+        hour = hour % 12 + (12 if match.group(3).lower() == "pm" else 0)
+        return f"{hour:02d}:{minute:02d}"
+    match = re.fullmatch(r"(\d{1,2}):(\d{2})", text)
+    if match:
+        hour, minute = int(match.group(1)), int(match.group(2))
+        if hour < 24 and minute < 60:
+            return f"{hour:02d}:{minute:02d}"
+    raise ValueError("Please provide a valid departure time, such as 11:00 AM")
+
+
 def timezone_from_location(location: object) -> str | None:
     """Use OpenCage's IANA name; never infer an offset from coordinates."""
     raw = getattr(location, "raw", None)

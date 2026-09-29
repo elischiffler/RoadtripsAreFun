@@ -35,6 +35,7 @@ import json
 import logging
 import os
 from collections.abc import Awaitable, Callable
+from datetime import datetime
 from typing import Any
 
 from fastapi import HTTPException
@@ -47,7 +48,7 @@ from app.agent.memory import MemoryFact
 from app.agent.persona import ATTRIBUTE_KEYS, PersonaWeightUpdate
 from app.agent.schemas import ToolCall, ToolResult, ToolSpec
 from app.agent.tools import ToolContext
-from app.agent.trip_dates import resolve_departure, timezone_from_location
+from app.agent.trip_dates import normalize_departure_time, resolve_departure, timezone_from_location
 from app.agent.trip_profile import TripProfile, TripProfileUpdate
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import MapBox, Route_Payload
@@ -406,8 +407,9 @@ class AppToolDispatcher:
                 description=(
                     "Record all trip details supplied in one message. Geocode each location, "
                     "normalize departure in the start timezone, save valid fields independently, "
-                    "and request clarification for invalid fields. Pass exact departure wording "
-                    "and the optional car choice. A car may be skipped."
+                    "and request clarification for invalid fields. Pass extracted departure_date "
+                    "and departure_time separately so a time can be retained before a date. "
+                    "A car may be skipped."
                 ),
                 parameters={
                     "type": "object",
@@ -417,6 +419,8 @@ class AppToolDispatcher:
                         "num_stops": {"type": "integer", "minimum": 1, "maximum": 10},
                         "budget": {"type": "number", "minimum": 0},
                         "departure": {"type": "string"},
+                        "departure_date": {"type": "string"},
+                        "departure_time": {"type": "string"},
                         "car_year": {"type": "integer"},
                         "car_make": {"type": "string"},
                         "car_model": {"type": "string"},
@@ -991,6 +995,31 @@ class AppToolDispatcher:
             values[field] = value
             changed = True
 
+        if "departure_time" in args:
+            try:
+                values["departure_time"] = normalize_departure_time(args["departure_time"])
+                changed = True
+            except ValueError as exc:
+                clarifications["departure_time"] = str(exc)
+
+        date_wording = args.get("departure_date")
+        if date_wording is None and "departure_time" in args and values["start_date"]:
+            date_wording = datetime.fromisoformat(values["start_date"]).date().isoformat()
+        if date_wording is not None:
+            if not values["start_timezone"]:
+                clarifications["departure_date"] = (
+                    "Please clarify the starting location so I can determine its timezone."
+                )
+            else:
+                try:
+                    time_wording = values["departure_time"] or "09:00"
+                    values["start_date"] = resolve_departure(
+                        f"{date_wording} at {time_wording}", values["start_timezone"]
+                    )
+                    changed = True
+                except ValueError as exc:
+                    clarifications["departure_date"] = str(exc)
+
         if "departure" in args:
             if not values["start_timezone"]:
                 clarifications["departure"] = (
@@ -1001,6 +1030,9 @@ class AppToolDispatcher:
                     values["start_date"] = resolve_departure(
                         args["departure"], values["start_timezone"]
                     )
+                    values["departure_time"] = datetime.fromisoformat(
+                        values["start_date"]
+                    ).strftime("%H:%M")
                     changed = True
                 except ValueError as exc:
                     clarifications["departure"] = str(exc)

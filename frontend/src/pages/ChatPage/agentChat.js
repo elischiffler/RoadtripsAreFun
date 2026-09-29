@@ -25,6 +25,7 @@ import axios from 'axios';
  *       tripProfile: object | null,
  *       validationIssues: { [field]: string },
  *       actions: [{ type: string, chatId?: string, payload?: object }],
+ *       extractedFields: string[], // keys identified by the per-turn JSON extraction
  *       provider: string | null,
  *       usage: { promptTokens, completionTokens } | null
  *     }

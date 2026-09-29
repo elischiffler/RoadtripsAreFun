@@ -9,7 +9,7 @@ import app.agent.tool_dispatcher as td
 from app.agent.schemas import ToolCall
 from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.tools import ToolContext
-from app.agent.trip_dates import resolve_departure
+from app.agent.trip_dates import normalize_departure_time, resolve_departure
 from app.agent.trip_profile import TripProfile
 from tests.agent.conftest import FakeMemory
 
@@ -62,6 +62,37 @@ async def test_complete_message_geocodes_and_saves_every_field(monkeypatch):
     assert profile.num_stops == 3
     assert profile.budget == 250
     assert profile.start_date == "2099-10-03T14:30:00-07:00"
+
+
+async def test_time_only_is_retained_until_date_arrives(monkeypatch):
+    monkeypatch.setattr(
+        "app.agent.tool_dispatcher.get_location",
+        lambda **kwargs: _location("Tampa, FL", 27.95, -82.46, "America/New_York"),
+    )
+    memory = FakeMemory()
+    first = await _record(memory, start_address="Tampa", departure_time="11 am", budget=150)
+    assert first.ok
+    pending = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
+    assert pending.departure_time == "11:00"
+    assert pending.start_date is None
+    second = await _record(memory, departure_date="October 3, 2099")
+    assert second.ok
+    saved = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
+    assert saved.start_date == "2099-10-03T11:00:00-04:00"
+    assert saved.budget == 150
+
+
+def test_extracted_time_normalization_rejects_invalid_values():
+    assert normalize_departure_time("11 am") == "11:00"
+    assert normalize_departure_time("3:45 PM") == "15:45"
+    assert normalize_departure_time("noon") == "12:00"
+    with pytest.raises(ValueError):
+        normalize_departure_time("25 PM")
+
+
+def test_existing_profile_recovers_selected_time_from_canonical_departure():
+    profile = TripProfile.from_json('{"start_date":"2099-10-03T11:00:00-04:00"}')
+    assert profile.departure_time == "11:00"
 
 
 async def test_bad_date_and_stop_count_preserve_valid_locations_and_budget(monkeypatch):

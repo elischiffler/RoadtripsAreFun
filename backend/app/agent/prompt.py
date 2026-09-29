@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import re
-
 from app.agent.memory import ConversationMemory, MemoryFact
 from app.agent.schemas import AgentClientContext, LLMMessage
 from app.agent.trip_profile import TripProfile
@@ -18,18 +16,13 @@ To call a tool, emit fenced JSON: ```tool
 {"tool":"name","arguments":{}}
 ```. Emit independent calls together; wait for results before dependent calls. When a tool returns ok:false, do not claim success: fix an obvious error once or explain what is needed. Never invent coordinates, prices, routes, or tool results. When no tool is needed, reply in plain language. Keep route geometry and full itinerary data out of your reply and tool arguments; pass returned route_handle values exactly.
 
-For trip locations, stops, budget, departure, and car choice, call record_trip_details once with every detail supplied in the message BEFORE replying. For example, "from Las Vegas to Tampa" means arguments {"start_address":"Las Vegas","destination_address":"Tampa"}. It geocodes locations, normalizes departure in the start timezone, and verifies a supplied car. Read its field-specific clarifications and ask plainly; never guess a timezone. Ask explicitly for departure time, offering 9:00 AM as the default. Ask for an optional car's year, make, and model before planning; "skip" or "no car" records a skipped choice. If car details fail validation, ask for a correction or offer to skip. A traveler may add or change a car later. Never invent one. A requested stop count does not require the traveler to name every attraction; do not promise a named attraction unless the planner confirms it. Use update_trip_profile for trip-only persona_weights. When the saved profile is ready, call complete_trip. Only say the whole trip is ready when its status is complete. If status is partial, explain that the route is ready and retry generate_itinerary with its handle, or without a handle in a later turn. Use get_account_persona for cross-chat preferences; update_account_persona only when explicitly asked to save them for future trips. Only use persona keys advertised by the tools. Tell the traveler about hotel budget warnings from a planned route."""
+The backend has already extracted and validated trip details from the latest user message before this response. The validated trip profile below is authoritative. Do not call record_trip_details for the same message. Read field-specific clarifications and ask plainly; never guess a timezone. Ask explicitly for departure date and time, offering 9:00 AM as the default only if no time was provided. Ask for an optional car's year, make, and model before planning; "skip" or "no car" records a skipped choice. If car details fail validation, ask for a correction or offer to skip. A traveler may add or change a car later. Never invent one. A requested stop count does not require the traveler to name every attraction; do not promise a named attraction unless the planner confirms it. Use update_trip_profile for trip-only persona_weights. When the saved profile is ready, call complete_trip. Only say the whole trip is ready when its status is complete. If status is partial, explain that the route is ready and retry generate_itinerary with its handle, or without a handle in a later turn. Use get_account_persona for cross-chat preferences; update_account_persona only when explicitly asked to save them for future trips. Only use persona keys advertised by the tools. Tell the traveler about hotel budget warnings from a planned route."""
 
 STAGE_INSTRUCTIONS = {
-    "collecting": "Stage: collect details. Need start, destination, 1–10 attraction stops, nightly hotel budget, upcoming start date and departure time, and an optional car choice. Ask for the time explicitly and offer 9:00 AM as the default. Ask for car year, make, and model or a skip. Call record_trip_details once with all details supplied, including exact departure wording and car choice. It saves valid fields independently; ask about its clarifications and one or two missing details at a time. Do not ask again for values already in the profile. When ready, call complete_trip.",
-    "correcting": "Stage: correct input. Call record_trip_details with all changed trip fields in the message. It geocodes changed locations and may clear the old departure; ask about clarifications. Never reuse coordinates from the old location. If the trip is complete, continue planning with the corrected profile.",
+    "collecting": "Stage: collect details. Need start, destination, 1–10 attraction stops, nightly hotel budget, upcoming start date and departure time, and an optional car choice. Ask for the time explicitly and offer 9:00 AM as the default only when no time is saved. Ask for car year, make, and model or a skip. Extraction has already run; ask about its clarifications and one or two missing details at a time. Do not ask again for values already in the profile. When ready, call complete_trip.",
     "completing": "Stage: complete the trip. The saved profile has the required details and the car choice is skipped or provided. Call complete_trip once. Only say the trip is ready when status is complete. On partial status, explain that the route exists and retry the itinerary without regenerating the route.",
-    "revising": "Stage: revise an existing trip. Call record_trip_details with requested trip changes and address its clarifications. Then call complete_trip for a changed route. If the traveler only asks a question, answer it without rebuilding. If only the itinerary failed, retry generate_itinerary. Never claim the revision succeeded before both actions succeed.",
+    "revising": "Stage: revise an existing trip. Extraction has already applied requested trip changes. Address its clarifications, then call complete_trip for a changed route. If the traveler only asks a question, answer it without rebuilding. If only the itinerary failed, retry generate_itinerary. Never claim the revision succeeded before both actions succeed.",
 }
-
-_CORRECTION = re.compile(
-    r"\b(?:actually|instead|change|correct|make it|switch|rather than|update)\b", re.I
-)
 
 
 def _stage(trip: TripProfile, user_message: str, ctx: AgentClientContext | None) -> str:
@@ -48,8 +41,6 @@ def _stage(trip: TripProfile, user_message: str, ctx: AgentClientContext | None)
     )
     if ctx is not None and ctx.hasRoute and has_required_details:
         return "revising"
-    if _CORRECTION.search(user_message):
-        return "correcting"
     if has_required_details:
         return "completing"
     return "collecting"
@@ -70,6 +61,7 @@ def _format_context(facts: list[MemoryFact], trip: TripProfile | None) -> str:
                 "num_stops",
                 "budget",
                 "start_date",
+                "departure_time",
             )
             if key in p
         ]

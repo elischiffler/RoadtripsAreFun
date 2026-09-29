@@ -25,12 +25,14 @@ from __future__ import annotations
 import json
 import logging
 import math
+from datetime import datetime
 from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import BaseModel, field_validator, model_validator
 
 from app.agent.persona import validate_weight_update
+from app.agent.trip_dates import normalize_departure_time
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +149,8 @@ class TripProfile(BaseModel):
     destination_coords: list[float] | None = None  # [lat, lon]
     num_stops: int | None = None  # 1..10
     budget: float | None = None  # nightly hotel budget, USD
-    start_date: str | None = None  # ISO-8601 trip start (free-form; validated on use)
+    start_date: str | None = None  # canonical ISO-8601 departure with UTC offset
+    departure_time: str | None = None  # selected local HH:MM, retained before date
     car: Car | None = None
     persona_weights: dict[str, float] | None = None  # partial, per-trip override
     car_status: CarStatus = "unanswered"
@@ -155,6 +158,14 @@ class TripProfile(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def _coerce_coords(cls, data):
+        # Existing profiles predate the separately saved time choice. Recover
+        # their selected local time from the canonical departure when possible.
+        if isinstance(data, dict) and data.get("start_date") and not data.get("departure_time"):
+            try:
+                departure = datetime.fromisoformat(data["start_date"])
+                data = {**data, "departure_time": departure.strftime("%H:%M")}
+            except (TypeError, ValueError):
+                pass
         # Profiles saved before car_status existed may already have a car.
         if isinstance(data, dict) and "car_status" not in data and data.get("car"):
             data = {**data, "car_status": "provided"}
@@ -194,6 +205,11 @@ class TripProfile(BaseModel):
     @classmethod
     def _blanks(cls, v):
         return _blank_to_none(v)
+
+    @field_validator("departure_time")
+    @classmethod
+    def _departure_time(cls, v):
+        return normalize_departure_time(v) if v is not None else None
 
     @field_validator("persona_weights", mode="before")
     @classmethod

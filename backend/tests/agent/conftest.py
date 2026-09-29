@@ -11,6 +11,7 @@ from datetime import UTC, datetime
 
 import pytest
 
+from app.agent.extraction import EXTRACTION_PROMPT
 from app.agent.memory import ConversationMemory, MemoryFact
 from app.agent.schemas import (
     AgentUsage,
@@ -53,6 +54,7 @@ class FakeProvider:
         configured: bool = True,
         fail: bool = False,
         error: Exception | None = None,
+        extraction_responses: list[str] | None = None,
     ):
         self.name = name
         self._responses = list(responses or [LLMResponse(content="Hi there!")])
@@ -60,6 +62,8 @@ class FakeProvider:
         self._fail = fail
         self._error = error
         self.calls = 0
+        self.extraction_calls = 0
+        self._extraction_responses = list(extraction_responses or ['{"details":{}}'])
         # Capture the message list passed to each provider call so tests can
         # assert what context (recent turns, summary, facts) was assembled.
         self.seen_messages: list[list[LLMMessage]] = []
@@ -68,12 +72,19 @@ class FakeProvider:
         return self._configured
 
     def complete(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
-        self.calls += 1
         self.seen_messages.append(list(messages))
+        is_extraction = bool(messages and messages[0].content == EXTRACTION_PROMPT)
+        if is_extraction:
+            self.extraction_calls += 1
+        else:
+            self.calls += 1
         if self._fail:
             from app.agent.providers import ProviderError
 
             raise self._error or ProviderError(f"{self.name} failed")
+        if is_extraction:
+            idx = min(self.extraction_calls - 1, len(self._extraction_responses) - 1)
+            return LLMResponse(content=self._extraction_responses[idx], provider=self.name)
         # Serve the next scripted response; repeat the last one after exhaustion.
         idx = min(self.calls - 1, len(self._responses) - 1)
         response = self._responses[idx].model_copy(deep=True)

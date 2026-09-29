@@ -108,6 +108,7 @@ const TRIP_PROFILE_FIELDS = [
   'num_stops',
   'budget',
   'start_date',
+  'departure_time',
   'car',
   'car_status',
 ];
@@ -175,13 +176,24 @@ export const logTripProfileChanges = (prev, next) => {
  * @param {Array}    actions      response.actions
  * @param {Array}    [toolErrors] response.toolErrors — [{ name, error }]
  * @param {object}   [validationIssues] response.validationIssues — field to clarification
+ * @param {string[]} [extractedFields] response.extractedFields — fields identified in this turn
  * @returns {boolean} true when a probable trip-profile validation failure was detected
  */
-export const logTripToolActivity = (toolsUsed, actions, toolErrors, validationIssues) => {
+export const logTripToolActivity = (
+  toolsUsed,
+  actions,
+  toolErrors,
+  validationIssues,
+  extractedFields
+) => {
   const tools = Array.isArray(toolsUsed) ? toolsUsed : [];
   const acts = Array.isArray(actions) ? actions : [];
   const errors = Array.isArray(toolErrors) ? toolErrors : [];
   console.log('[TripProfile] tools this turn: %s', tools.length ? tools.join(', ') : 'none');
+  console.log(
+    '[TripProfile] extracted fields this turn: %s',
+    Array.isArray(extractedFields) && extractedFields.length ? extractedFields.join(', ') : 'none'
+  );
   // Print the exact backend error for every failed tool (e.g. the validation
   // message from a rejected update_trip_profile) so debugging stays in-browser.
   for (const e of errors) {
@@ -497,7 +509,8 @@ export function useTripWorkflow({
             response.toolsUsed,
             response.actions,
             response.toolErrors,
-            response.validationIssues
+            response.validationIssues,
+            response.extractedFields
           );
           await applyAgentActions(response.actions);
           if (
