@@ -110,6 +110,8 @@ make run
 
 This starts the backend at `http://localhost:8000` and the frontend at `http://localhost:5173` concurrently. Ctrl+C stops both.
 
+To see the agent's per-turn tool arguments and trip-profile changes in the backend terminal, stop `make run` and start `make debug` from the repo root. Debug logging includes trip details, so use it only while troubleshooting.
+
 Or run them individually:
 
 ```bash

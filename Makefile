@@ -1,4 +1,4 @@
-.PHONY: run run-backend run-frontend test test-backend test-frontend \
+.PHONY: run debug run-backend run-frontend test test-backend test-frontend \
         coverage coverage-backend coverage-frontend format lint lint-fix
 
 ## Run both backend and frontend dev servers concurrently
@@ -8,6 +8,10 @@ run:
 	  (cd backend && uvicorn app.main:app --reload --reload-dir app) & \
 	  (cd frontend && PATH="$$(pwd)/node_modules/.bin:$$PATH" npm run dev) & \
 	  wait
+
+## Run both dev servers with per-turn agent tool and trip-profile logs
+debug:
+	@AGENT_DEBUG=true $(MAKE) run
 
 ## Run only backend dev server
 run-backend:
