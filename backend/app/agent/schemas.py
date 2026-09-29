@@ -126,6 +126,7 @@ class AgentChatResponse(BaseModel):
     actions: list[AgentAction] = Field(default_factory=list)
     provider: str | None = None
     usage: AgentUsage | None = None
+    modelCalls: int = 0
 
 
 # --------------------------------------------------------------------------- #

@@ -10,6 +10,7 @@ from app.agent.agent import MAX_TOOL_ITERATIONS, SUMMARY_WINDOW, run_turn
 from app.agent.providers import FallbackChain
 from app.agent.schemas import (
     AgentChatRequest,
+    AgentUsage,
     LLMMessage,
     LLMResponse,
     ToolResult,
@@ -52,6 +53,7 @@ async def test_run_turn_simple_no_tool_reply(fake_memory, fake_tools):
     assert result.toolsUsed == []
     assert result.provider == "fake"
     assert result.usage.promptTokens == 100
+    assert result.modelCalls == 1
     assert provider.calls == 1
 
 
@@ -88,6 +90,29 @@ async def test_run_turn_executes_tool_and_feeds_result_back(fake_memory):
     assert [a.type for a in result.actions] == ["route_updated"]
     assert result.actions[0].chatId == "42"
     assert provider.calls == 2
+    assert result.modelCalls == 2
+
+
+async def test_usage_sums_all_model_calls_even_when_some_fields_are_missing(
+    fake_memory, fake_tools
+):
+    provider = FakeProvider(
+        responses=[
+            LLMResponse(
+                content=_tool_block("noop"),
+                usage=make_usage(prompt=120, completion=12),
+            ),
+            LLMResponse(
+                content=_tool_block("noop"),
+                usage=AgentUsage(completionTokens=8),
+            ),
+            LLMResponse(content="Done.", usage=make_usage(prompt=180, completion=18)),
+        ]
+    )
+    result = await run_turn(_request(), FallbackChain([provider]), fake_memory, fake_tools)
+    assert result.modelCalls == 3
+    assert result.usage.promptTokens == 300
+    assert result.usage.completionTokens == 38
 
 
 async def test_action_carries_trip_payload_to_client(fake_memory):
@@ -191,7 +216,9 @@ async def test_write_back_rolls_summary_when_window_exceeds_threshold(fake_tools
     rolled = memory.saved_conversations[0]
     assert rolled.summary_turn_count == 1
     assert rolled.summary  # a truthful note was appended
-    assert "Done." in rolled.summary
+    assert "turn 0" in rolled.summary
+    assert "turn 1" in rolled.summary
+    assert "Done." not in rolled.summary
 
 
 async def test_write_back_skips_summary_below_threshold(fake_tools):

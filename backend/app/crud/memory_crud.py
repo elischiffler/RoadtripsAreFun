@@ -377,7 +377,7 @@ def save_trip_profile(auth_token: str, chat_id: str, profile_json: str) -> None:
         _put_conn(conn)
 
 
-def load_recent_turns(auth_token: str, chat_id: str, limit: int = 10) -> list[LLMMessage]:
+def load_recent_turns(auth_token: str, chat_id: str, limit: int = 6) -> list[LLMMessage]:
     """Best-effort verbatim short-term window from the existing ``ChatLog``.
 
     The verbatim recent turns are NOT stored in ``chat_memory`` — the frontend
@@ -460,7 +460,7 @@ class MemoryCrudStore:
     def save_trip_profile(self, user_id: str, chat_id: str, profile_json: str) -> None:
         save_trip_profile(user_id, chat_id, profile_json)
 
-    def load_recent_turns(self, user_id: str, chat_id: str, limit: int = 10) -> list[LLMMessage]:
+    def load_recent_turns(self, user_id: str, chat_id: str, limit: int = 6) -> list[LLMMessage]:
         return load_recent_turns(user_id, chat_id, limit)
 
 

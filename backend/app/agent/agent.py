@@ -24,13 +24,14 @@ from datetime import UTC, datetime
 
 from app.agent import debug
 from app.agent.memory import ConversationMemory, MemoryStore
-from app.agent.prompt import build_messages
+from app.agent.prompt import RECENT_MESSAGE_LIMIT, build_messages
 from app.agent.providers import LLMProvider
 from app.agent.schemas import (
     AgentAction,
     AgentChatRequest,
     AgentChatResponse,
     AgentToolError,
+    AgentUsage,
     LLMMessage,
     ToolResult,
 )
@@ -65,11 +66,11 @@ _INTERNAL_REPLY_MARKERS = (
 # summary (design doc §7 step 6). The verbatim window itself lives in the
 # frontend-owned ``ChatLog``; this only governs when we fold older context into
 # the rolling ``ConversationMemory.summary``.
-SUMMARY_WINDOW = 10
+SUMMARY_WINDOW = RECENT_MESSAGE_LIMIT
 
 # Bound the rolling summary so it can never blow the context window. When a new
 # note would push past this, the oldest characters are dropped.
-_MAX_SUMMARY_CHARS = 2000
+_MAX_SUMMARY_CHARS = 600
 
 
 def _load_recent_turns(memory: MemoryStore, user_id: str, chat_id: str) -> list[LLMMessage]:
@@ -82,7 +83,7 @@ def _load_recent_turns(memory: MemoryStore, user_id: str, chat_id: str) -> list[
     """
     getter = getattr(memory, "load_recent_turns", None)
     if callable(getter):
-        return list(getter(user_id, chat_id))
+        return list(getter(user_id, chat_id, RECENT_MESSAGE_LIMIT))[-RECENT_MESSAGE_LIMIT:]
     return []
 
 
@@ -158,7 +159,7 @@ def _roll_summary(
     (design doc §10). The note is intentionally terse so the bound holds for
     long chats.
     """
-    note = f"User: {user_message.strip()} | Assistant: {reply.strip()}"
+    note = f"User: {user_message.strip()[:200]} | Assistant: {reply.strip()[:200]}"
     summary = (conversation.summary + "\n" + note).strip() if conversation.summary else note
     if len(summary) > _MAX_SUMMARY_CHARS:
         # Drop the oldest characters so the newest exchange always survives.
@@ -200,7 +201,13 @@ def _persist_memory(
         #
         # b. Roll the summary once the verbatim window is large enough.
         if len(recent_turns) >= SUMMARY_WINDOW:
-            rolled = _roll_summary(conversation, user_message, reply)
+            # The oldest two messages fall out of the six-message window once
+            # the frontend persists this exchange. Roll those, not the current
+            # exchange, so the model does not receive both verbatim and summary.
+            oldest = recent_turns[:2]
+            user = next((m.content for m in oldest if m.role == "user"), "")
+            assistant = next((m.content for m in oldest if m.role == "assistant"), "")
+            rolled = _roll_summary(conversation, user, assistant)
             memory.save_conversation(user_id, chat_id, rolled)
     except Exception as exc:  # persistence is best-effort; never break the reply
         logger.warning(
@@ -267,6 +274,24 @@ async def run_turn(
 
     # 4. First provider call.
     response = providers.complete(messages, specs)
+    model_calls = 1
+    prompt_tokens = 0
+    completion_tokens = 0
+    has_prompt_usage = False
+    has_completion_usage = False
+
+    def add_usage(current: AgentUsage | None) -> None:
+        nonlocal prompt_tokens, completion_tokens, has_prompt_usage, has_completion_usage
+        if current is None:
+            return
+        if current.promptTokens is not None:
+            prompt_tokens += current.promptTokens
+            has_prompt_usage = True
+        if current.completionTokens is not None:
+            completion_tokens += current.completionTokens
+            has_completion_usage = True
+
+    add_usage(response.usage)
 
     # 5. Tool loop — driven by the TEXT protocol, not response.tool_calls.
     # The gateway has no native function-calling, so tool requests arrive as
@@ -298,6 +323,8 @@ async def run_turn(
             )
         # Ask the model again now that it has the tool results.
         response = providers.complete(messages, specs)
+        model_calls += 1
+        add_usage(response.usage)
         calls = parse_tool_calls(response.content)
 
     if calls:
@@ -342,7 +369,13 @@ async def run_turn(
         toolErrors=tool_errors,
         actions=actions,
         provider=response.provider or None,
-        usage=response.usage,
+        modelCalls=model_calls,
+        usage=AgentUsage(
+            promptTokens=prompt_tokens if has_prompt_usage else None,
+            completionTokens=completion_tokens if has_completion_usage else None,
+        )
+        if has_prompt_usage or has_completion_usage
+        else None,
     )
 
 
