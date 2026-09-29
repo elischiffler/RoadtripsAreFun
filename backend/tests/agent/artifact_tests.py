@@ -209,7 +209,10 @@ async def test_full_route_chain_by_handle(monkeypatch):
 
     # 3. generate_itinerary with the route handle
     r3 = await d.dispatch(
-        ToolCall(name="generate_itinerary", arguments={"route_handle": route_handle}),
+        ToolCall(
+            name="generate_itinerary",
+            arguments={"route_handle": route_handle, "start_time": "2030-01-01T09:00:00Z"},
+        ),
         ctx,
     )
     assert r3.ok, r3.error

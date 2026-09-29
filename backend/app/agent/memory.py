@@ -79,3 +79,11 @@ class MemoryStore(Protocol):
     def save_trip_profile(self, user_id: str, chat_id: str, profile_json: str) -> None:
         """Persist the trip-profile JSON string for a chat (upsert)."""
         ...
+
+    def load_planned_route(self, user_id: str, chat_id: str) -> dict | None:
+        """Return the last route for an itinerary retry in this chat."""
+        ...
+
+    def save_planned_route(self, user_id: str, chat_id: str, route: dict) -> None:
+        """Persist the last generated route for this chat."""
+        ...

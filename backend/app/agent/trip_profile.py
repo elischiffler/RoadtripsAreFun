@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import json
 import logging
+from typing import Literal
 
 from pydantic import BaseModel, field_validator, model_validator
 
@@ -34,6 +35,7 @@ logger = logging.getLogger(__name__)
 # Bounds mirrored from the routing contract (num_stops is validated 1..10).
 MIN_STOPS = 1
 MAX_STOPS = 10
+CarStatus = Literal["unanswered", "provided", "skipped"]
 
 
 class Car(BaseModel):
@@ -141,11 +143,14 @@ class TripProfile(BaseModel):
     budget: float | None = None  # nightly hotel budget, USD
     start_date: str | None = None  # ISO-8601 trip start (free-form; validated on use)
     car: Car | None = None
+    car_status: CarStatus = "unanswered"
     persona_weights: dict[str, float] | None = None  # partial, per-trip override
 
     @model_validator(mode="before")
     @classmethod
     def _coerce_coords(cls, data):
+        if isinstance(data, dict) and "car_status" not in data and data.get("car"):
+            data = {**data, "car_status": "provided"}
         return _coerce_stringified_coords(data)
 
     @field_validator("start_coords", "destination_coords")
@@ -182,6 +187,12 @@ class TripProfile(BaseModel):
     def _persona_weights(cls, v):
         return validate_weight_update(v) if v is not None else None
 
+    @model_validator(mode="after")
+    def _car_choice(self):
+        if (self.car_status == "provided") != (self.car is not None):
+            raise ValueError("car_status must be provided exactly when car details are present")
+        return self
+
     def merged_with(self, update: TripProfileUpdate) -> TripProfile:
         """Return a new trip profile with ``update``'s provided fields applied.
 
@@ -195,11 +206,17 @@ class TripProfile(BaseModel):
             if value is None:
                 continue
             data[key] = value
+        if provided.get("car") is not None:
+            data["car_status"] = "provided"
+        elif provided.get("car_status") in {"skipped", "unanswered"}:
+            data["car"] = None
         return TripProfile.model_validate(data)
 
     def is_empty(self) -> bool:
         """True when nothing has been gathered for this trip yet."""
         d = self.model_dump(exclude_none=True)
+        if self.car_status == "unanswered":
+            d.pop("car_status", None)
         return not any(v for v in d.values())
 
     # --- JSON mapping (stored as one per-chat 'trip' memory row) -----------
@@ -243,6 +260,7 @@ class TripProfileUpdate(BaseModel):
     budget: float | None = None
     start_date: str | None = None
     car: Car | None = None
+    car_status: CarStatus | None = None
     persona_weights: dict[str, float] | None = None
 
     @model_validator(mode="before")
@@ -251,6 +269,20 @@ class TripProfileUpdate(BaseModel):
         """Fold flat ``car_year`` / ``car_make`` / ``car_model`` into ``car``."""
         if not isinstance(data, dict):
             return data
+        data = data.copy()
+        if isinstance(data.get("car_status"), str) and data["car_status"].strip().lower() in {
+            "skip",
+            "no car",
+            "skipped",
+        }:
+            data["car_status"] = "skipped"
+        if isinstance(data.get("car"), str) and data["car"].strip().lower() in {
+            "skip",
+            "no car",
+            "skipped",
+        }:
+            data.pop("car")
+            data["car_status"] = "skipped"
         flat = {
             "year": data.get("car_year"),
             "make": data.get("car_make"),
@@ -260,6 +292,12 @@ class TripProfileUpdate(BaseModel):
             data = {k: v for k, v in data.items() if k not in ("car_year", "car_make", "car_model")}
             data["car"] = {k: v for k, v in flat.items() if v is not None}
         return data
+
+    @model_validator(mode="after")
+    def _car_update_consistent(self):
+        if self.car is not None and self.car_status in {"skipped", "unanswered"}:
+            raise ValueError("choose either car details or a skipped/unanswered car status")
+        return self
 
     @model_validator(mode="before")
     @classmethod

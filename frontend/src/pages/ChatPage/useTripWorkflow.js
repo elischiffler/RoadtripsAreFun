@@ -296,6 +296,7 @@ export function useTripWorkflow({
       const end = overrides.endConfirmed !== undefined ? overrides.endConfirmed : endConfirmed;
       const stopCount = overrides.stops !== undefined ? overrides.stops : stops;
       const b = overrides.budget !== undefined ? overrides.budget : budget;
+      const plannedItinerary = overrides.itinerary !== undefined ? overrides.itinerary : itinerary;
       return {
         chatId: chatIdRef.current,
         agentChatId: agentChatIdRef.current,
@@ -315,13 +316,13 @@ export function useTripWorkflow({
         endConfirmed: end,
         initial: null,
         route: r,
-        itinerary: overrides.itinerary !== undefined ? overrides.itinerary : itinerary,
+        itinerary: plannedItinerary,
         loading: false,
         hotelBudget: overrides.hotelBudget !== undefined ? overrides.hotelBudget : hotelBudget,
         carBudget: 0,
         carDetails: new Array(3).fill(''),
         budget: b,
-        isComplete: !!r,
+        isComplete: !!r && Array.isArray(plannedItinerary) && plannedItinerary.length > 0,
       };
     },
     [route, startConfirmed, endConfirmed, stops, budget, itinerary, hotelBudget]
@@ -363,6 +364,10 @@ export function useTripWorkflow({
           setRoute(newRoute);
           overrides.route = newRoute;
           sawRoute = true;
+          // A newly planned route invalidates any itinerary from an older route.
+          // A following itinerary_updated action in this response replaces it.
+          setItinerary(null);
+          overrides.itinerary = null;
 
           const coords = newRoute.coordinates;
           if (Array.isArray(coords) && coords.length >= 2) {

@@ -151,6 +151,36 @@ async def test_action_carries_trip_payload_to_client(fake_memory):
     assert payload["stops"] == [{"name": "Red Rocks"}]
 
 
+async def test_partial_completion_cannot_be_reported_as_ready(fake_memory):
+    route_dict = {"coordinates": [[39.74, -104.99], [35.69, -105.94]]}
+    tools = FakeTools(
+        results={
+            "complete_trip": ToolResult(
+                name="complete_trip",
+                ok=True,
+                result={
+                    "status": "partial",
+                    "itinerary_error": "upstream unavailable",
+                    "actions": [{"action": "route_updated", "route": route_dict}],
+                },
+            )
+        }
+    )
+    provider = FakeProvider(
+        responses=[
+            LLMResponse(content=_tool_block("complete_trip")),
+            LLMResponse(content="Your whole trip is ready!"),
+        ]
+    )
+    result = await run_turn(_request(), FallbackChain([provider]), fake_memory, tools)
+    assert (
+        result.reply
+        == "Your route is ready, but the itinerary could not be created. Please retry it."
+    )
+    assert [action.type for action in result.actions] == ["route_updated"]
+    assert result.actions[0].payload == {"route": route_dict}
+
+
 async def test_tool_loop_terminates_at_cap(fake_memory, fake_tools):
     # A provider that always asks for a tool would loop forever without the cap.
     always_tool = LLMResponse(content=_tool_block("noop"))

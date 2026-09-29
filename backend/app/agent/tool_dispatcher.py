@@ -42,6 +42,7 @@ from pydantic import ValidationError
 from requests.exceptions import RequestException
 
 from app.agent import routing_remote
+from app.agent.departure import normalize_departure
 from app.agent.memory import MemoryFact
 from app.agent.persona import ATTRIBUTE_KEYS, PersonaWeightUpdate
 from app.agent.schemas import ToolCall, ToolResult, ToolSpec
@@ -177,6 +178,7 @@ class AppToolDispatcher:
             "get_initial_route": self._get_initial_route,
             "generate_final_route": self._generate_final_route,
             "generate_itinerary": self._generate_itinerary,
+            "complete_trip": self._complete_trip,
             "get_car_budget": self._get_car_budget,
             "recall_facts": self._recall_facts,
             "remember_fact": self._remember_fact,
@@ -309,6 +311,17 @@ class AppToolDispatcher:
                 },
             ),
             ToolSpec(
+                name="complete_trip",
+                description=(
+                    "Complete the saved trip profile in one call. Requires validated start "
+                    "and destination, stops, budget, an upcoming departure with a UTC "
+                    "offset, and a selected or explicitly skipped car. Creates the route "
+                    "and itinerary with the same departure. If the itinerary fails, "
+                    "returns a partial result and keeps the route for an itinerary retry."
+                ),
+                parameters={"type": "object", "properties": {}},
+            ),
+            ToolSpec(
                 name="get_car_budget",
                 description=(
                     "Estimate fuel cost for a trip: looks up the car's combined MPG and the "
@@ -439,6 +452,11 @@ class AppToolDispatcher:
                         "car_year": {"type": "integer"},
                         "car_make": {"type": "string"},
                         "car_model": {"type": "string"},
+                        "car_status": {
+                            "type": "string",
+                            "enum": ["unanswered", "provided", "skipped"],
+                            "description": "Use skipped when the traveler explicitly chooses no car.",
+                        },
                         "persona_weights": {
                             "type": "object",
                             "properties": {
@@ -562,7 +580,7 @@ class AppToolDispatcher:
     def _resolve_route_for_itinerary(self, args: dict[str, Any], ctx: ToolContext):
         """Resolve the planned Route from a handle, or an inline object fallback."""
         handle = args.get("route_handle")
-        if isinstance(handle, str):
+        if isinstance(handle, str) and ctx.artifacts.has(handle):
             obj = ctx.artifacts.get(handle)
             # build_itinerary wants a validatable route payload; a stored Route
             # model is dumped back to a dict so Itinerary_Payload can validate it.
@@ -570,6 +588,10 @@ class AppToolDispatcher:
         inline = args.get("route")
         if inline is not None:
             return inline
+        if ctx.memory is not None:
+            saved = ctx.memory.load_planned_route(ctx.user_id, ctx.chat_id)
+            if saved and saved.get("profile") == self._load_trip_profile(ctx).model_dump():
+                return saved["route"]
         raise ValueError("generate_itinerary needs route_handle (from generate_final_route).")
 
     async def _get_initial_route(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
@@ -653,6 +675,13 @@ class AppToolDispatcher:
         # route still rides to the frontend via `route` (promoted onto the
         # action payload by run_turn), so Map/Itinerary render.
         handle = ctx.artifacts.put("route", route)
+        route_dict = route.model_dump()
+        if ctx.memory is not None:
+            ctx.memory.save_planned_route(
+                ctx.user_id,
+                ctx.chat_id,
+                {"route": route_dict, "departure": start, "profile": trip.model_dump()},
+            )
         stop_count = len([s for s in (route.stops or []) if s.get("type") == "stop"])
         return {
             "action": "route_updated",
@@ -667,16 +696,25 @@ class AppToolDispatcher:
             ),
             # Full payload for the frontend (trimmed out of the model-visible
             # message by run_turn — see _MODEL_HIDDEN_KEYS).
-            "route": route.model_dump(),
+            "route": route_dict,
             "stops": route.stops,
         }
 
     async def _generate_itinerary(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         # Resolve the planned route from its handle (fallback: inline `route`).
         route_obj = self._resolve_route_for_itinerary(args, ctx)
-        payload_data: dict[str, Any] = {"route": route_obj}
-        if args.get("start_time"):
-            payload_data["start_time"] = args["start_time"]
+        start_time = args.get("start_time")
+        if not start_time and ctx.memory is not None:
+            saved = ctx.memory.load_planned_route(ctx.user_id, ctx.chat_id)
+            if saved:
+                start_time = saved.get("departure")
+            if not start_time:
+                start_time = self._load_trip_profile(ctx).start_date
+        if not start_time:
+            raise ValueError("A departure date and time is required for the itinerary.")
+        # An explicit, shared departure prevents the itinerary model's legacy
+        # fixed 2024 default from reaching any agent call.
+        payload_data: dict[str, Any] = {"route": route_obj, "start_time": start_time}
         payload = Itinerary_Payload.model_validate(payload_data)
         # Itinerary building is pure (no whitelisted external calls), but proxy
         # it too when remote is enabled to keep the routing path uniform.
@@ -687,6 +725,98 @@ class AppToolDispatcher:
         return {
             "action": "itinerary_updated",
             "itinerary": [day.model_dump() for day in days],
+        }
+
+    async def _complete_trip(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
+        """Finish a saved profile using the existing route and itinerary tools."""
+        if ctx.memory is None:
+            raise ValueError("A saved trip profile is required.")
+        trip = self._load_trip_profile(ctx)
+        missing = []
+        if not trip.start_address or not trip.start_coords:
+            missing.append("validated start location")
+        if not trip.destination_address or not trip.destination_coords:
+            missing.append("validated destination")
+        if trip.num_stops is None:
+            missing.append("number of stops")
+        if trip.budget is None:
+            missing.append("nightly hotel budget")
+        if not trip.start_date:
+            missing.append("upcoming departure")
+        if trip.car_status == "unanswered":
+            missing.append("car choice or explicit skip")
+        if missing:
+            raise ValueError("Complete the saved trip profile: " + ", ".join(missing) + ".")
+
+        departure = normalize_departure(trip.start_date)
+        start = departure.isoformat()
+        # Revalidate the saved addresses before planning. Profile coordinates
+        # have valid shapes, but their presence alone does not prove that a
+        # provider resolved the traveler's locations.
+        locations = []
+        for label, address in (
+            ("start", trip.start_address),
+            ("destination", trip.destination_address),
+        ):
+            checked = await self.dispatch(
+                ToolCall(name="validate_location", arguments={"address": address}), ctx
+            )
+            if not checked.ok:
+                raise ValueError(f"Could not validate the {label} location: {checked.error}")
+            locations.append(checked.result)
+        initial = await self.dispatch(
+            ToolCall(
+                name="get_initial_route",
+                arguments={
+                    "start_lat": locations[0]["latitude"],
+                    "start_lon": locations[0]["longitude"],
+                    "end_lat": locations[1]["latitude"],
+                    "end_lon": locations[1]["longitude"],
+                },
+            ),
+            ctx,
+        )
+        if not initial.ok:
+            raise ValueError(f"Initial route creation failed: {initial.error}")
+        # Reuse the existing adapters and their error handling. Their artifact
+        # handles remain valid throughout this agent turn.
+        route_result = await self.dispatch(
+            ToolCall(
+                name="generate_final_route",
+                arguments={"route_handle": initial.result["route_handle"], "start": start},
+            ),
+            ctx,
+        )
+        if not route_result.ok:
+            raise ValueError(f"Route creation failed: {route_result.error}")
+        route = route_result.result
+        route_action = {
+            key: route[key] for key in ("action", "route", "stops", "cost") if key in route
+        }
+        itinerary_result = await self.dispatch(
+            ToolCall(
+                name="generate_itinerary",
+                arguments={"route_handle": route["route_handle"], "start_time": start},
+            ),
+            ctx,
+        )
+        if not itinerary_result.ok:
+            return {
+                "status": "partial",
+                "route_handle": route["route_handle"],
+                "itinerary_error": itinerary_result.error,
+                "summary": (
+                    "The route was created, but the itinerary failed. The route is saved; "
+                    "retry generate_itinerary with the returned route_handle during this turn. "
+                    f"Reason: {itinerary_result.error}"
+                ),
+                "actions": [route_action],
+            }
+        return {
+            "status": "complete",
+            "route_handle": route["route_handle"],
+            "summary": "The route and day-by-day itinerary were both created.",
+            "actions": [route_action, itinerary_result.result],
         }
 
     async def _get_car_budget(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:

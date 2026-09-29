@@ -19,13 +19,13 @@ whatever those names resolve to at call time (including test patches).
 
 import logging
 import os
-from datetime import date
 
 import requests  # noqa: F401  (re-exported: tests patch app.routers.routing_api.requests.get)
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import ValidationError
 from requests.exceptions import RequestException
 
+from app.agent.departure import is_upcoming_departure
 from app.agent.persona import effective_weights
 from app.crud.memory_crud import load_account_persona
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
@@ -173,7 +173,11 @@ async def plan_final_route(payload: Route_Payload, user_id: str | None = None) -
     if algorithm.startswith("cp_sat"):
         if user_id is None:
             raise PlanningError("Authenticated identity is required for CP-SAT", 401)
-        if "start" not in payload.model_fields_set or start is None or start.date() < date.today():
+        if (
+            "start" not in payload.model_fields_set
+            or start is None
+            or not is_upcoming_departure(start)
+        ):
             raise PlanningError("CP-SAT requires an upcoming trip start date", 422)
         account = load_account_persona(user_id)
         weights = effective_weights(account.weights, payload.persona_weights)

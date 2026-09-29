@@ -22,7 +22,8 @@ def _complete_trip() -> TripProfile:
         destination_coords=[38.6, -109.5],
         num_stops=3,
         budget=150,
-        start_date="2099-10-10T09:00:00",
+        start_date="2099-10-10T09:00:00-06:00",
+        car_status="skipped",
     )
 
 
@@ -44,6 +45,10 @@ def test_stage_uses_validated_profile_and_change_intent():
     assert _stage(trip, "Actually make it four stops", None) == "correcting"
     assert _stage(trip, "Change my budget", AgentClientContext(hasRoute=True)) == "revising"
     assert _stage(TripProfile(), "Continue", AgentClientContext(hasRoute=True)) == "collecting"
+    assert (
+        _stage(trip.model_copy(update={"car_status": "unanswered"}), "Go ahead", None)
+        == "collecting"
+    )
 
 
 def test_stage_instructions_are_selected_and_other_stages_omitted():

@@ -18,13 +18,13 @@ To call a tool, emit fenced JSON: ```tool
 {"tool":"name","arguments":{}}
 ```. Emit independent calls together; wait for results before dependent calls. When a tool returns ok:false, do not claim success: fix an obvious error once or explain what is needed. Never invent coordinates, prices, routes, or tool results. When no tool is needed, reply in plain language. Keep route geometry and full itinerary data out of your reply and tool arguments; pass returned route_handle values exactly.
 
-Use update_trip_profile to record details the traveler gives. Validate a location before recording its coordinates; copy only numeric coordinates returned by validate_location. For a finished trip, get_initial_route with validated endpoints, then generate_final_route with its handle, then generate_itinerary with the new handle. Use get_account_persona for cross-chat preferences; update_account_persona only when explicitly asked to save them for future trips. For this trip, use update_trip_profile with persona_weights. Only use persona keys advertised by the tools. Tell the traveler about hotel budget warnings from a planned route."""
+Use update_trip_profile to record details the traveler gives. Validate a location before recording its coordinates; copy only numeric coordinates returned by validate_location. Ask for an upcoming ISO-8601 departure with a UTC offset and a car choice; set car_status to skipped only when the traveler explicitly skips the car. When the saved profile is ready, call complete_trip. Only say the whole trip is ready when its status is complete. If status is partial, the route is ready but the itinerary failed; retry generate_itinerary with its handle, or without a handle in a later turn. Use get_account_persona for cross-chat preferences; update_account_persona only when explicitly asked to save them for future trips. For this trip, use update_trip_profile with persona_weights. Only use persona keys advertised by the tools. Tell the traveler about hotel budget warnings from a planned route."""
 
 STAGE_INSTRUCTIONS = {
-    "collecting": "Stage: collect details. Need start, destination, 1–10 attraction stops, nightly hotel budget, and an upcoming start date (9 AM departure by default). Ask for one or two missing details at a time. Validate each new location first, then save its address and returned coordinates with update_trip_profile. Save other supplied details immediately. Do not ask again for values already in the profile. When complete, proceed to the route tools.",
+    "collecting": "Stage: collect details. Need start, destination, 1–10 attraction stops, nightly hotel budget, an upcoming departure with UTC offset, and a selected or explicitly skipped car. Ask for one or two missing details at a time. Validate each new location first, then save its address and returned coordinates with update_trip_profile. Save other supplied details immediately. Do not ask again for values already in the profile. When ready, call complete_trip.",
     "correcting": "Stage: correct input. Apply the traveler's change with update_trip_profile. If a location changed, validate it first and record the returned coordinates; never reuse coordinates from the old location. Ask only for missing or ambiguous information. If the trip is complete, continue planning with the corrected profile.",
-    "completing": "Stage: complete the trip. The profile has the required details. Call get_initial_route with both validated coordinate pairs, then generate_final_route with its route_handle, then generate_itinerary with the new route_handle. Calls are sequential. Only say the trip is ready after the itinerary succeeds. If a tool fails, explain the blocker.",
-    "revising": "Stage: revise an existing trip. Record requested changes in the profile, validating changed locations first. Then regenerate the route with generate_final_route (it can rebuild the initial route from profile coordinates) and call generate_itinerary with the new route_handle. If the traveler only asks a question, answer it without rebuilding. Never claim the revision succeeded before both tools succeed.",
+    "completing": "Stage: complete the trip. The saved profile has the required details. Call complete_trip once. Only say the trip is ready when status is complete. On partial status, explain that the route exists and retry the itinerary without regenerating the route.",
+    "revising": "Stage: revise an existing trip. Record requested changes in the profile, validating changed locations first. Then call complete_trip for a changed route. If the traveler only asks a question, answer it without rebuilding. If only the itinerary failed, retry generate_itinerary. Never claim the revision succeeded before both actions succeed.",
 }
 
 _CORRECTION = re.compile(
@@ -43,6 +43,7 @@ def _stage(trip: TripProfile, user_message: str, ctx: AgentClientContext | None)
             trip.num_stops is not None,
             trip.budget is not None,
             trip.start_date,
+            trip.car_status != "unanswered",
         )
     )
     if ctx is not None and ctx.hasRoute and has_required_details:
@@ -74,6 +75,8 @@ def _format_context(facts: list[MemoryFact], trip: TripProfile | None) -> str:
         ]
         if trip.car:
             lines.append(f"car: {trip.car.year} {trip.car.make} {trip.car.model}")
+        elif trip.car_status == "skipped":
+            lines.append("car: explicitly skipped")
         if trip.persona_weights:
             lines.append(f"persona_weights: {trip.persona_weights}")
         sections.append(
