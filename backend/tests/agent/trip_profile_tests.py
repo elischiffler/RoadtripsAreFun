@@ -94,44 +94,29 @@ def test_partial_flat_car_surfaces_clear_error():
         TripProfileUpdate.model_validate({"car_make": "Mazda", "car_model": "CX-3"})
 
 
-def test_stringified_coords_are_coerced_to_list():
-    # Models routinely emit coords as a JSON *string* — coerce so the common case
-    # works instead of failing with a list_type validation error.
-    u = TripProfileUpdate.model_validate({"destination_coords": "[36.1674263, -115.1484131]"})
-    assert u.destination_coords == [36.1674263, -115.1484131]
+def test_new_updates_reject_stringified_coords():
+    with pytest.raises(ValidationError):
+        TripProfileUpdate.model_validate({"destination_coords": "[36.1674263, -115.1484131]"})
 
 
-def test_stringified_start_coords_coerced():
-    u = TripProfileUpdate.model_validate({"start_coords": "[35.28, -120.66]"})
-    assert u.start_coords == [35.28, -120.66]
-
-
-def test_stringified_coords_coerced_on_trip_profile_too():
+def test_saved_stringified_coords_remain_readable():
     t = TripProfile.model_validate({"start_coords": "[35.28, -120.66]"})
     assert t.start_coords == [35.28, -120.66]
 
 
-def test_placeholder_coord_string_is_dropped_not_kept():
-    # A non-coordinate placeholder (e.g. the model filled coords before it had a
-    # validate_location result) is DROPPED, not stored — so it can't poison a
-    # route later. Here it's the only field, so the update is empty -> rejected.
+def test_placeholder_coord_string_is_rejected():
     with pytest.raises(ValidationError):
         TripProfileUpdate.model_validate({"start_coords": "[await result]"})
 
 
-def test_placeholder_coord_dropped_but_sibling_field_survives():
-    # The key behavior: a bad coords placeholder must NOT discard a valid sibling
-    # field in the same update. The address saves; coords simply aren't recorded.
-    u = TripProfileUpdate.model_validate(
-        {"start_address": "482 Luneta Dr", "start_coords": "<coords>"}
-    )
-    assert u.start_address == "482 Luneta Dr"
-    assert u.start_coords is None
+def test_invalid_coord_update_is_not_partially_applied():
+    with pytest.raises(ValidationError):
+        TripProfileUpdate.model_validate(
+            {"start_address": "482 Luneta Dr", "start_coords": "<coords>"}
+        )
 
 
-def test_parseable_but_invalid_coord_still_errors_loudly():
-    # A value that PARSES to a list but is an invalid coordinate (out of range) is
-    # NOT dropped — it hard-fails so a genuine bug surfaces, not a placeholder.
+def test_stringified_invalid_coord_still_errors_loudly():
     with pytest.raises(ValidationError):
         TripProfileUpdate.model_validate({"start_coords": "[200, 0]"})
 
@@ -187,12 +172,11 @@ def test_old_stored_car_is_treated_as_provided():
     assert TripProfile.from_json(old).car_status == "provided"
 
 
-@pytest.mark.parametrize("choice", ["skip", "no car", "skipped"])
-def test_skip_phrases_clear_existing_car_and_allow_later_change(choice):
+def test_structured_skip_clears_existing_car_and_allows_later_change():
     provided = TripProfile().merged_with(
         TripProfileUpdate(car_year=2020, car_make="Mazda", car_model="CX-3")
     )
-    skipped = provided.merged_with(TripProfileUpdate.model_validate({"car_status": choice}))
+    skipped = provided.merged_with(TripProfileUpdate.model_validate({"car_status": "skipped"}))
     assert skipped.car_status == "skipped"
     assert skipped.car is None
     changed = skipped.merged_with(
@@ -202,9 +186,10 @@ def test_skip_phrases_clear_existing_car_and_allow_later_change(choice):
     assert changed.car == Car(year=2022, make="Honda", model="Civic")
 
 
-def test_skip_car_text_is_accepted():
-    skipped = TripProfile().merged_with(TripProfileUpdate.model_validate({"car": "no car"}))
-    assert skipped.car_status == "skipped"
+@pytest.mark.parametrize("data", [{"car_status": "no car"}, {"car": "skip"}])
+def test_unstructured_skip_text_is_rejected(data):
+    with pytest.raises(ValidationError):
+        TripProfileUpdate.model_validate(data)
 
 
 def test_inconsistent_or_incomplete_car_is_rejected():
@@ -242,31 +227,30 @@ async def test_get_trip_profile_empty():
     assert result.result["trip_profile"] == {"car_status": "unanswered"}
 
 
-async def test_update_trip_profile_persists_merges_and_emits_action():
+async def test_update_trip_profile_persists_persona_weights_and_emits_action():
     memory = FakeMemory()
     d = AppToolDispatcher()
 
     r1 = await d.dispatch(
-        ToolCall(name="update_trip_profile", arguments={"num_stops": 2}),
+        ToolCall(name="update_trip_profile", arguments={"persona_weights": {"nature": 2}}),
         _ctx(memory),
     )
     assert r1.ok is True
     # Emits the trip_profile_updated action so the frontend reflects/persists it.
     assert r1.result["action"] == "trip_profile_updated"
-    assert r1.result["trip_profile"]["num_stops"] == 2
+    assert r1.result["trip_profile"]["persona_weights"] == {"nature": 2}
 
-    # A second update merges without clobbering the existing stop count.
+    # A second update replaces the trip-only weight override.
     r2 = await d.dispatch(
         ToolCall(
             name="update_trip_profile",
-            arguments={"budget": 250},
+            arguments={"persona_weights": {"scenery": 3}},
         ),
         _ctx(memory),
     )
     assert r2.ok is True
     tp = r2.result["trip_profile"]
-    assert tp["num_stops"] == 2
-    assert tp["budget"] == 250
+    assert tp["persona_weights"] == {"scenery": 3}
 
 
 async def test_update_trip_profile_is_per_chat():
@@ -274,7 +258,7 @@ async def test_update_trip_profile_is_per_chat():
     memory = FakeMemory()
     d = AppToolDispatcher()
     await d.dispatch(
-        ToolCall(name="update_trip_profile", arguments={"num_stops": 2}),
+        ToolCall(name="update_trip_profile", arguments={"persona_weights": {"nature": 2}}),
         ToolContext(user_id="u1", chat_id="A", memory=memory),
     )
     # A different chat starts empty.
@@ -303,41 +287,13 @@ async def test_update_trip_profile_rejects_ungeocoded_location():
     assert "record_trip_details" in result.error
 
 
-async def test_car_choice_persists_and_invalid_change_keeps_previous_car(monkeypatch):
-    async def verify_car(*, model, make, year):
-        return {"combination_mpg": 30}
-
-    monkeypatch.setattr("app.agent.tool_dispatcher.get_car_details", verify_car)
-    memory = FakeMemory()
-    dispatcher = AppToolDispatcher()
-    skipped = await dispatcher.dispatch(
-        ToolCall(name="update_trip_profile", arguments={"car_status": "no car"}),
-        _ctx(memory),
+async def test_update_trip_profile_rejects_car_details():
+    result = await AppToolDispatcher().dispatch(
+        ToolCall(name="update_trip_profile", arguments={"car_status": "skipped"}),
+        _ctx(FakeMemory()),
     )
-    assert skipped.ok is True
-    assert skipped.result["trip_profile"]["car_status"] == "skipped"
-
-    provided = await dispatcher.dispatch(
-        ToolCall(
-            name="update_trip_profile",
-            arguments={"car_year": 2020, "car_make": "Mazda", "car_model": "CX-3"},
-        ),
-        _ctx(memory),
-    )
-    assert provided.ok is True
-    assert provided.result["trip_profile"]["car_status"] == "provided"
-
-    invalid = await dispatcher.dispatch(
-        ToolCall(
-            name="update_trip_profile",
-            arguments={"car_year": 1900, "car_make": "Mazda", "car_model": "CX-3"},
-        ),
-        _ctx(memory),
-    )
-    assert invalid.ok is False
-    assert "car.year" in invalid.error
-    saved = TripProfile.from_json(memory.load_trip_profile("u1", "42"))
-    assert saved.car == Car(year=2020, make="Mazda", model="CX-3")
+    assert result.ok is False
+    assert "record_trip_details" in result.error
 
 
 async def test_update_trip_profile_without_memory_returns_error():
@@ -374,7 +330,7 @@ async def test_generate_final_route_defaults_from_trip(monkeypatch):
     memory = FakeMemory()
     await AppToolDispatcher().dispatch(
         ToolCall(
-            name="update_trip_profile",
+            name="record_trip_details",
             arguments={"num_stops": 4, "budget": 150, "car_status": "skipped"},
         ),
         _ctx(memory),
@@ -408,7 +364,7 @@ async def test_generate_final_route_explicit_args_win(monkeypatch):
     memory = FakeMemory()
     await AppToolDispatcher().dispatch(
         ToolCall(
-            name="update_trip_profile",
+            name="record_trip_details",
             arguments={"num_stops": 4, "budget": 150, "car_status": "skipped"},
         ),
         _ctx(memory),
@@ -429,7 +385,7 @@ async def test_generate_final_route_missing_stops_no_trip_errors(monkeypatch):
     monkeypatch.setattr(td.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v))
     memory = FakeMemory()
     await AppToolDispatcher().dispatch(
-        ToolCall(name="update_trip_profile", arguments={"car_status": "skipped"}),
+        ToolCall(name="record_trip_details", arguments={"car_status": "skipped"}),
         _ctx(memory),
     )
     result = await AppToolDispatcher().dispatch(
@@ -476,8 +432,8 @@ async def test_get_car_budget_defaults_car_from_trip(monkeypatch):
     memory = FakeMemory()
     await AppToolDispatcher().dispatch(
         ToolCall(
-            name="update_trip_profile",
-            arguments={"car": {"year": 2020, "make": "Mazda", "model": "CX-3"}},
+            name="record_trip_details",
+            arguments={"car_year": 2020, "car_make": "Mazda", "car_model": "CX-3"},
         ),
         _ctx(memory),
     )

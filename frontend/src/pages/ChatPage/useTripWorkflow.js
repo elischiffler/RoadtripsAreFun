@@ -173,29 +173,20 @@ export const logTripProfileChanges = (prev, next) => {
  * turns with no tools, plus backend tool errors and field-specific clarifications.
  *
  * @param {string[]} toolsUsed   response.toolsUsed
- * @param {Array}    actions      response.actions
  * @param {Array}    [toolErrors] response.toolErrors — [{ name, error }]
  * @param {object}   [validationIssues] response.validationIssues — field to clarification
  * @param {string[]} [extractedFields] response.extractedFields — fields identified in this turn
- * @returns {boolean} true when a probable trip-profile validation failure was detected
+ * @returns {boolean} true when the backend reported a validation issue or tool error
  */
-export const logTripToolActivity = (
-  toolsUsed,
-  actions,
-  toolErrors,
-  validationIssues,
-  extractedFields
-) => {
+export const logTripToolActivity = (toolsUsed, toolErrors, validationIssues, extractedFields) => {
   const tools = Array.isArray(toolsUsed) ? toolsUsed : [];
-  const acts = Array.isArray(actions) ? actions : [];
   const errors = Array.isArray(toolErrors) ? toolErrors : [];
   console.log('[TripProfile] tools this turn: %s', tools.length ? tools.join(', ') : 'none');
   console.log(
     '[TripProfile] extracted fields this turn: %s',
     Array.isArray(extractedFields) && extractedFields.length ? extractedFields.join(', ') : 'none'
   );
-  // Print the exact backend error for every failed tool (e.g. the validation
-  // message from a rejected update_trip_profile) so debugging stays in-browser.
+  // Print backend validation errors so debugging stays in-browser.
   for (const e of errors) {
     if (e?.name && e?.error) {
       console.warn('[TripProfile] tool %s failed: %s', e.name, e.error);
@@ -205,23 +196,7 @@ export const logTripToolActivity = (
   for (const [field, detail] of Object.entries(issues)) {
     console.warn('[TripProfile] %s needs clarification: %s', field, detail);
   }
-  const attemptedUpdate = tools.filter((t) => t === 'update_trip_profile').length;
-  const appliedUpdate = acts.filter((a) => a?.type === 'trip_profile_updated').length;
-  if (attemptedUpdate > appliedUpdate) {
-    const detail = errors
-      .filter((e) => e?.name === 'update_trip_profile' && e?.error)
-      .map((e) => e.error)
-      .join(' | ');
-    console.warn(
-      '[TripProfile] VALIDATION FAILURE: update_trip_profile ran %d time(s) but only %d ' +
-        'applied — the agent tried to store a value that failed validation.%s',
-      attemptedUpdate,
-      appliedUpdate,
-      detail ? ` Detail: ${detail}` : ' (no error detail returned; check the backend agent log.)'
-    );
-    return true;
-  }
-  return errors.some((e) => e?.name === 'record_trip_details') || Object.keys(issues).length > 0;
+  return errors.length > 0 || Object.keys(issues).length > 0;
 };
 
 // ─── hook ────────────────────────────────────────────────────────────────────
@@ -507,7 +482,6 @@ export function useTripWorkflow({
           // Trace tool activity and the backend's authoritative profile on every turn.
           logTripToolActivity(
             response.toolsUsed,
-            response.actions,
             response.toolErrors,
             response.validationIssues,
             response.extractedFields

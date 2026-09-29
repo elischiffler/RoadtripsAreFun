@@ -25,7 +25,7 @@ STAGE_INSTRUCTIONS = {
 }
 
 
-def _stage(trip: TripProfile, user_message: str, ctx: AgentClientContext | None) -> str:
+def _stage(trip: TripProfile, ctx: AgentClientContext | None) -> str:
     # hasRoute is used only to choose instructions, never as trusted trip data.
     has_required_details = all(
         (
@@ -95,7 +95,7 @@ def build_messages(
     system = "\n\n".join(
         (
             SYSTEM_PROMPT,
-            STAGE_INSTRUCTIONS[_stage(trip, user_message, client_context)],
+            STAGE_INSTRUCTIONS[_stage(trip, client_context)],
             _format_context(facts, trip),
         )
     )

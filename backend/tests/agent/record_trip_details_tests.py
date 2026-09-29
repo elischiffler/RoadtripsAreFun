@@ -49,8 +49,9 @@ async def test_complete_message_geocodes_and_saves_every_field(monkeypatch):
         start_address="San Francisco",
         destination_address="Denver",
         num_stops=3,
-        budget="$250",
-        departure="October 3, 2099 at 2:30 PM",
+        budget=250,
+        departure_date="October 3, 2099",
+        departure_time="2:30 PM",
     )
     assert result.ok
     assert calls == ["San Francisco", "Denver"]
@@ -107,10 +108,10 @@ async def test_bad_date_and_stop_count_preserve_valid_locations_and_budget(monke
         destination_address="LA",
         num_stops=99,
         budget=180,
-        departure="sometime next season",
+        departure_date="sometime next season",
     )
     assert result.ok
-    assert set(result.result["clarifications"]) == {"num_stops", "departure"}
+    assert set(result.result["clarifications"]) == {"num_stops", "departure_date"}
     profile = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
     assert profile.start_address == "SLO"
     assert profile.destination_address == "LA"
@@ -136,7 +137,9 @@ async def test_partial_update_preserves_existing_fields_and_changes_date(monkeyp
         "app.agent.tool_dispatcher.get_location",
         lambda **kwargs: pytest.fail("No geocode needed for a budget/date update"),
     )
-    result = await _record(memory, budget=220, departure="October 3, 2099 at 4 PM")
+    result = await _record(
+        memory, budget=220, departure_date="October 3, 2099", departure_time="4 PM"
+    )
     assert result.ok
     profile = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
     assert profile.start_coords == existing.start_coords
@@ -152,9 +155,9 @@ async def test_missing_timezone_requests_clarification_without_guessing(monkeypa
         lambda *, geocoder, address: _location(address, 35.0, -120.0, None),
     )
     memory = FakeMemory()
-    result = await _record(memory, start_address="Unclear", budget=90, departure="tomorrow")
+    result = await _record(memory, start_address="Unclear", budget=90, departure_date="tomorrow")
     assert result.ok
-    assert set(result.result["clarifications"]) == {"start_timezone", "departure"}
+    assert set(result.result["clarifications"]) == {"start_timezone", "departure_date"}
     profile = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
     assert profile.start_timezone is None
     assert profile.start_date is None
@@ -196,7 +199,7 @@ async def test_car_skip_then_provide_or_change_uses_provider_validation(monkeypa
         return {"combination_mpg": 30}
 
     monkeypatch.setattr(td, "get_car_details", verify_car)
-    skipped = await _record(memory, car_status="no car", budget=180)
+    skipped = await _record(memory, car_status="skipped", budget=180)
     assert skipped.ok
     assert skipped.result["clarifications"] == {}
     assert skipped.result["trip_profile"]["car_status"] == "skipped"
@@ -237,7 +240,7 @@ async def test_invalid_car_requests_correction_or_skip_and_saves_valid_sibling(m
 
 async def test_recorded_skip_permits_agent_planning(monkeypatch):
     memory = FakeMemory()
-    skipped = await _record(memory, car_status="skip", num_stops=2, budget=150)
+    skipped = await _record(memory, car_status="skipped", num_stops=2, budget=150)
     assert skipped.ok
 
     async def fake_plan(payload, *, user_id):

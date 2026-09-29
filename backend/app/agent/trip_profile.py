@@ -15,7 +15,7 @@ round-trips through a single per-chat row (``mem_type='trip'``, real ``chat_id``
 mirroring how the previous user profile used a single ``fact`` row.
 ``from_json`` / ``to_json`` do the mapping so the DB layer only ever sees JSON.
 
-Updates are partial: the ``update_trip_profile`` tool sends a
+Updates are partial: validated trip details and trip-only persona changes use
 :class:`TripProfileUpdate` (all fields optional); :meth:`TripProfile.merged_with`
 applies only the provided fields and re-validates the result.
 """
@@ -40,7 +40,6 @@ logger = logging.getLogger(__name__)
 MIN_STOPS = 1
 MAX_STOPS = 10
 CarStatus = Literal["unanswered", "skipped", "provided"]
-_SKIP_CAR = {"skip", "skipped", "no car"}
 
 
 class Car(BaseModel):
@@ -90,51 +89,6 @@ def _blank_to_none(v: str | None) -> str | None:
     return v or None
 
 
-# The coordinate fields that may arrive stringified from the model.
-_COORD_FIELDS = ("start_coords", "destination_coords")
-
-
-def _coerce_stringified_coords(data):
-    """Normalize model-supplied coordinate values, in place.
-
-    Two model quirks are handled here (a ``before`` validator):
-
-    1. A JSON-string array — ``"destination_coords": "[36.17, -115.14]"`` — is
-       parsed into a real list so the common case works without a retry.
-    2. A non-numeric PLACEHOLDER string — ``"[await result]"``, ``"<coords>"``,
-       ``"[lat, lon]"`` — which happens when the model tries to fill coords
-       before it has a ``validate_location`` result. There is no correct
-       conversion for these, so we DROP just that field (logged) rather than
-       failing the whole ``update_trip_profile`` call. That way a valid sibling
-       field (e.g. ``start_address``) in the same update still saves, and the
-       model simply hasn't recorded coordinates yet.
-
-    A string that parses to a list but is an invalid coordinate (out of range,
-    wrong length) is left intact so the strict field validator rejects it loudly
-    — we only drop values that are clearly placeholders, never plausible data.
-    """
-    if not isinstance(data, dict):
-        return data
-    for key in _COORD_FIELDS:
-        value = data.get(key)
-        if isinstance(value, str):
-            try:
-                parsed = json.loads(value)
-            except ValueError:
-                # Not JSON at all -> a placeholder, not coordinates. Drop it so
-                # the rest of the update can still apply.
-                logger.warning(
-                    "trip_profile: dropping non-coordinate %s placeholder %r "
-                    "(no validate_location result yet).",
-                    key,
-                    value,
-                )
-                data.pop(key, None)
-                continue
-            data[key] = parsed
-    return data
-
-
 class TripProfile(BaseModel):
     """The complete, validated per-chat trip profile.
 
@@ -169,7 +123,16 @@ class TripProfile(BaseModel):
         # Profiles saved before car_status existed may already have a car.
         if isinstance(data, dict) and "car_status" not in data and data.get("car"):
             data = {**data, "car_status": "provided"}
-        return _coerce_stringified_coords(data)
+        # Older saved profiles may contain coordinates serialized as JSON strings.
+        # New updates must use geocoded numeric arrays and are validated strictly.
+        if isinstance(data, dict):
+            for key in ("start_coords", "destination_coords"):
+                if isinstance(data.get(key), str):
+                    try:
+                        data = {**data, key: json.loads(data[key])}
+                    except ValueError:
+                        pass
+        return data
 
     @model_validator(mode="after")
     def _car_consistent(self):
@@ -276,7 +239,7 @@ class TripProfile(BaseModel):
 
 
 class TripProfileUpdate(BaseModel):
-    """Partial trip-profile update sent by the ``update_trip_profile`` tool.
+    """Validated partial trip-profile update.
 
     Every field optional; ``model_dump(exclude_unset=True)`` in
     :meth:`TripProfile.merged_with` distinguishes "not provided" from "set to
@@ -305,12 +268,6 @@ class TripProfileUpdate(BaseModel):
         if not isinstance(data, dict):
             return data
         data = data.copy()
-        choice = data.get("car_status")
-        if isinstance(choice, str) and choice.strip().lower() in _SKIP_CAR:
-            data["car_status"] = "skipped"
-        if isinstance(data.get("car"), str) and data["car"].strip().lower() in _SKIP_CAR:
-            data.pop("car")
-            data["car_status"] = "skipped"
         flat = {
             "year": data.get("car_year"),
             "make": data.get("car_make"),
@@ -326,12 +283,6 @@ class TripProfileUpdate(BaseModel):
         if self.car is not None and self.car_status in {"skipped", "unanswered"}:
             raise ValueError("choose either car details or a skipped/unanswered car status")
         return self
-
-    @model_validator(mode="before")
-    @classmethod
-    def _coerce_coords(cls, data):
-        """Parse stringified coordinate arrays (a common model output) into lists."""
-        return _coerce_stringified_coords(data)
 
     @field_validator("start_coords", "destination_coords")
     @classmethod

@@ -251,19 +251,9 @@ describe('logTripToolActivity', () => {
     vi.restoreAllMocks();
   });
 
-  it('flags a validation failure when update ran but no action applied', () => {
-    const failed = logTripToolActivity(
-      ['validate_location', 'update_trip_profile'],
-      [] // no trip_profile_updated action came back
-    );
-    expect(failed).toBe(true);
-    expect(console.warn).toHaveBeenCalled();
-  });
-
-  it('includes the backend error detail in the validation-failure warning', () => {
+  it('includes the backend error detail in the validation warning', () => {
     logTripToolActivity(
       ['update_trip_profile'],
-      [],
       [{ name: 'update_trip_profile', error: 'num_stops must be between 1 and 10' }]
     );
     // The warning carries the actual backend validation message.
@@ -276,7 +266,6 @@ describe('logTripToolActivity', () => {
   it('logs each tool error the backend surfaced', () => {
     logTripToolActivity(
       ['validate_location', 'update_trip_profile'],
-      [{ type: 'trip_profile_updated', payload: {} }],
       [{ name: 'validate_location', error: 'Location not found' }]
     );
     const warned = console.warn.mock.calls.some((args) =>
@@ -285,38 +274,30 @@ describe('logTripToolActivity', () => {
     expect(warned).toBe(true);
   });
 
-  it('does not flag when the update applied (action present)', () => {
-    const failed = logTripToolActivity(
-      ['update_trip_profile'],
-      [{ type: 'trip_profile_updated', payload: { trip_profile: { num_stops: 3 } } }]
-    );
+  it('does not flag turns without backend errors or validation issues', () => {
+    const failed = logTripToolActivity(['update_trip_profile']);
     expect(failed).toBe(false);
     expect(console.warn).not.toHaveBeenCalled();
   });
 
-  it('does not flag when update_trip_profile was never attempted', () => {
-    const failed = logTripToolActivity(['validate_location'], []);
-    expect(failed).toBe(false);
-  });
-
   it('tolerates missing/undefined inputs', () => {
-    expect(logTripToolActivity(undefined, undefined, undefined)).toBe(false);
+    expect(logTripToolActivity(undefined, undefined)).toBe(false);
   });
 
   it('logs a turn with no validation tool and field-specific backend issues', () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
-    expect(logTripToolActivity([], [], [], { departure: 'Please clarify the date.' })).toBe(true);
+    expect(logTripToolActivity([], [], { departure_date: 'Please clarify the date.' })).toBe(true);
     expect(console.log).toHaveBeenCalledWith('[TripProfile] tools this turn: %s', 'none');
     expect(console.warn).toHaveBeenCalledWith(
       '[TripProfile] %s needs clarification: %s',
-      'departure',
+      'departure_date',
       'Please clarify the date.'
     );
   });
 
   it('logs the keys identified by structured extraction each turn', () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
-    logTripToolActivity(['record_trip_details'], [], [], {}, ['budget', 'departure_time']);
+    logTripToolActivity(['record_trip_details'], [], {}, ['budget', 'departure_time']);
     expect(console.log).toHaveBeenCalledWith(
       '[TripProfile] extracted fields this turn: %s',
       'budget, departure_time'

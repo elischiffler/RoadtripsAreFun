@@ -40,11 +40,10 @@ def _messages(trip=None, text="Plan a trip", hint=None, recent=None, summary="")
 
 def test_stage_uses_validated_profile_without_message_pattern_checks():
     trip = _complete_trip()
-    assert _stage(TripProfile(), "Plan a trip", None) == "collecting"
-    assert _stage(trip, "Go ahead", None) == "completing"
-    assert _stage(trip, "Actually make it four stops", None) == "completing"
-    assert _stage(trip, "Change my budget", AgentClientContext(hasRoute=True)) == "revising"
-    assert _stage(TripProfile(), "Continue", AgentClientContext(hasRoute=True)) == "collecting"
+    assert _stage(TripProfile(), None) == "collecting"
+    assert _stage(trip, None) == "completing"
+    assert _stage(trip, AgentClientContext(hasRoute=True)) == "revising"
+    assert _stage(TripProfile(), AgentClientContext(hasRoute=True)) == "collecting"
 
 
 def test_stage_instructions_are_selected_and_other_stages_omitted():
@@ -92,7 +91,7 @@ def test_profile_is_authoritative_and_ui_defaults_are_not_sent():
 
 
 def test_optional_car_and_departure_instructions_are_present_without_completing_early():
-    assert _stage(_complete_trip().model_copy(update={"car_status": "unanswered"}), "Go", None) == (
+    assert _stage(_complete_trip().model_copy(update={"car_status": "unanswered"}), None) == (
         "collecting"
     )
     collecting = _messages(TripProfile(), "Plan")[0].content

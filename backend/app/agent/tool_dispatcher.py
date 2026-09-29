@@ -418,7 +418,6 @@ class AppToolDispatcher:
                         "destination_address": {"type": "string"},
                         "num_stops": {"type": "integer", "minimum": 1, "maximum": 10},
                         "budget": {"type": "number", "minimum": 0},
-                        "departure": {"type": "string"},
                         "departure_date": {"type": "string"},
                         "departure_time": {"type": "string"},
                         "car_year": {"type": "integer"},
@@ -434,16 +433,10 @@ class AppToolDispatcher:
             ),
             ToolSpec(
                 name="update_trip_profile",
-                description=(
-                    "Legacy partial trip update. Prefer record_trip_details for new "
-                    "trip and car details. Use this for trip-only persona changes."
-                ),
+                description="Update trip-only persona preference weights.",
                 parameters={
                     "type": "object",
                     "properties": {
-                        "car_year": {"type": "integer"},
-                        "car_make": {"type": "string"},
-                        "car_model": {"type": "string"},
                         "persona_weights": {
                             "type": "object",
                             "properties": {
@@ -452,15 +445,8 @@ class AppToolDispatcher:
                             "additionalProperties": False,
                             "description": "Trip-only preference weight changes.",
                         },
-                        "car_status": {
-                            "type": "string",
-                            "enum": ["skipped", "provided", "unanswered"],
-                            "description": (
-                                "Use skipped when the traveler says skip or no car. "
-                                "Providing complete car details sets provided automatically."
-                            ),
-                        },
                     },
+                    "required": ["persona_weights"],
                 },
             ),
         ]
@@ -895,23 +881,12 @@ class AppToolDispatcher:
     async def _update_trip_profile(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         if ctx.memory is None:
             raise ValueError("No memory store is available.")
-        if set(args) & {
-            "start_address",
-            "start_coords",
-            "start_timezone",
-            "destination_address",
-            "destination_coords",
-            "start_date",
-        }:
-            raise ValueError("Use record_trip_details for locations and departure.")
+        if set(args) != {"persona_weights"}:
+            raise ValueError(
+                "Use record_trip_details for trip details; only persona_weights may be updated here."
+            )
         # Validate the partial update (raises ValidationError -> caught by dispatch).
         update = TripProfileUpdate.model_validate(args)
-        if update.car is not None:
-            await get_car_details(
-                model=update.car.model,
-                make=update.car.make,
-                year=update.car.year,
-            )
         current = self._load_trip_profile(ctx)
         merged = current.merged_with(update)
         # Persist the whole trip profile as the single per-chat 'trip' row.
@@ -978,10 +953,7 @@ class AppToolDispatcher:
             if field not in args:
                 continue
             try:
-                supplied = args[field]
-                if field == "budget" and isinstance(supplied, str):
-                    supplied = supplied.strip().removeprefix("$").replace(",", "")
-                validated = TripProfileUpdate.model_validate({field: supplied})
+                validated = TripProfileUpdate.model_validate({field: args[field]})
                 value = getattr(validated, field)
                 if value is None:
                     raise ValueError("missing")
@@ -1019,23 +991,6 @@ class AppToolDispatcher:
                     changed = True
                 except ValueError as exc:
                     clarifications["departure_date"] = str(exc)
-
-        if "departure" in args:
-            if not values["start_timezone"]:
-                clarifications["departure"] = (
-                    "Please clarify the starting location so I can determine its timezone."
-                )
-            else:
-                try:
-                    values["start_date"] = resolve_departure(
-                        args["departure"], values["start_timezone"]
-                    )
-                    values["departure_time"] = datetime.fromisoformat(
-                        values["start_date"]
-                    ).strftime("%H:%M")
-                    changed = True
-                except ValueError as exc:
-                    clarifications["departure"] = str(exc)
 
         if set(args) & {"car", "car_year", "car_make", "car_model", "car_status"}:
             try:

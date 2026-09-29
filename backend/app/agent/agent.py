@@ -409,8 +409,6 @@ async def run_turn(
             # an action, so record its error for the client to log/debug.
             if not result.ok and result.error:
                 tool_errors.append(AgentToolError(name=call.name, error=result.error))
-            if call.name == "record_trip_details" and result.ok and result.result:
-                validation_issues.update(result.result.get("clarifications") or {})
             _collect_action(result, chat_id, actions)
             messages.append(
                 LLMMessage(
