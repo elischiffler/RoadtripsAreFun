@@ -1017,7 +1017,9 @@ class AppToolDispatcher:
                     "Please give a valid year, make, and model, or say skip/no car."
                 )
             except HTTPException as exc:
-                if exc.status_code in {400, 404}:
+                if exc.status_code == 400:
+                    clarifications["car"] = str(exc.detail)
+                elif exc.status_code == 404:
                     clarifications["car"] = (
                         "I could not verify that year, make, and model. "
                         "Please correct them or say skip/no car."

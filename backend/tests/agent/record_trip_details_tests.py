@@ -238,6 +238,23 @@ async def test_invalid_car_requests_correction_or_skip_and_saves_valid_sibling(m
     assert TripProfile.from_json(memory.load_trip_profile("owner", "trip")).car is None
 
 
+async def test_ambiguous_car_returns_specific_choices(monkeypatch):
+    from fastapi import HTTPException
+
+    async def ambiguous(*, model, make, year):
+        raise HTTPException(
+            status_code=400,
+            detail="Mazda CX-5 has two versions for 2024: CX-5 2WD, CX-5 4WD.",
+        )
+
+    monkeypatch.setattr(td, "get_car_details", ambiguous)
+    result = await _record(FakeMemory(), car_year=2024, car_make="Mazda", car_model="CX-5")
+    assert result.ok
+    assert result.result["clarifications"]["car"] == (
+        "Mazda CX-5 has two versions for 2024: CX-5 2WD, CX-5 4WD."
+    )
+
+
 async def test_recorded_skip_permits_agent_planning(monkeypatch):
     memory = FakeMemory()
     skipped = await _record(memory, car_status="skipped", num_stops=2, budget=150)
