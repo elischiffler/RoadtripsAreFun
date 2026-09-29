@@ -26,7 +26,7 @@ from datetime import UTC, datetime
 from app.agent import debug
 from app.agent.memory import ConversationMemory, MemoryStore
 from app.agent.prompt import RECENT_MESSAGE_LIMIT, build_messages
-from app.agent.providers import LLMProvider
+from app.agent.providers import LLMProvider, ProvidersExhausted
 from app.agent.schemas import (
     AgentAction,
     AgentChatRequest,
@@ -34,6 +34,7 @@ from app.agent.schemas import (
     AgentToolError,
     AgentUsage,
     LLMMessage,
+    ToolCall,
     ToolResult,
 )
 from app.agent.toolcall_parser import parse_tool_calls, strip_tool_blocks
@@ -92,6 +93,78 @@ _TRIP_DETAIL_HINT = re.compile(
 
 def _needs_trip_recording(message: str) -> bool:
     return bool(_TRIP_DETAIL_HINT.search(message))
+
+
+_EXPLICIT_ROUTE = re.compile(
+    r"\bfrom\s+(?P<start>[^\n?!]{1,100}?)\s+to\s+"
+    r"(?P<destination>[^\n?!]{1,100}?)"
+    r"(?=\s+(?:on|at|leaving|departing|with|for|and|please)\b|[?!]|$)",
+    re.IGNORECASE,
+)
+
+
+def _explicit_locations(message: str) -> dict[str, str] | None:
+    """Extract only a plainly stated origin and destination for tool validation."""
+    match = _EXPLICIT_ROUTE.search(message)
+    if match is None:
+        return None
+    start = match.group("start").strip(" ,.")
+    destination = match.group("destination").strip(" ,.")
+    if not start or not destination:
+        return None
+    return {"start_address": start, "destination_address": destination}
+
+
+async def _recover_explicit_locations(
+    *,
+    message: str,
+    tools: ToolDispatcher,
+    ctx: ToolContext,
+    memory: MemoryStore,
+    user_id: str,
+    chat_id: str,
+    model_calls: int,
+    usage: AgentUsage | None = None,
+    provider_unavailable: bool = False,
+) -> AgentChatResponse | None:
+    """Keep an explicit location pair usable when the model misses tools or fails."""
+    locations = _explicit_locations(message)
+    if locations is None or not any(spec.name == "record_trip_details" for spec in tools.specs()):
+        return None
+    call = ToolCall(name="record_trip_details", arguments=locations)
+    result = await tools.dispatch(call, ctx)
+    debug.tool_fired(call.name, call.arguments, result.ok, result.result, result.error)
+    actions: list[AgentAction] = []
+    _collect_action(result, chat_id, actions)
+    issues = (result.result or {}).get("clarifications") or {} if result.ok else {}
+    profile = _load_trip(memory, user_id, chat_id)
+    if issues:
+        reply = "I couldn't confirm the locations. " + " ".join(issues.values())
+    elif result.ok and profile.start_address and profile.destination_address:
+        reply = f"I saved your trip from {profile.start_address} to {profile.destination_address}. "
+        if provider_unavailable:
+            reply += (
+                "The planning assistant is temporarily unavailable. "
+                "Please try sending your date and time again shortly."
+            )
+        else:
+            reply += "What date and time would you like to leave? 9:00 AM is the default."
+    else:
+        reply = "I couldn't validate those locations right now. Please try again."
+    debug.trip_snapshot("after", profile)
+    debug.turn_end(reply, [call.name], actions)
+    return AgentChatResponse(
+        reply=reply,
+        toolsUsed=[call.name],
+        toolErrors=[AgentToolError(name=call.name, error=result.error)]
+        if not result.ok and result.error
+        else [],
+        actions=actions,
+        tripProfile=profile.model_dump(mode="json", exclude_none=True),
+        validationIssues=issues,
+        modelCalls=model_calls,
+        usage=usage,
+    )
 
 
 def _load_recent_turns(memory: MemoryStore, user_id: str, chat_id: str) -> list[LLMMessage]:
@@ -296,7 +369,22 @@ async def run_turn(
     )
 
     # 4. First provider call.
-    response = providers.complete(messages, specs)
+    try:
+        response = providers.complete(messages, specs)
+    except ProvidersExhausted:
+        recovered = await _recover_explicit_locations(
+            message=request.message,
+            tools=tools,
+            ctx=ctx,
+            memory=memory,
+            user_id=user_id,
+            chat_id=chat_id,
+            model_calls=1,
+            provider_unavailable=True,
+        )
+        if recovered is not None:
+            return recovered
+        raise
     model_calls = 1
     prompt_tokens = 0
     completion_tokens = 0
@@ -333,7 +421,28 @@ async def run_turn(
                 ),
             )
         )
-        response = providers.complete(messages, specs)
+        try:
+            response = providers.complete(messages, specs)
+        except ProvidersExhausted:
+            recovered = await _recover_explicit_locations(
+                message=request.message,
+                tools=tools,
+                ctx=ctx,
+                memory=memory,
+                user_id=user_id,
+                chat_id=chat_id,
+                model_calls=model_calls + 1,
+                usage=AgentUsage(
+                    promptTokens=prompt_tokens if has_prompt_usage else None,
+                    completionTokens=completion_tokens if has_completion_usage else None,
+                )
+                if has_prompt_usage or has_completion_usage
+                else None,
+                provider_unavailable=True,
+            )
+            if recovered is not None:
+                return recovered
+            raise
         model_calls += 1
         add_usage(response.usage)
         calls = [
@@ -344,6 +453,23 @@ async def run_turn(
         recording_missed = not calls
         if recording_missed:
             logger.warning("Trip details were not recorded for chat_id=%s", chat_id)
+            recovered = await _recover_explicit_locations(
+                message=request.message,
+                tools=tools,
+                ctx=ctx,
+                memory=memory,
+                user_id=user_id,
+                chat_id=chat_id,
+                model_calls=model_calls,
+                usage=AgentUsage(
+                    promptTokens=prompt_tokens if has_prompt_usage else None,
+                    completionTokens=completion_tokens if has_completion_usage else None,
+                )
+                if has_prompt_usage or has_completion_usage
+                else None,
+            )
+            if recovered is not None:
+                return recovered
 
     # 5. Tool loop — driven by the TEXT protocol, not response.tool_calls.
     # The gateway has no native function-calling, so tool requests arrive as

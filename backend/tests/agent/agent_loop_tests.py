@@ -51,6 +51,95 @@ def test_trip_detail_recovery_targets_actual_details_not_general_questions():
     assert not _needs_trip_recording("What can I do in May?")
 
 
+@pytest.fixture
+def geocoded_locations(monkeypatch):
+    locations = {
+        "las vegas": ("Las Vegas, NV", 36.17, -115.14, "America/Los_Angeles"),
+        "houston": ("Houston, TX", 29.76, -95.37, "America/Chicago"),
+    }
+
+    def geocode(*, geocoder, address):
+        label, latitude, longitude, timezone = locations[address.lower()]
+        return SimpleNamespace(
+            address=label,
+            latitude=latitude,
+            longitude=longitude,
+            raw={"annotations": {"timezone": {"name": timezone}}},
+        )
+
+    monkeypatch.setattr("app.agent.tool_dispatcher.get_location", geocode)
+
+
+async def test_explicit_locations_are_saved_when_model_omits_tool(fake_memory, geocoded_locations):
+    provider = FakeProvider(
+        responses=[LLMResponse(content="Where from?"), LLMResponse(content="NO_TRIP_DETAILS")]
+    )
+    result = await run_turn(
+        _request("can you help create me a roadtrip from las vegas to houston"),
+        FallbackChain([provider]),
+        fake_memory,
+        AppToolDispatcher(),
+    )
+    saved = TripProfile.from_json(fake_memory.load_trip_profile("user-123", "42"))
+    assert saved.start_address == "Las Vegas, NV"
+    assert saved.destination_address == "Houston, TX"
+    assert saved.start_timezone == "America/Los_Angeles"
+    assert result.toolsUsed == ["record_trip_details"]
+    assert [action.type for action in result.actions] == ["trip_profile_updated"]
+    assert "date and time" in result.reply
+    assert result.modelCalls == 2
+
+
+async def test_explicit_locations_survive_provider_outage(fake_memory, geocoded_locations):
+    provider = FakeProvider(fail=True)
+    result = await run_turn(
+        _request("i want to go from las vegas to houston"),
+        FallbackChain([provider]),
+        fake_memory,
+        AppToolDispatcher(),
+    )
+    assert result.tripProfile["destination_address"] == "Houston, TX"
+    assert result.toolsUsed == ["record_trip_details"]
+    assert result.modelCalls == 1
+    assert provider.calls == 1
+
+
+async def test_invalid_explicit_location_is_not_reported_as_saved(monkeypatch, fake_memory):
+    fake_memory.save_trip_profile(
+        "user-123",
+        "42",
+        TripProfile(
+            start_address="Old start",
+            start_coords=[36.17, -115.14],
+            start_timezone="America/Los_Angeles",
+            destination_address="Old destination",
+            destination_coords=[29.76, -95.37],
+        ).to_json(),
+    )
+    monkeypatch.setattr("app.agent.tool_dispatcher.get_location", lambda **kwargs: None)
+    result = await run_turn(
+        _request("from las vegas to houston"),
+        FallbackChain([FakeProvider(fail=True)]),
+        fake_memory,
+        AppToolDispatcher(),
+    )
+    assert "couldn't confirm" in result.reply
+    assert "I saved" not in result.reply
+    assert set(result.validationIssues) == {"start_address", "destination_address"}
+
+
+async def test_other_messages_still_surface_provider_outage(fake_memory, fake_tools):
+    from app.agent.providers import ProvidersExhausted
+
+    with pytest.raises(ProvidersExhausted):
+        await run_turn(
+            _request("What else can we do?"),
+            FallbackChain([FakeProvider(fail=True)]),
+            fake_memory,
+            fake_tools,
+        )
+
+
 async def test_run_turn_simple_no_tool_reply(fake_memory, fake_tools):
     provider = FakeProvider(responses=[LLMResponse(content="Sure, where to?", usage=make_usage())])
     chain = FallbackChain([provider])
