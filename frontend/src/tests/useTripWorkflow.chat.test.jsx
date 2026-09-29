@@ -174,6 +174,7 @@ describe('applyAgentActions', () => {
   it('writes a route_updated payload into the persisted ChatData snapshot', async () => {
     const routeObj = {
       duration: 3600,
+      warnings: ['Hotel exceeds the $100 nightly target.'],
       geometry: { coordinates: [] },
       coordinates: [
         [40.0, -105.0], // start [lat, lon]
@@ -212,6 +213,7 @@ describe('applyAgentActions', () => {
     expect(snap.endConfirmed).toEqual({ latitude: 42.5, longitude: -103.5, address: '' });
     // Also mirrored into ChatLogsData so Map/Itinerary read it
     expect(chatLogsData.chatdata[0].route).toBe(routeObj);
+    expect(await screen.findByText('Hotel exceeds the $100 nightly target.')).toBeInTheDocument();
   });
 
   it('writes an itinerary_updated payload into the persisted ChatData snapshot', async () => {

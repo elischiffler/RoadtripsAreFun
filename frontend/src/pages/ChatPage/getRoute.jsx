@@ -33,7 +33,7 @@ export const getRoutingAlgorithm = () => {
   }
 };
 
-export const getFinalRoute = async (initial_route, budget, stops) => {
+export const getFinalRoute = async (initial_route, budget, stops, personaWeights = null) => {
   try {
     const data = {
       initial_route: initial_route,
@@ -46,6 +46,7 @@ export const getFinalRoute = async (initial_route, budget, stops) => {
     if (algorithm) {
       data.algorithm = algorithm;
     }
+    if (personaWeights) data.persona_weights = personaWeights;
 
     // Send request for a route given the user inputs
     const response = await axios.post(

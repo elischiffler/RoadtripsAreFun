@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+
+from app.agent.persona import validate_weight_update
 
 
 class Mapbox_geo(BaseModel):
@@ -24,6 +26,7 @@ class Route(BaseModel):
     stops: list[dict[str, Any]] | None = None  # TODO use or remove this
     geometry: Mapbox_geo
     cost: float
+    warnings: list[str] | None = None
 
     class Stop(BaseModel):
         name: str
@@ -107,3 +110,9 @@ class Route_Payload(BaseModel):
     start: datetime | None = datetime(2024, 9, 21, 9, 0, 0)
     # Which routing algorithm to run. None -> the ROUTING_ALGORITHM env / default.
     algorithm: str | None = None
+    persona_weights: dict[str, float] | None = None
+
+    @field_validator("persona_weights", mode="before")
+    @classmethod
+    def _persona_weights(cls, value):
+        return validate_weight_update(value) if value is not None else None

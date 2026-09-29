@@ -213,7 +213,7 @@ def test_generate_final_route_invalid_payload():
     response = client.post(
         "/generate-final-route", json={"initial_route": {}, "num_stops": 1, "budget": 200}
     )
-    assert response.status_code == 502
+    assert response.status_code == 422
 
 
 def test_generate_final_route_unknown_algorithm_returns_400():

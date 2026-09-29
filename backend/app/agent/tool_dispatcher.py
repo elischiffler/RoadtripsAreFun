@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from collections.abc import Awaitable, Callable
 from typing import Any
 
@@ -42,6 +43,7 @@ from requests.exceptions import RequestException
 
 from app.agent import routing_remote
 from app.agent.memory import MemoryFact
+from app.agent.persona import ATTRIBUTE_KEYS, PersonaWeightUpdate
 from app.agent.schemas import ToolCall, ToolResult, ToolSpec
 from app.agent.tools import ToolContext
 from app.agent.trip_profile import TripProfile, TripProfileUpdate
@@ -179,6 +181,8 @@ class AppToolDispatcher:
             "remember_fact": self._remember_fact,
             "get_trip_profile": self._get_trip_profile,
             "update_trip_profile": self._update_trip_profile,
+            "get_account_persona": self._get_account_persona,
+            "update_account_persona": self._update_account_persona,
         }
 
     # ------------------------------------------------------------------ #
@@ -359,6 +363,28 @@ class AppToolDispatcher:
                 parameters={"type": "object", "properties": {}},
             ),
             ToolSpec(
+                name="get_account_persona",
+                description="Read this authenticated traveler's cross-chat preference weights.",
+                parameters={"type": "object", "properties": {}},
+            ),
+            ToolSpec(
+                name="update_account_persona",
+                description="Update account preference weights only when the traveler explicitly asks to save preferences across trips.",
+                parameters={
+                    "type": "object",
+                    "properties": {
+                        "weights": {
+                            "type": "object",
+                            "properties": {
+                                key: {"type": "number", "minimum": 0} for key in ATTRIBUTE_KEYS
+                            },
+                            "additionalProperties": False,
+                        }
+                    },
+                    "required": ["weights"],
+                },
+            ),
+            ToolSpec(
                 name="update_trip_profile",
                 description=(
                     "Record trip details into THIS chat's trip profile as the traveler "
@@ -411,6 +437,14 @@ class AppToolDispatcher:
                         "car_year": {"type": "integer"},
                         "car_make": {"type": "string"},
                         "car_model": {"type": "string"},
+                        "persona_weights": {
+                            "type": "object",
+                            "properties": {
+                                key: {"type": "number", "minimum": 0} for key in ATTRIBUTE_KEYS
+                            },
+                            "additionalProperties": False,
+                            "description": "Trip-only preference weight changes.",
+                        },
                     },
                 },
             ),
@@ -512,7 +546,9 @@ class AppToolDispatcher:
                 handle,
             )
             if routing_remote.remote_enabled():
-                return await routing_remote.call_route_remote(start[0], start[1], end[0], end[1])
+                return await routing_remote.call_route_remote(
+                    start[0], start[1], end[0], end[1], ctx.auth_token
+                )
             return await call_route(start[0], start[1], end[0], end[1])
 
         raise ValueError(
@@ -539,7 +575,9 @@ class AppToolDispatcher:
         # Proxy to the deployed backend (whitelisted IP) in local dev; run
         # locally on the deployed backend itself. Same MapBox_Route either way.
         if routing_remote.remote_enabled():
-            route = await routing_remote.call_route_remote(start_lat, start_lon, end_lat, end_lon)
+            route = await routing_remote.call_route_remote(
+                start_lat, start_lon, end_lat, end_lon, ctx.auth_token
+            )
         else:
             route = await call_route(start_lat, start_lon, end_lat, end_lon)
         # Store the heavy Mapbox route server-side; hand the model only a handle
@@ -592,13 +630,20 @@ class AppToolDispatcher:
         start = args.get("start") or trip.start_date
         if start:
             payload_data["start"] = start
+        if trip.persona_weights or args.get("persona_weights"):
+            payload_data["persona_weights"] = args.get("persona_weights") or trip.persona_weights
         payload = Route_Payload.model_validate(payload_data)
         # Proxy planning (and its whitelisted TripAdvisor/hotel calls) to the
         # deployed backend in local dev; run locally on the deployed backend.
         if routing_remote.remote_enabled():
-            route = await routing_remote.plan_final_route_remote(payload)
+            route = await routing_remote.plan_final_route_remote(payload, ctx.auth_token)
         else:
-            route = await plan_final_route(payload)
+            route = (
+                await plan_final_route(payload, user_id=ctx.user_id)
+                if (payload_data.get("algorithm") or os.getenv("ROUTING_ALGORITHM", "greedy"))
+                == "cp_sat"
+                else await plan_final_route(payload)
+            )
         # Store the planned Route; hand the model a handle + summary. The FULL
         # route still rides to the frontend via `route` (promoted onto the
         # action payload by run_turn), so Map/Itinerary render.
@@ -608,6 +653,7 @@ class AppToolDispatcher:
             "action": "route_updated",
             "route_handle": handle,
             "cost": route.cost,
+            "warnings": getattr(route, "warnings", None),
             "stop_count": stop_count,
             "summary": (
                 f"Trip planned: {stop_count} stop(s), ${route.cost:.0f} hotels, "
@@ -630,7 +676,7 @@ class AppToolDispatcher:
         # Itinerary building is pure (no whitelisted external calls), but proxy
         # it too when remote is enabled to keep the routing path uniform.
         if routing_remote.remote_enabled():
-            days = await routing_remote.build_itinerary_remote(payload)
+            days = await routing_remote.build_itinerary_remote(payload, ctx.auth_token)
         else:
             days = await build_itinerary(payload)
         return {
@@ -697,6 +743,19 @@ class AppToolDispatcher:
     async def _get_trip_profile(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         trip = self._load_trip_profile(ctx)
         return {"trip_profile": trip.model_dump(mode="json", exclude_none=True)}
+
+    async def _get_account_persona(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
+        if ctx.memory is None:
+            raise ValueError("No memory store is available.")
+        return {"weights": ctx.memory.load_account_persona(ctx.user_id).weights}
+
+    async def _update_account_persona(
+        self, args: dict[str, Any], ctx: ToolContext
+    ) -> dict[str, Any]:
+        if ctx.memory is None:
+            raise ValueError("No memory store is available.")
+        update = PersonaWeightUpdate.model_validate(args)
+        return {"weights": ctx.memory.update_account_persona(ctx.user_id, update).weights}
 
     async def _update_trip_profile(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         if ctx.memory is None:

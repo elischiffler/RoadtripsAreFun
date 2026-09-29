@@ -356,6 +356,9 @@ export function useTripWorkflow({
 
         if (action.type === 'route_updated' && action.payload?.route) {
           const newRoute = action.payload.route;
+          if (Array.isArray(newRoute.warnings)) {
+            newRoute.warnings.forEach((warning) => bot(warning));
+          }
           setRoute(newRoute);
           overrides.route = newRoute;
           sawRoute = true;
@@ -444,7 +447,7 @@ export function useTripWorkflow({
 
       await persistSnapshot(snap);
     },
-    [buildSnapshot, persistSnapshot, onChatReady]
+    [buildSnapshot, persistSnapshot, onChatReady, bot]
   );
 
   // ── Public: submit user input (agent chat only) ───────────────────────────

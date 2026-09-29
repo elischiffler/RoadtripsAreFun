@@ -31,6 +31,8 @@ pytestmark = pytest.mark.asyncio
 
 
 EXPECTED_TOOLS = {
+    "get_account_persona",
+    "update_account_persona",
     "validate_location",
     "get_initial_route",
     "generate_final_route",

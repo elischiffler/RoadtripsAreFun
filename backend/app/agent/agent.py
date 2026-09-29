@@ -257,7 +257,9 @@ async def run_turn(
     tools_used: list[str] = []
     tool_errors: list[AgentToolError] = []
     actions: list[AgentAction] = []
-    ctx = ToolContext(user_id=user_id, chat_id=chat_id, memory=memory)
+    ctx = ToolContext(
+        user_id=user_id, chat_id=chat_id, auth_token=request.partitionKey, memory=memory
+    )
 
     # 4. First provider call.
     response = providers.complete(messages, specs)

@@ -139,7 +139,7 @@ async def schedule_cp_sat_route(
                     raise PlanningError("Verified hotel candidate limit exceeded", 502)
                 usable = [item for item in candidates if _usable_hotel(item)]
                 if usable:
-                    max_price = price_range[0][1]
+                    max_price = options.budget
                     hotel = min(
                         usable,
                         key=lambda item: (
@@ -165,6 +165,13 @@ async def schedule_cp_sat_route(
                     "address": hotel.get("address"),
                     "url": hotel.get("url"),
                     "price": hotel["price"],
+                    **(
+                        {
+                            "warning": f"Hotel {hotel['name']} costs ${hotel['price']:.0f}, above the ${options.budget:.0f} nightly target."
+                        }
+                        if hotel["price"] > options.budget
+                        else {}
+                    ),
                 }
             )
             total_cost += hotel["price"]

@@ -9,6 +9,7 @@ only shapes the messages.
 from __future__ import annotations
 
 from app.agent.memory import ConversationMemory, MemoryFact
+from app.agent.persona import ATTRIBUTE_KEYS
 from app.agent.schemas import AgentClientContext, LLMMessage
 from app.agent.trip_profile import TripProfile
 
@@ -17,6 +18,17 @@ You are the MyRoadtrip planning assistant — a friendly, practical road-trip \
 companion. Your JOB is to help the traveler finish planning a complete, drivable \
 multi-day road trip. You chat naturally, but you always keep the conversation \
 moving toward a finished trip.
+
+PREFERENCES: Use `get_account_persona` to read cross-chat weights. Only call \
+`update_account_persona` when the traveler explicitly asks to save preferences \
+for future trips. When a preference applies only to this trip, call \
+`update_trip_profile` with `persona_weights`; never save it to the account. \
+Use only the 14 keys advertised by the persona tools and nonnegative numeric \
+weights. `cp_sat` is opt-in through `generate_final_route.algorithm`; the \
+default planner remains greedy. If a planned route returns warnings, tell the \
+traveler the hotel price exceeded their nightly target.
+For CP-SAT, collect an upcoming trip start date before generating the route; \
+dated hotel offers cannot be requested for a past date.
 
 THE GOAL (always be driving toward this):
 Produce a finished trip by calling `generate_final_route`, then \
@@ -194,7 +206,11 @@ def build_messages(
     conversation summary, recent verbatim turns, then the new user message.
     Pure — no I/O.
     """
-    system_sections = [SYSTEM_PROMPT.strip(), _format_context(facts, trip)]
+    system_sections = [
+        SYSTEM_PROMPT.strip(),
+        "Persona weight keys: " + ", ".join(ATTRIBUTE_KEYS),
+        _format_context(facts, trip),
+    ]
     hint = _format_client_context(client_context)
     if hint:
         system_sections.append(hint)

@@ -214,6 +214,7 @@ async def test_over_budget_hotel_keeps_actual_price(route, start_date, fake_serv
     stops, cost = await schedule_cp_sat_route(route, [], PlanOptions(0, 100, start_date), services)
     assert cost == 400
     assert stops[0]["price"] == 400
+    assert "$100 nightly target" in stops[0]["warning"]
 
 
 @pytest.mark.asyncio

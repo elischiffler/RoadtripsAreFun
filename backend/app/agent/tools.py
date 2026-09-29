@@ -89,6 +89,7 @@ class ToolContext:
 
     user_id: str
     chat_id: str
+    auth_token: str | None = None
     memory: MemoryStore | None = None
     artifacts: ArtifactStore = field(default_factory=ArtifactStore)
 
