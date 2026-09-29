@@ -10,10 +10,16 @@ import app.agent.routing_remote as rr
 import app.agent.tool_dispatcher as td
 from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.tools import ToolCall, ToolContext
+from app.agent.trip_profile import TripProfile
+
+from .conftest import FakeMemory
 
 
-def _ctx():
-    return ToolContext(user_id="u1", chat_id="42", auth_token="verified-token")
+def _ctx(*, car_skipped=False):
+    memory = FakeMemory() if car_skipped else None
+    if memory:
+        memory.save_trip_profile("u1", "42", TripProfile(car_status="skipped").to_json())
+    return ToolContext(user_id="u1", chat_id="42", auth_token="verified-token", memory=memory)
 
 
 def test_remote_enabled_reflects_config(monkeypatch):
@@ -101,7 +107,7 @@ async def test_generate_final_route_uses_remote_when_enabled(monkeypatch):
 
     monkeypatch.setattr(td, "plan_final_route", local_boom)
 
-    ctx = _ctx()
+    ctx = _ctx(car_skipped=True)
     handle = ctx.artifacts.put("initial_route", {})
     result = await AppToolDispatcher().dispatch(
         ToolCall(

@@ -23,6 +23,7 @@ def _complete_trip() -> TripProfile:
         num_stops=3,
         budget=150,
         start_date="2099-10-10T09:00:00",
+        car_status="skipped",
     )
 
 
@@ -88,6 +89,20 @@ def test_profile_is_authoritative_and_ui_defaults_are_not_sent():
     assert "hotelBudget=0" not in system
     assert "stops=1" not in system
     assert "INTERNAL" in system
+
+
+def test_optional_car_and_departure_instructions_are_present_without_completing_early():
+    assert _stage(_complete_trip().model_copy(update={"car_status": "unanswered"}), "Go", None) == (
+        "collecting"
+    )
+    collecting = _messages(TripProfile(), "Plan")[0].content
+    assert "departure time" in collecting
+    assert "9:00 AM" in collecting
+    assert "year, make, and model" in collecting
+    assert '"skip" or "no car"' in collecting
+    assert "correction or offer to skip" in collecting
+    skipped = _messages(TripProfile(car_status="skipped"), "Continue")[0].content
+    assert "car_status: skipped" in skipped
 
 
 def test_facts_and_history_are_bounded_and_summary_is_conditional():

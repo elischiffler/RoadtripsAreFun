@@ -18,12 +18,12 @@ To call a tool, emit fenced JSON: ```tool
 {"tool":"name","arguments":{}}
 ```. Emit independent calls together; wait for results before dependent calls. When a tool returns ok:false, do not claim success: fix an obvious error once or explain what is needed. Never invent coordinates, prices, routes, or tool results. When no tool is needed, reply in plain language. Keep route geometry and full itinerary data out of your reply and tool arguments; pass returned route_handle values exactly.
 
-For trip locations, stops, budget, and departure, call record_trip_details once with every detail supplied in the message. It geocodes locations and normalizes departure in the start timezone. Read its field-specific clarifications and ask plainly; never guess a timezone. Use update_trip_profile only for a car or trip-only persona_weights. For a finished trip, get_initial_route with saved endpoints, then generate_final_route with its handle, then generate_itinerary with the new handle. Use get_account_persona for cross-chat preferences; update_account_persona only when explicitly asked to save them for future trips. Only use persona keys advertised by the tools. Tell the traveler about hotel budget warnings from a planned route."""
+For trip locations, stops, budget, departure, and car choice, call record_trip_details once with every detail supplied in the message. It geocodes locations, normalizes departure in the start timezone, and verifies a supplied car. Read its field-specific clarifications and ask plainly; never guess a timezone. Ask explicitly for departure time, offering 9:00 AM as the default. Ask for an optional car's year, make, and model before planning; "skip" or "no car" records a skipped choice. If car details fail validation, ask for a correction or offer to skip. A traveler may add or change a car later. Never invent one. Use update_trip_profile for trip-only persona_weights. For a finished trip, get_initial_route with saved endpoints, then generate_final_route with its handle, then generate_itinerary with the new handle. Use get_account_persona for cross-chat preferences; update_account_persona only when explicitly asked to save them for future trips. Only use persona keys advertised by the tools. Tell the traveler about hotel budget warnings from a planned route."""
 
 STAGE_INSTRUCTIONS = {
-    "collecting": "Stage: collect details. Need start, destination, 1–10 attraction stops, nightly hotel budget, and an upcoming start date (9 AM departure by default). Call record_trip_details once with all details the traveler supplied, including exact departure wording. It saves valid fields independently; ask about its clarifications and one or two missing details at a time. Do not ask again for values already in the profile. When complete, proceed to the route tools.",
+    "collecting": "Stage: collect details. Need start, destination, 1–10 attraction stops, nightly hotel budget, upcoming start date and departure time, and an optional car choice. Ask for the time explicitly and offer 9:00 AM as the default. Ask for car year, make, and model or a skip. Call record_trip_details once with all details supplied, including exact departure wording and car choice. It saves valid fields independently; ask about its clarifications and one or two missing details at a time. Do not ask again for values already in the profile. When complete, proceed to the route tools.",
     "correcting": "Stage: correct input. Call record_trip_details with all changed trip fields in the message. It geocodes changed locations and may clear the old departure; ask about clarifications. Never reuse coordinates from the old location. If the trip is complete, continue planning with the corrected profile.",
-    "completing": "Stage: complete the trip. The profile has the required details. Call get_initial_route with both validated coordinate pairs, then generate_final_route with its route_handle, then generate_itinerary with the new route_handle. Calls are sequential. Only say the trip is ready after the itinerary succeeds. If a tool fails, explain the blocker.",
+    "completing": "Stage: complete the trip. The profile has the required details and the optional car choice is skipped or provided. Call get_initial_route with both validated coordinate pairs, then generate_final_route with its route_handle, then generate_itinerary with the new route_handle. Calls are sequential. Only say the trip is ready after the itinerary succeeds. If a tool fails, explain the blocker.",
     "revising": "Stage: revise an existing trip. Call record_trip_details with requested trip changes and address its clarifications. Then regenerate the route with generate_final_route (it can rebuild the initial route from profile coordinates) and call generate_itinerary with the new route_handle. If the traveler only asks a question, answer it without rebuilding. Never claim the revision succeeded before both tools succeed.",
 }
 
@@ -43,6 +43,7 @@ def _stage(trip: TripProfile, user_message: str, ctx: AgentClientContext | None)
             trip.num_stops is not None,
             trip.budget is not None,
             trip.start_date,
+            trip.car_status != "unanswered",
         )
     )
     if ctx is not None and ctx.hasRoute and has_required_details:
@@ -72,6 +73,7 @@ def _format_context(facts: list[MemoryFact], trip: TripProfile | None) -> str:
             )
             if key in p
         ]
+        lines.append(f"car_status: {trip.car_status}")
         if trip.car:
             lines.append(f"car: {trip.car.year} {trip.car.make} {trip.car.model}")
         if trip.persona_weights:

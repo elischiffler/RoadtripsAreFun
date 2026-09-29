@@ -25,6 +25,7 @@ from __future__ import annotations
 import json
 import logging
 import math
+from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import BaseModel, field_validator, model_validator
@@ -36,6 +37,8 @@ logger = logging.getLogger(__name__)
 # Bounds mirrored from the routing contract (num_stops is validated 1..10).
 MIN_STOPS = 1
 MAX_STOPS = 10
+CarStatus = Literal["unanswered", "skipped", "provided"]
+_SKIP_CAR = {"skip", "skipped", "no car"}
 
 
 class Car(BaseModel):
@@ -147,11 +150,21 @@ class TripProfile(BaseModel):
     start_date: str | None = None  # ISO-8601 trip start (free-form; validated on use)
     car: Car | None = None
     persona_weights: dict[str, float] | None = None  # partial, per-trip override
+    car_status: CarStatus = "unanswered"
 
     @model_validator(mode="before")
     @classmethod
     def _coerce_coords(cls, data):
+        # Profiles saved before car_status existed may already have a car.
+        if isinstance(data, dict) and "car_status" not in data and data.get("car"):
+            data = {**data, "car_status": "provided"}
         return _coerce_stringified_coords(data)
+
+    @model_validator(mode="after")
+    def _car_consistent(self):
+        if (self.car_status == "provided") != (self.car is not None):
+            raise ValueError("car_status must be provided exactly when car details are present")
+        return self
 
     @field_validator("start_coords", "destination_coords")
     @classmethod
@@ -211,11 +224,18 @@ class TripProfile(BaseModel):
             if value is None:
                 continue
             data[key] = value
+        if "car" in provided and provided["car"] is not None:
+            data["car_status"] = "provided"
+        elif provided.get("car_status") in {"skipped", "unanswered"}:
+            data["car"] = None
         return TripProfile.model_validate(data)
 
     def is_empty(self) -> bool:
         """True when nothing has been gathered for this trip yet."""
+        if self.car_status != "unanswered":
+            return False
         d = self.model_dump(exclude_none=True)
+        d.pop("car_status", None)
         return not any(v for v in d.values())
 
     # --- JSON mapping (stored as one per-chat 'trip' memory row) -----------
@@ -260,6 +280,7 @@ class TripProfileUpdate(BaseModel):
     start_date: str | None = None
     car: Car | None = None
     persona_weights: dict[str, float] | None = None
+    car_status: CarStatus | None = None
 
     @model_validator(mode="before")
     @classmethod
@@ -267,6 +288,13 @@ class TripProfileUpdate(BaseModel):
         """Fold flat ``car_year`` / ``car_make`` / ``car_model`` into ``car``."""
         if not isinstance(data, dict):
             return data
+        data = data.copy()
+        choice = data.get("car_status")
+        if isinstance(choice, str) and choice.strip().lower() in _SKIP_CAR:
+            data["car_status"] = "skipped"
+        if isinstance(data.get("car"), str) and data["car"].strip().lower() in _SKIP_CAR:
+            data.pop("car")
+            data["car_status"] = "skipped"
         flat = {
             "year": data.get("car_year"),
             "make": data.get("car_make"),
@@ -276,6 +304,12 @@ class TripProfileUpdate(BaseModel):
             data = {k: v for k, v in data.items() if k not in ("car_year", "car_make", "car_model")}
             data["car"] = {k: v for k, v in flat.items() if v is not None}
         return data
+
+    @model_validator(mode="after")
+    def _car_update_consistent(self):
+        if self.car is not None and self.car_status in {"skipped", "unanswered"}:
+            raise ValueError("choose either car details or a skipped/unanswered car status")
+        return self
 
     @model_validator(mode="before")
     @classmethod

@@ -13,6 +13,8 @@ from app.agent.tool_dispatcher import AppToolDispatcher, _extract_endpoints
 from app.agent.tools import ArtifactStore, ToolCall, ToolContext
 from app.agent.trip_profile import TripProfile
 
+from .conftest import FakeMemory
+
 # async tests run under pytest-asyncio auto mode — no file-wide marker (which
 # would wrongly tag the sync unit tests below).
 
@@ -156,6 +158,12 @@ def _ctx(memory=None):
     return ToolContext(user_id="u1", chat_id="42", memory=memory)
 
 
+def _planning_ctx():
+    memory = FakeMemory()
+    memory.save_trip_profile("u1", "42", TripProfile(car_status="skipped").to_json())
+    return _ctx(memory)
+
+
 async def test_full_route_chain_by_handle(monkeypatch):
     from types import SimpleNamespace
 
@@ -181,7 +189,7 @@ async def test_full_route_chain_by_handle(monkeypatch):
     monkeypatch.setattr(td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v))
 
     d = AppToolDispatcher()
-    ctx = _ctx()
+    ctx = _planning_ctx()
 
     # 1. get_initial_route -> handle
     r1 = await d.dispatch(
@@ -228,7 +236,7 @@ async def test_generate_final_route_unresolved_handle_and_no_coords_errors():
             name="generate_final_route",
             arguments={"route_handle": "nope_1", "num_stops": 2, "budget": 300},
         ),
-        _ctx(),
+        _planning_ctx(),
     )
     assert result.ok is False
     assert "initial route" in result.error.lower()
@@ -240,8 +248,6 @@ async def test_generate_final_route_rebuilds_from_trip_coords_across_turns(monke
     # coordinates recorded on the trip profile, generate_final_route rebuilds the
     # initial route instead of failing with "needs route_handle".
     from types import SimpleNamespace
-
-    from .conftest import FakeMemory
 
     rebuilt = {}
 
@@ -270,6 +276,7 @@ async def test_generate_final_route_rebuilds_from_trip_coords_across_turns(monke
             destination_coords=[40.71, -74.0],
             num_stops=8,
             budget=600,
+            car_status="skipped",
         ).to_json(),
     )
     # A brand-new turn's context: fresh (empty) artifact store, same memory.

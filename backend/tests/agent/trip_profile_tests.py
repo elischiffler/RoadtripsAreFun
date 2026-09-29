@@ -36,6 +36,7 @@ def test_valid_full_trip():
     assert t.num_stops == 3
     assert t.budget == 250.0
     assert isinstance(t.car, Car)
+    assert t.car_status == "provided"
     assert t.start_coords == [35.28, -120.66]
 
 
@@ -167,6 +168,40 @@ def test_json_round_trip():
     assert restored.budget == 200.0
 
 
+def test_old_stored_car_is_treated_as_provided():
+    old = '{"car": {"year": 2020, "make": "Mazda", "model": "CX-3"}}'
+    assert TripProfile.from_json(old).car_status == "provided"
+
+
+@pytest.mark.parametrize("choice", ["skip", "no car", "skipped"])
+def test_skip_phrases_clear_existing_car_and_allow_later_change(choice):
+    provided = TripProfile().merged_with(
+        TripProfileUpdate(car_year=2020, car_make="Mazda", car_model="CX-3")
+    )
+    skipped = provided.merged_with(TripProfileUpdate.model_validate({"car_status": choice}))
+    assert skipped.car_status == "skipped"
+    assert skipped.car is None
+    changed = skipped.merged_with(
+        TripProfileUpdate(car_year=2022, car_make="Honda", car_model="Civic")
+    )
+    assert changed.car_status == "provided"
+    assert changed.car == Car(year=2022, make="Honda", model="Civic")
+
+
+def test_skip_car_text_is_accepted():
+    skipped = TripProfile().merged_with(TripProfileUpdate.model_validate({"car": "no car"}))
+    assert skipped.car_status == "skipped"
+
+
+def test_inconsistent_or_incomplete_car_is_rejected():
+    with pytest.raises(ValidationError):
+        TripProfileUpdate.model_validate({"car_status": "skipped", "car_year": 2020})
+    with pytest.raises(ValidationError):
+        TripProfileUpdate.model_validate({"car_year": 2020, "car_make": "Mazda"})
+    with pytest.raises(ValidationError):
+        TripProfile(car_status="provided")
+
+
 def test_from_json_empty_when_none():
     assert TripProfile.from_json(None).is_empty() is True
 
@@ -190,7 +225,7 @@ async def test_get_trip_profile_empty():
         ToolCall(name="get_trip_profile"), _ctx(FakeMemory())
     )
     assert result.ok is True
-    assert result.result["trip_profile"] == {}
+    assert result.result["trip_profile"] == {"car_status": "unanswered"}
 
 
 async def test_update_trip_profile_persists_merges_and_emits_action():
@@ -233,7 +268,7 @@ async def test_update_trip_profile_is_per_chat():
         ToolCall(name="get_trip_profile"),
         ToolContext(user_id="u1", chat_id="B", memory=memory),
     )
-    assert other.result["trip_profile"] == {}
+    assert other.result["trip_profile"] == {"car_status": "unanswered"}
 
 
 async def test_update_trip_profile_invalid_returns_error_not_raise():
@@ -252,6 +287,39 @@ async def test_update_trip_profile_rejects_ungeocoded_location():
     )
     assert result.ok is False
     assert "record_trip_details" in result.error
+
+
+async def test_car_choice_persists_and_invalid_change_keeps_previous_car():
+    memory = FakeMemory()
+    dispatcher = AppToolDispatcher()
+    skipped = await dispatcher.dispatch(
+        ToolCall(name="update_trip_profile", arguments={"car_status": "no car"}),
+        _ctx(memory),
+    )
+    assert skipped.ok is True
+    assert skipped.result["trip_profile"]["car_status"] == "skipped"
+
+    provided = await dispatcher.dispatch(
+        ToolCall(
+            name="update_trip_profile",
+            arguments={"car_year": 2020, "car_make": "Mazda", "car_model": "CX-3"},
+        ),
+        _ctx(memory),
+    )
+    assert provided.ok is True
+    assert provided.result["trip_profile"]["car_status"] == "provided"
+
+    invalid = await dispatcher.dispatch(
+        ToolCall(
+            name="update_trip_profile",
+            arguments={"car_year": 1900, "car_make": "Mazda", "car_model": "CX-3"},
+        ),
+        _ctx(memory),
+    )
+    assert invalid.ok is False
+    assert "car.year" in invalid.error
+    saved = TripProfile.from_json(memory.load_trip_profile("u1", "42"))
+    assert saved.car == Car(year=2020, make="Mazda", model="CX-3")
 
 
 async def test_update_trip_profile_without_memory_returns_error():
@@ -287,7 +355,10 @@ async def test_generate_final_route_defaults_from_trip(monkeypatch):
     # Trip profile supplies num_stops + budget gathered earlier in the chat.
     memory = FakeMemory()
     await AppToolDispatcher().dispatch(
-        ToolCall(name="update_trip_profile", arguments={"num_stops": 4, "budget": 150}),
+        ToolCall(
+            name="update_trip_profile",
+            arguments={"num_stops": 4, "budget": 150, "car_status": "skipped"},
+        ),
         _ctx(memory),
     )
 
@@ -318,7 +389,10 @@ async def test_generate_final_route_explicit_args_win(monkeypatch):
 
     memory = FakeMemory()
     await AppToolDispatcher().dispatch(
-        ToolCall(name="update_trip_profile", arguments={"num_stops": 4, "budget": 150}),
+        ToolCall(
+            name="update_trip_profile",
+            arguments={"num_stops": 4, "budget": 150, "car_status": "skipped"},
+        ),
         _ctx(memory),
     )
     await AppToolDispatcher().dispatch(
@@ -335,12 +409,35 @@ async def test_generate_final_route_missing_stops_no_trip_errors(monkeypatch):
     import app.agent.tool_dispatcher as td
 
     monkeypatch.setattr(td.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v))
+    memory = FakeMemory()
+    await AppToolDispatcher().dispatch(
+        ToolCall(name="update_trip_profile", arguments={"car_status": "skipped"}),
+        _ctx(memory),
+    )
     result = await AppToolDispatcher().dispatch(
         ToolCall(name="generate_final_route", arguments={"initial_route": {}, "budget": 300}),
-        _ctx(FakeMemory()),
+        _ctx(memory),
     )
     assert result.ok is False
     assert "num_stops" in result.error
+
+
+async def test_unanswered_car_blocks_planning_before_provider_call(monkeypatch):
+    import app.agent.tool_dispatcher as td
+
+    async def fail_if_called(*args, **kwargs):
+        raise AssertionError("route provider should not run")
+
+    monkeypatch.setattr(td, "plan_final_route", fail_if_called)
+    result = await AppToolDispatcher().dispatch(
+        ToolCall(
+            name="generate_final_route",
+            arguments={"initial_route": {}, "num_stops": 2, "budget": 150},
+        ),
+        _ctx(FakeMemory()),
+    )
+    assert result.ok is False
+    assert "car year, make, and model or skip" in result.error
 
 
 async def test_get_car_budget_defaults_car_from_trip(monkeypatch):

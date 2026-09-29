@@ -24,6 +24,7 @@ from app.agent.memory import MemoryFact
 from app.agent.schemas import ToolCall
 from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.tools import ToolContext
+from app.agent.trip_profile import TripProfile
 
 from .conftest import FakeMemory
 
@@ -46,7 +47,10 @@ EXPECTED_TOOLS = {
 }
 
 
-def _ctx(memory=None) -> ToolContext:
+def _ctx(memory=None, *, car_skipped=False) -> ToolContext:
+    if car_skipped:
+        memory = FakeMemory()
+        memory.save_trip_profile("user-1", "42", TripProfile(car_status="skipped").to_json())
     return ToolContext(user_id="user-1", chat_id="42", memory=memory)
 
 
@@ -184,7 +188,7 @@ async def test_generate_final_route_success_has_action(monkeypatch):
 
     # Seed the artifact store with an initial route + get its handle (mirrors
     # get_initial_route running first).
-    ctx = _ctx()
+    ctx = _ctx(car_skipped=True)
     handle = ctx.artifacts.put("initial_route", {})
 
     result = await _dispatcher().dispatch(
@@ -220,7 +224,7 @@ async def test_generate_final_route_failure_returns_error(monkeypatch):
             name="generate_final_route",
             arguments={"initial_route": {}, "num_stops": 2, "budget": 400},
         ),
-        _ctx(),
+        _ctx(car_skipped=True),
     )
     # PlanningError is a generic Exception here -> caught, not raised.
     assert result.ok is False

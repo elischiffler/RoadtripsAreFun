@@ -426,6 +426,14 @@ class AppToolDispatcher:
                             "additionalProperties": False,
                             "description": "Trip-only preference weight changes.",
                         },
+                        "car_status": {
+                            "type": "string",
+                            "enum": ["skipped", "provided", "unanswered"],
+                            "description": (
+                                "Use skipped when the traveler says skip or no car. "
+                                "Providing complete car details sets provided automatically."
+                            ),
+                        },
                     },
                 },
             ),
@@ -580,6 +588,11 @@ class AppToolDispatcher:
         # the coordinates used to rebuild the initial route when the route_handle
         # from an earlier turn is no longer in this turn's artifact store.
         trip = self._load_trip_profile(ctx)
+        if trip.car_status == "unanswered":
+            raise ValueError(
+                "Ask whether the traveler wants to provide a car year, make, and model "
+                "or skip the optional car before planning."
+            )
         # Resolve the initial route: this-turn handle → inline object → rebuild
         # from the trip's stored coordinates. The model never carries the raw
         # Mapbox geometry either way.
