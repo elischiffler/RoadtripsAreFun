@@ -209,7 +209,7 @@ async def test_recorded_skip_permits_agent_planning(monkeypatch):
     skipped = await _record(memory, car_status="skip", num_stops=2, budget=150)
     assert skipped.ok
 
-    async def fake_plan(payload):
+    async def fake_plan(payload, *, user_id):
         return SimpleNamespace(stops=[], cost=0.0, distance=100000.0, model_dump=lambda: {})
 
     monkeypatch.setattr(td, "plan_final_route", fake_plan)
