@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 
 from app.models.routing_models.routing_models import MapBox
@@ -47,6 +47,15 @@ GetPriceRange = Callable[..., PriceRange]
 # Used by batch/optimizer planners; collects candidates along the route corridor.
 GatherCandidates = Callable[..., Awaitable[list[dict[str, Any]]]]
 
+# Verified, persona-scored records supplied by the candidate layer. The CP-SAT
+# planner owns selection and timing, not provider verification or AI scoring.
+FindCPSatCandidates = Callable[
+    [MapBox_route, list[list[float]], dict[str, float]], Awaitable[list[dict[str, Any]]]
+]
+FindCPSatHotels = Callable[
+    [list[float], date, PriceRange, dict[str, float]], Awaitable[list[dict[str, Any]]]
+]
+
 
 @dataclass
 class RoutingServices:
@@ -61,6 +70,8 @@ class RoutingServices:
     find_position: FindPosition
     get_price_range: GetPriceRange
     gather_candidates: GatherCandidates | None = None
+    cp_sat_candidates: FindCPSatCandidates | None = None
+    cp_sat_hotels: FindCPSatHotels | None = None
 
     def require_gather(self) -> GatherCandidates:
         """Return ``gather_candidates`` or fail loudly if a planner needs it."""
@@ -94,6 +105,10 @@ class CountingServices(RoutingServices):
             gather_candidates=(
                 self._wrap(inner.gather_candidates) if inner.gather_candidates else None
             ),
+            cp_sat_candidates=(
+                self._wrap(inner.cp_sat_candidates) if inner.cp_sat_candidates else None
+            ),
+            cp_sat_hotels=(self._wrap(inner.cp_sat_hotels) if inner.cp_sat_hotels else None),
         )
 
     def _wrap(self, fn):
