@@ -22,6 +22,8 @@ import axios from 'axios';
  *     {
  *       reply: string,
  *       toolsUsed: string[],
+ *       tripProfile: object | null,
+ *       validationIssues: { [field]: string },
  *       actions: [{ type: string, chatId?: string, payload?: object }],
  *       provider: string | null,
  *       usage: { promptTokens, completionTokens } | null

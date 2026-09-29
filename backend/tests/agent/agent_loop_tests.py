@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 
 import pytest
 
-from app.agent.agent import MAX_TOOL_ITERATIONS, SUMMARY_WINDOW, run_turn
+from app.agent.agent import MAX_TOOL_ITERATIONS, SUMMARY_WINDOW, _needs_trip_recording, run_turn
 from app.agent.providers import FallbackChain
 from app.agent.schemas import (
     AgentChatRequest,
@@ -16,6 +17,8 @@ from app.agent.schemas import (
     ToolResult,
     ToolSpec,
 )
+from app.agent.tool_dispatcher import AppToolDispatcher
+from app.agent.trip_profile import TripProfile
 
 from .conftest import FakeMemory, FakeProvider, FakeTools, make_usage
 
@@ -43,6 +46,11 @@ def _tool_block(name: str, arguments: dict | None = None, prose: str = "") -> st
     return f"{prose}\n{block}" if prose else block
 
 
+def test_trip_detail_recovery_targets_actual_details_not_general_questions():
+    assert _needs_trip_recording("November 10th at 10 AM, 7 total stops, a 2023 Mazda CX-5")
+    assert not _needs_trip_recording("What can I do in May?")
+
+
 async def test_run_turn_simple_no_tool_reply(fake_memory, fake_tools):
     provider = FakeProvider(responses=[LLMResponse(content="Sure, where to?", usage=make_usage())])
     chain = FallbackChain([provider])
@@ -55,6 +63,112 @@ async def test_run_turn_simple_no_tool_reply(fake_memory, fake_tools):
     assert result.usage.promptTokens == 100
     assert result.modelCalls == 1
     assert provider.calls == 1
+
+
+async def test_trip_details_without_initial_tool_call_are_recorded_on_retry(fake_memory):
+    tools = FakeTools(
+        results={
+            "record_trip_details": ToolResult(
+                name="record_trip_details",
+                ok=True,
+                result={
+                    "action": "trip_profile_updated",
+                    "trip_profile": {"start_address": "Las Vegas", "destination_address": "Tampa"},
+                    "clarifications": {"budget": "Please give a nightly budget."},
+                },
+            )
+        }
+    )
+    provider = FakeProvider(
+        responses=[
+            LLMResponse(content="Where are you starting from?"),
+            LLMResponse(
+                content=_tool_block(
+                    "record_trip_details",
+                    {"start_address": "Las Vegas", "destination_address": "Tampa"},
+                )
+            ),
+            LLMResponse(content="What is your nightly hotel budget?"),
+        ]
+    )
+    result = await run_turn(
+        _request("I want to travel from Las Vegas to Tampa"),
+        FallbackChain([provider]),
+        fake_memory,
+        tools,
+    )
+    assert result.toolsUsed == ["record_trip_details"]
+    assert result.validationIssues == {"budget": "Please give a nightly budget."}
+    assert [action.type for action in result.actions] == ["trip_profile_updated"]
+    assert provider.calls == 3
+    assert result.reply == "What is your nightly hotel budget?"
+
+
+async def test_trip_details_without_any_tool_call_do_not_get_fictional_acknowledgment(
+    fake_memory, fake_tools
+):
+    provider = FakeProvider(
+        responses=[
+            LLMResponse(content="I've saved your trip from Las Vegas."),
+            LLMResponse(content="NO_TRIP_DETAILS"),
+        ]
+    )
+    result = await run_turn(
+        _request("I want to travel from Las Vegas to Tampa"),
+        FallbackChain([provider]),
+        fake_memory,
+        fake_tools,
+    )
+    assert result.toolsUsed == []
+    assert result.tripProfile == {"car_status": "unanswered"}
+    assert (
+        result.reply
+        == "I couldn't validate the trip details you shared. Please try sending them again."
+    )
+    assert provider.calls == 2
+
+
+async def test_recovered_location_call_persists_validated_profile(monkeypatch, fake_memory):
+    locations = {
+        "Las Vegas": ("Las Vegas, NV", 36.17, -115.14, "America/Los_Angeles"),
+        "Tampa": ("Tampa, FL", 27.95, -82.46, "America/New_York"),
+    }
+
+    def geocode(*, geocoder, address):
+        label, latitude, longitude, timezone = locations[address]
+        return SimpleNamespace(
+            address=label,
+            latitude=latitude,
+            longitude=longitude,
+            raw={"annotations": {"timezone": {"name": timezone}}},
+        )
+
+    monkeypatch.setattr("app.agent.tool_dispatcher.get_location", geocode)
+    provider = FakeProvider(
+        responses=[
+            LLMResponse(content="What city are you starting from?"),
+            LLMResponse(
+                content=_tool_block(
+                    "record_trip_details",
+                    {"start_address": "Las Vegas", "destination_address": "Tampa"},
+                )
+            ),
+            LLMResponse(content="What is your nightly hotel budget?"),
+        ]
+    )
+    result = await run_turn(
+        _request("I want to travel from Las Vegas to Tampa"),
+        FallbackChain([provider]),
+        fake_memory,
+        AppToolDispatcher(),
+    )
+    saved = TripProfile.from_json(fake_memory.load_trip_profile("user-123", "42"))
+    assert saved.start_address == "Las Vegas, NV"
+    assert saved.start_coords == [36.17, -115.14]
+    assert saved.start_timezone == "America/Los_Angeles"
+    assert saved.destination_address == "Tampa, FL"
+    assert result.tripProfile["start_address"] == "Las Vegas, NV"
+    assert result.toolsUsed == ["record_trip_details"]
 
 
 async def test_run_turn_executes_tool_and_feeds_result_back(fake_memory):

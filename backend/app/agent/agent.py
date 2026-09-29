@@ -20,6 +20,7 @@ verbatim ``ChatLog`` is owned by the frontend and is NOT written here.
 from __future__ import annotations
 
 import logging
+import re
 from datetime import UTC, datetime
 
 from app.agent import debug
@@ -71,6 +72,26 @@ SUMMARY_WINDOW = RECENT_MESSAGE_LIMIT
 # Bound the rolling summary so it can never blow the context window. When a new
 # note would push past this, the oldest characters are dropped.
 _MAX_SUMMARY_CHARS = 600
+
+# This only detects when a tool-free model reply needs a second, focused pass.
+# The model still extracts fields and the backend validates them; regexes never
+# write trip data directly.
+_TRIP_DETAIL_HINT = re.compile(
+    r"\b(?:from\s+.+?\s+to\s+|(?:i|we)\s+(?:will\s+|want\s+to\s+)?"
+    r"(?:depart|leave)|tomorrow|today|"
+    r"(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|"
+    r"jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|"
+    r"dec(?:ember)?)\s+\d{1,2}(?:st|nd|rd|th)?|"
+    r"\d{1,2}\s*(?:st|nd|rd|th)?\s+"
+    r"(?:total\s+)?stops?|\d{4}\s+[a-z]+\s+[\w-]+|"
+    r"(?:hotel|nightly)\s+budget\s+(?:is\s+|of\s+)?\$?\d+|"
+    r"skip\s+(?:the\s+)?car|no\s+car)\b",
+    re.IGNORECASE,
+)
+
+
+def _needs_trip_recording(message: str) -> bool:
+    return bool(_TRIP_DETAIL_HINT.search(message))
 
 
 def _load_recent_turns(memory: MemoryStore, user_id: str, chat_id: str) -> list[LLMMessage]:
@@ -263,6 +284,7 @@ async def run_turn(
 
     tools_used: list[str] = []
     tool_errors: list[AgentToolError] = []
+    validation_issues: dict[str, str] = {}
     actions: list[AgentAction] = []
     partial_completion = False
     ctx = ToolContext(
@@ -294,13 +316,41 @@ async def run_turn(
 
     add_usage(response.usage)
 
+    # A plain-language answer can bypass validation entirely. Give the model
+    # one focused chance to emit the recording tool before accepting a reply
+    # to a message that appears to supply trip details.
+    recording_missed = False
+    calls = parse_tool_calls(response.content)
+    if not calls and _needs_trip_recording(request.message):
+        messages.append(
+            LLMMessage(
+                role="system",
+                content=(
+                    "The latest user message may contain trip details. Before replying, "
+                    "emit exactly one record_trip_details tool block with every detail "
+                    "the user actually supplied. Do not invent missing fields. If the "
+                    "message supplies no trip detail, reply with NO_TRIP_DETAILS only."
+                ),
+            )
+        )
+        response = providers.complete(messages, specs)
+        model_calls += 1
+        add_usage(response.usage)
+        calls = [
+            call
+            for call in parse_tool_calls(response.content)
+            if call.name == "record_trip_details"
+        ]
+        recording_missed = not calls
+        if recording_missed:
+            logger.warning("Trip details were not recorded for chat_id=%s", chat_id)
+
     # 5. Tool loop — driven by the TEXT protocol, not response.tool_calls.
     # The gateway has no native function-calling, so tool requests arrive as
     # ```tool JSON blocks inside response.content (see toolcall_parser). We parse
     # them, dispatch, feed results back, and re-ask. Capped to guarantee
     # termination.
     iterations = 0
-    calls = parse_tool_calls(response.content)
     while calls and iterations < MAX_TOOL_ITERATIONS:
         iterations += 1
         # Record the assistant turn that requested the tools (verbatim content,
@@ -316,6 +366,8 @@ async def run_turn(
             # an action, so record its error for the client to log/debug.
             if not result.ok and result.error:
                 tool_errors.append(AgentToolError(name=call.name, error=result.error))
+            if call.name == "record_trip_details" and result.ok and result.result:
+                validation_issues.update(result.result.get("clarifications") or {})
             _collect_action(result, chat_id, actions)
             messages.append(
                 LLMMessage(
@@ -343,6 +395,8 @@ async def run_turn(
     # The user-facing reply is the model's prose with any tool blocks stripped
     # out (raw tool JSON must never surface to the traveler).
     reply = strip_tool_blocks(response.content) or ""
+    if recording_missed:
+        reply = "I couldn't validate the trip details you shared. Please try sending them again."
     if partial_completion and not any(action.type == "itinerary_updated" for action in actions):
         # A model can misread a partial tool result and claim the whole trip is
         # ready. The route action still reaches the UI, but the reply stays true.
@@ -370,11 +424,14 @@ async def run_turn(
     if debug.enabled():
         debug.trip_snapshot("after", _load_trip(memory, user_id, chat_id))
         debug.turn_end(reply, tools_used, actions)
+    final_trip = _load_trip(memory, user_id, chat_id)
     return AgentChatResponse(
         reply=reply,
         toolsUsed=tools_used,
         toolErrors=tool_errors,
         actions=actions,
+        tripProfile=final_trip.model_dump(mode="json", exclude_none=True),
+        validationIssues=validation_issues,
         provider=response.provider or None,
         modelCalls=model_calls,
         usage=AgentUsage(

@@ -295,4 +295,15 @@ describe('logTripToolActivity', () => {
   it('tolerates missing/undefined inputs', () => {
     expect(logTripToolActivity(undefined, undefined, undefined)).toBe(false);
   });
+
+  it('logs a turn with no validation tool and field-specific backend issues', () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    expect(logTripToolActivity([], [], [], { departure: 'Please clarify the date.' })).toBe(true);
+    expect(console.log).toHaveBeenCalledWith('[TripProfile] tools this turn: %s', 'none');
+    expect(console.warn).toHaveBeenCalledWith(
+      '[TripProfile] %s needs clarification: %s',
+      'departure',
+      'Please clarify the date.'
+    );
+  });
 });

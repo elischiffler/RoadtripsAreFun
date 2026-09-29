@@ -84,6 +84,25 @@ beforeEach(() => {
 });
 
 describe("submit('chat_message')", () => {
+  it('logs the backend profile snapshot even when no action was emitted', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const tripProfile = { car_status: 'unanswered' };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Please tell me your starting city.',
+      toolsUsed: [],
+      actions: [],
+      tripProfile,
+    });
+
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    await screen.findByText('Please tell me your starting city.');
+
+    expect(log).toHaveBeenCalledWith('[TripProfile] tools this turn: %s', 'none');
+    expect(log).toHaveBeenCalledWith('[TripProfile] current state:', tripProfile);
+    log.mockRestore();
+  });
+
   it('appends the user message, calls the agent, and renders the bot reply', async () => {
     sendAgentMessage.mockResolvedValueOnce({
       reply: 'Sure — I lowered your hotel budget.',

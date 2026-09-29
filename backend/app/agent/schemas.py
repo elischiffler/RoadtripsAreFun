@@ -124,6 +124,8 @@ class AgentChatResponse(BaseModel):
     toolsUsed: list[str] = Field(default_factory=list)
     toolErrors: list[AgentToolError] = Field(default_factory=list)
     actions: list[AgentAction] = Field(default_factory=list)
+    tripProfile: dict | None = None
+    validationIssues: dict[str, str] = Field(default_factory=dict)
     provider: str | None = None
     usage: AgentUsage | None = None
     modelCalls: int = 0
