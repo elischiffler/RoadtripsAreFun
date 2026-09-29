@@ -62,6 +62,7 @@ def _ensure_loaded() -> None:
         return
     # Importing each module triggers its register_planner(...) call.
     from app.routing.planners import (
+        cp_sat,  # noqa: F401
         greedy,  # noqa: F401
         ortools_knapsack,  # noqa: F401
     )
