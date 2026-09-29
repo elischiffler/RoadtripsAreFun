@@ -289,7 +289,11 @@ async def test_update_trip_profile_rejects_ungeocoded_location():
     assert "record_trip_details" in result.error
 
 
-async def test_car_choice_persists_and_invalid_change_keeps_previous_car():
+async def test_car_choice_persists_and_invalid_change_keeps_previous_car(monkeypatch):
+    async def verify_car(*, model, make, year):
+        return {"combination_mpg": 30}
+
+    monkeypatch.setattr("app.agent.tool_dispatcher.get_car_details", verify_car)
     memory = FakeMemory()
     dispatcher = AppToolDispatcher()
     skipped = await dispatcher.dispatch(

@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
+import app.agent.tool_dispatcher as td
 from app.agent.schemas import ToolCall
 from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.tools import ToolContext
@@ -153,6 +154,71 @@ async def test_invalid_budget_does_not_discard_valid_stop_count():
     assert "budget" in result.result["clarifications"]
     assert result.result["trip_profile"]["num_stops"] == 5
     assert "budget" not in result.result["trip_profile"]
+
+
+async def test_car_skip_then_provide_or_change_uses_provider_validation(monkeypatch):
+    memory = FakeMemory()
+    calls = []
+
+    async def verify_car(*, model, make, year):
+        calls.append((year, make, model))
+        return {"combination_mpg": 30}
+
+    monkeypatch.setattr(td, "get_car_details", verify_car)
+    skipped = await _record(memory, car_status="no car", budget=180)
+    assert skipped.ok
+    assert skipped.result["clarifications"] == {}
+    assert skipped.result["trip_profile"]["car_status"] == "skipped"
+    assert "car" not in skipped.result["trip_profile"]
+    assert calls == []
+
+    provided = await _record(memory, car_year=2020, car_make="Mazda", car_model="CX-3")
+    assert provided.ok
+    assert provided.result["trip_profile"]["car_status"] == "provided"
+    assert calls == [(2020, "Mazda", "CX-3")]
+
+    changed = await _record(memory, car_year=2022, car_make="Honda", car_model="Civic")
+    assert changed.ok
+    assert changed.result["trip_profile"]["car"]["model"] == "Civic"
+    assert TripProfile.from_json(memory.load_trip_profile("owner", "trip")).budget == 180
+
+
+async def test_invalid_car_requests_correction_or_skip_and_saves_valid_sibling(monkeypatch):
+    from fastapi import HTTPException
+
+    async def no_match(*, model, make, year):
+        raise HTTPException(status_code=404, detail="No matching car")
+
+    monkeypatch.setattr(td, "get_car_details", no_match)
+    memory = FakeMemory()
+    result = await _record(memory, car_year=2020, car_make="Unknown", car_model="X", num_stops=3)
+    assert result.ok
+    assert result.result["trip_profile"]["num_stops"] == 3
+    assert result.result["trip_profile"]["car_status"] == "unanswered"
+    assert "correct" in result.result["clarifications"]["car"].lower()
+    assert "skip" in result.result["clarifications"]["car"].lower()
+
+    partial = await _record(memory, car_year=2020, car_make="Mazda")
+    assert partial.ok
+    assert "car" in partial.result["clarifications"]
+    assert TripProfile.from_json(memory.load_trip_profile("owner", "trip")).car is None
+
+
+async def test_recorded_skip_permits_agent_planning(monkeypatch):
+    memory = FakeMemory()
+    skipped = await _record(memory, car_status="skip", num_stops=2, budget=150)
+    assert skipped.ok
+
+    async def fake_plan(payload):
+        return SimpleNamespace(stops=[], cost=0.0, distance=100000.0, model_dump=lambda: {})
+
+    monkeypatch.setattr(td, "plan_final_route", fake_plan)
+    monkeypatch.setattr(td.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v))
+    monkeypatch.setattr(td.Route_Payload, "model_validate", classmethod(lambda cls, v: v))
+    result = await AppToolDispatcher().dispatch(
+        ToolCall(name="generate_final_route", arguments={"initial_route": {}}), _ctx(memory)
+    )
+    assert result.ok, result.error
 
 
 async def test_invalid_geocode_coordinates_are_not_saved(monkeypatch):

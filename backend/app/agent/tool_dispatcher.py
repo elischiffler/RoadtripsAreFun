@@ -393,7 +393,8 @@ class AppToolDispatcher:
                 description=(
                     "Record all trip details supplied in one message. Geocode each location, "
                     "normalize departure in the start timezone, save valid fields independently, "
-                    "and request clarification for invalid fields. Pass exact departure wording."
+                    "and request clarification for invalid fields. Pass exact departure wording "
+                    "and the optional car choice. A car may be skipped."
                 ),
                 parameters={
                     "type": "object",
@@ -403,14 +404,22 @@ class AppToolDispatcher:
                         "num_stops": {"type": "integer", "minimum": 1, "maximum": 10},
                         "budget": {"type": "number", "minimum": 0},
                         "departure": {"type": "string"},
+                        "car_year": {"type": "integer"},
+                        "car_make": {"type": "string"},
+                        "car_model": {"type": "string"},
+                        "car_status": {
+                            "type": "string",
+                            "enum": ["skipped"],
+                            "description": "Use skipped for skip or no car; complete car details set provided.",
+                        },
                     },
                 },
             ),
             ToolSpec(
                 name="update_trip_profile",
                 description=(
-                    "Record a car or trip-only preference update. Use record_trip_details "
-                    "for locations, stops, budget, and departure."
+                    "Legacy partial trip update. Prefer record_trip_details for new "
+                    "trip and car details. Use this for trip-only persona changes."
                 ),
                 parameters={
                     "type": "object",
@@ -768,6 +777,12 @@ class AppToolDispatcher:
             raise ValueError("Use record_trip_details for locations and departure.")
         # Validate the partial update (raises ValidationError -> caught by dispatch).
         update = TripProfileUpdate.model_validate(args)
+        if update.car is not None:
+            await get_car_details(
+                model=update.car.model,
+                make=update.car.make,
+                year=update.car.year,
+            )
         current = self._load_trip_profile(ctx)
         merged = current.merged_with(update)
         # Persist the whole trip profile as the single per-chat 'trip' row.
@@ -864,6 +879,41 @@ class AppToolDispatcher:
                     changed = True
                 except ValueError as exc:
                     clarifications["departure"] = str(exc)
+
+        if set(args) & {"car", "car_year", "car_make", "car_model", "car_status"}:
+            try:
+                car_args = {
+                    key: args[key]
+                    for key in ("car", "car_year", "car_make", "car_model", "car_status")
+                    if key in args
+                }
+                car_update = TripProfileUpdate.model_validate(car_args)
+                if car_update.car is not None:
+                    # Validate the year/make/model combination against the existing
+                    # car provider before treating the choice as provided.
+                    await get_car_details(
+                        model=car_update.car.model,
+                        make=car_update.car.make,
+                        year=car_update.car.year,
+                    )
+                car_profile = TripProfile.model_validate(values).merged_with(car_update)
+                values["car"] = car_profile.car
+                values["car_status"] = car_profile.car_status
+                changed = True
+            except ValidationError:
+                clarifications["car"] = (
+                    "Please give a valid year, make, and model, or say skip/no car."
+                )
+            except HTTPException as exc:
+                if exc.status_code in {400, 404}:
+                    clarifications["car"] = (
+                        "I could not verify that year, make, and model. "
+                        "Please correct them or say skip/no car."
+                    )
+                else:
+                    clarifications["car"] = (
+                        "Car verification is unavailable; please try again or say skip/no car."
+                    )
 
         profile = TripProfile.model_validate(values)
         if changed:
