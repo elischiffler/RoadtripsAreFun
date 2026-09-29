@@ -198,27 +198,26 @@ async def test_update_trip_profile_persists_merges_and_emits_action():
     d = AppToolDispatcher()
 
     r1 = await d.dispatch(
-        ToolCall(name="update_trip_profile", arguments={"start_address": "482 Luneta Dr"}),
+        ToolCall(name="update_trip_profile", arguments={"num_stops": 2}),
         _ctx(memory),
     )
     assert r1.ok is True
     # Emits the trip_profile_updated action so the frontend reflects/persists it.
     assert r1.result["action"] == "trip_profile_updated"
-    assert r1.result["trip_profile"]["start_address"] == "482 Luneta Dr"
+    assert r1.result["trip_profile"]["num_stops"] == 2
 
-    # A second update merges (adds destination) without clobbering the start.
+    # A second update merges without clobbering the existing stop count.
     r2 = await d.dispatch(
         ToolCall(
             name="update_trip_profile",
-            arguments={"destination_address": "Denver, CO", "num_stops": 3},
+            arguments={"budget": 250},
         ),
         _ctx(memory),
     )
     assert r2.ok is True
     tp = r2.result["trip_profile"]
-    assert tp["start_address"] == "482 Luneta Dr"  # preserved
-    assert tp["destination_address"] == "Denver, CO"
-    assert tp["num_stops"] == 3
+    assert tp["num_stops"] == 2
+    assert tp["budget"] == 250
 
 
 async def test_update_trip_profile_is_per_chat():
@@ -226,7 +225,7 @@ async def test_update_trip_profile_is_per_chat():
     memory = FakeMemory()
     d = AppToolDispatcher()
     await d.dispatch(
-        ToolCall(name="update_trip_profile", arguments={"start_address": "SLO"}),
+        ToolCall(name="update_trip_profile", arguments={"num_stops": 2}),
         ToolContext(user_id="u1", chat_id="A", memory=memory),
     )
     # A different chat starts empty.
@@ -244,6 +243,15 @@ async def test_update_trip_profile_invalid_returns_error_not_raise():
     )
     assert result.ok is False
     assert result.error
+
+
+async def test_update_trip_profile_rejects_ungeocoded_location():
+    result = await AppToolDispatcher().dispatch(
+        ToolCall(name="update_trip_profile", arguments={"start_address": "SLO"}),
+        _ctx(FakeMemory()),
+    )
+    assert result.ok is False
+    assert "record_trip_details" in result.error
 
 
 async def test_update_trip_profile_without_memory_returns_error():

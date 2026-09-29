@@ -24,6 +24,8 @@ from __future__ import annotations
 
 import json
 import logging
+import math
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import BaseModel, field_validator, model_validator
 
@@ -67,6 +69,8 @@ def _validate_coords(v: list[float] | None) -> list[float] | None:
     if len(v) != 2:
         raise ValueError("coordinates must be a [lat, lon] pair")
     lat, lon = float(v[0]), float(v[1])
+    if not (math.isfinite(lat) and math.isfinite(lon)):
+        raise ValueError("coordinates must be finite")
     if not (-90.0 <= lat <= 90.0):
         raise ValueError("latitude must be between -90 and 90")
     if not (-180.0 <= lon <= 180.0):
@@ -135,6 +139,7 @@ class TripProfile(BaseModel):
 
     start_address: str | None = None
     start_coords: list[float] | None = None  # [lat, lon]
+    start_timezone: str | None = None  # IANA name from the start geocode
     destination_address: str | None = None
     destination_coords: list[float] | None = None  # [lat, lon]
     num_stops: int | None = None  # 1..10
@@ -168,7 +173,7 @@ class TripProfile(BaseModel):
         if v is None:
             return None
         v = float(v)
-        if v < 0:
+        if not math.isfinite(v) or v < 0:
             raise ValueError("budget must be non-negative")
         return v
 
@@ -181,6 +186,17 @@ class TripProfile(BaseModel):
     @classmethod
     def _persona_weights(cls, v):
         return validate_weight_update(v) if v is not None else None
+
+    @field_validator("start_timezone")
+    @classmethod
+    def _timezone(cls, v):
+        if v is None:
+            return None
+        try:
+            ZoneInfo(v)
+        except (ZoneInfoNotFoundError, TypeError) as exc:
+            raise ValueError("start_timezone must be a valid IANA timezone") from exc
+        return v
 
     def merged_with(self, update: TripProfileUpdate) -> TripProfile:
         """Return a new trip profile with ``update``'s provided fields applied.
@@ -287,7 +303,7 @@ class TripProfileUpdate(BaseModel):
         if v is None:
             return None
         v = float(v)
-        if v < 0:
+        if not math.isfinite(v) or v < 0:
             raise ValueError("budget must be non-negative")
         return v
 

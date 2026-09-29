@@ -46,6 +46,7 @@ from app.agent.memory import MemoryFact
 from app.agent.persona import ATTRIBUTE_KEYS, PersonaWeightUpdate
 from app.agent.schemas import ToolCall, ToolResult, ToolSpec
 from app.agent.tools import ToolContext
+from app.agent.trip_dates import resolve_departure, timezone_from_location
 from app.agent.trip_profile import TripProfile, TripProfileUpdate
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import MapBox, Route_Payload
@@ -181,6 +182,7 @@ class AppToolDispatcher:
             "recall_facts": self._recall_facts,
             "remember_fact": self._remember_fact,
             "get_trip_profile": self._get_trip_profile,
+            "record_trip_details": self._record_trip_details,
             "update_trip_profile": self._update_trip_profile,
             "get_account_persona": self._get_account_persona,
             "update_account_persona": self._update_account_persona,
@@ -387,55 +389,32 @@ class AppToolDispatcher:
                 },
             ),
             ToolSpec(
-                name="update_trip_profile",
+                name="record_trip_details",
                 description=(
-                    "Record trip details into THIS chat's trip profile as the traveler "
-                    "confirms them (start, destination, number of stops, nightly hotel "
-                    "budget, start date, car). Call this whenever you learn or confirm a "
-                    "trip detail — e.g. when the user gives the starting location or "
-                    "destination. Only include the fields you learned; others are left "
-                    "unchanged. Prefer storing coordinates from validate_location "
-                    "alongside the address."
+                    "Record all trip details supplied in one message. Geocode each location, "
+                    "normalize departure in the start timezone, save valid fields independently, "
+                    "and request clarification for invalid fields. Pass exact departure wording."
                 ),
                 parameters={
                     "type": "object",
                     "properties": {
-                        "start_address": {
-                            "type": "string",
-                            "description": "Where the trip starts (address or city).",
-                        },
-                        "start_coords": {
-                            "type": "array",
-                            "items": {"type": "number"},
-                            "minItems": 2,
-                            "maxItems": 2,
-                            "description": "[lat, lon] of the start (from validate_location).",
-                        },
-                        "destination_address": {
-                            "type": "string",
-                            "description": "Where the trip is headed (address or city).",
-                        },
-                        "destination_coords": {
-                            "type": "array",
-                            "items": {"type": "number"},
-                            "minItems": 2,
-                            "maxItems": 2,
-                            "description": "[lat, lon] of the destination.",
-                        },
-                        "num_stops": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "maximum": 10,
-                            "description": "Number of attraction stops.",
-                        },
-                        "budget": {
-                            "type": "number",
-                            "description": "Nightly hotel budget in dollars.",
-                        },
-                        "start_date": {
-                            "type": "string",
-                            "description": "Upcoming ISO-8601 trip start date/time.",
-                        },
+                        "start_address": {"type": "string"},
+                        "destination_address": {"type": "string"},
+                        "num_stops": {"type": "integer", "minimum": 1, "maximum": 10},
+                        "budget": {"type": "number", "minimum": 0},
+                        "departure": {"type": "string"},
+                    },
+                },
+            ),
+            ToolSpec(
+                name="update_trip_profile",
+                description=(
+                    "Record a car or trip-only preference update. Use record_trip_details "
+                    "for locations, stops, budget, and departure."
+                ),
+                parameters={
+                    "type": "object",
+                    "properties": {
                         "car_year": {"type": "integer"},
                         "car_make": {"type": "string"},
                         "car_model": {"type": "string"},
@@ -765,6 +744,15 @@ class AppToolDispatcher:
     async def _update_trip_profile(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         if ctx.memory is None:
             raise ValueError("No memory store is available.")
+        if set(args) & {
+            "start_address",
+            "start_coords",
+            "start_timezone",
+            "destination_address",
+            "destination_coords",
+            "start_date",
+        }:
+            raise ValueError("Use record_trip_details for locations and departure.")
         # Validate the partial update (raises ValidationError -> caught by dispatch).
         update = TripProfileUpdate.model_validate(args)
         current = self._load_trip_profile(ctx)
@@ -775,3 +763,102 @@ class AppToolDispatcher:
         # Emit an action so the frontend can reflect the gathered trip data live
         # (and persist a ChatData snapshot -> the [DB] updateUserData log).
         return {"action": "trip_profile_updated", "trip_profile": profile_dict}
+
+    async def _record_trip_details(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
+        """Persist independently validated details without losing valid siblings."""
+        if ctx.memory is None:
+            raise ValueError("No memory store is available.")
+        current = self._load_trip_profile(ctx)
+        values = current.model_dump()
+        clarifications: dict[str, str] = {}
+        changed = False
+
+        for field in ("start_address", "destination_address"):
+            if field not in args:
+                continue
+            supplied = args[field]
+            if not isinstance(supplied, str) or not supplied.strip():
+                clarifications[field] = "Please provide a specific city or address."
+                continue
+            try:
+                location = get_location(geocoder=geolocator, address=supplied.strip())
+            except (HTTPException, RequestException, ValueError):
+                location = None
+            if (
+                location is None
+                or not isinstance(location.address, str)
+                or not location.address.strip()
+            ):
+                clarifications[field] = "I could not confirm that location; please clarify it."
+                continue
+            try:
+                coords = [location.latitude, location.longitude]
+                TripProfile.model_validate(
+                    {**values, field: location.address, field.replace("address", "coords"): coords}
+                )
+            except (ValidationError, AttributeError, TypeError):
+                clarifications[field] = "The location had invalid coordinates; please clarify it."
+                continue
+            coords_field = field.replace("address", "coords")
+            if field == "start_address":
+                timezone = timezone_from_location(location)
+                if (values["start_address"], values["start_coords"], values["start_timezone"]) != (
+                    location.address,
+                    coords,
+                    timezone,
+                ):
+                    values["start_date"] = None
+                values["start_timezone"] = timezone
+                if timezone is None:
+                    clarifications["start_timezone"] = (
+                        "The starting location has no IANA timezone; please clarify the location."
+                    )
+            values[field] = location.address
+            values[coords_field] = coords
+            changed = True
+
+        for field in ("num_stops", "budget"):
+            if field not in args:
+                continue
+            try:
+                supplied = args[field]
+                if field == "budget" and isinstance(supplied, str):
+                    supplied = supplied.strip().removeprefix("$").replace(",", "")
+                validated = TripProfileUpdate.model_validate({field: supplied})
+                value = getattr(validated, field)
+                if value is None:
+                    raise ValueError("missing")
+            except (ValidationError, ValueError, TypeError):
+                clarifications[field] = (
+                    "Please give a whole number from 1 to 10."
+                    if field == "num_stops"
+                    else "Please give a nonnegative nightly budget in dollars."
+                )
+                continue
+            values[field] = value
+            changed = True
+
+        if "departure" in args:
+            if not values["start_timezone"]:
+                clarifications["departure"] = (
+                    "Please clarify the starting location so I can determine its timezone."
+                )
+            else:
+                try:
+                    values["start_date"] = resolve_departure(
+                        args["departure"], values["start_timezone"]
+                    )
+                    changed = True
+                except ValueError as exc:
+                    clarifications["departure"] = str(exc)
+
+        profile = TripProfile.model_validate(values)
+        if changed:
+            ctx.memory.save_trip_profile(ctx.user_id, ctx.chat_id, profile.to_json())
+        result = {
+            "trip_profile": profile.model_dump(mode="json", exclude_none=True),
+            "clarifications": clarifications,
+        }
+        if changed:
+            result["action"] = "trip_profile_updated"
+        return result

@@ -16,14 +16,15 @@ relative comparison, not a provider billing estimate.
 
 | Scenario | Before prompt proxy | After prompt proxy | Model calls before → after | Scripted trip completion before → after |
 | --- | ---: | ---: | ---: | --- |
-| Collecting details | 2,008 | 465 | 1 → 1 | Not yet applicable |
-| Correcting stops | 4,255 | 1,061 | 2 → 2 | Not yet applicable |
-| Completing a trip | 8,785 | 2,401 | 4 → 4 | Pass → pass |
-| Revising a trip | 8,804 | 2,456 | 4 → 4 | Pass → pass |
-| **Total** | **23,852** | **6,383** | **11 → 11** | **2/2 → 2/2** |
+| Collecting details | 2,008 | 493 | 1 → 1 | Not yet applicable |
+| Correcting stops | 4,255 | 1,103 | 2 → 2 | Not yet applicable |
+| Completing a trip | 8,785 | 2,505 | 4 → 4 | Pass → pass |
+| Revising a trip | 8,804 | 2,556 | 4 → 4 | Pass → pass |
+| **Total** | **23,852** | **6,657** | **11 → 11** | **2/2 → 2/2** |
 
-The proxy fell by 73.2%. The scripted completion cases verify that the
-route and itinerary actions still reach the frontend while the model receives
+With the trip-detail recorder instructions, the proxy fell by 72.1%. The
+scripted completion cases verify that the route and itinerary actions still
+reach the frontend while the model receives
 only handles and short tool results. They do not establish that a real model
 will choose the right tools, nor do they exercise real providers. A live
 before/after comparison requires the same fixed conversations against an
