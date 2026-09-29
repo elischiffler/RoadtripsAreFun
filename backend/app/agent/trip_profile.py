@@ -27,6 +27,8 @@ import logging
 
 from pydantic import BaseModel, field_validator, model_validator
 
+from app.agent.persona import validate_weight_update
+
 logger = logging.getLogger(__name__)
 
 # Bounds mirrored from the routing contract (num_stops is validated 1..10).
@@ -139,6 +141,7 @@ class TripProfile(BaseModel):
     budget: float | None = None  # nightly hotel budget, USD
     start_date: str | None = None  # ISO-8601 trip start (free-form; validated on use)
     car: Car | None = None
+    persona_weights: dict[str, float] | None = None  # partial, per-trip override
 
     @model_validator(mode="before")
     @classmethod
@@ -173,6 +176,11 @@ class TripProfile(BaseModel):
     @classmethod
     def _blanks(cls, v):
         return _blank_to_none(v)
+
+    @field_validator("persona_weights", mode="before")
+    @classmethod
+    def _persona_weights(cls, v):
+        return validate_weight_update(v) if v is not None else None
 
     def merged_with(self, update: TripProfileUpdate) -> TripProfile:
         """Return a new trip profile with ``update``'s provided fields applied.
@@ -235,6 +243,7 @@ class TripProfileUpdate(BaseModel):
     budget: float | None = None
     start_date: str | None = None
     car: Car | None = None
+    persona_weights: dict[str, float] | None = None
 
     @model_validator(mode="before")
     @classmethod
@@ -281,6 +290,11 @@ class TripProfileUpdate(BaseModel):
         if v < 0:
             raise ValueError("budget must be non-negative")
         return v
+
+    @field_validator("persona_weights", mode="before")
+    @classmethod
+    def _persona_weights(cls, v):
+        return validate_weight_update(v) if v is not None else None
 
     @model_validator(mode="after")
     def _at_least_one(self):

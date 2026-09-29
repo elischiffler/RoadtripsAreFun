@@ -22,6 +22,7 @@ import psycopg2.extras
 from pydantic import ValidationError
 
 from app.agent.memory import ConversationMemory, MemoryFact
+from app.agent.persona import AccountPersona, PersonaWeightUpdate
 from app.agent.schemas import LLMMessage
 
 # Reuse the single module-level pool from chat_crud — do NOT open a second pool.
@@ -49,6 +50,7 @@ def _empty_conversation(chat_id: str) -> ConversationMemory:
 # of a usable UPSERT conflict target, so cross-chat facts use this sentinel for
 # chat_id. It keeps the composite PK deterministic while still meaning "no chat".
 _CROSS_CHAT = ""
+_PERSONA_KEY = "persona.weights"
 
 _CREATE_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS chat_memory (
@@ -104,10 +106,10 @@ def load_facts(auth_token: str) -> list[MemoryFact]:
             cur.execute(
                 """
                 SELECT mem_value FROM chat_memory
-                WHERE user_id = %s AND mem_type = 'fact'
+                WHERE user_id = %s AND mem_type = 'fact' AND mem_key <> %s
                 ORDER BY updated_at DESC
                 """,
-                (auth_token,),
+                (auth_token, _PERSONA_KEY),
             )
             rows = cur.fetchall()
         facts: list[MemoryFact] = []
@@ -162,6 +164,80 @@ def upsert_facts(auth_token: str, facts: list[MemoryFact]) -> None:
         conn.commit()
     except Exception as exc:
         logger.error("upsert_facts DB error user_id=%s: %s", auth_token, exc)
+        conn.rollback()
+        raise
+    finally:
+        _put_conn(conn)
+
+
+def _persona_from_row(row) -> AccountPersona:
+    if not row:
+        return AccountPersona.default()
+    payload = row["mem_value"]
+    if isinstance(payload, str):
+        payload = json.loads(payload)
+    fact = MemoryFact.model_validate(payload)
+    return AccountPersona.model_validate({"weights": json.loads(fact.value)})
+
+
+def load_account_persona(auth_token: str) -> AccountPersona:
+    """Read the one cross-chat persona fact for an authenticated user."""
+    if not auth_token:
+        raise ValueError("user_id is required for account persona")
+    ensure_memory_table()
+    conn = _get_conn()
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """SELECT mem_value FROM chat_memory
+                WHERE user_id = %s AND chat_id = %s
+                  AND mem_type = 'fact' AND mem_key = %s""",
+                (auth_token, _CROSS_CHAT, _PERSONA_KEY),
+            )
+            return _persona_from_row(cur.fetchone())
+    finally:
+        _put_conn(conn)
+
+
+def update_account_persona(auth_token: str, update: PersonaWeightUpdate) -> AccountPersona:
+    """Atomically merge a partial chat update into the cross-chat baseline.
+
+    The transaction-scoped advisory lock serializes first writes too, when there
+    is no row yet to lock. It is keyed by user and cannot mix two accounts.
+    """
+    if not auth_token:
+        raise ValueError("user_id is required for account persona")
+    ensure_memory_table()
+    conn = _get_conn()
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("SELECT pg_advisory_xact_lock(hashtext(%s))", (f"persona:{auth_token}",))
+            cur.execute(
+                """SELECT mem_value FROM chat_memory
+                WHERE user_id = %s AND chat_id = %s
+                  AND mem_type = 'fact' AND mem_key = %s FOR UPDATE""",
+                (auth_token, _CROSS_CHAT, _PERSONA_KEY),
+            )
+            persona = _persona_from_row(cur.fetchone()).merged_with(update)
+            fact = MemoryFact(key=_PERSONA_KEY, value=json.dumps(persona.weights))
+            cur.execute(
+                """INSERT INTO chat_memory
+                    (user_id, chat_id, mem_type, mem_key, mem_value, confidence, updated_at)
+                VALUES (%s, %s, 'fact', %s, %s, 1.0, %s)
+                ON CONFLICT (user_id, chat_id, mem_type, mem_key) DO UPDATE
+                    SET mem_value = EXCLUDED.mem_value,
+                        updated_at = EXCLUDED.updated_at""",
+                (
+                    auth_token,
+                    _CROSS_CHAT,
+                    _PERSONA_KEY,
+                    json.dumps(fact.model_dump(mode="json")),
+                    fact.updated_at,
+                ),
+            )
+        conn.commit()
+        return persona
+    except Exception:
         conn.rollback()
         raise
     finally:
@@ -362,6 +438,12 @@ class MemoryCrudStore:
 
     def load_facts(self, user_id: str) -> list[MemoryFact]:
         return load_facts(user_id)
+
+    def load_account_persona(self, user_id: str) -> AccountPersona:
+        return load_account_persona(user_id)
+
+    def update_account_persona(self, user_id: str, update: PersonaWeightUpdate) -> AccountPersona:
+        return update_account_persona(user_id, update)
 
     def upsert_facts(self, user_id: str, facts: list[MemoryFact]) -> None:
         upsert_facts(user_id, facts)
