@@ -126,6 +126,7 @@ def cases():
         num_stops=3,
         budget=150,
         start_date="2099-10-10T09:00:00",
+        car_status="skipped",
     )
     return [
         ("collecting", TripProfile(), "Plan a scenic trip", False, ["Where are you starting?"]),

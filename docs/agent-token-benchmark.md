@@ -8,7 +8,8 @@ python -m tests.agent.token_benchmark
 
 The script compares the prompt at baseline commit `ff370b5` with the current
 prompt. It replays the same ten saved messages, bounded conversation summary,
-validated trip profile, and scripted provider responses for four scenarios.
+validated trip profile (including a skipped optional car in complete trips),
+and scripted provider responses for four scenarios.
 It counts every provider request in a turn. The prompt-token column is a
 **lexical token proxy** (words and punctuation across all requests), since the
 script does not call Mentro or its tokenizer. It is useful for a repeatable
@@ -16,13 +17,13 @@ relative comparison, not a provider billing estimate.
 
 | Scenario | Before prompt proxy | After prompt proxy | Model calls before → after | Scripted trip completion before → after |
 | --- | ---: | ---: | ---: | --- |
-| Collecting details | 2,008 | 493 | 1 → 1 | Not yet applicable |
-| Correcting stops | 4,255 | 1,103 | 2 → 2 | Not yet applicable |
-| Completing a trip | 8,785 | 2,505 | 4 → 4 | Pass → pass |
-| Revising a trip | 8,804 | 2,556 | 4 → 4 | Pass → pass |
-| **Total** | **23,852** | **6,657** | **11 → 11** | **2/2 → 2/2** |
+| Collecting details | 2,008 | 600 | 1 → 1 | Not yet applicable |
+| Correcting stops | 4,255 | 1,265 | 2 → 2 | Not yet applicable |
+| Completing a trip | 8,785 | 2,865 | 4 → 4 | Pass → pass |
+| Revising a trip | 8,804 | 2,880 | 4 → 4 | Pass → pass |
+| **Total** | **23,852** | **7,610** | **11 → 11** | **2/2 → 2/2** |
 
-With the trip-detail recorder instructions, the proxy fell by 72.1%. The
+With the trip-detail recorder and optional-car instructions, the proxy fell by 68.1%. The
 scripted completion cases verify that the route and itinerary actions still
 reach the frontend while the model receives
 only handles and short tool results. They do not establish that a real model
