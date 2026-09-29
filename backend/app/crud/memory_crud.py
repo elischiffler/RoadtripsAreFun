@@ -377,6 +377,50 @@ def save_trip_profile(auth_token: str, chat_id: str, profile_json: str) -> None:
         _put_conn(conn)
 
 
+def load_planned_route(auth_token: str, chat_id: str) -> dict | None:
+    """Load a generated route scoped to the authenticated user and chat."""
+    ensure_memory_table()
+    conn = _get_conn()
+    try:
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(
+                """SELECT mem_value FROM chat_memory
+                WHERE user_id = %s AND chat_id = %s
+                  AND mem_type = 'trip_route' AND mem_key = 'route'""",
+                (auth_token, chat_id),
+            )
+            row = cur.fetchone()
+        if not row:
+            return None
+        value = row["mem_value"]
+        return json.loads(value) if isinstance(value, str) else value
+    finally:
+        _put_conn(conn)
+
+
+def save_planned_route(auth_token: str, chat_id: str, route: dict) -> None:
+    """Upsert the last generated route for an itinerary retry in a later turn."""
+    ensure_memory_table()
+    conn = _get_conn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO chat_memory
+                    (user_id, chat_id, mem_type, mem_key, mem_value, confidence, updated_at)
+                VALUES (%s, %s, 'trip_route', 'route', %s, 1.0, %s)
+                ON CONFLICT (user_id, chat_id, mem_type, mem_key) DO UPDATE
+                    SET mem_value = EXCLUDED.mem_value,
+                        updated_at = EXCLUDED.updated_at""",
+                (auth_token, chat_id, json.dumps(route), _utcnow()),
+            )
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        _put_conn(conn)
+
+
 def load_recent_turns(auth_token: str, chat_id: str, limit: int = 6) -> list[LLMMessage]:
     """Best-effort verbatim short-term window from the existing ``ChatLog``.
 
@@ -459,6 +503,12 @@ class MemoryCrudStore:
 
     def save_trip_profile(self, user_id: str, chat_id: str, profile_json: str) -> None:
         save_trip_profile(user_id, chat_id, profile_json)
+
+    def load_planned_route(self, user_id: str, chat_id: str) -> dict | None:
+        return load_planned_route(user_id, chat_id)
+
+    def save_planned_route(self, user_id: str, chat_id: str, route: dict) -> None:
+        save_planned_route(user_id, chat_id, route)
 
     def load_recent_turns(self, user_id: str, chat_id: str, limit: int = 6) -> list[LLMMessage]:
         return load_recent_turns(user_id, chat_id, limit)

@@ -74,6 +74,20 @@ def test_nested_car_still_accepted():
     assert u.car == Car(year=2019, make="Honda", model="Civic")
 
 
+def test_car_choice_can_be_skipped_then_selected():
+    skipped = TripProfile().merged_with(TripProfileUpdate(car_status="skipped"))
+    assert skipped.car is None
+    assert skipped.car_status == "skipped"
+    selected = skipped.merged_with(
+        TripProfileUpdate(car_year=2020, car_make="Mazda", car_model="3")
+    )
+    assert selected.car == Car(year=2020, make="Mazda", model="3")
+    assert selected.car_status == "provided"
+    skipped_again = selected.merged_with(TripProfileUpdate(car_status="skipped"))
+    assert skipped_again.car is None
+    assert skipped_again.car_status == "skipped"
+
+
 def test_partial_flat_car_surfaces_clear_error():
     # Missing year → Car validation error (not silently dropped).
     with pytest.raises(ValidationError):

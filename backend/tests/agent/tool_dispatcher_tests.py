@@ -38,6 +38,7 @@ EXPECTED_TOOLS = {
     "get_initial_route",
     "generate_final_route",
     "generate_itinerary",
+    "complete_trip",
     "get_car_budget",
     "recall_facts",
     "remember_fact",
@@ -246,7 +247,10 @@ async def test_generate_itinerary_success_has_action(monkeypatch):
     monkeypatch.setattr(td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v))
 
     result = await _dispatcher().dispatch(
-        ToolCall(name="generate_itinerary", arguments={"route": {}}), _ctx()
+        ToolCall(
+            name="generate_itinerary", arguments={"route": {}, "start_time": "2030-01-01T09:00:00Z"}
+        ),
+        _ctx(),
     )
     assert result.ok is True
     assert result.result["action"] == "itinerary_updated"
@@ -261,7 +265,10 @@ async def test_generate_itinerary_failure_returns_error(monkeypatch):
     monkeypatch.setattr(td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v))
 
     result = await _dispatcher().dispatch(
-        ToolCall(name="generate_itinerary", arguments={"route": {}}), _ctx()
+        ToolCall(
+            name="generate_itinerary", arguments={"route": {}, "start_time": "2030-01-01T09:00:00Z"}
+        ),
+        _ctx(),
     )
     assert result.ok is False
     assert "Incomplete route" in result.error

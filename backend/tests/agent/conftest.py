@@ -99,6 +99,7 @@ class FakeMemory:
         self.upserted: list[MemoryFact] = []
         # Per-chat trip-profile JSON strings, keyed by (user_id, chat_id).
         self._trip_profiles: dict[tuple[str, str], str] = {}
+        self._planned_routes: dict[tuple[str, str], dict] = {}
         self._seed = facts or []
         # Optional short-term window (verbatim recent turns). When set, this fake
         # satisfies the loop's duck-typed ``load_recent_turns`` probe.
@@ -129,6 +130,12 @@ class FakeMemory:
 
     def save_trip_profile(self, user_id: str, chat_id: str, profile_json: str) -> None:
         self._trip_profiles[(user_id, chat_id)] = profile_json
+
+    def load_planned_route(self, user_id: str, chat_id: str) -> dict | None:
+        return self._planned_routes.get((user_id, chat_id))
+
+    def save_planned_route(self, user_id: str, chat_id: str, route: dict) -> None:
+        self._planned_routes[(user_id, chat_id)] = route
 
     def load_recent_turns(self, user_id: str, chat_id: str, limit: int = 10) -> list[LLMMessage]:
         if self._recent_turns is None:

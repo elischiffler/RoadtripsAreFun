@@ -264,6 +264,7 @@ async def run_turn(
     tools_used: list[str] = []
     tool_errors: list[AgentToolError] = []
     actions: list[AgentAction] = []
+    partial_completion = False
     ctx = ToolContext(
         user_id=user_id,
         chat_id=chat_id,
@@ -308,6 +309,8 @@ async def run_turn(
         for call in calls:
             result = await tools.dispatch(call, ctx)
             tools_used.append(call.name)
+            if call.name == "complete_trip" and result.result:
+                partial_completion |= result.result.get("status") == "partial"
             debug.tool_fired(call.name, call.arguments, result.ok, result.result, result.error)
             # A failed tool is fed back to the model (not raised) and never becomes
             # an action, so record its error for the client to log/debug.
@@ -340,6 +343,10 @@ async def run_turn(
     # The user-facing reply is the model's prose with any tool blocks stripped
     # out (raw tool JSON must never surface to the traveler).
     reply = strip_tool_blocks(response.content) or ""
+    if partial_completion and not any(action.type == "itinerary_updated" for action in actions):
+        # A model can misread a partial tool result and claim the whole trip is
+        # ready. The route action still reaches the UI, but the reply stays true.
+        reply = "Your route is ready, but the itinerary could not be created. Please retry it."
 
     # Monitor: flag (don't rewrite) any INTERNAL context that leaked into the
     # reply — the client hint, trip-profile internals, raw coords, tool syntax.
@@ -384,7 +391,16 @@ async def run_turn(
 # request-size limit (the 413). Tools that produce these also return a
 # ``route_handle`` + ``summary`` for the model, and the full data still reaches
 # the frontend via the action payload (see ``_collect_action``).
-_MODEL_HIDDEN_KEYS = ("route", "stops", "itinerary", "coordinates", "geometry", "legs", "steps")
+_MODEL_HIDDEN_KEYS = (
+    "route",
+    "stops",
+    "itinerary",
+    "actions",
+    "coordinates",
+    "geometry",
+    "legs",
+    "steps",
+)
 
 
 def _tool_result_content(result: ToolResult) -> str:
@@ -417,8 +433,12 @@ def _collect_action(result: ToolResult, chat_id: str, actions: list[AgentAction]
     """
     if not result.ok or not result.result:
         return
-    action_type = result.result.get("action")
-    if not isinstance(action_type, str) or not action_type:
-        return
-    payload = {k: result.result[k] for k in _ACTION_PAYLOAD_KEYS if k in result.result}
-    actions.append(AgentAction(type=action_type, chatId=chat_id, payload=payload or None))
+    results = result.result.get("actions")
+    if results is None:
+        results = [result.result]
+    for item in results:
+        action_type = item.get("action")
+        if not isinstance(action_type, str) or not action_type:
+            continue
+        payload = {k: item[k] for k in _ACTION_PAYLOAD_KEYS if k in item}
+        actions.append(AgentAction(type=action_type, chatId=chat_id, payload=payload or None))

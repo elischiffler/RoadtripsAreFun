@@ -22,7 +22,7 @@ def _complete_trip() -> TripProfile:
         destination_coords=[38.6, -109.5],
         num_stops=3,
         budget=150,
-        start_date="2099-10-10T09:00:00",
+        start_date="2099-10-10T09:00:00-06:00",
         car_status="skipped",
     )
 
