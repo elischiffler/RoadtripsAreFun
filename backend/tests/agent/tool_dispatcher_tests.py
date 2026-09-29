@@ -39,6 +39,7 @@ EXPECTED_TOOLS = {
     "recall_facts",
     "remember_fact",
     "get_trip_profile",
+    "record_trip_details",
     "update_trip_profile",
 }
 

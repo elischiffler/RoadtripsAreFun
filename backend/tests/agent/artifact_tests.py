@@ -11,6 +11,7 @@ from app.agent.agent import _tool_result_content
 from app.agent.schemas import ToolResult
 from app.agent.tool_dispatcher import AppToolDispatcher, _extract_endpoints
 from app.agent.tools import ArtifactStore, ToolCall, ToolContext
+from app.agent.trip_profile import TripProfile
 
 # async tests run under pytest-asyncio auto mode — no file-wide marker (which
 # would wrongly tag the sync unit tests below).
@@ -260,19 +261,16 @@ async def test_generate_final_route_rebuilds_from_trip_coords_across_turns(monke
 
     memory = FakeMemory()
     d = AppToolDispatcher()
-    ctx = ToolContext(user_id="u1", chat_id="42", memory=memory)
-    # Record the endpoints on the profile (what update_trip_profile would store).
-    await d.dispatch(
-        ToolCall(
-            name="update_trip_profile",
-            arguments={
-                "start_coords": [40.01, -105.27],
-                "destination_coords": [40.71, -74.0],
-                "num_stops": 8,
-                "budget": 600,
-            },
-        ),
-        ctx,
+    # Seed a previously geocoded profile; this test concerns cross-turn route reuse.
+    memory.save_trip_profile(
+        "u1",
+        "42",
+        TripProfile(
+            start_coords=[40.01, -105.27],
+            destination_coords=[40.71, -74.0],
+            num_stops=8,
+            budget=600,
+        ).to_json(),
     )
     # A brand-new turn's context: fresh (empty) artifact store, same memory.
     next_turn_ctx = ToolContext(user_id="u1", chat_id="42", memory=memory)
