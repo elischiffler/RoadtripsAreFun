@@ -26,6 +26,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { updateUserData } from './DatabaseUtils';
 import { sendAgentMessage } from './agentChat';
+import { getRoutingAlgorithm } from './getRoute';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -473,7 +474,12 @@ export function useTripWorkflow({
           // reused integer chat id, so per-chat memory never collides.
           chatId: agentChatIdRef.current,
           message: text,
-          clientContext: { hasRoute: !!route, stops, hotelBudget },
+          clientContext: {
+            hasRoute: !!route,
+            stops,
+            hotelBudget,
+            algorithm: getRoutingAlgorithm(),
+          },
         });
         noLoader();
 

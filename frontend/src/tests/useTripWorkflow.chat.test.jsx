@@ -78,6 +78,7 @@ Harness.propTypes = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  localStorage.clear();
   updateUserData.mockResolvedValue(true);
   import.meta.env.VITE_BACKEND_SERVER = 'http://localhost:8000/';
 });
@@ -126,6 +127,15 @@ describe("submit('chat_message')", () => {
     expect(sendAgentMessage).toHaveBeenCalledWith(
       expect.objectContaining({ chatId: 'uuid-abc-123' })
     );
+  });
+
+  it('passes the selected CP-SAT variant to the agent', async () => {
+    localStorage.setItem('devRoutingAlgorithm', 'cp_sat_scenic');
+    sendAgentMessage.mockResolvedValueOnce({ reply: 'ok', toolsUsed: [], actions: [] });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    await waitFor(() => expect(sendAgentMessage).toHaveBeenCalledTimes(1));
+    expect(sendAgentMessage.mock.calls[0][0].clientContext.algorithm).toBe('cp_sat_scenic');
   });
 
   it('shows a generic fallback when the agent returns null', async () => {

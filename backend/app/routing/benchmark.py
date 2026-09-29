@@ -156,6 +156,32 @@ class CachedServices:
             )
         return out
 
+    async def cp_sat_candidates(self, route, points, weights):
+        return [
+            {
+                "provider_id": f"benchmark-attraction-{i}",
+                "name": f"Candidate {i}",
+                "coordinates": point,
+                "utility": 0.9 - i * 0.01,
+                "address": f"{i} Candidate St",
+                "url": "https://example.com/c",
+            }
+            for i, point in enumerate(points[: self.pool_size])
+        ]
+
+    async def cp_sat_hotels(self, position, check_in, price_range, weights):
+        return [
+            {
+                "provider_id": "benchmark-hotel",
+                "name": "Cached Hotel",
+                "coordinates": position,
+                "utility": 0.8,
+                "price": self.hotel_price,
+                "address": "1 Hotel Rd",
+                "url": "https://example.com/h",
+            }
+        ]
+
     def bundle(self) -> RoutingServices:
         return RoutingServices(
             find_stop=self.find_stop,
@@ -163,6 +189,8 @@ class CachedServices:
             find_position=find_position,
             get_price_range=get_price_range,
             gather_candidates=self.gather_candidates,
+            cp_sat_candidates=self.cp_sat_candidates,
+            cp_sat_hotels=self.cp_sat_hotels,
         )
 
 

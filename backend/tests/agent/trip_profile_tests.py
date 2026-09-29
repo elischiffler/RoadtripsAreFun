@@ -265,7 +265,7 @@ async def test_generate_final_route_defaults_from_trip(monkeypatch):
 
     captured = {}
 
-    async def fake_plan(payload):
+    async def fake_plan(payload, user_id=None):
         from types import SimpleNamespace
 
         captured["num_stops"] = payload["num_stops"]
@@ -300,7 +300,7 @@ async def test_generate_final_route_explicit_args_win(monkeypatch):
 
     captured = {}
 
-    async def fake_plan(payload):
+    async def fake_plan(payload, user_id=None):
         captured["num_stops"] = payload["num_stops"]
         return SimpleNamespace(stops=[], cost=0.0, distance=100000.0, model_dump=lambda: {})
 

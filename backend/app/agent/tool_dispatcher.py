@@ -53,6 +53,7 @@ from app.routers.car_api import get_car_details, get_gas_price
 from app.routers.itinerary_api import build_itinerary
 from app.routers.routing_api import plan_final_route
 from app.routing.config import geolocator
+from app.routing.registry import DEFAULT_ALGORITHM
 from app.routing.sources.mapbox import call_route
 from app.utils.geolocation_helpers import get_location
 
@@ -256,8 +257,9 @@ class AppToolDispatcher:
                 description=(
                     "Plan the full multi-day trip: insert attraction/hotel stops into the "
                     "initial route. Takes the `route_handle` from get_initial_route. "
-                    "num_stops/budget/algorithm default from the traveler's profile if "
-                    "omitted. Returns a new `route_handle` (pass it to "
+                    "num_stops/budget default from the traveler's trip profile; the "
+                    "algorithm defaults to CP-SAT if omitted. Requires an upcoming "
+                    "start date. Returns a new `route_handle` (pass it to "
                     "generate_itinerary). Mutates trip state."
                 ),
                 parameters={
@@ -278,7 +280,7 @@ class AppToolDispatcher:
                         },
                         "algorithm": {
                             "type": "string",
-                            "description": "Optional planner name (e.g. 'greedy', 'ortools').",
+                            "description": "Optional planner name, such as 'cp_sat' or a future CP-SAT variant.",
                         },
                     },
                     "required": ["route_handle"],
@@ -432,7 +434,7 @@ class AppToolDispatcher:
                         },
                         "start_date": {
                             "type": "string",
-                            "description": "Optional ISO-8601 trip start date/time.",
+                            "description": "Upcoming ISO-8601 trip start date/time.",
                         },
                         "car_year": {"type": "integer"},
                         "car_make": {"type": "string"},
@@ -625,8 +627,9 @@ class AppToolDispatcher:
             "num_stops": int(num_stops),
             "budget": float(budget),
         }
-        if args.get("algorithm"):
-            payload_data["algorithm"] = args["algorithm"]
+        selected_algorithm = args.get("algorithm") or ctx.algorithm
+        if selected_algorithm:
+            payload_data["algorithm"] = selected_algorithm
         start = args.get("start") or trip.start_date
         if start:
             payload_data["start"] = start
@@ -640,8 +643,10 @@ class AppToolDispatcher:
         else:
             route = (
                 await plan_final_route(payload, user_id=ctx.user_id)
-                if (payload_data.get("algorithm") or os.getenv("ROUTING_ALGORITHM", "greedy"))
-                == "cp_sat"
+                if (
+                    payload_data.get("algorithm")
+                    or os.getenv("ROUTING_ALGORITHM", DEFAULT_ALGORITHM)
+                ).startswith("cp_sat")
                 else await plan_final_route(payload)
             )
         # Store the planned Route; hand the model a handle + summary. The FULL

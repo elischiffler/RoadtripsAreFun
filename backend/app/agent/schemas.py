@@ -73,6 +73,7 @@ class AgentClientContext(BaseModel):
     hasRoute: bool = False
     stops: int | None = None
     hotelBudget: int | None = None
+    algorithm: str | None = None
 
 
 class AgentChatRequest(BaseModel):

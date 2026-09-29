@@ -172,7 +172,7 @@ async def test_generate_final_route_success_has_action(monkeypatch):
         model_dump=lambda: {"cost": 320.0},
     )
 
-    async def fake_plan(payload):
+    async def fake_plan(payload, user_id=None):
         return fake_route
 
     monkeypatch.setattr(td, "plan_final_route", fake_plan)
@@ -207,7 +207,7 @@ async def test_generate_final_route_success_has_action(monkeypatch):
 async def test_generate_final_route_failure_returns_error(monkeypatch):
     from app.routing import PlanningError
 
-    async def boom(payload):
+    async def boom(payload, user_id=None):
         raise PlanningError("no feasible trip", status_code=422)
 
     monkeypatch.setattr(td, "plan_final_route", boom)

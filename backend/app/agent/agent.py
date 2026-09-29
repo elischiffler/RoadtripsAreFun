@@ -258,7 +258,11 @@ async def run_turn(
     tool_errors: list[AgentToolError] = []
     actions: list[AgentAction] = []
     ctx = ToolContext(
-        user_id=user_id, chat_id=chat_id, auth_token=request.partitionKey, memory=memory
+        user_id=user_id,
+        chat_id=chat_id,
+        auth_token=request.partitionKey,
+        algorithm=request.clientContext.algorithm if request.clientContext else None,
+        memory=memory,
     )
 
     # 4. First provider call.

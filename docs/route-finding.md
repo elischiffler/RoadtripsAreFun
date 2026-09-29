@@ -3,15 +3,12 @@
 How MyRoadtrip turns a start and end point into a multi-day road trip with
 attractions and overnight hotels.
 
-> **Architecture note (pluggable planners).** The route-planning *algorithm* now
-> lives behind a swappable interface in the `backend/app/routing/` package, not
-> inline in the router. `backend/app/routers/routing_api.py` is a thin controller
-> that picks a planner by name and assembles the response. Two planners ship
-> today: `greedy` (the algorithm described below) and `ortools` (an OR-Tools
-> knapsack selector). See
-> [pluggable-routing-refactor.md](./pluggable-routing-refactor.md) for the layer
-> layout and how to add a new algorithm. The rest of this document describes the
-> **greedy** planner's behavior, which is unchanged by that refactor.
+> **Current behavior.** `cp_sat` is the default and the only registered planner.
+> The `/algorithms` selector remains available for future CP-SAT variants.
+> `greedy` and `ortools` remain in the source tree for historical reference but
+> cannot be selected. The rest of this document describes that historical greedy
+> implementation; see [pluggable-routing-refactor.md](./pluggable-routing-refactor.md)
+> for the planner interface.
 
 The greedy algorithm below is defined by its *selection* logic in
 `backend/app/routing/planners/greedy.py`. The day-by-day *scheduling* loop it
@@ -168,10 +165,10 @@ the full polyline (`geometry.coordinates`), a single `leg`, `duration`, and
 `get_final_route(request)` validates the body into `Route_Payload` and calls the
 same planning core as the chat tool.
 
-### Opt-in persona-aware CP-SAT planner
+### Persona-aware CP-SAT planner
 
-`algorithm: "cp_sat"` selects the verified-candidate planner. Omit the field to
-keep the `greedy` default. The authenticated endpoint loads the account's 14
+`algorithm: "cp_sat"` selects the verified-candidate planner, and omitting the
+field uses the same default. The authenticated endpoint loads the account's 14
 preference weights using the verified Cognito subject. Missing account weights
 are equal. A partial `persona_weights` request field changes only that trip;
 it is validated and normalized with the account baseline. The chat agent can

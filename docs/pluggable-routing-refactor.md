@@ -1,5 +1,9 @@
 # Pluggable Routing Algorithms — Refactor Plan
 
+> Historical design record. The current registered/default planner is `cp_sat`.
+> Greedy and OR-Tools remain as source references but are not selectable; the
+> registry and algorithm selector are retained for future CP-SAT variants.
+
 A plan for restructuring the backend so different route-planning algorithms can
 be swapped in "plug and play" style. This builds directly on the design thinking
 already captured in [algorithm-analysis.md](./algorithm-analysis.md) (the four

@@ -38,7 +38,6 @@ from ortools.algorithms.python import knapsack_solver
 
 from app.models.routing_models.routing_models import MapBox
 from app.routing.base import PlanningError, PlanOptions, PlanResult, RoutePlanner
-from app.routing.registry import register_planner
 from app.routing.scheduler import schedule_route
 from app.routing.services import RoutingServices
 
@@ -193,6 +192,3 @@ class _PreselectedStopProvider:
         # Strip the internal scheduling key but keep the attraction's own
         # coordinates so routing targets the real attraction location.
         return {k: v for k, v in chosen.items() if k != "elapsed_time"}
-
-
-register_planner(ORToolsKnapsackPlanner())

@@ -161,7 +161,7 @@ async def test_full_route_chain_by_handle(monkeypatch):
     async def fake_call_route(a, b, c, d, *args, **kwargs):
         return SimpleNamespace(distance=664000.0, duration=26000.0)
 
-    async def fake_plan(payload):
+    async def fake_plan(payload, user_id=None):
         return SimpleNamespace(
             stops=[{"name": "Stop", "type": "stop"}],
             cost=250.0,
@@ -248,7 +248,7 @@ async def test_generate_final_route_rebuilds_from_trip_coords_across_turns(monke
         rebuilt["args"] = (start_lat, start_lon, end_lat, end_lon)
         return SimpleNamespace(distance=100000.0, duration=3600.0)
 
-    async def fake_plan(payload):
+    async def fake_plan(payload, user_id=None):
         return SimpleNamespace(stops=[], cost=0.0, distance=100000.0, model_dump=lambda: {})
 
     # conftest's autouse _routing_local fixture already forces the LOCAL path

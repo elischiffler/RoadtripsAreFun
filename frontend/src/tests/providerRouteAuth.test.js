@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import axios from 'axios';
-import { getInitialRoute, getFinalRoute } from '../pages/ChatPage/getRoute';
+import { getInitialRoute, getFinalRoute, getRoutingAlgorithm } from '../pages/ChatPage/getRoute';
 
 vi.mock('axios', () => ({
   default: { get: vi.fn(), post: vi.fn() },
@@ -33,5 +33,18 @@ describe('provider route access token', () => {
       { initial_route: { geometry: {} }, num_stops: 0, budget: 100 },
       { headers: { Authorization: 'Bearer signed-access-token' } }
     );
+  });
+
+  it('clears a retired algorithm choice before requesting a route', async () => {
+    localStorage.setItem('devRoutingAlgorithm', 'greedy');
+    axios.post.mockResolvedValueOnce({ data: { stops: [] } });
+    await getFinalRoute({ geometry: {} }, 100, 0, null, '2026-10-01T09:00:00');
+    expect(getRoutingAlgorithm()).toBeNull();
+    expect(axios.post.mock.calls[0][1]).toEqual({
+      initial_route: { geometry: {} },
+      num_stops: 0,
+      budget: 100,
+      start: '2026-10-01T09:00:00',
+    });
   });
 });

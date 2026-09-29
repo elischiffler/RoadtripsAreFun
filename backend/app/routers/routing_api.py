@@ -170,7 +170,7 @@ async def plan_final_route(payload: Route_Payload, user_id: str | None = None) -
     planner = get_planner(algorithm)
     services = _build_services()
     weights = None
-    if algorithm == "cp_sat":
+    if algorithm.startswith("cp_sat"):
         if user_id is None:
             raise PlanningError("Authenticated identity is required for CP-SAT", 401)
         if "start" not in payload.model_fields_set or start is None or start.date() < date.today():
@@ -190,7 +190,7 @@ async def plan_final_route(payload: Route_Payload, user_id: str | None = None) -
     # Construct waypoints string and make new route with stopping points
     waypoints = ";".join([f"{lon},{lat}" for lat, lon in coordinates])
     route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
-    if algorithm == "cp_sat":
+    if algorithm.startswith("cp_sat"):
         if len(route.legs) != len(coordinates) + 1 or route.duration < 0:
             raise PlanningError("Mapbox returned an incomplete final route", 502)
         # The initial route only estimates scheduling. Recheck the actual final
