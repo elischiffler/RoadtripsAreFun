@@ -2,7 +2,7 @@
 
 The backend owns collection receipts and missing-detail questions. Agent replies
 with validated trip changes, pending location choices, explicit trip-summary or
-collection requests, or a `complete_trip` outcome carry an optional
+collection requests, or a route/itinerary tool outcome carry an optional
 `presentation` alongside a readable `reply` fallback. Other conversation keeps
 the model's natural reply.
 

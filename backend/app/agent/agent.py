@@ -385,6 +385,8 @@ async def run_turn(
             notes.append("Your route and itinerary are ready.")
         elif any(action.type == "itinerary_updated" for action in actions):
             notes.append("Your itinerary has been created.")
+        elif any(action.type == "route_updated" for action in actions):
+            notes.append("Your route has been created. Ask me to create its itinerary next.")
         return list(dict.fromkeys(notes))
 
     def validated_response_during_outage() -> AgentChatResponse:
@@ -584,10 +586,12 @@ async def run_turn(
         or validation_issues
         or presentation_request
         or completion_status
-        or "complete_trip" in tools_used
+        or set(tools_used) & {"complete_trip", "generate_final_route", "generate_itinerary"}
         or final_trip != initial_trip
     ):
         notes = outcome_notes()
+        if terminal_error:
+            notes.insert(0, "I couldn't finish creating the trip.")
         if not final_trip.missing_details() and not tool_errors and not notes:
             notes.append("The details are saved. Ask me to create the route and itinerary.")
         presentation = format_details(final_trip, notes)

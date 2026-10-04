@@ -367,7 +367,10 @@ async def test_run_turn_executes_tool_and_feeds_result_back(fake_memory):
 
     result = await run_turn(_request(), chain, fake_memory, tools)
 
-    assert result.reply == "Your trip is planned."
+    assert "Your trip is planned." not in result.reply
+    assert result.presentation.notes == [
+        "Your route has been created. Ask me to create its itinerary next."
+    ]
     assert result.toolsUsed == ["generate_final_route"]
     assert len(tools.dispatched) == 1
     assert tools.dispatched[0].arguments == {"route_handle": "initial_route_1"}
