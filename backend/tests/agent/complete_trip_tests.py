@@ -257,3 +257,18 @@ async def test_complete_trip_preserves_nonretryable_hotel_failure(monkeypatch):
     assert result.error.startswith("Google Hotels returned no verifiable")
     assert "itinerary_start" not in calls
     assert result.result is None
+
+
+@pytest.mark.asyncio
+async def test_completion_preserves_clear_scheduling_error(monkeypatch):
+    _stub_planning(monkeypatch)
+    detail = "Final route exceeds the daily driving window: Boulder after the 21:00 local cutoff. Choose an earlier departure."
+
+    async def failed_plan(*args, **kwargs):
+        raise HTTPException(status_code=422, detail=detail)
+
+    monkeypatch.setattr(td, "plan_final_route", failed_plan)
+    result = await AppToolDispatcher().dispatch(
+        ToolCall(name="complete_trip"), _context(_profile())
+    )
+    assert not result.ok and result.error == detail

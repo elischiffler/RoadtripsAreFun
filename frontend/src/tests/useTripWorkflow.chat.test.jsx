@@ -27,11 +27,12 @@ vi.mock('../pages/ChatPage/agentChat', () => ({
   sendAgentMessage: vi.fn(),
 }));
 vi.mock('../pages/ChatPage/DatabaseUtils', () => ({
+  ensureChatCreated: vi.fn().mockResolvedValue(true),
   updateUserData: vi.fn().mockResolvedValue(true),
 }));
 
 import { sendAgentMessage } from '../pages/ChatPage/agentChat';
-import { updateUserData } from '../pages/ChatPage/DatabaseUtils';
+import { ensureChatCreated, updateUserData } from '../pages/ChatPage/DatabaseUtils';
 import { useTripWorkflow } from '../pages/ChatPage/useTripWorkflow';
 
 const CHAT_ID = 5;
@@ -112,6 +113,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   localStorage.clear();
   updateUserData.mockResolvedValue(true);
+  ensureChatCreated.mockResolvedValue(true);
   import.meta.env.VITE_BACKEND_SERVER = 'http://localhost:8000/';
 });
 
@@ -607,4 +609,44 @@ describe('applyAgentActions', () => {
     // Persisted to ChatLogsData too
     expect(chatLogsData.chatdata[0].stops).toBe(3);
   });
+});
+
+it('awaits creation before the agent, blocks rapid submission and retries failures', async () => {
+  let finish;
+  ensureChatCreated.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+  );
+  sendAgentMessage.mockResolvedValue({ reply: 'Saved', actions: [] });
+  render(<Harness />);
+  await userEvent.click(screen.getByText('send'));
+  await userEvent.click(screen.getByText('send'));
+  expect(ensureChatCreated).toHaveBeenCalledTimes(1);
+  expect(sendAgentMessage).not.toHaveBeenCalled();
+  expect(updateUserData).not.toHaveBeenCalled();
+  finish(false);
+  await screen.findByText(/couldn't create this trip/);
+  expect(sendAgentMessage).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByText('send'));
+  await waitFor(() => expect(sendAgentMessage).toHaveBeenCalledTimes(1));
+  await waitFor(() => expect(updateUserData).toHaveBeenCalledTimes(1));
+});
+
+it('does not send an agent turn after the account panel unmounts during creation', async () => {
+  let finish;
+  ensureChatCreated.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+  );
+  const view = render(<Harness />);
+  await userEvent.click(screen.getByText('send'));
+  view.unmount();
+  finish(true);
+  await Promise.resolve();
+  expect(sendAgentMessage).not.toHaveBeenCalled();
+  expect(updateUserData).not.toHaveBeenCalled();
 });

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Box, TextField, IconButton, InputAdornment } from '@mui/material';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import PropTypes from 'prop-types';
@@ -16,12 +16,17 @@ import './ChatPage.css';
  */
 const ChatInput = ({ onSubmit, disabled }) => {
   const [value, setValue] = useState('');
+  const sending = useRef(false);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const text = value.trim();
-    if (!text) return;
-    onSubmit(text);
-    setValue('');
+    if (!text || disabled || sending.current) return;
+    sending.current = true;
+    try {
+      if ((await onSubmit(text)) !== false) setValue('');
+    } finally {
+      sending.current = false;
+    }
   };
 
   const handleKeyDown = (e) => {

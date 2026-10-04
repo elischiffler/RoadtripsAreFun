@@ -24,14 +24,20 @@ def apply_timing(
         arrival = advance(now, duration)
         if zone is not None:
             arrival = arrival.astimezone(zone)
-        deadline = policy.deadline(travel_day, zone)
+        final = stop["type"] == "end"
+        cutoff = policy.arrival_cutoff(final=final)
+        deadline = policy.deadline(travel_day, zone, final=final)
         departure = advance(arrival, 7200) if stop["type"] == "stop" else arrival
         if seconds_until(departure, deadline) < -1e-6:
             raise PlanningError(
                 f"Final route exceeds the daily driving window: {stop['name']} reaches "
-                f"{departure.isoformat()} after the {policy.cutoff} local cutoff. "
+                f"{departure.isoformat()} after the {cutoff} local cutoff. "
                 "Choose an earlier departure, an earlier overnight, or explicitly allow later driving.",
                 422,
+            )
+        if final and seconds_until(arrival, policy.deadline(travel_day, zone)) < 0:
+            stop["warning"] = (
+                "Final destination arrival is after the normal hotel cutoff; plan for a late arrival."
             )
         stop.update(
             arrival_time=arrival.isoformat(),

@@ -821,7 +821,9 @@ class AppToolDispatcher:
         if not route_result.ok:
             if not route_result.retryable:
                 raise CandidateProviderError(route_result.error or "Route provider unavailable")
-            raise ValueError(f"Route creation failed: {route_result.error}")
+            raise HTTPException(
+                status_code=422, detail=route_result.error or "Route creation failed"
+            )
         route = route_result.result
         route_action = {
             key: route[key] for key in ("action", "route", "stops", "cost") if key in route

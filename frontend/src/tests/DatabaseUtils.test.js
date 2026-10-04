@@ -9,6 +9,7 @@ vi.mock('axios');
 
 import {
   createChat,
+  ensureChatCreated,
   deleteChat,
   initializeUserData,
   updateUserData,
@@ -173,4 +174,59 @@ describe('updateUserData', () => {
     expect(axios.put).not.toHaveBeenCalled();
     expect(result).toBe(false);
   });
+});
+
+describe('chat creation lifecycle', () => {
+  it('shares creation across remounts and blocks PUT until POST completes', async () => {
+    const owner = {};
+    let finish;
+    axios.post.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        })
+    );
+    axios.put.mockResolvedValueOnce({ status: 200 });
+    const creation = ensureChatCreated(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG], owner);
+    const save = updateUserData(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG], owner);
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.put).not.toHaveBeenCalled();
+    finish({ status: 200 });
+    expect(await creation).toBe(true);
+    expect(await save).toBe(true);
+    await ensureChatCreated(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG], owner);
+    expect(axios.post).toHaveBeenCalledTimes(1);
+  });
+  it('retries creation without PUT and isolates accounts', async () => {
+    const owner = {};
+    axios.post.mockRejectedValueOnce(new Error('offline'));
+    expect(await updateUserData(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG], owner)).toBe(false);
+    expect(axios.put).not.toHaveBeenCalled();
+    axios.post.mockResolvedValue({ status: 200 });
+    expect(await ensureChatCreated(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG], owner)).toBe(true);
+    expect(await ensureChatCreated('other-account', CHAT_DATA, [CHAT_LOG], owner)).toBe(true);
+    expect(axios.post).toHaveBeenCalledTimes(3);
+  });
+  it('recognizes restored rows without recreating them', async () => {
+    axios.get.mockResolvedValueOnce({ data: [[CHAT_DATA, CHAT_LOG]] });
+    const restored = await initializeUserData(AUTH_TOKEN);
+    expect(
+      await ensureChatCreated(AUTH_TOKEN, CHAT_DATA, restored.chats, restored.UserData.chatlogs)
+    ).toBe(true);
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+});
+
+it('keeps created rows across token refresh and forgets deleted rows', async () => {
+  const owner = {};
+  const token = (expiration) =>
+    `header.${btoa(JSON.stringify({ iss: 'fixture', sub: 'user', exp: expiration }))}.signature`;
+  axios.post.mockResolvedValue({ status: 200 });
+  expect(await ensureChatCreated(token(1), CHAT_DATA, [CHAT_LOG], owner)).toBe(true);
+  expect(await ensureChatCreated(token(2), CHAT_DATA, [CHAT_LOG], owner)).toBe(true);
+  expect(axios.post).toHaveBeenCalledTimes(1);
+  axios.delete.mockResolvedValueOnce({ status: 200 });
+  await deleteChat(token(2), 1, owner);
+  expect(await ensureChatCreated(token(2), CHAT_DATA, [CHAT_LOG], owner)).toBe(true);
+  expect(axios.post).toHaveBeenCalledTimes(2);
 });

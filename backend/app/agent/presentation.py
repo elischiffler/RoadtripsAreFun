@@ -98,7 +98,7 @@ def present_details(
             if full and not changed and value == SchedulingPolicy():
                 continue
             late = f"until {value.late_cutoff}" if value.late_driving else "off"
-            text = f"Hotel arrival: prefer {value.preferred_hotel_arrival}, latest {value.latest_hotel_arrival}; morning restart: {value.morning_restart}; late driving: {late}"
+            text = f"Hotel arrival: prefer {value.preferred_hotel_arrival}, latest {value.latest_hotel_arrival}; morning restart: {value.morning_restart}; late driving: {late}; final destination latest: {value.arrival_cutoff(final=True)}"
         elif field == "evening_interests":
             text = "Evening suggestions: " + (", ".join(value) if value else "off")
         elif field == "start_date":

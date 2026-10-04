@@ -26,7 +26,7 @@ import { updateTripProgress } from './tripProgressState';
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { updateUserData } from './DatabaseUtils';
+import { ensureChatCreated, updateUserData } from './DatabaseUtils';
 import { sendAgentMessage } from './agentChat';
 import { getRoutingAlgorithm } from './getRoute';
 
@@ -253,6 +253,13 @@ export function useTripWorkflow({
 
   // Prevents concurrent submit calls (StrictMode double-invoke / rapid clicks).
   const submitInFlightRef = useRef(false);
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
   // Drives the ChatInput disabled state while a turn is in flight, so the send
   // button can't be used until the agent finishes and the user should type again.
   const [isLoading, setIsLoading] = useState(false);
@@ -349,7 +356,7 @@ export function useTripWorkflow({
       const idx = ChatLogsData.chatdata.findIndex((c) => c.chatId === snap.chatId);
       if (idx !== -1) ChatLogsData.chatdata[idx] = snap;
       else ChatLogsData.chatdata.push(snap);
-      const saved = await updateUserData(accessToken, snap, chatsRef.current);
+      const saved = await updateUserData(accessToken, snap, chatsRef.current, ChatLogsData);
       if (!saved) bot("I couldn't save this trip. Please try again before leaving this page.");
     },
     [ChatLogsData, accessToken, chatsRef, bot]
@@ -488,7 +495,7 @@ export function useTripWorkflow({
         return;
 
       // Guard against StrictMode double-invoke or rapid double-clicks.
-      if (submitInFlightRef.current) return;
+      if (submitInFlightRef.current) return false;
       submitInFlightRef.current = true;
       setIsLoading(true);
 
@@ -505,6 +512,19 @@ export function useTripWorkflow({
               : '';
         if (!text) return;
 
+        const created = await ensureChatCreated(
+          accessToken,
+          buildSnapshot(),
+          chatsRef.current,
+          ChatLogsData
+        );
+        if (!mountedRef.current) return false;
+        if (!created) {
+          bot(
+            "I couldn't create this trip. Your message is still in the input; send it again to retry."
+          );
+          return false;
+        }
         addMessage(id, setChats, text, USER, undefined, chatsRef);
         loading();
         setProcessProgress({ startedAt: Date.now(), entries: [] });
@@ -574,6 +594,7 @@ export function useTripWorkflow({
               : 'Something went wrong on my end. Please try sending that again.'
           );
         }
+        return true;
       } finally {
         noLoader();
         submitInFlightRef.current = false;
@@ -583,6 +604,8 @@ export function useTripWorkflow({
     },
     [
       accessToken,
+      buildSnapshot,
+      ChatLogsData,
       route,
       stops,
       hotelBudget,

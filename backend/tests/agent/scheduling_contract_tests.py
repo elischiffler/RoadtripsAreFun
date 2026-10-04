@@ -12,7 +12,7 @@ from app.agent.providers import FallbackChain
 from app.agent.schemas import LLMResponse, ToolCall
 from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.tools import ToolContext
-from app.agent.trip_profile import TripProfile
+from app.agent.trip_profile import TripProfile, TripProfileUpdate
 from app.main import app
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import Route_Payload
@@ -170,3 +170,15 @@ async def test_remote_round_trip_preserves_policy_timing_and_suggestions(monkeyp
     assert bodies[0]["evening_interests"] == ["food"] and bodies[0]["num_stops"] == 2
     assert received == final and itinerary == days
     assert any(stop.optional for day in itinerary for stop in day.stops)
+
+
+def test_explicit_destination_deadline_has_truthful_receipt():
+    from app.agent.presentation import present_details
+
+    before = TripProfile()
+    after = before.merged_with(
+        TripProfileUpdate(scheduling_policy={"latest_destination_arrival": "19:30"})
+    )
+    receipt = present_details(before, after, {})
+    assert any("final destination latest: 19:30" in item for item in receipt.updated)
+    assert not after.scheduling_policy.late_driving

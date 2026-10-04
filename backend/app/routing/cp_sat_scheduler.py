@@ -113,10 +113,11 @@ async def schedule_cp_sat_route(
             remaining_visits = sum(item is not None for _, item in events[event_index:])
             finish_seconds = route.duration - elapsed + remaining_visits * _VISIT_SECONDS
             can_finish = (
-                finish_seconds <= seconds_until(now, policy.deadline(travel_day, end_zone)) + 1e-6
+                finish_seconds
+                <= seconds_until(now, policy.deadline(travel_day, end_zone, final=True)) + 1e-6
             )
             event_limit = (
-                policy.deadline(travel_day, event_zone)
+                policy.deadline(travel_day, event_zone, final=attraction is None)
                 if can_finish
                 else policy.at(travel_day, policy.preferred_hotel_arrival, event_zone)
             )

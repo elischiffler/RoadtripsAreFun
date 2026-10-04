@@ -87,6 +87,8 @@ def test_old_profile_defaults_and_policy_persistence():
 def test_actual_reroute_cutoff_inclusive_only_through_midnight(late, hours, accepted, kind):
     stops = [point(hours * 3600, kind)]
     policy = SchedulingPolicy(late_driving=late)
+    if kind == "end" and not late:
+        accepted = hours <= 12
     if not accepted:
         with pytest.raises(PlanningError, match="driving window"):
             apply_timing(stops, START, policy, ZONE)
@@ -125,7 +127,7 @@ def test_actual_arrival_timezone_controls_deadline():
     assert east["arrival_time"] == "2035-11-21T20:00:00-05:00"
     with pytest.raises(PlanningError):
         apply_timing(
-            [point(8 * 3600 + 60, zone="America/New_York")], START, SchedulingPolicy(), ZONE
+            [point(9 * 3600 + 60, zone="America/New_York")], START, SchedulingPolicy(), ZONE
         )
 
 
@@ -393,3 +395,54 @@ async def test_itinerary_departure_uses_start_location_clock_even_with_utc_input
     )
     assert itinerary[0].stops[0].time == "09:00 AM"
     assert itinerary[0].stops[1].time == "10:00 AM"
+
+
+@pytest.mark.parametrize("seconds,accepted", [(41438.484, True), (43200, True), (43200.001, False)])
+def test_boulder_final_arrival_grace_is_bounded(seconds, accepted):
+    start = datetime(2026, 10, 19, 9, tzinfo=ZoneInfo("America/Denver"))
+    end = point(seconds, zone="America/Denver")
+    if not accepted:
+        with pytest.raises(PlanningError, match="21:00 local cutoff"):
+            apply_timing([end], start, SchedulingPolicy())
+        return
+    apply_timing([end], start, SchedulingPolicy())
+    assert end["deadline"] == "2026-10-19T21:00:00-06:00"
+    assert end["warning"].startswith("Final destination arrival")
+    if seconds == 41438.484:
+        assert end["arrival_time"] == "2026-10-19T20:30:38.484000-06:00"
+
+
+@pytest.mark.parametrize(
+    "policy",
+    [
+        SchedulingPolicy(latest_destination_arrival="20:00"),
+        SchedulingPolicy(preferred_hotel_arrival="17:00", latest_hotel_arrival="19:00"),
+        SchedulingPolicy(late_driving=True, latest_destination_arrival="20:00"),
+    ],
+)
+def test_explicit_final_restrictions_survive_serialization(policy):
+    policy = SchedulingPolicy.model_validate_json(policy.model_dump_json())
+    with pytest.raises(PlanningError):
+        apply_timing([point(11.5 * 3600)], START, policy)
+
+
+@pytest.mark.parametrize("duration", [-1, float("nan"), float("inf")])
+def test_final_grace_never_accepts_invalid_durations(duration):
+    with pytest.raises(PlanningError, match="invalid leg duration"):
+        apply_timing([point(duration)], START, SchedulingPolicy())
+
+
+@pytest.mark.asyncio
+async def test_estimated_final_arrival_uses_same_grace(route, fake_services):
+    route.duration = 11.5 * 3600
+    services, calls = services_with_hotels(fake_services, [True])
+    stops, cost = await schedule_cp_sat_route(
+        route,
+        [],
+        PlanOptions(
+            0, 100, START, traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ),
+        services,
+    )
+    assert stops == [] and cost == 0 and calls == []
+    apply_timing([point(route.duration)], START, SchedulingPolicy())

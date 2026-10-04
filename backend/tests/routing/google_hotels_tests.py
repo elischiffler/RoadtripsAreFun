@@ -215,7 +215,7 @@ async def test_live_adapter_scheduler_retries_only_spatial_misses(
             hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
         )
 
-    route.duration = route.legs[0].duration = route.legs[0].steps[0].duration = 12 * 3600
+    route.duration = route.legs[0].duration = route.legs[0].steps[0].duration = 13 * 3600
     services = fake_services.bundle()
     services.cp_sat_hotels = hotels
     options = PlanOptions(

@@ -218,8 +218,9 @@ const ChatPage = () => {
   );
 
   // Fresh trip scaffolded immediately — no waiting for DB
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const freshChatData = useMemo(() => ChatLogsData.createChatData(1), []);
+  const [freshChatData] = useState(
+    () => ChatLogsData.getChatDataById(1) ?? ChatLogsData.createChatData(1)
+  );
   const freshChat = useMemo(
     () => ({ id: 1, title: 'New Trip', messages: initialMessage }),
     [initialMessage]
@@ -253,6 +254,7 @@ const ChatPage = () => {
   });
 
   const [isFetchingChats, setIsFetchingChats] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const chatEndRef = useRef(null);
   // Holds a { id, title, messages } for a new trip that hasn't had its destination confirmed yet.
@@ -304,6 +306,7 @@ const ChatPage = () => {
 
   // Background DB fetch — only runs on first mount (chats context is empty)
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       // If chats context already has data, this is a remount after navigation — skip the fetch.
       // The context already holds the correct state from the previous mount.
@@ -314,6 +317,8 @@ const ChatPage = () => {
       setIsFetchingChats(true);
       try {
         const prevChats = await initializeUserData(accessToken);
+        if (cancelled) return;
+        if (!prevChats) throw new Error('Chat loading failed');
         if (prevChats) {
           const savedChats = prevChats.chats ?? [];
           if (savedChats.length > 0) {
@@ -350,12 +355,16 @@ const ChatPage = () => {
           }
         }
       } catch {
-        // silently continue with fresh trip
+        // Do not allocate a reused integer id when saved rows could not be read.
+        if (!cancelled) setLoadError(true);
       } finally {
-        setIsFetchingChats(false);
+        if (!cancelled) setIsFetchingChats(false);
       }
     };
     fetchData();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -463,7 +472,7 @@ const ChatPage = () => {
 
     setChats(remaining);
     chatsRef.current = remaining;
-    await deleteChat(accessToken, chatId);
+    await deleteChat(accessToken, chatId, ChatLogsData);
 
     if (selectedChatIdRef.current === chatId) {
       // The active chat was deleted — redirect to a new virgin trip
@@ -504,7 +513,14 @@ const ChatPage = () => {
       {/* Trip management buttons — top-left (below header) */}
       <Box className="fab-group fab-group--top">
         <ThemedTooltip title="New trip" placement="right" arrow>
-          <Box className="fab fab--new" onClick={handleNewChat} role="button" aria-label="New trip">
+          <Box
+            className="fab fab--new"
+            onClick={() => {
+              if (!isFetchingChats && !loadError) handleNewChat();
+            }}
+            role="button"
+            aria-label="New trip"
+          >
             <AddIcon className="fab-icon" />
           </Box>
         </ThemedTooltip>
@@ -520,21 +536,31 @@ const ChatPage = () => {
         </ThemedTooltip>
       </Box>
 
+      {loadError && (
+        <Box className="main-content" role="alert">
+          <Typography>
+            Saved trips could not be loaded. Retry before starting a new trip.
+          </Typography>
+          <Button onClick={() => window.location.reload()}>Retry loading trips</Button>
+        </Box>
+      )}
       {/* WorkflowPanel: keyed so bumping workflowKey resets the hook */}
-      <WorkflowPanel
-        key={workflowKey}
-        chatId={selectedChatId}
-        agentChatId={getAgentChatId(selectedChatId)}
-        setChats={setChats}
-        setCurrentStep={setCurrentStep}
-        chatsRef={chatsRef}
-        accessToken={accessToken}
-        ChatLogsData={ChatLogsData}
-        activeMessages={activeMessages}
-        chatEndRef={chatEndRef}
-        savedData={savedData}
-        onChatReady={handleChatReady}
-      />
+      {!isFetchingChats && !loadError && (
+        <WorkflowPanel
+          key={workflowKey}
+          chatId={selectedChatId}
+          agentChatId={getAgentChatId(selectedChatId)}
+          setChats={setChats}
+          setCurrentStep={setCurrentStep}
+          chatsRef={chatsRef}
+          accessToken={accessToken}
+          ChatLogsData={ChatLogsData}
+          activeMessages={activeMessages}
+          chatEndRef={chatEndRef}
+          savedData={savedData}
+          onChatReady={handleChatReady}
+        />
+      )}
     </Box>
   );
 };

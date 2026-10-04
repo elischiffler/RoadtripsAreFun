@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { StrictMode, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -271,4 +271,32 @@ describe('ChatPage reload', () => {
       )
     );
   });
+});
+
+it('blocks new-trip workflow if saved rows cannot be read safely', async () => {
+  initializeUserData.mockResolvedValueOnce(null);
+  render(<Harness />);
+  expect(await screen.findByRole('alert')).toHaveTextContent('Saved trips could not be loaded');
+  expect(screen.getByRole('button', { name: 'Retry loading trips' })).toBeInTheDocument();
+});
+
+it('ignores stale startup fetch completion after StrictMode remount', async () => {
+  sessionStorage.clear();
+  let finish;
+  initializeUserData.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+  );
+  initializeUserData.mockResolvedValueOnce({ chats: [], UserData: new Data() });
+  render(
+    <StrictMode>
+      <Harness />
+    </StrictMode>
+  );
+  await screen.findByText(/Hello! I'm JourneyGenie/);
+  finish(null);
+  await Promise.resolve();
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 });

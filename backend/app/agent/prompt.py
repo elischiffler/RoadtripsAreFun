@@ -64,7 +64,7 @@ def build_messages(
     system = "\n\n".join(
         (
             SYSTEM_PROMPT
-            + " Scheduling preferences are optional: default hotel target 18:00, normal limit 20:00, restart 09:00. Use the saved scheduling preferences; extraction has already handled explicit overrides. Late driving is opt-in only, at most 24:00 local at arrival. Evening suggestions are optional, separate from daytime stops; never claim unknown opening hours or late check-in are guaranteed.",
+            + " Scheduling preferences are optional: default hotel target 18:00, normal hotel/attraction limit 20:00, final destination limit 21:00, restart 09:00. Explicit earlier final-arrival or driving deadlines remain binding. Use the saved scheduling preferences; extraction has already handled explicit overrides. Late driving is opt-in only, at most 24:00 local at arrival. Evening suggestions are optional, separate from daytime stops; never claim unknown opening hours or late check-in are guaranteed.",
             STAGE_INSTRUCTIONS[_stage(trip, client_context)],
             _format_context(facts, trip),
         )

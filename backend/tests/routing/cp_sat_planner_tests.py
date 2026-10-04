@@ -178,7 +178,7 @@ def test_unsolved_status_never_returns_candidates(monkeypatch, status):
 
 @pytest.mark.asyncio
 async def test_stop_at_assigned_drive_position_then_day_rollover(route, start_date, fake_services):
-    short_route(route, 12 * 3600)
+    short_route(route, 13 * 3600)
     position = fake_services.bundle().find_position(
         route.geometry.coordinates, route.legs[0].steps, route.duration * 6 / 7
     )
@@ -205,7 +205,7 @@ async def test_stop_at_assigned_drive_position_then_day_rollover(route, start_da
 
 @pytest.mark.asyncio
 async def test_hotel_retry_and_in_budget_preference(route, start_date, fake_services):
-    short_route(route, 12 * 3600)
+    short_route(route, 13 * 3600)
     services, calls = configure(fake_services)
 
     async def find_hotels(position, check_in, price_range, weights, hotel_rooms):
@@ -234,7 +234,7 @@ async def test_hotel_retry_and_in_budget_preference(route, start_date, fake_serv
 
 @pytest.mark.asyncio
 async def test_over_budget_hotel_keeps_actual_price(route, start_date, fake_services):
-    short_route(route, 12 * 3600)
+    short_route(route, 13 * 3600)
     services, _ = configure(fake_services, hotels=[hotel("high", [35, -100], 400, 0.8)])
     stops, cost = await schedule_cp_sat_route(
         route,
@@ -251,7 +251,7 @@ async def test_over_budget_hotel_keeps_actual_price(route, start_date, fake_serv
 
 @pytest.mark.asyncio
 async def test_missing_hotel_fails_after_bounded_retries(route, start_date, fake_services):
-    short_route(route, 12 * 3600)
+    short_route(route, 13 * 3600)
     services, calls = configure(fake_services)
     with pytest.raises(PlanningError, match="No verified hotel"):
         await schedule_cp_sat_route(
