@@ -11,6 +11,7 @@ import psycopg2
 from pydantic import BaseModel
 
 from app.agent.memory import ConversationMemory, MemoryFact
+from app.agent.trip_dates import PendingDeparture
 from app.agent.trip_profile import TripProfile
 from app.crud import chat_crud, memory_crud
 from app.models.scheduling_policy import SchedulingPolicy
@@ -41,6 +42,8 @@ EVENING_OPTIONS = [
 PENDING_JSON = TripProfile(
     scheduling_policy=POLICY,
     evening_interests=["food"],
+    departure_time="10:00",
+    pending_departure=PendingDeparture(date="October 10th", requested_at="2099-10-03T17:00:00Z"),
     pending_locations={
         "start_address": PendingLocation(
             query="SLO",

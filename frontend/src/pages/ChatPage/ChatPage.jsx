@@ -56,39 +56,6 @@ const WorkflowPanel = ({
       </Box>
 
       <Box className="main-content">
-        {Object.entries(pendingLocations ?? {}).map(([field, pending]) => (
-          <Box
-            key={field}
-            role="group"
-            aria-label={
-              field === 'start_address' ? 'Choose starting location' : 'Choose destination'
-            }
-            sx={{ p: 2 }}
-          >
-            <Typography>
-              {field === 'start_address' ? 'Starting location' : 'Destination'}: choose a match for
-              “{pending.query}”
-            </Typography>
-            {pending.candidates.map((candidate) => (
-              <Button
-                key={candidate.id}
-                disabled={isLoading}
-                onClick={() =>
-                  submit('location_confirmation', {
-                    field,
-                    candidateId: candidate.id,
-                    address: candidate.address,
-                  })
-                }
-              >
-                {candidate.address}
-              </Button>
-            ))}
-            <Typography variant="body2">
-              If none match, enter the full city and state or address below.
-            </Typography>
-          </Box>
-        ))}
         <Box className="chat-box">
           <Box
             className="chat-messages"
@@ -135,6 +102,64 @@ const WorkflowPanel = ({
               return null;
             })}
 
+            {Object.entries(pendingLocations ?? {}).map(([field, pending]) => (
+              <Box
+                key={field}
+                role="group"
+                aria-label={
+                  field === 'start_address' ? 'Confirm starting location' : 'Confirm destination'
+                }
+                className="message bot"
+                sx={{ maxWidth: '100%' }}
+              >
+                <Typography sx={{ fontWeight: 600 }}>
+                  {field === 'start_address' ? 'Starting location' : 'Destination'}
+                </Typography>
+                {pending.candidates.length ? (
+                  <>
+                    <Typography>Suggested address: {pending.candidates[0].address}</Typography>
+                    <Button
+                      variant="contained"
+                      disabled={isLoading}
+                      onClick={() =>
+                        submit('location_confirmation', {
+                          field,
+                          candidateId: pending.candidates[0].id,
+                          address: pending.candidates[0].address,
+                        })
+                      }
+                    >
+                      Confirm {field === 'start_address' ? 'starting location' : 'destination'}
+                    </Button>
+                    {pending.candidates.length > 1 && (
+                      <Box component="details" sx={{ mt: 1 }}>
+                        <Box component="summary">Choose another match</Box>
+                        {pending.candidates.slice(1).map((candidate) => (
+                          <Button
+                            key={candidate.id}
+                            disabled={isLoading}
+                            onClick={() =>
+                              submit('location_confirmation', {
+                                field,
+                                candidateId: candidate.id,
+                                address: candidate.address,
+                              })
+                            }
+                          >
+                            {candidate.address}
+                          </Button>
+                        ))}
+                      </Box>
+                    )}
+                  </>
+                ) : (
+                  <Typography>No match found for &quot;{pending.query}&quot;.</Typography>
+                )}
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  To change this location, enter a city and state or address below.
+                </Typography>
+              </Box>
+            ))}
             <div ref={chatEndRef} />
           </Box>
 

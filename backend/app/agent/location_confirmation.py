@@ -23,7 +23,20 @@ def confirm_location(
     values[selection.field.replace("address", "coords")] = [candidate.latitude, candidate.longitude]
     if selection.field == "start_address":
         values["start_timezone"] = candidate.timezone
-        values["start_date"] = None
+        if (profile.start_address, profile.start_coords, profile.start_timezone) != (
+            candidate.address,
+            [candidate.latitude, candidate.longitude],
+            candidate.timezone,
+        ):
+            values["start_date"] = None
+        if profile.pending_departure and candidate.timezone:
+            try:
+                values["start_date"] = profile.pending_departure.resolve(
+                    profile.departure_time, candidate.timezone
+                )
+                values["pending_departure"] = None
+            except ValueError:
+                pass  # Save the chosen location; presentation asks for a corrected departure.
     values["pending_locations"].pop(selection.field)
     confirmed = TripProfile.model_validate(values)
     memory.save_trip_profile(user_id, chat_id, confirmed.to_json())

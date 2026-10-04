@@ -20,7 +20,7 @@ from app.agent.schemas import (
 from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.trip_profile import TripProfile
 
-from .conftest import FakeMemory, FakeProvider, FakeTools, make_usage
+from .conftest import FakeMemory, FakeProvider, FakeTools, confirm_pending_locations, make_usage
 
 pytestmark = pytest.mark.asyncio
 
@@ -48,11 +48,20 @@ async def test_saved_location_receipt_uses_geocode_even_when_model_omits_it(
     result = await run_turn(
         _request("drive from SLO"), FallbackChain([provider]), fake_memory, AppToolDispatcher()
     )
-    assert result.presentation.updated == [f"{label.capitalize()}: {address}"]
-    assert result.tripProfile[field] == address
-    assert address in provider.seen_messages[1][0].content
-    if field == "start_address":
-        assert '"start_timezone":"America/Chicago"' in provider.seen_messages[1][0].content
+    assert result.presentation.updated == []
+    assert address in result.presentation.needed[0]
+    pending = result.tripProfile["pending_locations"][field]
+    selected = await run_turn(
+        _request(
+            "confirm",
+            locationConfirmation={"field": field, "candidateId": pending["candidates"][0]["id"]},
+        ),
+        FallbackChain([FakeProvider(fail=True)]),
+        fake_memory,
+        AppToolDispatcher(),
+    )
+    assert selected.presentation.updated == [f"{label.capitalize()}: {address}"]
+    assert selected.tripProfile[field] == address
 
     followup = FakeProvider(responses=[LLMResponse(content="What time?")])
     followup_result = await run_turn(
@@ -107,8 +116,8 @@ def _verified_test_user(monkeypatch):
     monkeypatch.setattr("app.agent.agent.get_user_id_from_token", lambda token: "user-123")
 
 
-def _request(message: str = "plan me a trip") -> AgentChatRequest:
-    return AgentChatRequest(partitionKey="user-123", chatId="42", message=message)
+def _request(message: str = "plan me a trip", **kwargs) -> AgentChatRequest:
+    return AgentChatRequest(partitionKey="user-123", chatId="42", message=message, **kwargs)
 
 
 def _tool_block(name: str, arguments: dict | None = None, prose: str = "") -> str:
@@ -177,7 +186,11 @@ async def test_every_turn_extracts_json_and_validates_all_supplied_fields(
         fake_memory,
         AppToolDispatcher(),
     )
-    saved = TripProfile.from_json(fake_memory.load_trip_profile("user-123", "42"))
+    assert (
+        result.tripProfile["pending_locations"]["start_address"]["candidates"][0]["address"]
+        == "Las Vegas, NV"
+    )
+    saved = confirm_pending_locations(fake_memory, "user-123", "42")
     assert saved.start_address == "Las Vegas, NV"
     assert saved.destination_address == "Houston, TX"
     assert saved.num_stops == 8
@@ -198,7 +211,7 @@ async def test_every_turn_extracts_json_and_validates_all_supplied_fields(
         "car_model",
     }
     assert provider.extraction_calls == 1
-    assert result.modelCalls == 2
+    assert result.modelCalls == 1
 
     skip_provider = FakeProvider(
         responses=[LLMResponse(content="What date would you like to leave?")],
@@ -237,6 +250,7 @@ async def test_later_date_and_skip_use_saved_time(fake_memory, geocoded_location
         fake_memory,
         AppToolDispatcher(),
     )
+    confirm_pending_locations(fake_memory, "user-123", "42")
     second = FakeProvider(
         responses=[LLMResponse(content="I have your departure date and car choice.")],
         extraction_responses=[
@@ -302,7 +316,19 @@ async def test_validated_patch_survives_reply_provider_outage(fake_memory, geoco
         fake_memory,
         AppToolDispatcher(),
     )
+    assert (
+        result.tripProfile["pending_locations"]["start_address"]["candidates"][0]["address"]
+        == "Las Vegas, NV"
+    )
+    confirm_pending_locations(fake_memory, "user-123", "42")
+    result = await run_turn(
+        _request("$200 hotels"),
+        FallbackChain([ExtractThenFail(extraction_responses=['{"details":{"budget":200}}'])]),
+        fake_memory,
+        AppToolDispatcher(),
+    )
     assert result.tripProfile["start_address"] == "Las Vegas, NV"
+    assert result.tripProfile["budget"] == 200
     assert [action.type for action in result.actions] == ["trip_profile_updated"]
     assert "temporarily unavailable" in result.reply
     assert result.modelCalls == 2

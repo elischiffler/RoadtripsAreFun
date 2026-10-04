@@ -11,7 +11,7 @@ from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.tools import ToolContext
 from app.agent.trip_dates import normalize_departure_time, resolve_departure
 from app.agent.trip_profile import TripProfile
-from tests.agent.conftest import FakeMemory
+from tests.agent.conftest import FakeMemory, confirm_pending_locations
 
 
 def _location(address, lat, lon, timezone="America/Los_Angeles"):
@@ -55,8 +55,15 @@ async def test_complete_message_geocodes_and_saves_every_field(monkeypatch):
     )
     assert result.ok
     assert calls == ["San Francisco", "Denver"]
-    assert result.result["clarifications"] == {}
-    profile = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
+    assert set(result.result["clarifications"]) == {
+        "start_address",
+        "destination_address",
+        "departure_date",
+    }
+    pending = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
+    assert pending.start_coords is None
+    assert pending.pending_departure.date == "October 3, 2099"
+    profile = confirm_pending_locations(memory, "owner", "trip")
     assert profile.start_coords == [37.77, -122.42]
     assert profile.destination_coords == [39.74, -104.99]
     assert profile.start_timezone == "America/Los_Angeles"
@@ -76,6 +83,7 @@ async def test_time_only_is_retained_until_date_arrives(monkeypatch):
     pending = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
     assert pending.departure_time == "11:00"
     assert pending.start_date is None
+    confirm_pending_locations(memory, "owner", "trip")
     second = await _record(memory, departure_date="October 3, 2099")
     assert second.ok
     saved = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
@@ -111,8 +119,13 @@ async def test_bad_date_and_stop_count_preserve_valid_locations_and_budget(monke
         departure_date="sometime next season",
     )
     assert result.ok
-    assert set(result.result["clarifications"]) == {"num_stops", "departure_date"}
-    profile = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
+    assert set(result.result["clarifications"]) == {
+        "start_address",
+        "destination_address",
+        "num_stops",
+        "departure_date",
+    }
+    profile = confirm_pending_locations(memory, "owner", "trip")
     assert profile.start_address == "San Luis Obispo"
     assert profile.destination_address == "Los Angeles"
     assert profile.budget == 180
@@ -157,7 +170,8 @@ async def test_missing_timezone_requests_clarification_without_guessing(monkeypa
     memory = FakeMemory()
     result = await _record(memory, start_address="Unclear", budget=90, departure_date="tomorrow")
     assert result.ok
-    assert set(result.result["clarifications"]) == {"start_timezone", "departure_date"}
+    assert set(result.result["clarifications"]) == {"start_address", "departure_date"}
+    confirm_pending_locations(memory, "owner", "trip")
     profile = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
     assert profile.start_timezone is None
     assert profile.start_date is None
@@ -313,6 +327,9 @@ async def test_changing_start_clears_old_date_and_timezone(monkeypatch):
     result = await _record(memory, start_address="Boston")
     assert result.ok
     profile = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
+    assert profile.start_timezone == "America/Los_Angeles"
+    assert "start_address" in profile.pending_locations
+    profile = confirm_pending_locations(memory, "owner", "trip")
     assert profile.start_timezone == "America/New_York"
     assert profile.start_date is None
 

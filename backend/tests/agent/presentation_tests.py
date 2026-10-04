@@ -18,7 +18,7 @@ from app.routing.occupancy import HotelRoom
 from app.schemas.chat_schemas import ChatLogSchema
 
 from .complete_trip_tests import _profile, _stub_planning
-from .conftest import FakeMemory, FakeProvider, FakeTools
+from .conftest import FakeMemory, FakeProvider, FakeTools, confirm_pending_locations
 
 
 @pytest.fixture(autouse=True)
@@ -80,10 +80,12 @@ async def test_conversation_corrections_invalids_and_no_change(monkeypatch):
         TripProfile(traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]).to_json(),
     )
     first = await turn(memory, {"start_address": "Boulder", "destination_address": "Marceline"})
-    assert first.presentation.updated == [
-        "Starting location: Boulder, USA",
-        "Destination: Marceline, USA",
-    ]
+    assert first.presentation.updated == []
+    assert "Boulder, USA" in first.presentation.needed[0]
+    assert "Marceline, USA" in first.presentation.needed[1]
+    confirmed = confirm_pending_locations(memory, "user", "42")
+    assert confirmed.start_address == "Boulder, USA"
+    assert confirmed.destination_address == "Marceline, USA"
     second = await turn(
         memory,
         {"departure_time": "10 AM", "car_year": 2023, "car_make": "Mazda", "car_model": "CX-5"},

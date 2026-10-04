@@ -152,7 +152,7 @@ async def test_yes_does_not_confirm_and_selection_never_uses_model_coordinates(m
     assert provider.calls == 0
     assert "choose" in first.reply.lower()
     assert first.presentation.updated == []
-    assert "Starting location: Please choose" in first.presentation.needed[0]
+    assert "Starting location: Confirm the suggested address" in first.presentation.needed[0]
     candidate = first.tripProfile["pending_locations"]["start_address"]["candidates"][0]
     yes = await run_turn(
         request("yes"), FallbackChain([FakeProvider(fail=True)]), memory, AppToolDispatcher()

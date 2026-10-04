@@ -118,7 +118,16 @@ async def test_recorded_details_and_skipped_car_can_complete_together(monkeypatc
         ctx,
     )
     assert recorded.ok is True
-    assert recorded.result["clarifications"] == {}
+    assert set(recorded.result["clarifications"]) == {
+        "start_address",
+        "destination_address",
+        "departure_date",
+    }
+    blocked = await dispatcher.dispatch(ToolCall(name="complete_trip"), ctx)
+    assert not blocked.ok
+    from tests.agent.conftest import confirm_pending_locations
+
+    confirm_pending_locations(ctx.memory, ctx.user_id, ctx.chat_id)
     completed = await dispatcher.dispatch(ToolCall(name="complete_trip"), ctx)
     assert completed.ok is True
     assert completed.result["status"] == "complete"

@@ -31,7 +31,7 @@ the changes since the older guidance and implementation still in progress.
   `record_trip_details` and `complete_trip` in `tool_dispatcher.py` collect and
   complete it. An explicit skipped car is valid; an unanswered choice blocks
   completion. Relative dates resolve in the starting location's IANA timezone.
-- Ambiguous endpoints require explicit owner/chat-scoped candidate selection;
+- New endpoints receive a suggested address and require explicit owner/chat-scoped selection;
   pending endpoints block agent route and itinerary tools. See
   `docs/agent-location-confirmations.md`.
 - The chat shows deterministic saved-detail lists and at most two missing-detail

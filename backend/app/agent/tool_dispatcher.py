@@ -48,7 +48,7 @@ from app.agent.persona import ATTRIBUTE_KEYS, PersonaWeightUpdate
 from app.agent.progress import emit, stage
 from app.agent.schemas import ToolCall, ToolResult, ToolSpec
 from app.agent.tools import ToolContext
-from app.agent.trip_dates import normalize_departure_time, resolve_departure
+from app.agent.trip_dates import PendingDeparture, normalize_departure_time
 from app.agent.trip_profile import TripProfile, TripProfileUpdate
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import MapBox, Route_Payload
@@ -68,7 +68,7 @@ from app.routing.selection import select_algorithm
 from app.routing.sources.mapbox import call_route
 from app.routing.sources.persona_candidates import CandidateProviderError
 from app.utils.geolocation_helpers import get_location
-from app.utils.location_resolution import needs_confirmation, resolve_location
+from app.utils.location_resolution import resolve_location
 
 logger = logging.getLogger(__name__)
 
@@ -956,6 +956,18 @@ class AppToolDispatcher:
             if field not in args:
                 continue
             supplied = args[field]
+            if isinstance(supplied, str):
+                query = supplied.strip().casefold()
+                pending = current.pending_locations.get(field)
+                if pending and pending.candidates and pending.query.casefold() == query:
+                    continue  # Keep visible choices valid when extraction repeats the same input.
+                if (
+                    not pending
+                    and getattr(current, field)
+                    and getattr(current, field.replace("address", "coords"))
+                    and getattr(current, field).casefold() == query
+                ):
+                    continue  # Repeating the saved canonical address is not a replacement.
             # A replacement search invalidates old choice IDs even on failure.
             values["pending_locations"][field] = {"query": str(supplied)[:1000], "candidates": []}
             changed = True
@@ -967,41 +979,13 @@ class AppToolDispatcher:
             except (HTTPException, RequestException, ValueError):
                 resolution = None
             if resolution is None or not resolution.candidates:
-                clarifications[field] = "I could not confirm that location; please clarify it."
+                clarifications[field] = "I could not find that location; please clarify it."
                 continue
-            if needs_confirmation(resolution):
-                values["pending_locations"][field] = resolution.model_dump()
-                clarifications[field] = (
-                    "Choose the exact location below, or provide a full city and state or address."
-                )
-                continue
-            location = resolution.candidates[0]
-            try:
-                coords = [location.latitude, location.longitude]
-                TripProfile.model_validate(
-                    {**values, field: location.address, field.replace("address", "coords"): coords}
-                )
-            except (ValidationError, AttributeError, TypeError):
-                clarifications[field] = "The location had invalid coordinates; please clarify it."
-                continue
-            coords_field = field.replace("address", "coords")
-            if field == "start_address":
-                timezone = location.timezone
-                if (values["start_address"], values["start_coords"], values["start_timezone"]) != (
-                    location.address,
-                    coords,
-                    timezone,
-                ):
-                    values["start_date"] = None
-                values["start_timezone"] = timezone
-                if timezone is None:
-                    clarifications["start_timezone"] = (
-                        "The starting location has no IANA timezone; please clarify the location."
-                    )
-            values[field] = location.address
-            values[coords_field] = coords
-            values["pending_locations"].pop(field, None)
-            changed = True
+            # Provider order supplies a suggestion, not permission to plan with it.
+            values["pending_locations"][field] = resolution.model_dump()
+            clarifications[field] = (
+                f"Confirm the suggested address: {resolution.candidates[0].address}"
+            )
 
         for field in ("num_stops", "budget", "traveler_count", "hotel_rooms"):
             if field not in args:
@@ -1067,19 +1051,32 @@ class AppToolDispatcher:
                 clarifications["departure_time"] = str(exc)
 
         date_wording = args.get("departure_date")
-        if date_wording is None and "departure_time" in args and values["start_date"]:
+        if (
+            date_wording is None
+            and "departure_time" in args
+            and values["start_date"]
+            and not values["pending_departure"]
+            and "start_address" not in values["pending_locations"]
+        ):
             date_wording = datetime.fromisoformat(values["start_date"]).date().isoformat()
         if date_wording is not None:
+            try:
+                values["pending_departure"] = PendingDeparture(date=date_wording).model_dump()
+                values["start_date"] = None
+                changed = True
+            except ValidationError:
+                clarifications["departure_date"] = "Please provide a departure date."
+        if values["pending_departure"]:
             if not values["start_timezone"] or "start_address" in values["pending_locations"]:
                 clarifications["departure_date"] = (
-                    "Please clarify the starting location so I can determine its timezone."
+                    "Your departure date is saved; confirm the starting location to finish setting it."
                 )
             else:
                 try:
-                    time_wording = values["departure_time"] or "09:00"
-                    values["start_date"] = resolve_departure(
-                        f"{date_wording} at {time_wording}", values["start_timezone"]
-                    )
+                    values["start_date"] = PendingDeparture.model_validate(
+                        values["pending_departure"]
+                    ).resolve(values["departure_time"], values["start_timezone"])
+                    values["pending_departure"] = None
                     changed = True
                 except ValueError as exc:
                     clarifications["departure_date"] = str(exc)

@@ -4,7 +4,7 @@ import re
 from typing import Literal
 from uuid import uuid4
 
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from app.agent.trip_dates import timezone_from_location
 from app.utils.geolocation_helpers import get_location
@@ -28,6 +28,19 @@ class LocationCandidate(BaseModel):
 class PendingLocation(BaseModel):
     query: str = Field(max_length=1000)
     candidates: list[LocationCandidate] = Field(default_factory=list, max_length=5)
+
+    @model_validator(mode="after")
+    def prefer_matching_address(self):
+        """Prefer an address starting with the supplied place/region; keep every choice."""
+        query_words = re.findall(r"\w+", self.query.casefold())
+        if query_words:
+            self.candidates.sort(
+                key=lambda candidate: (
+                    re.findall(r"\w+", candidate.address.casefold())[: len(query_words)]
+                    != query_words
+                )
+            )
+        return self
 
 
 LocationField = Literal["start_address", "destination_address"]

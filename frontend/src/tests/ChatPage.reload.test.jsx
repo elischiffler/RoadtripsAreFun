@@ -61,13 +61,48 @@ describe('ChatPage reload', () => {
       UserData: new Data(new ChatLogs([partial])),
     });
     render(<Harness />);
-    const button = await screen.findByRole('button', { name: 'Salem-Leckrone Airport, Illinois' });
+    const button = await screen.findByRole('button', { name: 'Confirm starting location' });
+    expect(button.closest('[role="log"]')).not.toBeNull();
+    expect(
+      screen.getByText('Suggested address: Salem-Leckrone Airport, Illinois')
+    ).toBeInTheDocument();
     const submit = useTripWorkflow.mock.results.at(-1).value.submit;
     await userEvent.click(button);
     expect(submit).toHaveBeenCalledWith('location_confirmation', {
       field: 'start_address',
       candidateId: 'choice-1',
       address: 'Salem-Leckrone Airport, Illinois',
+    });
+  });
+  it('lets the traveler choose an alternative to the suggested address', async () => {
+    sessionStorage.clear();
+    const partial = new ChatData(1);
+    partial.tripProfile = {
+      pending_locations: {
+        destination_address: {
+          query: 'Boulder',
+          candidates: [
+            { id: 'city', address: 'Boulder, Colorado, USA' },
+            { id: 'county', address: 'Boulder County, Colorado, USA' },
+          ],
+        },
+      },
+    };
+    initializeUserData.mockResolvedValueOnce({
+      chats: [{ id: 1, title: 'Trip', messages: [] }],
+      UserData: new Data(new ChatLogs([partial])),
+    });
+    render(<Harness />);
+    const suggestion = await screen.findByRole('button', { name: 'Confirm destination' });
+    expect(suggestion.closest('[role="log"]')).not.toBeNull();
+    await userEvent.click(screen.getByText('Choose another match'));
+    const alternative = screen.getByRole('button', { name: 'Boulder County, Colorado, USA' });
+    const submit = useTripWorkflow.mock.results.at(-1).value.submit;
+    await userEvent.click(alternative);
+    expect(submit).toHaveBeenCalledWith('location_confirmation', {
+      field: 'destination_address',
+      candidateId: 'county',
+      address: 'Boulder County, Colorado, USA',
     });
   });
   it('restores lists alongside old plain text messages', async () => {

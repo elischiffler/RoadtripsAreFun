@@ -7,6 +7,8 @@ import re
 from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from pydantic import AwareDatetime, BaseModel, Field
+
 _MONTHS = {name.lower(): number for number, name in enumerate(calendar.month_name) if name}
 _MONTHS.update({name.lower(): number for number, name in enumerate(calendar.month_abbr) if name})
 _MONTHS["sept"] = 9
@@ -144,3 +146,18 @@ def resolve_departure(wording: str, timezone: str, now: datetime | None = None) 
     if departure <= local_now:
         raise ValueError("Departure must be in the future; please choose a later date or time")
     return departure.isoformat()
+
+
+class PendingDeparture(BaseModel):
+    """Retain supplied date wording and its reference instant until the origin is confirmed."""
+
+    date: str = Field(min_length=1, max_length=1000)
+    requested_at: AwareDatetime = Field(default_factory=lambda: datetime.now(UTC))
+
+    def resolve(self, time: str | None, timezone: str) -> str:
+        departure = resolve_departure(
+            f"{self.date} at {time or '09:00'}", timezone, now=self.requested_at
+        )
+        if datetime.fromisoformat(departure) <= datetime.now(UTC):
+            raise ValueError("Departure must be in the future; please choose a later date or time")
+        return departure

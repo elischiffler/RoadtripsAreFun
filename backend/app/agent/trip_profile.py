@@ -32,7 +32,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.agent.persona import validate_weight_update
-from app.agent.trip_dates import normalize_departure_time
+from app.agent.trip_dates import PendingDeparture, normalize_departure_time
 from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
 from app.routing.occupancy import HotelRooms, TravelerCount
 from app.utils.location_resolution import PendingLocation
@@ -110,6 +110,7 @@ class TripProfile(BaseModel):
     budget: float | None = None  # nightly hotel budget, USD
     start_date: str | None = None  # canonical ISO-8601 departure with UTC offset
     departure_time: str | None = None  # selected local HH:MM, retained before date
+    pending_departure: PendingDeparture | None = None
     car: Car | None = None
     persona_weights: dict[str, float] | None = None  # partial, per-trip override
     car_status: CarStatus = "unanswered"

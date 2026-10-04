@@ -140,12 +140,35 @@ def present_details(
             text = f"{LABELS[field]}: {value}"
         updated.append(text)
 
+    if after.pending_departure and (full or after.pending_departure != before.pending_departure):
+        updated.append("Departure date (awaiting validation): " + after.pending_departure.date)
     issues = dict(issues)
+    if (
+        after.start_address
+        and not after.start_timezone
+        and not after.start_date
+        and "start_address" not in after.pending_locations
+    ):
+        issues["start_timezone"] = (
+            "The selected starting location has no usable timezone. Please enter a different city or address."
+        )
+    if after.pending_departure:
+        if "start_address" in after.pending_locations or not after.start_timezone:
+            issues["departure_date"] = (
+                "Your date is saved; confirm the starting location to finish setting it."
+            )
+        else:
+            try:
+                after.pending_departure.resolve(after.departure_time, after.start_timezone)
+            except ValueError as exc:
+                issues["departure_date"] = str(exc)
     if after.hotel_rooms and "hotel_rooms" in after.missing_details():
         issues["hotel_rooms"] = "Room occupants must equal the total travelers including you."
     for field, pending in after.pending_locations.items():
         issues[field] = (
-            f"Please choose a match for '{pending.query}' below, or enter a full city and state or address."
+            f"Confirm the suggested address: {pending.candidates[0].address}. Choose another match or enter a correction if needed."
+            if pending.candidates
+            else f"No match found for '{pending.query}'. Please enter a city and state or address."
         )
     needed = [
         f"{LABELS.get(field, 'Trip detail')}: "

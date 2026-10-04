@@ -216,3 +216,23 @@ def fake_memory():
 @pytest.fixture
 def fake_tools():
     return FakeTools()
+
+
+def confirm_pending_locations(memory, user_id, chat_id):
+    """Model the traveler explicitly selecting each saved provider suggestion."""
+    from app.agent.location_confirmation import confirm_location
+    from app.agent.trip_profile import TripProfile
+    from app.utils.location_resolution import LocationConfirmation
+
+    profile = TripProfile.from_json(memory.load_trip_profile(user_id, chat_id))
+    for field, pending in list(profile.pending_locations.items()):
+        profile = confirm_location(
+            memory,
+            user_id,
+            chat_id,
+            LocationConfirmation(
+                field=field,
+                candidateId=pending.candidates[0].id,
+            ),
+        )
+    return profile

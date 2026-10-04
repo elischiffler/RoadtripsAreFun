@@ -19,41 +19,56 @@ saved locations and to ask for a correction when they conflict with the
 traveler's intent. This is guidance for model prose; the backend-generated
 confirmation is deterministic.
 
-## Ambiguous location choices
+## Suggested addresses and explicit confirmation
 
-The shared resolver requests multiple OpenCage results and presents at most
-five valid, deduplicated candidates. Multiple distinct candidates require a
-choice. A bare two- or three-letter abbreviation such as `SLO` or `LA` requires
-confirmation even when the provider returns one result. A single valid result
-for other wording can be saved directly. Provider confidence measures precision,
-so it is not used as proof of relevance. This conservative policy may request
-confirmation even when the traveler considers a city obvious.
+The chat resolver accepts nonblank location wording, including abbreviations,
+city names and full addresses, and requests multiple OpenCage results. It keeps
+at most five valid, deduplicated candidates. Results whose leading address words
+match the supplied query come first; other matches retain provider order. Thus
+San Luis Obispo, California precedes San Luis Obispo County for a full city/state
+query, without discarding the county alternative. The first result
+is a **suggested address**, not a claim that the traveler intended that place.
+Every new endpoint requires an explicit selection, even when there is only one
+match. No confidence threshold or requirement to type a full street address
+blocks a usable suggestion. Failed lookups ask for a correction and never
+invent coordinates.
 
-The recorder saves unresolved searches in `TripProfile.pending_locations`.
-This includes empty candidates after a failed lookup, so a failed revision
-cannot silently reuse the old origin for a new trip. Valid sibling details
-remain saved. Old confirmed endpoints remain intact until a new selection or
-unambiguous correction succeeds, while all agent route/itinerary tools reject
-pending locations. The agent responds with a deterministic choice prompt;
-free-form `yes` never chooses a candidate. Location extraction is instructed to
-preserve abbreviations exactly.
+The recorder saves searches in `TripProfile.pending_locations`, including empty
+candidates after a failed lookup. Previously confirmed endpoints stay intact
+until selection, but all agent route/itinerary tools reject pending endpoints.
+Valid sibling details remain saved. Repeating the same pending query preserves
+its choice IDs; repeating a confirmed canonical address does not reopen it.
+Changing the query invalidates the old IDs even if the new lookup fails.
 
-Chat shows exact candidate addresses as buttons and offers a full city/state
-or address correction when none match. A click posts `locationConfirmation`
-with `field` and `candidateId`; addresses, coordinates and timezones are loaded
-only from this authenticated owner's chat memory. There is no model-callable
-confirmation tool. New searches replace the opaque IDs; old or foreign choices
-are rejected. Selection does not need inference or another geocode. Confirming
-the start clears the old departure date but keeps the selected local time;
-the traveler supplies the date again. Confirming the destination asks the
-traveler to continue planning. Changed endpoints clear the displayed old route
-and itinerary. Completion uses the stored coordinates without re-geocoding.
+Confirmation cards live **inside the scrollable chat log**, after the latest
+reply. Each shows the exact suggested address and a labeled Confirm button;
+additional provider matches are available under Choose another match. Travelers
+can also type a correction. These cards must not be outside the fixed chat box,
+which would cover them. The deterministic reply names the suggested address,
+rather than repeatedly asking for more specific wording.
 
-The pending profile is also saved in the existing `ChatData` JSON so buttons
-survive reloads. This UI snapshot is advisory; confirmation always checks
-authoritative agent memory. No database schema migration is required. Existing
-trips remain readable; previously misresolved locations are not automatically
-corrected and need a new full-address request.
+A click posts `locationConfirmation` with `field` and `candidateId`. Only this
+authenticated owner's chat memory supplies the address, coordinates and timezone.
+There is no model-callable confirmation tool. Expired or foreign choices are
+rejected; a free-form `yes` never selects a candidate. The confirmation needs no
+model inference or additional geocode. Changed endpoints clear the displayed old
+route and itinerary; completion uses saved coordinates without re-geocoding.
+
+`TripProfile.pending_departure` retains supplied departure wording and its UTC
+request instant while the origin is pending. The chosen local time is retained
+separately. Confirming the start resolves that wording in the selected IANA
+timezone, using the original request instant for tomorrow and yearless dates.
+The result must still be in the future. Invalid dates, DST ambiguities and missing
+timezones ask for clarification without discarding the selected location or
+other valid details. Changing an origin without supplying a new date still
+clears the previous canonical departure; no date is silently copied from an old
+trip. Dates already lost by an older server must be supplied again.
+
+Pending locations and departure wording persist through the existing `ChatData`
+and agent-memory JSON. The frontend snapshot is advisory; confirmation always
+checks authoritative memory. No database schema migration is required. Existing
+trips remain readable and previously confirmed addresses are not retroactively
+made pending.
 
 The authenticated direct `/validate-location` API shares the same resolution
 policy. One unambiguous match keeps the existing success shape. Ambiguity
@@ -62,7 +77,9 @@ and bounded candidates; callers must ask for a clarified address or make an
 explicit coordinate selection. Existing non-trip reverse geocoding and hotel
 verification keep their existing helper behavior.
 
-Regression coverage uses fake model/geocoder responses for canonical origin
+Regression coverage uses fake model/geocoder responses for single and multiple
+address suggestions, query stability, date retention and original-date anchoring,
+canonical origin
 and destination receipts, failed updates, subsequent turns, complete schema
 serialization, refreshed tool continuation state, pending guards, ownership,
 stale selections and timezone/date invalidation. Frontend tests cover choice
