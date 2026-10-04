@@ -25,6 +25,7 @@ from app.agent.schemas import ToolCall
 from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.tools import ToolContext
 from app.agent.trip_profile import TripProfile
+from app.routing.occupancy import HotelRoom
 
 from .conftest import FakeMemory
 
@@ -51,7 +52,15 @@ EXPECTED_TOOLS = {
 def _ctx(memory=None, *, car_skipped=False) -> ToolContext:
     if car_skipped:
         memory = FakeMemory()
-        memory.save_trip_profile("user-1", "42", TripProfile(car_status="skipped").to_json())
+        memory.save_trip_profile(
+            "user-1",
+            "42",
+            TripProfile(
+                car_status="skipped",
+                traveler_count=2,
+                hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+            ).to_json(),
+        )
     return ToolContext(user_id="user-1", chat_id="42", memory=memory)
 
 
@@ -248,9 +257,13 @@ async def test_generate_itinerary_success_has_action(monkeypatch):
 
     result = await _dispatcher().dispatch(
         ToolCall(
-            name="generate_itinerary", arguments={"route": {}, "start_time": "2030-01-01T09:00:00Z"}
+            name="generate_itinerary",
+            arguments={
+                "route": {"traveler_count": 2, "hotel_rooms": [{"adults": 2, "child_ages": []}]},
+                "start_time": "2030-01-01T09:00:00Z",
+            },
         ),
-        _ctx(),
+        _ctx(car_skipped=True),
     )
     assert result.ok is True
     assert result.result["action"] == "itinerary_updated"
@@ -266,9 +279,13 @@ async def test_generate_itinerary_failure_returns_error(monkeypatch):
 
     result = await _dispatcher().dispatch(
         ToolCall(
-            name="generate_itinerary", arguments={"route": {}, "start_time": "2030-01-01T09:00:00Z"}
+            name="generate_itinerary",
+            arguments={
+                "route": {"traveler_count": 2, "hotel_rooms": [{"adults": 2, "child_ages": []}]},
+                "start_time": "2030-01-01T09:00:00Z",
+            },
         ),
-        _ctx(),
+        _ctx(car_skipped=True),
     )
     assert result.ok is False
     assert "Incomplete route" in result.error

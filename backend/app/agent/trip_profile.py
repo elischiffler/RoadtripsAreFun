@@ -34,6 +34,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from app.agent.persona import validate_weight_update
 from app.agent.trip_dates import normalize_departure_time
 from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
+from app.routing.occupancy import HotelRooms, TravelerCount
 from app.utils.location_resolution import PendingLocation
 
 logger = logging.getLogger(__name__)
@@ -104,6 +105,8 @@ class TripProfile(BaseModel):
     destination_address: str | None = None
     destination_coords: list[float] | None = None  # [lat, lon]
     num_stops: int | None = None  # 1..10
+    traveler_count: TravelerCount | None = None
+    hotel_rooms: HotelRooms | None = None
     budget: float | None = None  # nightly hotel budget, USD
     start_date: str | None = None  # canonical ISO-8601 departure with UTC offset
     departure_time: str | None = None  # selected local HH:MM, retained before date
@@ -243,6 +246,14 @@ class TripProfile(BaseModel):
             or not self.destination_coords
         ):
             missing.append("destination_address")
+        if self.traveler_count is None:
+            missing.append("traveler_count")
+        if (
+            not self.hotel_rooms
+            or sum(room.adults + len(room.child_ages) for room in self.hotel_rooms)
+            != self.traveler_count
+        ):
+            missing.append("hotel_rooms")
         if self.num_stops is None:
             missing.append("num_stops")
         if self.budget is None:
@@ -291,6 +302,8 @@ class TripProfileUpdate(BaseModel):
     destination_address: str | None = None
     destination_coords: list[float] | None = None
     num_stops: int | None = None
+    traveler_count: TravelerCount | None = None
+    hotel_rooms: HotelRooms | None = None
     budget: float | None = None
     start_date: str | None = None
     car: Car | None = None

@@ -165,7 +165,7 @@ the full polyline (`geometry.coordinates`), a single `leg`, `duration`, and
 `get_final_route(request)` validates the body into `Route_Payload` and calls the
 same planning core as the chat tool.
 
-### Persona-aware CP-SAT planner
+### Trip personality and the CP-SAT planner
 
 `algorithm: "cp_sat"` selects the verified-candidate planner, and omitting the
 field uses the same default. The authenticated endpoint loads the account's 14
@@ -342,3 +342,5 @@ Defined in `backend/app/models/routing_models/routing_models.py`.
   upstream failures manifest as `ValidationError` → HTTP 502.
 - **Route generation does no database writes.** Persistence (route segmentation
   via `segment_route`) happens separately in the chat CRUD layer.
+
+Traveler counts and family room pricing use the [occupancy contract](travelers-and-hotel-occupancy.md).

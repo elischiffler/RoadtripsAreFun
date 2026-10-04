@@ -6,8 +6,11 @@ from datetime import datetime
 from app.agent.schemas import TripDetailPresentation
 from app.agent.trip_profile import TripProfile
 from app.models.scheduling_policy import SchedulingPolicy
+from app.routing.occupancy import COUNT_QUESTION, OCCUPANCY_QUESTION
 
 QUESTIONS = {
+    "traveler_count": COUNT_QUESTION,
+    "hotel_rooms": OCCUPANCY_QUESTION,
     "start_address": "What city or address are you starting from?",
     "destination_address": "What city or address are you traveling to?",
     "num_stops": "How many attraction stops would you like (1–10)?",
@@ -17,6 +20,9 @@ QUESTIONS = {
     "car": "Optional car: what year, make, and model will you use, or would you like to skip?",
 }
 LABELS = {
+    "traveler_count": "Travelers (including you)",
+    "hotel_rooms": "Hotel occupancy",
+    "persona_weights": "Trip personality",
     "start_address": "Starting location",
     "destination_address": "Destination",
     "num_stops": "Attraction stops",
@@ -63,6 +69,9 @@ def present_details(
         "start_address",
         "destination_address",
         "num_stops",
+        "traveler_count",
+        "hotel_rooms",
+        "persona_weights",
         "budget",
         "start_date",
         "departure_time",
@@ -104,13 +113,29 @@ def present_details(
                 continue
             car = after.car
             text = "Optional car: " + (f"{car.year} {car.make} {car.model}" if car else "skipped")
+        elif field == "hotel_rooms":
+            text = "Hotel rooms: " + "; ".join(
+                f"Room {i + 1}: {room.adults} adults, "
+                + (
+                    "children aged " + ", ".join(map(str, room.child_ages))
+                    if room.child_ages
+                    else "no children"
+                )
+                for i, room in enumerate(value)
+            )
+        elif field == "persona_weights":
+            text = "Trip personality: " + ", ".join(
+                f"{key} {weight:g}" for key, weight in value.items()
+            )
         elif field == "budget":
-            text = f"Hotel budget: ${value:g} per night"
+            text = f"Hotel budget: ${value:g} per room per night"
         else:
             text = f"{LABELS[field]}: {value}"
         updated.append(text)
 
     issues = dict(issues)
+    if after.hotel_rooms and "hotel_rooms" in after.missing_details():
+        issues["hotel_rooms"] = "Room occupants must equal the total travelers including you."
     for field, pending in after.pending_locations.items():
         issues[field] = (
             f"Please choose a match for '{pending.query}' below, or enter a full city and state or address."

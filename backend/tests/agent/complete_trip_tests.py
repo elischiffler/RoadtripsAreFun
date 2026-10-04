@@ -24,6 +24,8 @@ def _profile(**changes) -> TripProfile:
         "start_coords": [39.74, -104.99],
         "destination_address": "Santa Fe, NM",
         "destination_coords": [35.69, -105.94],
+        "traveler_count": 2,
+        "hotel_rooms": [{"adults": 2, "child_ages": []}],
         "num_stops": 2,
         "budget": 200,
         "start_date": departure,
@@ -69,6 +71,8 @@ def _stub_planning(monkeypatch):
             model_dump=lambda **kwargs: {
                 "stops": [{"name": "Museum", "type": "stop"}],
                 "cost": 120.0,
+                "traveler_count": 2,
+                "hotel_rooms": [{"adults": 2, "child_ages": []}],
                 "coordinates": [[39.74, -104.99], [35.69, -105.94]],
             },
         )
@@ -102,6 +106,8 @@ async def test_recorded_details_and_skipped_car_can_complete_together(monkeypatc
             arguments={
                 "start_address": "Denver, CO",
                 "destination_address": "Santa Fe, NM",
+                "traveler_count": 2,
+                "hotel_rooms": [{"adults": 2, "child_ages": []}],
                 "num_stops": 2,
                 "budget": 200,
                 "departure_date": "October 10, 2099",
@@ -152,7 +158,14 @@ async def test_complete_trip_emits_both_existing_actions_with_same_departure(mon
     [
         ({"start_coords": None}, "validated start location"),
         ({"destination_address": None}, "validated destination"),
-        ({"num_stops": None}, "number of stops"),
+        (
+            {
+                "traveler_count": 2,
+                "hotel_rooms": [{"adults": 2, "child_ages": []}],
+                "num_stops": None,
+            },
+            "number of stops",
+        ),
         ({"budget": None}, "nightly hotel budget"),
         ({"start_date": None}, "upcoming departure"),
         ({"car_status": "unanswered"}, "car choice or explicit skip"),

@@ -57,6 +57,13 @@ from app.routers.car_api import get_car_details, get_gas_price
 from app.routers.itinerary_api import build_itinerary
 from app.routers.routing_api import plan_final_route
 from app.routing.config import geolocator
+from app.routing.occupancy import (
+    MAX_ROOMS,
+    MAX_TRAVELERS,
+    UNSUPPORTED_OCCUPANCY,
+    HotelRoom,
+    require_occupancy,
+)
 from app.routing.selection import select_algorithm
 from app.routing.sources.mapbox import call_route
 from app.routing.sources.persona_candidates import CandidateProviderError
@@ -420,6 +427,17 @@ class AppToolDispatcher:
                         "start_address": {"type": "string"},
                         "destination_address": {"type": "string"},
                         "num_stops": {"type": "integer", "minimum": 1, "maximum": 10},
+                        "traveler_count": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": MAX_TRAVELERS,
+                        },
+                        "hotel_rooms": {
+                            "type": "array",
+                            "minItems": 1,
+                            "maxItems": MAX_ROOMS,
+                            "items": HotelRoom.model_json_schema(),
+                        },
                         "budget": {"type": "number", "minimum": 0},
                         "departure_date": {"type": "string"},
                         "departure_time": {"type": "string"},
@@ -441,7 +459,7 @@ class AppToolDispatcher:
             ),
             ToolSpec(
                 name="update_trip_profile",
-                description="Update trip-only persona preference weights.",
+                description="Update Trip personality preference weights for this trip only.",
                 parameters={
                     "type": "object",
                     "properties": {
@@ -632,6 +650,7 @@ class AppToolDispatcher:
         # the coordinates used to rebuild the initial route when the route_handle
         # from an earlier turn is no longer in this turn's artifact store.
         trip = self._load_trip_profile(ctx)
+        require_occupancy(trip.traveler_count, trip.hotel_rooms)
         if trip.car_status == "unanswered":
             raise ValueError(
                 "Ask whether the traveler wants to provide a car year, make, and model "
@@ -660,6 +679,8 @@ class AppToolDispatcher:
 
         payload_data: dict[str, Any] = {
             "initial_route": initial_route,
+            "traveler_count": trip.traveler_count,
+            "hotel_rooms": [room.model_dump() for room in trip.hotel_rooms],
             "num_stops": int(num_stops),
             "budget": float(budget),
             "scheduling_policy": trip.scheduling_policy.model_dump(),
@@ -716,7 +737,16 @@ class AppToolDispatcher:
 
     async def _generate_itinerary(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         # Resolve the planned route from its handle (fallback: inline `route`).
+        trip = self._load_trip_profile(ctx)
+        require_occupancy(trip.traveler_count, trip.hotel_rooms)
         route_obj = self._resolve_route_for_itinerary(args, ctx)
+        route_data = route_obj.model_dump() if hasattr(route_obj, "model_dump") else route_obj
+        if route_data.get("traveler_count") != trip.traveler_count or route_data.get(
+            "hotel_rooms"
+        ) != [room.model_dump() for room in trip.hotel_rooms]:
+            raise ValueError(
+                "Traveler occupancy changed or is unverified; regenerate the route before its itinerary."
+            )
         start_time = args.get("start_time")
         if not start_time and ctx.memory is not None:
             saved = ctx.memory.load_planned_route(ctx.user_id, ctx.chat_id)
@@ -746,7 +776,10 @@ class AppToolDispatcher:
         if ctx.memory is None:
             raise ValueError("A saved trip profile is required.")
         trip = self._load_trip_profile(ctx)
+        require_occupancy(trip.traveler_count, trip.hotel_rooms)
         labels = {
+            "traveler_count": "total travelers including you",
+            "hotel_rooms": "room allocation including adults and child ages",
             "start_address": "validated start location",
             "destination_address": "validated destination",
             "num_stops": "number of stops",
@@ -970,7 +1003,7 @@ class AppToolDispatcher:
             values["pending_locations"].pop(field, None)
             changed = True
 
-        for field in ("num_stops", "budget"):
+        for field in ("num_stops", "budget", "traveler_count", "hotel_rooms"):
             if field not in args:
                 continue
             try:
@@ -979,12 +1012,25 @@ class AppToolDispatcher:
                 if value is None:
                     raise ValueError("missing")
             except (ValidationError, ValueError, TypeError):
+                if field in {"traveler_count", "hotel_rooms"}:
+                    clarifications[field] = (
+                        UNSUPPORTED_OCCUPANCY
+                        if field == "hotel_rooms"
+                        else "Please give a whole number from 1 to 24, including you. Up to four rooms of six guests can be searched."
+                    )
+                    values["hotel_rooms"] = None
+                    if field == "traveler_count":
+                        values["traveler_count"] = None
+                    changed = True
+                    continue
                 clarifications[field] = (
                     "Please give a whole number from 1 to 10."
                     if field == "num_stops"
                     else "Please give a nonnegative nightly budget in dollars."
                 )
                 continue
+            if field == "traveler_count" and values[field] != value:
+                values["hotel_rooms"] = None
             values[field] = value
             changed = True
 

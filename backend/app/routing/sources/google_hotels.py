@@ -1,4 +1,4 @@
-"""Bounded Google Hotels HTML lookup for one night, two adults, USD.
+"""Bounded Google Hotels HTML lookup for one night, confirmed adults in one room, USD.
 
 Accept only displayed totals whose returned stay controls match the request.
 No JavaScript execution, challenge bypass, or invented prices on failure.
@@ -20,6 +20,7 @@ from lxml import html
 from lxml.etree import LxmlError
 
 from app.agent.progress import emit, stage
+from app.routing.occupancy import HotelRoom
 
 BASE = "https://www.google.com"
 MAX_DETAILS = 6
@@ -50,7 +51,7 @@ def _field(number: int, value: int | bytes) -> bytes:
     return _varint(number * 8) + _varint(value)
 
 
-def stay_token(check_in: date) -> str:
+def stay_token(check_in: date, room: HotelRoom) -> str:
     """Google's undocumented protobuf `ts` parameter; response checks are mandatory."""
 
     def day(value: date) -> bytes:
@@ -61,22 +62,27 @@ def stay_token(check_in: date) -> str:
     )
     payload = (
         _field(1, 1)
-        + _field(2, _field(1, _field(1, 3)) * 2 + _field(2, 1))
+        + _field(
+            2,
+            _field(1, _field(1, 3)) * room.adults
+            + b"".join(_field(1, _field(1, 2) + _field(2, age)) for age in room.provider_child_ages)
+            + _field(2, 1),
+        )
         + _field(3, _field(2, _field(2, duration) + _field(6, _field(1, 1))))
         + _field(5, _field(1, _field(7, b"USD")))
     )
     return base64.urlsafe_b64encode(payload).decode().rstrip("=")
 
 
-def _params(check_in: date) -> dict[str, str]:
-    return {"ts": stay_token(check_in), "hl": "en", "gl": "us", "curr": "USD"}
+def _params(check_in: date, room: HotelRoom) -> dict[str, str]:
+    return {"ts": stay_token(check_in, room), "hl": "en", "gl": "us", "curr": "USD"}
 
 
 def _key(name: str) -> str:
     return " ".join(re.findall(r"\w+", name.casefold()))
 
 
-def _validate_stay(root, check_in: date) -> None:
+def _validate_stay(root, check_in: date, room: HotelRoom) -> None:
     for label, expected in (("Check-in", check_in), ("Check-out", check_in + timedelta(days=1))):
         values = root.xpath(
             f'//input[@aria-label="{label}"]/ancestor::*[@data-value][1]/@data-value'
@@ -84,8 +90,14 @@ def _validate_stay(root, check_in: date) -> None:
         if not values or set(values) != {expected.isoformat()}:
             raise GoogleHotelLookupError("Google Hotels did not confirm the requested stay dates.")
     guests = root.xpath("//*[@data-adults]")
-    if not guests or any(e.get("data-adults") != "2" or e.get("data-children", "") for e in guests):
-        raise GoogleHotelLookupError("Google Hotels did not confirm two adult guests.")
+    if not guests or any(
+        e.get("data-adults") != str(room.adults)
+        or e.get("data-children", "") != ",".join(map(str, room.provider_child_ages))
+        for e in guests
+    ):
+        raise GoogleHotelLookupError(
+            "Google Hotels did not confirm requested adults and child ages."
+        )
     currencies = root.xpath('//span[@jsname="nxRoyb"]/text()')
     if not currencies or set(currencies) != {"USD"}:
         raise GoogleHotelLookupError("Google Hotels did not confirm USD prices.")
@@ -130,11 +142,11 @@ class GoogleHotelProvider:
                     raise GoogleHotelLookupError("Google Hotels returned an oversized response.")
         return html.fromstring(bytes(data))
 
-    async def hotels_near(self, point: list[float], check_in: date) -> list[dict]:
+    async def hotels_near(self, point: list[float], check_in: date, room: HotelRoom) -> list[dict]:
         try:
             async with asyncio.timeout(LOOKUP_TIMEOUT):
                 with stage("hotels.lookup"):
-                    return await self._lookup(point, check_in)
+                    return await self._lookup(point, check_in, room)
         except GoogleHotelLookupError:
             raise
         except (
@@ -150,7 +162,7 @@ class GoogleHotelProvider:
                 "Google Hotels prices are temporarily unavailable. Please try again later."
             ) from exc
 
-    async def _lookup(self, point: list[float], check_in: date) -> list[dict]:
+    async def _lookup(self, point: list[float], check_in: date, room: HotelRoom) -> list[dict]:
         location = await asyncio.to_thread(self.geocoder.reverse, point, timeout=5)
         components = location.raw.get("components", {}) if location else {}
         city = next(
@@ -171,9 +183,9 @@ class GoogleHotelProvider:
         ) as client:
             with stage("hotels.google_search"):
                 root = await self._page(
-                    client, "/travel/search", {**_params(check_in), "q": "hotels in " + query}
+                    client, "/travel/search", {**_params(check_in, room), "q": "hotels in " + query}
                 )
-            _validate_stay(root, check_in)
+            _validate_stay(root, check_in, room)
             cards = root.xpath('//div[@jsname="mutHjb"]')
             if not cards:
                 raise GoogleHotelLookupError(
@@ -212,8 +224,8 @@ class GoogleHotelProvider:
                 seen.add(path)
                 details += 1
                 with stage("hotels.verify_listing", attempt=details):
-                    detail = await self._page(client, path, _params(check_in))
-                _validate_stay(detail, check_in)
+                    detail = await self._page(client, path, _params(check_in, room))
+                _validate_stay(detail, check_in, room)
                 if _key(" ".join(detail.xpath("//h1//text()"))) != _key(name):
                     rejected["identity"] += 1
                     continue
@@ -236,8 +248,10 @@ class GoogleHotelProvider:
                         "name": name,
                         "coordinates": coordinates,
                         "address": address,
-                        "url": BASE + path + "?" + urlencode(_params(check_in)),
+                        "url": BASE + path + "?" + urlencode(_params(check_in, room)),
                         "price": price,
+                        "room": room.model_dump(),
+                        "price_scope": "one_room_one_night_including_taxes_fees",
                         "check_in_date": check_in,
                     }
                 )

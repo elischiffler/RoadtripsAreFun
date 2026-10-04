@@ -257,7 +257,14 @@ async def test_ambiguous_car_returns_specific_choices(monkeypatch):
 
 async def test_recorded_skip_permits_agent_planning(monkeypatch):
     memory = FakeMemory()
-    skipped = await _record(memory, car_status="skipped", num_stops=2, budget=150)
+    skipped = await _record(
+        memory,
+        car_status="skipped",
+        num_stops=2,
+        budget=150,
+        traveler_count=2,
+        hotel_rooms=[{"adults": 2, "child_ages": []}],
+    )
     assert skipped.ok
 
     async def fake_plan(payload, *, user_id, can_select_algorithm=False):

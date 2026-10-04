@@ -68,7 +68,19 @@ const ItineraryPage = () => {
                   )}
                   {activity.price != null && (
                     <Typography variant="body2" className="activity-time">
-                      {`Price: $${activity.price}`}
+                      {`${activity.room_offers?.length > 1 ? 'Sum of independent room quotes' : 'Price'}: $${activity.price}`}
+                    </Typography>
+                  )}
+                  {activity.room_offers?.map((offer, roomIndex) => (
+                    <Typography key={roomIndex} variant="body2" className="activity-time">
+                      <a href={offer.url} target="_blank" rel="noopener noreferrer">
+                        {`Room ${roomIndex + 1}: ${offer.room.adults} adults, ${offer.room.child_ages.length ? `children aged ${offer.room.child_ages.join(', ')}` : 'no children'} — $${offer.price} with taxes and fees`}
+                      </a>
+                    </Typography>
+                  ))}
+                  {activity.room_offers?.length > 1 && (
+                    <Typography variant="body2" className="activity-time">
+                      Confirm simultaneous room availability with the booking provider.
                     </Typography>
                   )}
                   {activity.notice && (

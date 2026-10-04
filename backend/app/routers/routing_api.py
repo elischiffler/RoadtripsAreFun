@@ -37,6 +37,7 @@ from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: 
 from app.routing import PlanningError, PlanOptions, RoutingServices, get_planner
 from app.routing.config import geolocator  # shared reverse-geocoder
 from app.routing.geometry import find_position as _find_position  # noqa: F401
+from app.routing.occupancy import require_occupancy
 from app.routing.pricing import get_price_range as _get_price_range  # noqa: F401
 from app.routing.registry import DEFAULT_ALGORITHM
 from app.routing.selection import owner_routing_claims, select_algorithm
@@ -184,6 +185,10 @@ async def plan_final_route(
         requests.exceptions.RequestException / pydantic.ValidationError: On
             Mapbox transport / response failures.
     """
+    try:
+        require_occupancy(payload.traveler_count, payload.hotel_rooms)
+    except ValueError as exc:
+        raise PlanningError(str(exc), 422) from exc
     initial_route = payload.initial_route
     start_lon, start_lat = initial_route.geometry.coordinates[0]
     end_lon, end_lat = initial_route.geometry.coordinates[-1]
@@ -216,6 +221,8 @@ async def plan_final_route(
         start=start,
         weights=weights,
         scheduling_policy=payload.scheduling_policy,
+        traveler_count=payload.traveler_count,
+        hotel_rooms=payload.hotel_rooms,
     )
 
     # Run the planner to find stopping points.
@@ -294,6 +301,8 @@ async def plan_final_route(
         scheduling_policy=payload.scheduling_policy,
         start_timezone=start_timezone,
         departure_time=start,
+        traveler_count=payload.traveler_count,
+        hotel_rooms=payload.hotel_rooms,
         warnings=[stop["warning"] for stop in stopping_points if stop.get("warning")] or None,
     )
 

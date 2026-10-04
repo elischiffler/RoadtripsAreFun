@@ -18,6 +18,7 @@ from app.routers import routing_api
 from app.routers.itinerary_api import build_itinerary
 from app.routing.base import PlanningError, PlanOptions, PlanResult
 from app.routing.cp_sat_scheduler import schedule_cp_sat_route
+from app.routing.occupancy import HotelRoom
 from app.routing.travel_timing import apply_timing
 
 ZONE = "America/Los_Angeles"
@@ -185,7 +186,7 @@ def services_with_hotels(fake_services, outcomes):
     async def zone_at(coords):
         return ZONE
 
-    async def hotels(coords, stay_date, prices, weights):
+    async def hotels(coords, stay_date, prices, weights, hotel_rooms):
         calls.append((coords, stay_date))
         found = outcomes[min(len(calls) - 1, len(outcomes) - 1)]
         if not found:
@@ -193,6 +194,9 @@ def services_with_hotels(fake_services, outcomes):
         return [
             {
                 "provider_id": "hotel-1",
+                "hotel_rooms": [room.model_dump() for room in hotel_rooms],
+                "room_offers": [{"room": hotel_rooms[0].model_dump(), "price": 120, "url": None}],
+                "price_scope": "one_room_one_night_including_taxes_fees",
                 "name": "Verified hotel",
                 "coordinates": coords,
                 "price": 120,
@@ -210,7 +214,14 @@ def services_with_hotels(fake_services, outcomes):
 async def test_hotel_search_around_soft_target(route, fake_services, misses, expected_hour):
     route.duration = 16 * 3600
     services, calls = services_with_hotels(fake_services, [False] * misses + [True])
-    stops, cost = await schedule_cp_sat_route(route, [], PlanOptions(0, 100, START), services)
+    stops, cost = await schedule_cp_sat_route(
+        route,
+        [],
+        PlanOptions(
+            0, 100, START, traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ),
+        services,
+    )
     assert len(calls) == misses + 1
     # The search point is the corridor position reached at that local hour.
     expected = services.find_position(
@@ -226,7 +237,14 @@ async def test_unavailable_hotels_bound_retry_and_keep_failure_useful(route, fak
     route.duration = 16 * 3600
     services, calls = services_with_hotels(fake_services, [False])
     with pytest.raises(PlanningError, match="earlier departure"):
-        await schedule_cp_sat_route(route, [], PlanOptions(0, 100, START), services)
+        await schedule_cp_sat_route(
+            route,
+            [],
+            PlanOptions(
+                0, 100, START, traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+            ),
+            services,
+        )
     assert len(calls) == 6
 
 
@@ -237,7 +255,17 @@ async def test_later_available_hotel_can_reach_effective_cutoff(route, fake_serv
     services, calls = services_with_hotels(fake_services, [False] * 4 + [True])
     policy = SchedulingPolicy(late_driving=late)
     stops, _ = await schedule_cp_sat_route(
-        route, [], PlanOptions(0, 200, START, scheduling_policy=policy), services
+        route,
+        [],
+        PlanOptions(
+            0,
+            200,
+            START,
+            scheduling_policy=policy,
+            traveler_count=2,
+            hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+        ),
+        services,
     )
     expected = services.find_position(
         route.geometry.coordinates, route.legs[0].steps, (hour - 9) * 3600
@@ -252,12 +280,24 @@ async def test_late_mode_avoids_unnecessary_hotel_without_dropping_stops(route, 
     attraction = {"provider_id": "a", "name": "a", "coordinates": [34, -118]}
     services, calls = services_with_hotels(fake_services, [True])
     normal, _ = await schedule_cp_sat_route(
-        route, [(2, attraction)], PlanOptions(1, 100, START), services
+        route,
+        [(2, attraction)],
+        PlanOptions(
+            1, 100, START, traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ),
+        services,
     )
     late, _ = await schedule_cp_sat_route(
         route,
         [(2, attraction)],
-        PlanOptions(1, 100, START, scheduling_policy=SchedulingPolicy(late_driving=True)),
+        PlanOptions(
+            1,
+            100,
+            START,
+            scheduling_policy=SchedulingPolicy(late_driving=True),
+            traveler_count=2,
+            hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+        ),
         services,
     )
     assert [s["type"] for s in late] == ["stop"]
@@ -272,7 +312,17 @@ async def test_late_departure_hotel_uses_preceding_booking_night(route, fake_ser
     services, calls = services_with_hotels(fake_services, [True])
     policy = SchedulingPolicy(late_driving=True)
     stops, _ = await schedule_cp_sat_route(
-        route, [], PlanOptions(0, 100, START.replace(hour=23), scheduling_policy=policy), services
+        route,
+        [],
+        PlanOptions(
+            0,
+            100,
+            START.replace(hour=23),
+            scheduling_policy=policy,
+            traveler_count=2,
+            hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+        ),
+        services,
     )
     assert calls[0][1].isoformat() == "2035-11-21"
     # Actual reroute reaches the overnight at midnight: the next departure is that morning.
@@ -320,6 +370,8 @@ def test_http_final_detours_enforce_same_hard_limit(
         "/generate-final-route",
         json={
             "initial_route": route.model_dump(mode="json"),
+            "traveler_count": 2,
+            "hotel_rooms": [{"adults": 2, "child_ages": []}],
             "num_stops": 0,
             "budget": 200,
             "start": START.isoformat(),

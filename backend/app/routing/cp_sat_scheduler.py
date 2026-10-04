@@ -14,6 +14,7 @@ from app.agent.progress import emit
 from app.models.routing_models.routing_models import MapBox
 from app.models.scheduling_policy import advance, local_time, seconds_until
 from app.routing.base import PlanningError, PlanOptions
+from app.routing.occupancy import require_occupancy
 from app.routing.services import RoutingServices
 
 MapBox_route = MapBox.MapBox_Route
@@ -49,6 +50,15 @@ def _usable_hotel(hotel: Any) -> bool:
     )
 
 
+def _over_budget(hotel: dict, budget: float, room_count: int) -> bool:
+    offers = hotel.get("room_offers") or []
+    return (
+        any(offer["price"] > budget for offer in offers)
+        if offers
+        else hotel["price"] > budget * room_count
+    )
+
+
 async def schedule_cp_sat_route(
     route: MapBox_route,
     selected: list[tuple[int, dict[str, Any]]],
@@ -76,6 +86,7 @@ async def schedule_cp_sat_route(
     travel_day = now.date()
     if seconds_until(now, policy.deadline(travel_day, start_zone)) <= 0:
         raise PlanningError("Departure must precede the chosen local driving cutoff", 400)
+    hotel_rooms = require_occupancy(options.traveler_count, options.hotel_rooms)
     if services.cp_sat_hotels is None:
         raise PlanningError("CP-SAT verified hotel service is not configured", 503)
 
@@ -175,7 +186,7 @@ async def schedule_cp_sat_route(
                 emit("route.overnight", "started", day=overnights + 1, attempt=attempt)
                 try:
                     candidates = await services.cp_sat_hotels(
-                        position, travel_day, price_range, options.weights or {}
+                        position, travel_day, price_range, options.weights or {}, hotel_rooms
                     )
                 except HTTPException as exc:
                     if exc.status_code != 404:
@@ -191,7 +202,9 @@ async def schedule_cp_sat_route(
                 )
                 usable = []
                 for item in candidates:
-                    if not _usable_hotel(item):
+                    if not _usable_hotel(item) or item.get("hotel_rooms") != [
+                        room.model_dump() for room in hotel_rooms
+                    ]:
                         continue
                     # Live source verifies the requested dated offer. Also guard
                     # adapters that supply a different explicit booking date.
@@ -212,7 +225,7 @@ async def schedule_cp_sat_route(
                     hotel, zone = min(
                         usable,
                         key=lambda pair: (
-                            pair[0]["price"] > options.budget,
+                            _over_budget(pair[0], options.budget, len(hotel_rooms)),
                             -pair[0]["utility"],
                             pair[0]["price"],
                             geodesic(pair[0]["coordinates"], position).meters,
@@ -238,13 +251,24 @@ async def schedule_cp_sat_route(
                     "price": hotel["price"],
                     "timezone": getattr(zone, "key", None),
                     "check_in_date": travel_day.isoformat(),
-                    **(
-                        {
-                            "warning": f"Hotel {hotel['name']} costs ${hotel['price']:.0f}, above the ${options.budget:.0f} nightly target."
-                        }
-                        if hotel["price"] > options.budget
-                        else {}
-                    ),
+                    "traveler_count": options.traveler_count,
+                    "hotel_rooms": hotel["hotel_rooms"],
+                    "room_offers": hotel["room_offers"],
+                    "price_scope": hotel["price_scope"],
+                    "warning": " ".join(
+                        filter(
+                            None,
+                            [
+                                f"Hotel {hotel['name']} has ${hotel['price']:.0f} in room quotes with a room above the ${options.budget:.0f} per-room nightly target."
+                                if _over_budget(hotel, options.budget, len(hotel_rooms))
+                                else None,
+                                "Multiple rooms: these are independent dated room quotes; confirm simultaneous room availability with the booking provider."
+                                if len(hotel_rooms) > 1
+                                else None,
+                            ],
+                        )
+                    )
+                    or None,
                 }
             )
             total_cost += hotel["price"]

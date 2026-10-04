@@ -14,6 +14,7 @@ from app.agent.prompt import (
 )
 from app.agent.schemas import AgentClientContext, LLMMessage
 from app.agent.trip_profile import TripProfile
+from app.routing.occupancy import HotelRoom
 
 
 def _complete_trip() -> TripProfile:
@@ -26,6 +27,8 @@ def _complete_trip() -> TripProfile:
         budget=150,
         start_date="2099-10-10T09:00:00-06:00",
         car_status="skipped",
+        traveler_count=2,
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
     )
 
 
@@ -102,7 +105,12 @@ def test_optional_car_and_departure_instructions_are_present_without_completing_
     assert "year, make, and model" in collecting
     assert '"skip" or "no car"' in collecting
     assert "correction or offer to skip" in collecting
-    skipped = _messages(TripProfile(car_status="skipped"), "Continue")[0].content
+    skipped = _messages(
+        TripProfile(
+            car_status="skipped", traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ),
+        "Continue",
+    )[0].content
     assert '"car_status":"skipped"' in skipped
 
 

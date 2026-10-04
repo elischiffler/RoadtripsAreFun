@@ -112,6 +112,10 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
             "name": stop["name"],
             "url": stop.get("url"),
             "price": stop.get("price"),
+            "traveler_count": stop.get("traveler_count"),
+            "hotel_rooms": stop.get("hotel_rooms"),
+            "room_offers": stop.get("room_offers"),
+            "price_scope": stop.get("price_scope"),
             "address": stop.get("address"),
             "kind": "arrival",
             "timezone": stop.get("timezone"),
@@ -214,6 +218,10 @@ async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]
                 "status": stop.get("status"),
                 "return_by": stop.get("return_by"),
                 "return_time": stop.get("return_time"),
+                "traveler_count": stop.get("traveler_count"),
+                "hotel_rooms": stop.get("hotel_rooms"),
+                "room_offers": stop.get("room_offers"),
+                "price_scope": stop.get("price_scope"),
             }
             # Check if the date matches and if so add stop to the same day
             if stop["date"] == curr_day["date"]:

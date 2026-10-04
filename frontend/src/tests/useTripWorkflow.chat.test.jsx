@@ -102,6 +102,41 @@ beforeEach(() => {
 });
 
 describe("submit('chat_message')", () => {
+  it.each(['traveler_count', 'hotel_rooms'])(
+    'invalidates restored prices and itinerary when %s changes',
+    async (field) => {
+      const tripProfile = { traveler_count: 2, hotel_rooms: [{ adults: 2, child_ages: [] }] };
+      const next = {
+        ...tripProfile,
+        [field]: field === 'traveler_count' ? 3 : [{ adults: 1, child_ages: [5] }],
+      };
+      const savedData = {
+        route: {
+          coordinates: [
+            [35, -120],
+            [36, -115],
+          ],
+          cost: 120,
+        },
+        itinerary: [{ date: 'Day 1', stops: [] }],
+        tripProfile,
+      };
+      sendAgentMessage.mockResolvedValueOnce({
+        reply: 'Updated rooms.',
+        tripProfile: next,
+        actions: [{ type: 'trip_profile_updated', payload: { trip_profile: next } }],
+      });
+      render(<Harness savedData={savedData} />);
+      await userEvent.click(screen.getByText('send'));
+      await waitFor(() => expect(updateUserData).toHaveBeenCalled());
+      const snapshot = updateUserData.mock.calls[0][1];
+      expect(snapshot.tripProfile).toEqual(next);
+      expect(snapshot.route).toBeNull();
+      expect(snapshot.itinerary).toBeNull();
+      expect(snapshot.isComplete).toBe(false);
+    }
+  );
+
   it('persists new pending matches and selects a restored candidate by ID', async () => {
     const pending_locations = {
       start_address: {

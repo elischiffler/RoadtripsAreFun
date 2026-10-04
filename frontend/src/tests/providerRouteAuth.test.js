@@ -30,7 +30,13 @@ describe('provider route access token', () => {
     await getFinalRoute({ geometry: {} }, 100, 0);
     expect(axios.post).toHaveBeenCalledWith(
       'https://api.example.test/generate-final-route',
-      { initial_route: { geometry: {} }, num_stops: 0, budget: 100 },
+      {
+        initial_route: { geometry: {} },
+        num_stops: 0,
+        budget: 100,
+        traveler_count: null,
+        hotel_rooms: null,
+      },
       { headers: { Authorization: 'Bearer signed-access-token' } }
     );
   });
@@ -44,7 +50,24 @@ describe('provider route access token', () => {
       initial_route: { geometry: {} },
       num_stops: 0,
       budget: 100,
+      traveler_count: null,
+      hotel_rooms: null,
       start: '2026-10-01T09:00:00',
     });
+  });
+  it('forwards explicit family room allocation without changing budget or identity', async () => {
+    sessionStorage.setItem('accessToken', 'signed-access-token');
+    const rooms = [
+      { adults: 2, child_ages: [5] },
+      { adults: 1, child_ages: [] },
+    ];
+    axios.post.mockResolvedValueOnce({ data: { stops: [] } });
+    await getFinalRoute({ geometry: {} }, 100, 0, null, '2030-01-01T09:00:00Z', 4, rooms);
+    expect(axios.post.mock.calls[0][1]).toMatchObject({
+      traveler_count: 4,
+      hotel_rooms: rooms,
+      budget: 100,
+    });
+    expect(axios.post.mock.calls[0][2].headers.Authorization).toBe('Bearer signed-access-token');
   });
 });

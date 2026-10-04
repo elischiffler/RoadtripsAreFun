@@ -203,6 +203,8 @@ def test_generate_final_route_zero_stops():
 
         payload = {
             "initial_route": init_resp.json(),
+            "traveler_count": 2,
+            "hotel_rooms": [{"adults": 2, "child_ages": []}],
             "num_stops": 0,
             "budget": 400,
             "start": (datetime.now() + timedelta(days=1)).replace(hour=9, minute=0).isoformat(),
@@ -218,7 +220,14 @@ def test_generate_final_route_zero_stops():
 def test_generate_final_route_invalid_payload():
     """Returns 502 when the payload cannot be validated."""
     response = client.post(
-        "/generate-final-route", json={"initial_route": {}, "num_stops": 1, "budget": 200}
+        "/generate-final-route",
+        json={
+            "initial_route": {},
+            "traveler_count": 2,
+            "hotel_rooms": [{"adults": 2, "child_ages": []}],
+            "num_stops": 1,
+            "budget": 200,
+        },
     )
     assert response.status_code == 422
 
@@ -253,6 +262,8 @@ def test_generate_final_route_unknown_algorithm_returns_400():
             "/generate-final-route",
             json={
                 "initial_route": init_resp.json(),
+                "traveler_count": 2,
+                "hotel_rooms": [{"adults": 2, "child_ages": []}],
                 "num_stops": 0,
                 "budget": 400,
                 "algorithm": "does-not-exist",

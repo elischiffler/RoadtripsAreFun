@@ -83,6 +83,33 @@ function buildUserDataWithItinerary(itinerary) {
 describe('ItineraryPage', () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it('shows children and separate room quotes without promising combined inventory', () => {
+    const room_offers = [
+      { room: { adults: 2, child_ages: [5] }, price: 120, url: 'https://example.test/room-family' },
+      { room: { adults: 1, child_ages: [] }, price: 175, url: 'https://example.test/room-solo' },
+    ];
+    renderItineraryPageWithData(
+      buildUserDataWithItinerary([
+        {
+          date: 'Day 1',
+          stops: [{ name: 'Hotel', time: '4 PM', address: 'Main St', price: 295, room_offers }],
+        },
+      ])
+    );
+    expect(screen.getByText('Sum of independent room quotes: $295')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Room 1: 2 adults, children aged 5/ })).toHaveAttribute(
+      'href',
+      room_offers[0].url
+    );
+    expect(screen.getByRole('link', { name: /Room 2: 1 adults, no children/ })).toHaveAttribute(
+      'href',
+      room_offers[1].url
+    );
+    expect(
+      screen.getByText('Confirm simultaneous room availability with the booking provider.')
+    ).toBeInTheDocument();
+  });
+
   it('shows "No Itinerary Available" when there is no itinerary', () => {
     renderItineraryPageWithData(buildUserDataWithItinerary(null));
     expect(screen.getByText(/no itinerary available/i)).toBeInTheDocument();

@@ -26,5 +26,9 @@ class Itinerary_Day(BaseModel):
         status: str | None = None
         return_by: str | None = None
         return_time: str | None = None
+        traveler_count: int | None = None
+        hotel_rooms: list[dict] | None = None
+        room_offers: list[dict] | None = None
+        price_scope: str | None = None
 
     stops: list[Itinerary_Stop]

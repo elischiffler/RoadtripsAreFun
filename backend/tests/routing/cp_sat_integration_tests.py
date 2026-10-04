@@ -17,6 +17,7 @@ from app.models.routing_models.routing_models import Route_Payload
 from app.routers import routing_api
 from app.routing import registry
 from app.routing.base import PlanningError, PlanResult
+from app.routing.occupancy import HotelRoom
 from app.routing.selection import OWNER_EMAIL
 from tests.agent.conftest import FakeMemory, FakeProvider
 from tests.conftest import CLIENT
@@ -70,6 +71,8 @@ def test_http_selection_enforced(signed_token, route, alternate_planners, owner,
         budget=100,
         start=datetime(2035, 6, 1, 9),
         algorithm=requested,
+        traveler_count=2,
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
     )
     response = TestClient(app).post(
         "/generate-final-route", json=payload.model_dump(mode="json"), headers=headers
@@ -95,7 +98,13 @@ async def test_tool_and_remote_selection(
         routing_remote.settings, "ROUTING_REMOTE_URL", "https://fixture" if remote else None
     )
     memory = FakeMemory()
-    memory.save_trip_profile("user", "chat", TripProfile(car_status="skipped").to_json())
+    memory.save_trip_profile(
+        "user",
+        "chat",
+        TripProfile(
+            car_status="skipped", traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ).to_json(),
+    )
     ctx = ToolContext(
         user_id="user",
         chat_id="chat",
@@ -107,6 +116,8 @@ async def test_tool_and_remote_selection(
     )
     arguments = {
         "route_handle": ctx.artifacts.put("initial_route", route),
+        "traveler_count": 2,
+        "hotel_rooms": [{"adults": 2, "child_ages": []}],
         "num_stops": 0,
         "budget": 100,
         "start": "2035-06-01T09:00:00",
@@ -201,6 +212,8 @@ async def test_cp_sat_uses_verified_identity_and_trip_override(monkeypatch, rout
         start=datetime(2035, 6, 1, 9),
         algorithm="cp_sat",
         persona_weights={"nature": 2},
+        traveler_count=2,
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
     )
     result = await routing_api.plan_final_route(payload, user_id="verified-user")
     assert result.warnings is None
@@ -213,14 +226,28 @@ async def test_cp_sat_uses_verified_identity_and_trip_override(monkeypatch, rout
 
 @pytest.mark.asyncio
 async def test_cp_sat_requires_identity_before_persona_lookup(route):
-    payload = Route_Payload(initial_route=route, num_stops=0, budget=100, algorithm="cp_sat")
+    payload = Route_Payload(
+        initial_route=route,
+        num_stops=0,
+        budget=100,
+        algorithm="cp_sat",
+        traveler_count=2,
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+    )
     with pytest.raises(PlanningError, match="Authenticated identity"):
         await routing_api.plan_final_route(payload)
 
 
 @pytest.mark.asyncio
 async def test_cp_sat_requires_upcoming_date(route):
-    payload = Route_Payload(initial_route=route, num_stops=0, budget=100, algorithm="cp_sat")
+    payload = Route_Payload(
+        initial_route=route,
+        num_stops=0,
+        budget=100,
+        algorithm="cp_sat",
+        traveler_count=2,
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+    )
     with pytest.raises(PlanningError, match="upcoming trip start date"):
         await routing_api.plan_final_route(payload, user_id="u")
 
@@ -249,6 +276,8 @@ async def test_final_mapbox_leg_shape_rejected(monkeypatch, route):
         budget=100,
         start=datetime(2035, 6, 1, 9),
         algorithm="cp_sat",
+        traveler_count=2,
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
     )
     with pytest.raises(PlanningError, match="incomplete final route"):
         await routing_api.plan_final_route(payload, user_id="u")

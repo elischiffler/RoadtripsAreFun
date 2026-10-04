@@ -27,13 +27,17 @@ export const getFinalRoute = async (
   budget,
   stops,
   personaWeights = null,
-  start = null
+  start = null,
+  travelerCount = null,
+  hotelRooms = null
 ) => {
   try {
     const data = {
       initial_route: initial_route,
       num_stops: stops,
       budget: budget,
+      traveler_count: travelerCount,
+      hotel_rooms: hotelRooms,
     };
 
     // Dev-mode algorithm override: only sent when explicitly chosen.

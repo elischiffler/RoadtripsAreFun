@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING, Any
 
 from app.models.routing_models.routing_models import MapBox
 from app.models.scheduling_policy import SchedulingPolicy
+from app.routing.occupancy import HotelRoom
 
 if TYPE_CHECKING:  # avoid a runtime import cycle (services imports base)
     from app.routing.services import RoutingServices
@@ -76,6 +77,8 @@ class PlanOptions:
     num_stops: int
     budget: float
     start: datetime
+    traveler_count: int | None = None
+    hotel_rooms: list[HotelRoom] | None = None
     daily_start: int = 9
     daily_end: int = 16
     # Reserved for future preference-aware planners (see docs/algorithm-analysis.md).

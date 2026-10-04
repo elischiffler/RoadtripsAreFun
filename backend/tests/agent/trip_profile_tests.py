@@ -331,7 +331,13 @@ async def test_generate_final_route_defaults_from_trip(monkeypatch):
     await AppToolDispatcher().dispatch(
         ToolCall(
             name="record_trip_details",
-            arguments={"num_stops": 4, "budget": 150, "car_status": "skipped"},
+            arguments={
+                "num_stops": 4,
+                "budget": 150,
+                "car_status": "skipped",
+                "traveler_count": 2,
+                "hotel_rooms": [{"adults": 2, "child_ages": []}],
+            },
         ),
         _ctx(memory),
     )
@@ -365,7 +371,13 @@ async def test_generate_final_route_explicit_args_win(monkeypatch):
     await AppToolDispatcher().dispatch(
         ToolCall(
             name="record_trip_details",
-            arguments={"num_stops": 4, "budget": 150, "car_status": "skipped"},
+            arguments={
+                "num_stops": 4,
+                "budget": 150,
+                "car_status": "skipped",
+                "traveler_count": 2,
+                "hotel_rooms": [{"adults": 2, "child_ages": []}],
+            },
         ),
         _ctx(memory),
     )
@@ -385,7 +397,14 @@ async def test_generate_final_route_missing_stops_no_trip_errors(monkeypatch):
     monkeypatch.setattr(td.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v))
     memory = FakeMemory()
     await AppToolDispatcher().dispatch(
-        ToolCall(name="record_trip_details", arguments={"car_status": "skipped"}),
+        ToolCall(
+            name="record_trip_details",
+            arguments={
+                "car_status": "skipped",
+                "traveler_count": 2,
+                "hotel_rooms": [{"adults": 2, "child_ages": []}],
+            },
+        ),
         _ctx(memory),
     )
     result = await AppToolDispatcher().dispatch(
@@ -411,7 +430,7 @@ async def test_unanswered_car_blocks_planning_before_provider_call(monkeypatch):
         _ctx(FakeMemory()),
     )
     assert result.ok is False
-    assert "car year, make, and model or skip" in result.error
+    assert "including you" in result.error
 
 
 async def test_get_car_budget_defaults_car_from_trip(monkeypatch):

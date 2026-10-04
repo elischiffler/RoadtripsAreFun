@@ -12,6 +12,7 @@ from app.agent.schemas import ToolResult
 from app.agent.tool_dispatcher import AppToolDispatcher, _extract_endpoints
 from app.agent.tools import ArtifactStore, ToolCall, ToolContext
 from app.agent.trip_profile import TripProfile
+from app.routing.occupancy import HotelRoom
 
 from .conftest import FakeMemory
 
@@ -160,7 +161,13 @@ def _ctx(memory=None):
 
 def _planning_ctx():
     memory = FakeMemory()
-    memory.save_trip_profile("u1", "42", TripProfile(car_status="skipped").to_json())
+    memory.save_trip_profile(
+        "u1",
+        "42",
+        TripProfile(
+            car_status="skipped", traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ).to_json(),
+    )
     return _ctx(memory)
 
 
@@ -175,7 +182,11 @@ async def test_full_route_chain_by_handle(monkeypatch):
             stops=[{"name": "Stop", "type": "stop"}],
             cost=250.0,
             distance=664000.0,
-            model_dump=lambda: {"cost": 250.0},
+            model_dump=lambda: {
+                "cost": 250.0,
+                "traveler_count": 2,
+                "hotel_rooms": [{"adults": 2, "child_ages": []}],
+            },
         )
 
     async def fake_build(payload):
@@ -280,6 +291,8 @@ async def test_generate_final_route_rebuilds_from_trip_coords_across_turns(monke
             num_stops=8,
             budget=600,
             car_status="skipped",
+            traveler_count=2,
+            hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
         ).to_json(),
     )
     # A brand-new turn's context: fresh (empty) artifact store, same memory.

@@ -7,6 +7,7 @@ from ortools.sat.python import cp_model
 
 from app.routing.base import PlanningError, PlanOptions
 from app.routing.cp_sat_scheduler import schedule_cp_sat_route
+from app.routing.occupancy import HotelRoom
 from app.routing.planners.cp_sat import CPSatPlanner
 from app.routing.registry import available_planners
 
@@ -48,6 +49,9 @@ def hotel(provider_id, coordinates, price, utility):
         "address": None,
         "url": None,
         "type": "hotel",
+        "hotel_rooms": [{"adults": 2, "child_ages": []}],
+        "room_offers": [],
+        "price_scope": "one_room_one_night_including_taxes_fees",
         "price": price,
         "utility": utility,
     }
@@ -60,7 +64,7 @@ def configure(fake_services, attractions=(), hotels=()):
         calls["attractions"].append((route, points, weights))
         return list(attractions)
 
-    async def hotel_candidates(position, check_in, price_range, weights):
+    async def hotel_candidates(position, check_in, price_range, weights, hotel_rooms):
         calls["hotels"].append((position, check_in, price_range, weights))
         return list(hotels)
 
@@ -81,7 +85,11 @@ def short_route(route, seconds):
 async def test_zero_stops_has_no_candidate_call_or_hotel(route, start_date, fake_services):
     services, calls = configure(fake_services)
     result = await CPSatPlanner().plan(
-        short_route(route, 3600), PlanOptions(0, 100, start_date), services
+        short_route(route, 3600),
+        PlanOptions(
+            0, 100, start_date, traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ),
+        services,
     )
     assert result.stopping_points == []
     assert calls == {"attractions": [], "hotels": []}
@@ -97,7 +105,13 @@ async def test_sparse_and_weak_candidates_are_not_forced(route, start_date, fake
         fake_services,
         [attraction("weak", point, 0.59), attraction("good", point, 0.85)],
     )
-    result = await CPSatPlanner().plan(route, PlanOptions(3, 100, start_date), services)
+    result = await CPSatPlanner().plan(
+        route,
+        PlanOptions(
+            3, 100, start_date, traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ),
+        services,
+    )
     assert [stop["name"] for stop in result.stopping_points] == ["good"]
     assert len(calls["attractions"][0][1]) == 9
     assert calls["attractions"][0][1][0] != calls["attractions"][0][1][1]
@@ -175,7 +189,9 @@ async def test_stop_at_assigned_drive_position_then_day_rollover(route, start_da
     )
     result = await CPSatPlanner().plan(
         route,
-        PlanOptions(1, 500, start_date),
+        PlanOptions(
+            1, 500, start_date, traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ),
         services,
     )
     assert [item["type"] for item in result.stopping_points] == ["hotel", "stop"]
@@ -192,7 +208,7 @@ async def test_hotel_retry_and_in_budget_preference(route, start_date, fake_serv
     short_route(route, 12 * 3600)
     services, calls = configure(fake_services)
 
-    async def find_hotels(position, check_in, price_range, weights):
+    async def find_hotels(position, check_in, price_range, weights, hotel_rooms):
         calls["hotels"].append((position, check_in, price_range, weights))
         if len(calls["hotels"]) == 1:
             return []
@@ -202,7 +218,14 @@ async def test_hotel_retry_and_in_budget_preference(route, start_date, fake_serv
         ]
 
     services.cp_sat_hotels = find_hotels
-    result = await schedule_cp_sat_route(route, [], PlanOptions(0, 200, start_date), services)
+    result = await schedule_cp_sat_route(
+        route,
+        [],
+        PlanOptions(
+            0, 200, start_date, traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ),
+        services,
+    )
     assert result[0][0]["name"] == "affordable"
     assert result[1] == 100
     assert len(calls["hotels"]) == 2
@@ -213,10 +236,17 @@ async def test_hotel_retry_and_in_budget_preference(route, start_date, fake_serv
 async def test_over_budget_hotel_keeps_actual_price(route, start_date, fake_services):
     short_route(route, 12 * 3600)
     services, _ = configure(fake_services, hotels=[hotel("high", [35, -100], 400, 0.8)])
-    stops, cost = await schedule_cp_sat_route(route, [], PlanOptions(0, 100, start_date), services)
+    stops, cost = await schedule_cp_sat_route(
+        route,
+        [],
+        PlanOptions(
+            0, 100, start_date, traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ),
+        services,
+    )
     assert cost == 400
     assert stops[0]["price"] == 400
-    assert "$100 nightly target" in stops[0]["warning"]
+    assert "$100 per-room nightly target" in stops[0]["warning"]
 
 
 @pytest.mark.asyncio
@@ -224,5 +254,16 @@ async def test_missing_hotel_fails_after_bounded_retries(route, start_date, fake
     short_route(route, 12 * 3600)
     services, calls = configure(fake_services)
     with pytest.raises(PlanningError, match="No verified hotel"):
-        await schedule_cp_sat_route(route, [], PlanOptions(0, 100, start_date), services)
+        await schedule_cp_sat_route(
+            route,
+            [],
+            PlanOptions(
+                0,
+                100,
+                start_date,
+                traveler_count=2,
+                hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+            ),
+            services,
+        )
     assert 1 <= len(calls["hotels"]) <= 6

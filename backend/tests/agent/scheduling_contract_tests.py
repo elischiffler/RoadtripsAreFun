@@ -18,6 +18,7 @@ from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import Route_Payload
 from app.models.scheduling_policy import SchedulingPolicy
 from app.routers.agent_api import get_agent_dependencies
+from app.routing.occupancy import HotelRoom
 from tests.agent.conftest import FakeMemory, FakeProvider
 from tests.routing.flexible_hotel_tests import START, point, saved_route
 
@@ -68,7 +69,7 @@ def test_chat_json_and_ndjson_record_same_explicit_late_preference(monkeypatch, 
     provider = FakeProvider(
         responses=[LLMResponse(content="Saved your late-driving preference.")],
         extraction_responses=[
-            '{"details":{"scheduling_policy":{"late_driving":true,"late_cutoff":"24:00"},"evening_interests":["food"]}}'
+            '{"details":{"scheduling_policy":{"late_driving":true,"late_cutoff":"24:00"},"evening_interests":["food"],"traveler_count":4,"hotel_rooms":[{"adults":2,"child_ages":[5]},{"adults":1,"child_ages":[]}]}}'
         ],
     )
     monkeypatch.setattr("app.agent.agent.get_user_id_from_token", lambda token: "user")
@@ -96,6 +97,11 @@ def test_chat_json_and_ndjson_record_same_explicit_late_preference(monkeypatch, 
     )
     assert body["tripProfile"]["scheduling_policy"]["late_driving"] is True
     assert body["tripProfile"]["evening_interests"] == ["food"]
+    assert body["tripProfile"]["traveler_count"] == 4
+    assert body["tripProfile"]["hotel_rooms"] == [
+        {"adults": 2, "child_ages": [5]},
+        {"adults": 1, "child_ages": []},
+    ]
     assert any("late driving: until 24:00" in line for line in body["presentation"]["updated"])
     assert "Evening suggestions: food" in body["presentation"]["updated"]
     assert TripProfile.from_json(
@@ -151,12 +157,16 @@ async def test_remote_round_trip_preserves_policy_timing_and_suggestions(monkeyp
         start=START,
         scheduling_policy=policy,
         evening_interests=["food"],
+        traveler_count=2,
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
     )
     received = await routing_remote.plan_final_route_remote(payload, "fixture-token")
     itinerary = await routing_remote.build_itinerary_remote(
         Itinerary_Payload(route=received, start_time=START), "fixture-token"
     )
     assert bodies[0]["scheduling_policy"] == policy.model_dump()
+    assert bodies[0]["traveler_count"] == 2
+    assert bodies[0]["hotel_rooms"] == [{"adults": 2, "child_ages": []}]
     assert bodies[0]["evening_interests"] == ["food"] and bodies[0]["num_stops"] == 2
     assert received == final and itinerary == days
     assert any(stop.optional for day in itinerary for stop in day.stops)

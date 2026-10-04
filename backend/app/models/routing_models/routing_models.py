@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from app.agent.persona import validate_weight_update
 from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
+from app.routing.occupancy import HotelRooms, TravelerCount
 
 
 class Mapbox_geo(BaseModel):
@@ -32,6 +33,8 @@ class Route(BaseModel):
     scheduling_policy: SchedulingPolicy | None = None
     start_timezone: str | None = None
     departure_time: datetime | None = None
+    traveler_count: TravelerCount | None = None
+    hotel_rooms: HotelRooms | None = None
 
     class Stop(BaseModel):
         name: str
@@ -119,6 +122,8 @@ class Route_Payload(BaseModel):
     scheduling_policy: SchedulingPolicy = Field(default_factory=SchedulingPolicy)
     start_timezone: str | None = None
     evening_interests: list[EveningInterest] | None = None
+    traveler_count: TravelerCount | None = None
+    hotel_rooms: HotelRooms | None = None
 
     @field_validator("persona_weights", mode="before")
     @classmethod

@@ -430,8 +430,8 @@ export function useTripWorkflow({
           logTripProfileChanges(tripProfileRef.current, tp);
           const previous = tripProfileRef.current;
           if (
-            ['start_coords', 'destination_coords'].some(
-              (field) => tp[field] && JSON.stringify(tp[field]) !== JSON.stringify(previous[field])
+            ['start_coords', 'destination_coords', 'traveler_count', 'hotel_rooms'].some(
+              (field) => JSON.stringify(tp[field]) !== JSON.stringify(previous[field])
             )
           ) {
             setRoute(null);

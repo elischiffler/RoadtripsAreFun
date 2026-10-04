@@ -6,6 +6,7 @@ import pytest
 from app.agent.persona import ATTRIBUTE_KEYS, default_weights
 from app.agent.progress import reporting
 from app.agent.schemas import LLMResponse
+from app.routing.occupancy import HotelRoom
 from app.routing.sources import persona_candidates as source
 
 
@@ -35,7 +36,7 @@ class FakePlaces:
         self.calls += 1
         return self.attractions
 
-    async def hotels_near(self, _point, _date, _range):
+    async def hotels_near(self, _point, _date, _range, room):
         self.calls += 1
         return self.hotels
 
@@ -107,6 +108,8 @@ async def test_hotel_requires_matching_identity_date_and_provider_price():
                 coordinates=[40, -74],
                 check_in_date=date(2026, 10, 1),
                 price=225,
+                room=HotelRoom(adults=2, child_ages=[]),
+                price_scope="one_room_one_night_including_taxes_fees",
             ),
             source.VerifiedHotel(
                 provider_id="google:H1",
@@ -114,6 +117,8 @@ async def test_hotel_requires_matching_identity_date_and_provider_price():
                 coordinates=[40, -74],
                 check_in_date=date(2026, 10, 1),
                 price=225,
+                room=HotelRoom(adults=2, child_ages=[]),
+                price_scope="one_room_one_night_including_taxes_fees",
             ),
         ]
     )
@@ -124,6 +129,7 @@ async def test_hotel_requires_matching_identity_date_and_provider_price():
         default_weights(),
         ai=ai,
         places=places,
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
     )
     assert len(result) == 1
     assert result[0]["type"] == "hotel"
@@ -136,6 +142,7 @@ async def test_hotel_requires_matching_identity_date_and_provider_price():
         default_weights(),
         ai=ai,
         places=places,
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
     )
 
 
@@ -149,6 +156,8 @@ async def test_hotel_output_cap_and_unconfigured_dated_provider(monkeypatch):
             coordinates=[40, -74],
             check_in_date=date(2026, 10, 1),
             price=100 + index,
+            room=HotelRoom(adults=2, child_ages=[]),
+            price_scope="one_room_one_night_including_taxes_fees",
         )
         for index in range(15)
     ]
@@ -159,6 +168,7 @@ async def test_hotel_output_cap_and_unconfigured_dated_provider(monkeypatch):
         default_weights(),
         ai=FakeAI(proposals),
         places=FakePlaces(hotels=hotels),
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
     )
     assert len(result) == source.MAX_HOTELS
     monkeypatch.setattr(source.config, "OPENCAGE_KEY", None)
@@ -169,6 +179,7 @@ async def test_hotel_output_cap_and_unconfigured_dated_provider(monkeypatch):
             ((0, 200), "0-200"),
             default_weights(),
             ai=FakeAI(proposals),
+            hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
         )
 
 
@@ -203,12 +214,14 @@ async def test_google_adapter_supplies_verified_names_prices_and_links(monkeypat
 
     monkeypatch.setattr(source.config, "OPENCAGE_KEY", "fixture")
 
-    async def fetched(self, point, check_in):
+    async def fetched(self, point, check_in, room):
         return [
             {
                 "provider_id": "google:H1",
                 "name": "Hotel One",
                 "coordinates": point,
+                "room": {"adults": 2, "child_ages": []},
+                "price_scope": "one_room_one_night_including_taxes_fees",
                 "check_in_date": check_in,
                 "price": 120,
                 "url": "https://www.google.com/travel/hotels/entity/H1?dated=fixture",
@@ -225,18 +238,23 @@ async def test_google_adapter_supplies_verified_names_prices_and_links(monkeypat
 
     ai = RatingAI([{"name": "Hotel One", "attribute_ratings": _ratings(), "price": 1}])
     result = await source.hotel_candidates(
-        [40, -74], date(2026, 11, 20), ((50, 150), "USD"), default_weights(), ai=ai
+        [40, -74],
+        date(2026, 11, 20),
+        ((50, 150), "USD"),
+        default_weights(),
+        ai=ai,
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
     )
     assert result[0]["price"] == 120
     assert result[0]["url"].startswith("https://www.google.com/travel/hotels/entity/H1")
 
-    async def failed(self, point, check_in):
+    async def failed(self, point, check_in, room):
         raise GoogleHotelLookupError("Google Hotels did not confirm USD prices.")
 
     monkeypatch.setattr(GoogleHotelProvider, "hotels_near", failed)
     with pytest.raises(source.CandidateProviderError, match="USD prices"):
         await source.LivePlaceProvider().hotels_near(
-            [40, -74], date(2026, 11, 20), ((50, 150), "USD")
+            [40, -74], date(2026, 11, 20), ((50, 150), "USD"), HotelRoom(adults=2, child_ages=[])
         )
 
 

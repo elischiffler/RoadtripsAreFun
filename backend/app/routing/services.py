@@ -53,7 +53,7 @@ FindCPSatCandidates = Callable[
     [MapBox_route, list[list[float]], dict[str, float]], Awaitable[list[dict[str, Any]]]
 ]
 FindCPSatHotels = Callable[
-    [list[float], date, PriceRange, dict[str, float]], Awaitable[list[dict[str, Any]]]
+    [list[float], date, PriceRange, dict[str, float], list], Awaitable[list[dict[str, Any]]]
 ]
 
 

@@ -28,6 +28,7 @@ from typing import Any
 from app.models.routing_models.routing_models import MapBox
 from app.routing.base import PlanMetrics, PlanOptions
 from app.routing.geometry import find_position
+from app.routing.occupancy import HotelRoom
 from app.routing.pricing import get_price_range
 from app.routing.registry import available_planners, get_planner
 from app.routing.services import CountingServices, RoutingServices
@@ -169,10 +170,13 @@ class CachedServices:
             for i, point in enumerate(points[: self.pool_size])
         ]
 
-    async def cp_sat_hotels(self, position, check_in, price_range, weights):
+    async def cp_sat_hotels(self, position, check_in, price_range, weights, hotel_rooms):
         return [
             {
                 "provider_id": "benchmark-hotel",
+                "hotel_rooms": [room.model_dump() for room in hotel_rooms],
+                "room_offers": [],
+                "price_scope": "one_room_one_night_including_taxes_fees",
                 "name": "Cached Hotel",
                 "coordinates": position,
                 "utility": 0.8,
@@ -235,7 +239,11 @@ async def run_case(case: BenchmarkCase, algorithms: list[str]) -> list[PlanMetri
         # Fresh services + counter per run so api_calls is isolated.
         services = CountingServices(case.services().bundle())
         options = PlanOptions(
-            num_stops=case.num_stops, budget=case.budget, start=datetime(2025, 6, 1, 9, 0, 0)
+            traveler_count=2,
+            hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+            num_stops=case.num_stops,
+            budget=case.budget,
+            start=datetime(2025, 6, 1, 9, 0, 0),
         )
         result = await planner.run(case.route(), options, services)
         metrics = result.metrics or PlanMetrics(algorithm=name, feasible=False)

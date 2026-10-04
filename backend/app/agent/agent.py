@@ -311,7 +311,9 @@ async def run_turn(
             patch, extraction_responses = {}, []
         else:
             with stage("agent.extract_details"):
-                patch, extraction_responses = extract_trip_patch(providers, request.message, trip)
+                patch, extraction_responses = extract_trip_patch(
+                    providers, request.message, trip, recent_turns=recent_turns
+                )
     except ExtractionFormatError as exc:
         reply = "I couldn't read the trip details in that message. Please try sending them again."
         debug.trip_snapshot("after", trip)

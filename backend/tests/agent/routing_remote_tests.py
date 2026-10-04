@@ -18,7 +18,15 @@ from .conftest import FakeMemory
 def _ctx(*, car_skipped=False):
     memory = FakeMemory() if car_skipped else None
     if memory:
-        memory.save_trip_profile("u1", "42", TripProfile(car_status="skipped").to_json())
+        memory.save_trip_profile(
+            "u1",
+            "42",
+            TripProfile(
+                car_status="skipped",
+                traveler_count=2,
+                hotel_rooms=[{"adults": 2, "child_ages": []}],
+            ).to_json(),
+        )
     return ToolContext(user_id="u1", chat_id="42", auth_token="verified-token", memory=memory)
 
 

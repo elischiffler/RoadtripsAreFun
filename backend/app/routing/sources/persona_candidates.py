@@ -12,7 +12,7 @@ import json
 import math
 import re
 from datetime import date, datetime
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol
 
 import httpx
 from geopy.distance import geodesic
@@ -23,6 +23,7 @@ from app.agent.progress import emit, stage
 from app.agent.providers import LLMProvider, build_default_chain
 from app.agent.schemas import LLMMessage
 from app.routing import config
+from app.routing.occupancy import MAX_ROOMS, HotelRoom
 from app.routing.sources.attractions import _auth_headers, _raise_for_status
 
 MAX_ATTRACTIONS = 30
@@ -114,6 +115,8 @@ class VerifiedHotel(VerifiedPlace):
 
     price: float
     check_in_date: date
+    room: HotelRoom
+    price_scope: Literal["one_room_one_night_including_taxes_fees"]
     stars: float | None = None
     review_count: int | None = None
 
@@ -129,7 +132,11 @@ class PlaceProvider(Protocol):
     async def attractions_near(self, point: list[float]) -> list[VerifiedPlace]: ...
 
     async def hotels_near(
-        self, point: list[float], check_in: date, price_range: tuple[tuple[float, float], str]
+        self,
+        point: list[float],
+        check_in: date,
+        price_range: tuple[tuple[float, float], str],
+        room: HotelRoom,
     ) -> list[VerifiedHotel]: ...
 
 
@@ -298,11 +305,12 @@ async def attraction_candidates(
     return results
 
 
-async def hotel_candidates(
+async def _room_candidates(
     overnight_position: list[float],
     check_in_date: date | datetime,
     price_range: tuple[tuple[float, float], str],
     effective_weights: dict[str, float],
+    room: HotelRoom,
     *,
     ai: LLMProvider | None = None,
     places: PlaceProvider | None = None,
@@ -320,7 +328,7 @@ async def hotel_candidates(
     places = places or LivePlaceProvider()
     if isinstance(places, LivePlaceProvider):
         places.require_hotels()
-    records = await places.hotels_near(point, check_in, price_range)
+    records = await places.hotels_near(point, check_in, price_range, room)
     if not records:
         return []
     names = [
@@ -339,6 +347,7 @@ async def hotel_candidates(
                 continue
             if (
                 verified.check_in_date != check_in
+                or verified.room != room
                 or _name_key(verified.name) != _name_key(proposal.name)
                 or verified.provider_id in seen
                 or _distance_miles(point, verified.coordinates) > _HOTEL_RADIUS_MI
@@ -414,14 +423,75 @@ class LivePlaceProvider:
         return records
 
     async def hotels_near(
-        self, point: list[float], check_in: date, price_range: tuple[tuple[float, float], str]
+        self,
+        point: list[float],
+        check_in: date,
+        price_range: tuple[tuple[float, float], str],
+        room: HotelRoom,
     ) -> list[VerifiedHotel]:
         del price_range  # Advisory budget: keep usable over-budget hotels.
         self.require_hotels()
         from app.routing.sources.google_hotels import GoogleHotelLookupError, GoogleHotelProvider
 
         try:
-            records = await GoogleHotelProvider(config.geolocator).hotels_near(point, check_in)
+            records = await GoogleHotelProvider(config.geolocator).hotels_near(
+                point, check_in, room
+            )
             return [VerifiedHotel.model_validate(record) for record in records]
         except GoogleHotelLookupError as exc:
             raise CandidateProviderError(str(exc)) from exc
+
+
+async def hotel_candidates(
+    overnight_position: list[float],
+    check_in_date: date | datetime,
+    price_range: tuple[tuple[float, float], str],
+    effective_weights: dict[str, float],
+    hotel_rooms: list[HotelRoom],
+    *,
+    ai: LLMProvider | None = None,
+    places: PlaceProvider | None = None,
+) -> list[dict[str, Any]]:
+    """Intersect independently verified room quotes at the same hotel.
+
+    No claim of simultaneous room inventory: every quote keeps its own link.
+    """
+    rooms = [HotelRoom.model_validate(room) for room in hotel_rooms]
+    if not 1 <= len(rooms) <= MAX_ROOMS:
+        raise ValueError("Hotel lookup supports 1-4 rooms")
+    by_room = []
+    for room in rooms:
+        candidates = await _room_candidates(
+            overnight_position,
+            check_in_date,
+            price_range,
+            effective_weights,
+            room,
+            ai=ai,
+            places=places,
+        )
+        if not candidates:
+            return []
+        by_room.append({item["provider_id"]: item for item in candidates})
+    results = []
+    for key, first in by_room[0].items():
+        if not all(key in lookup for lookup in by_room):
+            continue
+        offers = [
+            {"room": room.model_dump(), "price": lookup[key]["price"], "url": lookup[key]["url"]}
+            for room, lookup in zip(rooms, by_room)
+        ]
+        results.append(
+            {
+                **first,
+                "traveler_count": sum(room.adults + len(room.child_ages) for room in rooms),
+                "hotel_rooms": [room.model_dump() for room in rooms],
+                "room_offers": offers,
+                "price": sum(offer["price"] for offer in offers),
+                "url": offers[0]["url"] if len(offers) == 1 else None,
+                "price_scope": "one_room_one_night_including_taxes_fees"
+                if len(offers) == 1
+                else "independent_room_quotes_not_combined_inventory",
+            }
+        )
+    return results

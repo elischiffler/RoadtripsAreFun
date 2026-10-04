@@ -14,6 +14,7 @@ from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.trip_profile import TripProfile
 from app.main import app
 from app.routers.agent_api import get_agent_dependencies
+from app.routing.occupancy import HotelRoom
 from app.schemas.chat_schemas import ChatLogSchema
 
 from .complete_trip_tests import _profile, _stub_planning
@@ -36,6 +37,8 @@ def profile():
         budget=200,
         departure_time="10:00",
         car={"year": 2023, "make": "Mazda", "model": "CX-5"},
+        traveler_count=2,
+        hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
     )
 
 
@@ -71,6 +74,11 @@ async def test_conversation_corrections_invalids_and_no_change(monkeypatch):
 
     monkeypatch.setattr("app.agent.tool_dispatcher.get_car_details", car)
     memory = FakeMemory()
+    memory.save_trip_profile(
+        "user",
+        "42",
+        TripProfile(traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]).to_json(),
+    )
     first = await turn(memory, {"start_address": "Boulder", "destination_address": "Marceline"})
     assert first.presentation.updated == [
         "Starting location: Boulder, USA",
@@ -85,7 +93,10 @@ async def test_conversation_corrections_invalids_and_no_change(monkeypatch):
         "Optional car: 2023 Mazda CX-5",
     ]
     third = await turn(memory, {"num_stops": 6, "budget": 200})
-    assert third.presentation.updated == ["Attraction stops: 6", "Hotel budget: $200 per night"]
+    assert third.presentation.updated == [
+        "Attraction stops: 6",
+        "Hotel budget: $200 per room per night",
+    ]
     assert third.presentation.needed == ["What date would you like to leave?"]
     assert "Everything is ready" not in third.reply
     fourth = await turn(memory, {"departure_date": "November 21"})
@@ -94,7 +105,7 @@ async def test_conversation_corrections_invalids_and_no_change(monkeypatch):
     assert fourth.presentation.needed == []
     assert "ready" not in fourth.reply
     correction = await turn(memory, {"budget": 180, "num_stops": 99})
-    assert correction.presentation.updated == ["Hotel budget: $180 per night"]
+    assert correction.presentation.updated == ["Hotel budget: $180 per room per night"]
     assert correction.tripProfile["num_stops"] == 6
     assert correction.presentation.needed == [
         "Attraction stops: Please give a whole number from 1 to 10."
@@ -115,7 +126,7 @@ async def test_no_change_question_summary_skip_and_outage():
     assert question.presentation.needed == ["What date would you like to leave?"]
     summary = await turn(memory, {}, message="Show trip details")
     assert summary.presentation.title == "Trip details"
-    assert "Hotel budget: $200 per night" in summary.presentation.updated
+    assert "Hotel budget: $200 per room per night" in summary.presentation.updated
     skipped = await turn(memory, {"car_status": "skipped"})
     assert skipped.presentation.updated == ["Optional car: skipped"]
     assert all("car" not in question.lower() for question in skipped.presentation.needed)
@@ -129,7 +140,7 @@ async def test_no_change_question_summary_skip_and_outage():
     outage = await turn(
         memory, {}, provider=Outage(extraction_responses=['{"details":{"budget":210}}'])
     )
-    assert outage.presentation.updated == ["Hotel budget: $210 per night"]
+    assert outage.presentation.updated == ["Hotel budget: $210 per room per night"]
     assert outage.presentation.needed == ["What date would you like to leave?"]
     assert "temporarily unavailable" in outage.reply
 
