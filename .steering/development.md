@@ -25,13 +25,27 @@ cd ..
 make run
 ```
 
-The root Makefile uses POSIX shell syntax and `backend/.venv/bin/` paths.
-`make run` starts API8000 and Vite5173; `make debug` enables per-turn trip/tool
-logging. Debug output can contain trip data. For separate processes, use
-`make run-backend` and `make run-frontend`. Native PowerShell does not support
-those shell recipes as written; `uvloop` in the pinned requirements is also a
-POSIX dependency. Use WSL or the Docker workflow for the pinned backend rather
-than silently changing its lockfile to install on Windows.
+On Windows PowerShell, use Python 3.12 and Node 24, then run from the root:
+
+```powershell
+py -3.12 -m venv backend/.venv
+./backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt ruff==0.16.7
+npm ci --prefix frontend
+make run
+```
+
+Install GNU Make if `make` is unavailable (for example, `winget install --id
+GnuWin32.Make --exact`). Add its `bin` folder to PATH and reopen PowerShell.
+You can also start both services with `node scripts/dev.mjs`.
+
+The root Makefile starts a Node launcher that selects the native virtualenv
+interpreter. `make run` starts API8000 and Vite5173 in the same terminal; Ctrl+C
+stops both process trees. A server failure shuts down the other server. Vite
+fails if port 5173 is occupied instead of choosing a different port.
+`make debug` enables per-turn trip/tool logging, which can contain trip data.
+Use `make run-backend` and `make run-frontend` for separate processes.
+The uvloop requirement is skipped on Windows; Uvicorn uses asyncio there.
+Launcher regression checks: `node --test tests/dev-runner.test.mjs`.
 
 The diagnostic Docker preview is documented in `docs/container-runbook.md`:
 set `ROADTRIPS_REVISION` to `git rev-parse HEAD`, then

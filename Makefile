@@ -1,34 +1,34 @@
 .PHONY: run debug run-backend run-frontend test test-backend test-frontend \
         coverage coverage-backend coverage-frontend format lint lint-fix
 
-## Run both backend and frontend dev servers concurrently
+ifeq ($(OS),Windows_NT)
+PYTHON = .venv/Scripts/python.exe
+else
+PYTHON = .venv/bin/python
+endif
+
+## Run both development servers on Windows, macOS, Linux, or WSL
 run:
-	@echo "Starting backend (http://localhost:8000) and frontend (http://localhost:5173)..."
-	@trap 'kill 0' SIGINT; \
-	  (cd backend/app && ../.venv/bin/uvicorn app.main:app --app-dir .. --reload --reload-dir .) & \
-	  (cd frontend && PATH="$$(pwd)/node_modules/.bin:$$PATH" npm run dev) & \
-	  wait
+	@node scripts/dev.mjs
 
-## Run both dev servers with per-turn agent tool and trip-profile logs
+## Run with per-turn agent tool and trip-profile logs
 debug:
-	@AGENT_DEBUG=true $(MAKE) run
+	@node scripts/dev.mjs --debug
 
-## Run only backend dev server
 run-backend:
-	cd backend/app && ../.venv/bin/uvicorn app.main:app --app-dir .. --reload --reload-dir .
+	@node scripts/dev.mjs --backend-only
 
-## Run only frontend dev server
 run-frontend:
-	cd frontend && npm run dev
+	@node scripts/dev.mjs --frontend-only
 
 ## Run all tests from the repo root
 test:
-	cd backend && .venv/bin/python -m pytest
+	cd backend && $(PYTHON) -m pytest
 	cd frontend && npm test
 
 ## Run only backend tests
 test-backend:
-	cd backend && .venv/bin/python -m pytest
+	cd backend && $(PYTHON) -m pytest
 
 ## Run only frontend tests
 test-frontend:
@@ -36,12 +36,12 @@ test-frontend:
 
 ## Run coverage for both (enforces thresholds — fails if below minimums)
 coverage:
-	cd backend && .venv/bin/python -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
+	cd backend && $(PYTHON) -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
 	cd frontend && npm run test:coverage
 
 ## Run only backend coverage
 coverage-backend:
-	cd backend && .venv/bin/python -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
+	cd backend && $(PYTHON) -m pytest --cov=app --cov-report=term-missing --cov-fail-under=63
 
 ## Run only frontend coverage
 coverage-frontend:
@@ -49,15 +49,15 @@ coverage-frontend:
 
 ## Format all code (backend: ruff, frontend: prettier)
 format:
-	cd backend && ruff format .
+	cd backend && $(PYTHON) -m ruff format .
 	cd frontend && npm run format
 
 ## Lint all code (backend: ruff check, frontend: eslint)
 lint:
-	cd backend && ruff check .
+	cd backend && $(PYTHON) -m ruff check .
 	cd frontend && npm run lint
 
 ## Fix auto-fixable lint issues
 lint-fix:
-	cd backend && ruff check --fix .
+	cd backend && $(PYTHON) -m ruff check --fix .
 	cd frontend && npm run lint -- --fix

@@ -117,7 +117,20 @@ cd frontend
 npm ci
 ```
 
-From the repo root:
+On Windows PowerShell, use Python 3.12 and Node 24, then run from the root:
+
+```powershell
+py -3.12 -m venv backend/.venv
+./backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt ruff==0.16.7
+npm ci --prefix frontend
+make run
+```
+
+Install GNU Make if `make` is unavailable (for example, `winget install --id
+GnuWin32.Make --exact`). Add its `bin` folder to PATH and reopen PowerShell.
+You can also start both services with `node scripts/dev.mjs`.
+
+From the repo root (Windows, macOS, Linux, or WSL):
 
 ```bash
 make run
