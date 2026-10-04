@@ -66,7 +66,9 @@ async def call_route_remote(
     return MapBox.MapBox_Route.model_validate(resp.json())
 
 
-async def plan_final_route_remote(payload: Route_Payload, token: str | None = None) -> Route:
+async def plan_final_route_remote(
+    payload: Route_Payload, token: str | None = None, *, identity_token: str | None = None
+) -> Route:
     """Proxy ``POST /generate-final-route`` and validate into a ``Route``.
 
     The deployed endpoint runs the planner (and all whitelisted TripAdvisor /
@@ -74,8 +76,11 @@ async def plan_final_route_remote(payload: Route_Payload, token: str | None = No
     ``Route`` the local ``plan_final_route`` returns.
     """
     body = payload.model_dump(mode="json")
+    headers = _auth(token)
+    if identity_token:
+        headers["X-Cognito-Id-Token"] = identity_token
     async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
-        resp = await client.post(f"{_base()}/generate-final-route", json=body, headers=_auth(token))
+        resp = await client.post(f"{_base()}/generate-final-route", json=body, headers=headers)
     resp.raise_for_status()
     return Route.model_validate(resp.json())
 

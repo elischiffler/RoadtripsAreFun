@@ -236,6 +236,7 @@ def test_generate_final_route_unknown_algorithm_returns_400():
     with (
         patch("app.routing.sources.mapbox.requests.get", return_value=mock_resp),
         patch("app.routers.routing_api.get_location", return_value=mock_location),
+        patch("app.routers.routing_api.owner_routing_claims", return_value={"sub": "fixture-user"}),
     ):
         init_resp = client.get(
             "/get-initial-route",

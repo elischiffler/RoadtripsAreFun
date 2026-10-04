@@ -40,6 +40,7 @@ from app.agent.schemas import (
 from app.agent.toolcall_parser import parse_tool_calls, strip_tool_blocks
 from app.agent.tools import ToolContext, ToolDispatcher
 from app.agent.trip_profile import TripProfile
+from app.routing.selection import owner_routing_claims
 from app.utils.auth import get_user_id_from_token
 
 logger = logging.getLogger(__name__)
@@ -224,6 +225,8 @@ async def run_turn(
     providers: LLMProvider,
     memory: MemoryStore,
     tools: ToolDispatcher,
+    *,
+    identity_token: str | None = None,
 ) -> AgentChatResponse:
     """Run one conversational turn.
 
@@ -264,6 +267,8 @@ async def run_turn(
         chat_id=chat_id,
         auth_token=request.partitionKey,
         algorithm=request.clientContext.algorithm if request.clientContext else None,
+        can_select_algorithm=owner_routing_claims(user_id, identity_token) is not None,
+        identity_token=identity_token,
         memory=memory,
     )
     try:

@@ -33,7 +33,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 from collections.abc import Awaitable, Callable
 from datetime import datetime
 from typing import Any
@@ -56,7 +55,7 @@ from app.routers.car_api import get_car_details, get_gas_price
 from app.routers.itinerary_api import build_itinerary
 from app.routers.routing_api import plan_final_route
 from app.routing.config import geolocator
-from app.routing.registry import DEFAULT_ALGORITHM
+from app.routing.selection import select_algorithm
 from app.routing.sources.mapbox import call_route
 from app.utils.geolocation_helpers import get_location
 
@@ -635,9 +634,9 @@ class AppToolDispatcher:
             "num_stops": int(num_stops),
             "budget": float(budget),
         }
-        selected_algorithm = args.get("algorithm") or ctx.algorithm
-        if selected_algorithm:
-            payload_data["algorithm"] = selected_algorithm
+        payload_data["algorithm"] = select_algorithm(
+            args.get("algorithm") or ctx.algorithm, ctx.can_select_algorithm
+        )
         start = args.get("start") or trip.start_date
         if start:
             payload_data["start"] = start
@@ -647,15 +646,12 @@ class AppToolDispatcher:
         # Proxy planning (and its whitelisted TripAdvisor/hotel calls) to the
         # deployed backend in local dev; run locally on the deployed backend.
         if routing_remote.remote_enabled():
-            route = await routing_remote.plan_final_route_remote(payload, ctx.auth_token)
+            route = await routing_remote.plan_final_route_remote(
+                payload, ctx.auth_token, identity_token=ctx.identity_token
+            )
         else:
-            route = (
-                await plan_final_route(payload, user_id=ctx.user_id)
-                if (
-                    payload_data.get("algorithm")
-                    or os.getenv("ROUTING_ALGORITHM", DEFAULT_ALGORITHM)
-                ).startswith("cp_sat")
-                else await plan_final_route(payload)
+            route = await plan_final_route(
+                payload, user_id=ctx.user_id, can_select_algorithm=ctx.can_select_algorithm
             )
         # Store the planned Route; hand the model a handle + summary. The FULL
         # route still rides to the frontend via `route` (promoted onto the

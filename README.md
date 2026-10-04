@@ -57,6 +57,9 @@ All colours are defined in `frontend/src/components/Theme.jsx` and exposed as CS
 
 Technical docs live in [`docs/`](./docs):
 
+- [Owner routing settings](./docs/owner-routing-settings.md) — verified Cognito
+  eligibility, session lifecycle, shared planner enforcement, and validation limits.
+
 - [Route-Finding Algorithm](./docs/route-finding.md) — the two-phase route
   generation flow, day-by-day scheduling, attraction and hotel discovery, and
   data models, with Mermaid diagrams.

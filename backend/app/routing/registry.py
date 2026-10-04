@@ -2,15 +2,15 @@
 
 Adding a new algorithm is a two-line change: implement a
 :class:`~app.routing.base.RoutePlanner` under ``planners/`` and register it here.
-The router resolves a planner by name (from the request or the
-``ROUTING_ALGORITHM`` env var) via :func:`get_planner`.
+Interactive callers enforce owner eligibility through ``routing.selection``
+before resolving a registered planner via :func:`get_planner`.
 """
 
 from __future__ import annotations
 
 from app.routing.base import PlanningError, RoutePlanner
 
-# Default algorithm when neither the request nor the environment specifies one.
+# Canonical interactive default, including owners who have not chosen a planner.
 DEFAULT_ALGORITHM = "cp_sat"
 
 _REGISTRY: dict[str, RoutePlanner] = {}

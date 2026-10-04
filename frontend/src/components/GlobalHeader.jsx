@@ -6,6 +6,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { UserDataContext } from '../states/UserDataContext';
 import { isAuthenticated } from '../services/authService';
 import AlgorithmSettings from './AlgorithmSettings';
+import { useRoutingSettings } from '../services/routingSettings';
 import './GlobalHeader.css';
 
 // Show the dev-mode algorithm picker only in local dev (npm run dev), or when
@@ -18,6 +19,7 @@ export default function GlobalHeader() {
   const location = useLocation();
   const navigate = useNavigate();
   const authed = isAuthenticated();
+  const routingSettings = useRoutingSettings();
   const { currentStep, clearUserData } = useContext(UserDataContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -31,6 +33,7 @@ export default function GlobalHeader() {
     sessionStorage.removeItem('accessToken');
     sessionStorage.removeItem('idToken');
     sessionStorage.removeItem('refreshToken');
+    window.dispatchEvent(new Event('auth-changed'));
     clearUserData();
     navigate('/');
   };
@@ -52,7 +55,7 @@ export default function GlobalHeader() {
       <LogoButton driving={isDriving} progress={logoProgress} />
 
       <Box className="global-header-right">
-        {SHOW_DEV_TOOLS && <AlgorithmSettings />}
+        {SHOW_DEV_TOOLS && routingSettings.canSelect && <AlgorithmSettings />}
         {authed ? (
           <>
             <Box

@@ -91,6 +91,8 @@ class ToolContext:
     chat_id: str
     auth_token: str | None = None
     algorithm: str | None = None
+    can_select_algorithm: bool = False
+    identity_token: str | None = None
     memory: MemoryStore | None = None
     artifacts: ArtifactStore = field(default_factory=ArtifactStore)
 

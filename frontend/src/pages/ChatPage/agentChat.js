@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { backendAuthConfig } from '../../services/backendAuth';
+import { getRoutingAlgorithm } from '../../services/routingSettings';
 
 /**
  * agentChat — API helper for the conversational chat agent.
@@ -46,10 +48,20 @@ export const sendAgentMessage = async ({ accessToken, chatId, message, clientCon
       message,
     };
     if (clientContext) {
-      data.clientContext = clientContext;
+      const context = { ...clientContext };
+      delete context.algorithm;
+      const algorithm =
+        accessToken === sessionStorage.getItem('accessToken') ? getRoutingAlgorithm() : null;
+      data.clientContext = { ...context, ...(algorithm ? { algorithm } : {}) };
     }
 
-    const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}agent/chat`, data);
+    const config = backendAuthConfig();
+    if (config.headers?.Authorization !== `Bearer ${accessToken}`) delete config.headers;
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_SERVER}agent/chat`,
+      data,
+      config
+    );
 
     return response.data;
   } catch (error) {

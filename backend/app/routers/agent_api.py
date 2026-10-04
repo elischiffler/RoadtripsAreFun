@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import ValidationError
 
 from app.agent.agent import run_turn
@@ -77,11 +77,12 @@ def get_agent_dependencies() -> tuple[object, MemoryStore, ToolDispatcher]:
 async def agent_chat(
     request: AgentChatRequest,
     deps: tuple = Depends(get_agent_dependencies),
+    x_cognito_id_token: str | None = Header(default=None),
 ) -> AgentChatResponse:
     """Handle one conversational turn."""
     providers, memory, tools = deps
     try:
-        return await run_turn(request, providers, memory, tools)
+        return await run_turn(request, providers, memory, tools, identity_token=x_cognito_id_token)
     except HTTPException:
         raise
     except ProvidersExhausted as exception:

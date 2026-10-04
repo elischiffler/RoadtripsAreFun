@@ -33,6 +33,7 @@ export const signIn = async (username: string, password: string) => {
       sessionStorage.setItem('idToken', AuthenticationResult.IdToken || '');
       sessionStorage.setItem('accessToken', AuthenticationResult.AccessToken || '');
       sessionStorage.setItem('refreshToken', AuthenticationResult.RefreshToken || '');
+      window.dispatchEvent(new Event('auth-changed'));
       return AuthenticationResult;
     }
   } catch (error) {

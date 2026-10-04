@@ -472,7 +472,7 @@ export function useTripWorkflow({
             hasRoute: !!route,
             stops,
             hotelBudget,
-            algorithm: getRoutingAlgorithm(),
+            ...(getRoutingAlgorithm() ? { algorithm: getRoutingAlgorithm() } : {}),
           },
         });
         noLoader();

@@ -148,13 +148,13 @@ describe("submit('chat_message')", () => {
     );
   });
 
-  it('passes the selected CP-SAT variant to the agent', async () => {
+  it('ignores a saved CP-SAT variant without verified eligibility', async () => {
     localStorage.setItem('devRoutingAlgorithm', 'cp_sat_scenic');
     sendAgentMessage.mockResolvedValueOnce({ reply: 'ok', toolsUsed: [], actions: [] });
     render(<Harness />);
     await userEvent.click(screen.getByText('send'));
     await waitFor(() => expect(sendAgentMessage).toHaveBeenCalledTimes(1));
-    expect(sendAgentMessage.mock.calls[0][0].clientContext.algorithm).toBe('cp_sat_scenic');
+    expect(sendAgentMessage.mock.calls[0][0].clientContext).not.toHaveProperty('algorithm');
   });
 
   it('shows a generic fallback when the agent returns null', async () => {

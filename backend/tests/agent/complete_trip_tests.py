@@ -59,7 +59,7 @@ def _stub_planning(monkeypatch):
         calls["endpoints"] = args
         return SimpleNamespace(distance=1000, duration=600)
 
-    async def fake_plan(payload, user_id=None):
+    async def fake_plan(payload, user_id=None, *, can_select_algorithm=False):
         calls["route_start"] = payload["start"]
         calls["user_id"] = user_id
         return SimpleNamespace(

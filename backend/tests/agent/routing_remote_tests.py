@@ -90,7 +90,7 @@ async def test_generate_final_route_uses_remote_when_enabled(monkeypatch):
     monkeypatch.setattr(td.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v))
     monkeypatch.setattr(td.Route_Payload, "model_validate", classmethod(lambda cls, v: v))
 
-    async def fake_remote_plan(payload, token):
+    async def fake_remote_plan(payload, token, *, identity_token=None):
         assert token == "verified-token"
         return SimpleNamespace(
             stops=[{"name": "S", "type": "stop"}],
@@ -167,7 +167,8 @@ def test_remote_route_rejects_missing_token():
 
 
 @pytest.mark.asyncio
-async def test_remote_final_route_forwards_override_and_auth(monkeypatch):
+@pytest.mark.parametrize("identity_token", [None, "signed-identity-token"])
+async def test_remote_final_route_forwards_override_and_auth(monkeypatch, identity_token):
     import httpx
 
     monkeypatch.setattr(rr.settings, "ROUTING_REMOTE_URL", "https://deployed.example")
@@ -192,9 +193,12 @@ async def test_remote_final_route_forwards_override_and_auth(monkeypatch):
     payload = SimpleNamespace(
         model_dump=lambda mode: {"algorithm": "cp_sat", "persona_weights": {"nature": 2}}
     )
-    await rr.plan_final_route_remote(payload, "verified-token")
+    await rr.plan_final_route_remote(payload, "verified-token", identity_token=identity_token)
     assert seen == {
         "url": "https://deployed.example/generate-final-route",
         "body": {"algorithm": "cp_sat", "persona_weights": {"nature": 2}},
-        "headers": {"Authorization": "Bearer verified-token"},
+        "headers": {
+            "Authorization": "Bearer verified-token",
+            **({"X-Cognito-Id-Token": identity_token} if identity_token else {}),
+        },
     }

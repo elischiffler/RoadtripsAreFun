@@ -21,7 +21,7 @@ import logging
 import os
 
 import requests  # noqa: F401  (re-exported: tests patch app.routers.routing_api.requests.get)
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
 from pydantic import ValidationError
 from requests.exceptions import RequestException
 
@@ -35,6 +35,7 @@ from app.routing.config import geolocator  # shared reverse-geocoder
 from app.routing.geometry import find_position as _find_position  # noqa: F401
 from app.routing.pricing import get_price_range as _get_price_range  # noqa: F401
 from app.routing.registry import DEFAULT_ALGORITHM
+from app.routing.selection import owner_routing_claims, select_algorithm
 from app.routing.sources.attractions import find_stop as _find_stop  # noqa: F401
 from app.routing.sources.attractions import gather_candidates as _gather_candidates
 from app.routing.sources.hotels import find_hotel as _find_hotel  # noqa: F401
@@ -96,7 +97,9 @@ async def get_initial_route(
     response_model=Route,
 )
 async def get_final_route(
-    request: Request, user_id: str = Depends(require_authenticated_user)
+    request: Request,
+    user_id: str = Depends(require_authenticated_user),
+    x_cognito_id_token: str | None = Header(default=None),
 ) -> Route:
     """
     Retrieves a route from Mapbox API, adds intermediate stops via the selected
@@ -117,7 +120,11 @@ async def get_final_route(
         # Validate provided payload and delegate to the shared planning core.
         json_data = await request.json()
         payload = Route_Payload.model_validate(json_data)
-        return await plan_final_route(payload, user_id=user_id)
+        return await plan_final_route(
+            payload,
+            user_id=user_id,
+            can_select_algorithm=owner_routing_claims(user_id, x_cognito_id_token) is not None,
+        )
 
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail)
@@ -131,7 +138,9 @@ async def get_final_route(
         raise HTTPException(status_code=502, detail=f"Unexpected value or key: {str(exception)}")
 
 
-async def plan_final_route(payload: Route_Payload, user_id: str | None = None) -> Route:
+async def plan_final_route(
+    payload: Route_Payload, user_id: str | None = None, *, can_select_algorithm: bool = False
+) -> Route:
     """Plan and shape the full multi-day route from a validated payload.
 
     The core of :func:`get_final_route`, factored out so both the HTTP endpoint
@@ -165,8 +174,7 @@ async def plan_final_route(payload: Route_Payload, user_id: str | None = None) -
     if not isinstance(num_stops, int) or num_stops < 0:
         raise ValueError("Number of stops must be a non-negative integer")
 
-    # Select the routing algorithm: request field > env var > default.
-    algorithm = payload.algorithm or os.getenv("ROUTING_ALGORITHM", DEFAULT_ALGORITHM)
+    algorithm = select_algorithm(payload.algorithm, can_select_algorithm)
     planner = get_planner(algorithm)
     services = _build_services()
     weights = None
@@ -274,8 +282,26 @@ async def list_algorithms() -> dict:
     """
     from app.routing.registry import available_planners
 
-    default = os.getenv("ROUTING_ALGORITHM", DEFAULT_ALGORITHM)
-    return {"algorithms": available_planners(), "default": default}
+    return {"algorithms": available_planners(), "default": DEFAULT_ALGORITHM}
+
+
+@router.get("/routing-settings")
+async def routing_settings(
+    response: Response,
+    user_id: str = Depends(require_authenticated_user),
+    x_cognito_id_token: str | None = Header(default=None),
+) -> dict:
+    """Minimal authenticated capability; never return email or credential data."""
+    from app.routing.registry import available_planners
+
+    claims = owner_routing_claims(user_id, x_cognito_id_token)
+    response.headers["Cache-Control"] = "no-store"
+    return {
+        "can_select_algorithm": claims is not None,
+        "algorithms": available_planners() if claims else [],
+        "default": DEFAULT_ALGORITHM,
+        "expires_at": claims["exp"] if claims else None,
+    }
 
 
 @router.get("/benchmark", dependencies=[Depends(require_authenticated_user)])

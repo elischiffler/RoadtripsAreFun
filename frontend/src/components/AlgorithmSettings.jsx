@@ -1,65 +1,33 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 import { Box, IconButton, Menu, MenuItem, Typography, Divider, Chip } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
-import { ROUTING_ALGORITHM_KEY, getRoutingAlgorithm } from '../pages/ChatPage/getRoute';
+import {
+  useRoutingSettings,
+  getRoutingAlgorithm,
+  chooseRoutingAlgorithm,
+} from '../services/routingSettings';
 
 /**
  * Dev-mode routing-algorithm picker.
  *
  * A gear button that opens a small popup listing the routing algorithms the
- * backend has registered (fetched from GET /algorithms). Selecting one stores it
- * in localStorage for the next trip.
+ * backend has registered for a verified owner. Selection lasts for this session.
  *
  * This is a developer/demo tool for switching among current and future CP-SAT variants.
  */
-// Default algorithm when nothing has been picked yet.
-const DEFAULT_ALGORITHM = 'cp_sat';
-
-/**
- * Persist the selected routing algorithm, tolerating a failing localStorage
- * (private mode, quota, storage disabled). A write failure is non-fatal: the
- * picker keeps working in-memory, and getFinalRoute() still falls back to the
- * backend default when nothing is stored.
- */
-function writeRoutingAlgorithm(algo) {
-  try {
-    localStorage.setItem(ROUTING_ALGORITHM_KEY, algo);
-  } catch (err) {
-    console.warn('Could not persist routing algorithm to localStorage:', err);
-  }
-}
-
 export default function AlgorithmSettings() {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [algorithms, setAlgorithms] = useState([]);
-  const [selected, setSelected] = useState(getRoutingAlgorithm() || DEFAULT_ALGORITHM);
+  const { canSelect, algorithms, defaultAlgorithm } = useRoutingSettings();
+  const selected = getRoutingAlgorithm() || defaultAlgorithm;
   const open = Boolean(anchorEl);
 
-  useEffect(() => {
-    // Load the available algorithms once, when the popup is first opened.
-    if (open && algorithms.length === 0) {
-      axios
-        .get(`${import.meta.env.VITE_BACKEND_SERVER}algorithms`)
-        .then((res) => {
-          const available = res.data.algorithms || [];
-          setAlgorithms(available);
-          const saved = getRoutingAlgorithm();
-          if (saved && !available.includes(saved)) {
-            localStorage.removeItem(ROUTING_ALGORITHM_KEY);
-          }
-          setSelected(available.includes(saved) ? saved : res.data.default || DEFAULT_ALGORITHM);
-        })
-        .catch(() => setAlgorithms([]));
-    }
-  }, [open, algorithms.length]);
-
   const choose = (algo) => {
-    writeRoutingAlgorithm(algo);
-    setSelected(algo);
+    chooseRoutingAlgorithm(algo);
     setAnchorEl(null);
   };
+
+  if (!canSelect) return null;
 
   return (
     <>

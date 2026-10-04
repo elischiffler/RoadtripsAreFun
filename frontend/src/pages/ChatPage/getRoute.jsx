@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { backendAuthConfig } from '../../services/backendAuth';
+import { getRoutingAlgorithm } from '../../services/routingSettings';
+export { getRoutingAlgorithm, ROUTING_ALGORITHM_KEY } from '../../services/routingSettings';
 export const getInitialRoute = async (start_lat, start_lon, end_lat, end_lon) => {
   try {
     const params = {
@@ -20,24 +22,6 @@ export const getInitialRoute = async (start_lat, start_lon, end_lat, end_lon) =>
     return null;
   }
 };
-// Dev-mode: which routing algorithm to request. Stored in localStorage by the
-// settings popup (see AlgorithmSettings.jsx). When unset, the backend uses its
-// default, so production behavior is unchanged.
-export const ROUTING_ALGORITHM_KEY = 'devRoutingAlgorithm';
-
-export const getRoutingAlgorithm = () => {
-  try {
-    const algorithm = localStorage.getItem(ROUTING_ALGORITHM_KEY);
-    if (algorithm === 'greedy' || algorithm === 'ortools') {
-      localStorage.removeItem(ROUTING_ALGORITHM_KEY);
-      return null;
-    }
-    return algorithm || null;
-  } catch {
-    return null;
-  }
-};
-
 export const getFinalRoute = async (
   initial_route,
   budget,
