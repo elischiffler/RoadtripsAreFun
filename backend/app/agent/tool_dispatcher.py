@@ -179,6 +179,10 @@ def _extract_endpoints(args: dict[str, Any]) -> tuple[float, float, float, float
     )
 
 
+class RouteUnavailableError(RuntimeError):
+    """A planned route must be saved before it can be advertised as usable."""
+
+
 class AppToolDispatcher:
     """Real :class:`~app.agent.tools.ToolDispatcher` over existing capabilities."""
 
@@ -503,6 +507,9 @@ class AppToolDispatcher:
             with stage("agent.tool", tool=call.name):
                 result = await handler(arguments, ctx)
             return ToolResult(name=call.name, ok=True, result=result)
+        except RouteUnavailableError as exception:
+            emit("agent.tool_error", "failed", tool=call.name, retryable=False)
+            return ToolResult(name=call.name, ok=False, error=str(exception), retryable=False)
         except CandidateProviderError as exception:
             emit("agent.tool_error", "failed", tool=call.name, retryable=False)
             logger.warning("tool %s: required candidate provider unavailable", call.name)
@@ -709,14 +716,24 @@ class AppToolDispatcher:
         # Store the planned Route; hand the model a handle + summary. The FULL
         # route still rides to the frontend via `route` (promoted onto the
         # action payload by run_turn), so Map/Itinerary render.
+        try:
+            route_dict = route.model_dump(mode="json")
+            if ctx.memory is not None:
+                ctx.memory.save_planned_route(
+                    ctx.user_id,
+                    ctx.chat_id,
+                    {
+                        "route": route_dict,
+                        "departure": start,
+                        "profile": trip.model_dump(mode="json"),
+                    },
+                )
+        except Exception as exception:  # noqa: BLE001 — stop this turn on persistence failure
+            logger.exception("Could not save the planned route")
+            raise RouteUnavailableError(
+                "I couldn't save the planned route. Please try creating the route and itinerary again."
+            ) from exception
         handle = ctx.artifacts.put("route", route)
-        route_dict = route.model_dump()
-        if ctx.memory is not None:
-            ctx.memory.save_planned_route(
-                ctx.user_id,
-                ctx.chat_id,
-                {"route": route_dict, "departure": start, "profile": trip.model_dump()},
-            )
         stop_count = len([s for s in (route.stops or []) if s.get("type") == "stop"])
         return {
             "action": "route_updated",
@@ -732,7 +749,7 @@ class AppToolDispatcher:
             # Full payload for the frontend (trimmed out of the model-visible
             # message by run_turn — see _MODEL_HIDDEN_KEYS).
             "route": route_dict,
-            "stops": route.stops,
+            "stops": route_dict.get("stops"),
         }
 
     async def _generate_itinerary(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
@@ -820,7 +837,7 @@ class AppToolDispatcher:
         )
         if not route_result.ok:
             if not route_result.retryable:
-                raise CandidateProviderError(route_result.error or "Route provider unavailable")
+                raise RouteUnavailableError(route_result.error or "Route creation failed")
             raise HTTPException(
                 status_code=422, detail=route_result.error or "Route creation failed"
             )

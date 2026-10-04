@@ -182,7 +182,7 @@ async def test_full_route_chain_by_handle(monkeypatch):
             stops=[{"name": "Stop", "type": "stop"}],
             cost=250.0,
             distance=664000.0,
-            model_dump=lambda: {
+            model_dump=lambda **kwargs: {
                 "cost": 250.0,
                 "traveler_count": 2,
                 "hotel_rooms": [{"adults": 2, "child_ages": []}],
@@ -190,7 +190,7 @@ async def test_full_route_chain_by_handle(monkeypatch):
         )
 
     async def fake_build(payload):
-        return [SimpleNamespace(model_dump=lambda: {"date": "Day 1", "stops": []})]
+        return [SimpleNamespace(model_dump=lambda **kwargs: {"date": "Day 1", "stops": []})]
 
     monkeypatch.setattr(td, "call_route", fake_call_route)
     monkeypatch.setattr(td, "plan_final_route", fake_plan)
@@ -270,7 +270,9 @@ async def test_generate_final_route_rebuilds_from_trip_coords_across_turns(monke
         return SimpleNamespace(distance=100000.0, duration=3600.0)
 
     async def fake_plan(payload, user_id=None, *, can_select_algorithm=False):
-        return SimpleNamespace(stops=[], cost=0.0, distance=100000.0, model_dump=lambda: {})
+        return SimpleNamespace(
+            stops=[], cost=0.0, distance=100000.0, model_dump=lambda **kwargs: {}
+        )
 
     # conftest's autouse _routing_local fixture already forces the LOCAL path
     # (ROUTING_REMOTE_URL=None), so call_route (not the remote proxy) is used.

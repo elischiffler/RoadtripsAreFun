@@ -272,3 +272,102 @@ async def test_completion_preserves_clear_scheduling_error(monkeypatch):
         ToolCall(name="complete_trip"), _context(_profile())
     )
     assert not result.ok and result.error == detail
+
+
+@pytest.mark.asyncio
+async def test_dated_route_is_json_safe_for_persistence_actions_and_later_itinerary(monkeypatch):
+    import json
+
+    from app.models.routing_models.routing_models import Route
+
+    calls = _stub_planning(monkeypatch)
+    ctx = _context(_profile())
+    departure = datetime.fromisoformat(_profile().start_date)
+
+    async def dated_plan(*args, **kwargs):
+        return Route(
+            coordinates=[[39.74, -104.99], [35.69, -105.94]],
+            distance=1000,
+            duration=600,
+            steps=[],
+            cost=120,
+            geometry={"coordinates": [[-104.99, 39.74], [-105.94, 35.69]]},
+            stops=[{"name": "Museum", "type": "stop", "arrival_time": departure}],
+            departure_time=departure,
+            traveler_count=2,
+            hotel_rooms=[{"adults": 2, "child_ages": []}],
+        )
+
+    monkeypatch.setattr(td, "plan_final_route", dated_plan)
+    original_save = ctx.memory.save_planned_route
+
+    def strict_save(user_id, chat_id, saved):
+        original_save(user_id, chat_id, json.loads(json.dumps(saved)))
+
+    monkeypatch.setattr(ctx.memory, "save_planned_route", strict_save)
+    result = await AppToolDispatcher().dispatch(ToolCall(name="complete_trip"), ctx)
+    assert result.ok and result.result["status"] == "complete"
+    saved = ctx.memory.load_planned_route(ctx.user_id, ctx.chat_id)
+    assert datetime.fromisoformat(saved["route"]["departure_time"]) == departure
+    assert datetime.fromisoformat(saved["route"]["stops"][0]["arrival_time"]) == departure
+    json.dumps(result.result)
+    later = ToolContext(user_id=ctx.user_id, chat_id=ctx.chat_id, memory=ctx.memory)
+    retry = await AppToolDispatcher().dispatch(ToolCall(name="generate_itinerary"), later)
+    assert retry.ok
+    assert "itinerary_start" in calls
+
+
+@pytest.mark.asyncio
+async def test_route_save_failure_stops_completion_without_itinerary_or_route_handle(monkeypatch):
+    calls = _stub_planning(monkeypatch)
+    ctx = _context(_profile())
+
+    def fail_save(*args):
+        raise RuntimeError("fixture storage failure")
+
+    monkeypatch.setattr(ctx.memory, "save_planned_route", fail_save)
+    result = await AppToolDispatcher().dispatch(ToolCall(name="complete_trip"), ctx)
+    assert not result.ok and not result.retryable
+    assert (
+        result.error
+        == "I couldn't save the planned route. Please try creating the route and itinerary again."
+    )
+    assert "itinerary_start" not in calls
+    assert not ctx.artifacts.has("route_1")
+    assert ctx.memory.load_planned_route(ctx.user_id, ctx.chat_id) is None
+
+
+@pytest.mark.asyncio
+async def test_route_save_failure_does_not_run_following_model_itinerary_call(monkeypatch):
+    from app.agent.agent import run_turn
+    from app.agent.providers import FallbackChain
+    from app.agent.schemas import AgentChatRequest, LLMResponse
+    from tests.agent.conftest import FakeProvider
+
+    _stub_planning(monkeypatch)
+    ctx = _context(_profile())
+    monkeypatch.setattr("app.agent.agent.get_user_id_from_token", lambda token: ctx.user_id)
+
+    def fail_save(*args):
+        raise RuntimeError("fixture storage failure")
+
+    monkeypatch.setattr(ctx.memory, "save_planned_route", fail_save)
+    provider = FakeProvider(
+        extraction_responses=['{"details":{}}'],
+        responses=[
+            LLMResponse(
+                content='```tool\n{"name":"generate_final_route","arguments":{}}\n```\n'
+                '```tool\n{"name":"generate_itinerary","arguments":{}}\n```'
+            )
+        ],
+    )
+    response = await run_turn(
+        AgentChatRequest(partitionKey="fixture", chatId=ctx.chat_id, message="Create the route"),
+        FallbackChain([provider]),
+        ctx.memory,
+        AppToolDispatcher(),
+    )
+    assert response.toolsUsed == ["generate_final_route"]
+    assert len(response.toolErrors) == 1
+    assert "couldn't save the planned route" in response.reply
+    assert "route_handle" not in response.reply

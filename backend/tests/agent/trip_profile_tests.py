@@ -320,7 +320,9 @@ async def test_generate_final_route_defaults_from_trip(monkeypatch):
 
         captured["num_stops"] = payload["num_stops"]
         captured["budget"] = payload["budget"]
-        return SimpleNamespace(stops=[], cost=0.0, distance=100000.0, model_dump=lambda: {})
+        return SimpleNamespace(
+            stops=[], cost=0.0, distance=100000.0, model_dump=lambda **kwargs: {}
+        )
 
     monkeypatch.setattr(td, "plan_final_route", fake_plan)
     monkeypatch.setattr(td.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v))
@@ -361,7 +363,9 @@ async def test_generate_final_route_explicit_args_win(monkeypatch):
 
     async def fake_plan(payload, user_id=None, *, can_select_algorithm=False):
         captured["num_stops"] = payload["num_stops"]
-        return SimpleNamespace(stops=[], cost=0.0, distance=100000.0, model_dump=lambda: {})
+        return SimpleNamespace(
+            stops=[], cost=0.0, distance=100000.0, model_dump=lambda **kwargs: {}
+        )
 
     monkeypatch.setattr(td, "plan_final_route", fake_plan)
     monkeypatch.setattr(td.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v))

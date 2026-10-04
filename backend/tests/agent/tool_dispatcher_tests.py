@@ -129,7 +129,7 @@ async def test_validate_location_missing_args_returns_error():
 
 async def test_get_initial_route_success(monkeypatch):
     fake_route = SimpleNamespace(
-        distance=1000.0, duration=600.0, model_dump=lambda: {"distance": 1000.0}
+        distance=1000.0, duration=600.0, model_dump=lambda **kwargs: {"distance": 1000.0}
     )
 
     async def fake_call_route(start_lat, start_lon, end_lat, end_lon, *args, **kwargs):
@@ -184,7 +184,7 @@ async def test_generate_final_route_success_has_action(monkeypatch):
         stops=[{"name": "Red Rocks", "type": "stop", "coordinates": [39.6, -105.2]}],
         cost=320.0,
         distance=500000.0,
-        model_dump=lambda: {"cost": 320.0},
+        model_dump=lambda **kwargs: {"cost": 320.0},
     )
 
     async def fake_plan(payload, user_id=None, *, can_select_algorithm=False):
@@ -247,7 +247,7 @@ async def test_generate_final_route_failure_returns_error(monkeypatch):
 
 
 async def test_generate_itinerary_success_has_action(monkeypatch):
-    fake_day = SimpleNamespace(model_dump=lambda: {"date": "Monday", "stops": []})
+    fake_day = SimpleNamespace(model_dump=lambda **kwargs: {"date": "Monday", "stops": []})
 
     async def fake_build(payload):
         return [fake_day]

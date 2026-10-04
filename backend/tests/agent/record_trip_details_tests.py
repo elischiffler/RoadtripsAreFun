@@ -282,7 +282,9 @@ async def test_recorded_skip_permits_agent_planning(monkeypatch):
     assert skipped.ok
 
     async def fake_plan(payload, *, user_id, can_select_algorithm=False):
-        return SimpleNamespace(stops=[], cost=0.0, distance=100000.0, model_dump=lambda: {})
+        return SimpleNamespace(
+            stops=[], cost=0.0, distance=100000.0, model_dump=lambda **kwargs: {}
+        )
 
     monkeypatch.setattr(td, "plan_final_route", fake_plan)
     monkeypatch.setattr(td.MapBox.MapBox_Route, "model_validate", classmethod(lambda cls, v: v))

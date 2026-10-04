@@ -105,7 +105,7 @@ async def test_generate_final_route_uses_remote_when_enabled(monkeypatch):
             cost=250.0,
             distance=664000.0,
             warnings=None,
-            model_dump=lambda: {"cost": 250.0},
+            model_dump=lambda **kwargs: {"cost": 250.0},
         )
 
     monkeypatch.setattr(rr, "plan_final_route_remote", fake_remote_plan)
