@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 from app.agent.memory import ConversationMemory, MemoryFact
 from app.agent.prompt import (
     RECENT_MESSAGE_CHARS,
@@ -83,8 +85,8 @@ def test_profile_is_authoritative_and_ui_defaults_are_not_sent():
         "Continue",
         AgentClientContext(hasRoute=False, stops=1, hotelBudget=0),
     )[0].content
-    assert "num_stops: 3" in system
-    assert "budget: 150.0" in system
+    assert '"num_stops":3' in system
+    assert '"budget":150.0' in system
     assert "hotelBudget=0" not in system
     assert "stops=1" not in system
     assert "INTERNAL" in system
@@ -101,7 +103,20 @@ def test_optional_car_and_departure_instructions_are_present_without_completing_
     assert '"skip" or "no car"' in collecting
     assert "correction or offer to skip" in collecting
     skipped = _messages(TripProfile(car_status="skipped"), "Continue")[0].content
-    assert "car_status: skipped" in skipped
+    assert '"car_status":"skipped"' in skipped
+
+
+def test_complete_saved_structure_includes_timezone_and_missing_fields():
+    trip = TripProfile(
+        start_address="Salem-Leckrone Airport, Salem, Marion County, Illinois, United States of America",
+        start_coords=[38.6404024, -88.9644242],
+        start_timezone="America/Chicago",
+    )
+    system = _messages(trip, "drive from SLO to Nashville")[0].content
+    snapshot = system.split("Saved trip profile JSON (INTERNAL):\n", 1)[1]
+    assert json.loads(snapshot) == trip.model_dump(mode="json")
+    assert "copy start_address and destination_address exactly" in system
+    assert "Do not expand abbreviations" in system
 
 
 def test_facts_and_history_are_bounded_and_summary_is_conditional():

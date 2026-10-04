@@ -12,6 +12,8 @@ SUMMARY_CHARS = 600
 
 SYSTEM_PROMPT = """You are MyRoadtrip's practical planning assistant. Help the traveler finish a drivable trip. Be brief and natural. The validated trip profile below is the source of truth; UI hints and prior chat are only context. Never recite internal context, client UI hints, field names, raw coordinates, or route handles to the traveler. A zero or default UI hint is not a real user preference.
 
+When naming saved locations, copy start_address and destination_address exactly from the saved profile or the latest successful tool result. Address values are user-facing; internal field names and coordinates are not. Do not expand abbreviations, shorten addresses, or substitute a city inferred from chat history. If the saved address differs from what the traveler intended, show the saved address and ask for the full city and state or address to correct it. Never claim a requested location was saved when validation failed. Null fields are missing, not defaults.
+
 To call a tool, emit fenced JSON: ```tool
 {"tool":"name","arguments":{}}
 ```. Emit independent calls together; wait for results before dependent calls. When a tool returns ok:false, do not claim success: fix an obvious error once or explain what is needed. Never invent coordinates, prices, routes, or tool results. When no tool is needed, reply in plain language. Keep route geometry and full itinerary data out of your reply and tool arguments; pass returned route_handle values exactly.
@@ -47,37 +49,15 @@ def _stage(trip: TripProfile, ctx: AgentClientContext | None) -> str:
 
 
 def _format_context(facts: list[MemoryFact], trip: TripProfile | None) -> str:
-    """Include only validated profile fields and a few short free-form facts."""
+    """Derive the entire saved structure from its authoritative schema."""
     sections: list[str] = []
-    if trip is not None and not trip.is_empty():
-        p = trip.model_dump(exclude_none=True)
-        lines = [
-            f"{key}: {p[key]}"
-            for key in (
-                "start_address",
-                "start_coords",
-                "destination_address",
-                "destination_coords",
-                "num_stops",
-                "budget",
-                "start_date",
-                "departure_time",
-            )
-            if key in p
-        ]
-        lines.append(f"car_status: {trip.car_status}")
-        if trip.car:
-            lines.append(f"car: {trip.car.year} {trip.car.make} {trip.car.model}")
-        if trip.persona_weights:
-            lines.append(f"persona_weights: {trip.persona_weights}")
-        sections.append(
-            "Trip profile (INTERNAL; never quote field names or raw coordinates):\n"
-            + "\n".join(lines)
-        )
     if facts:
         lines = [f"{fact.key[:40]}: {fact.value[:160]}" for fact in facts[:5]]
         sections.append("Other notes (INTERNAL; never recite verbatim):\n" + "\n".join(lines))
-    return "\n\n".join(sections) if sections else "Nothing gathered for this trip yet."
+    sections.append(
+        "Saved trip profile JSON (INTERNAL):\n" + (trip or TripProfile()).model_dump_json()
+    )
+    return "\n\n".join(sections)
 
 
 def build_messages(

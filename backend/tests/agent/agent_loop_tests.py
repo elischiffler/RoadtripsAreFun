@@ -25,6 +25,82 @@ from .conftest import FakeMemory, FakeProvider, FakeTools, make_usage
 pytestmark = pytest.mark.asyncio
 
 
+@pytest.mark.parametrize(
+    "field,label", [("start_address", "starting location"), ("destination_address", "destination")]
+)
+async def test_saved_location_receipt_uses_geocode_even_when_model_omits_it(
+    fake_memory, monkeypatch, field, label
+):
+    address = "Salem-Leckrone Airport, Salem, Marion County, Illinois, United States of America"
+    monkeypatch.setattr(
+        "app.agent.tool_dispatcher.get_location",
+        lambda **kwargs: SimpleNamespace(
+            address=address,
+            latitude=38.6404024,
+            longitude=-88.9644242,
+            raw={"annotations": {"timezone": {"name": "America/Chicago"}}},
+        ),
+    )
+    provider = FakeProvider(
+        responses=[LLMResponse(content="What date would you like to leave?")],
+        extraction_responses=[json.dumps({"details": {field: "SLO"}})],
+    )
+    result = await run_turn(
+        _request("drive from SLO"), FallbackChain([provider]), fake_memory, AppToolDispatcher()
+    )
+    assert result.reply.startswith(f"Saved {label}: {address}.")
+    assert result.tripProfile[field] == address
+    assert address in provider.seen_messages[1][0].content
+    if field == "start_address":
+        assert '"start_timezone":"America/Chicago"' in provider.seen_messages[1][0].content
+
+    followup = FakeProvider(responses=[LLMResponse(content="What time?")])
+    followup_result = await run_turn(
+        _request("October 17"), FallbackChain([followup]), fake_memory, AppToolDispatcher()
+    )
+    assert address in followup.seen_messages[1][0].content
+    assert "Saved starting location:" not in followup_result.reply
+    assert "Saved destination:" not in followup_result.reply
+
+
+async def test_failed_location_is_not_confirmed_and_other_details_survive(fake_memory, monkeypatch):
+    fake_memory.save_trip_profile(
+        "user-123",
+        "42",
+        TripProfile(start_address="Denver", start_coords=[39.74, -104.99]).to_json(),
+    )
+    monkeypatch.setattr("app.agent.tool_dispatcher.get_location", lambda **kwargs: None)
+    provider = FakeProvider(
+        responses=[LLMResponse(content="Please clarify your starting city.")],
+        extraction_responses=['{"details":{"start_address":"SLO","budget":180}}'],
+    )
+    result = await run_turn(
+        _request("SLO, $180 hotels"), FallbackChain([provider]), fake_memory, AppToolDispatcher()
+    )
+    assert "Saved starting location" not in result.reply
+    assert result.tripProfile["budget"] == 180
+    assert result.tripProfile["start_address"] == "Denver"
+    assert "start_address" in result.validationIssues
+
+
+async def test_tool_continuation_refreshes_saved_profile(fake_memory):
+    class UpdatingTools(FakeTools):
+        async def dispatch(self, call, ctx):
+            ctx.memory.save_trip_profile(
+                ctx.user_id, ctx.chat_id, TripProfile(budget=180).to_json()
+            )
+            return ToolResult(name=call.name, ok=True, result={"action": "trip_profile_updated"})
+
+    provider = FakeProvider(
+        responses=[
+            LLMResponse(content=_tool_block("update_trip_profile")),
+            LLMResponse(content="Saved."),
+        ]
+    )
+    await run_turn(_request(), FallbackChain([provider]), fake_memory, UpdatingTools())
+    assert '"budget":180.0' in provider.seen_messages[-1][0].content
+
+
 @pytest.fixture(autouse=True)
 def _verified_test_user(monkeypatch):
     # These tests exercise the agent loop, not Cognito; auth has dedicated tests.
@@ -135,7 +211,7 @@ async def test_every_turn_extracts_json_and_validates_all_supplied_fields(
     assert saved_after_skip.car_status == "skipped"
     assert saved_after_skip.budget == 150
     assert saved_after_skip.departure_time == "11:00"
-    assert "budget: 150.0" in skip_provider.seen_messages[1][0].content
+    assert '"budget":150.0' in skip_provider.seen_messages[1][0].content
     assert skip_result.extractedFields == ["car_status"]
 
 

@@ -327,6 +327,7 @@ async def run_turn(
         if tool_errors:
             reply += "Some details could not be saved. "
         reply += "The planning assistant is temporarily unavailable; please try again shortly."
+        reply = with_saved_locations(reply, final_trip)
         debug.trip_snapshot("after", final_trip)
         debug.turn_end(reply, tools_used, actions)
         return AgentChatResponse(
@@ -347,6 +348,18 @@ async def run_turn(
             else None,
         )
 
+    saved_location_fields: list[str] = []
+
+    def with_saved_locations(reply: str, profile: TripProfile) -> str:
+        """Show exact persisted addresses even if the model omits their confirmation."""
+        labels = {"start_address": "starting location", "destination_address": "destination"}
+        receipts = [
+            f"Saved {labels[field]}: {getattr(profile, field)}."
+            for field in saved_location_fields
+            if getattr(profile, field)
+        ]
+        return "\n\n".join([*receipts, reply])
+
     for extracted_response in extraction_responses:
         add_usage(extracted_response.usage)
     if patch:
@@ -358,6 +371,12 @@ async def run_turn(
             tool_errors.append(AgentToolError(name=call.name, error=result.error))
         if result.ok and result.result:
             validation_issues.update(result.result.get("clarifications") or {})
+            recorded_profile = result.result.get("trip_profile") or {}
+            saved_location_fields.extend(
+                field
+                for field in ("start_address", "destination_address")
+                if field in patch and field not in validation_issues and recorded_profile.get(field)
+            )
         _collect_action(result, chat_id, actions)
 
     trip = _load_trip(memory, user_id, chat_id)
@@ -433,6 +452,17 @@ async def run_turn(
             calls = []
             break
         emit("agent.tools", iteration=iterations, tools=len(calls))
+        # Tools may have changed persisted state. Replace the snapshot rather
+        # than accumulating stale profiles in the model's context.
+        trip = _load_trip(memory, user_id, chat_id)
+        messages[0] = build_messages(
+            facts=facts,
+            trip=trip,
+            conversation=conversation,
+            recent_turns=recent_turns,
+            user_message=request.message,
+            client_context=request.clientContext,
+        )[0]
         # Ask the model again now that it has the tool results.
         try:
             with stage("agent.model", iteration=iterations):
@@ -473,9 +503,12 @@ async def run_turn(
         # ready. The route action still reaches the UI, but the reply stays true.
         reply = "Your route is ready, but the itinerary could not be created. Please retry it."
 
+    final_trip = _load_trip(memory, user_id, chat_id)
+    reply = with_saved_locations(reply, final_trip)
+
     # Monitor: flag (don't rewrite) any INTERNAL context that leaked into the
     # reply — the client hint, trip-profile internals, raw coords, tool syntax.
-    _scan_reply_for_leaks(reply, trip, chat_id)
+    _scan_reply_for_leaks(reply, final_trip, chat_id)
 
     # 6. Persist memory (best-effort). Fact extraction + rolling summary go
     # through the injected MemoryStore. We do NOT write the verbatim ChatLog —
