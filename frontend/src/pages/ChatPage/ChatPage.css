@@ -22,7 +22,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: var(--cream-main);
+  background-color: transparent;
   display: flex;
   position: fixed;
   flex-direction: column;
@@ -69,14 +69,18 @@
 
 .message.bot {
   align-self: flex-start;
-  background-color: var(--cream-light);
-  border: 1px solid var(--cream-dark);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 12px 0;
+  color: #000;
+  max-width: 100%;
 }
 
 .message.user {
   align-self: flex-end;
-  background-color: var(--bark-main);
-  color: var(--cream-light);
+  background-color: var(--cream-light);
+  color: #000;
 }
 
 @media (max-width: 600px) {
@@ -128,12 +132,10 @@
   /* Span the full message column: from the left edge of the bot messages to the
      right edge of the user messages, matching .chat-messages' horizontal padding. */
   margin: 8px max(72px, calc(50% - 380px)) 24px;
-  background-color: var(--cream-light);
-  border: 1px solid var(--cream-dark);
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(58, 42, 26, 0.1);
-  padding: 14px 16px;
-  box-sizing: border-box;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
   animation: input-float-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -157,6 +159,16 @@
 .split-input-bar {
   flex: 1;
   box-sizing: border-box;
+}
+
+.chat-send-button {
+  color: #000 !important;
+  width: 34px;
+  height: 34px;
+}
+
+.chat-send-button.Mui-disabled {
+  color: var(--sand-main) !important;
 }
 
 /* ── Location input bar ── */
@@ -268,7 +280,7 @@
 }
 
 .trip-progress {
-  color: var(--bark-main, #44382c);
+  color: #000;
   font-size: 0.9rem;
   animation: trip-progress-thinking 1.8s ease-in-out infinite;
 }
