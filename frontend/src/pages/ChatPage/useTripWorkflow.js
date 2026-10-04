@@ -1,4 +1,5 @@
 import { createProgressLogger } from './agentProgress';
+import { updateTripProgress } from './tripProgressState';
 /**
  * useTripWorkflow — thin agent-chat hook.
  *
@@ -243,6 +244,7 @@ export function useTripWorkflow({
   // Drives the ChatInput disabled state while a turn is in flight, so the send
   // button can't be used until the agent finishes and the user should type again.
   const [isLoading, setIsLoading] = useState(false);
+  const [processProgress, setProcessProgress] = useState(null);
 
   // Last trip-profile snapshot the agent reported, so we can diff each turn's
   // trip_profile_updated action and log field-level ADDED/REMOVED/CHANGED.
@@ -463,9 +465,14 @@ export function useTripWorkflow({
 
         addMessage(id, setChats, text, USER);
         loading();
+        setProcessProgress({ startedAt: Date.now(), entries: [] });
+        const logProgress = import.meta.env.DEV ? createProgressLogger() : null;
         const response = await sendAgentMessage({
           accessToken,
-          ...(import.meta.env.DEV ? { onProgress: createProgressLogger() } : {}),
+          onProgress: (event) => {
+            logProgress?.(event);
+            setProcessProgress((previous) => updateTripProgress(previous, event));
+          },
           // Use the globally-unique agent conversation key (a UUID), NOT the
           // reused integer chat id, so per-chat memory never collides.
           chatId: agentChatIdRef.current,
@@ -512,6 +519,7 @@ export function useTripWorkflow({
         noLoader();
         submitInFlightRef.current = false;
         setIsLoading(false);
+        setProcessProgress(null);
       }
     },
     [accessToken, route, stops, hotelBudget, bot, loading, noLoader, setChats, applyAgentActions]
@@ -523,6 +531,7 @@ export function useTripWorkflow({
     itinerary,
     // true while a turn is in flight — drives the ChatInput disabled state.
     isLoading,
+    processProgress,
     // kept for potential compatibility; the persistent ChatInput is the only input now.
     inputMode: 'none',
   };

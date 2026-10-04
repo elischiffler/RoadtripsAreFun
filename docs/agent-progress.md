@@ -1,10 +1,16 @@
 # Developer route progress
 
-Vite development builds use authenticated `POST /agent/chat/stream` for chat
-turns. The browser console shows `[RouteProgress <request id> +<elapsed>s]`
-messages immediately while the turn is running. Production builds retain the
-existing JSON `POST /agent/chat` path. Callers can also opt into streaming with
-the API helper's `onProgress` callback.
+The chat UI uses authenticated `POST /agent/chat/stream` in development and
+production. A live status card replaces the loading ring with the current
+process step, elapsed time and an expandable recent step history. Labels map
+the backend's actual stage events to traveler-facing descriptions. No estimated
+percentage, ETA or internal model reasoning is shown. Status is transient,
+resets each turn and is excluded from saved chat logs. Reduced-motion users
+receive a static activity dot. Timers are cleaned up when the card disappears.
+
+Development builds also show `[RouteProgress <request id> +<elapsed>s]` console
+messages while a turn runs. The API helper retains the existing JSON
+`POST /agent/chat` path for callers without an `onProgress` callback.
 
 The stream is newline-delimited JSON. Progress frames include a request ID,
 sequence, stage, state, elapsed milliseconds, and optional duration/counts.

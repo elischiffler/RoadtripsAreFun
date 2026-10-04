@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import { UserDataContext } from '../../states/UserDataContext';
-import { ring } from 'ldrs';
+import TripProgress from './TripProgress';
 import ThemedTooltip from '../../components/ThemedTooltip';
 import ItineraryButton from '../../components/buttons/ItineraryButton';
 import MapButton from '../../components/buttons/MapButton';
@@ -14,8 +14,6 @@ import { useTripWorkflow, deriveProgress, renameChatToRoute } from './useTripWor
 import { deleteChat, initializeUserData } from './DatabaseUtils';
 import { chooseRestoredChatId, forgetAgentChatId, getOrCreateAgentChatId } from './chatSession';
 import './ChatPage.css';
-
-ring.register('loading-chat');
 
 // ── WorkflowPanel: isolated component so `key` can reset the workflow hook ──
 const WorkflowPanel = ({
@@ -31,7 +29,7 @@ const WorkflowPanel = ({
   savedData,
   onChatReady,
 }) => {
-  const { submit, route, itinerary, isLoading } = useTripWorkflow({
+  const { submit, route, itinerary, isLoading, processProgress } = useTripWorkflow({
     chatId,
     agentChatId,
     setChats,
@@ -67,7 +65,7 @@ const WorkflowPanel = ({
               if (message.type === 'loading-chat') {
                 return (
                   <Box key={index} className="message-container">
-                    <loading-chat size="30" color="black" />
+                    <TripProgress progress={processProgress} />
                   </Box>
                 );
               }

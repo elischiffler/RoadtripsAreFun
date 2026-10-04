@@ -42,7 +42,7 @@ function Harness({ chatLogsData, onChatReady = () => {}, agentChatId }) {
   const chatsRef = useRef(chats);
   chatsRef.current = chats;
 
-  const { submit } = useTripWorkflow({
+  const { submit, processProgress } = useTripWorkflow({
     chatId: CHAT_ID,
     agentChatId,
     setChats,
@@ -59,6 +59,7 @@ function Harness({ chatLogsData, onChatReady = () => {}, agentChatId }) {
   return (
     <div>
       <button onClick={() => submit('chat_message', 'make it cheaper')}>send</button>
+      <output data-testid="progress">{JSON.stringify(processProgress)}</output>
       <ul>
         {messages.map((m, i) => (
           <li key={i} data-sender={m.sender} data-type={m.type}>
@@ -84,6 +85,34 @@ beforeEach(() => {
 });
 
 describe("submit('chat_message')", () => {
+  it('streams visible progress in production, clears it after failure and resets the next turn', async () => {
+    vi.stubEnv('DEV', false);
+    let finish;
+    sendAgentMessage.mockImplementationOnce(({ onProgress }) => {
+      onProgress({ type: 'progress', stage: 'hotels.lookup', state: 'started' });
+      return new Promise((resolve) => {
+        finish = resolve;
+      });
+    });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    expect(screen.getByTestId('progress')).toHaveTextContent('Finding hotels near your route');
+    finish({ ok: false, status: 503 });
+    await screen.findByText(/trouble reaching my planning service/);
+    expect(screen.getByTestId('progress')).toHaveTextContent('null');
+    sendAgentMessage.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        })
+    );
+    await userEvent.click(screen.getByText('send'));
+    expect(screen.getByTestId('progress')).not.toHaveTextContent('Finding hotels');
+    finish({ reply: 'Ready', actions: [] });
+    await screen.findByText('Ready');
+    vi.unstubAllEnvs();
+  });
+
   it('logs the backend profile snapshot even when no action was emitted', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
     const tripProfile = { car_status: 'unanswered' };
