@@ -237,19 +237,25 @@ async def attraction_candidates(
     results: list[dict[str, Any]] = []
     seen: set[str] = set()
     for query_index, raw_point in enumerate(query_points, start=1):
-        emit("attractions.query", "started", query=query_index, queries=len(query_points))
+        emit(
+            "attractions.query",
+            "started",
+            query=query_index,
+            queries=len(query_points),
+            collected=len(results),
+        )
         point = _point(raw_point)
         proposals = await _propose(ai, "attractions", point, MAX_PROPOSALS_PER_QUERY)
         if not proposals:
-            emit("attractions.query", query=query_index, queries=len(query_points), candidates=0)
+            emit(
+                "attractions.query",
+                query=query_index,
+                queries=len(query_points),
+                candidates=0,
+                collected=len(results),
+            )
             continue
         records = await places.attractions_near(point)
-        emit(
-            "attractions.query",
-            query=query_index,
-            queries=len(query_points),
-            candidates=len(records),
-        )
         for proposal in proposals:
             name = _name_key(proposal.name)
             for record in records:
@@ -265,9 +271,30 @@ async def attraction_candidates(
                     continue
                 seen.add(verified.provider_id)
                 results.append(_candidate(verified, proposal, weights))
+                emit(
+                    "attractions.collected",
+                    name=verified.name[:100],
+                    collected=len(results),
+                    query=query_index,
+                    queries=len(query_points),
+                )
                 break
             if len(results) >= MAX_ATTRACTIONS:
+                emit(
+                    "attractions.query",
+                    query=query_index,
+                    queries=len(query_points),
+                    candidates=len(records),
+                    collected=len(results),
+                )
                 return results
+        emit(
+            "attractions.query",
+            query=query_index,
+            queries=len(query_points),
+            candidates=len(records),
+            collected=len(results),
+        )
     return results
 
 

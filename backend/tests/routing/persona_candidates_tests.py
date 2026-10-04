@@ -4,6 +4,7 @@ from datetime import date
 import pytest
 
 from app.agent.persona import ATTRIBUTE_KEYS, default_weights
+from app.agent.progress import reporting
 from app.agent.schemas import LLMResponse
 from app.routing.sources import persona_candidates as source
 
@@ -237,3 +238,34 @@ async def test_google_adapter_supplies_verified_names_prices_and_links(monkeypat
         await source.LivePlaceProvider().hotels_near(
             [40, -74], date(2026, 11, 20), ((50, 150), "USD")
         )
+
+
+async def test_collection_progress_only_reports_verified_unique_matches():
+    events = []
+    ai = FakeAI(
+        [
+            {"name": "Real Museum", "attribute_ratings": _ratings()},
+            {"name": "Invented Place", "attribute_ratings": _ratings()},
+        ]
+    )
+    places = FakePlaces(
+        attractions=[
+            source.VerifiedPlace(provider_id="terra:7", name="Real Museum", coordinates=[40, -74]),
+        ]
+    )
+    with reporting(events.append):
+        result = await source.attraction_candidates(
+            {},
+            [[40, -74], [40, -74]],
+            default_weights(),
+            ai=ai,
+            places=places,
+        )
+    collected = [event for event in events if event["stage"] == "attractions.collected"]
+    assert len(result) == len(collected) == 1
+    assert collected[0]["name"] == "Real Museum"
+    assert collected[0]["collected"] == 1
+    searches = [event for event in events if event["stage"] == "attractions.query"]
+    assert searches[-1]["collected"] == 1
+    assert searches[-1]["query"] == searches[-1]["queries"] == 2
+    assert events.index(collected[0]) < events.index(searches[1])

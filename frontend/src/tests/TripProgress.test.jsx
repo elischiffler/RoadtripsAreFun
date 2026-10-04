@@ -40,6 +40,37 @@ describe('trip progress display', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Thinking…');
   });
 
+  it('replaces live collection updates with one short line and leaves counts unchanged on heartbeats', () => {
+    let progress = updateTripProgress(
+      { entries: [] },
+      event('attractions.query', 'started', { query: 1, queries: 6, collected: 0 })
+    );
+    const { rerender, container } = render(<TripProgress progress={progress} />);
+    expect(container.textContent).toBe('Searching area 1 of 6…');
+    progress = updateTripProgress(
+      progress,
+      event('attractions.collected', 'completed', { name: 'Real Museum', collected: 1 })
+    );
+    rerender(<TripProgress progress={progress} />);
+    expect(container.textContent).toBe('Found Real Museum · 1 collected…');
+    expect(screen.queryByText(/Searching area/)).not.toBeInTheDocument();
+    expect(updateTripProgress(progress, { type: 'heartbeat' })).toBe(progress);
+    progress = updateTripProgress(
+      progress,
+      event('attractions.query', 'started', { query: 2, queries: 6, collected: 1 })
+    );
+    rerender(<TripProgress progress={progress} />);
+    expect(container.textContent).toBe('1 place collected · Searching area 2 of 6…');
+    expect(screen.queryByText(/Real Museum/)).not.toBeInTheDocument();
+    progress = updateTripProgress(
+      progress,
+      event('hotels.collected', 'completed', { name: 'Example Hotel', hotels: 2 })
+    );
+    rerender(<TripProgress progress={progress} />);
+    expect(container.textContent).toBe('Verified Example Hotel · 2 found…');
+    expect(container.querySelectorAll('[role="status"]')).toHaveLength(1);
+  });
+
   it('has a safe initial label for legacy loading bubbles', () => {
     render(<TripProgress />);
     expect(screen.getByRole('status')).toHaveTextContent('Thinking…');

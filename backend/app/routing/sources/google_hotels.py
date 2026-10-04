@@ -241,6 +241,7 @@ class GoogleHotelProvider:
                         "check_in_date": check_in,
                     }
                 )
+                emit("hotels.collected", name=name[:100], hotels=len(records))
             emit("hotels.rejections", checked=details, verified=len(records), **rejected)
             if not records:
                 if details > 0 and rejected["radius"] == details:

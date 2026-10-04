@@ -6,6 +6,12 @@ falling back to "Thinking…" between stages. It has no card, background, border
 timer or expandable history. Labels map the backend's actual stage events to
 traveler-facing descriptions. Status is transient, resets each turn and is
 excluded from saved chat logs. Reduced-motion users receive static text.
+The same line replaces itself with live area counts, verified place/hotel names,
+collection totals, selected stop counts and overnight attempt numbers as those
+facts arrive. Names are shown only after provider identity/location verification;
+totals count accepted unique attraction candidates, not unverified proposals.
+Names are truncated in the UI and escaped by React; no additional history is shown.
+No timer invents discoveries while a provider call is pending.
 
 Development builds also show `[RouteProgress <request id> +<elapsed>s]` console
 messages while a turn runs. The API helper retains the existing JSON

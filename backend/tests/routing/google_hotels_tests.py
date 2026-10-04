@@ -65,7 +65,16 @@ def provider(
 
 async def test_verified_dated_total_and_booking_link():
     places, requests = provider()
-    records = await places.hotels_near([39.74, -104.99], CHECK_IN)
+    events = []
+    with reporting(events.append):
+        records = await places.hotels_near([39.74, -104.99], CHECK_IN)
+    collected = [event for event in events if event["stage"] == "hotels.collected"]
+    assert len(collected) == 1
+    assert collected[0]["name"] == "Example Hotel"
+    assert collected[0]["hotels"] == 1
+    assert events.index(collected[0]) < next(
+        index for index, event in enumerate(events) if event["stage"] == "hotels.verified"
+    )
     assert len(requests) == 2
     assert "Denver, Colorado, USA" in requests[0].url.params["q"]
     assert records[0]["price"] == 120  # Total incl taxes/fees, never the base rate.
