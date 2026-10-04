@@ -34,7 +34,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from app.agent.persona import validate_weight_update
 from app.agent.trip_dates import PendingDeparture, normalize_departure_time
 from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
-from app.routing.occupancy import HotelRooms, TravelerCount
+from app.routing.occupancy import HotelRoom, HotelRooms, TravelerCount
 from app.utils.location_resolution import PendingLocation
 
 logger = logging.getLogger(__name__)
@@ -151,6 +151,14 @@ class TripProfile(BaseModel):
             raise ValueError("car_status must be provided exactly when car details are present")
         return self
 
+    @model_validator(mode="after")
+    def _solo_room(self):
+        # A lone traveler needs no allocation question. Explicit room details
+        # still win; groups must provide their own adults and child ages.
+        if self.traveler_count == 1 and self.hotel_rooms is None:
+            self.hotel_rooms = [HotelRoom(adults=1, child_ages=[])]
+        return self
+
     @field_validator("start_coords", "destination_coords")
     @classmethod
     def _coords(cls, v):
@@ -249,7 +257,7 @@ class TripProfile(BaseModel):
             missing.append("destination_address")
         if self.traveler_count is None:
             missing.append("traveler_count")
-        if (
+        elif (
             not self.hotel_rooms
             or sum(room.adults + len(room.child_ages) for room in self.hotel_rooms)
             != self.traveler_count

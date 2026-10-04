@@ -162,7 +162,11 @@ def present_details(
                 after.pending_departure.resolve(after.departure_time, after.start_timezone)
             except ValueError as exc:
                 issues["departure_date"] = str(exc)
-    if after.hotel_rooms and "hotel_rooms" in after.missing_details():
+    if (
+        after.traveler_count is not None
+        and after.hotel_rooms
+        and "hotel_rooms" in after.missing_details()
+    ):
         issues["hotel_rooms"] = "Room occupants must equal the total travelers including you."
     for field, pending in after.pending_locations.items():
         issues[field] = (

@@ -58,7 +58,7 @@ def test_old_chat_readable_but_count_and_allocation_required():
     old.pop("hotel_rooms")
     restored = TripProfile.from_json(json.dumps(old))
     assert restored.start_address == old["start_address"]
-    assert restored.missing_details() == ["traveler_count", "hotel_rooms"]
+    assert restored.missing_details() == ["traveler_count"]
     assert present_details(restored, restored, {}).needed[0] == COUNT_QUESTION
 
 
@@ -154,3 +154,54 @@ async def test_incomplete_child_correction_cannot_reuse_adult_room_at_same_count
     assert result.ok and "hotel_rooms" in result.result["clarifications"]
     saved = TripProfile.from_json(memory.load_trip_profile("u", "c"))
     assert saved.traveler_count == 2 and saved.hotel_rooms is None and saved.budget == 150
+
+
+@pytest.mark.parametrize("count", [None, 1, 2, 3])
+def test_room_collection_depends_on_known_party_size(count):
+    from app.routing.occupancy import OCCUPANCY_QUESTION
+
+    trip = _profile().model_dump()
+    trip.update(traveler_count=count, hotel_rooms=None)
+    profile = TripProfile.model_validate(trip)
+    presentation = present_details(profile, profile, {})
+    if count is None:
+        assert presentation.needed == [COUNT_QUESTION]
+        assert "hotel_rooms" not in profile.missing_details()
+    elif count == 1:
+        assert not profile.missing_details()
+        assert profile.hotel_rooms == [HotelRoom(adults=1, child_ages=[])]
+        assert require_occupancy(1, profile.hotel_rooms) == profile.hotel_rooms
+        assert not presentation.needed
+        assert TripProfile.from_json(profile.to_json()).hotel_rooms == profile.hotel_rooms
+    else:
+        assert presentation.needed == [OCCUPANCY_QUESTION]
+        assert profile.hotel_rooms is None
+
+
+async def test_solo_count_correction_defaults_room_then_group_requires_new_allocation():
+    memory = FakeMemory()
+    memory.save_trip_profile("u", "c", _profile().to_json())
+    ctx = ToolContext(user_id="u", chat_id="c", memory=memory)
+    dispatcher = AppToolDispatcher()
+    for count in [1, 2]:
+        await dispatcher.dispatch(
+            ToolCall(name="record_trip_details", arguments={"traveler_count": count}), ctx
+        )
+        saved = TripProfile.from_json(memory.load_trip_profile("u", "c"))
+        if count == 1:
+            assert saved.hotel_rooms == [HotelRoom(adults=1, child_ages=[])]
+            assert not saved.missing_details()
+        else:
+            assert saved.hotel_rooms is None
+            assert saved.missing_details() == ["hotel_rooms"]
+
+
+def test_preprovided_rooms_wait_for_count_and_explicit_solo_occupancy_is_preserved():
+    rooms = [HotelRoom(adults=2, child_ages=[])]
+    trip = _profile().model_dump()
+    trip.update(traveler_count=None, hotel_rooms=rooms)
+    profile = TripProfile.model_validate(trip)
+    assert present_details(profile, profile, {}).needed == [COUNT_QUESTION]
+    solo = TripProfile(traveler_count=1, hotel_rooms=rooms)
+    assert solo.hotel_rooms == rooms
+    assert "hotel_rooms" in solo.missing_details()  # Clarify conflicting explicit details.
