@@ -27,6 +27,7 @@ from requests.exceptions import RequestException
 
 from app.agent.departure import is_upcoming_departure
 from app.agent.persona import effective_weights
+from app.agent.progress import stage
 from app.crud.memory_crud import load_account_persona
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
@@ -200,7 +201,8 @@ async def plan_final_route(
 
     # Construct waypoints string and make new route with stopping points
     waypoints = ";".join([f"{lon},{lat}" for lat, lon in coordinates])
-    route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
+    with stage("route.final_reroute", waypoints=len(coordinates)):
+        route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
     if algorithm.startswith("cp_sat"):
         if len(route.legs) != len(coordinates) + 1 or route.duration < 0:
             raise PlanningError("Mapbox returned an incomplete final route", 502)

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { streamAgentMessage } from './agentProgress';
 import { backendAuthConfig } from '../../services/backendAuth';
 import { getRoutingAlgorithm } from '../../services/routingSettings';
 
@@ -40,7 +41,13 @@ import { getRoutingAlgorithm } from '../../services/routingSettings';
  * @returns {Promise<object>} the AgentChatResponse on success, or a structured
  *   failure { ok: false, status: number|null } on error.
  */
-export const sendAgentMessage = async ({ accessToken, chatId, message, clientContext }) => {
+export const sendAgentMessage = async ({
+  accessToken,
+  chatId,
+  message,
+  clientContext,
+  onProgress,
+}) => {
   try {
     const data = {
       partitionKey: accessToken,
@@ -57,6 +64,14 @@ export const sendAgentMessage = async ({ accessToken, chatId, message, clientCon
 
     const config = backendAuthConfig();
     if (config.headers?.Authorization !== `Bearer ${accessToken}`) delete config.headers;
+    if (onProgress) {
+      return await streamAgentMessage(
+        `${import.meta.env.VITE_BACKEND_SERVER}agent/chat/stream`,
+        data,
+        config,
+        onProgress
+      );
+    }
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_SERVER}agent/chat`,
       data,

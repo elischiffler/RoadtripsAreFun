@@ -12,14 +12,18 @@ dispatcher — neither requires a change to this router.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 
+from app.agent import agent as agent_module
 from app.agent.agent import run_turn
 from app.agent.memory import ConversationMemory, MemoryFact, MemoryStore
+from app.agent.progress_stream import stream_turn
 from app.agent.providers import ProvidersExhausted, build_default_chain
 from app.agent.schemas import AgentChatRequest, AgentChatResponse
 from app.agent.tool_dispatcher import AppToolDispatcher
@@ -100,3 +104,18 @@ async def agent_chat(
         raise HTTPException(
             status_code=503, detail="The assistant hit a temporary problem. Please try again."
         )
+
+
+@router.post("/agent/chat/stream")
+async def agent_chat_stream(
+    request: AgentChatRequest,
+    deps: tuple = Depends(get_agent_dependencies),
+    x_cognito_id_token: str | None = Header(default=None),
+):
+    # Reject unauthenticated requests before sending any progress/stream headers.
+    await asyncio.to_thread(agent_module.get_user_id_from_token, request.partitionKey)
+    return StreamingResponse(
+        stream_turn(lambda: agent_chat(request, deps, x_cognito_id_token)),
+        media_type="application/x-ndjson",
+        headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+    )

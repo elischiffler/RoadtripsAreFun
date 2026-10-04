@@ -9,6 +9,7 @@ from fastapi import HTTPException
 from geopy.distance import geodesic
 from ortools.sat.python import cp_model
 
+from app.agent.progress import emit, stage
 from app.models.routing_models.routing_models import MapBox
 from app.routing.base import PlanningError, PlanOptions, PlanResult, RoutePlanner
 from app.routing.cp_sat_scheduler import schedule_cp_sat_route
@@ -61,8 +62,13 @@ class CPSatPlanner(RoutePlanner):
                 if points
                 else []
             )
-            selected = self._select(candidates, points, options.num_stops)
-            stops, cost = await schedule_cp_sat_route(initial_route, selected, options, services)
+            with stage("route.solver", candidates=len(candidates)):
+                selected = self._select(candidates, points, options.num_stops)
+            emit("route.selected", selected=len(selected))
+            with stage("route.schedule"):
+                stops, cost = await schedule_cp_sat_route(
+                    initial_route, selected, options, services
+                )
         except HTTPException as exc:
             raise PlanningError(str(exc.detail), exc.status_code) from exc
         return PlanResult(stopping_points=stops, total_cost=cost)

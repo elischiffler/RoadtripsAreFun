@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import requests
 
+from app.agent.progress import stage
 from app.models.routing_models.routing_models import MapBox
 from app.routing import config
 
@@ -46,7 +47,8 @@ async def call_route(
         "access_token": config.MAPBOX_API,
     }
 
-    response = requests.get(call_route_url, params=params, timeout=config.HTTP_TIMEOUT)
+    with stage("mapbox.request"):
+        response = requests.get(call_route_url, params=params, timeout=config.HTTP_TIMEOUT)
     json_data = response.json()
     data = MapBox.model_validate(json_data)
     route = data.routes[

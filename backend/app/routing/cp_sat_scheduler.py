@@ -9,6 +9,7 @@ from typing import Any
 from fastapi import HTTPException
 from geopy.distance import geodesic
 
+from app.agent.progress import emit
 from app.models.routing_models.routing_models import MapBox
 from app.routing.base import PlanningError, PlanOptions
 from app.routing.services import RoutingServices
@@ -127,6 +128,7 @@ async def schedule_cp_sat_route(
                 check_in = (
                     overnight_time - timedelta(seconds=overnight_elapsed - trial_elapsed)
                 ).date()
+                emit("route.overnight", "started", day=overnights + 1, attempt=attempt + 1)
                 try:
                     candidates = await services.cp_sat_hotels(
                         position, check_in, price_range, options.weights or {}
@@ -137,6 +139,12 @@ async def schedule_cp_sat_route(
                     candidates = []
                 if not isinstance(candidates, list) or len(candidates) > _MAX_HOTELS:
                     raise PlanningError("Verified hotel candidate limit exceeded", 502)
+                emit(
+                    "route.overnight",
+                    day=overnights + 1,
+                    attempt=attempt + 1,
+                    candidates=len(candidates),
+                )
                 usable = [item for item in candidates if _usable_hotel(item)]
                 if usable:
                     max_price = options.budget

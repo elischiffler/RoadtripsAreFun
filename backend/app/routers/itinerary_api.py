@@ -4,6 +4,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import ValidationError
 
+from app.agent.progress import stage
 from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
 from app.utils.auth import require_authenticated_user
 
@@ -40,6 +41,11 @@ async def generate_itinerary(request: Request) -> list[Itinerary_Day]:
 
 
 async def build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
+    with stage("itinerary.build"):
+        return await _build_itinerary(data)
+
+
+async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
     """Build a day-by-day itinerary from a validated :class:`Itinerary_Payload`.
 
     The core itinerary logic, factored out of :func:`generate_itinerary` so both

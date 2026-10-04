@@ -1,3 +1,4 @@
+import { createProgressLogger } from './agentProgress';
 /**
  * useTripWorkflow — thin agent-chat hook.
  *
@@ -464,6 +465,7 @@ export function useTripWorkflow({
         loading();
         const response = await sendAgentMessage({
           accessToken,
+          ...(import.meta.env.DEV ? { onProgress: createProgressLogger() } : {}),
           // Use the globally-unique agent conversation key (a UUID), NOT the
           // reused integer chat id, so per-chat memory never collides.
           chatId: agentChatIdRef.current,
@@ -507,6 +509,7 @@ export function useTripWorkflow({
           );
         }
       } finally {
+        noLoader();
         submitInFlightRef.current = false;
         setIsLoading(false);
       }

@@ -25,6 +25,7 @@ from datetime import UTC, datetime
 from app.agent import debug
 from app.agent.extraction import ExtractionFormatError, extract_trip_patch
 from app.agent.memory import ConversationMemory, MemoryStore
+from app.agent.progress import emit, stage
 from app.agent.prompt import RECENT_MESSAGE_LIMIT, build_messages
 from app.agent.providers import LLMProvider, ProvidersExhausted
 from app.agent.schemas import (
@@ -272,7 +273,8 @@ async def run_turn(
         memory=memory,
     )
     try:
-        patch, extraction_responses = extract_trip_patch(providers, request.message, trip)
+        with stage("agent.extract_details"):
+            patch, extraction_responses = extract_trip_patch(providers, request.message, trip)
     except ExtractionFormatError as exc:
         reply = "I couldn't read the trip details in that message. Please try sending them again."
         debug.trip_snapshot("after", trip)
@@ -382,7 +384,8 @@ async def run_turn(
         )
     specs = [spec for spec in tools.specs() if spec.name != "record_trip_details"]
     try:
-        response = providers.complete(messages, specs)
+        with stage("agent.model", iteration=0):
+            response = providers.complete(messages, specs)
     except ProvidersExhausted:
         if patch:
             return validated_response_during_outage()
@@ -429,9 +432,11 @@ async def run_turn(
         if terminal_error:
             calls = []
             break
+        emit("agent.tools", iteration=iterations, tools=len(calls))
         # Ask the model again now that it has the tool results.
         try:
-            response = providers.complete(messages, specs)
+            with stage("agent.model", iteration=iterations):
+                response = providers.complete(messages, specs)
         except ProvidersExhausted:
             if actions or validation_issues or tool_errors:
                 return validated_response_during_outage()
@@ -476,15 +481,16 @@ async def run_turn(
     # through the injected MemoryStore. We do NOT write the verbatim ChatLog —
     # the frontend owns that write. A persistence failure must never break the
     # reply, so this is wrapped and swallowed with a warning.
-    _persist_memory(
-        memory=memory,
-        user_id=user_id,
-        chat_id=chat_id,
-        user_message=request.message,
-        reply=reply,
-        conversation=conversation,
-        recent_turns=recent_turns,
-    )
+    with stage("agent.persist_memory"):
+        _persist_memory(
+            memory=memory,
+            user_id=user_id,
+            chat_id=chat_id,
+            user_message=request.message,
+            reply=reply,
+            conversation=conversation,
+            recent_turns=recent_turns,
+        )
 
     # 7. Return.
     if debug.enabled():

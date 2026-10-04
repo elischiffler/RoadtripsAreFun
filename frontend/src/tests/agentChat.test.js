@@ -82,3 +82,34 @@ describe('sendAgentMessage', () => {
     spy.mockRestore();
   });
 });
+
+it('opts into progress streaming without duplicating the chat request', async () => {
+  const frame = JSON.stringify({ type: 'result', response: AGENT_RESPONSE }) + '\n';
+  const fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    headers: new Headers({ 'content-type': 'application/x-ndjson' }),
+    body: {
+      getReader: () => ({
+        read: vi
+          .fn()
+          .mockResolvedValueOnce({ value: new TextEncoder().encode(frame), done: false }),
+        cancel: vi.fn().mockResolvedValue(),
+      }),
+    },
+  });
+  vi.stubGlobal('fetch', fetch);
+  try {
+    const result = await sendAgentMessage({
+      accessToken: 'test-access-token',
+      chatId: 42,
+      message: 'plan',
+      onProgress: vi.fn(),
+    });
+    expect(result).toEqual(AGENT_RESPONSE);
+    expect(fetch.mock.calls[0][0]).toBe('http://localhost:8000/agent/chat/stream');
+    expect(JSON.parse(fetch.mock.calls[0][1].body).partitionKey).toBe('test-access-token');
+    expect(axios.post).not.toHaveBeenCalled();
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});

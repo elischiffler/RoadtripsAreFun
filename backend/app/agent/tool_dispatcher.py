@@ -45,6 +45,7 @@ from app.agent import routing_remote
 from app.agent.departure import normalize_departure
 from app.agent.memory import MemoryFact
 from app.agent.persona import ATTRIBUTE_KEYS, PersonaWeightUpdate
+from app.agent.progress import emit, stage
 from app.agent.schemas import ToolCall, ToolResult, ToolSpec
 from app.agent.tools import ToolContext
 from app.agent.trip_dates import normalize_departure_time, resolve_departure, timezone_from_location
@@ -463,9 +464,11 @@ class AppToolDispatcher:
 
         arguments = call.arguments if isinstance(call.arguments, dict) else {}
         try:
-            result = await handler(arguments, ctx)
+            with stage("agent.tool", tool=call.name):
+                result = await handler(arguments, ctx)
             return ToolResult(name=call.name, ok=True, result=result)
         except CandidateProviderError as exception:
+            emit("agent.tool_error", "failed", tool=call.name, retryable=False)
             logger.warning("tool %s: required candidate provider unavailable", call.name)
             return ToolResult(name=call.name, ok=False, error=str(exception), retryable=False)
         except HTTPException as exception:
@@ -774,6 +777,8 @@ class AppToolDispatcher:
             ctx,
         )
         if not route_result.ok:
+            if not route_result.retryable:
+                raise CandidateProviderError(route_result.error or "Route provider unavailable")
             raise ValueError(f"Route creation failed: {route_result.error}")
         route = route_result.result
         route_action = {

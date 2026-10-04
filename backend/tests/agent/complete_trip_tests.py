@@ -217,3 +217,22 @@ async def test_partial_route_can_retry_itinerary_in_later_turn(monkeypatch):
     assert retry.ok is True
     assert retry.result["action"] == "itinerary_updated"
     assert calls["retry_start"] == calls["route_start"]
+
+
+@pytest.mark.asyncio
+async def test_complete_trip_preserves_nonretryable_hotel_failure(monkeypatch):
+    calls = _stub_planning(monkeypatch)
+
+    async def no_hotels(*args, **kwargs):
+        raise td.CandidateProviderError(
+            "Google Hotels returned no verifiable prices near the overnight stop."
+        )
+
+    monkeypatch.setattr(td, "plan_final_route", no_hotels)
+    result = await AppToolDispatcher().dispatch(
+        ToolCall(name="complete_trip"), _context(_profile())
+    )
+    assert not result.ok and not result.retryable
+    assert result.error.startswith("Google Hotels returned no verifiable")
+    assert "itinerary_start" not in calls
+    assert result.result is None

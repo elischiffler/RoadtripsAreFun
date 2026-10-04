@@ -19,6 +19,7 @@ from geopy.distance import geodesic
 from pydantic import BaseModel, ConfigDict, field_validator
 
 from app.agent.persona import ATTRIBUTE_KEYS, normalize_weights
+from app.agent.progress import emit, stage
 from app.agent.providers import LLMProvider, build_default_chain
 from app.agent.schemas import LLMMessage
 from app.routing import config
@@ -235,12 +236,20 @@ async def attraction_candidates(
         places.require_attractions()
     results: list[dict[str, Any]] = []
     seen: set[str] = set()
-    for raw_point in query_points:
+    for query_index, raw_point in enumerate(query_points, start=1):
+        emit("attractions.query", "started", query=query_index, queries=len(query_points))
         point = _point(raw_point)
         proposals = await _propose(ai, "attractions", point, MAX_PROPOSALS_PER_QUERY)
         if not proposals:
+            emit("attractions.query", query=query_index, queries=len(query_points), candidates=0)
             continue
         records = await places.attractions_near(point)
+        emit(
+            "attractions.query",
+            query=query_index,
+            queries=len(query_points),
+            candidates=len(records),
+        )
         for proposal in proposals:
             name = _name_key(proposal.name)
             for record in records:
@@ -291,7 +300,8 @@ async def hotel_candidates(
         record.name if isinstance(record, VerifiedHotel) else record.get("name", "")
         for record in records[:MAX_HOTEL_PROPOSALS]
     ]
-    proposals = await _propose(ai, "hotels", point, MAX_HOTEL_PROPOSALS, names=names)
+    with stage("hotels.ratings", hotels=len(names)):
+        proposals = await _propose(ai, "hotels", point, MAX_HOTEL_PROPOSALS, names=names)
     results: list[dict[str, Any]] = []
     seen: set[str] = set()
     for proposal in proposals:

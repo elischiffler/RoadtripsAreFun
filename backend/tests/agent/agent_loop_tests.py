@@ -594,3 +594,35 @@ async def test_required_provider_failure_stops_retries_and_returns_error(fake_me
     assert "Google Hotels prices are temporarily unavailable" in result.reply
     assert "couldn't finish" in result.reply
     assert result.actions == []
+
+
+async def test_failed_completion_does_not_run_queued_itinerary_or_retry_route(fake_memory):
+    provider = FakeProvider(
+        responses=[
+            LLMResponse(
+                content="\n".join(
+                    [
+                        _tool_block("complete_trip"),
+                        _tool_block("generate_itinerary"),
+                        _tool_block("generate_final_route"),
+                    ]
+                )
+            )
+        ]
+    )
+    tools = FakeTools(
+        results={
+            "complete_trip": ToolResult(
+                name="complete_trip",
+                ok=False,
+                retryable=False,
+                error="Google Hotels returned no verifiable prices near the overnight stop.",
+            )
+        }
+    )
+    result = await run_turn(_request(), FallbackChain([provider]), fake_memory, tools)
+    assert result.toolsUsed == ["complete_trip"]
+    assert [call.name for call in tools.dispatched] == ["complete_trip"]
+    assert provider.calls == 1
+    assert "no verifiable prices" in result.reply
+    assert result.actions == []

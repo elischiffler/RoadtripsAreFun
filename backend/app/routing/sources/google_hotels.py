@@ -19,6 +19,8 @@ from geopy.exc import GeopyError
 from lxml import html
 from lxml.etree import LxmlError
 
+from app.agent.progress import emit, stage
+
 BASE = "https://www.google.com"
 MAX_DETAILS = 6
 MAX_HTML_BYTES = 5 * 1024 * 1024
@@ -131,7 +133,8 @@ class GoogleHotelProvider:
     async def hotels_near(self, point: list[float], check_in: date) -> list[dict]:
         try:
             async with asyncio.timeout(LOOKUP_TIMEOUT):
-                return await self._lookup(point, check_in)
+                with stage("hotels.lookup"):
+                    return await self._lookup(point, check_in)
         except GoogleHotelLookupError:
             raise
         except (
@@ -159,15 +162,17 @@ class GoogleHotelProvider:
         query = ", ".join(
             str(v) for v in (city, components.get("state"), components.get("country")) if v
         )
+        emit("hotels.search_area", city=str(city)[:100], checkIn=check_in.isoformat())
         async with httpx.AsyncClient(
             timeout=httpx.Timeout(20, connect=5),
             headers={"User-Agent": USER_AGENT, "Accept-Language": "en-US,en;q=0.9"},
             transport=self.transport,
             follow_redirects=False,
         ) as client:
-            root = await self._page(
-                client, "/travel/search", {**_params(check_in), "q": "hotels in " + query}
-            )
+            with stage("hotels.google_search"):
+                root = await self._page(
+                    client, "/travel/search", {**_params(check_in), "q": "hotels in " + query}
+                )
             _validate_stay(root, check_in)
             cards = root.xpath('//div[@jsname="mutHjb"]')
             if not cards:
@@ -175,6 +180,14 @@ class GoogleHotelProvider:
                     "Google Hotels returned no readable dated hotel listings."
                 )
             records = []
+            rejected = {
+                "unusablePriceOrLink": 0,
+                "identity": 0,
+                "address": 0,
+                "geocode": 0,
+                "radius": 0,
+            }
+            emit("hotels.listings", candidates=len(cards))
             seen = set()
             details = 0
             for card in cards[:20]:
@@ -191,25 +204,31 @@ class GoogleHotelProvider:
                     or price < nightly
                     or "1 night with taxes + fees" not in card.text_content()
                 ):
+                    rejected["unusablePriceOrLink"] += 1
                     continue
                 if details >= MAX_DETAILS:
                     break
                 path = paths[0]
                 seen.add(path)
                 details += 1
-                detail = await self._page(client, path, _params(check_in))
+                with stage("hotels.verify_listing", attempt=details):
+                    detail = await self._page(client, path, _params(check_in))
                 _validate_stay(detail, check_in)
                 if _key(" ".join(detail.xpath("//h1//text()"))) != _key(name):
+                    rejected["identity"] += 1
                     continue
                 addresses = detail.xpath('//div[@class="K4nuhf"]/span[@class="CFH2De"]/text()')
                 if not addresses:
+                    rejected["address"] += 1
                     continue
                 address = addresses[0].strip()
                 geo = await asyncio.to_thread(self.geocoder.geocode, address, timeout=5)
                 if not geo:
+                    rejected["geocode"] += 1
                     continue
                 coordinates = [geo.latitude, geo.longitude]
                 if geodesic(point, coordinates).miles > 30:
+                    rejected["radius"] += 1
                     continue
                 records.append(
                     {
@@ -222,8 +241,10 @@ class GoogleHotelProvider:
                         "check_in_date": check_in,
                     }
                 )
+            emit("hotels.rejections", checked=details, verified=len(records), **rejected)
             if not records:
                 raise GoogleHotelLookupError(
                     "Google Hotels returned no verifiable prices near the overnight stop."
                 )
+            emit("hotels.verified", hotels=len(records))
             return records
