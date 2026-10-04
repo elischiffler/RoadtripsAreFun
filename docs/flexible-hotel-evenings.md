@@ -131,16 +131,20 @@ Local validation on October 3, 2026, against the integrated implementation
 
 | Gate | Result |
 | --- | --- |
-| Backend pinned Python 3.12 suite | PASS: 538 tests, 85.07% coverage (63% required) |
+| Backend pinned Python 3.12 suite | PASS: 541 tests, 85.08% coverage (63% required) |
 | Ruff 0.16.7 format and lint | PASS |
-| Frontend Node 24 install, format, lint, coverage and build | PASS |
+| Frontend Node 24 install, format, lint, coverage and build | PASS: 164 tests |
 | Rebuilt preview container smoke | PASS: 2 tests |
 | Disposable real PostgreSQL | PASS: ownership, policy/suggestion persistence, recreation, outage recovery and backup/restore |
 
 The disposable PostgreSQL runner retained source/restore volumes and its ignored
-backup; the final run used project `roadtrips-crud-c1643f41b4`. These are local
-fixtures, not production schema or provider acceptance. The subsequent context
-refresh changed documentation only and did not change the checked-in test DDL.
+backup; the final run used project `roadtrips-crud-94c16c0960`. These are local
+fixtures, not production schema or provider acceptance. The departure-recovery
+follow-up `87a91c9` on `codex/hotel-evenings-integration` builds on integrated
+shared head `079dc41`, retaining its single scheduling policy. Its three new
+HTTP regressions cover omitted departure, saved departure and explicit override.
+Container smoke used a separately rebuilt preview on ports 18004/18084 after
+health checks completed; an earlier startup-race attempt was rerun successfully.
 
 Live provider/model/Cognito planning, actual travel durations, hotel date/price
 availability and reception/late-check-in acceptance remain BLOCKED pending

@@ -37,8 +37,10 @@ even before this feature diff.
 The `codex/flexible-hotel-evenings` implementation builds on shared feature head
 `cd03486`, preserving the concurrent receipts, direct-reply guards and context
 refresh. See [the scheduling contract, example and validation](../docs/flexible-hotel-evenings.md).
-The other observed hotel-evenings worktree is separate overlapping work; its
-changes and reported tests are not part of this integration.
+The overlapping hotel-evenings worktree retained its independent prototype,
+then based `codex/hotel-evenings-integration` on shared head `079dc41` instead.
+Follow-up `87a91c9` preserves this implementation and recovers saved departures
+for direct itinerary requests; the duplicate scheduling abstraction is excluded.
 
 `backend/app/models/scheduling_policy.py` owns preferred hotel arrival **18:00**,
 normal latest arrival **20:00**, morning restart **09:00**, and explicit late
@@ -62,8 +64,8 @@ unscheduled **Check opening hours** options. Dated verified interval fixtures
 exercise scheduled suggestions. Failures or insufficient time do not invalidate
 a successful route. No new service, reservation or deployment is introduced.
 
-The integrated local checks pass: 538 backend tests at 85.07% coverage, pinned
-Ruff checks, all required frontend checks, two rebuilt container smoke tests and
+The integrated local checks pass: 541 backend tests at 85.08% coverage, pinned
+Ruff checks, all required frontend checks with 164 tests, two rebuilt container smoke tests and
 real disposable PostgreSQL persistence/recovery. See the feature validation
 ledger for scope and retained recovery data. Live provider/model/Cognito trip
 acceptance and late reception remain blocked; PR #26 stays draft. Each later
