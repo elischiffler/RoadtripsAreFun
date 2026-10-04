@@ -48,6 +48,7 @@ export const sendAgentMessage = async ({
   clientContext,
   onProgress,
   locationConfirmation,
+  locationConfirmations,
 }) => {
   try {
     const data = {
@@ -55,6 +56,7 @@ export const sendAgentMessage = async ({
       chatId: String(chatId),
       message,
       ...(locationConfirmation ? { locationConfirmation } : {}),
+      ...(locationConfirmations ? { locationConfirmations } : {}),
     };
     if (clientContext) {
       const context = { ...clientContext };

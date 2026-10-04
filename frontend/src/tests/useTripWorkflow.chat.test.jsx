@@ -75,6 +75,20 @@ function Harness({ chatLogsData, onChatReady = () => {}, agentChatId, savedData 
           </button>
         ))
       )}
+      <button
+        onClick={() =>
+          submit(
+            'location_confirmations',
+            Object.entries(pendingLocations).map(([field, pending]) => ({
+              field,
+              candidateId: pending.candidates[0].id,
+              address: pending.candidates[0].address,
+            }))
+          )
+        }
+      >
+        confirm both
+      </button>
       <output data-testid="progress">{JSON.stringify(processProgress)}</output>
       <ul>
         {messages.map((m, i) => (
@@ -102,6 +116,29 @@ beforeEach(() => {
 });
 
 describe("submit('chat_message')", () => {
+  it('confirms both locations with one request and one user message', async () => {
+    const pending_locations = {
+      start_address: { candidates: [{ id: 'start', address: 'Boulder' }] },
+      destination_address: { candidates: [{ id: 'end', address: 'Minneapolis' }] },
+    };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Both saved.',
+      tripProfile: { pending_locations: {} },
+      actions: [],
+    });
+    const { container } = render(<Harness savedData={{ tripProfile: { pending_locations } }} />);
+    await userEvent.click(screen.getByText('confirm both'));
+    await waitFor(() => expect(sendAgentMessage).toHaveBeenCalledTimes(1));
+    expect(sendAgentMessage.mock.calls[0][0].locationConfirmations).toEqual([
+      { field: 'start_address', candidateId: 'start' },
+      { field: 'destination_address', candidateId: 'end' },
+    ]);
+    expect(sendAgentMessage.mock.calls[0][0].message).toBe('Use Boulder and Minneapolis');
+    expect(container.querySelectorAll('[data-sender="user"]')).toHaveLength(1);
+    await waitFor(() => expect(screen.queryByText('Boulder')).not.toBeInTheDocument());
+    expect(screen.queryByText('Minneapolis')).not.toBeInTheDocument();
+  });
+
   it.each(['traveler_count', 'hotel_rooms'])(
     'invalidates restored prices and itinerary when %s changes',
     async (field) => {

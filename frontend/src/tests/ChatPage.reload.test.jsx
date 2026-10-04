@@ -85,9 +85,9 @@ describe('ChatPage reload', () => {
     });
     render(<Harness />);
     expect(
-      await screen.findByRole('button', { name: 'Confirm starting location' })
+      await screen.findByRole('button', { name: 'Confirm both locations' })
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Confirm destination' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Confirm destination' })).not.toBeInTheDocument();
     expect(screen.queryByText('Still needed')).not.toBeInTheDocument();
     expect(screen.queryByText('duplicate fallback')).not.toBeInTheDocument();
     expect(
@@ -95,6 +95,13 @@ describe('ChatPage reload', () => {
     ).toHaveLength(1);
     expect(screen.getAllByText(/Boulder, Colorado/)).toHaveLength(1);
     expect(screen.getAllByText(/Minneapolis, Minnesota/)).toHaveLength(1);
+    const submit = useTripWorkflow.mock.results.at(-1).value.submit;
+    await userEvent.click(screen.getByRole('button', { name: 'Confirm both locations' }));
+    expect(submit).toHaveBeenCalledTimes(1);
+    expect(submit).toHaveBeenCalledWith('location_confirmations', [
+      { field: 'start_address', candidateId: 'start', address: 'Boulder, Colorado' },
+      { field: 'destination_address', candidateId: 'end', address: 'Minneapolis, Minnesota' },
+    ]);
   });
   it('renders exact restored candidate labels and sends the explicit selection', async () => {
     sessionStorage.clear();
@@ -120,11 +127,13 @@ describe('ChatPage reload', () => {
     ).toBeInTheDocument();
     const submit = useTripWorkflow.mock.results.at(-1).value.submit;
     await userEvent.click(button);
-    expect(submit).toHaveBeenCalledWith('location_confirmation', {
-      field: 'start_address',
-      candidateId: 'choice-1',
-      address: 'Salem-Leckrone Airport, Illinois',
-    });
+    expect(submit).toHaveBeenCalledWith('location_confirmations', [
+      {
+        field: 'start_address',
+        candidateId: 'choice-1',
+        address: 'Salem-Leckrone Airport, Illinois',
+      },
+    ]);
   });
   it('shows only the suggested address and asks for typed corrections', async () => {
     sessionStorage.clear();
@@ -157,11 +166,13 @@ describe('ChatPage reload', () => {
     ).toBeInTheDocument();
     const submit = useTripWorkflow.mock.results.at(-1).value.submit;
     await userEvent.click(suggestion);
-    expect(submit).toHaveBeenCalledWith('location_confirmation', {
-      field: 'destination_address',
-      candidateId: 'city',
-      address: 'Boulder, Colorado, USA',
-    });
+    expect(submit).toHaveBeenCalledWith('location_confirmations', [
+      {
+        field: 'destination_address',
+        candidateId: 'city',
+        address: 'Boulder, Colorado, USA',
+      },
+    ]);
   });
   it('restores lists alongside old plain text messages', async () => {
     sessionStorage.clear();

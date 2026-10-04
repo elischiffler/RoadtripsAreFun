@@ -484,7 +484,8 @@ export function useTripWorkflow({
   // ── Public: submit user input (agent chat only) ───────────────────────────
   const submit = useCallback(
     async (action, payload) => {
-      if (action !== 'chat_message' && action !== 'location_confirmation') return;
+      if (!['chat_message', 'location_confirmation', 'location_confirmations'].includes(action))
+        return;
 
       // Guard against StrictMode double-invoke or rapid double-clicks.
       if (submitInFlightRef.current) return;
@@ -494,11 +495,14 @@ export function useTripWorkflow({
       const id = chatIdRef.current;
       try {
         const confirmation = action === 'location_confirmation' ? payload : null;
-        const text = confirmation
-          ? `Use ${confirmation.address}`
-          : typeof payload === 'string'
-            ? payload.trim()
-            : '';
+        const confirmations = action === 'location_confirmations' ? payload : null;
+        const text = confirmations
+          ? `Use ${confirmations.map((selection) => selection.address).join(' and ')}`
+          : confirmation
+            ? `Use ${confirmation.address}`
+            : typeof payload === 'string'
+              ? payload.trim()
+              : '';
         if (!text) return;
 
         addMessage(id, setChats, text, USER, undefined, chatsRef);
@@ -521,6 +525,14 @@ export function useTripWorkflow({
                   field: confirmation.field,
                   candidateId: confirmation.candidateId,
                 },
+              }
+            : {}),
+          ...(confirmations
+            ? {
+                locationConfirmations: confirmations.map(({ field, candidateId }) => ({
+                  field,
+                  candidateId,
+                })),
               }
             : {}),
           clientContext: {

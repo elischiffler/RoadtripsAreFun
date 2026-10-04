@@ -29,6 +29,22 @@ const AGENT_RESPONSE = {
 };
 
 describe('sendAgentMessage', () => {
+  it('sends both candidate selections in one request', async () => {
+    axios.post.mockResolvedValueOnce({ data: AGENT_RESPONSE });
+    const locationConfirmations = [
+      { field: 'start_address', candidateId: 'start' },
+      { field: 'destination_address', candidateId: 'end' },
+    ];
+    await sendAgentMessage({
+      accessToken: 't',
+      chatId: 42,
+      message: 'Confirm both',
+      locationConfirmations,
+    });
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.post.mock.calls[0][1].locationConfirmations).toEqual(locationConfirmations);
+    expect(axios.post.mock.calls[0][1]).not.toHaveProperty('locationConfirmation');
+  });
   it('sends an explicit location candidate selection', async () => {
     axios.post.mockResolvedValueOnce({ data: AGENT_RESPONSE });
     const locationConfirmation = { field: 'start_address', candidateId: 'server-candidate' };

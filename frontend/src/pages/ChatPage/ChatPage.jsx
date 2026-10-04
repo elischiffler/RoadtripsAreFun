@@ -46,6 +46,12 @@ const WorkflowPanel = ({
   const handleChatSubmit = (text) => submit('chat_message', text);
 
   const currentProgress = deriveProgress({ route });
+  const locationSelections = Object.entries(pendingLocations ?? {}).flatMap(([field, pending]) =>
+    pending.candidates.length
+      ? [{ field, candidateId: pending.candidates[0].id, address: pending.candidates[0].address }]
+      : []
+  );
+
   const latestBotIndex = activeMessages.findLastIndex(
     (message) => message.sender === 'bot' && message.text != null
   );
@@ -126,33 +132,33 @@ const WorkflowPanel = ({
                 {pending.candidates.length ? (
                   <>
                     <Typography>Suggested address: {pending.candidates[0].address}</Typography>
-                    <Button
-                      variant="text"
-                      size="small"
-                      className="location-confirm-button"
-                      disableRipple
-                      aria-label={
-                        field === 'start_address'
-                          ? 'Confirm starting location'
-                          : 'Confirm destination'
-                      }
-                      disabled={isLoading}
-                      onClick={() =>
-                        submit('location_confirmation', {
-                          field,
-                          candidateId: pending.candidates[0].id,
-                          address: pending.candidates[0].address,
-                        })
-                      }
-                    >
-                      Confirm
-                    </Button>
                   </>
                 ) : (
                   <Typography>No match found for &quot;{pending.query}&quot;.</Typography>
                 )}
               </Box>
             ))}
+            {locationSelections.length > 0 && (
+              <Box className="message bot">
+                <Button
+                  variant="text"
+                  size="small"
+                  className="location-confirm-button"
+                  disableRipple
+                  aria-label={
+                    locationSelections.length > 1
+                      ? 'Confirm both locations'
+                      : locationSelections[0].field === 'start_address'
+                        ? 'Confirm starting location'
+                        : 'Confirm destination'
+                  }
+                  disabled={isLoading}
+                  onClick={() => submit('location_confirmations', locationSelections)}
+                >
+                  {locationSelections.length > 1 ? 'Confirm both locations' : 'Confirm'}
+                </Button>
+              </Box>
+            )}
             {Object.keys(pendingLocations ?? {}).length > 0 && (
               <Typography className="message bot" variant="body2">
                 Wrong location? Type a different city or address below.

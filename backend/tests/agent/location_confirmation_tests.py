@@ -5,7 +5,7 @@ import pytest
 
 import app.agent.tool_dispatcher as td
 from app.agent.agent import run_turn
-from app.agent.location_confirmation import confirm_location
+from app.agent.location_confirmation import confirm_location, confirm_locations
 from app.agent.providers import FallbackChain
 from app.agent.schemas import AgentChatRequest, LLMResponse, ToolCall
 from app.agent.tool_dispatcher import AppToolDispatcher
@@ -202,3 +202,64 @@ async def test_confirmed_start_clears_date_and_retains_selected_time(monkeypatch
     assert after.start_date is None
     assert after.departure_time == "11:00"
     assert after.start_timezone == "America/Chicago"
+
+
+async def test_batch_confirmation_saves_both_in_one_turn_without_model_calls(monkeypatch):
+    monkeypatch.setattr("app.agent.agent.get_user_id_from_token", lambda token: "owner")
+    monkeypatch.setattr(td, "get_location", lambda **kw: [location(address=kw["address"])])
+    memory = FakeMemory()
+    await AppToolDispatcher().dispatch(
+        ToolCall(
+            name="record_trip_details",
+            arguments={"start_address": "Boulder", "destination_address": "Minneapolis"},
+        ),
+        ToolContext(user_id="owner", chat_id="chat", memory=memory),
+    )
+    profile = TripProfile.from_json(memory.load_trip_profile("owner", "chat"))
+    choices = [
+        LocationConfirmation(field=field, candidateId=pending.candidates[0].id)
+        for field, pending in profile.pending_locations.items()
+    ]
+    before = profile.to_json()
+    stale = choices[1].model_copy(update={"candidateId": "expired"})
+    with pytest.raises(ValueError, match="expired"):
+        confirm_locations(memory, "owner", "chat", [choices[0], stale])
+    assert memory.load_trip_profile("owner", "chat") == before
+    memory.save_trip_profile = Mock(wraps=memory.save_trip_profile)
+    response = await run_turn(
+        AgentChatRequest(
+            partitionKey="owner",
+            chatId="chat",
+            message="Confirm both",
+            locationConfirmations=choices,
+        ),
+        FallbackChain([FakeProvider(fail=True)]),
+        memory,
+        AppToolDispatcher(),
+    )
+    memory.save_trip_profile.assert_called_once()
+    assert response.modelCalls == 0
+    assert not response.tripProfile["pending_locations"]
+    assert response.tripProfile["start_address"] == "Boulder"
+    assert response.tripProfile["destination_address"] == "Minneapolis"
+    assert response.presentation.updated == [
+        "Starting location: Boulder",
+        "Destination: Minneapolis",
+    ]
+    assert len(response.actions) == 1
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        {"locationConfirmations": []},
+        {"locationConfirmations": [{"field": "start_address", "candidateId": "a"}] * 2},
+        {
+            "locationConfirmation": {"field": "start_address", "candidateId": "a"},
+            "locationConfirmations": [{"field": "destination_address", "candidateId": "b"}],
+        },
+    ],
+)
+def test_batch_confirmation_rejects_empty_duplicate_and_mixed_selections(extra):
+    with pytest.raises(ValueError):
+        AgentChatRequest(partitionKey="owner", chatId="chat", message="Confirm", **extra)

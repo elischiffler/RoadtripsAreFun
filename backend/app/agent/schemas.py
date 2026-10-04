@@ -17,7 +17,7 @@ Contracts implemented:
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from app.utils.location_resolution import LocationConfirmation
 
@@ -93,6 +93,19 @@ class AgentChatRequest(BaseModel):
     message: str
     clientContext: AgentClientContext | None = None
     locationConfirmation: LocationConfirmation | None = None
+    locationConfirmations: list[LocationConfirmation] | None = Field(
+        default=None, min_length=1, max_length=2
+    )
+
+    @model_validator(mode="after")
+    def distinct_location_selections(self):
+        if self.locationConfirmation and self.locationConfirmations:
+            raise ValueError("Use one location confirmation format.")
+        if self.locationConfirmations and len({s.field for s in self.locationConfirmations}) != len(
+            self.locationConfirmations
+        ):
+            raise ValueError("Confirm each location only once.")
+        return self
 
 
 class AgentAction(BaseModel):

@@ -24,7 +24,7 @@ from datetime import UTC, datetime
 
 from app.agent import debug
 from app.agent.extraction import ExtractionFormatError, extract_trip_patch
-from app.agent.location_confirmation import confirm_location
+from app.agent.location_confirmation import confirm_locations
 from app.agent.memory import ConversationMemory, MemoryStore
 from app.agent.presentation import detail_request, present_details
 from app.agent.progress import emit, stage
@@ -279,9 +279,12 @@ async def run_turn(
         memory=memory,
     )
     try:
-        if request.locationConfirmation:
+        selections = request.locationConfirmations or (
+            [request.locationConfirmation] if request.locationConfirmation else []
+        )
+        if selections:
             try:
-                trip = confirm_location(memory, user_id, chat_id, request.locationConfirmation)
+                trip = confirm_locations(memory, user_id, chat_id, selections)
             except ValueError as exc:
                 return AgentChatResponse(reply=str(exc), tripProfile=trip.model_dump(mode="json"))
             actions.append(
