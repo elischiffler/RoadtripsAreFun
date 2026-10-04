@@ -258,70 +258,21 @@
 }
 
 .trip-progress {
-  width: min(100%, 440px);
-  padding: 16px 18px;
-  border: 1px solid var(--sand-main);
-  border-radius: 14px;
-  background: var(--white-main, #fffdf8);
   color: var(--bark-main, #44382c);
+  font-size: 0.9rem;
+  animation: trip-progress-thinking 1.8s ease-in-out infinite;
 }
-.trip-progress-heading {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.trip-progress-pulse {
-  width: 8px;
-  height: 8px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--bark-main, #44382c);
-  animation: trip-progress-pulse 1.6s ease-in-out infinite;
-}
-.trip-progress-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  margin: 8px 0 0 18px;
-  font-size: 0.8rem;
-}
-.trip-progress-details {
-  margin-top: 12px;
-  font-size: 0.85rem;
-}
-.trip-progress-details summary {
-  cursor: pointer;
-  padding: 4px 0;
-}
-.trip-progress-details summary:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 3px;
-}
-.trip-progress-details ol {
-  list-style: none;
-  padding: 0;
-  margin: 8px 0 0;
-}
-.trip-progress-step {
-  display: flex;
-  gap: 8px;
-  padding: 6px 0;
-}
-.trip-progress-step-state {
-  margin-left: auto;
-  font-size: 0.75rem;
-  text-align: right;
-}
-.trip-progress-step--failed {
-  color: #9c3028;
-}
-@keyframes trip-progress-pulse {
+@keyframes trip-progress-thinking {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
   50% {
-    opacity: 0.3;
+    opacity: 0.45;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .trip-progress-pulse {
+  .trip-progress {
     animation: none;
   }
 }

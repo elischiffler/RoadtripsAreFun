@@ -1,10 +1,9 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import TripProgress from '../pages/ChatPage/TripProgress';
 import { updateTripProgress } from '../pages/ChatPage/tripProgressState';
 
 const event = (stage, state, details = {}) => ({ type: 'progress', stage, state, ...details });
-afterEach(() => vi.useRealTimers());
 
 describe('trip progress display', () => {
   it('tracks nested work, repeated searches and terminal failures without exposing unknown internals', () => {
@@ -28,27 +27,21 @@ describe('trip progress display', () => {
     expect(progress.entries).toHaveLength(12);
   });
 
-  it('shows actual active work, expandable history, and elapsed time with timer cleanup', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(1000);
-    let progress = { startedAt: 1000, entries: [] };
+  it('shows only the current step and returns to Thinking between steps', () => {
+    let progress = { entries: [] };
     progress = updateTripProgress(progress, event('agent.extract_details', 'started'));
     progress = updateTripProgress(progress, event('agent.extract_details', 'completed'));
     progress = updateTripProgress(progress, event('hotels.lookup', 'started'));
-    const { unmount } = render(<TripProgress progress={progress} />);
-    expect(screen.getByRole('status')).toHaveTextContent('Finding hotels near your route');
-    fireEvent.click(screen.getByText('View progress'));
-    expect(screen.getByText('Checking your trip details')).toBeInTheDocument();
-    expect(screen.getByText('Done')).toBeInTheDocument();
-    expect(screen.getByText('In progress')).toBeInTheDocument();
-    act(() => vi.advanceTimersByTime(65000));
-    expect(screen.getByText('1m 5s elapsed')).toBeInTheDocument();
-    unmount();
-    expect(vi.getTimerCount()).toBe(0);
+    const { rerender, container } = render(<TripProgress progress={progress} />);
+    expect(screen.getByRole('status')).toHaveTextContent('Finding hotels near your route…');
+    expect(container.textContent).toBe('Finding hotels near your route…');
+    progress = updateTripProgress(progress, event('hotels.lookup', 'completed'));
+    rerender(<TripProgress progress={progress} />);
+    expect(screen.getByRole('status')).toHaveTextContent('Thinking…');
   });
 
   it('has a safe initial label for legacy loading bubbles', () => {
     render(<TripProgress />);
-    expect(screen.getByRole('status')).toHaveTextContent('Getting started');
+    expect(screen.getByRole('status')).toHaveTextContent('Thinking…');
   });
 });

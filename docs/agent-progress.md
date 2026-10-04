@@ -1,12 +1,11 @@
 # Developer route progress
 
 The chat UI uses authenticated `POST /agent/chat/stream` in development and
-production. A live status card replaces the loading ring with the current
-process step, elapsed time and an expandable recent step history. Labels map
-the backend's actual stage events to traveler-facing descriptions. No estimated
-percentage, ETA or internal model reasoning is shown. Status is transient,
-resets each turn and is excluded from saved chat logs. Reduced-motion users
-receive a static activity dot. Timers are cleaned up when the card disappears.
+production. A single subtly pulsing text line shows the current process step,
+falling back to "Thinking…" between stages. It has no card, background, border,
+timer or expandable history. Labels map the backend's actual stage events to
+traveler-facing descriptions. Status is transient, resets each turn and is
+excluded from saved chat logs. Reduced-motion users receive static text.
 
 Development builds also show `[RouteProgress <request id> +<elapsed>s]` console
 messages while a turn runs. The API helper retains the existing JSON
