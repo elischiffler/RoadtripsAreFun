@@ -103,3 +103,19 @@ Desktop 1280px and mobile 390px component previews show native separate items,
 natural wrapping and no horizontal overflow or duplicated fallback text. Real
 PostgreSQL recreation and backup/restore preserve the added sections. Full live
 model/Cognito/provider acceptance remains unverified; keep PR #26 draft.
+
+
+Local validation on the integrated application (October 3, 2026): Ruff 0.16.7
+format/lint; pinned Python 3.12 suite, 589 tests and 85.46% coverage against the
+unchanged 63% gate; Node 24 npm ci, format/lint, frontend coverage and build;
+rebuilt isolated container smoke (2 tests); disposable PostgreSQL ownership,
+presentation persistence, recreation, outage recovery, backup/restore and
+populated-target refusal. Ignored mobile/desktop component screenshots are
+local evidence, not live authenticated browser acceptance. The subsequent
+shared-head change was documentation-only. Source/restore volumes and backup
+`roadtrips-crud-003caa5a88` remain preserved.
+
+A separate collector refactor would be needed to persist partial car values
+across turns: the current year/make/model validator accepts complete combinations
+atomically. This presentation change separates requested values visually while
+preserving that existing extraction and validation behavior.
