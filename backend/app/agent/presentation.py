@@ -183,7 +183,8 @@ def present_details(
         )
         for field, question in issues.items()
     ]
-    missing = collection_fields(after)
+    # Finish the address choices before introducing the next collection questions.
+    missing = [] if after.pending_locations else collection_fields(after)
     # Prioritize validation questions; then ask at most two actionable details.
     for field in missing:
         if len(needed) >= 2:

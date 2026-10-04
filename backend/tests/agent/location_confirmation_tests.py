@@ -6,6 +6,7 @@ import pytest
 import app.agent.tool_dispatcher as td
 from app.agent.agent import run_turn
 from app.agent.location_confirmation import confirm_location, confirm_locations
+from app.agent.presentation import present_details
 from app.agent.providers import FallbackChain
 from app.agent.schemas import AgentChatRequest, LLMResponse, ToolCall
 from app.agent.tool_dispatcher import AppToolDispatcher
@@ -221,6 +222,14 @@ async def test_batch_confirmation_saves_both_in_one_turn_without_model_calls(mon
         for field, pending in profile.pending_locations.items()
     ]
     before = profile.to_json()
+    asks = present_details(TripProfile(), profile, {}).needed
+    assert len(asks) == 2
+    assert all("Confirm the suggested address" in question for question in asks)
+    one_pending = profile.model_copy(deep=True)
+    one_pending.pending_locations.pop("start_address")
+    asks = present_details(TripProfile(), one_pending, {}).needed
+    assert len(asks) == 1
+    assert "Destination: Confirm" in asks[0]
     stale = choices[1].model_copy(update={"candidateId": "expired"})
     with pytest.raises(ValueError, match="expired"):
         confirm_locations(memory, "owner", "chat", [choices[0], stale])
