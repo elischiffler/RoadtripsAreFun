@@ -57,6 +57,7 @@ from app.routers.routing_api import plan_final_route
 from app.routing.config import geolocator
 from app.routing.selection import select_algorithm
 from app.routing.sources.mapbox import call_route
+from app.routing.sources.persona_candidates import CandidateProviderError
 from app.utils.geolocation_helpers import get_location
 
 logger = logging.getLogger(__name__)
@@ -464,6 +465,9 @@ class AppToolDispatcher:
         try:
             result = await handler(arguments, ctx)
             return ToolResult(name=call.name, ok=True, result=result)
+        except CandidateProviderError as exception:
+            logger.warning("tool %s: required candidate provider unavailable", call.name)
+            return ToolResult(name=call.name, ok=False, error=str(exception), retryable=False)
         except HTTPException as exception:
             # Surface the upstream detail (already scrubbed of secrets by sources).
             return ToolResult(name=call.name, ok=False, error=str(exception.detail))

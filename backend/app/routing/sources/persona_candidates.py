@@ -167,7 +167,7 @@ def _parse_proposals(text: str, limit: int) -> list[ProposedPlace]:
 
 
 async def _propose(
-    ai: LLMProvider, kind: str, point: list[float], limit: int
+    ai: LLMProvider, kind: str, point: list[float], limit: int, names: list[str] | None = None
 ) -> list[ProposedPlace]:
     example = json.dumps(
         {
@@ -182,6 +182,11 @@ async def _propose(
         f"Return only JSON in this exact shape: {example}. "
         "Do not include prices, coordinates, or a final utility score."
     )
+    if names is not None:
+        prompt += (
+            " Rate only these provider-verified names, preserving each exactly: "
+            + json.dumps(names)
+        )
     try:
         response = await asyncio.to_thread(
             ai.complete,
@@ -280,10 +285,14 @@ async def hotel_candidates(
     places = places or LivePlaceProvider()
     if isinstance(places, LivePlaceProvider):
         places.require_hotels()
-    proposals = await _propose(ai, "hotels", point, MAX_HOTEL_PROPOSALS)
-    if not proposals:
-        return []
     records = await places.hotels_near(point, check_in, price_range)
+    if not records:
+        return []
+    names = [
+        record.name if isinstance(record, VerifiedHotel) else record.get("name", "")
+        for record in records[:MAX_HOTEL_PROPOSALS]
+    ]
+    proposals = await _propose(ai, "hotels", point, MAX_HOTEL_PROPOSALS, names=names)
     results: list[dict[str, Any]] = []
     seen: set[str] = set()
     for proposal in proposals:
@@ -312,7 +321,7 @@ async def hotel_candidates(
 
 
 class LivePlaceProvider:
-    """Terra identities and Amadeus dated hotel offers; no scraper prices."""
+    """Terra identities and configurable dated hotel prices."""
 
     @staticmethod
     def require_attractions() -> None:
@@ -321,6 +330,14 @@ class LivePlaceProvider:
 
     @staticmethod
     def require_hotels() -> None:
+        if config.HOTEL_PROVIDER == "google":
+            if not config.OPENCAGE_KEY:
+                raise CandidateProviderError(
+                    "Google Hotels location verification is not configured"
+                )
+            return
+        if config.HOTEL_PROVIDER != "amadeus":
+            raise CandidateProviderError("The hotel price provider is not supported")
         import os
 
         if (
@@ -377,6 +394,18 @@ class LivePlaceProvider:
     async def hotels_near(
         self, point: list[float], check_in: date, price_range: tuple[tuple[float, float], str]
     ) -> list[VerifiedHotel]:
+        self.require_hotels()
+        if config.HOTEL_PROVIDER == "google":
+            from app.routing.sources.google_hotels import (
+                GoogleHotelLookupError,
+                GoogleHotelProvider,
+            )
+
+            try:
+                records = await GoogleHotelProvider(config.geolocator).hotels_near(point, check_in)
+                return [VerifiedHotel.model_validate(record) for record in records]
+            except GoogleHotelLookupError as exc:
+                raise CandidateProviderError(str(exc)) from exc
         del price_range  # Advisory budget: request all offers, including over-budget.
         import os
 

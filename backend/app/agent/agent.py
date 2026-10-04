@@ -399,6 +399,7 @@ async def run_turn(
     # them, dispatch, feed results back, and re-ask. Capped to guarantee
     # termination.
     iterations = 0
+    terminal_error = None
     while calls and iterations < MAX_TOOL_ITERATIONS:
         iterations += 1
         # Record the assistant turn that requested the tools (verbatim content,
@@ -422,6 +423,12 @@ async def run_turn(
                     tool_call_id=call.name,
                 )
             )
+            if not result.ok and not result.retryable:
+                terminal_error = result.error or "A required trip provider is unavailable."
+                break
+        if terminal_error:
+            calls = []
+            break
         # Ask the model again now that it has the tool results.
         try:
             response = providers.complete(messages, specs)
@@ -449,7 +456,11 @@ async def run_turn(
 
     # The user-facing reply is the model's prose with any tool blocks stripped
     # out (raw tool JSON must never surface to the traveler).
-    reply = strip_tool_blocks(response.content) or ""
+    reply = (
+        "I couldn't finish creating the trip. " + terminal_error
+        if terminal_error
+        else strip_tool_blocks(response.content) or ""
+    )
     if not reply and not calls:
         reply = "I recorded the details I could verify. What would you like to add next?"
     if partial_completion and not any(action.type == "itinerary_updated" for action in actions):

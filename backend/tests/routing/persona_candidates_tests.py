@@ -161,6 +161,7 @@ async def test_hotel_output_cap_and_unconfigured_dated_provider(monkeypatch):
         places=FakePlaces(hotels=hotels),
     )
     assert len(result) == source.MAX_HOTELS
+    monkeypatch.setattr(source.config, "HOTEL_PROVIDER", "amadeus")
     monkeypatch.setattr(source.config, "AMADEUS_ENABLED", False)
     with pytest.raises(source.CandidateProviderError, match="Dated Amadeus"):
         await source.hotel_candidates(
@@ -199,6 +200,7 @@ async def test_unavailable_providers_fail_clearly():
 
 @pytest.mark.asyncio
 async def test_amadeus_price_is_dated_offer_only(monkeypatch):
+    monkeypatch.setattr(source.config, "HOTEL_PROVIDER", "amadeus")
     monkeypatch.setattr(source.config, "AMADEUS_ENABLED", True)
     monkeypatch.setenv("AMADEUS_KEY", "test-key")
     monkeypatch.setenv("AMADEUS_SECRET", "test-secret")
@@ -263,3 +265,47 @@ async def test_amadeus_price_is_dated_offer_only(monkeypatch):
     assert len(hotels) == 1
     assert hotels[0].provider_id == "amadeus:H1"
     assert hotels[0].price == 189.5
+
+
+@pytest.mark.asyncio
+async def test_google_adapter_supplies_verified_names_prices_and_links(monkeypatch):
+    from app.routing.sources.google_hotels import GoogleHotelLookupError, GoogleHotelProvider
+
+    monkeypatch.setattr(source.config, "HOTEL_PROVIDER", "google")
+    monkeypatch.setattr(source.config, "OPENCAGE_KEY", "fixture")
+
+    async def fetched(self, point, check_in):
+        return [
+            {
+                "provider_id": "google:H1",
+                "name": "Hotel One",
+                "coordinates": point,
+                "check_in_date": check_in,
+                "price": 120,
+                "url": "https://www.google.com/travel/hotels/entity/H1?dated=fixture",
+            }
+        ]
+
+    monkeypatch.setattr(GoogleHotelProvider, "hotels_near", fetched)
+
+    class RatingAI(FakeAI):
+        def complete(self, messages, tools):
+            assert "provider-verified names" in messages[-1].content
+            assert '["Hotel One"]' in messages[-1].content
+            return super().complete(messages, tools)
+
+    ai = RatingAI([{"name": "Hotel One", "attribute_ratings": _ratings(), "price": 1}])
+    result = await source.hotel_candidates(
+        [40, -74], date(2026, 11, 20), ((50, 150), "USD"), default_weights(), ai=ai
+    )
+    assert result[0]["price"] == 120
+    assert result[0]["url"].startswith("https://www.google.com/travel/hotels/entity/H1")
+
+    async def failed(self, point, check_in):
+        raise GoogleHotelLookupError("Google Hotels did not confirm USD prices.")
+
+    monkeypatch.setattr(GoogleHotelProvider, "hotels_near", failed)
+    with pytest.raises(source.CandidateProviderError, match="USD prices"):
+        await source.LivePlaceProvider().hotels_near(
+            [40, -74], date(2026, 11, 20), ((50, 150), "USD")
+        )

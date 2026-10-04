@@ -371,3 +371,15 @@ async def test_remember_fact_without_memory_returns_error():
     )
     assert result.ok is False
     assert "memory" in result.error.lower()
+
+
+async def test_required_candidate_provider_failure_is_not_retryable():
+    async def failed_provider(arguments, context):
+        raise td.CandidateProviderError("Google Hotels did not confirm the requested stay dates.")
+
+    dispatcher = _dispatcher()
+    dispatcher._handlers["generate_final_route"] = failed_provider
+    result = await dispatcher.dispatch(ToolCall(name="generate_final_route", arguments={}), _ctx())
+    assert not result.ok and not result.retryable
+    assert "requested stay dates" in result.error
+    assert result.result is None

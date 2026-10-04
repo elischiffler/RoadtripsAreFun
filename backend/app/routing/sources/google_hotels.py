@@ -1,0 +1,229 @@
+"""Bounded Google Hotels HTML lookup for one night, two adults, USD.
+
+Accept only displayed totals whose returned stay controls match the request.
+No JavaScript execution, challenge bypass, or invented prices on failure.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import base64
+import math
+import re
+from datetime import date, timedelta
+from urllib.parse import urlencode, urlsplit
+
+import httpx
+from geopy.distance import geodesic
+from geopy.exc import GeopyError
+from lxml import html
+from lxml.etree import LxmlError
+
+BASE = "https://www.google.com"
+MAX_DETAILS = 6
+MAX_HTML_BYTES = 5 * 1024 * 1024
+LOOKUP_TIMEOUT = 60
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+)
+
+
+class GoogleHotelLookupError(RuntimeError):
+    """A lookup cannot supply verified dated hotel prices."""
+
+
+def _varint(value: int) -> bytes:
+    result = bytearray()
+    while value > 127:
+        result.append((value & 127) | 128)
+        value >>= 7
+    result.append(value)
+    return bytes(result)
+
+
+def _field(number: int, value: int | bytes) -> bytes:
+    if isinstance(value, bytes):
+        return _varint(number * 8 + 2) + _varint(len(value)) + value
+    return _varint(number * 8) + _varint(value)
+
+
+def stay_token(check_in: date) -> str:
+    """Google's undocumented protobuf `ts` parameter; response checks are mandatory."""
+
+    def day(value: date) -> bytes:
+        return _field(1, value.year) + _field(2, value.month) + _field(3, value.day)
+
+    duration = (
+        _field(1, day(check_in)) + _field(2, day(check_in + timedelta(days=1))) + _field(3, 1)
+    )
+    payload = (
+        _field(1, 1)
+        + _field(2, _field(1, _field(1, 3)) * 2 + _field(2, 1))
+        + _field(3, _field(2, _field(2, duration) + _field(6, _field(1, 1))))
+        + _field(5, _field(1, _field(7, b"USD")))
+    )
+    return base64.urlsafe_b64encode(payload).decode().rstrip("=")
+
+
+def _params(check_in: date) -> dict[str, str]:
+    return {"ts": stay_token(check_in), "hl": "en", "gl": "us", "curr": "USD"}
+
+
+def _key(name: str) -> str:
+    return " ".join(re.findall(r"\w+", name.casefold()))
+
+
+def _validate_stay(root, check_in: date) -> None:
+    for label, expected in (("Check-in", check_in), ("Check-out", check_in + timedelta(days=1))):
+        values = root.xpath(
+            f'//input[@aria-label="{label}"]/ancestor::*[@data-value][1]/@data-value'
+        )
+        if not values or set(values) != {expected.isoformat()}:
+            raise GoogleHotelLookupError("Google Hotels did not confirm the requested stay dates.")
+    guests = root.xpath("//*[@data-adults]")
+    if not guests or any(e.get("data-adults") != "2" or e.get("data-children", "") for e in guests):
+        raise GoogleHotelLookupError("Google Hotels did not confirm two adult guests.")
+    currencies = root.xpath('//span[@jsname="nxRoyb"]/text()')
+    if not currencies or set(currencies) != {"USD"}:
+        raise GoogleHotelLookupError("Google Hotels did not confirm USD prices.")
+
+
+def _entity_path(href: str) -> str | None:
+    url = urlsplit(href)
+    if url.netloc and (url.netloc != "www.google.com" or url.scheme != "https"):
+        return None
+    match = re.fullmatch(r"(/travel/hotels/entity/[A-Za-z0-9_-]{1,200})(?:/reviews)?", url.path)
+    return match[1] if match else None
+
+
+def _price(card, suffix: str) -> float | None:
+    values = set()
+    for text in card.xpath(".//text()"):
+        match = re.fullmatch(
+            r"\$((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d{1,2})?) " + suffix, str(text).strip()
+        )
+        if match:
+            values.add(float(match[1].replace(",", "")))
+    if len(values) != 1:
+        return None
+    value = values.pop()
+    return value if math.isfinite(value) and value > 0 else None
+
+
+class GoogleHotelProvider:
+    def __init__(self, geocoder, *, transport=None):
+        self.geocoder = geocoder
+        self.transport = transport
+
+    async def _page(self, client: httpx.AsyncClient, path: str, params: dict):
+        async with client.stream("GET", BASE + path, params=params) as response:
+            response.raise_for_status()
+            if "text/html" not in response.headers.get("content-type", ""):
+                raise GoogleHotelLookupError("Google Hotels returned an unsupported response.")
+            data = bytearray()
+            async for chunk in response.aiter_bytes():
+                data.extend(chunk)
+                if len(data) > MAX_HTML_BYTES:
+                    raise GoogleHotelLookupError("Google Hotels returned an oversized response.")
+        return html.fromstring(bytes(data))
+
+    async def hotels_near(self, point: list[float], check_in: date) -> list[dict]:
+        try:
+            async with asyncio.timeout(LOOKUP_TIMEOUT):
+                return await self._lookup(point, check_in)
+        except GoogleHotelLookupError:
+            raise
+        except (
+            TimeoutError,
+            httpx.HTTPError,
+            GeopyError,
+            LxmlError,
+            ValueError,
+            TypeError,
+            AttributeError,
+        ) as exc:
+            raise GoogleHotelLookupError(
+                "Google Hotels prices are temporarily unavailable. Please try again later."
+            ) from exc
+
+    async def _lookup(self, point: list[float], check_in: date) -> list[dict]:
+        location = await asyncio.to_thread(self.geocoder.reverse, point, timeout=5)
+        components = location.raw.get("components", {}) if location else {}
+        city = next(
+            (components[k] for k in ("city", "town", "village", "county") if components.get(k)),
+            None,
+        )
+        if not city:
+            raise GoogleHotelLookupError("The overnight city could not be verified.")
+        query = ", ".join(
+            str(v) for v in (city, components.get("state"), components.get("country")) if v
+        )
+        async with httpx.AsyncClient(
+            timeout=httpx.Timeout(20, connect=5),
+            headers={"User-Agent": USER_AGENT, "Accept-Language": "en-US,en;q=0.9"},
+            transport=self.transport,
+            follow_redirects=False,
+        ) as client:
+            root = await self._page(
+                client, "/travel/search", {**_params(check_in), "q": "hotels in " + query}
+            )
+            _validate_stay(root, check_in)
+            cards = root.xpath('//div[@jsname="mutHjb"]')
+            if not cards:
+                raise GoogleHotelLookupError(
+                    "Google Hotels returned no readable dated hotel listings."
+                )
+            records = []
+            seen = set()
+            details = 0
+            for card in cards[:20]:
+                names = card.xpath(".//h2//text()")
+                name = " ".join(names).strip()
+                paths = [path for href in card.xpath(".//a/@href") if (path := _entity_path(href))]
+                price, nightly = _price(card, "total"), _price(card, "nightly")
+                if (
+                    not name
+                    or not paths
+                    or paths[0] in seen
+                    or price is None
+                    or nightly is None
+                    or price < nightly
+                    or "1 night with taxes + fees" not in card.text_content()
+                ):
+                    continue
+                if details >= MAX_DETAILS:
+                    break
+                path = paths[0]
+                seen.add(path)
+                details += 1
+                detail = await self._page(client, path, _params(check_in))
+                _validate_stay(detail, check_in)
+                if _key(" ".join(detail.xpath("//h1//text()"))) != _key(name):
+                    continue
+                addresses = detail.xpath('//div[@class="K4nuhf"]/span[@class="CFH2De"]/text()')
+                if not addresses:
+                    continue
+                address = addresses[0].strip()
+                geo = await asyncio.to_thread(self.geocoder.geocode, address, timeout=5)
+                if not geo:
+                    continue
+                coordinates = [geo.latitude, geo.longitude]
+                if geodesic(point, coordinates).miles > 30:
+                    continue
+                records.append(
+                    {
+                        "provider_id": "google:" + path.rsplit("/", 1)[1],
+                        "name": name,
+                        "coordinates": coordinates,
+                        "address": address,
+                        "url": BASE + path + "?" + urlencode(_params(check_in)),
+                        "price": price,
+                        "check_in_date": check_in,
+                    }
+                )
+            if not records:
+                raise GoogleHotelLookupError(
+                    "Google Hotels returned no verifiable prices near the overnight stop."
+                )
+            return records

@@ -61,5 +61,8 @@ TRIPADVISOR_CATEGORY_MAP = {
 # in find_hotel once the upstream API is working again.
 AMADEUS_ENABLED = os.getenv("AMADEUS_ENABLED", "false").lower() == "true"
 
+# CP-SAT hotel prices default to Google Hotels HTML. Legacy Amadeus is opt-in.
+HOTEL_PROVIDER = os.getenv("HOTEL_PROVIDER", "google").strip().lower()
+
 # A single shared reverse-geocoder.
 geolocator = OpenCage(api_key=OPENCAGE_KEY, user_agent="RP-Hotels", timeout=10)

@@ -1,18 +1,18 @@
 """Pydantic v2 models for the chat agent (contracts 1 and 1b).
 
 This module also owns the **shared tool primitives** (:class:`ToolSpec`,
-:class:`ToolCall`, :class:`ToolResult`). The design doc (§5) lists these under
-``tools.py``, but :class:`LLMMessage` / :class:`LLMResponse` (§6, defined here)
-reference :class:`ToolCall`, and ``tools.py`` also needs them — putting them in
+:class:`ToolCall`, :class:`ToolResult`). The design doc (Â§5) lists these under
+``tools.py``, but :class:`LLMMessage` / :class:`LLMResponse` (Â§6, defined here)
+reference :class:`ToolCall`, and ``tools.py`` also needs them â€” putting them in
 one low-level module avoids an import cycle. ``tools.py`` re-exports them so the
 doc's ``tools.py`` surface is preserved. This is the clean decision called for
 by the Stream A brief.
 
 Contracts implemented:
-- §3  — :class:`AgentClientContext`, :class:`AgentChatRequest`,
+- Â§3  â€” :class:`AgentClientContext`, :class:`AgentChatRequest`,
         :class:`AgentAction`, :class:`AgentUsage`, :class:`AgentChatResponse`
-- §5  — :class:`ToolSpec`, :class:`ToolCall`, :class:`ToolResult`
-- §6  — :class:`LLMMessage`, :class:`LLMResponse`
+- Â§5  â€” :class:`ToolSpec`, :class:`ToolCall`, :class:`ToolResult`
+- Â§6  â€” :class:`LLMMessage`, :class:`LLMResponse`
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from __future__ import annotations
 from pydantic import BaseModel, Field
 
 # --------------------------------------------------------------------------- #
-# Shared tool primitives (design doc §5) — live here to avoid an import cycle
+# Shared tool primitives (design doc Â§5) â€” live here to avoid an import cycle
 # with the provider/message models below. Re-exported from ``tools.py``.
 # --------------------------------------------------------------------------- #
 
@@ -48,25 +48,27 @@ class ToolResult(BaseModel):
     """The outcome of dispatching a :class:`ToolCall`.
 
     Tool failures are captured as ``ok=False`` with an ``error`` string and fed
-    back to the model rather than raised — the agent can retry, pick another
-    tool, or explain.
+    back to the model rather than raised â€” the agent can retry, pick another
+    tool, or explain. Required provider outages use ``retryable=False`` to
+    return an error immediately instead of repeating the same lookup.
     """
 
     name: str
     ok: bool
     result: dict | None = None
     error: str | None = None
+    retryable: bool = True
 
 
 # --------------------------------------------------------------------------- #
-# Contract 1 — Agent request/response (backend <-> frontend), design doc §3
+# Contract 1 â€” Agent request/response (backend <-> frontend), design doc Â§3
 # --------------------------------------------------------------------------- #
 
 
 class AgentClientContext(BaseModel):
     """Best-effort UI hint about current trip state.
 
-    Purely advisory — never trusted for server-side state (the server reads the
+    Purely advisory â€” never trusted for server-side state (the server reads the
     DB as the source of truth).
     """
 
@@ -81,7 +83,7 @@ class AgentChatRequest(BaseModel):
 
     ``partitionKey`` is decoded server-side to ``user_id`` via
     ``app.utils.auth.get_user_id_from_token``. The frontend does not send
-    history — the server rehydrates conversation context from persistence.
+    history â€” the server rehydrates conversation context from persistence.
     """
 
     partitionKey: str
@@ -110,7 +112,7 @@ class AgentToolError(BaseModel):
 
     Tool failures are fed back to the model (not raised), so they don't appear in
     ``actions``. Echoing them here lets the frontend log *why* an attempted tool
-    (e.g. ``update_trip_profile``) didn't apply — without digging in server logs.
+    (e.g. ``update_trip_profile``) didn't apply â€” without digging in server logs.
     """
 
     name: str
@@ -133,7 +135,7 @@ class AgentChatResponse(BaseModel):
 
 
 # --------------------------------------------------------------------------- #
-# Contract 1b — Provider fallback chain messages (design doc §6)
+# Contract 1b â€” Provider fallback chain messages (design doc Â§6)
 # --------------------------------------------------------------------------- #
 
 
@@ -152,7 +154,7 @@ class LLMMessage(BaseModel):
 
 
 class LLMResponse(BaseModel):
-    """Normalized provider output — every provider maps its API shape into this."""
+    """Normalized provider output â€” every provider maps its API shape into this."""
 
     content: str = ""
     tool_calls: list[ToolCall] = Field(default_factory=list)

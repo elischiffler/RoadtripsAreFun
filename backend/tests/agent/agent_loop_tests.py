@@ -573,3 +573,24 @@ async def test_run_turn_feeds_tool_error_back_and_lets_model_recover(fake_memory
         m.role == "tool" and "needs start/end coordinates" in m.content
         for m in second_call_messages
     )
+
+
+async def test_required_provider_failure_stops_retries_and_returns_error(fake_memory):
+    provider = FakeProvider(responses=[LLMResponse(content=_tool_block("generate_final_route"))])
+    tools = FakeTools(
+        results={
+            "generate_final_route": ToolResult(
+                name="generate_final_route",
+                ok=False,
+                retryable=False,
+                error="Google Hotels prices are temporarily unavailable. Please try again later.",
+            )
+        }
+    )
+    result = await run_turn(_request(), FallbackChain([provider]), fake_memory, tools)
+    assert provider.calls == 1
+    assert result.toolsUsed == ["generate_final_route"]
+    assert len(result.toolErrors) == 1
+    assert "Google Hotels prices are temporarily unavailable" in result.reply
+    assert "couldn't finish" in result.reply
+    assert result.actions == []
