@@ -96,6 +96,8 @@ def test_chat_json_and_ndjson_record_same_explicit_late_preference(monkeypatch, 
     )
     assert body["tripProfile"]["scheduling_policy"]["late_driving"] is True
     assert body["tripProfile"]["evening_interests"] == ["food"]
+    assert any("late driving: until 24:00" in line for line in body["presentation"]["updated"])
+    assert "Evening suggestions: food" in body["presentation"]["updated"]
     assert TripProfile.from_json(
         memory.load_trip_profile("user", "trip")
     ).scheduling_policy.late_driving

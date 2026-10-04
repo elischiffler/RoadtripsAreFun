@@ -5,6 +5,7 @@ from datetime import datetime
 
 from app.agent.schemas import TripDetailPresentation
 from app.agent.trip_profile import TripProfile
+from app.models.scheduling_policy import SchedulingPolicy
 
 QUESTIONS = {
     "start_address": "What city or address are you starting from?",
@@ -24,6 +25,8 @@ LABELS = {
     "departure_time": "Departure time",
     "start_timezone": "Starting location timezone",
     "car": "Optional car",
+    "scheduling_policy": "Hotel and driving times",
+    "evening_interests": "Evening suggestions",
 }
 
 
@@ -64,6 +67,8 @@ def present_details(
         "start_date",
         "departure_time",
         "car_status",
+        "scheduling_policy",
+        "evening_interests",
     ):
         value = getattr(after, field)
         changed = value != getattr(before, field)
@@ -73,7 +78,14 @@ def present_details(
             continue
         if value is None or field in issues or field in after.pending_locations:
             continue
-        if field == "start_date":
+        if field == "scheduling_policy":
+            if full and not changed and value == SchedulingPolicy():
+                continue
+            late = f"until {value.late_cutoff}" if value.late_driving else "off"
+            text = f"Hotel arrival: prefer {value.preferred_hotel_arrival}, latest {value.latest_hotel_arrival}; morning restart: {value.morning_restart}; late driving: {late}"
+        elif field == "evening_interests":
+            text = "Evening suggestions: " + (", ".join(value) if value else "off")
+        elif field == "start_date":
             try:
                 departure = datetime.fromisoformat(value)
                 text = "Departure: " + departure.isoformat(sep=" ")

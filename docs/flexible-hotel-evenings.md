@@ -119,6 +119,22 @@ patches, remote payloads, JSON/NDJSON, optional discovery failures and reload.
 `tests/postgres/run.mjs` also checks the policy and suggestions in both chat and
 planned-route memory through recreation and real backup/restore.
 
+Local validation on October 3, 2026, against the integrated implementation
+(including the concurrent detail receipts and direct-reply guards):
+
+| Gate | Result |
+| --- | --- |
+| Backend pinned Python 3.12 suite | PASS: 538 tests, 85.07% coverage (63% required) |
+| Ruff 0.16.7 format and lint | PASS |
+| Frontend Node 24 install, format, lint, coverage and build | PASS |
+| Rebuilt preview container smoke | PASS: 2 tests |
+| Disposable real PostgreSQL | PASS: ownership, policy/suggestion persistence, recreation, outage recovery and backup/restore |
+
+The disposable PostgreSQL runner retained source/restore volumes and its ignored
+backup; the final run used project `roadtrips-crud-c1643f41b4`. These are local
+fixtures, not production schema or provider acceptance. The subsequent context
+refresh changed documentation only and did not change the checked-in test DDL.
+
 Live provider/model/Cognito planning, actual travel durations, hotel date/price
 availability and reception/late-check-in acceptance remain BLOCKED pending
 isolated real-provider validation. Fixture or container success does not replace
