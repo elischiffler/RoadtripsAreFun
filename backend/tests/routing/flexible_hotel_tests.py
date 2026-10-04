@@ -144,6 +144,40 @@ def test_first_day_can_depart_after_preferred_arrival():
     assert end["arrival_time"].startswith("2035-11-21T19:30")
 
 
+@pytest.mark.parametrize("stored_departure", [False, True])
+def test_direct_http_itinerary_recovers_saved_travel_day(allow_provider_auth, stored_departure):
+    start = START.replace(hour=23)
+    policy = SchedulingPolicy(late_driving=True)
+    stops = [point(3600, "hotel"), point(3600)]
+    apply_timing(stops, start, policy, ZONE)
+    route = saved_route(stops, policy)
+    if stored_departure:
+        route.departure_time = start
+    response = TestClient(app).post(
+        "/generate-itinerary", json={"route": route.model_dump(mode="json")}
+    )
+    assert response.status_code == 200, response.text
+    days = response.json()
+    assert "November 21 2035" in days[0]["date"]
+    assert days[0]["stops"][0]["time"] == "11:00 PM"
+    assert [s["time"] for s in days[1]["stops"]] == ["12:00 AM", "09:00 AM", "10:00 AM"]
+
+
+def test_explicit_itinerary_departure_overrides_route(allow_provider_auth):
+    route = saved_route([point(3600)], SchedulingPolicy())
+    route.departure_time = START
+    response = TestClient(app).post(
+        "/generate-itinerary",
+        json={
+            "route": route.model_dump(mode="json"),
+            "start_time": START.replace(hour=10).isoformat(),
+        },
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()[0]["stops"][0]["time"] == "10:00 AM"
+    assert response.json()[0]["stops"][1]["time"] == "11:00 AM"
+
+
 def services_with_hotels(fake_services, outcomes):
     services = fake_services.bundle()
     calls = []

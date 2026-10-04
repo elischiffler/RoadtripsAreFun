@@ -60,6 +60,13 @@ policy retain their original next-calendar-day 09:00 itinerary behavior.
 New route timing and suggestions round-trip in existing chat JSON and memory
 records, without a database migration.
 
+New routes also save `departure_time`. A direct itinerary request may omit
+`start_time` and reuse the saved departure, preserving its travel/booking night.
+Policy routes saved before that field existed recover departure from the first
+actual arrival minus its driving-leg duration, converted to the saved origin
+timezone. An explicit `start_time` takes precedence. Legacy routes without
+policy/timing metadata retain their existing fallback behavior.
+
 ## Optional suggestions
 
 `evening_interests` accepts `food`, `culture`, and `nightlife`; `[]` explicitly

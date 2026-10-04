@@ -31,6 +31,7 @@ class Route(BaseModel):
     # None identifies legacy saved routes, which retain their original 09:00 restart.
     scheduling_policy: SchedulingPolicy | None = None
     start_timezone: str | None = None
+    departure_time: datetime | None = None
 
     class Stop(BaseModel):
         name: str

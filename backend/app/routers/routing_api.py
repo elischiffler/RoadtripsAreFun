@@ -293,6 +293,7 @@ async def plan_final_route(
         cost=total_cost,
         scheduling_policy=payload.scheduling_policy,
         start_timezone=start_timezone,
+        departure_time=start,
         warnings=[stop["warning"] for stop in stopping_points if stop.get("warning")] or None,
     )
 

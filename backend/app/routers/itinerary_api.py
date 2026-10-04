@@ -69,8 +69,17 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
     Raises:
         HTTPException: if the route is incomplete or the data can't be processed.
     """
-    # initialize current_time to be the specified start_time
-    current_time = data.start_time
+    # An omitted departure must reuse the planned travel day, including on
+    # direct HTTP calls. Recover policy routes saved before departure_time was
+    # added from the actual first arrival; legacy routes retain their old default.
+    current_time = data.start_time or data.route.departure_time
+    if current_time is None and data.route.scheduling_policy and data.route.stops:
+        first = data.route.stops[0]
+        if first.get("arrival_time"):
+            current_time = advance(
+                datetime.fromisoformat(first["arrival_time"]), -first["duration"]
+            )
+    current_time = current_time or datetime(2024, 9, 21, 9)
     if data.route.scheduling_policy is not None:
         if data.route.start_timezone:
             current_time = local_time(current_time, ZoneInfo(data.route.start_timezone))
