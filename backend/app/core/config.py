@@ -29,8 +29,6 @@ def validate_local_environment(env) -> None:
         "TRIPADVISOR_API",
         "GOOGLE_PLACES_API",
         "OPENCAGE_KEY",
-        "AMADEUS_KEY",
-        "AMADEUS_SECRET",
         "CAR_DATA_API",
     ):
         if env.get(name):

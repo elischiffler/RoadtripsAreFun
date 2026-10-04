@@ -182,15 +182,16 @@ ratings and effective weights. CP-SAT selects at most the requested number
 of attractions, with at most one per query point and utility at least 0.60.
 The final route preserves that point order.
 
-For each overnight, hotel proposals must match Amadeus hotel identity and a
-USD offer for the requested check-in date. The nightly budget is advisory:
+For each overnight, hotel ratings must match a verified Google Hotels identity
+and a displayed one-night USD total for the requested check-in date (two adults,
+taxes and fees included). Dated comparison links are retained. The nightly budget is advisory:
 an otherwise usable hotel above it is returned with a visible `warnings` list;
 no usable verified hotel fails planning. The final Mapbox reroute must contain
 one leg per selected waypoint plus the destination and fit each day's drive
 window after attraction visits. A detour that breaks the schedule is rejected.
 
-Live CP-SAT needs the AI gateway, Terra credentials, enabled Amadeus hotel
-offers, Mapbox, authenticated Cognito requests, and access to `chat_memory` for
+Live CP-SAT needs the AI gateway, Terra credentials, Google Hotels HTML,
+OpenCage location verification, Mapbox, authenticated Cognito requests, and access to `chat_memory` for
 account persona storage. Fixture tests do not establish provider availability, production
 schema history, or deployment readiness.
 
@@ -264,8 +265,7 @@ on what's left:
 - `days_left = (duration_left + stops_left * 2h) // daily_drive_time`
 - `remaining_avg = remaining_budget / days_left`
 - Band is `remaining_avg ± 75` (with a floored minimum), returned both as a
-  numeric tuple (used by the Google scraper) and as a `"min-max"` string (used by
-  the Amadeus fallback).
+  numeric tuple (used by the Google scraper) and a `"min-max"` display string.
 
 ### Position interpolation: `_find_position`
 
@@ -292,12 +292,11 @@ later.
 
 ## Hotel finding: `_find_hotel`
 
-Hotels come primarily from scraping Google Hotels, with Amadeus as an optional
-fallback (disabled by default — see below). `_find_hotel` reverse-geocodes the
-target point, builds a search query (a nearby city from Google Places, falling
-back to the geocoded address), then scrapes Google Hotels. If the scraper finds
-nothing and the Amadeus fallback is enabled, it tries Amadeus; otherwise it
-raises a 404 that `_add_stops` retries.
+The legacy `_find_hotel` reverse-geocodes the target point, builds a search
+query (a nearby city from Google Places, falling back to the geocoded address),
+and scrapes Google Hotels. If the scraper finds nothing it raises a 404 that
+`_add_stops` retries. CP-SAT uses the separate dated and verified Google Hotels
+adapter described in [dated hotel prices](hotel-prices.md).
 
 ### Google Hotels scraping (`find_google_hotels`)
 
@@ -312,23 +311,6 @@ Lives in `webscraping_fns.py`:
    scrapes the listing page for a precise address, geocodes it, and accepts the
    hotel only if it is within `radius` miles of the target coordinates.
 5. Return the first qualifying hotel, else raise 404.
-
-### Amadeus fallback
-
-The Amadeus fallback is **disabled by default** because the upstream API is
-currently nonfunctional. It is controlled by the `AMADEUS_ENABLED` environment
-variable: set `AMADEUS_ENABLED=true` to re-enable it. When enabled, the fallback
-runs whenever the Google scraper returns a 404 (no hotel found). It lists hotels
-by geocode, fetches offers within the price range, gets sentiment ratings, and
-returns the highest-rated hotel that fits.
-
-> **History:** this was previously gated on `exception.status_code == 600` — a
-> status code the scraper never raises — which silently made the branch dead and
-> misleading. It is now an explicit `AMADEUS_ENABLED` flag checked against the
-> scraper's real 404. While disabling the branch, two latent bugs in it were also
-> fixed so it works if re-enabled: the check-out date now uses
-> `timedelta(days=1)` (the old `day + 1` raised `ValueError` on month-end dates),
-> and offers now carry the `hotel_id` key that `_find_hotel` reads back.
 
 ---
 
@@ -353,9 +335,7 @@ Defined in `backend/app/models/routing_models/routing_models.py`.
 - **`Route.steps` is always empty by design** — no client consumes it, so the
   turn-by-turn list isn't built. See the `NOTE` in `get_final_route` for where to
   populate it if that changes.
-- **The Amadeus fallback is disabled by default** via `AMADEUS_ENABLED` (the
-  upstream API is nonfunctional). It previously relied on an unreachable HTTP 600
-  gate; that has been made explicit and its latent bugs fixed.
+
 - **`_add_stops` schedules against the single-leg initial route**; the accurate
   multi-leg route is only computed afterward to get per-segment leg durations.
 - **No status-code checks precede `.model_validate`** on external responses, so

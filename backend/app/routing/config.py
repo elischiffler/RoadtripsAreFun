@@ -15,7 +15,7 @@ from geopy.geocoders import OpenCage
 # app/routing/config.py -> parents[3] == the repo root, where .env lives (matches
 # app/core/config.py and the routers). parents[2] would be backend/, which has no .env.
 # Use the default non-overriding behavior so real deployment environment variables
-# (e.g. MAPBOX_API, AMADEUS_ENABLED set on Render) take precedence over any .env file
+# (e.g. MAPBOX_API set in the runtime) take precedence over any .env file
 # that happens to be present; dotenv only fills in values that aren't already set.
 load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
@@ -55,14 +55,6 @@ TRIPADVISOR_CATEGORY_MAP = {
     "hotels": "HOTEL",
     "hotel": "HOTEL",
 }
-
-# The Amadeus hotel API is currently nonfunctional, so the fallback is disabled by
-# default. Set AMADEUS_ENABLED=true in the environment to re-enable the fallback path
-# in find_hotel once the upstream API is working again.
-AMADEUS_ENABLED = os.getenv("AMADEUS_ENABLED", "false").lower() == "true"
-
-# CP-SAT hotel prices default to Google Hotels HTML. Legacy Amadeus is opt-in.
-HOTEL_PROVIDER = os.getenv("HOTEL_PROVIDER", "google").strip().lower()
 
 # A single shared reverse-geocoder.
 geolocator = OpenCage(api_key=OPENCAGE_KEY, user_agent="RP-Hotels", timeout=10)

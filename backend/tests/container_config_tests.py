@@ -27,7 +27,7 @@ def test_local_preview_rejects_missing_or_hosted_destinations(name, value):
 
 
 @pytest.mark.parametrize(
-    "name", ["ROUTING_REMOTE_URL", "MAPBOX_API", "TRIPADVISOR_API", "AMADEUS_KEY"]
+    "name", ["ROUTING_REMOTE_URL", "MAPBOX_API", "TRIPADVISOR_API", "OPENCAGE_KEY"]
 )
 def test_local_preview_rejects_live_provider_configuration(name):
     env = local_env()

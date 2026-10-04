@@ -11,7 +11,7 @@ import asyncio
 import json
 import math
 import re
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from typing import Any, Protocol
 
 import httpx
@@ -28,7 +28,6 @@ MAX_ATTRACTIONS = 30
 MAX_HOTELS = 10
 MAX_PROPOSALS_PER_QUERY = 5
 MAX_HOTEL_PROPOSALS = 15
-MAX_HOTEL_PROVIDER_RESULTS = 20
 _ATTRACTION_RADIUS_MI = 5.0
 _HOTEL_RADIUS_MI = 30.0
 
@@ -330,22 +329,8 @@ class LivePlaceProvider:
 
     @staticmethod
     def require_hotels() -> None:
-        if config.HOTEL_PROVIDER == "google":
-            if not config.OPENCAGE_KEY:
-                raise CandidateProviderError(
-                    "Google Hotels location verification is not configured"
-                )
-            return
-        if config.HOTEL_PROVIDER != "amadeus":
-            raise CandidateProviderError("The hotel price provider is not supported")
-        import os
-
-        if (
-            not config.AMADEUS_ENABLED
-            or not os.getenv("AMADEUS_KEY")
-            or not os.getenv("AMADEUS_SECRET")
-        ):
-            raise CandidateProviderError("Dated Amadeus hotel offers are not configured")
+        if not config.OPENCAGE_KEY:
+            raise CandidateProviderError("Google Hotels location verification is not configured")
 
     async def attractions_near(self, point: list[float]) -> list[VerifiedPlace]:
         self.require_attractions()
@@ -394,125 +379,12 @@ class LivePlaceProvider:
     async def hotels_near(
         self, point: list[float], check_in: date, price_range: tuple[tuple[float, float], str]
     ) -> list[VerifiedHotel]:
+        del price_range  # Advisory budget: keep usable over-budget hotels.
         self.require_hotels()
-        if config.HOTEL_PROVIDER == "google":
-            from app.routing.sources.google_hotels import (
-                GoogleHotelLookupError,
-                GoogleHotelProvider,
-            )
+        from app.routing.sources.google_hotels import GoogleHotelLookupError, GoogleHotelProvider
 
-            try:
-                records = await GoogleHotelProvider(config.geolocator).hotels_near(point, check_in)
-                return [VerifiedHotel.model_validate(record) for record in records]
-            except GoogleHotelLookupError as exc:
-                raise CandidateProviderError(str(exc)) from exc
-        del price_range  # Advisory budget: request all offers, including over-budget.
-        import os
-
-        self.require_hotels()
-        base = "https://test.api.amadeus.com"
         try:
-            async with httpx.AsyncClient(timeout=config.HTTP_TIMEOUT) as client:
-                auth = await client.post(
-                    f"{base}/v1/security/oauth2/token",
-                    data={
-                        "grant_type": "client_credentials",
-                        "client_id": os.environ["AMADEUS_KEY"],
-                        "client_secret": os.environ["AMADEUS_SECRET"],
-                    },
-                )
-                auth.raise_for_status()
-                token = auth.json()["access_token"]
-                headers = {"Authorization": f"Bearer {token}"}
-                search = await client.get(
-                    f"{base}/v1/reference-data/locations/hotels/by-geocode",
-                    params={
-                        "latitude": point[0],
-                        "longitude": point[1],
-                        "radius": 30,
-                        "radiusUnit": "MILE",
-                    },
-                    headers=headers,
-                )
-                if search.status_code == 404:
-                    return []
-                search.raise_for_status()
-                locations = search.json().get("data", [])
-                if not isinstance(locations, list):
-                    raise ValueError("Amadeus hotel search returned no list")
-                by_id = {
-                    item["hotelId"]: item
-                    for item in locations[:MAX_HOTEL_PROVIDER_RESULTS]
-                    if isinstance(item, dict) and item.get("hotelId")
-                }
-                if not by_id:
-                    return []
-                offers = await client.get(
-                    f"{base}/v3/shopping/hotel-offers",
-                    params={
-                        "hotelIds": ",".join(by_id),
-                        "adults": 2,
-                        "checkInDate": check_in.isoformat(),
-                        "checkOutDate": (check_in + timedelta(days=1)).isoformat(),
-                        "currency": "USD",
-                    },
-                    headers=headers,
-                )
-                if offers.status_code == 404:
-                    return []
-                offers.raise_for_status()
-                offer_data = offers.json().get("data", [])
-                if not isinstance(offer_data, list):
-                    raise ValueError("Amadeus offers returned no list")
-        except (httpx.HTTPError, AttributeError, KeyError, TypeError, ValueError) as exc:
-            raise CandidateProviderError("Amadeus dated hotel lookup failed") from exc
-        records = []
-        for item in offer_data:
-            if not isinstance(item, dict):
-                continue
-            hotel = item.get("hotel") or {}
-            if not isinstance(hotel, dict):
-                continue
-            provider_id = hotel.get("hotelId")
-            location = by_id.get(provider_id)
-            if not location:
-                continue
-            valid_prices = []
-            for offer in item.get("offers") or []:
-                if not isinstance(offer, dict):
-                    continue
-                price = offer.get("price") or {}
-                if not isinstance(price, dict):
-                    continue
-                if (
-                    offer.get("checkInDate") != check_in.isoformat()
-                    or offer.get("checkOutDate") != (check_in + timedelta(days=1)).isoformat()
-                    or price.get("currency") != "USD"
-                ):
-                    continue
-                try:
-                    amount = float(price["total"])
-                except (KeyError, TypeError, ValueError):
-                    continue
-                if math.isfinite(amount) and amount > 0:
-                    valid_prices.append(amount)
-            if not valid_prices:
-                continue
-            try:
-                records.append(
-                    VerifiedHotel(
-                        provider_id=f"amadeus:{provider_id}",
-                        name=location["name"],
-                        coordinates=[
-                            location["geoCode"]["latitude"],
-                            location["geoCode"]["longitude"],
-                        ],
-                        address=", ".join(str(v) for v in location.get("address", {}).values())
-                        or None,
-                        price=min(valid_prices),
-                        check_in_date=check_in,
-                    )
-                )
-            except (AttributeError, KeyError, TypeError, ValueError):
-                continue
-        return records
+            records = await GoogleHotelProvider(config.geolocator).hotels_near(point, check_in)
+            return [VerifiedHotel.model_validate(record) for record in records]
+        except GoogleHotelLookupError as exc:
+            raise CandidateProviderError(str(exc)) from exc

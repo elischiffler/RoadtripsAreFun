@@ -30,7 +30,7 @@ tangled together in one file:
 | Group | Functions | Role | Belongs to |
 |---|---|---|---|
 | **The planner** | `_add_stops`, `_find_position`, `_get_price_range` | Decides *which* stops/hotels to insert and *how the trip is scheduled across days*. | The swappable algorithm |
-| **Candidate sourcing** | `_find_stop` / `_get_details` (TripAdvisor), `_find_hotel` + Amadeus helpers + `_get_nearby_city` (Google/Amadeus), `find_google_hotels` (scraper) | Given a `(lat, lon)`, returns a real attraction or a real hotel. | Shared infrastructure |
+| **Candidate sourcing** | `_find_stop` / `_get_details` (TripAdvisor), `_find_hotel` + `_get_nearby_city` (Google), `find_google_hotels` (scraper) | Given a `(lat, lon)`, returns a real attraction or a real hotel. | Shared infrastructure |
 | **Routing + assembly** | `_call_route` (Mapbox), the endpoint body of `get_final_route` (re-route through stops, leg-walking, address backfill, `Route` construction) | Talks to Mapbox and shapes the HTTP response. | Shared infrastructure |
 
 The **planner** is the only part that should vary between algorithms. Everything
@@ -152,7 +152,7 @@ careful refactor and not a rewrite.
   must not change the shape of what gets stored.
 - **Function names tests patch.** Tests patch
   `app.routers.routing_api.requests.get`, `get_location`, `find_google_hotels`,
-  `_get_nearby_city`, and call `_find_hotel` / `_get_amadeus_token` directly. If
+  `_get_nearby_city`, and call `_find_hotel` directly. If
   those move, the tests must move with them (see §7).
 
 ---
@@ -241,7 +241,7 @@ backend/app/routing/
 └── sources/
     ├── mapbox.py            # call_route (Mapbox Directions)
     ├── attractions.py       # find_stop / get_details / gather_candidates (TripAdvisor)
-    └── hotels.py            # find_hotel + Google Places + Amadeus fallback
+    └── hotels.py            # find_hotel + Google Places
 ```
 
 `backend/app/routers/routing_api.py` is now a thin controller: it fetches the

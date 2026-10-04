@@ -30,7 +30,6 @@ This repo contains two services: `backend/` (Python/FastAPI) and `frontend/` (Re
 | TripAdvisor Terra (Partner API) | Attraction search and details (replaced the deprecated Content API) |
 | Google Places API | Nearby city lookup |
 | Google Hotels (scraping) | Hotel search with price range |
-| Amadeus | Hotel search fallback (disabled by default) |
 | OpenCage | Reverse geocoding (coords → address) |
 | Mentro gateway (self-hosted, SSE) | Chat agent LLM provider (`/api/chat/stream-full`) |
 | Supabase Auth | Mints the service-account JWT the backend uses to call the Mentro gateway |
@@ -106,7 +105,6 @@ All secrets are loaded from `.env` (never committed). Required keys:
 - `MAPBOX_API`
 - `TRIPADVISOR_API` – now a Terra Partner API **UUID** (sent as the `X-API-Key` header)
 - `OPENCAGE_KEY`
-- `AMADEUS_KEY`, `AMADEUS_SECRET`
 - `CAR_DATA_API`
 
 Chat agent (leave the Supabase service creds blank to run without the agent — the provider reports "not configured" and `/agent/chat` returns 503):
@@ -116,7 +114,6 @@ Chat agent (leave the Supabase service creds blank to run without the agent — 
 
 Optional (all have safe defaults):
 - `ROUTING_ALGORITHM` – default planner when the request omits `algorithm` (defaults to `greedy`)
-- `AMADEUS_ENABLED` – enable the Amadeus hotel fallback (`false` by default)
 - `BENCHMARK_ENABLED` – expose the `/benchmark` debug endpoint (`false` by default)
 - `TRIPADVISOR_BASE_URL` – override the Terra base URL (defaults to `https://terra.tripadvisor.com/api`)
 - `ROUTING_REMOTE_URL` – local dev only; proxy the agent's IP-whitelisted routing calls through the deployed backend. Leave **blank** on the deployed backend

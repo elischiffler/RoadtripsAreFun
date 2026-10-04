@@ -12,7 +12,7 @@ in ``app.routing.sources``. This module's job is to:
 
 Candidate-sourcing functions are re-exported at module level (``get_location``,
 ``find_google_hotels``, ``_get_nearby_city``, ``_find_hotel``,
-``_get_amadeus_token``, ``requests``) so existing tests that patch
+``requests``) so existing tests that patch
 ``app.routers.routing_api.<name>`` keep working, and so the injected services use
 whatever those names resolve to at call time (including test patches).
 """
@@ -39,7 +39,6 @@ from app.routing.selection import owner_routing_claims, select_algorithm
 from app.routing.sources.attractions import find_stop as _find_stop  # noqa: F401
 from app.routing.sources.attractions import gather_candidates as _gather_candidates
 from app.routing.sources.hotels import find_hotel as _find_hotel  # noqa: F401
-from app.routing.sources.hotels import get_amadeus_token as _get_amadeus_token  # noqa: F401
 from app.routing.sources.hotels import get_nearby_city as _get_nearby_city  # noqa: F401
 from app.routing.sources.mapbox import call_route as _call_route
 from app.routing.sources.persona_candidates import attraction_candidates, hotel_candidates

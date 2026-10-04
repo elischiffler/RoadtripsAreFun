@@ -1,6 +1,6 @@
 # Dated hotel prices
 
-CP-SAT uses `HOTEL_PROVIDER=google` by default. Google Hotels HTML supplies the
+CP-SAT uses Google Hotels HTML as its sole hotel price source, supplying the
 displayed **one-night total with taxes and fees, for two adults, in USD**.
 The existing `OPENCAGE_KEY` verifies the overnight city and each hotel address;
 no additional scraping subscription or browser process is required.
@@ -40,11 +40,8 @@ details instead of asking the model to retry the same failing planning tool up
 to five times. A subsequent user request can try again. The deadline applies to
 hotel lookup, not to the entire model/route turn.
 
-`HOTEL_PROVIDER=amadeus` retains the explicit legacy dated-offer adapter and
-requires `AMADEUS_ENABLED=true`, `AMADEUS_KEY` and `AMADEUS_SECRET`. Its upstream
-may be unavailable; it is not an automatic fallback for Google prices. The
-older `find_hotel` scraper is outside the CP-SAT path and retains its existing
-behavior.
+The older `find_hotel` scraper is outside the CP-SAT path and retains its Google
+lookup behavior. Neither path switches to another hotel provider on failure.
 
 Offline regression tests are in `backend/tests/routing/google_hotels_tests.py`,
 with provider integration and agent failure tests in the existing candidate,

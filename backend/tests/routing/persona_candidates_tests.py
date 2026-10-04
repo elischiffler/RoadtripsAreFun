@@ -1,7 +1,6 @@
 import json
 from datetime import date
 
-import httpx
 import pytest
 
 from app.agent.persona import ATTRIBUTE_KEYS, default_weights
@@ -102,14 +101,14 @@ async def test_hotel_requires_matching_identity_date_and_provider_price():
     places = FakePlaces(
         hotels=[
             source.VerifiedHotel(
-                provider_id="amadeus:H1",
+                provider_id="google:H1",
                 name="Hotel One",
                 coordinates=[40, -74],
                 check_in_date=date(2026, 10, 1),
                 price=225,
             ),
             source.VerifiedHotel(
-                provider_id="amadeus:H1",
+                provider_id="google:H1",
                 name="Hotel One",
                 coordinates=[40, -74],
                 check_in_date=date(2026, 10, 1),
@@ -144,7 +143,7 @@ async def test_hotel_output_cap_and_unconfigured_dated_provider(monkeypatch):
     proposals = [{"name": f"Hotel {index}", "attribute_ratings": _ratings()} for index in range(15)]
     hotels = [
         source.VerifiedHotel(
-            provider_id=f"amadeus:H{index}",
+            provider_id=f"google:H{index}",
             name=f"Hotel {index}",
             coordinates=[40, -74],
             check_in_date=date(2026, 10, 1),
@@ -161,9 +160,8 @@ async def test_hotel_output_cap_and_unconfigured_dated_provider(monkeypatch):
         places=FakePlaces(hotels=hotels),
     )
     assert len(result) == source.MAX_HOTELS
-    monkeypatch.setattr(source.config, "HOTEL_PROVIDER", "amadeus")
-    monkeypatch.setattr(source.config, "AMADEUS_ENABLED", False)
-    with pytest.raises(source.CandidateProviderError, match="Dated Amadeus"):
+    monkeypatch.setattr(source.config, "OPENCAGE_KEY", None)
+    with pytest.raises(source.CandidateProviderError, match="location verification"):
         await source.hotel_candidates(
             [40, -74],
             date(2026, 10, 1),
@@ -199,79 +197,9 @@ async def test_unavailable_providers_fail_clearly():
 
 
 @pytest.mark.asyncio
-async def test_amadeus_price_is_dated_offer_only(monkeypatch):
-    monkeypatch.setattr(source.config, "HOTEL_PROVIDER", "amadeus")
-    monkeypatch.setattr(source.config, "AMADEUS_ENABLED", True)
-    monkeypatch.setenv("AMADEUS_KEY", "test-key")
-    monkeypatch.setenv("AMADEUS_SECRET", "test-secret")
-
-    def respond(request):
-        path = request.url.path
-        if path.endswith("/token"):
-            return httpx.Response(200, json={"access_token": "fake"})
-        if path.endswith("/by-geocode"):
-            return httpx.Response(
-                200,
-                json={
-                    "data": [
-                        {
-                            "hotelId": "H1",
-                            "name": "Hotel One",
-                            "geoCode": {"latitude": 40, "longitude": -74},
-                        }
-                    ]
-                },
-            )
-        assert request.url.params["checkInDate"] == "2026-10-01"
-        assert request.url.params["checkOutDate"] == "2026-10-02"
-        assert request.url.params["currency"] == "USD"
-        return httpx.Response(
-            200,
-            json={
-                "data": [
-                    {
-                        "hotel": {"hotelId": "H1"},
-                        "offers": [
-                            {
-                                "checkInDate": "2026-10-02",
-                                "checkOutDate": "2026-10-03",
-                                "price": {"currency": "USD", "total": "1"},
-                            },
-                            {
-                                "checkInDate": "2026-10-01",
-                                "checkOutDate": "2026-10-02",
-                                "price": {"currency": "EUR", "total": "2"},
-                            },
-                            {
-                                "checkInDate": "2026-10-01",
-                                "checkOutDate": "2026-10-02",
-                                "price": {"currency": "USD", "total": "189.50"},
-                            },
-                        ],
-                    }
-                ]
-            },
-        )
-
-    real_client = httpx.AsyncClient
-    monkeypatch.setattr(
-        source.httpx,
-        "AsyncClient",
-        lambda **kwargs: real_client(transport=httpx.MockTransport(respond), **kwargs),
-    )
-    hotels = await source.LivePlaceProvider().hotels_near(
-        [40, -74], date(2026, 10, 1), ((0, 200), "0-200")
-    )
-    assert len(hotels) == 1
-    assert hotels[0].provider_id == "amadeus:H1"
-    assert hotels[0].price == 189.5
-
-
-@pytest.mark.asyncio
 async def test_google_adapter_supplies_verified_names_prices_and_links(monkeypatch):
     from app.routing.sources.google_hotels import GoogleHotelLookupError, GoogleHotelProvider
 
-    monkeypatch.setattr(source.config, "HOTEL_PROVIDER", "google")
     monkeypatch.setattr(source.config, "OPENCAGE_KEY", "fixture")
 
     async def fetched(self, point, check_in):

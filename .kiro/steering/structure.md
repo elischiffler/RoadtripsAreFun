@@ -46,11 +46,11 @@ MyRoadtrip/
 │   │   │   └── sources/              # Candidate sourcing (all external API calls)
 │   │   │       ├── mapbox.py             # call_route (Mapbox Directions)
 │   │   │       ├── attractions.py        # find_stop / get_details / gather_candidates (TripAdvisor Terra)
-│   │   │       └── hotels.py             # find_hotel + Google Places + Amadeus fallback
+│   │   │       ├── google_hotels.py      # Dated totals + verified locations + booking links
+│   │   │       └── hotels.py             # Legacy find_hotel + Google Places
 │   │   ├── models/               # Pydantic response/domain models (not DB schemas)
 │   │   │   ├── routing_models/
 │   │   │   │   ├── routing_models.py       # Core types: Route, MapBox, Route_Payload, etc.
-│   │   │   │   ├── amadeus_models.py       # Amadeus API response models
 │   │   │   │   ├── google_places_models.py # Google Places response models
 │   │   │   │   └── trip_advisor_models.py  # TripAdvisor **Terra** models (Terra_Location, Terra_Page_Nearby_Location, ...)
 │   │   │   ├── itinerary_models.py         # Itinerary_Payload, Itinerary_Day
@@ -75,7 +75,7 @@ MyRoadtrip/
 │   │   ├── routing_api/
 │   │   │   ├── routing_api_tests.py
 │   │   │   ├── attractions_tests.py  # TripAdvisor Terra sourcing tests
-│   │   │   └── amadeus_tests.py
+│   │   │   └── hotel_tests.py        # Google lookup success and failure propagation
 │   │   ├── routing/              # Planner-level tests (inject fake RoutingServices, no network)
 │   │   │   ├── conftest.py           # Route fixture + FakeServices
 │   │   │   ├── greedy_planner_tests.py

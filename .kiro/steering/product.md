@@ -9,7 +9,7 @@
 
 - **Route generation**: Computes driving routes via the Mapbox Directions API, with support for intermediate waypoints.
 - **Stop discovery**: Finds attractions along a route using the **TripAdvisor Terra Partner API** (the successor to the deprecated Content API), ordered best-first by rating.
-- **Hotel finding**: Locates hotels at nightly stopping points using Google Hotels web scraping, with Amadeus API as a fallback (disabled by default).
+- **Hotel finding**: Locates hotels at nightly stopping points using dated Google Hotels web scraping with verified locations and booking comparison links.
 - **Itinerary building**: Converts a finalized route into a day-by-day itinerary with times and addresses.
 - **Conversational planning agent**: A chat agent (`POST /agent/chat`) turns free-text messages into trip actions by calling the same routing/itinerary/location/car capabilities as tools, and remembers user preferences and trip state across turns and chats.
 - **Chat persistence**: Stores and retrieves user chat sessions (route state + message history) in Neon Postgres.
