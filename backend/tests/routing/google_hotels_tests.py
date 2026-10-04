@@ -192,7 +192,7 @@ async def test_live_adapter_scheduler_retries_only_spatial_misses(
             point, check_in, price_range, weights, ai=ai
         )
 
-    route.duration = route.legs[0].duration = route.legs[0].steps[0].duration = 8 * 3600
+    route.duration = route.legs[0].duration = route.legs[0].steps[0].duration = 12 * 3600
     services = fake_services.bundle()
     services.cp_sat_hotels = hotels
     options = PlanOptions(0, 150, datetime(2026, 11, 20, 9), weights=default_weights())

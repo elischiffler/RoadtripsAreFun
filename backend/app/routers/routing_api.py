@@ -17,7 +17,9 @@ Candidate-sourcing functions are re-exported at module level (``get_location``,
 whatever those names resolve to at call time (including test patches).
 """
 
+import asyncio
 import logging
+import math
 import os
 
 import requests  # noqa: F401  (re-exported: tests patch app.routers.routing_api.requests.get)
@@ -28,6 +30,7 @@ from requests.exceptions import RequestException
 from app.agent.departure import is_upcoming_departure
 from app.agent.persona import effective_weights
 from app.agent.progress import stage
+from app.agent.trip_dates import timezone_from_location
 from app.crud.memory_crud import load_account_persona
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
@@ -39,10 +42,12 @@ from app.routing.registry import DEFAULT_ALGORITHM
 from app.routing.selection import owner_routing_claims, select_algorithm
 from app.routing.sources.attractions import find_stop as _find_stop  # noqa: F401
 from app.routing.sources.attractions import gather_candidates as _gather_candidates
+from app.routing.sources.evenings import enrich_evenings, evening_interests
 from app.routing.sources.hotels import find_hotel as _find_hotel  # noqa: F401
 from app.routing.sources.hotels import get_nearby_city as _get_nearby_city  # noqa: F401
 from app.routing.sources.mapbox import call_route as _call_route
 from app.routing.sources.persona_candidates import attraction_candidates, hotel_candidates
+from app.routing.travel_timing import apply_timing
 from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location  # noqa: F401  (patched in tests)
 
@@ -63,6 +68,21 @@ def _build_services() -> RoutingServices:
     References this module's names so tests patching
     ``app.routers.routing_api.<name>`` take effect.
     """
+    timezone_cache = {}
+
+    async def timezone_at(coords):
+        key = tuple(coords)
+        if key not in timezone_cache:
+            location = await asyncio.to_thread(get_location, geocoder=geolocator, coords=coords)
+            timezone = timezone_from_location(location)
+            if timezone is None:
+                raise PlanningError(
+                    "The provider could not verify the arrival location timezone; replan after geocoding is available",
+                    503,
+                )
+            timezone_cache[key] = timezone
+        return timezone_cache[key]
+
     return RoutingServices(
         find_stop=_find_stop,
         find_hotel=_find_hotel,
@@ -71,6 +91,7 @@ def _build_services() -> RoutingServices:
         gather_candidates=_gather_candidates,
         cp_sat_candidates=attraction_candidates,
         cp_sat_hotels=hotel_candidates,
+        timezone_at=timezone_at,
     )
 
 
@@ -189,7 +210,13 @@ async def plan_final_route(
             raise PlanningError("CP-SAT requires an upcoming trip start date", 422)
         account = load_account_persona(user_id)
         weights = effective_weights(account.weights, payload.persona_weights)
-    options = PlanOptions(num_stops=num_stops, budget=budget, start=start, weights=weights)
+    options = PlanOptions(
+        num_stops=num_stops,
+        budget=budget,
+        start=start,
+        weights=weights,
+        scheduling_policy=payload.scheduling_policy,
+    )
 
     # Run the planner to find stopping points.
     result = await planner.plan(initial_route, options, services)
@@ -204,29 +231,12 @@ async def plan_final_route(
     with stage("route.final_reroute", waypoints=len(coordinates)):
         route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
     if algorithm.startswith("cp_sat"):
-        if len(route.legs) != len(coordinates) + 1 or route.duration < 0:
+        if (
+            len(route.legs) != len(coordinates) + 1
+            or not math.isfinite(route.duration)
+            or route.duration < 0
+        ):
             raise PlanningError("Mapbox returned an incomplete final route", 502)
-        # The initial route only estimates scheduling. Recheck the actual final
-        # Mapbox legs after detours, including two hours at every attraction.
-        day_seconds = options.daily_end * 3600 - (
-            start.hour * 3600 + start.minute * 60 + start.second
-        )
-        used_seconds = 0.0
-        for index, leg in enumerate(route.legs):
-            if leg.duration < 0:
-                raise PlanningError("Mapbox returned an invalid leg duration", 502)
-            used_seconds += leg.duration
-            if index < len(stopping_points):
-                stop_type = stopping_points[index]["type"]
-                if stop_type == "stop":
-                    used_seconds += 2 * 3600
-                if used_seconds > day_seconds + 1:
-                    raise PlanningError("Final route exceeds the daily driving window", 422)
-                if stop_type == "hotel":
-                    used_seconds = 0.0
-                    day_seconds = (options.daily_end - options.daily_start) * 3600
-            elif used_seconds > day_seconds + 1:
-                raise PlanningError("Final route exceeds the daily driving window", 422)
     distance, duration = route.distance, route.duration
     geometry = route.geometry
     steps = []
@@ -252,10 +262,21 @@ async def plan_final_route(
                     "name": "Arrive at your destination",
                     "duration": leg.duration,
                     "type": "end",
+                    "coordinates": [end_lat, end_lon],
                     "address": location.address if location else None,
                 }
             )
         idx += 1
+    start_timezone = payload.start_timezone
+    if algorithm.startswith("cp_sat"):
+        if services.timezone_at is not None:
+            start_timezone = await services.timezone_at([start_lat, start_lon])
+            for stop in stopping_points:
+                stop["timezone"] = await services.timezone_at(stop["coordinates"])
+        apply_timing(stopping_points, start, payload.scheduling_policy, start_timezone)
+        await enrich_evenings(
+            stopping_points, evening_interests(payload.evening_interests, weights)
+        )
     # NOTE: `steps` is intentionally left empty. Turn-by-turn Route_Step data is
     # not consumed by any client (the frontend and itinerary endpoint read `stops`
     # and `geometry`, never `steps`), so we skip building it. Populate this from
@@ -270,6 +291,8 @@ async def plan_final_route(
         stops=stopping_points,
         geometry=geometry,
         cost=total_cost,
+        scheduling_policy=payload.scheduling_policy,
+        start_timezone=start_timezone,
         warnings=[stop["warning"] for stop in stopping_points if stop.get("warning")] or None,
     )
 

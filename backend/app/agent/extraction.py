@@ -24,12 +24,14 @@ TRIP_DETAIL_FIELDS = frozenset(
         "car_make",
         "car_model",
         "car_status",
+        "scheduling_policy",
+        "evening_interests",
     }
 )
 
 EXTRACTION_PROMPT = """Extract trip details supplied by the LATEST user message. Return only one JSON object with a `details` object, such as {"details":{"start_address":"Tampa","destination_address":"Houston","budget":150}}. Omit fields the latest message does not supply. Do not copy saved profile fields into details. For no trip details, return {"details":{}}. Never invent a value.
 
-Allowed details keys: start_address, destination_address, num_stops, budget, departure_date, departure_time, car_year, car_make, car_model, car_status. Copy location wording exactly as supplied; never expand an abbreviation such as SLO or LA into a city. A bare yes or a location-choice response does not supply a new address. Use departure_date for date wording such as "tomorrow" or "November 10th" and departure_time for time wording such as "11 am". Extract both independently. Use car_status="skipped" only when the user explicitly skips or declines a car. Extract numeric stop count and nightly hotel budget as numbers when clear. Car year, make, and model are independent fields. Check each clause of the latest message before returning JSON so every supplied field appears. The backend validates every value. No prose, markdown, tool blocks, or extra keys."""
+Allowed details keys: start_address, destination_address, num_stops, budget, departure_date, departure_time, car_year, car_make, car_model, car_status, scheduling_policy, evening_interests. Copy location wording exactly as supplied; never expand an abbreviation such as SLO or LA into a city. A bare yes or a location-choice response does not supply a new address. Use departure_date for date wording such as "tomorrow" or "November 10th" and departure_time for time wording such as "11 am". Extract both independently. Use car_status="skipped" only when the user explicitly skips or declines a car. Extract numeric stop count and nightly hotel budget as numbers when clear. Car year, make, and model are independent fields. Optional scheduling_policy is a partial object with preferred_hotel_arrival, latest_hotel_arrival, morning_restart, late_driving (boolean), late_cutoff, using HH:MM local clocks. "I can drive until midnight" explicitly supplies {"late_driving":true,"late_cutoff":"24:00"}; do not turn it on otherwise. "No late driving" supplies late_driving=false. Only extract explicitly stated timing preferences. evening_interests is an array of food, culture, nightlife for optional evening requests, or [] when declined. These are optional and never new planning blockers. Check each clause of the latest message before returning JSON so every supplied field appears. The backend validates every value. No prose, markdown, tool blocks, or extra keys."""
 
 
 class ExtractionFormatError(Exception):

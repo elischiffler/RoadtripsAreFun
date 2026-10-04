@@ -34,43 +34,57 @@ const ItineraryPage = () => {
               <Typography variant="h6">{day['date']}</Typography>
             </Box>
             <Box>
-              {day['stops'].map((activity, idx) =>
-                activity['address'] ? (
-                  <Box key={idx} className="activity-box">
-                    <Typography variant="body1">
-                      {activity['url'] ? ( // Conditionally render the name
-                        // Makes the name clickable and navigates you to the booking link in a new tab
-                        <a
-                          href={activity['url']}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="activity-link"
-                        >
-                          {activity['name']}
-                        </a>
-                      ) : (
-                        activity['name']
-                      )}
-                    </Typography>
+              {day['stops'].map((activity, idx) => (
+                <Box key={idx} className="activity-box">
+                  {activity.optional && (
                     <Typography variant="body2" className="activity-time">
-                      {`Arrival time: ${activity['time']}`}
+                      Optional evening suggestion - choose one
                     </Typography>
+                  )}
+                  <Typography variant="body1">
+                    {activity.url ? (
+                      <a
+                        href={activity.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="activity-link"
+                      >
+                        {activity.name}
+                      </a>
+                    ) : (
+                      activity.name
+                    )}
+                  </Typography>
+                  {activity.time !== 'Unscheduled' && (
                     <Typography variant="body2" className="activity-time">
-                      {`Address: ${activity['address']}`}
+                      {`${activity.optional ? 'Suggested visit' : activity.kind === 'arrival' || activity.address ? 'Arrival time' : 'Departure time'}: ${activity.time}`}
+                      {activity.timezone ? ` (${activity.timezone})` : ''}
                     </Typography>
+                  )}
+                  {activity.address && (
                     <Typography variant="body2" className="activity-time">
-                      {activity['price'] ? `Price: $${activity['price']}` : null}
+                      {`Address: ${activity.address}`}
                     </Typography>
-                  </Box>
-                ) : (
-                  <Box key={idx} className="activity-box">
-                    <Typography variant="body1">{activity['name']}</Typography>
+                  )}
+                  {activity.price != null && (
                     <Typography variant="body2" className="activity-time">
-                      {`Departure time: ${activity['time']}`}
+                      {`Price: $${activity.price}`}
                     </Typography>
-                  </Box>
-                )
-              )}
+                  )}
+                  {activity.notice && (
+                    <Typography variant="body2" className="activity-time">
+                      {activity.notice}
+                    </Typography>
+                  )}
+                  {activity.optional && activity.return_by && (
+                    <Typography variant="body2" className="activity-time">
+                      {activity.return_time
+                        ? `Suggested return: ${activity.return_time}`
+                        : `Return to hotel by: ${activity.return_by}`}
+                    </Typography>
+                  )}
+                </Box>
+              ))}
             </Box>
           </Box>
         ))}

@@ -1,9 +1,10 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.agent.persona import validate_weight_update
+from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
 
 
 class Mapbox_geo(BaseModel):
@@ -27,6 +28,9 @@ class Route(BaseModel):
     geometry: Mapbox_geo
     cost: float
     warnings: list[str] | None = None
+    # None identifies legacy saved routes, which retain their original 09:00 restart.
+    scheduling_policy: SchedulingPolicy | None = None
+    start_timezone: str | None = None
 
     class Stop(BaseModel):
         name: str
@@ -111,6 +115,9 @@ class Route_Payload(BaseModel):
     # Which routing algorithm to run. None -> the ROUTING_ALGORITHM env / default.
     algorithm: str | None = None
     persona_weights: dict[str, float] | None = None
+    scheduling_policy: SchedulingPolicy = Field(default_factory=SchedulingPolicy)
+    start_timezone: str | None = None
+    evening_interests: list[EveningInterest] | None = None
 
     @field_validator("persona_weights", mode="before")
     @classmethod

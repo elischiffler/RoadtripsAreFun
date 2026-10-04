@@ -122,4 +122,60 @@ describe('ItineraryPage', () => {
     renderItineraryPageWithData(buildUserDataWithItinerary(MOCK_ITINERARY));
     expect(screen.getByText(/departure time: 8:00 AM/i)).toBeInTheDocument();
   });
+
+  it('shows tentative evening options after reload without claiming an arrival time', () => {
+    const itinerary = JSON.parse(JSON.stringify(MOCK_ITINERARY));
+    itinerary[1].stops.push({
+      name: 'Nearby cafe',
+      time: 'Unscheduled',
+      optional: true,
+      kind: 'evening',
+      status: 'tentative',
+      url: 'https://example.test/cafe',
+      notice: 'Check opening hours',
+      return_by: '08:00 PM',
+    });
+    renderItineraryPageWithData(buildUserDataWithItinerary(itinerary));
+    expect(screen.getByText(/optional evening suggestion/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Nearby cafe' })).toHaveAttribute(
+      'href',
+      'https://example.test/cafe'
+    );
+    expect(screen.getByText('Check opening hours')).toBeInTheDocument();
+    expect(screen.getByText('Return to hotel by: 08:00 PM')).toBeInTheDocument();
+    expect(screen.queryByText(/Unscheduled/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Suggested visit/)).not.toBeInTheDocument();
+  });
+
+  it('shows local actual hotel arrival, late check-in notice and optional visit times', () => {
+    const itinerary = [
+      {
+        date: 'November 21',
+        stops: [
+          {
+            name: 'Hotel',
+            kind: 'arrival',
+            time: '11:59 PM',
+            timezone: 'America/Los_Angeles',
+            notice: 'Confirm late check-in with the hotel',
+            price: 150,
+          },
+          {
+            name: 'Fixture gallery',
+            optional: true,
+            kind: 'evening',
+            time: '06:40 PM',
+            return_time: '07:50 PM',
+            return_by: '08:00 PM',
+          },
+        ],
+      },
+    ];
+    renderItineraryPageWithData(buildUserDataWithItinerary(itinerary));
+    expect(screen.getByText('Arrival time: 11:59 PM (America/Los_Angeles)')).toBeInTheDocument();
+    expect(screen.getByText('Confirm late check-in with the hotel')).toBeInTheDocument();
+    expect(screen.getByText('Suggested visit: 06:40 PM')).toBeInTheDocument();
+    expect(screen.getByText('Suggested return: 07:50 PM')).toBeInTheDocument();
+    expect(screen.getByText('Price: $150')).toBeInTheDocument();
+  });
 });

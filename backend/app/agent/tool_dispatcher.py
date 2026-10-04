@@ -52,6 +52,7 @@ from app.agent.trip_dates import normalize_departure_time, resolve_departure
 from app.agent.trip_profile import TripProfile, TripProfileUpdate
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import MapBox, Route_Payload
+from app.models.scheduling_policy import SchedulingPolicy
 from app.routers.car_api import get_car_details, get_gas_price
 from app.routers.itinerary_api import build_itinerary
 from app.routers.routing_api import plan_final_route
@@ -422,6 +423,11 @@ class AppToolDispatcher:
                         "budget": {"type": "number", "minimum": 0},
                         "departure_date": {"type": "string"},
                         "departure_time": {"type": "string"},
+                        "scheduling_policy": SchedulingPolicy.model_json_schema(),
+                        "evening_interests": {
+                            "type": "array",
+                            "items": {"type": "string", "enum": ["food", "culture", "nightlife"]},
+                        },
                         "car_year": {"type": "integer"},
                         "car_make": {"type": "string"},
                         "car_model": {"type": "string"},
@@ -656,6 +662,9 @@ class AppToolDispatcher:
             "initial_route": initial_route,
             "num_stops": int(num_stops),
             "budget": float(budget),
+            "scheduling_policy": trip.scheduling_policy.model_dump(),
+            "start_timezone": trip.start_timezone,
+            "evening_interests": trip.evening_interests,
         }
         payload_data["algorithm"] = select_algorithm(
             args.get("algorithm") or ctx.algorithm, ctx.can_select_algorithm
@@ -978,6 +987,31 @@ class AppToolDispatcher:
                 continue
             values[field] = value
             changed = True
+
+        if "scheduling_policy" in args:
+            try:
+                patch = args["scheduling_policy"]
+                if not isinstance(patch, dict) or not patch:
+                    raise ValueError("Supply at least one scheduling preference")
+                values["scheduling_policy"] = SchedulingPolicy.model_validate(
+                    {**values["scheduling_policy"], **patch}
+                ).model_dump()
+                changed = True
+            except (ValidationError, ValueError, TypeError) as exc:
+                clarifications["scheduling_policy"] = str(exc)
+        if "evening_interests" in args:
+            try:
+                update = TripProfileUpdate.model_validate(
+                    {"evening_interests": args["evening_interests"]}
+                )
+                if update.evening_interests is None:
+                    raise ValueError(
+                        "Choose food, culture, nightlife, or an empty list to disable suggestions"
+                    )
+                values["evening_interests"] = update.evening_interests
+                changed = True
+            except (ValidationError, ValueError) as exc:
+                clarifications["evening_interests"] = str(exc)
 
         if "departure_time" in args:
             try:

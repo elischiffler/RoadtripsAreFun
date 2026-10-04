@@ -3,14 +3,16 @@
 from __future__ import annotations
 
 import math
-from datetime import timedelta
+from datetime import UTC
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException
 from geopy.distance import geodesic
 
 from app.agent.progress import emit
 from app.models.routing_models.routing_models import MapBox
+from app.models.scheduling_policy import advance, local_time, seconds_until
 from app.routing.base import PlanningError, PlanOptions
 from app.routing.services import RoutingServices
 
@@ -20,10 +22,6 @@ _MAX_HOTEL_ATTEMPTS = 6
 _RETRY_DRIVE_SECONDS = 1800
 _MAX_HOTELS = 30
 _MAX_OVERNIGHTS = 60
-
-
-def _clock_seconds(value) -> float:
-    return value.hour * 3600 + value.minute * 60 + value.second
 
 
 def _usable_hotel(hotel: Any) -> bool:
@@ -57,14 +55,27 @@ async def schedule_cp_sat_route(
     options: PlanOptions,
     services: RoutingServices,
 ) -> tuple[list[dict[str, Any]], float]:
-    """Drive to each selected slot, ending days at provider-verified hotels."""
-    if not 0 <= options.daily_start < options.daily_end <= 24:
-        raise PlanningError("Invalid daily drive window", 400)
-    if selected and options.daily_end - options.daily_start < 2:
-        raise PlanningError("Daily window cannot fit a two-hour attraction visit", 400)
+    """Prefer hotels around the target, retaining every selected daytime stop.
+
+    Initial corridor times are estimates. Final Mapbox legs must pass the same
+    local deadline before this plan can be returned to the traveler.
+    """
+    policy = options.scheduling_policy
     now = options.start
-    if not options.daily_start * 3600 <= _clock_seconds(now) < options.daily_end * 3600:
-        raise PlanningError("Trip start must be within the daily drive window", 400)
+    coordinates, steps = route.geometry.coordinates, route.legs[0].steps
+
+    async def zone_at(position):
+        if services.timezone_at is not None:
+            return ZoneInfo(await services.timezone_at(list(position)))
+        # Injected offline services/benchmarks may use a fixed fixture clock.
+        # Live services always supply a provider-backed IANA resolver.
+        return now.tzinfo or UTC
+
+    start_zone = await zone_at([coordinates[0][1], coordinates[0][0]])
+    now = local_time(now, start_zone)
+    travel_day = now.date()
+    if seconds_until(now, policy.deadline(travel_day, start_zone)) <= 0:
+        raise PlanningError("Departure must precede the chosen local driving cutoff", 400)
     if services.cp_sat_hotels is None:
         raise PlanningError("CP-SAT verified hotel service is not configured", 503)
 
@@ -74,22 +85,33 @@ async def schedule_cp_sat_route(
         for index, candidate in selected
     ]
     events.append((route.duration, None))
-    elapsed = 0.0
-    total_cost = 0.0
-    stops: list[dict[str, Any]] = []
-    overnights = 0
-    coordinates = route.geometry.coordinates
-    steps = route.legs[0].steps
-    daily_seconds = options.daily_end * 3600
+    elapsed, total_cost, overnights = 0.0, 0.0, 0
+    stops = []
+    end_zone = await zone_at([coordinates[-1][1], coordinates[-1][0]])
 
-    for target, attraction in events:
+    for event_index, (target, attraction) in enumerate(events):
         while True:
             drive_left = max(0.0, target - elapsed)
             visit = _VISIT_SECONDS if attraction is not None else 0
-            available = daily_seconds - _clock_seconds(now)
-            if drive_left + visit <= available + 1e-6:
+            position = (
+                attraction["coordinates"]
+                if attraction
+                else [coordinates[-1][1], coordinates[-1][0]]
+            )
+            event_zone = await zone_at(position)
+            remaining_visits = sum(item is not None for _, item in events[event_index:])
+            finish_seconds = route.duration - elapsed + remaining_visits * _VISIT_SECONDS
+            can_finish = (
+                finish_seconds <= seconds_until(now, policy.deadline(travel_day, end_zone)) + 1e-6
+            )
+            event_limit = (
+                policy.deadline(travel_day, event_zone)
+                if can_finish
+                else policy.at(travel_day, policy.preferred_hotel_arrival, event_zone)
+            )
+            if drive_left + visit <= seconds_until(now, event_limit) + 1e-6:
                 elapsed = target
-                now += timedelta(seconds=drive_left + visit)
+                now = advance(now, drive_left + visit).astimezone(event_zone)
                 if attraction is not None:
                     stops.append(
                         {
@@ -99,39 +121,61 @@ async def schedule_cp_sat_route(
                             "coordinates": list(attraction["coordinates"]),
                             "address": attraction.get("address"),
                             "url": attraction.get("url"),
+                            "timezone": getattr(event_zone, "key", None),
                         }
                     )
                 break
 
-            # Drive as far as the next selected slot permits before searching
-            # backward along this day's segment for a usable overnight stay.
             if overnights >= _MAX_OVERNIGHTS:
                 raise PlanningError("CP-SAT trip exceeds the overnight limit", 400)
             segment_start = elapsed
-            drive_today = min(max(available, 0.0), drive_left)
-            overnight_elapsed = elapsed + drive_today
-            overnight_time = now + timedelta(seconds=drive_today)
-            remaining_stops = sum(item is not None for _, item in events if _ >= target)
+            # Refine the target using its actual local zone before bounded searches.
+            preferred_drive = max(
+                0.0,
+                seconds_until(
+                    now, policy.at(travel_day, policy.preferred_hotel_arrival, now.tzinfo)
+                ),
+            )
+            for _ in range(3):
+                trial = min(drive_left, preferred_drive)
+                position = services.find_position(coordinates, steps, elapsed + trial)
+                zone = await zone_at(position)
+                preferred_drive = max(
+                    0.0,
+                    seconds_until(now, policy.at(travel_day, policy.preferred_hotel_arrival, zone)),
+                )
+            base_drive = min(drive_left, preferred_drive)
             price_range = services.get_price_range(
                 remaining_budget=options.budget - total_cost,
-                duration_left=max(0.0, route.duration - overnight_elapsed),
-                stops_left=remaining_stops,
-                daily_drive_time=options.daily_end - options.daily_start,
-            )
-
-            hotel = None
-            for attempt in range(_MAX_HOTEL_ATTEMPTS):
-                trial_elapsed = max(
-                    segment_start, overnight_elapsed - attempt * _RETRY_DRIVE_SECONDS
+                duration_left=max(0.0, route.duration - elapsed - base_drive),
+                stops_left=remaining_visits,
+                daily_drive_time=seconds_until(
+                    policy.at(travel_day, policy.morning_restart, zone),
+                    policy.deadline(travel_day, zone),
                 )
+                / 3600,
+            )
+            hotel = None
+            tried = set()
+            # Include the hard cutoff as an availability fallback, while keeping
+            # six searches and the original 2.5h earlier fallback.
+            cutoff_offset = seconds_until(now, policy.deadline(travel_day, zone)) - base_drive
+            for offset in (0, -1800, 1800, -3600, cutoff_offset, -9000):
+                trial_drive = min(drive_left, max(0.0, base_drive + offset))
+                trial_elapsed = segment_start + trial_drive
+                if trial_elapsed in tried:
+                    continue
+                tried.add(trial_elapsed)
                 position = services.find_position(coordinates, steps, trial_elapsed)
-                check_in = (
-                    overnight_time - timedelta(seconds=overnight_elapsed - trial_elapsed)
-                ).date()
-                emit("route.overnight", "started", day=overnights + 1, attempt=attempt + 1)
+                zone = await zone_at(position)
+                arrival = advance(now, trial_drive).astimezone(zone)
+                if seconds_until(arrival, policy.deadline(travel_day, zone)) < -1e-6:
+                    continue
+                attempt = len(tried)
+                emit("route.overnight", "started", day=overnights + 1, attempt=attempt)
                 try:
                     candidates = await services.cp_sat_hotels(
-                        position, check_in, price_range, options.weights or {}
+                        position, travel_day, price_range, options.weights or {}
                     )
                 except HTTPException as exc:
                     if exc.status_code != 404:
@@ -142,28 +186,47 @@ async def schedule_cp_sat_route(
                 emit(
                     "route.overnight",
                     day=overnights + 1,
-                    attempt=attempt + 1,
+                    attempt=attempt,
                     candidates=len(candidates),
                 )
-                usable = [item for item in candidates if _usable_hotel(item)]
+                usable = []
+                for item in candidates:
+                    if not _usable_hotel(item):
+                        continue
+                    # Live source verifies the requested dated offer. Also guard
+                    # adapters that supply a different explicit booking date.
+                    if (
+                        item.get("check_in_date")
+                        and str(item["check_in_date"]) != travel_day.isoformat()
+                    ):
+                        continue
+                    hotel_zone = await zone_at(item["coordinates"])
+                    if (
+                        seconds_until(
+                            advance(now, trial_drive), policy.deadline(travel_day, hotel_zone)
+                        )
+                        >= -1e-6
+                    ):
+                        usable.append((item, hotel_zone))
                 if usable:
-                    max_price = options.budget
-                    hotel = min(
+                    hotel, zone = min(
                         usable,
-                        key=lambda item: (
-                            item["price"] > max_price,
-                            -item["utility"],
-                            item["price"],
-                            geodesic(item["coordinates"], position).meters,
-                            item["provider_id"],
+                        key=lambda pair: (
+                            pair[0]["price"] > options.budget,
+                            -pair[0]["utility"],
+                            pair[0]["price"],
+                            geodesic(pair[0]["coordinates"], position).meters,
+                            pair[0]["provider_id"],
                         ),
                     )
+                    arrival = advance(now, trial_drive).astimezone(zone)
                     elapsed = trial_elapsed
                     break
-                if trial_elapsed == segment_start:
-                    break
             if hotel is None:
-                raise PlanningError("No verified hotel is available for an overnight stop", 404)
+                raise PlanningError(
+                    "No verified hotel is available near the preferred arrival within the local cutoff; try an earlier departure or a different overnight area",
+                    404,
+                )
             stops.append(
                 {
                     "provider_id": hotel["provider_id"],
@@ -173,6 +236,8 @@ async def schedule_cp_sat_route(
                     "address": hotel.get("address"),
                     "url": hotel.get("url"),
                     "price": hotel["price"],
+                    "timezone": getattr(zone, "key", None),
+                    "check_in_date": travel_day.isoformat(),
                     **(
                         {
                             "warning": f"Hotel {hotel['name']} costs ${hotel['price']:.0f}, above the ${options.budget:.0f} nightly target."
@@ -184,7 +249,10 @@ async def schedule_cp_sat_route(
             )
             total_cost += hotel["price"]
             overnights += 1
-            now = (overnight_time + timedelta(days=1)).replace(
-                hour=options.daily_start, minute=0, second=0, microsecond=0
-            )
+            now = policy.restart(travel_day, zone)
+            if seconds_until(arrival, now) <= 0:
+                raise PlanningError(
+                    "Hotel arrival leaves no time before the chosen morning restart", 422
+                )
+            travel_day = now.date()
     return stops, total_cost

@@ -72,6 +72,7 @@ class RoutingServices:
     gather_candidates: GatherCandidates | None = None
     cp_sat_candidates: FindCPSatCandidates | None = None
     cp_sat_hotels: FindCPSatHotels | None = None
+    timezone_at: Callable[[list[float]], Awaitable[str]] | None = None
 
     def require_gather(self) -> GatherCandidates:
         """Return ``gather_candidates`` or fail loudly if a planner needs it."""
@@ -109,6 +110,7 @@ class CountingServices(RoutingServices):
                 self._wrap(inner.cp_sat_candidates) if inner.cp_sat_candidates else None
             ),
             cp_sat_hotels=(self._wrap(inner.cp_sat_hotels) if inner.cp_sat_hotels else None),
+            timezone_at=inner.timezone_at,
         )
 
     def _wrap(self, fn):

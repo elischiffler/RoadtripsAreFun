@@ -11,6 +11,7 @@ const labels = {
   'hotels.ratings': 'Comparing hotel options',
   'mapbox.request': 'Checking driving directions',
   'route.final_reroute': 'Finalizing your route',
+  'evening.discovery': 'Checking optional places near your hotel',
   'itinerary.build': 'Building your itinerary',
   'agent.persist_memory': 'Saving your trip details',
 };

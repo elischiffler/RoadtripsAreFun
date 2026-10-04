@@ -17,6 +17,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from app.models.routing_models.routing_models import MapBox
+from app.models.scheduling_policy import SchedulingPolicy
 
 if TYPE_CHECKING:  # avoid a runtime import cycle (services imports base)
     from app.routing.services import RoutingServices
@@ -80,6 +81,7 @@ class PlanOptions:
     # Reserved for future preference-aware planners (see docs/algorithm-analysis.md).
     preferences: dict[str, Any] | None = None
     weights: dict[str, float] | None = None
+    scheduling_policy: SchedulingPolicy = field(default_factory=SchedulingPolicy)
 
 
 @dataclass

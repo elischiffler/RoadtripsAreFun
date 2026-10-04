@@ -1,6 +1,7 @@
 """Cross-layer CP-SAT identity, persona, and final-route checks with fakes."""
 
 from datetime import datetime
+from types import SimpleNamespace
 
 import pytest
 from fastapi.testclient import TestClient
@@ -40,7 +41,13 @@ def alternate_planners(monkeypatch, route):
     monkeypatch.setitem(registry._REGISTRY, "test_alternate", Planner("test_alternate"))
     monkeypatch.setenv("ROUTING_ALGORITHM", "test_alternate")
     monkeypatch.setattr(routing_api, "load_account_persona", lambda user: AccountPersona.default())
-    monkeypatch.setattr(routing_api, "get_location", lambda **kwargs: None)
+    monkeypatch.setattr(
+        routing_api,
+        "get_location",
+        lambda **kwargs: SimpleNamespace(
+            address="fixture", raw={"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
+        ),
+    )
 
     async def final_route(*args):
         return route
@@ -180,7 +187,13 @@ async def test_cp_sat_uses_verified_identity_and_trip_override(monkeypatch, rout
     monkeypatch.setattr(routing_api, "load_account_persona", persona)
     monkeypatch.setattr(routing_api, "get_planner", lambda name: Planner())
     monkeypatch.setattr(routing_api, "_call_route", final_route)
-    monkeypatch.setattr(routing_api, "get_location", lambda **kwargs: None)
+    monkeypatch.setattr(
+        routing_api,
+        "get_location",
+        lambda **kwargs: SimpleNamespace(
+            address="fixture", raw={"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
+        ),
+    )
     payload = Route_Payload(
         initial_route=route,
         num_stops=0,

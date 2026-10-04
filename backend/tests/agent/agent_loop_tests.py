@@ -273,7 +273,7 @@ async def test_provider_outage_does_not_trigger_string_extraction(fake_memory, f
 async def test_malformed_extraction_does_not_claim_data_was_saved(fake_memory, fake_tools):
     provider = FakeProvider(extraction_responses=["not JSON", "still not JSON"])
     result = await run_turn(_request("8 stops"), FallbackChain([provider]), fake_memory, fake_tools)
-    assert result.tripProfile == {"car_status": "unanswered", "pending_locations": {}}
+    assert result.tripProfile == TripProfile().model_dump(mode="json", exclude_none=True)
     assert result.toolsUsed == []
     assert "couldn't read" in result.reply
     assert result.modelCalls == 2

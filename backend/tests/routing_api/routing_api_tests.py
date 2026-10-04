@@ -181,6 +181,7 @@ def test_generate_final_route_zero_stops():
 
     mock_location = MagicMock()
     mock_location.address = "Somewhere, USA"
+    mock_location.raw = {"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
 
     with (
         patch("app.routing.sources.mapbox.requests.get", return_value=mock_resp),
@@ -232,6 +233,7 @@ def test_generate_final_route_unknown_algorithm_returns_400():
     mock_resp.json.return_value = short_trip_mapbox
     mock_location = MagicMock()
     mock_location.address = "Somewhere, USA"
+    mock_location.raw = {"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
 
     with (
         patch("app.routing.sources.mapbox.requests.get", return_value=mock_resp),

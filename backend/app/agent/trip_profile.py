@@ -33,6 +33,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.agent.persona import validate_weight_update
 from app.agent.trip_dates import normalize_departure_time
+from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
 from app.utils.location_resolution import PendingLocation
 
 logger = logging.getLogger(__name__)
@@ -109,6 +110,8 @@ class TripProfile(BaseModel):
     car: Car | None = None
     persona_weights: dict[str, float] | None = None  # partial, per-trip override
     car_status: CarStatus = "unanswered"
+    scheduling_policy: SchedulingPolicy = Field(default_factory=SchedulingPolicy)
+    evening_interests: list[EveningInterest] | None = None
     pending_locations: dict[Literal["start_address", "destination_address"], PendingLocation] = (
         Field(default_factory=dict)
     )
@@ -206,6 +209,8 @@ class TripProfile(BaseModel):
         for key, value in provided.items():
             if value is None:
                 continue
+            if key == "scheduling_policy":
+                value = {**data[key], **value}
             data[key] = value
         if "car" in provided and provided["car"] is not None:
             data["car_status"] = "provided"
@@ -219,6 +224,8 @@ class TripProfile(BaseModel):
             return False
         d = self.model_dump(exclude_none=True)
         d.pop("car_status", None)
+        if self.scheduling_policy == SchedulingPolicy():
+            d.pop("scheduling_policy", None)
         return not any(v for v in d.values())
 
     def missing_details(self) -> list[str]:
@@ -289,6 +296,8 @@ class TripProfileUpdate(BaseModel):
     car: Car | None = None
     persona_weights: dict[str, float] | None = None
     car_status: CarStatus | None = None
+    scheduling_policy: SchedulingPolicy | None = None
+    evening_interests: list[EveningInterest] | None = None
 
     @model_validator(mode="before")
     @classmethod

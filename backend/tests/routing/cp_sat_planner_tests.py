@@ -164,7 +164,7 @@ def test_unsolved_status_never_returns_candidates(monkeypatch, status):
 
 @pytest.mark.asyncio
 async def test_stop_at_assigned_drive_position_then_day_rollover(route, start_date, fake_services):
-    short_route(route, 8 * 3600)
+    short_route(route, 12 * 3600)
     position = fake_services.bundle().find_position(
         route.geometry.coordinates, route.legs[0].steps, route.duration * 6 / 7
     )
@@ -181,13 +181,15 @@ async def test_stop_at_assigned_drive_position_then_day_rollover(route, start_da
     assert [item["type"] for item in result.stopping_points] == ["hotel", "stop"]
     assert result.stopping_points[1]["coordinates"] == position
     assert len(calls["hotels"]) == 1
-    assert calls["hotels"][0][0] == position
+    assert calls["hotels"][0][0] == services.find_position(
+        route.geometry.coordinates, route.legs[0].steps, 9 * 3600
+    )
     assert calls["hotels"][0][1] == date(2025, 6, 1)
 
 
 @pytest.mark.asyncio
 async def test_hotel_retry_and_in_budget_preference(route, start_date, fake_services):
-    short_route(route, 8 * 3600)
+    short_route(route, 12 * 3600)
     services, calls = configure(fake_services)
 
     async def find_hotels(position, check_in, price_range, weights):
@@ -209,7 +211,7 @@ async def test_hotel_retry_and_in_budget_preference(route, start_date, fake_serv
 
 @pytest.mark.asyncio
 async def test_over_budget_hotel_keeps_actual_price(route, start_date, fake_services):
-    short_route(route, 8 * 3600)
+    short_route(route, 12 * 3600)
     services, _ = configure(fake_services, hotels=[hotel("high", [35, -100], 400, 0.8)])
     stops, cost = await schedule_cp_sat_route(route, [], PlanOptions(0, 100, start_date), services)
     assert cost == 400
@@ -219,7 +221,7 @@ async def test_over_budget_hotel_keeps_actual_price(route, start_date, fake_serv
 
 @pytest.mark.asyncio
 async def test_missing_hotel_fails_after_bounded_retries(route, start_date, fake_services):
-    short_route(route, 8 * 3600)
+    short_route(route, 12 * 3600)
     services, calls = configure(fake_services)
     with pytest.raises(PlanningError, match="No verified hotel"):
         await schedule_cp_sat_route(route, [], PlanOptions(0, 100, start_date), services)

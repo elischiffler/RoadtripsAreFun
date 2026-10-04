@@ -1,11 +1,16 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import ValidationError
 
 from app.agent.progress import stage
 from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
+from app.models.scheduling_policy import advance, local_time
+from app.routing.base import PlanningError
+from app.routing.sources.evenings import current_suggestions
+from app.routing.travel_timing import apply_timing
 from app.utils.auth import require_authenticated_user
 
 # Initialize FastAPI
@@ -38,6 +43,8 @@ async def generate_itinerary(request: Request) -> list[Itinerary_Day]:
         raise HTTPException(status_code=501, detail=f"Missing expected data: {error}")
     except ValueError as error:
         raise HTTPException(status_code=502, detail=f"Error processing data: {error}")
+    except PlanningError as error:
+        raise HTTPException(status_code=error.status_code, detail=error.detail)
 
 
 async def build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
@@ -64,6 +71,15 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
     """
     # initialize current_time to be the specified start_time
     current_time = data.start_time
+    if data.route.scheduling_policy is not None:
+        if data.route.start_timezone:
+            current_time = local_time(current_time, ZoneInfo(data.route.start_timezone))
+        apply_timing(
+            data.route.stops or [],
+            current_time,
+            data.route.scheduling_policy,
+            data.route.start_timezone,
+        )
 
     # initialize a list of stops with a generic message and specified start time
     stop_list = [
@@ -76,7 +92,11 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
     # loop through the stops and get the time for each
     for stop in data.route.stops:
         # Add the time to get to the stop to the current time
-        current_time += timedelta(seconds=stop["duration"])
+        current_time = (
+            datetime.fromisoformat(stop["arrival_time"])
+            if data.route.scheduling_policy is not None
+            else advance(current_time, stop["duration"])
+        )
         destination = {
             "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
             "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
@@ -84,20 +104,53 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
             "url": stop.get("url"),
             "price": stop.get("price"),
             "address": stop.get("address"),
+            "kind": "arrival",
+            "timezone": stop.get("timezone"),
+            "notice": " · ".join(
+                value for value in (stop.get("late_check_in_notice"), stop.get("warning")) if value
+            )
+            or None,
         }
         # Add the stop to stop_list
         stop_list.append(destination)
         if stop["type"] == "hotel":  # If the stop is a hotel
-            # Advance to 9AM the NEXT calendar day. Use timedelta so month/year
-            # roll over correctly — ``current_time.day + 1`` raises ValueError on
-            # the last day of a month (e.g. Jan 31 -> day 32).
-            next_day = current_time + timedelta(days=1)
-            current_time = next_day.replace(
-                hour=9,  # TODO Make the start time a parameter
-                minute=0,
-                second=0,
-                microsecond=0,
-            )
+            for suggestion in current_suggestions(stop) if data.route.scheduling_policy else []:
+                visit = (
+                    datetime.fromisoformat(suggestion["visit_time"])
+                    if suggestion.get("visit_time")
+                    else current_time
+                )
+                stop_list.append(
+                    {
+                        "date": visit.strftime("%A, %B %d %Y"),
+                        "time": visit.strftime("%I:%M %p")
+                        if suggestion.get("visit_time")
+                        else "Unscheduled",
+                        "name": suggestion["name"],
+                        "url": suggestion.get("url"),
+                        "address": suggestion.get("address"),
+                        "kind": "evening",
+                        "optional": True,
+                        "status": suggestion["status"],
+                        "notice": suggestion["notice"],
+                        "timezone": stop.get("timezone"),
+                        "return_by": datetime.fromisoformat(suggestion["return_by"]).strftime(
+                            "%I:%M %p"
+                        ),
+                        "return_time": datetime.fromisoformat(suggestion["return_time"]).strftime(
+                            "%I:%M %p"
+                        )
+                        if suggestion.get("return_time")
+                        else None,
+                    }
+                )
+            if data.route.scheduling_policy is not None:
+                current_time = datetime.fromisoformat(stop["departure_time"])
+            else:
+                # Explicit backward compatibility for routes saved before the policy.
+                current_time = (current_time + timedelta(days=1)).replace(
+                    hour=9, minute=0, second=0, microsecond=0
+                )
             stop_list.append(
                 {
                     "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
@@ -106,7 +159,7 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
                 }
             )
         elif stop["type"] == "stop":
-            current_time += timedelta(hours=2)  # Increment two hours for time at the stop
+            current_time = advance(current_time, 7200)
             stop_list.append(
                 {
                     "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
@@ -145,6 +198,13 @@ async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]
                 "address": stop.get("address"),
                 "url": stop.get("url"),
                 "price": stop.get("price"),
+                "kind": stop.get("kind"),
+                "timezone": stop.get("timezone"),
+                "notice": stop.get("notice"),
+                "optional": stop.get("optional", False),
+                "status": stop.get("status"),
+                "return_by": stop.get("return_by"),
+                "return_time": stop.get("return_time"),
             }
             # Check if the date matches and if so add stop to the same day
             if stop["date"] == curr_day["date"]:
