@@ -243,6 +243,12 @@ class GoogleHotelProvider:
                 )
             emit("hotels.rejections", checked=details, verified=len(records), **rejected)
             if not records:
+                if details > 0 and rejected["radius"] == details:
+                    # Valid dated listings outside this point's radius are a spatial
+                    # miss, not a provider failure. Let the scheduler backtrack to
+                    # an earlier overnight point using its existing bounded retries.
+                    emit("hotels.no_nearby", checked=details, radiusMiles=30)
+                    return []
                 raise GoogleHotelLookupError(
                     "Google Hotels returned no verifiable prices near the overnight stop."
                 )

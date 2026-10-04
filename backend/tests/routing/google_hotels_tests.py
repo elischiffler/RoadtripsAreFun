@@ -1,12 +1,18 @@
 """Representative HTML contracts, independent of Google/network availability."""
 
-from datetime import date
+from datetime import date, datetime
 from types import SimpleNamespace
 
 import httpx
 import pytest
 
+from app.agent.persona import default_weights
+from app.agent.progress import reporting
+from app.routing.base import PlanOptions
+from app.routing.cp_sat_scheduler import schedule_cp_sat_route
 from app.routing.sources import google_hotels as source
+from app.routing.sources import persona_candidates
+from tests.routing.persona_candidates_tests import FakeAI, _ratings
 
 CHECK_IN = date(2026, 11, 20)
 CONTROLS = """
@@ -124,11 +130,93 @@ async def test_radius_and_duplicate_identity():
             return SimpleNamespace(latitude=35.3, longitude=-120.6)
 
     places, _ = provider(geocoder=DistantGeocoder())
-    with pytest.raises(source.GoogleHotelLookupError, match="no verifiable"):
-        await places.hotels_near([39.74, -104.99], CHECK_IN)
+    assert await places.hotels_near([39.74, -104.99], CHECK_IN) == []
     places, requests = provider(search=CONTROLS + CARD * 20)
     assert len(await places.hotels_near([39.74, -104.99], CHECK_IN)) == 1
     assert len(requests) == 2
+
+
+async def test_county_search_with_six_distant_verified_hotels_is_empty():
+    class CountyGeocoder(Geocoder):
+        def reverse(self, point, timeout):
+            return SimpleNamespace(raw={"components": {"county": "San Bernardino County"}})
+
+        def geocode(self, address, timeout):
+            return SimpleNamespace(latitude=34.1, longitude=-117.3)
+
+    cards = "".join(CARD.replace("ExampleID", f"ExampleID{i}") for i in range(6))
+    places, requests = provider(search=CONTROLS + cards, geocoder=CountyGeocoder())
+    events = []
+    with reporting(events.append):
+        assert await places.hotels_near([35.45, -115.6], CHECK_IN) == []
+    assert len(requests) == 7
+    rejected = next(event for event in events if event["stage"] == "hotels.rejections")
+    assert rejected["checked"] == rejected["radius"] == 6
+    assert rejected["verified"] == rejected["identity"] == rejected["geocode"] == 0
+    assert events[-1]["stage"] == "hotels.lookup" and events[-1]["state"] == "completed"
+
+
+@pytest.mark.parametrize("outcome", ["nearby", "no_nearby", "provider_failure"])
+async def test_live_adapter_scheduler_retries_only_spatial_misses(
+    monkeypatch, route, fake_services, outcome
+):
+    class MovingGeocoder:
+        points = []
+
+        def reverse(self, point, timeout):
+            self.points.append(point)
+            return SimpleNamespace(raw={"components": {"county": "San Bernardino County"}})
+
+        def geocode(self, address, timeout):
+            # First search has a valid dated price, but the hotel is too far away.
+            coords = [0, 0] if len(self.points) == 1 or outcome == "no_nearby" else self.points[-1]
+            return SimpleNamespace(latitude=coords[0], longitude=coords[1])
+
+    geocoder = MovingGeocoder()
+    places, _ = provider(geocoder=geocoder, status=429 if outcome == "provider_failure" else 200)
+    monkeypatch.setattr(source, "GoogleHotelProvider", lambda _: places)
+    monkeypatch.setattr(persona_candidates.config, "OPENCAGE_KEY", "fixture")
+    ai = FakeAI([{"name": "Example Hotel", "attribute_ratings": _ratings()}])
+
+    async def hotels(point, check_in, price_range, weights):
+        return await persona_candidates.hotel_candidates(
+            point, check_in, price_range, weights, ai=ai
+        )
+
+    route.duration = route.legs[0].duration = route.legs[0].steps[0].duration = 8 * 3600
+    services = fake_services.bundle()
+    services.cp_sat_hotels = hotels
+    options = PlanOptions(0, 150, datetime(2026, 11, 20, 9), weights=default_weights())
+    if outcome == "provider_failure":
+        with pytest.raises(persona_candidates.CandidateProviderError, match="unavailable"):
+            await schedule_cp_sat_route(route, [], options, services)
+        assert len(geocoder.points) == 1 and ai.calls == 0
+        return
+    if outcome == "no_nearby":
+        from app.routing.base import PlanningError
+
+        with pytest.raises(PlanningError, match="No verified hotel") as error:
+            await schedule_cp_sat_route(route, [], options, services)
+        assert error.value.status_code == 404
+        assert len(geocoder.points) == 6 and ai.calls == 0
+        return
+    stops, cost = await schedule_cp_sat_route(route, [], options, services)
+    assert len(geocoder.points) == 2 and geocoder.points[0] != geocoder.points[1]
+    assert ai.calls == 1  # No ratings request for the empty first search.
+    assert stops[0]["coordinates"] == geocoder.points[1]
+    assert stops[0]["price"] == cost == 120
+
+
+@pytest.mark.parametrize("missing_address", [False, True])
+async def test_unverified_locations_remain_provider_failures(missing_address):
+    class UnresolvedGeocoder(Geocoder):
+        def geocode(self, address, timeout):
+            return None
+
+    detail = CONTROLS + ("<h1>Example Hotel</h1>" if missing_address else DETAIL)
+    places, _ = provider(detail=detail, geocoder=UnresolvedGeocoder())
+    with pytest.raises(source.GoogleHotelLookupError, match="no verifiable"):
+        await places.hotels_near([39.74, -104.99], CHECK_IN)
 
 
 async def test_http_failure_and_overall_deadline(monkeypatch):

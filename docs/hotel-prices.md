@@ -40,6 +40,17 @@ details instead of asking the model to retry the same failing planning tool up
 to five times. A subsequent user request can try again. The deadline applies to
 hotel lookup, not to the entire model/route turn.
 
+A rural overnight point may reverse-geocode only to a county. Google can then
+return hotels elsewhere in that county, beyond the 30-mile limit. If every
+checked detail listing confirms its dates, identity, address and geocoded
+location but is outside the radius, the lookup returns an empty candidate list
+and emits `hotels.no_nearby`. The scheduler can then try up to six overnight
+points, moving backward in half-hour driving increments. It still fails if no
+verified hotel can be found; it never expands the radius or accepts undated
+prices. Invalid listings, geocoding failures and upstream errors remain provider
+failures and stop the current turn. Each spatial retry has the existing lookup
+request limits and deadline, so sparse areas can take longer to plan.
+
 The older `find_hotel` scraper is outside the CP-SAT path and retains its Google
 lookup behavior. Neither path switches to another hotel provider on failure.
 
