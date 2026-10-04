@@ -133,3 +133,49 @@ def test_budget_remains_per_room_even_when_aggregate_is_below_total_target():
     hotel = {"price": 190, "room_offers": [{"price": 150}, {"price": 40}]}
     assert _over_budget(hotel, 100, 2)
     assert not _over_budget(hotel, 150, 2)
+
+
+async def test_family_room_quotes_survive_route_and_itinerary_reload():
+    from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
+    from app.models.routing_models.routing_models import Route
+    from app.models.scheduling_policy import SchedulingPolicy
+    from app.routers.itinerary_api import build_itinerary
+    from app.routing.travel_timing import apply_timing
+    from tests.routing.flexible_hotel_tests import START, ZONE, point, saved_route
+
+    rooms = [HotelRoom(adults=2, child_ages=[5]), HotelRoom(adults=1, child_ages=[])]
+    candidates = await hotel_candidates(
+        [34, -118],
+        START.date(),
+        ((0, 200), "0-200"),
+        default_weights(),
+        rooms,
+        ai=FakeAI([{"name": "Example Hotel", "attribute_ratings": _ratings()}]),
+        places=RoomPlaces(),
+    )
+    hotel = {
+        **candidates[0],
+        "type": "hotel",
+        "address": "Main St",
+        "duration": 3600,
+        "timezone": ZONE,
+    }
+    stops = [hotel, point(3600)]
+    policy = SchedulingPolicy()
+    apply_timing(stops, START, policy, ZONE)
+    route = saved_route(stops, policy)
+    route.traveler_count = 4
+    route.hotel_rooms = rooms
+    restored = Route.model_validate_json(route.model_dump_json())
+    days = await build_itinerary(Itinerary_Payload(route=restored, start_time=START))
+    restored_days = [Itinerary_Day.model_validate_json(day.model_dump_json()) for day in days]
+    arrival = next(
+        stop for day in restored_days for stop in day.stops if stop.name == "Example Hotel"
+    )
+    assert arrival.room_offers == hotel["room_offers"]
+    assert arrival.traveler_count == 4 and arrival.hotel_rooms == [
+        room.model_dump() for room in rooms
+    ]
+    assert arrival.price == 295 and arrival.url is None
+    assert arrival.price_scope == "independent_room_quotes_not_combined_inventory"
+    assert all(offer["check_in_date"] == START.date().isoformat() for offer in arrival.room_offers)

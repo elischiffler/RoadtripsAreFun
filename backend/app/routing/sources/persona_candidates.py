@@ -355,7 +355,9 @@ async def _room_candidates(
                 continue
             seen.add(verified.provider_id)
             candidate = _candidate(verified, proposal, weights)
-            candidate.update(type="hotel", price=verified.price)
+            candidate.update(
+                type="hotel", price=verified.price, check_in_date=verified.check_in_date.isoformat()
+            )
             candidate["stars"] = verified.stars
             candidate["review_count"] = verified.review_count
             results.append(candidate)
@@ -478,12 +480,18 @@ async def hotel_candidates(
         if not all(key in lookup for lookup in by_room):
             continue
         offers = [
-            {"room": room.model_dump(), "price": lookup[key]["price"], "url": lookup[key]["url"]}
+            {
+                "room": room.model_dump(),
+                "price": lookup[key]["price"],
+                "url": lookup[key]["url"],
+                "check_in_date": lookup[key]["check_in_date"],
+                "price_scope": lookup[key]["price_scope"],
+            }
             for room, lookup in zip(rooms, by_room)
         ]
         results.append(
             {
-                **first,
+                **{field: value for field, value in first.items() if field != "room"},
                 "traveler_count": sum(room.adults + len(room.child_ages) for room in rooms),
                 "hotel_rooms": [room.model_dump() for room in rooms],
                 "room_offers": offers,

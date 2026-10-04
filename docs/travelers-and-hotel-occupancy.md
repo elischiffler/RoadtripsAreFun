@@ -57,3 +57,28 @@ room quotes, child ages and occupancy-specific links. Browser inspection
 verified the guest controls and child token encoding, but does not establish
 live server-side price acceptance for the scraper, all room combinations,
 simultaneous inventory, a live model conversation or authenticated persistence.
+
+
+## Validation and handoff (2026-10-03)
+
+Based on shared feature head `a640743`; implemented on `codex/trip-travelers`.
+Preserved flexible hotel deadlines, local timezones, midnight booking nights,
+saved departure recovery, evening suggestions and formatted collection receipts.
+
+- PASS: Python 3.12 pinned requirements, Ruff 0.16.7 format/check, 579 backend
+  tests, 85.30% coverage (required minimum remains 63%). Tests include
+  JSON/NDJSON collection parity, remote serialization, route/itinerary JSON
+  reload, one/two/three adults, infant age band, children, multiple independent
+  room quotes, per-room budget targets, mismatched occupancy rejection and
+  invalidation of incomplete child corrections at unchanged headcount.
+- PASS: Node 24 `npm ci`, `npm run format:check`, `npm run lint`,
+  `npm run test:coverage` (168 tests, 81.05% statement coverage), `npm run build`.
+- PASS: separately rebuilt local containers, `node --test
+  tests/container-smoke.test.mjs` (2 tests). Task-owned smoke containers stopped.
+- PASS: `node tests/postgres/run.mjs`, real disposable CRUD, owner isolation,
+  recreation, outage recovery and backup/restore. Preserved source/restore
+  volumes and ignored backup for `roadtrips-crud-440182cf10`.
+- BLOCKED/unverified: live full-trip model and Cognito acceptance, live scraper
+  prices for every occupancy, simultaneous multi-room inventory. Browser guest
+  controls/token inspection and fixtures do not satisfy those gates. PR #26
+  remains draft; no production deployment or schema migration is included.
