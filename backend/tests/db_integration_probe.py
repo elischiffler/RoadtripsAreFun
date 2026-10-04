@@ -120,6 +120,10 @@ def seed():
                         "title": "Updated trip details",
                         "updated": ["Hotel budget: $200 per night"],
                         "needed": ["What date would you like to leave?"],
+                        "introduction": "A few details remain.",
+                        "questions": [
+                            "Which evening interests would you like suggestions for (optional)?"
+                        ],
                         "notes": [],
                     },
                 },
@@ -228,6 +232,10 @@ def verify():
     assert restored_log.messages[0].presentation is None
     assert restored_log.messages[1].presentation.updated == ["Hotel budget: $200 per night"]
     assert restored_log.messages[1].presentation.needed == ["What date would you like to leave?"]
+    assert restored_log.messages[1].presentation.introduction == "A few details remain."
+    assert restored_log.messages[1].presentation.questions == [
+        "Which evening interests would you like suggestions for (optional)?"
+    ]
     assert chat_crud.get_segments(OWNER_A, CHAT_ID, ROUTE_A) == GOOD_COORDS
     assert chat_crud.get_segments(OWNER_B, CHAT_ID, ROUTE_A) == []
     assert memory_crud.load_facts(OWNER_A)[0].value == "San Luis Obispo"

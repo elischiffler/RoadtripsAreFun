@@ -318,7 +318,7 @@ async def test_run_turn_simple_no_tool_reply(fake_memory, fake_tools):
     assert result.toolsUsed == []
     assert result.provider == "fake"
     assert result.usage.promptTokens == 100
-    assert result.modelCalls == 2
+    assert result.modelCalls == 3
     assert provider.calls == 1
     assert provider.extraction_calls == 1
 
@@ -337,7 +337,7 @@ async def test_usage_includes_structured_extraction(fake_memory, fake_tools):
         responses=[LLMResponse(content="What is your starting city?", usage=make_usage())]
     )
     result = await run_turn(_request(), FallbackChain([provider]), fake_memory, fake_tools)
-    assert result.modelCalls == 2
+    assert result.modelCalls == 3
     assert result.usage.promptTokens == 140
     assert result.usage.completionTokens == 24
 
@@ -398,7 +398,7 @@ async def test_usage_sums_all_model_calls_even_when_some_fields_are_missing(
         ]
     )
     result = await run_turn(_request(), FallbackChain([provider]), fake_memory, fake_tools)
-    assert result.modelCalls == 4
+    assert result.modelCalls == 5
     assert result.usage.promptTokens == 300
     assert result.usage.completionTokens == 38
 

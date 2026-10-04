@@ -102,7 +102,8 @@ def test_optional_car_and_departure_instructions_are_present_without_completing_
     collecting = _messages(TripProfile(), "Plan")[0].content
     assert "departure time" in collecting
     assert "9:00 AM" in collecting
-    assert "year, make, and model" in collecting
+    assert "car_year, car_make, car_model" in collecting
+    assert "each vehicle value separately" in collecting
     assert '"skip" or "no car"' in collecting
     assert "correction or offer to skip" in collecting
     skipped = _messages(

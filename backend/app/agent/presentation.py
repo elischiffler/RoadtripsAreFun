@@ -17,7 +17,7 @@ QUESTIONS = {
     "budget": "What is your hotel budget per night in dollars?",
     "departure_date": "What date would you like to leave?",
     "departure_time": "What time would you like to leave? You can choose 9:00 AM.",
-    "car": "Optional car: what year, make, and model will you use, or would you like to skip?",
+    "car": "Optional car: would you like to provide a car for this trip, or skip it?",
 }
 LABELS = {
     "traveler_count": "Travelers (including you)",
@@ -54,6 +54,13 @@ def detail_request(message: str) -> str | None:
     ):
         return "collect"
     return None
+
+
+def collection_fields(profile: TripProfile) -> list[str]:
+    missing = profile.missing_details()
+    if "departure_date" in missing and not profile.departure_time:
+        missing.insert(missing.index("departure_date") + 1, "departure_time")
+    return missing
 
 
 def present_details(
@@ -141,11 +148,19 @@ def present_details(
             f"Please choose a match for '{pending.query}' below, or enter a full city and state or address."
         )
     needed = [
-        f"{LABELS.get(field, 'Trip detail')}: {question}" for field, question in issues.items()
+        f"{LABELS.get(field, 'Trip detail')}: "
+        + (
+            (
+                "Car verification is unavailable. Would you like to retry verification, or skip the car?"
+                if "verification is unavailable" in question
+                else "Would you like to correct the car details, or skip the car?"
+            )
+            if field == "car"
+            else question
+        )
+        for field, question in issues.items()
     ]
-    missing = after.missing_details()
-    if "departure_date" in missing and not after.departure_time:
-        missing.insert(missing.index("departure_date") + 1, "departure_time")
+    missing = collection_fields(after)
     # Prioritize validation questions; then ask at most two actionable details.
     for field in missing:
         if len(needed) >= 2:

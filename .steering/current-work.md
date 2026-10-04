@@ -85,3 +85,15 @@ fix; avoid a second parallel scheduling abstraction. A separate documentation
 follow-up can reconcile the long historical `docs/chat-agent-design.md` and
 mixed algorithm documents with the current contracts. Keep historical rationale,
 but link current examples to schemas to prevent renewed drift.
+
+
+## Chat question separation
+
+The chat-question change extends structured presentation to model-originated
+follow-ups on unchanged/no-tool turns. Required asks share the saved-profile
+collection helper; optional scheduling/evening asks use a separate Questions
+list and never become blockers. Car choice and individual vehicle values are
+separate asks, with at most two questions per response. Legacy paragraph model
+output gets one bounded formatting call; malformed output fails to saved-state
+questions plus a retry notice. See `docs/agent-trip-detail-lists.md` and
+`backend/app/agent/questions.py`. This does not establish live provider compliance.

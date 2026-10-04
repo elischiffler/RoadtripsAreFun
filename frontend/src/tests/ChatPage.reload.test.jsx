@@ -85,7 +85,12 @@ describe('ChatPage reload', () => {
               presentation: {
                 title: 'Updated trip details',
                 updated: ['Hotel budget: $200 per night'],
-                needed: ['What date would you like to leave?'],
+                needed: [
+                  'What time would you like to leave?',
+                  'Would you like to provide a car, or skip it?',
+                ],
+                introduction: 'A few details remain.',
+                questions: ['Which evening interests would you like suggestions for (optional)?'],
                 notes: [],
               },
             },
@@ -97,7 +102,12 @@ describe('ChatPage reload', () => {
     render(<Harness />);
     expect(await screen.findByText('Hotel budget: $200 per night')).toBeInTheDocument();
     expect(screen.getByText('Old reply')).toBeInTheDocument();
-    expect(screen.getAllByRole('list')).toHaveLength(2);
+    expect(screen.getAllByRole('list')).toHaveLength(3);
+    expect(screen.getByText('A few details remain.')).toBeInTheDocument();
+    expect(screen.getByText('What time would you like to leave?')).toBeInTheDocument();
+    expect(
+      screen.getByText('Which evening interests would you like suggestions for (optional)?')
+    ).toBeInTheDocument();
     expect(screen.queryByText('Fallback reply')).not.toBeInTheDocument();
   });
   it('uses the empty starter chat when a stored selection no longer exists', async () => {

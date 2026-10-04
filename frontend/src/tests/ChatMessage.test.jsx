@@ -50,4 +50,46 @@ describe('ChatMessage', () => {
       expect(screen.getByText('Old saved reply')).toBeInTheDocument();
     }
   );
+  it('renders introduction, independent asks and optional questions after a JSON reload', () => {
+    const message = JSON.parse(
+      JSON.stringify({
+        sender: 'bot',
+        text: 'duplicate fallback',
+        presentation: {
+          ...presentation,
+          updated: [],
+          introduction: 'A few details remain.',
+          needed: [
+            'What time would you like to leave? You can choose 9:00 AM.',
+            'Would you like to provide a car, or skip it?',
+          ],
+          questions: ['Which evening interests would you like suggestions for (optional)?'],
+        },
+      })
+    );
+    render(<ChatMessage message={message} />);
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    expect(screen.getByText('A few details remain.')).toBeInTheDocument();
+    expect(screen.queryByText('duplicate fallback')).not.toBeInTheDocument();
+    expect(
+      within(screen.getByRole('region', { name: 'Questions' })).getAllByRole('listitem')
+    ).toHaveLength(1);
+  });
+
+  it.each([{ introduction: {} }, { questions: [42] }])(
+    'falls back for malformed new sections',
+    (extra) => {
+      render(
+        <ChatMessage
+          message={{
+            sender: 'bot',
+            text: 'Safe old reply',
+            presentation: { ...presentation, ...extra },
+          }}
+        />
+      );
+      expect(screen.getByText('Safe old reply')).toBeInTheDocument();
+      expect(screen.queryByRole('list')).not.toBeInTheDocument();
+    }
+  );
 });

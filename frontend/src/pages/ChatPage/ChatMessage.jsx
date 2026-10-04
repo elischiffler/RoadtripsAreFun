@@ -7,15 +7,23 @@ export default function ChatMessage({ message }) {
   if (
     !presentation ||
     typeof presentation.title !== 'string' ||
-    !['updated', 'needed', 'notes'].every((key) => isList(presentation[key]))
+    !['updated', 'needed', 'notes'].every((key) => isList(presentation[key])) ||
+    (presentation.introduction !== undefined && typeof presentation.introduction !== 'string') ||
+    (presentation.questions !== undefined && !isList(presentation.questions))
   ) {
     return <Typography variant="body1">{message.text}</Typography>;
   }
   return (
     <Box sx={{ overflowWrap: 'anywhere', minWidth: 0 }}>
+      {presentation.introduction && (
+        <Typography variant="body1" sx={{ mb: 1.5 }}>
+          {presentation.introduction}
+        </Typography>
+      )}
       {[
         [presentation.title, presentation.updated],
         ['Still needed', presentation.needed],
+        ['Questions', presentation.questions || []],
       ].map(([title, items]) =>
         items.length ? (
           <Box component="section" aria-label={title} key={title} sx={{ mb: 1.5 }}>

@@ -129,10 +129,16 @@ class TripDetailPresentation(BaseModel):
     updated: list[str] = Field(default_factory=list)
     needed: list[str] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
+    introduction: str = ""
+    questions: list[str] = Field(default_factory=list)
 
     def readable_reply(self) -> str:
-        sections = []
-        for label, items in ((self.title, self.updated), ("Still needed", self.needed)):
+        sections = [self.introduction] if self.introduction else []
+        for label, items in (
+            (self.title, self.updated),
+            ("Still needed", self.needed),
+            ("Questions", self.questions),
+        ):
             if items:
                 sections.append(label + "\n" + "\n".join("• " + item for item in items))
         sections.extend(self.notes)

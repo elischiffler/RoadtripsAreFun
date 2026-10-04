@@ -7,12 +7,14 @@ with no network and no DB. This is the fake-injection template for the agent.
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 
 import pytest
 
 from app.agent.extraction import EXTRACTION_PROMPT
 from app.agent.memory import ConversationMemory, MemoryFact
+from app.agent.questions import QUESTION_FORMAT_PROMPT
 from app.agent.schemas import (
     AgentUsage,
     LLMMessage,
@@ -55,12 +57,15 @@ class FakeProvider:
         fail: bool = False,
         error: Exception | None = None,
         extraction_responses: list[str] | None = None,
+        question_responses: list[str] | None = None,
     ):
         self.name = name
         self._responses = list(responses or [LLMResponse(content="Hi there!")])
         self._configured = configured
         self._fail = fail
         self._error = error
+        self.question_responses = question_responses
+        self.question_calls = 0
         self.calls = 0
         self.extraction_calls = 0
         self._extraction_responses = list(extraction_responses or ['{"details":{}}'])
@@ -73,6 +78,25 @@ class FakeProvider:
 
     def complete(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
         self.seen_messages.append(list(messages))
+        if messages and messages[0].content == QUESTION_FORMAT_PROMPT:
+            self.question_calls += 1
+            if self._fail:
+                from app.agent.providers import ProviderError
+
+                raise self._error or ProviderError(f"{self.name} failed")
+            content = (
+                self.question_responses[
+                    min(self.question_calls - 1, len(self.question_responses) - 1)
+                ]
+                if self.question_responses
+                else json.dumps(
+                    {
+                        "introduction": json.loads(messages[-1].content)["assistant_reply"],
+                        "requests": [],
+                    }
+                )
+            )
+            return LLMResponse(content=content, provider=self.name)
         is_extraction = bool(messages and messages[0].content == EXTRACTION_PROMPT)
         if is_extraction:
             self.extraction_calls += 1

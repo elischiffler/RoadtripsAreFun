@@ -30,6 +30,7 @@ from app.agent.presentation import detail_request, present_details
 from app.agent.progress import emit, stage
 from app.agent.prompt import RECENT_MESSAGE_LIMIT, build_messages
 from app.agent.providers import LLMProvider, ProvidersExhausted
+from app.agent.questions import parse_question_reply, present_questions, question_format_messages
 from app.agent.schemas import (
     AgentAction,
     AgentChatRequest,
@@ -598,6 +599,25 @@ async def run_turn(
             notes.append("The details are saved. Ask me to create the route and itinerary.")
         presentation = format_details(final_trip, notes)
         reply = presentation.readable_reply()
+
+    if presentation is None:
+        try:
+            try:
+                question_reply = parse_question_reply(reply)
+            except ValueError:
+                # One bounded compatibility call; no sentence splitting or tools.
+                with stage("agent.model", iteration=iterations + 1):
+                    model_calls += 1
+                    formatted = providers.complete(question_format_messages(reply), [])
+                add_usage(formatted.usage)
+                question_reply = parse_question_reply(formatted.content)
+            presentation = present_questions(final_trip, question_reply)
+            reply = presentation.readable_reply() if presentation else question_reply.introduction
+        except (ValueError, ProvidersExhausted):
+            presentation = format_details(
+                final_trip, ["I couldn't format the assistant's response. Please try again."]
+            )
+            reply = presentation.readable_reply()
 
     # Monitor: flag (don't rewrite) any INTERNAL context that leaked into the
     # reply — the client hint, trip-profile internals, raw coords, tool syntax.
