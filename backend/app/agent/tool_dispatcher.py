@@ -737,19 +737,15 @@ class AppToolDispatcher:
         if ctx.memory is None:
             raise ValueError("A saved trip profile is required.")
         trip = self._load_trip_profile(ctx)
-        missing = []
-        if not trip.start_address or not trip.start_coords:
-            missing.append("validated start location")
-        if not trip.destination_address or not trip.destination_coords:
-            missing.append("validated destination")
-        if trip.num_stops is None:
-            missing.append("number of stops")
-        if trip.budget is None:
-            missing.append("nightly hotel budget")
-        if not trip.start_date:
-            missing.append("upcoming departure")
-        if trip.car_status == "unanswered":
-            missing.append("car choice or explicit skip")
+        labels = {
+            "start_address": "validated start location",
+            "destination_address": "validated destination",
+            "num_stops": "number of stops",
+            "budget": "nightly hotel budget",
+            "departure_date": "upcoming departure",
+            "car": "car choice or explicit skip",
+        }
+        missing = [labels[field] for field in trip.missing_details()]
         if missing:
             raise ValueError("Complete the saved trip profile: " + ", ".join(missing) + ".")
 

@@ -36,30 +36,42 @@ const BOT = 'bot';
 const USER = 'user';
 
 /** Append a message to the named chat in `chats` state. */
-export const addMessage = (chatId, setChats, text, sender) => {
+const updateMessages = (setChats, chatsRef, update) => {
+  // React may batch the setter until after persistence starts. Keep the same
+  // immutable update in the persistence ref so this turn's reply is saved.
+  if (chatsRef) chatsRef.current = update(chatsRef.current);
+  setChats(update);
+};
+
+export const addMessage = (chatId, setChats, text, sender, presentation, chatsRef) => {
   if (text === 'loading') {
-    setChats((prev) =>
+    updateMessages(setChats, chatsRef, (prev) =>
       prev.map((c) =>
         c.id === chatId ? { ...c, messages: [...c.messages, { type: 'loading-chat' }] } : c
       )
     );
     return;
   }
-  const msg = { text: String(text), sender };
-  setChats((prev) => {
+  const msg = { text: String(text), sender, ...(presentation ? { presentation } : {}) };
+  updateMessages(setChats, chatsRef, (prev) => {
     return prev.map((c) => {
       if (c.id !== chatId) return c;
       const last = c.messages[c.messages.length - 1];
       // Deduplicate consecutive identical messages
-      if (last?.text === msg.text) return c;
+      if (
+        last?.text === msg.text &&
+        last?.sender === sender &&
+        JSON.stringify(last?.presentation) === JSON.stringify(presentation)
+      )
+        return c;
       return { ...c, messages: [...c.messages, msg] };
     });
   });
 };
 
 /** Remove the loading bubble from a chat. */
-export const removeLoader = (chatId, setChats) => {
-  setChats((prev) =>
+export const removeLoader = (chatId, setChats, chatsRef) => {
+  updateMessages(setChats, chatsRef, (prev) =>
     prev.map((c) =>
       c.id === chatId ? { ...c, messages: c.messages.filter((m) => m.type !== 'loading-chat') } : c
     )
@@ -271,12 +283,19 @@ export function useTripWorkflow({
   }, [route, setCurrentStep]);
 
   // ── Message shorthands ───────────────────────────────────────────────────
-  const bot = useCallback((text) => addMessage(chatIdRef.current, setChats, text, BOT), [setChats]);
-  const loading = useCallback(
-    () => addMessage(chatIdRef.current, setChats, 'loading', BOT),
-    [setChats]
+  const bot = useCallback(
+    (text, presentation) =>
+      addMessage(chatIdRef.current, setChats, text, BOT, presentation, chatsRef),
+    [setChats, chatsRef]
   );
-  const noLoader = useCallback(() => removeLoader(chatIdRef.current, setChats), [setChats]);
+  const loading = useCallback(
+    () => addMessage(chatIdRef.current, setChats, 'loading', BOT, undefined, chatsRef),
+    [setChats, chatsRef]
+  );
+  const noLoader = useCallback(
+    () => removeLoader(chatIdRef.current, setChats, chatsRef),
+    [setChats, chatsRef]
+  );
 
   // ── Build a ChatData-shaped snapshot for DB persistence ──────────────────
   // Same 24 positional fields the ChatData constructor / DatabaseUtils expect.
@@ -341,8 +360,8 @@ export function useTripWorkflow({
   // itinerary_updated → payload.itinerary drives the itinerary
   // Then persist a ChatData snapshot so Map/Itinerary/DB see it.
   const applyAgentActions = useCallback(
-    async (actions) => {
-      if (!Array.isArray(actions) || actions.length === 0) return;
+    async (actions, presentedNotes = []) => {
+      actions = Array.isArray(actions) ? actions : [];
 
       const overrides = {};
       let sawRoute = false;
@@ -353,7 +372,9 @@ export function useTripWorkflow({
         if (action.type === 'route_updated' && action.payload?.route) {
           const newRoute = action.payload.route;
           if (Array.isArray(newRoute.warnings)) {
-            newRoute.warnings.forEach((warning) => bot(warning));
+            newRoute.warnings
+              .filter((warning) => !presentedNotes.includes(warning))
+              .forEach((warning) => bot(warning));
           }
           setRoute(newRoute);
           overrides.route = newRoute;
@@ -447,8 +468,6 @@ export function useTripWorkflow({
         }
       }
 
-      if (Object.keys(overrides).length === 0) return;
-
       const snap = buildSnapshot(overrides);
 
       // Title the chat once a route first lands (agent gathered the destination).
@@ -482,7 +501,7 @@ export function useTripWorkflow({
             : '';
         if (!text) return;
 
-        addMessage(id, setChats, text, USER);
+        addMessage(id, setChats, text, USER, undefined, chatsRef);
         loading();
         setProcessProgress({ startedAt: Date.now(), entries: [] });
         const logProgress = import.meta.env.DEV ? createProgressLogger() : null;
@@ -514,7 +533,7 @@ export function useTripWorkflow({
         noLoader();
 
         if (response && typeof response.reply === 'string') {
-          bot(response.reply);
+          bot(response.reply, response.presentation);
           if (response.tripProfile) setTripProfile(response.tripProfile);
           // Trace tool activity and the backend's authoritative profile on every turn.
           logTripToolActivity(
@@ -523,7 +542,6 @@ export function useTripWorkflow({
             response.validationIssues,
             response.extractedFields
           );
-          await applyAgentActions(response.actions);
           if (
             response.tripProfile &&
             !response.actions?.some((action) => action?.type === 'trip_profile_updated')
@@ -531,8 +549,7 @@ export function useTripWorkflow({
             logTripProfileChanges(tripProfileRef.current, response.tripProfile);
             tripProfileRef.current = response.tripProfile;
           }
-          if (response.tripProfile && !response.actions?.length)
-            await persistSnapshot(buildSnapshot());
+          await applyAgentActions(response.actions, response.presentation?.notes);
         } else {
           // The turn produced NO reply (network / 503 / other). This is not an
           // agent-recoverable tool error — those are fed back within the turn and
@@ -561,9 +578,8 @@ export function useTripWorkflow({
       loading,
       noLoader,
       setChats,
+      chatsRef,
       applyAgentActions,
-      persistSnapshot,
-      buildSnapshot,
     ]
   );
 

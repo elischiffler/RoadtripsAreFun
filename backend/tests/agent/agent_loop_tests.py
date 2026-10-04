@@ -48,7 +48,7 @@ async def test_saved_location_receipt_uses_geocode_even_when_model_omits_it(
     result = await run_turn(
         _request("drive from SLO"), FallbackChain([provider]), fake_memory, AppToolDispatcher()
     )
-    assert result.reply.startswith(f"Saved {label}: {address}.")
+    assert result.presentation.updated == [f"{label.capitalize()}: {address}"]
     assert result.tripProfile[field] == address
     assert address in provider.seen_messages[1][0].content
     if field == "start_address":
@@ -458,10 +458,9 @@ async def test_partial_completion_cannot_be_reported_as_ready(fake_memory):
         ]
     )
     result = await run_turn(_request(), FallbackChain([provider]), fake_memory, tools)
-    assert (
-        result.reply
-        == "Your route is ready, but the itinerary could not be created. Please retry it."
-    )
+    assert result.presentation.notes == [
+        "Your route is ready, but the itinerary could not be created. Please retry it."
+    ]
     assert [action.type for action in result.actions] == ["route_updated"]
     assert result.actions[0].payload == {"route": route_dict}
 

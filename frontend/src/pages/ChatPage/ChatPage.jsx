@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import { UserDataContext } from '../../states/UserDataContext';
 import TripProgress from './TripProgress';
+import ChatMessage from './ChatMessage';
 import ThemedTooltip from '../../components/ThemedTooltip';
 import ItineraryButton from '../../components/buttons/ItineraryButton';
 import MapButton from '../../components/buttons/MapButton';
@@ -107,7 +108,7 @@ const WorkflowPanel = ({
                 return (
                   <Box key={index} className="message-container user">
                     <Box className="message user">
-                      <Typography variant="body1">{message.text}</Typography>
+                      <ChatMessage message={message} />
                     </Box>
                     <Box className="button-container">
                       {message.buttons.map((btn, bi) => (
@@ -127,7 +128,7 @@ const WorkflowPanel = ({
               if (message.text != null) {
                 return (
                   <Box key={index} className={`message ${message.sender}`}>
-                    <Typography variant="body1">{message.text}</Typography>
+                    <ChatMessage message={message} />
                   </Box>
                 );
               }

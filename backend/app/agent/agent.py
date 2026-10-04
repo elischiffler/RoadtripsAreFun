@@ -26,6 +26,7 @@ from app.agent import debug
 from app.agent.extraction import ExtractionFormatError, extract_trip_patch
 from app.agent.location_confirmation import confirm_location
 from app.agent.memory import ConversationMemory, MemoryStore
+from app.agent.presentation import detail_request, present_details
 from app.agent.progress import emit, stage
 from app.agent.prompt import RECENT_MESSAGE_LIMIT, build_messages
 from app.agent.providers import LLMProvider, ProvidersExhausted
@@ -256,6 +257,9 @@ async def run_turn(
     recent_turns = _load_recent_turns(memory, user_id, chat_id)
     trip = _load_trip(memory, user_id, chat_id)
     debug.trip_snapshot("before", trip)
+    initial_trip = trip
+    presentation_request = detail_request(request.message)
+    completion_status = None
 
     # 3. Extract a structured patch on every turn, then validate it through the
     # existing backend recorder. The model never owns the saved profile.
@@ -279,12 +283,6 @@ async def run_turn(
                 trip = confirm_location(memory, user_id, chat_id, request.locationConfirmation)
             except ValueError as exc:
                 return AgentChatResponse(reply=str(exc), tripProfile=trip.model_dump(mode="json"))
-            address = getattr(trip, request.locationConfirmation.field)
-            label = (
-                "starting location"
-                if request.locationConfirmation.field == "start_address"
-                else "destination"
-            )
             actions.append(
                 AgentAction(
                     type="trip_profile_updated",
@@ -292,15 +290,10 @@ async def run_turn(
                     payload={"trip_profile": trip.model_dump(mode="json")},
                 )
             )
+            presentation = present_details(initial_trip, trip, {})
             return AgentChatResponse(
-                reply=f"Saved {label}: {address}. "
-                + (
-                    "Please provide your departure date again for this starting location."
-                    if request.locationConfirmation.field == "start_address"
-                    else "Choose the remaining location below."
-                    if trip.pending_locations
-                    else "Continue when you're ready to plan."
-                ),
+                reply=presentation.readable_reply(),
+                presentation=presentation,
                 actions=actions,
                 tripProfile=trip.model_dump(mode="json"),
             )
@@ -345,6 +338,22 @@ async def run_turn(
             if prompt_usage or completion_usage
             else None,
         )
+    except ProvidersExhausted:
+        if trip.is_empty() and not presentation_request:
+            raise
+        presentation = present_details(
+            trip,
+            trip,
+            {},
+            full=presentation_request == "summary",
+            notes=["The planning assistant is temporarily unavailable; please try again shortly."],
+        )
+        return AgentChatResponse(
+            reply=presentation.readable_reply(),
+            presentation=presentation,
+            tripProfile=trip.model_dump(mode="json", exclude_none=True),
+            modelCalls=1,
+        )
     model_calls = len(extraction_responses)
     prompt_tokens = 0
     completion_tokens = 0
@@ -362,20 +371,34 @@ async def run_turn(
             completion_tokens += current.completionTokens
             has_completion_usage = True
 
+    def outcome_notes() -> list[str]:
+        notes = [error.error for error in tool_errors]
+        for action in actions:
+            if action.type == "route_updated" and action.payload:
+                warnings = (action.payload.get("route") or {}).get("warnings") or []
+                notes.extend(warning for warning in warnings if isinstance(warning, str))
+        if partial_completion and not any(action.type == "itinerary_updated" for action in actions):
+            notes.append(
+                "Your route is ready, but the itinerary could not be created. Please retry it."
+            )
+        elif completion_status == "complete":
+            notes.append("Your route and itinerary are ready.")
+        elif any(action.type == "itinerary_updated" for action in actions):
+            notes.append("Your itinerary has been created.")
+        return list(dict.fromkeys(notes))
+
     def validated_response_during_outage() -> AgentChatResponse:
         """Return already validated effects if a later model call fails."""
         final_trip = _load_trip(memory, user_id, chat_id)
-        reply = "I saved the trip details I could validate. " if actions else ""
-        if validation_issues:
-            reply += " ".join(validation_issues.values()) + " "
-        if tool_errors:
-            reply += "Some details could not be saved. "
-        reply += "The planning assistant is temporarily unavailable; please try again shortly."
-        reply = with_saved_locations(reply, final_trip)
+        notes = outcome_notes()
+        notes.append("The planning assistant is temporarily unavailable; please try again shortly.")
+        presentation = format_details(final_trip, notes)
+        reply = presentation.readable_reply()
         debug.trip_snapshot("after", final_trip)
         debug.turn_end(reply, tools_used, actions)
         return AgentChatResponse(
             reply=reply,
+            presentation=presentation,
             toolsUsed=tools_used,
             toolErrors=tool_errors,
             actions=actions,
@@ -392,17 +415,9 @@ async def run_turn(
             else None,
         )
 
-    saved_location_fields: list[str] = []
-
-    def with_saved_locations(reply: str, profile: TripProfile) -> str:
-        """Show exact persisted addresses even if the model omits their confirmation."""
-        labels = {"start_address": "starting location", "destination_address": "destination"}
-        receipts = [
-            f"Saved {labels[field]}: {getattr(profile, field)}."
-            for field in saved_location_fields
-            if getattr(profile, field)
-        ]
-        return "\n\n".join([*receipts, reply])
+    def format_details(profile: TripProfile, notes: list[str] | None = None):
+        full = presentation_request == "summary" or completion_status == "complete"
+        return present_details(initial_trip, profile, validation_issues, full=full, notes=notes)
 
     for extracted_response in extraction_responses:
         add_usage(extracted_response.usage)
@@ -415,24 +430,14 @@ async def run_turn(
             tool_errors.append(AgentToolError(name=call.name, error=result.error))
         if result.ok and result.result:
             validation_issues.update(result.result.get("clarifications") or {})
-            recorded_profile = result.result.get("trip_profile") or {}
-            saved_location_fields.extend(
-                field
-                for field in ("start_address", "destination_address")
-                if field in patch and field not in validation_issues and recorded_profile.get(field)
-            )
         _collect_action(result, chat_id, actions)
 
     trip = _load_trip(memory, user_id, chat_id)
     if trip.pending_locations:
-        prompts = []
-        for field, pending in trip.pending_locations.items():
-            label = "starting location" if field == "start_address" else "destination"
-            prompts.append(
-                f"Please choose your {label} for ‘{pending.query}’, or enter a full city and state or address."
-            )
+        presentation = format_details(trip, outcome_notes())
         return AgentChatResponse(
-            reply=with_saved_locations("\n\n".join(prompts), trip),
+            reply=presentation.readable_reply(),
+            presentation=presentation,
             actions=actions,
             toolsUsed=tools_used,
             toolErrors=tool_errors,
@@ -443,7 +448,9 @@ async def run_turn(
             usage=AgentUsage(
                 promptTokens=prompt_tokens if has_prompt_usage else None,
                 completionTokens=completion_tokens if has_completion_usage else None,
-            ),
+            )
+            if has_prompt_usage or has_completion_usage
+            else None,
         )
     messages = build_messages(
         facts=facts,
@@ -471,7 +478,7 @@ async def run_turn(
         with stage("agent.model", iteration=0):
             response = providers.complete(messages, specs)
     except ProvidersExhausted:
-        if patch:
+        if patch or not trip.is_empty() or presentation_request:
             return validated_response_during_outage()
         raise
     model_calls += 1
@@ -496,7 +503,9 @@ async def run_turn(
             result = await tools.dispatch(call, ctx)
             tools_used.append(call.name)
             if call.name == "complete_trip" and result.result:
-                partial_completion |= result.result.get("status") == "partial"
+                if result.ok:
+                    completion_status = result.result.get("status")
+                    partial_completion |= completion_status == "partial"
             debug.tool_fired(call.name, call.arguments, result.ok, result.result, result.error)
             # A failed tool is fed back to the model (not raised) and never becomes
             # an action, so record its error for the client to log/debug.
@@ -569,7 +578,20 @@ async def run_turn(
         reply = "Your route is ready, but the itinerary could not be created. Please retry it."
 
     final_trip = _load_trip(memory, user_id, chat_id)
-    reply = with_saved_locations(reply, final_trip)
+    presentation = None
+    if (
+        patch
+        or validation_issues
+        or presentation_request
+        or completion_status
+        or "complete_trip" in tools_used
+        or final_trip != initial_trip
+    ):
+        notes = outcome_notes()
+        if not final_trip.missing_details() and not tool_errors and not notes:
+            notes.append("The details are saved. Ask me to create the route and itinerary.")
+        presentation = format_details(final_trip, notes)
+        reply = presentation.readable_reply()
 
     # Monitor: flag (don't rewrite) any INTERNAL context that leaked into the
     # reply — the client hint, trip-profile internals, raw coords, tool syntax.
@@ -597,6 +619,7 @@ async def run_turn(
     final_trip = _load_trip(memory, user_id, chat_id)
     return AgentChatResponse(
         reply=reply,
+        presentation=presentation,
         toolsUsed=tools_used,
         toolErrors=tool_errors,
         actions=actions,

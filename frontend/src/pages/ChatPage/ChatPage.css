@@ -79,6 +79,16 @@
   color: var(--cream-light);
 }
 
+@media (max-width: 600px) {
+  .chat-messages {
+    padding-right: 20px;
+  }
+
+  .message.bot {
+    max-width: 100%;
+  }
+}
+
 .message-container {
   display: flex;
   flex-direction: column;

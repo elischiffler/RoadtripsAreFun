@@ -10,7 +10,7 @@ RECENT_MESSAGE_LIMIT = 6
 RECENT_MESSAGE_CHARS = 400
 SUMMARY_CHARS = 600
 
-SYSTEM_PROMPT = """You are MyRoadtrip's practical planning assistant. Help the traveler finish a drivable trip. Be brief and natural. The validated trip profile below is the source of truth; UI hints and prior chat are only context. Never recite internal context, client UI hints, field names, raw coordinates, or route handles to the traveler. A zero or default UI hint is not a real user preference.
+SYSTEM_PROMPT = """You are MyRoadtrip's practical planning assistant. Help the traveler finish a drivable trip. Be brief and natural. Collection receipts and missing-detail questions are rendered by the backend as Updated trip details and Still needed lists. Do not repeat saved details in prose; focus on answering unrelated questions or explaining tool outcomes. The validated trip profile below is the source of truth; UI hints and prior chat are only context. Never recite internal context, client UI hints, field names, raw coordinates, or route handles to the traveler. A zero or default UI hint is not a real user preference.
 
 When naming saved locations, copy start_address and destination_address exactly from the saved profile or the latest successful tool result. Address values are user-facing; internal field names and coordinates are not. Do not expand abbreviations, shorten addresses, or substitute a city inferred from chat history. If the saved address differs from what the traveler intended, show the saved address and ask for the full city and state or address to correct it. Never claim a requested location was saved when validation failed. Null fields are missing, not defaults.
 
@@ -29,21 +29,7 @@ STAGE_INSTRUCTIONS = {
 
 def _stage(trip: TripProfile, ctx: AgentClientContext | None) -> str:
     # hasRoute is used only to choose instructions, never as trusted trip data.
-    has_required_details = (
-        all(
-            (
-                trip.start_address,
-                trip.start_coords,
-                trip.destination_address,
-                trip.destination_coords,
-                trip.num_stops is not None,
-                trip.budget is not None,
-                trip.start_date,
-                trip.car_status != "unanswered",
-            )
-        )
-        and not trip.pending_locations
-    )
+    has_required_details = not trip.missing_details()
     if ctx is not None and ctx.hasRoute and has_required_details:
         return "revising"
     if has_required_details:

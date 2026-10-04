@@ -221,6 +221,31 @@ class TripProfile(BaseModel):
         d.pop("car_status", None)
         return not any(v for v in d.values())
 
+    def missing_details(self) -> list[str]:
+        """Required saved inputs, shared by collection and complete_trip."""
+        missing = []
+        if (
+            "start_address" in self.pending_locations
+            or not self.start_address
+            or not self.start_coords
+        ):
+            missing.append("start_address")
+        if (
+            "destination_address" in self.pending_locations
+            or not self.destination_address
+            or not self.destination_coords
+        ):
+            missing.append("destination_address")
+        if self.num_stops is None:
+            missing.append("num_stops")
+        if self.budget is None:
+            missing.append("budget")
+        if not self.start_date:
+            missing.append("departure_date")
+        if self.car_status == "unanswered":
+            missing.append("car")
+        return missing
+
     # --- JSON mapping (stored as one per-chat 'trip' memory row) -----------
 
     def to_json(self) -> str:

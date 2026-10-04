@@ -138,6 +138,29 @@ describe("submit('chat_message')", () => {
       expect(screen.queryByText('Salem-Leckrone Airport, Illinois')).not.toBeInTheDocument()
     );
   });
+  it('persists list replies even when the turn has no data actions', async () => {
+    const presentation = {
+      title: 'Updated trip details',
+      updated: [],
+      needed: ['What date would you like to leave?'],
+      notes: [],
+    };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Still needed: departure date',
+      presentation,
+      actions: [],
+    });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    await waitFor(() => expect(updateUserData).toHaveBeenCalled());
+    const savedMessages = updateUserData.mock.calls[0][2][0].messages;
+    expect(savedMessages).toContainEqual({
+      sender: 'bot',
+      text: 'Still needed: departure date',
+      presentation,
+    });
+    expect(savedMessages.some((message) => message.type === 'loading-chat')).toBe(false);
+  });
   it('streams visible progress in production, clears it after failure and resets the next turn', async () => {
     vi.stubEnv('DEV', false);
     let finish;

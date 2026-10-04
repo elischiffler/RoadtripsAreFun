@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from app.agent.memory import ConversationMemory, MemoryFact
 from app.agent.trip_profile import TripProfile
 from app.crud import chat_crud, memory_crud
+from app.schemas.chat_schemas import ChatLogSchema
 from app.utils.location_resolution import LocationCandidate, PendingLocation
 
 
@@ -22,10 +23,6 @@ class RouteComponent(BaseModel):
 
 class InitialComponent(BaseModel):
     initial: dict
-
-
-class LogComponent(BaseModel):
-    messages: list[dict]
 
 
 PENDING_JSON = TripProfile(
@@ -88,7 +85,23 @@ def seed():
     chat_crud.update_chat_component(
         OWNER_A,
         CHAT_ID,
-        LogComponent(messages=[{"sender": "user", "text": "fixture hello"}]),
+        ChatLogSchema(
+            id=1,
+            title="Fixture trip",
+            messages=[
+                {"sender": "user", "text": "fixture hello"},
+                {
+                    "sender": "bot",
+                    "text": "Updated trip details: Hotel budget: $200 per night",
+                    "presentation": {
+                        "title": "Updated trip details",
+                        "updated": ["Hotel budget: $200 per night"],
+                        "needed": ["What date would you like to leave?"],
+                        "notes": [],
+                    },
+                },
+            ],
+        ),
         "ChatLog",
     )
     assert chat_crud.get_segments(OWNER_A, CHAT_ID, ROUTE_A) == GOOD_COORDS
@@ -173,6 +186,10 @@ def verify():
     assert (
         chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_log"]["messages"][0]["text"] == "fixture hello"
     )
+    restored_log = ChatLogSchema.model_validate(chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_log"])
+    assert restored_log.messages[0].presentation is None
+    assert restored_log.messages[1].presentation.updated == ["Hotel budget: $200 per night"]
+    assert restored_log.messages[1].presentation.needed == ["What date would you like to leave?"]
     assert chat_crud.get_segments(OWNER_A, CHAT_ID, ROUTE_A) == GOOD_COORDS
     assert chat_crud.get_segments(OWNER_B, CHAT_ID, ROUTE_A) == []
     assert memory_crud.load_facts(OWNER_A)[0].value == "San Luis Obispo"

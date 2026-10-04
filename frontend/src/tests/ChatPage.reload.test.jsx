@@ -70,6 +70,36 @@ describe('ChatPage reload', () => {
       address: 'Salem-Leckrone Airport, Illinois',
     });
   });
+  it('restores lists alongside old plain text messages', async () => {
+    sessionStorage.clear();
+    initializeUserData.mockResolvedValueOnce({
+      chats: [
+        {
+          id: 1,
+          title: 'Trip',
+          messages: [
+            { sender: 'bot', text: 'Old reply' },
+            {
+              sender: 'bot',
+              text: 'Fallback reply',
+              presentation: {
+                title: 'Updated trip details',
+                updated: ['Hotel budget: $200 per night'],
+                needed: ['What date would you like to leave?'],
+                notes: [],
+              },
+            },
+          ],
+        },
+      ],
+      UserData: new Data(new ChatLogs([new ChatData(1)])),
+    });
+    render(<Harness />);
+    expect(await screen.findByText('Hotel budget: $200 per night')).toBeInTheDocument();
+    expect(screen.getByText('Old reply')).toBeInTheDocument();
+    expect(screen.getAllByRole('list')).toHaveLength(2);
+    expect(screen.queryByText('Fallback reply')).not.toBeInTheDocument();
+  });
   it('uses the empty starter chat when a stored selection no longer exists', async () => {
     sessionStorage.clear();
     sessionStorage.setItem('selectedChatId', '9');

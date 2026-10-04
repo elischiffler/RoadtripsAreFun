@@ -122,10 +122,28 @@ class AgentToolError(BaseModel):
     error: str
 
 
+class TripDetailPresentation(BaseModel):
+    """Plain text sections, rendered as native lists; also stored in ChatLog."""
+
+    title: str = "Updated trip details"
+    updated: list[str] = Field(default_factory=list)
+    needed: list[str] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+
+    def readable_reply(self) -> str:
+        sections = []
+        for label, items in ((self.title, self.updated), ("Still needed", self.needed)):
+            if items:
+                sections.append(label + "\n" + "\n".join("• " + item for item in items))
+        sections.extend(self.notes)
+        return "\n\n".join(sections)
+
+
 class AgentChatResponse(BaseModel):
     """``POST /agent/chat`` response body."""
 
     reply: str
+    presentation: TripDetailPresentation | None = None
     toolsUsed: list[str] = Field(default_factory=list)
     toolErrors: list[AgentToolError] = Field(default_factory=list)
     actions: list[AgentAction] = Field(default_factory=list)
