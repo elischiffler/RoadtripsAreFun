@@ -57,27 +57,39 @@ All colours are defined in `frontend/src/components/Theme.jsx` and exposed as CS
 
 Technical docs live in [`docs/`](./docs):
 
+- [Current repository context](.steering/overview.md) — source ownership,
+  repeatable checks, operational boundaries and the [active change map](.steering/current-work.md).
+
+- [Trip detail lists](docs/agent-trip-detail-lists.md),
+  [location confirmations](docs/agent-location-confirmations.md),
+  [process status](docs/agent-progress.md) and [dated hotel prices](docs/hotel-prices.md)
+  — current feature contracts and verification limits.
+
 - [Owner routing settings](./docs/owner-routing-settings.md) — verified Cognito
   eligibility, session lifecycle, shared planner enforcement, and validation limits.
 
-- [Route-Finding Algorithm](./docs/route-finding.md) — the two-phase route
-  generation flow, day-by-day scheduling, attraction and hotel discovery, and
-  data models, with Mermaid diagrams.
+- [Route-Finding Algorithm](./docs/route-finding.md) — current CP-SAT notes and
+  historical greedy design, with Mermaid diagrams. Use the
+  [architecture map](.steering/architecture.md) for current planner ownership.
 
 ---
 
 ## Local Setup
 
 ### Prerequisites
-- Python 3.9
-- Node.js (LTS)
-- A [Neon](https://neon.tech) Postgres database
+- Python 3.12 on POSIX/WSL, or Docker for the pinned backend
+- Node.js 24
+- PostgreSQL for native persistence; use the disposable local test stack for fixtures
+
+See [development context](.steering/development.md) for environment names and
+platform limitations. The root Makefile uses POSIX shell syntax; the pinned
+backend includes `uvloop`, which is not a native Windows dependency.
 
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/elischiffler/MyRoadtrip.git
-cd MyRoadtrip
+git clone https://github.com/elischiffler/RoadtripsAreFun.git
+cd RoadtripsAreFun
 ```
 
 ### 2. Configure environment variables
@@ -93,16 +105,16 @@ See `.env.example` for all required keys. The `.env` at the repo root is shared 
 
 ```bash
 cd backend
-python3.9 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt 'ruff==0.16.7'
 ```
 
 ### 4. Frontend
 
 ```bash
 cd frontend
-npm install
+npm ci
 ```
 
 From the repo root:
@@ -126,7 +138,10 @@ make run-frontend
 
 ## Database Schema
 
-Run once against your Neon database (via `psql` or the Neon SQL editor):
+The following is the checked-in local schema reference used by disposable tests.
+Production schema and migration history remain unverified; do not apply this DDL
+to a hosted database to satisfy local test gates. The disposable test's exact DDL
+is [tests/postgres/schema.sql](tests/postgres/schema.sql).
 
 ```sql
 CREATE TABLE IF NOT EXISTS chats (
@@ -164,16 +179,28 @@ CREATE INDEX IF NOT EXISTS idx_steps_leg_id ON steps(leg_id);
 
 ## CI
 
-GitHub Actions runs on every PR, path-filtered per service:
+GitHub Actions runs on every PR and main push, without service path filters:
 
-- `backend/**` changes → runs `pytest` ([workflow](.github/workflows/backend-ci.yml))
-- `frontend/**` changes → runs `npm run build` ([workflow](.github/workflows/frontend-ci.yml))
+- [Backend](.github/workflows/backend-ci.yml): Ruff format/lint and pytest coverage >=63%.
+- [Frontend](.github/workflows/frontend-ci.yml): Node 24, npm ci, format/lint,
+  coverage tests and build.
+- [Containers](.github/workflows/container-ci.yml): diagnostic preview smoke and
+  isolated backend tests.
+- [Disposable PostgreSQL](.github/workflows/disposable-postgres-ci.yml): CRUD,
+  ownership, recreation, loss recovery and backup/restore.
+
+Repository check enforcement was not verified by this context refresh. No
+automatic production Docker deployment is configured in these workflows.
 
 ---
 
 ## Running Tests
 
-All tests use mocks — no real API keys or database connection needed.
+Unit tests use controlled provider/database responses. Separate container,
+disposable real PostgreSQL and signed local journey tests have their own
+prerequisites. They do not establish actual Cognito or full live provider acceptance.
+Required format/lint/coverage/build commands are in [AGENTS.md](AGENTS.md) and
+the [development map](.steering/development.md).
 
 **From the repo root:**
 

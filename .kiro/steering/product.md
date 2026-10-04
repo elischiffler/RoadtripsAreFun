@@ -1,27 +1,10 @@
-# Product: MyRoadtrip – RoadtripsAreFun
+# Product context
 
-**MyRoadtrip** is a road trip planning application hosted at [github.com/elischiffler/MyRoadtrip](https://github.com/elischiffler/MyRoadtrip). It is a personal monorepo containing two services:
+The current product and implementation map is [`.steering/overview.md`](../../.steering/overview.md).
+Read [active work](../../.steering/current-work.md) to distinguish integrated
+feature behavior from ongoing implementation. Source and `AGENTS.md` take
+precedence over context snapshots.
 
-- `backend/` — Python/FastAPI routing microservice (formerly `rp-routing`)
-- `frontend/` — React/Vite UI (formerly `rp-ui`)
-
-## Core Capabilities
-
-- **Route generation**: Computes driving routes via the Mapbox Directions API, with support for intermediate waypoints.
-- **Stop discovery**: Finds attractions along a route using the **TripAdvisor Terra Partner API** (the successor to the deprecated Content API), ordered best-first by rating.
-- **Hotel finding**: Locates hotels at nightly stopping points using dated Google Hotels web scraping with verified locations and booking comparison links.
-- **Itinerary building**: Converts a finalized route into a day-by-day itinerary with times and addresses.
-- **Conversational planning agent**: A chat agent (`POST /agent/chat`) turns free-text messages into trip actions by calling the same routing/itinerary/location/car capabilities as tools, and remembers user preferences and trip state across turns and chats.
-- **Chat persistence**: Stores and retrieves user chat sessions (route state + message history) in Neon Postgres.
-- **Agent memory**: Persists durable cross-chat facts, a rolling per-chat conversation summary, and a per-chat structured trip profile in Neon Postgres (`chat_memory` table).
-- **Location utilities**: Resolves coordinates to addresses and vice versa using OpenCage geocoding and Google Places.
-- **Car data**: Fetches fuel efficiency (MPG) and current national average gas prices from the FuelEconomy.gov API to support budget calculations.
-
-## Users
-
-End users plan road trips through the `frontend/` React app, either via the structured input workflow or the conversational chat agent. The backend is consumed exclusively via REST API. Authentication uses AWS Cognito JWT tokens (decoded without signature verification to extract the `sub` claim).
-
-## Deployment
-
-- **Backend** — deployed on [Render](https://dashboard.render.com/web/srv-cqvu44jv2p9s739hhb60) (web service). Runs on port 8000.
-- **Frontend** — deployed on [Vercel](https://roadtripsarefun.vercel.app).
+This compatibility entry replaces the older product snapshot, which described
+retired Render hosting and unsigned authentication. Runtime and release
+boundaries are in [operations](../../.steering/operations.md).

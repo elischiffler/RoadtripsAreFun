@@ -2,8 +2,11 @@
 
 Frontend: React/Vite in `frontend/`, Node 24, committed npm lockfile. Backend:
 FastAPI in `backend/`, Python 3.12, pinned `requirements.txt`, Ruff 0.16.7.
-Read the existing `.kiro/steering` architecture guidance. Keep routing/agent
-contracts in their existing modules; backend validation remains authoritative.
+Read `.steering/overview.md` and its architecture/development/operations map;
+`.steering/current-work.md` distinguishes the inspected implementation from active
+work. `.kiro/steering` contains compatibility pointers. Verify snapshot claims
+against current source/Git before integrating. Keep routing/agent contracts in
+their existing modules; backend validation remains authoritative.
 
 From `frontend/`: `npm ci`, `npm run format:check`, `npm run lint`,
 `npm run test:coverage`, `npm run build`. From `backend/`: install requirements,

@@ -1,5 +1,11 @@
 # Chat Agent: Design & Contracts
 
+> This document retains earlier design plans and contract examples. For the
+> inspected current implementation, start with [the architecture map](../.steering/architecture.md)
+> and [active change map](../.steering/current-work.md). Current schemas and source
+> take precedence over examples below, especially user/trip memory, mandatory
+> extraction, location confirmation, completion, presentation and streaming.
+
 The design spec for the conversational chat agent — a tool-using LLM assistant
 layered on top of the existing trip-planning workflow. Where
 [algorithm-analysis.md](./algorithm-analysis.md) frames the routing research,
