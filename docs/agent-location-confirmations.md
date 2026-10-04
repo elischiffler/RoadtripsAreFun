@@ -42,8 +42,9 @@ Changing the query invalidates the old IDs even if the new lookup fails.
 
 Confirmation cards live **inside the scrollable chat log**, after the latest
 reply. Each shows the exact suggested address and a labeled Confirm button;
-additional provider matches are available under Choose another match. Travelers
-can also type a correction. These cards must not be outside the fixed chat box,
+the only action is a compact Confirm button. Travelers type a different city or
+address to correct the suggestion; no alternate-match menu is shown. These cards
+must not be outside the fixed chat box,
 which would cover them. The deterministic reply names the suggested address,
 rather than repeatedly asking for more specific wording.
 

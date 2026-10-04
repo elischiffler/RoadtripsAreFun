@@ -119,7 +119,14 @@ const WorkflowPanel = ({
                   <>
                     <Typography>Suggested address: {pending.candidates[0].address}</Typography>
                     <Button
-                      variant="contained"
+                      variant="text"
+                      size="small"
+                      className="location-confirm-button"
+                      aria-label={
+                        field === 'start_address'
+                          ? 'Confirm starting location'
+                          : 'Confirm destination'
+                      }
                       disabled={isLoading}
                       onClick={() =>
                         submit('location_confirmation', {
@@ -129,34 +136,14 @@ const WorkflowPanel = ({
                         })
                       }
                     >
-                      Confirm {field === 'start_address' ? 'starting location' : 'destination'}
+                      Confirm
                     </Button>
-                    {pending.candidates.length > 1 && (
-                      <Box component="details" sx={{ mt: 1 }}>
-                        <Box component="summary">Choose another match</Box>
-                        {pending.candidates.slice(1).map((candidate) => (
-                          <Button
-                            key={candidate.id}
-                            disabled={isLoading}
-                            onClick={() =>
-                              submit('location_confirmation', {
-                                field,
-                                candidateId: candidate.id,
-                                address: candidate.address,
-                              })
-                            }
-                          >
-                            {candidate.address}
-                          </Button>
-                        ))}
-                      </Box>
-                    )}
                   </>
                 ) : (
                   <Typography>No match found for &quot;{pending.query}&quot;.</Typography>
                 )}
                 <Typography variant="body2" sx={{ mt: 1 }}>
-                  To change this location, enter a city and state or address below.
+                  Wrong location? Type a different city or address below.
                 </Typography>
               </Box>
             ))}

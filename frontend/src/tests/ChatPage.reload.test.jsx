@@ -74,7 +74,7 @@ describe('ChatPage reload', () => {
       address: 'Salem-Leckrone Airport, Illinois',
     });
   });
-  it('lets the traveler choose an alternative to the suggested address', async () => {
+  it('shows only the suggested address and asks for typed corrections', async () => {
     sessionStorage.clear();
     const partial = new ChatData(1);
     partial.tripProfile = {
@@ -95,14 +95,20 @@ describe('ChatPage reload', () => {
     render(<Harness />);
     const suggestion = await screen.findByRole('button', { name: 'Confirm destination' });
     expect(suggestion.closest('[role="log"]')).not.toBeNull();
-    await userEvent.click(screen.getByText('Choose another match'));
-    const alternative = screen.getByRole('button', { name: 'Boulder County, Colorado, USA' });
+    expect(suggestion).toHaveTextContent('Confirm');
+    expect(screen.queryByText('Choose another match')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Boulder County, Colorado, USA' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText('Wrong location? Type a different city or address below.')
+    ).toBeInTheDocument();
     const submit = useTripWorkflow.mock.results.at(-1).value.submit;
-    await userEvent.click(alternative);
+    await userEvent.click(suggestion);
     expect(submit).toHaveBeenCalledWith('location_confirmation', {
       field: 'destination_address',
-      candidateId: 'county',
-      address: 'Boulder County, Colorado, USA',
+      candidateId: 'city',
+      address: 'Boulder, Colorado, USA',
     });
   });
   it('restores lists alongside old plain text messages', async () => {

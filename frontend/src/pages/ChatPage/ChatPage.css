@@ -24,9 +24,9 @@
   left: 0;
   right: 0;
   background-color: transparent;
-  display: flex;
+  display: grid;
   position: fixed;
-  flex-direction: column;
+  grid-template-rows: minmax(0, 1fr) auto;
   box-sizing: border-box;
 }
 
@@ -40,9 +40,14 @@
   overflow-y: auto;
   box-sizing: border-box;
   max-width: 100%;
-  /* Grow to fill the chat-box so the input bar below stays pinned to the bottom. */
-  flex: 1;
+  /* Scroll only the conversation; the composer owns a separate grid row. */
   min-height: 0;
+  scroll-padding-bottom: 24px;
+}
+
+/* Preserve natural message heights so overflowing text stays inside the scroller. */
+.chat-messages > * {
+  flex-shrink: 0;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -170,6 +175,13 @@
 
 .chat-send-button.Mui-disabled {
   color: var(--sand-main) !important;
+}
+
+.location-confirm-button {
+  color: #000 !important;
+  text-transform: none !important;
+  min-width: 0 !important;
+  padding: 4px 0 !important;
 }
 
 /* ── Location input bar ── */

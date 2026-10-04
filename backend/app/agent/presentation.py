@@ -166,7 +166,7 @@ def present_details(
         issues["hotel_rooms"] = "Room occupants must equal the total travelers including you."
     for field, pending in after.pending_locations.items():
         issues[field] = (
-            f"Confirm the suggested address: {pending.candidates[0].address}. Choose another match or enter a correction if needed."
+            f"Confirm the suggested address: {pending.candidates[0].address}. If it is wrong, type a different city or address."
             if pending.candidates
             else f"No match found for '{pending.query}'. Please enter a city and state or address."
         )
