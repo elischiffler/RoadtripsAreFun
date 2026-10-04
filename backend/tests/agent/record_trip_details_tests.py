@@ -38,7 +38,7 @@ async def test_complete_message_geocodes_and_saves_every_field(monkeypatch):
         "Denver": _location("Denver, CO", 39.74, -104.99, "America/Denver"),
     }
 
-    def geocode(*, geocoder, address):
+    def geocode(*, geocoder, address, **kwargs):
         calls.append(address)
         return locations[address]
 
@@ -99,13 +99,13 @@ def test_existing_profile_recovers_selected_time_from_canonical_departure():
 async def test_bad_date_and_stop_count_preserve_valid_locations_and_budget(monkeypatch):
     monkeypatch.setattr(
         "app.agent.tool_dispatcher.get_location",
-        lambda *, geocoder, address: _location(address, 35.0, -120.0),
+        lambda *, geocoder, address, **kwargs: _location(address, 35.0, -120.0),
     )
     memory = FakeMemory()
     result = await _record(
         memory,
-        start_address="SLO",
-        destination_address="LA",
+        start_address="San Luis Obispo",
+        destination_address="Los Angeles",
         num_stops=99,
         budget=180,
         departure_date="sometime next season",
@@ -113,8 +113,8 @@ async def test_bad_date_and_stop_count_preserve_valid_locations_and_budget(monke
     assert result.ok
     assert set(result.result["clarifications"]) == {"num_stops", "departure_date"}
     profile = TripProfile.from_json(memory.load_trip_profile("owner", "trip"))
-    assert profile.start_address == "SLO"
-    assert profile.destination_address == "LA"
+    assert profile.start_address == "San Luis Obispo"
+    assert profile.destination_address == "Los Angeles"
     assert profile.budget == 180
     assert profile.num_stops is None
     assert profile.start_date is None
@@ -152,7 +152,7 @@ async def test_partial_update_preserves_existing_fields_and_changes_date(monkeyp
 async def test_missing_timezone_requests_clarification_without_guessing(monkeypatch):
     monkeypatch.setattr(
         "app.agent.tool_dispatcher.get_location",
-        lambda *, geocoder, address: _location(address, 35.0, -120.0, None),
+        lambda *, geocoder, address, **kwargs: _location(address, 35.0, -120.0, None),
     )
     memory = FakeMemory()
     result = await _record(memory, start_address="Unclear", budget=90, departure_date="tomorrow")
@@ -299,7 +299,9 @@ async def test_changing_start_clears_old_date_and_timezone(monkeypatch):
     )
     monkeypatch.setattr(
         "app.agent.tool_dispatcher.get_location",
-        lambda *, geocoder, address: _location("Boston, MA", 42.36, -71.06, "America/New_York"),
+        lambda *, geocoder, address, **kwargs: _location(
+            "Boston, MA", 42.36, -71.06, "America/New_York"
+        ),
     )
     result = await _record(memory, start_address="Boston")
     assert result.ok

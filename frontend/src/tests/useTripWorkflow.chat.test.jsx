@@ -37,17 +37,17 @@ import { useTripWorkflow } from '../pages/ChatPage/useTripWorkflow';
 const CHAT_ID = 5;
 
 // Minimal harness: drives the hook and renders messages live from `chats`.
-function Harness({ chatLogsData, onChatReady = () => {}, agentChatId }) {
+function Harness({ chatLogsData, onChatReady = () => {}, agentChatId, savedData = null }) {
   const [chats, setChats] = useState([{ id: CHAT_ID, title: 'Trip', messages: [] }]);
   const chatsRef = useRef(chats);
   chatsRef.current = chats;
 
-  const { submit, processProgress } = useTripWorkflow({
+  const { submit, processProgress, pendingLocations } = useTripWorkflow({
     chatId: CHAT_ID,
     agentChatId,
     setChats,
     setCurrentStep: () => {},
-    savedData: null,
+    savedData,
     chatsRef,
     accessToken: 'test-token',
     ChatLogsData: chatLogsData ?? { chatdata: [], currentId: CHAT_ID },
@@ -59,6 +59,22 @@ function Harness({ chatLogsData, onChatReady = () => {}, agentChatId }) {
   return (
     <div>
       <button onClick={() => submit('chat_message', 'make it cheaper')}>send</button>
+      {Object.entries(pendingLocations).flatMap(([field, pending]) =>
+        pending.candidates.map((candidate) => (
+          <button
+            key={candidate.id}
+            onClick={() =>
+              submit('location_confirmation', {
+                field,
+                candidateId: candidate.id,
+                address: candidate.address,
+              })
+            }
+          >
+            {candidate.address}
+          </button>
+        ))
+      )}
       <output data-testid="progress">{JSON.stringify(processProgress)}</output>
       <ul>
         {messages.map((m, i) => (
@@ -75,6 +91,7 @@ Harness.propTypes = {
   chatLogsData: PropTypes.object,
   onChatReady: PropTypes.func,
   agentChatId: PropTypes.string,
+  savedData: PropTypes.object,
 };
 
 beforeEach(() => {
@@ -85,6 +102,42 @@ beforeEach(() => {
 });
 
 describe("submit('chat_message')", () => {
+  it('persists new pending matches and selects a restored candidate by ID', async () => {
+    const pending_locations = {
+      start_address: {
+        query: 'SLO',
+        candidates: [{ id: 'candidate-1', address: 'Salem-Leckrone Airport, Illinois' }],
+      },
+    };
+    const chatLogsData = { chatdata: [{ chatId: CHAT_ID }], currentId: CHAT_ID };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Choose a location.',
+      tripProfile: { pending_locations },
+      actions: [],
+    });
+    const view = render(<Harness chatLogsData={chatLogsData} />);
+    await userEvent.click(screen.getByText('send'));
+    await waitFor(() => expect(updateUserData).toHaveBeenCalled());
+    expect(updateUserData.mock.calls[0][1].tripProfile.pending_locations).toEqual(
+      pending_locations
+    );
+    view.unmount();
+    render(<Harness savedData={{ tripProfile: { pending_locations } }} />);
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Saved.',
+      tripProfile: { pending_locations: {} },
+      actions: [],
+    });
+    await userEvent.click(screen.getByText('Salem-Leckrone Airport, Illinois'));
+    await waitFor(() => expect(sendAgentMessage).toHaveBeenCalledTimes(2));
+    expect(sendAgentMessage.mock.calls[1][0].locationConfirmation).toEqual({
+      field: 'start_address',
+      candidateId: 'candidate-1',
+    });
+    await waitFor(() =>
+      expect(screen.queryByText('Salem-Leckrone Airport, Illinois')).not.toBeInTheDocument()
+    );
+  });
   it('streams visible progress in production, clears it after failure and resets the next turn', async () => {
     vi.stubEnv('DEV', false);
     let finish;
@@ -210,6 +263,34 @@ describe("submit('chat_message')", () => {
 });
 
 describe('applyAgentActions', () => {
+  it('clears the old route and itinerary after an endpoint is confirmed elsewhere', async () => {
+    const tp = {
+      destination_address: 'Nashville, Tennessee',
+      destination_coords: [36.16, -86.77],
+      pending_locations: {},
+    };
+    const savedData = {
+      route: {
+        coordinates: [
+          [35, -120],
+          [38, -88],
+        ],
+      },
+      itinerary: [{ day: 1 }],
+      tripProfile: { destination_coords: [38, -88] },
+    };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Saved destination.',
+      tripProfile: tp,
+      actions: [{ type: 'trip_profile_updated', payload: { trip_profile: tp } }],
+    });
+    render(<Harness savedData={savedData} />);
+    await userEvent.click(screen.getByText('send'));
+    await waitFor(() => expect(updateUserData).toHaveBeenCalled());
+    expect(updateUserData.mock.calls[0][1].route).toBeNull();
+    expect(updateUserData.mock.calls[0][1].itinerary).toBeNull();
+    expect(updateUserData.mock.calls[0][1].tripProfile).toEqual(tp);
+  });
   it('warns in the chat when the trip snapshot was not saved', async () => {
     updateUserData.mockResolvedValueOnce(false);
     sendAgentMessage.mockResolvedValueOnce({

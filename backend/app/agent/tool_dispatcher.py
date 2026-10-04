@@ -48,7 +48,7 @@ from app.agent.persona import ATTRIBUTE_KEYS, PersonaWeightUpdate
 from app.agent.progress import emit, stage
 from app.agent.schemas import ToolCall, ToolResult, ToolSpec
 from app.agent.tools import ToolContext
-from app.agent.trip_dates import normalize_departure_time, resolve_departure, timezone_from_location
+from app.agent.trip_dates import normalize_departure_time, resolve_departure
 from app.agent.trip_profile import TripProfile, TripProfileUpdate
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import MapBox, Route_Payload
@@ -60,6 +60,7 @@ from app.routing.selection import select_algorithm
 from app.routing.sources.mapbox import call_route
 from app.routing.sources.persona_candidates import CandidateProviderError
 from app.utils.geolocation_helpers import get_location
+from app.utils.location_resolution import needs_confirmation, resolve_location
 
 logger = logging.getLogger(__name__)
 
@@ -464,6 +465,17 @@ class AppToolDispatcher:
 
         arguments = call.arguments if isinstance(call.arguments, dict) else {}
         try:
+            if (
+                call.name
+                in {
+                    "complete_trip",
+                    "get_initial_route",
+                    "generate_final_route",
+                    "generate_itinerary",
+                }
+                and self._load_trip_profile(ctx).pending_locations
+            ):
+                raise ValueError("Choose or clarify the pending locations before planning.")
             with stage("agent.tool", tool=call.name):
                 result = await handler(arguments, ctx)
             return ToolResult(name=call.name, ok=True, result=result)
@@ -577,7 +589,11 @@ class AppToolDispatcher:
             return inline
         if ctx.memory is not None:
             saved = ctx.memory.load_planned_route(ctx.user_id, ctx.chat_id)
-            if saved and saved.get("profile") == self._load_trip_profile(ctx).model_dump():
+            if (
+                saved
+                and isinstance(saved.get("profile"), dict)
+                and TripProfile.model_validate(saved["profile"]) == self._load_trip_profile(ctx)
+            ):
                 return saved["route"]
         raise ValueError("generate_itinerary needs route_handle (from generate_final_route).")
 
@@ -739,28 +755,16 @@ class AppToolDispatcher:
 
         departure = normalize_departure(trip.start_date)
         start = departure.isoformat()
-        # Revalidate the saved addresses before planning. Profile coordinates
-        # have valid shapes, but their presence alone does not prove that a
-        # provider resolved the traveler's locations.
-        locations = []
-        for label, address in (
-            ("start", trip.start_address),
-            ("destination", trip.destination_address),
-        ):
-            checked = await self.dispatch(
-                ToolCall(name="validate_location", arguments={"address": address}), ctx
-            )
-            if not checked.ok:
-                raise ValueError(f"Could not validate the {label} location: {checked.error}")
-            locations.append(checked.result)
+        # Use the persisted provider coordinates the traveler selected. A new
+        # geocode could silently move the endpoint after confirmation.
         initial = await self.dispatch(
             ToolCall(
                 name="get_initial_route",
                 arguments={
-                    "start_lat": locations[0]["latitude"],
-                    "start_lon": locations[0]["longitude"],
-                    "end_lat": locations[1]["latitude"],
-                    "end_lon": locations[1]["longitude"],
+                    "start_lat": trip.start_coords[0],
+                    "start_lon": trip.start_coords[1],
+                    "end_lat": trip.destination_coords[0],
+                    "end_lon": trip.destination_coords[1],
                 },
             ),
             ctx,
@@ -914,20 +918,26 @@ class AppToolDispatcher:
             if field not in args:
                 continue
             supplied = args[field]
+            # A replacement search invalidates old choice IDs even on failure.
+            values["pending_locations"][field] = {"query": str(supplied)[:1000], "candidates": []}
+            changed = True
             if not isinstance(supplied, str) or not supplied.strip():
                 clarifications[field] = "Please provide a specific city or address."
                 continue
             try:
-                location = get_location(geocoder=geolocator, address=supplied.strip())
+                resolution = resolve_location(geolocator, supplied.strip(), lookup=get_location)
             except (HTTPException, RequestException, ValueError):
-                location = None
-            if (
-                location is None
-                or not isinstance(location.address, str)
-                or not location.address.strip()
-            ):
+                resolution = None
+            if resolution is None or not resolution.candidates:
                 clarifications[field] = "I could not confirm that location; please clarify it."
                 continue
+            if needs_confirmation(resolution):
+                values["pending_locations"][field] = resolution.model_dump()
+                clarifications[field] = (
+                    "Choose the exact location below, or provide a full city and state or address."
+                )
+                continue
+            location = resolution.candidates[0]
             try:
                 coords = [location.latitude, location.longitude]
                 TripProfile.model_validate(
@@ -938,7 +948,7 @@ class AppToolDispatcher:
                 continue
             coords_field = field.replace("address", "coords")
             if field == "start_address":
-                timezone = timezone_from_location(location)
+                timezone = location.timezone
                 if (values["start_address"], values["start_coords"], values["start_timezone"]) != (
                     location.address,
                     coords,
@@ -952,6 +962,7 @@ class AppToolDispatcher:
                     )
             values[field] = location.address
             values[coords_field] = coords
+            values["pending_locations"].pop(field, None)
             changed = True
 
         for field in ("num_stops", "budget"):
@@ -983,7 +994,7 @@ class AppToolDispatcher:
         if date_wording is None and "departure_time" in args and values["start_date"]:
             date_wording = datetime.fromisoformat(values["start_date"]).date().isoformat()
         if date_wording is not None:
-            if not values["start_timezone"]:
+            if not values["start_timezone"] or "start_address" in values["pending_locations"]:
                 clarifications["departure_date"] = (
                     "Please clarify the starting location so I can determine its timezone."
                 )

@@ -29,6 +29,17 @@ const AGENT_RESPONSE = {
 };
 
 describe('sendAgentMessage', () => {
+  it('sends an explicit location candidate selection', async () => {
+    axios.post.mockResolvedValueOnce({ data: AGENT_RESPONSE });
+    const locationConfirmation = { field: 'start_address', candidateId: 'server-candidate' };
+    await sendAgentMessage({
+      accessToken: 't',
+      chatId: 42,
+      message: 'Use the selected place',
+      locationConfirmation,
+    });
+    expect(axios.post.mock.calls[0][1].locationConfirmation).toEqual(locationConfirmation);
+  });
   it('posts to agent/chat with the correct body shape and returns data', async () => {
     axios.post.mockResolvedValueOnce({ status: 200, data: AGENT_RESPONSE });
 

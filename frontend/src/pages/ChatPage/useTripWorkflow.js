@@ -249,6 +249,7 @@ export function useTripWorkflow({
   // Last trip-profile snapshot the agent reported, so we can diff each turn's
   // trip_profile_updated action and log field-level ADDED/REMOVED/CHANGED.
   const tripProfileRef = useRef(savedData?.tripProfile ?? {});
+  const [tripProfile, setTripProfile] = useState(savedData?.tripProfile ?? {});
 
   // Keep chatId in a ref so callbacks always use the live value.
   const chatIdRef = useRef(chatId);
@@ -315,6 +316,7 @@ export function useTripWorkflow({
         carDetails: new Array(3).fill(''),
         budget: b,
         isComplete: !!r && Array.isArray(plannedItinerary) && plannedItinerary.length > 0,
+        tripProfile: tripProfileRef.current,
       };
     },
     [route, startConfirmed, endConfirmed, stops, budget, itinerary, hotelBudget]
@@ -405,7 +407,19 @@ export function useTripWorkflow({
           const tp = action.payload.trip_profile;
           // Turn-level trace: what was added / removed / changed this turn.
           logTripProfileChanges(tripProfileRef.current, tp);
+          const previous = tripProfileRef.current;
+          if (
+            ['start_coords', 'destination_coords'].some(
+              (field) => tp[field] && JSON.stringify(tp[field]) !== JSON.stringify(previous[field])
+            )
+          ) {
+            setRoute(null);
+            setItinerary(null);
+            overrides.route = null;
+            overrides.itinerary = null;
+          }
           tripProfileRef.current = tp;
+          overrides.tripProfile = tp;
           if (Array.isArray(tp.start_coords) && tp.start_coords.length >= 2) {
             const start = confirmedFromCoord(tp.start_coords);
             if (start) {
@@ -451,7 +465,7 @@ export function useTripWorkflow({
   // ── Public: submit user input (agent chat only) ───────────────────────────
   const submit = useCallback(
     async (action, payload) => {
-      if (action !== 'chat_message') return;
+      if (action !== 'chat_message' && action !== 'location_confirmation') return;
 
       // Guard against StrictMode double-invoke or rapid double-clicks.
       if (submitInFlightRef.current) return;
@@ -460,7 +474,12 @@ export function useTripWorkflow({
 
       const id = chatIdRef.current;
       try {
-        const text = typeof payload === 'string' ? payload.trim() : '';
+        const confirmation = action === 'location_confirmation' ? payload : null;
+        const text = confirmation
+          ? `Use ${confirmation.address}`
+          : typeof payload === 'string'
+            ? payload.trim()
+            : '';
         if (!text) return;
 
         addMessage(id, setChats, text, USER);
@@ -477,6 +496,14 @@ export function useTripWorkflow({
           // reused integer chat id, so per-chat memory never collides.
           chatId: agentChatIdRef.current,
           message: text,
+          ...(confirmation
+            ? {
+                locationConfirmation: {
+                  field: confirmation.field,
+                  candidateId: confirmation.candidateId,
+                },
+              }
+            : {}),
           clientContext: {
             hasRoute: !!route,
             stops,
@@ -488,6 +515,7 @@ export function useTripWorkflow({
 
         if (response && typeof response.reply === 'string') {
           bot(response.reply);
+          if (response.tripProfile) setTripProfile(response.tripProfile);
           // Trace tool activity and the backend's authoritative profile on every turn.
           logTripToolActivity(
             response.toolsUsed,
@@ -503,6 +531,8 @@ export function useTripWorkflow({
             logTripProfileChanges(tripProfileRef.current, response.tripProfile);
             tripProfileRef.current = response.tripProfile;
           }
+          if (response.tripProfile && !response.actions?.length)
+            await persistSnapshot(buildSnapshot());
         } else {
           // The turn produced NO reply (network / 503 / other). This is not an
           // agent-recoverable tool error — those are fed back within the turn and
@@ -522,7 +552,19 @@ export function useTripWorkflow({
         setProcessProgress(null);
       }
     },
-    [accessToken, route, stops, hotelBudget, bot, loading, noLoader, setChats, applyAgentActions]
+    [
+      accessToken,
+      route,
+      stops,
+      hotelBudget,
+      bot,
+      loading,
+      noLoader,
+      setChats,
+      applyAgentActions,
+      persistSnapshot,
+      buildSnapshot,
+    ]
   );
 
   return {
@@ -532,6 +574,7 @@ export function useTripWorkflow({
     // true while a turn is in flight — drives the ChatInput disabled state.
     isLoading,
     processProgress,
+    pendingLocations: tripProfile.pending_locations ?? {},
     // kept for potential compatibility; the persistent ChatInput is the only input now.
     inputMode: 'none',
   };

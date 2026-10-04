@@ -11,7 +11,9 @@ import psycopg2
 from pydantic import BaseModel
 
 from app.agent.memory import ConversationMemory, MemoryFact
+from app.agent.trip_profile import TripProfile
 from app.crud import chat_crud, memory_crud
+from app.utils.location_resolution import LocationCandidate, PendingLocation
 
 
 class RouteComponent(BaseModel):
@@ -25,6 +27,23 @@ class InitialComponent(BaseModel):
 class LogComponent(BaseModel):
     messages: list[dict]
 
+
+PENDING_JSON = TripProfile(
+    pending_locations={
+        "start_address": PendingLocation(
+            query="SLO",
+            candidates=[
+                LocationCandidate(
+                    id="fixture-pending-location",
+                    address="Salem-Leckrone Airport, Illinois",
+                    latitude=38.64,
+                    longitude=-88.96,
+                    timezone="America/Chicago",
+                )
+            ],
+        )
+    }
+).to_json()
 
 RUN_ID = os.environ["DB_TEST_RUN_ID"]
 OWNER_A = f"dbtest-{RUN_ID}-a"
@@ -86,7 +105,7 @@ def seed():
     memory_crud.save_conversation(
         OWNER_A, CHAT_ID, ConversationMemory(chat_id=CHAT_ID, summary="Pacific coast")
     )
-    memory_crud.save_trip_profile(OWNER_A, CHAT_ID, '{"pace":"slow"}')
+    memory_crud.save_trip_profile(OWNER_A, CHAT_ID, PENDING_JSON)
     memory_crud.save_planned_route(
         OWNER_A,
         CHAT_ID,
@@ -96,7 +115,7 @@ def seed():
     assert memory_crud.load_facts(OWNER_B)[0].value == "Boston"
     assert memory_crud.load_conversation(OWNER_A, CHAT_ID).summary == "Pacific coast"
     assert memory_crud.load_conversation(OWNER_B, CHAT_ID).summary == ""
-    assert memory_crud.load_trip_profile(OWNER_A, CHAT_ID) == '{"pace":"slow"}'
+    assert memory_crud.load_trip_profile(OWNER_A, CHAT_ID) == PENDING_JSON
     assert memory_crud.load_trip_profile(OWNER_B, CHAT_ID) is None
     assert memory_crud.load_planned_route(OWNER_A, CHAT_ID)["route"]["stops"][0]["name"] == "Museum"
     assert memory_crud.load_planned_route(OWNER_B, CHAT_ID) is None
@@ -159,7 +178,7 @@ def verify():
     assert memory_crud.load_facts(OWNER_A)[0].value == "San Luis Obispo"
     assert memory_crud.load_facts(OWNER_B)[0].value == "Boston"
     assert memory_crud.load_conversation(OWNER_A, CHAT_ID).summary == "Pacific coast"
-    assert memory_crud.load_trip_profile(OWNER_A, CHAT_ID) == '{"pace":"slow"}'
+    assert memory_crud.load_trip_profile(OWNER_A, CHAT_ID) == PENDING_JSON
     assert memory_crud.load_planned_route(OWNER_A, CHAT_ID)["departure"] == "2030-01-01T09:00:00Z"
     assert memory_crud.load_planned_route(OWNER_B, CHAT_ID) is None
     assert chat_crud.get_chat(OWNER_A, DELETE_CHAT) is None

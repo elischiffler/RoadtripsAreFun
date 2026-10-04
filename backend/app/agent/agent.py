@@ -24,6 +24,7 @@ from datetime import UTC, datetime
 
 from app.agent import debug
 from app.agent.extraction import ExtractionFormatError, extract_trip_patch
+from app.agent.location_confirmation import confirm_location
 from app.agent.memory import ConversationMemory, MemoryStore
 from app.agent.progress import emit, stage
 from app.agent.prompt import RECENT_MESSAGE_LIMIT, build_messages
@@ -273,8 +274,51 @@ async def run_turn(
         memory=memory,
     )
     try:
-        with stage("agent.extract_details"):
-            patch, extraction_responses = extract_trip_patch(providers, request.message, trip)
+        if request.locationConfirmation:
+            try:
+                trip = confirm_location(memory, user_id, chat_id, request.locationConfirmation)
+            except ValueError as exc:
+                return AgentChatResponse(reply=str(exc), tripProfile=trip.model_dump(mode="json"))
+            address = getattr(trip, request.locationConfirmation.field)
+            label = (
+                "starting location"
+                if request.locationConfirmation.field == "start_address"
+                else "destination"
+            )
+            actions.append(
+                AgentAction(
+                    type="trip_profile_updated",
+                    chatId=chat_id,
+                    payload={"trip_profile": trip.model_dump(mode="json")},
+                )
+            )
+            return AgentChatResponse(
+                reply=f"Saved {label}: {address}. "
+                + (
+                    "Please provide your departure date again for this starting location."
+                    if request.locationConfirmation.field == "start_address"
+                    else "Choose the remaining location below."
+                    if trip.pending_locations
+                    else "Continue when you're ready to plan."
+                ),
+                actions=actions,
+                tripProfile=trip.model_dump(mode="json"),
+            )
+        if trip.pending_locations and request.message.strip().lower().rstrip(".!?") in {
+            "yes",
+            "yes please",
+            "yep",
+            "yeah",
+            "ok",
+            "okay",
+            "confirm",
+            "correct",
+        }:
+            # A generic assent cannot become a location via model inference.
+            patch, extraction_responses = {}, []
+        else:
+            with stage("agent.extract_details"):
+                patch, extraction_responses = extract_trip_patch(providers, request.message, trip)
     except ExtractionFormatError as exc:
         reply = "I couldn't read the trip details in that message. Please try sending them again."
         debug.trip_snapshot("after", trip)
@@ -380,6 +424,27 @@ async def run_turn(
         _collect_action(result, chat_id, actions)
 
     trip = _load_trip(memory, user_id, chat_id)
+    if trip.pending_locations:
+        prompts = []
+        for field, pending in trip.pending_locations.items():
+            label = "starting location" if field == "start_address" else "destination"
+            prompts.append(
+                f"Please choose your {label} for ‘{pending.query}’, or enter a full city and state or address."
+            )
+        return AgentChatResponse(
+            reply=with_saved_locations("\n\n".join(prompts), trip),
+            actions=actions,
+            toolsUsed=tools_used,
+            toolErrors=tool_errors,
+            tripProfile=trip.model_dump(mode="json"),
+            validationIssues=validation_issues,
+            extractedFields=list(patch),
+            modelCalls=model_calls,
+            usage=AgentUsage(
+                promptTokens=prompt_tokens if has_prompt_usage else None,
+                completionTokens=completion_tokens if has_completion_usage else None,
+            ),
+        )
     messages = build_messages(
         facts=facts,
         trip=trip,

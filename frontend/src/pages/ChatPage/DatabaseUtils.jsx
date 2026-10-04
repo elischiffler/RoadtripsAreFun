@@ -56,35 +56,35 @@ export const initializeUserData = async (auth_token) => {
     for (const entry of user_data) {
       chats.push(entry[1]);
       const chat_d = entry[0];
-      chatdata.push(
-        new ChatData(
-          chat_d['chatId'],
-          chat_d['action'],
-          chat_d['locationType'],
-          chat_d['startCoords'],
-          chat_d['startAddress'],
-          chat_d['endCoords'],
-          chat_d['endAddress'],
-          chat_d['stops'],
-          chat_d['showInputBar'],
-          chat_d['showStopSlider'],
-          chat_d['showBudgetSlider'],
-          chat_d['showAddressInput'],
-          false,
-          chat_d['startConfirmed'],
-          chat_d['endConfirmed'],
-          chat_d['initial'],
-          chat_d['route'],
-          chat_d['itinerary'],
-          false,
-          chat_d['hotelBudget'],
-          chat_d['carBudget'],
-          chat_d['carDetails'],
-          chat_d['budget'],
-          chat_d['isComplete'] || false,
-          chat_d['agentChatId'] || null
-        )
+      const restored = new ChatData(
+        chat_d['chatId'],
+        chat_d['action'],
+        chat_d['locationType'],
+        chat_d['startCoords'],
+        chat_d['startAddress'],
+        chat_d['endCoords'],
+        chat_d['endAddress'],
+        chat_d['stops'],
+        chat_d['showInputBar'],
+        chat_d['showStopSlider'],
+        chat_d['showBudgetSlider'],
+        chat_d['showAddressInput'],
+        false,
+        chat_d['startConfirmed'],
+        chat_d['endConfirmed'],
+        chat_d['initial'],
+        chat_d['route'],
+        chat_d['itinerary'],
+        false,
+        chat_d['hotelBudget'],
+        chat_d['carBudget'],
+        chat_d['carDetails'],
+        chat_d['budget'],
+        chat_d['isComplete'] || false,
+        chat_d['agentChatId'] || null
       );
+      restored.tripProfile = chat_d.tripProfile ?? {};
+      chatdata.push(restored);
     }
     const logs = new ChatLogs(chatdata);
     const UserData = new Data(logs);

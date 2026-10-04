@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Data, ChatData, ChatLogs, UserDataContext } from '../states/UserDataContext';
 
 vi.mock('ldrs', () => ({ ring: { register: vi.fn() } }));
@@ -14,6 +15,7 @@ vi.mock('../pages/ChatPage/useTripWorkflow', () => ({
     route: savedData?.route ?? null,
     itinerary: null,
     isLoading: false,
+    pendingLocations: savedData?.tripProfile?.pending_locations ?? {},
   })),
   deriveProgress: () => 1,
   renameChatToRoute: vi.fn(),
@@ -42,6 +44,32 @@ function Harness() {
 }
 
 describe('ChatPage reload', () => {
+  it('renders exact restored candidate labels and sends the explicit selection', async () => {
+    sessionStorage.clear();
+    sessionStorage.setItem('selectedChatId', '1');
+    const partial = new ChatData(1);
+    partial.tripProfile = {
+      pending_locations: {
+        start_address: {
+          query: 'SLO',
+          candidates: [{ id: 'choice-1', address: 'Salem-Leckrone Airport, Illinois' }],
+        },
+      },
+    };
+    initializeUserData.mockResolvedValueOnce({
+      chats: [{ id: 1, title: 'Trip', messages: [] }],
+      UserData: new Data(new ChatLogs([partial])),
+    });
+    render(<Harness />);
+    const button = await screen.findByRole('button', { name: 'Salem-Leckrone Airport, Illinois' });
+    const submit = useTripWorkflow.mock.results.at(-1).value.submit;
+    await userEvent.click(button);
+    expect(submit).toHaveBeenCalledWith('location_confirmation', {
+      field: 'start_address',
+      candidateId: 'choice-1',
+      address: 'Salem-Leckrone Airport, Illinois',
+    });
+  });
   it('uses the empty starter chat when a stored selection no longer exists', async () => {
     sessionStorage.clear();
     sessionStorage.setItem('selectedChatId', '9');

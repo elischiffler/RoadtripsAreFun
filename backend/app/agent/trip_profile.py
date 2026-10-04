@@ -29,10 +29,11 @@ from datetime import datetime
 from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.agent.persona import validate_weight_update
 from app.agent.trip_dates import normalize_departure_time
+from app.utils.location_resolution import PendingLocation
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +109,9 @@ class TripProfile(BaseModel):
     car: Car | None = None
     persona_weights: dict[str, float] | None = None  # partial, per-trip override
     car_status: CarStatus = "unanswered"
+    pending_locations: dict[Literal["start_address", "destination_address"], PendingLocation] = (
+        Field(default_factory=dict)
+    )
 
     @model_validator(mode="before")
     @classmethod

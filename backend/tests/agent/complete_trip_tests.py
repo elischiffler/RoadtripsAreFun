@@ -130,7 +130,7 @@ async def test_complete_trip_emits_both_existing_actions_with_same_departure(mon
     assert calls["route_start"] == calls["itinerary_start"]
     assert calls["user_id"] == "user-1"
     assert calls["endpoints"] == (39.74, -104.99, 35.69, -105.94)
-    assert calls["validated"] == ["Denver, CO", "Santa Fe, NM"]
+    assert "validated" not in calls
     actions = []
     _collect_action(result, "chat-1", actions)
     assert [action.type for action in actions] == ["route_updated", "itinerary_updated"]
@@ -167,15 +167,14 @@ async def test_complete_trip_rejects_missing_profile_fields(changes, missing):
 
 
 @pytest.mark.asyncio
-async def test_complete_trip_stops_when_saved_location_cannot_be_validated(monkeypatch):
+async def test_complete_trip_uses_saved_coordinates_without_regeocoding(monkeypatch):
     calls = _stub_planning(monkeypatch)
     monkeypatch.setattr(td, "get_location", lambda **kwargs: None)
     result = await AppToolDispatcher().dispatch(
         ToolCall(name="complete_trip"), _context(_profile())
     )
-    assert result.ok is False
-    assert "validate the start location" in result.error
-    assert "endpoints" not in calls
+    assert result.ok is True
+    assert calls["endpoints"] == (39.74, -104.99, 35.69, -105.94)
 
 
 def test_departure_checks_instant_across_timezones():

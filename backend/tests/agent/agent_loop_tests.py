@@ -43,7 +43,7 @@ async def test_saved_location_receipt_uses_geocode_even_when_model_omits_it(
     )
     provider = FakeProvider(
         responses=[LLMResponse(content="What date would you like to leave?")],
-        extraction_responses=[json.dumps({"details": {field: "SLO"}})],
+        extraction_responses=[json.dumps({"details": {field: "Salem-Leckrone Airport"}})],
     )
     result = await run_turn(
         _request("drive from SLO"), FallbackChain([provider]), fake_memory, AppToolDispatcher()
@@ -129,7 +129,7 @@ def geocoded_locations(monkeypatch):
         "houston": ("Houston, TX", 29.76, -95.37, "America/Chicago"),
     }
 
-    def geocode(*, geocoder, address):
+    def geocode(*, geocoder, address, **kwargs):
         label, latitude, longitude, timezone = locations[address.lower()]
         return SimpleNamespace(
             address=label,
@@ -273,7 +273,7 @@ async def test_provider_outage_does_not_trigger_string_extraction(fake_memory, f
 async def test_malformed_extraction_does_not_claim_data_was_saved(fake_memory, fake_tools):
     provider = FakeProvider(extraction_responses=["not JSON", "still not JSON"])
     result = await run_turn(_request("8 stops"), FallbackChain([provider]), fake_memory, fake_tools)
-    assert result.tripProfile == {"car_status": "unanswered"}
+    assert result.tripProfile == {"car_status": "unanswered", "pending_locations": {}}
     assert result.toolsUsed == []
     assert "couldn't read" in result.reply
     assert result.modelCalls == 2

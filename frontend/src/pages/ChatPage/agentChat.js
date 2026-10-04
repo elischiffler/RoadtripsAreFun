@@ -47,12 +47,14 @@ export const sendAgentMessage = async ({
   message,
   clientContext,
   onProgress,
+  locationConfirmation,
 }) => {
   try {
     const data = {
       partitionKey: accessToken,
       chatId: String(chatId),
       message,
+      ...(locationConfirmation ? { locationConfirmation } : {}),
     };
     if (clientContext) {
       const context = { ...clientContext };

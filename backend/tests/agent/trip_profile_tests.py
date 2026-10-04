@@ -224,7 +224,7 @@ async def test_get_trip_profile_empty():
         ToolCall(name="get_trip_profile"), _ctx(FakeMemory())
     )
     assert result.ok is True
-    assert result.result["trip_profile"] == {"car_status": "unanswered"}
+    assert result.result["trip_profile"] == {"car_status": "unanswered", "pending_locations": {}}
 
 
 async def test_update_trip_profile_persists_persona_weights_and_emits_action():
@@ -266,7 +266,7 @@ async def test_update_trip_profile_is_per_chat():
         ToolCall(name="get_trip_profile"),
         ToolContext(user_id="u1", chat_id="B", memory=memory),
     )
-    assert other.result["trip_profile"] == {"car_status": "unanswered"}
+    assert other.result["trip_profile"] == {"car_status": "unanswered", "pending_locations": {}}
 
 
 async def test_update_trip_profile_invalid_returns_error_not_raise():

@@ -29,17 +29,18 @@ const WorkflowPanel = ({
   savedData,
   onChatReady,
 }) => {
-  const { submit, route, itinerary, isLoading, processProgress } = useTripWorkflow({
-    chatId,
-    agentChatId,
-    setChats,
-    setCurrentStep,
-    savedData,
-    chatsRef,
-    accessToken,
-    ChatLogsData,
-    onChatReady,
-  });
+  const { submit, route, itinerary, isLoading, processProgress, pendingLocations } =
+    useTripWorkflow({
+      chatId,
+      agentChatId,
+      setChats,
+      setCurrentStep,
+      savedData,
+      chatsRef,
+      accessToken,
+      ChatLogsData,
+      onChatReady,
+    });
 
   const handleChatSubmit = (text) => submit('chat_message', text);
 
@@ -54,6 +55,39 @@ const WorkflowPanel = ({
       </Box>
 
       <Box className="main-content">
+        {Object.entries(pendingLocations ?? {}).map(([field, pending]) => (
+          <Box
+            key={field}
+            role="group"
+            aria-label={
+              field === 'start_address' ? 'Choose starting location' : 'Choose destination'
+            }
+            sx={{ p: 2 }}
+          >
+            <Typography>
+              {field === 'start_address' ? 'Starting location' : 'Destination'}: choose a match for
+              “{pending.query}”
+            </Typography>
+            {pending.candidates.map((candidate) => (
+              <Button
+                key={candidate.id}
+                disabled={isLoading}
+                onClick={() =>
+                  submit('location_confirmation', {
+                    field,
+                    candidateId: candidate.id,
+                    address: candidate.address,
+                  })
+                }
+              >
+                {candidate.address}
+              </Button>
+            ))}
+            <Typography variant="body2">
+              If none match, enter the full city and state or address below.
+            </Typography>
+          </Box>
+        ))}
         <Box className="chat-box">
           <Box
             className="chat-messages"

@@ -8,6 +8,7 @@ from app.models.routing_models.routing_models import MapBox, Route
 class ChatDataSchema(BaseModel):
     chatId: int
     agentChatId: str | None = None
+    tripProfile: dict | None = None  # UI snapshot only; agent memory is authoritative
     action: str | None = None
     locationType: str
     startCoords: list[float] | None = None

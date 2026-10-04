@@ -19,6 +19,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
+from app.utils.location_resolution import LocationConfirmation
+
 # --------------------------------------------------------------------------- #
 # Shared tool primitives (design doc §5) — live here to avoid an import cycle
 # with the provider/message models below. Re-exported from ``tools.py``.
@@ -90,6 +92,7 @@ class AgentChatRequest(BaseModel):
     chatId: str
     message: str
     clientContext: AgentClientContext | None = None
+    locationConfirmation: LocationConfirmation | None = None
 
 
 class AgentAction(BaseModel):

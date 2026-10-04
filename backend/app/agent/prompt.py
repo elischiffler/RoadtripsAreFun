@@ -29,17 +29,20 @@ STAGE_INSTRUCTIONS = {
 
 def _stage(trip: TripProfile, ctx: AgentClientContext | None) -> str:
     # hasRoute is used only to choose instructions, never as trusted trip data.
-    has_required_details = all(
-        (
-            trip.start_address,
-            trip.start_coords,
-            trip.destination_address,
-            trip.destination_coords,
-            trip.num_stops is not None,
-            trip.budget is not None,
-            trip.start_date,
-            trip.car_status != "unanswered",
+    has_required_details = (
+        all(
+            (
+                trip.start_address,
+                trip.start_coords,
+                trip.destination_address,
+                trip.destination_coords,
+                trip.num_stops is not None,
+                trip.budget is not None,
+                trip.start_date,
+                trip.car_status != "unanswered",
+            )
         )
+        and not trip.pending_locations
     )
     if ctx is not None and ctx.hasRoute and has_required_details:
         return "revising"
