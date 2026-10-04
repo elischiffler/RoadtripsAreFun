@@ -32,45 +32,42 @@ templates and much local recovery tooling already existed in inspected main;
 the old Kiro descriptions of unsigned auth/Render/path-filtered CI were stale
 even before this feature diff.
 
-## Active flexible hotel evenings work: not integrated at this snapshot
+## Integrated flexible hotel evenings
 
-Two active chats named **Implement flexible hotel evenings** were inspected. Their
-separate `codex/hotel-evenings` and `codex/flexible-hotel-evenings` worktrees both
-contain overlapping uncommitted implementations. Do not combine them blindly
-or treat either implementation's reported tests as acceptance of the shared
-feature head. Resolve the chosen implementation/ownership before integration;
-this refresh does not alter or deliver their code.
+The `codex/flexible-hotel-evenings` implementation builds on shared feature head
+`cd03486`, preserving the concurrent receipts, direct-reply guards and context
+refresh. See [the scheduling contract, example and validation](../docs/flexible-hotel-evenings.md).
+The other observed hotel-evenings worktree is separate overlapping work; its
+changes and reported tests are not part of this integration.
 
-The accepted work order asks for one authoritative backend scheduling policy:
-preferred hotel arrival **18:00**, normal latest arrival **20:00**, morning restart
-**09:00**, configurable trip preferences and explicit opt-in late driving through
-at most **24:00**. Defaults must preserve existing saved-trip readability and
-remain optional inputs. Preferred arrival is soft; actual rerouted arrivals must
-respect the hard cutoff without dropping selected daytime attractions.
+`backend/app/models/scheduling_policy.py` owns preferred hotel arrival **18:00**,
+normal latest arrival **20:00**, morning restart **09:00**, and explicit late
+driving through at most **24:00**. It flows through profile/extraction/tools,
+HTTP/remote payloads, CP-SAT scheduling, shared actual-leg timing, itinerary and
+persistence. Preferred arrival is soft; actual rerouted hotel/destination arrivals
+must meet the arrival-local hard deadline while retaining selected attractions.
+`routing/travel_timing.py` shares the clock logic rather than introducing a
+second independently maintained itinerary policy.
 
-The same policy must flow through profile/extraction/tools, HTTP/remote payloads,
-CP-SAT scheduling, final Mapbox leg validation, itinerary and persistence. Midnight
-is the end of the arrival location's travel day: 00:00 next calendar day is
-allowed, 00:01 is not; booking dates stay tied to the preceding travel night and
-the next restart is that same morning. Arrival-local IANA/DST handling replaces
-fixed-offset assumptions. A dated hotel price does not guarantee late check-in.
+Arrival-local IANA/DST deadlines retain the preceding booking night at midnight
+and restart that same following morning. Existing saved routes without a policy
+keep their legacy timing. Late reception remains unverified and is labeled
+**Confirm late check-in with the hotel**.
 
-Optional evenings should provide at most two nearby provider-verified activities
-after choosing the hotel, separate from daytime stop counts and route waypoints.
-Allow travel/check-in/rest/return within the cutoff. Assign times only with dated
-verified opening intervals; otherwise label tentative options **Check opening
-hours**. Unknown hours, closed venues, late arrival and provider failure must not
-invalidate a successful route. Discovery stays bounded and best effort.
+`routing/sources/evenings.py` provides at most two optional alternatives around
+the selected hotel, separate from daytime stops and waypoints, within 2 km and
+15 minutes each way. Discovery has an eight-second total budget. Existing Terra
+weekly hours do not verify date-specific exceptions, so live suggestions are
+unscheduled **Check opening hours** options. Dated verified interval fixtures
+exercise scheduled suggestions. Failures or insufficient time do not invalidate
+a successful route. No new service, reservation or deployment is introduced.
 
-The observed worktrees add different policy modules (`models/scheduling.py`
-versus `models/scheduling_policy.py`) and shared timing integration. The latter
-also adds `routing/travel_timing.py`, `routing/sources/evenings.py`, itinerary UI
-and database recovery fixtures. These are work-in-progress paths, not current
-shared contracts. Before integration, require boundary/midnight/DST/booking-night,
-detour, remote/JSON/NDJSON, persistence/reload and optional-provider tests plus
-the repository gates. Live provider hours and full trip acceptance remain
-separate requirements. No new paid provider or production deployment is planned
-by this feature.
+The integrated local checks pass: 538 backend tests at 85.07% coverage, pinned
+Ruff checks, all required frontend checks, two rebuilt container smoke tests and
+real disposable PostgreSQL persistence/recovery. See the feature validation
+ledger for scope and retained recovery data. Live provider/model/Cognito trip
+acceptance and late reception remain blocked; PR #26 stays draft. Each later
+shared-head change still requires its own CI evidence.
 
 ## Verification and structural follow-ups
 
@@ -81,7 +78,7 @@ this context refresh did not rerun those suites. Live full-trip acceptance remai
 unverified and the PR stays draft. Later commits require their own CI evidence.
 
 Concrete structural issue: scheduler, final route validation and itinerary owned
-different clock logic. The active policy refactor is the appropriate bounded
+different clock logic. The integrated policy refactor provides this bounded
 fix; avoid a second parallel scheduling abstraction. A separate documentation
 follow-up can reconcile the long historical `docs/chat-agent-design.md` and
 mixed algorithm documents with the current contracts. Keep historical rationale,

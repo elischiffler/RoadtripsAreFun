@@ -40,6 +40,9 @@ the changes since the older guidance and implementation still in progress.
 - CP-SAT hotel prices are verified dated Google Hotels one-night totals for two
   adults in USD, with taxes/fees and comparison links. Hotel budget is a nightly
   target; usable over-budget hotels produce warnings. See `docs/hotel-prices.md`.
+- [Flexible hotel evenings](../docs/flexible-hotel-evenings.md) adds shared local
+  arrival deadlines and optional nearby suggestions; see the current-work handoff
+  for the integration and remaining live acceptance gates.
 - The frontend saves chats, route/itinerary actions, presentation and stable agent
   conversation IDs. PostgreSQL stores owner-scoped chat data and agent memory.
   Current schemas and ownership are described in [architecture](architecture.md).
