@@ -184,7 +184,10 @@ async def test_generate_final_route_success_has_action(monkeypatch):
         stops=[{"name": "Red Rocks", "type": "stop", "coordinates": [39.6, -105.2]}],
         cost=320.0,
         distance=500000.0,
-        model_dump=lambda **kwargs: {"cost": 320.0},
+        model_dump=lambda **kwargs: {
+            "cost": 320.0,
+            "stops": [{"name": "Red Rocks", "type": "stop", "coordinates": [39.6, -105.2]}],
+        },
     )
 
     async def fake_plan(payload, user_id=None, *, can_select_algorithm=False):
