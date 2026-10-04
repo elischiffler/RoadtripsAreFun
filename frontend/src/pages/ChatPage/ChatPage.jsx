@@ -46,6 +46,9 @@ const WorkflowPanel = ({
   const handleChatSubmit = (text) => submit('chat_message', text);
 
   const currentProgress = deriveProgress({ route });
+  const latestBotIndex = activeMessages.findLastIndex(
+    (message) => message.sender === 'bot' && message.text != null
+  );
 
   return (
     <>
@@ -95,7 +98,12 @@ const WorkflowPanel = ({
               if (message.text != null) {
                 return (
                   <Box key={index} className={`message ${message.sender}`}>
-                    <ChatMessage message={message} />
+                    <ChatMessage
+                      message={message}
+                      pendingLocationFields={
+                        index === latestBotIndex ? Object.keys(pendingLocations ?? {}) : []
+                      }
+                    />
                   </Box>
                 );
               }
@@ -122,6 +130,7 @@ const WorkflowPanel = ({
                       variant="text"
                       size="small"
                       className="location-confirm-button"
+                      disableRipple
                       aria-label={
                         field === 'start_address'
                           ? 'Confirm starting location'
@@ -142,11 +151,13 @@ const WorkflowPanel = ({
                 ) : (
                   <Typography>No match found for &quot;{pending.query}&quot;.</Typography>
                 )}
-                <Typography variant="body2" sx={{ mt: 1 }}>
-                  Wrong location? Type a different city or address below.
-                </Typography>
               </Box>
             ))}
+            {Object.keys(pendingLocations ?? {}).length > 0 && (
+              <Typography className="message bot" variant="body2">
+                Wrong location? Type a different city or address below.
+              </Typography>
+            )}
             <div ref={chatEndRef} />
           </Box>
 

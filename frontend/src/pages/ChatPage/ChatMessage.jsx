@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 
-export default function ChatMessage({ message }) {
+export default function ChatMessage({ message, pendingLocationFields = [] }) {
   const presentation = message.sender === 'bot' ? message.presentation : null;
   const isList = (items) => Array.isArray(items) && items.every((item) => typeof item === 'string');
   if (
@@ -13,6 +13,24 @@ export default function ChatMessage({ message }) {
   ) {
     return <Typography variant="body1">{message.text}</Typography>;
   }
+  // Active confirmation controls already explain these requests. Keep the saved
+  // receipt intact and hide only its matching location rows in the current reply.
+  const locationLabels = {
+    start_address: 'Starting location:',
+    destination_address: 'Destination:',
+  };
+  const needed = presentation.needed.filter(
+    (item) => !pendingLocationFields.some((field) => item.startsWith(locationLabels[field]))
+  );
+  if (
+    !presentation.introduction &&
+    !presentation.updated.length &&
+    !needed.length &&
+    !presentation.questions?.length &&
+    !presentation.notes.length
+  ) {
+    return null;
+  }
   return (
     <Box sx={{ overflowWrap: 'anywhere', minWidth: 0 }}>
       {presentation.introduction && (
@@ -22,7 +40,7 @@ export default function ChatMessage({ message }) {
       )}
       {[
         [presentation.title, presentation.updated],
-        ['Still needed', presentation.needed],
+        ['Still needed', needed],
         ['Questions', presentation.questions || []],
       ].map(([title, items]) =>
         items.length ? (
@@ -55,4 +73,5 @@ ChatMessage.propTypes = {
     sender: PropTypes.string,
     presentation: PropTypes.object,
   }).isRequired,
+  pendingLocationFields: PropTypes.arrayOf(PropTypes.string),
 };

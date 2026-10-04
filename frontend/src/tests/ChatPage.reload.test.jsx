@@ -44,6 +44,58 @@ function Harness() {
 }
 
 describe('ChatPage reload', () => {
+  it('restores one confirmation per address with one correction hint', async () => {
+    sessionStorage.clear();
+    const partial = new ChatData(1);
+    partial.tripProfile = {
+      pending_locations: {
+        start_address: {
+          query: 'Boulder',
+          candidates: [{ id: 'start', address: 'Boulder, Colorado' }],
+        },
+        destination_address: {
+          query: 'Minneapolis',
+          candidates: [{ id: 'end', address: 'Minneapolis, Minnesota' }],
+        },
+      },
+    };
+    initializeUserData.mockResolvedValueOnce({
+      chats: [
+        {
+          id: 1,
+          title: 'Trip',
+          messages: [
+            {
+              sender: 'bot',
+              text: 'duplicate fallback',
+              presentation: {
+                title: 'Updated trip details',
+                updated: [],
+                notes: [],
+                needed: [
+                  'Starting location: Confirm the suggested address: Boulder, Colorado.',
+                  'Destination: Confirm the suggested address: Minneapolis, Minnesota.',
+                ],
+              },
+            },
+          ],
+        },
+      ],
+      UserData: new Data(new ChatLogs([partial])),
+    });
+    render(<Harness />);
+    expect(
+      await screen.findByRole('button', { name: 'Confirm starting location' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Confirm destination' })).toBeInTheDocument();
+    expect(screen.queryByText('Still needed')).not.toBeInTheDocument();
+    expect(screen.queryByText('duplicate fallback')).not.toBeInTheDocument();
+    expect(
+      screen.getAllByText('Wrong location? Type a different city or address below.')
+    ).toHaveLength(1);
+    expect(screen.getAllByText(/Boulder, Colorado/)).toHaveLength(1);
+    expect(screen.getAllByText(/Minneapolis, Minnesota/)).toHaveLength(1);
+  });
   it('renders exact restored candidate labels and sends the explicit selection', async () => {
     sessionStorage.clear();
     sessionStorage.setItem('selectedChatId', '1');

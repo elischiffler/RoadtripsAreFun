@@ -178,10 +178,28 @@
 }
 
 .location-confirm-button {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
   color: #000 !important;
+  font-weight: 700 !important;
   text-transform: none !important;
   min-width: 0 !important;
   padding: 4px 0 !important;
+}
+
+.location-confirm-button:hover {
+  background: transparent !important;
+  text-decoration: underline;
+}
+
+.location-confirm-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.location-confirm-button.Mui-disabled {
+  opacity: 0.45;
 }
 
 /* ── Location input bar ── */

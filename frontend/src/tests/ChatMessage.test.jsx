@@ -10,6 +10,50 @@ const presentation = {
 };
 
 describe('ChatMessage', () => {
+  it('omits requests already handled by active location controls and preserves other asks', () => {
+    const message = {
+      sender: 'bot',
+      text: 'fallback',
+      presentation: {
+        ...presentation,
+        needed: [
+          'Starting location: Confirm Boulder, Colorado.',
+          'Destination: Confirm Minneapolis, Minnesota.',
+          'What date would you like to leave?',
+        ],
+      },
+    };
+    render(
+      <ChatMessage
+        message={message}
+        pendingLocationFields={['start_address', 'destination_address']}
+      />
+    );
+    expect(screen.queryByText(/Starting location: Confirm/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Destination: Confirm/)).not.toBeInTheDocument();
+    expect(screen.getByText('What date would you like to leave?')).toBeInTheDocument();
+    expect(screen.getByText('Attraction stops: 6')).toBeInTheDocument();
+    expect(message.presentation.needed).toHaveLength(3);
+  });
+
+  it('omits an empty location-only reply without falling back to duplicate text', () => {
+    const { container } = render(
+      <ChatMessage
+        message={{
+          sender: 'bot',
+          text: 'Starting location: Confirm Boulder.',
+          presentation: {
+            ...presentation,
+            updated: [],
+            needed: ['Starting location: Confirm Boulder.'],
+          },
+        }}
+        pendingLocationFields={['start_address']}
+      />
+    );
+    expect(container).toBeEmptyDOMElement();
+  });
+
   it('renders labeled native lists instead of duplicate fallback text', () => {
     render(<ChatMessage message={{ sender: 'bot', text: 'fallback', presentation }} />);
     expect(screen.queryByText('fallback')).not.toBeInTheDocument();
