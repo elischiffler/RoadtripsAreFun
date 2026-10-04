@@ -37,8 +37,8 @@ including for identical allocations; they never multiply one two-adult price.
 The sum is labeled **independent room quotes**. Simultaneous inventory, room
 types and bed arrangements must be confirmed with the booking provider; this
 is not a combined bookable whole-party offer. There is no automatic booking.
-Nightly budget remains per room; scheduling compares the sum with that budget
-times the number of rooms and discloses over-budget quotes.
+Nightly budget remains per room; scheduling checks every room quote against
+that budget and discloses any room that exceeds it.
 
 Old saved chats remain readable. Missing occupancy blocks new prices and
 itinerary generation; no two-adult default is substituted. A count correction
