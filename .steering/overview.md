@@ -5,6 +5,10 @@ road trip planning, maps, itineraries, saved chats and conversational preference
 The repository remote is `https://github.com/elischiffler/RoadtripsAreFun.git`.
 Manifests, schemas, source and `AGENTS.md` take precedence over these notes.
 
+October 5 integration is consolidated on `codex/production-release`, targeting
+main through one release PR. See [release consolidation](../docs/release-consolidation.md)
+for preserved branch history, verification and outstanding deployment gates.
+
 This refresh inspected shared feature commit `53fd0bf` against main `92ac3af` on
 October 4, 2026 (America/Los_Angeles). The feature implementation is in draft
 [PR #26](https://github.com/elischiffler/RoadtripsAreFun/pull/26); it is not merged

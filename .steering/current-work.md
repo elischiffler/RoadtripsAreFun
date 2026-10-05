@@ -1,5 +1,15 @@
 # Current feature and senior demonstration work
 
+## October 5 release consolidation
+
+Active integration is now `codex/production-release`, targeting `main` in one
+release PR. It contains the integrated feature/UI work and final live preset
+fixes; every pre-cleanup local/remote branch tip is preserved in its ancestry.
+See [release consolidation](../docs/release-consolidation.md) for the branch
+audit, current validation and remaining production gates. The dated snapshots
+below retain their original evidence scope; superseded PRs are closed during
+cleanup. This integration does not merge main or deploy production.
+
 Snapshot: October 4, 2026, America/Los_Angeles. Inspected and fetched shared
 feature `53fd0bf9d03f31103b909818ee646fb19ce5b825` (`codex/cp-sat-solver`) against
 main `92ac3af4155afc99704dc6072e6f25e57a4dc488`. The primary checkout was clean
