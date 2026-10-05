@@ -100,7 +100,7 @@ BENCHMARK_PROFILES = {
         "scheduling_policy": {
             "preferred_hotel_arrival": "17:00",
             "latest_hotel_arrival": "19:00",
-            "morning_restart": "08:00",
+            "morning_restart": "07:30",
             "latest_destination_arrival": "19:00",
         },
         "evening_interests": ["food"],
