@@ -7,9 +7,12 @@ import HotelChip from '../../components/HotelChip';
 import ClockChip from '../../components/ClockChip';
 import { isAuthenticated } from '../../services/authService';
 import './HomePage.css';
+import { signOut } from '../../services/session';
+import { useSessionStatus } from '../../services/useSessionStatus';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  useSessionStatus();
   const authenticated = isAuthenticated();
 
   const handleGetStartedClick = () => {
@@ -17,9 +20,7 @@ export default function HomePage() {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem('accessToken');
-    sessionStorage.removeItem('idToken');
-    sessionStorage.removeItem('refreshToken');
+    signOut();
     navigate('/');
   };
 

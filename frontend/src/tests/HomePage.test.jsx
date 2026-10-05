@@ -1,3 +1,4 @@
+import { fixtureSession } from './sessionFixtures';
 /**
  * HomePage — landing page smoke tests.
  */
@@ -38,7 +39,7 @@ describe('HomePage (unauthenticated)', () => {
 
 describe('HomePage (authenticated)', () => {
   beforeEach(() => {
-    sessionStorage.setItem('accessToken', 'fake-token');
+    fixtureSession();
   });
   afterEach(() => sessionStorage.clear());
 

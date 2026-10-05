@@ -1,8 +1,10 @@
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { Box, TextField, IconButton, InputAdornment } from '@mui/material';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import PropTypes from 'prop-types';
 import './ChatPage.css';
+import { UserDataContext } from '../../states/UserDataContext';
+import { getSession, isCurrentSession } from '../../services/session';
 
 /**
  * ChatInput — persistent free-text bar for talking to the conversational agent.
@@ -14,8 +16,14 @@ import './ChatPage.css';
  *   onSubmit  {fn}       – called with the trimmed text when the user submits
  *   disabled  {boolean}  – disables input while a turn is in flight
  */
-const ChatInput = ({ onSubmit, disabled }) => {
-  const [value, setValue] = useState('');
+const ChatInput = ({ onSubmit, disabled, draftKey = 'chat' }) => {
+  const context = useContext(UserDataContext);
+  const drafts = context?.drafts;
+  const [value, setValue] = useState(() => drafts?.current.get(draftKey) ?? '');
+  const updateValue = (text) => {
+    setValue(text);
+    drafts?.current.set(draftKey, text);
+  };
   const sending = useRef(false);
 
   const handleSend = async () => {
@@ -23,7 +31,8 @@ const ChatInput = ({ onSubmit, disabled }) => {
     if (!text || disabled || sending.current) return;
     sending.current = true;
     try {
-      if ((await onSubmit(text)) !== false) setValue('');
+      const session = getSession();
+      if ((await onSubmit(text)) !== false && isCurrentSession(session)) updateValue('');
     } finally {
       sending.current = false;
     }
@@ -42,7 +51,7 @@ const ChatInput = ({ onSubmit, disabled }) => {
         className="split-input-bar"
         placeholder="Ask JourneyGenie anything about your trip…"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => updateValue(e.target.value)}
         onKeyDown={handleKeyDown}
         disabled={disabled}
         fullWidth
@@ -84,6 +93,7 @@ const ChatInput = ({ onSubmit, disabled }) => {
 ChatInput.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
+  draftKey: PropTypes.string,
 };
 
 export default ChatInput;

@@ -1,3 +1,4 @@
+import { fixtureSession } from './sessionFixtures';
 /**
  * agentChat — API helper for the conversational chat agent.
  * axios is mocked so no real network calls happen.
@@ -17,6 +18,7 @@ import { sendAgentMessage } from '../pages/ChatPage/agentChat';
 
 beforeEach(() => {
   vi.clearAllMocks();
+  fixtureSession();
   import.meta.env.VITE_BACKEND_SERVER = 'http://localhost:8000/';
 });
 
@@ -70,7 +72,7 @@ describe('sendAgentMessage', () => {
     const [url, body] = axios.post.mock.calls[0];
     expect(url).toBe('http://localhost:8000/agent/chat');
     expect(body).toEqual({
-      partitionKey: 'test-access-token',
+      partitionKey: sessionStorage.getItem('accessToken'),
       chatId: '42', // coerced to string
       message: 'make it cheaper',
       clientContext: { hasRoute: true, stops: 3, hotelBudget: 450 },
@@ -134,7 +136,9 @@ it('opts into progress streaming without duplicating the chat request', async ()
     });
     expect(result).toEqual(AGENT_RESPONSE);
     expect(fetch.mock.calls[0][0]).toBe('http://localhost:8000/agent/chat/stream');
-    expect(JSON.parse(fetch.mock.calls[0][1].body).partitionKey).toBe('test-access-token');
+    expect(JSON.parse(fetch.mock.calls[0][1].body).partitionKey).toBe(
+      sessionStorage.getItem('accessToken')
+    );
     expect(axios.post).not.toHaveBeenCalled();
   } finally {
     vi.unstubAllGlobals();

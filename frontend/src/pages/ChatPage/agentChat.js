@@ -1,7 +1,8 @@
-import axios from 'axios';
+import axios from '../../services/protectedRequest';
 import { streamAgentMessage } from './agentProgress';
 import { backendAuthConfig } from '../../services/backendAuth';
-import { getRoutingAlgorithm } from '../../services/routingSettings';
+import { getFreshRoutingAlgorithm } from '../../services/routingSettings';
+import { getSession, ensureSession, isCurrentSession, SessionError } from '../../services/session';
 
 /**
  * agentChat — API helper for the conversational chat agent.
@@ -51,6 +52,9 @@ export const sendAgentMessage = async ({
   locationConfirmations,
 }) => {
   try {
+    const started = getSession();
+    await ensureSession();
+    if (!isCurrentSession(started)) throw new SessionError('session-changed');
     const data = {
       partitionKey: accessToken,
       chatId: String(chatId),
@@ -61,13 +65,12 @@ export const sendAgentMessage = async ({
     if (clientContext) {
       const context = { ...clientContext };
       delete context.algorithm;
-      const algorithm =
-        accessToken === sessionStorage.getItem('accessToken') ? getRoutingAlgorithm() : null;
+      const algorithm = await getFreshRoutingAlgorithm();
       data.clientContext = { ...context, ...(algorithm ? { algorithm } : {}) };
     }
 
+    if (!isCurrentSession(started)) throw new SessionError('session-changed');
     const config = backendAuthConfig();
-    if (config.headers?.Authorization !== `Bearer ${accessToken}`) delete config.headers;
     if (onProgress) {
       return await streamAgentMessage(
         `${import.meta.env.VITE_BACKEND_SERVER}agent/chat/stream`,
@@ -85,7 +88,8 @@ export const sendAgentMessage = async ({
     return response.data;
   } catch (error) {
     // Log any errors encountered during the request
-    console.error('Error sending agent message:', error);
+    if (error instanceof SessionError) return { ok: false, status: null, sessionError: error.code };
+    console.error('Error sending agent message; status=%s', error.response?.status ?? 'network');
     // Return a structured failure (not just null) so the caller can tell a
     // transient "try again" (503) apart from other faults and message the user
     // appropriately. The turn produced no reply, so there's no agent to recover.

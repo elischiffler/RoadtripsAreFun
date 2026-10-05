@@ -1,12 +1,13 @@
-/** Attach the current Cognito access token to browser calls into our API. */
+import { getSession } from './session';
+
+/** Advisory snapshot; protectedRequest replaces credentials immediately before dispatch. */
 export const backendAuthConfig = () => {
-  const token = sessionStorage.getItem('accessToken');
-  const identityToken = sessionStorage.getItem('idToken');
-  return token
+  const { accessToken, idToken } = getSession();
+  return accessToken
     ? {
         headers: {
-          Authorization: `Bearer ${token}`,
-          ...(identityToken ? { 'X-Cognito-Id-Token': identityToken } : {}),
+          Authorization: `Bearer ${accessToken}`,
+          ...(idToken ? { 'X-Cognito-Id-Token': idToken } : {}),
         },
       }
     : {};

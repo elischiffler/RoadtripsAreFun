@@ -8,6 +8,8 @@ import { isAuthenticated } from '../services/authService';
 import AlgorithmSettings from './AlgorithmSettings';
 import { useRoutingSettings } from '../services/routingSettings';
 import './GlobalHeader.css';
+import { signOut } from '../services/session';
+import { useSessionStatus } from '../services/useSessionStatus';
 
 // Show the dev-mode algorithm picker only in local dev (npm run dev), or when
 // VITE_DEV_TOOLS=true is set. It's hidden in a normal production build.
@@ -18,6 +20,7 @@ const HIDDEN_ON = ['/login', '/signup', '/algorithm'];
 export default function GlobalHeader() {
   const location = useLocation();
   const navigate = useNavigate();
+  useSessionStatus();
   const authed = isAuthenticated();
   const routingSettings = useRoutingSettings();
   const { currentStep, clearUserData } = useContext(UserDataContext);
@@ -30,10 +33,7 @@ export default function GlobalHeader() {
 
   const handleSignOut = () => {
     handleClose();
-    sessionStorage.removeItem('accessToken');
-    sessionStorage.removeItem('idToken');
-    sessionStorage.removeItem('refreshToken');
-    window.dispatchEvent(new Event('auth-changed'));
+    signOut();
     clearUserData();
     navigate('/');
   };

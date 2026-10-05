@@ -1,3 +1,4 @@
+import { fixtureSession, fixtureToken } from './sessionFixtures';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -96,11 +97,9 @@ const response = () => ({
   error: null,
 });
 function login(sub = 'owner', expiry = Date.now() / 1000 + 600) {
-  sessionStorage.setItem(
-    'accessToken',
-    `header.${btoa(JSON.stringify({ sub, exp: expiry }))}.signature`
-  );
-  sessionStorage.setItem('idToken', `identity-${sub}`);
+  fixtureSession(sub);
+  sessionStorage.setItem('accessToken', fixtureToken(sub, expiry));
+  sessionStorage.setItem('idToken', fixtureToken(sub, expiry, 'id'));
 }
 function capability() {
   return {
@@ -246,7 +245,7 @@ describe('Algorithm Lab experiments', () => {
     });
     expect(config.headers).toEqual({
       Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
-      'X-Cognito-Id-Token': 'identity-owner',
+      'X-Cognito-Id-Token': sessionStorage.getItem('idToken'),
     });
     expect(screen.getByText('Replay · frozen candidate fixture')).toBeInTheDocument();
     expect(screen.getByText(/Selection-only replay: no road route/)).toBeInTheDocument();
