@@ -2,7 +2,14 @@ import { useId, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import HelpTip from './HelpTip';
 import './InterestsPie.css';
+import {
+  piePoint as point,
+  layoutHandles,
+  HANDLE_WIDTH,
+  HANDLE_HEIGHT,
+} from './interestPieGeometry';
 
+const MIN_TOPIC_SHARE = 1;
 const COLORS = [
   '#38644b',
   '#2d667b',
@@ -20,10 +27,6 @@ const COLORS = [
   '#606936',
 ];
 const title = (key) => key.replaceAll('_', ' ');
-const point = (percent, radius = 110) => {
-  const angle = (percent / 100) * Math.PI * 2 - Math.PI / 2;
-  return [140 + radius * Math.cos(angle), 140 + radius * Math.sin(angle)];
-};
 const wedge = (start, size) => {
   if (size >= 99.999999) return 'M140 30 A110 110 0 1 1 140 250 A110 110 0 1 1 140 30 Z';
   const [x1, y1] = point(start);
@@ -71,19 +74,26 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
       start += slice.size;
       return slice;
     });
-  const writeShare = (key, value, base = shares) => {
+  const writeShare = (key, value, base = shares, remove = false) => {
     if (disabled || !Number.isFinite(value)) return;
     setEmptyDraft(null);
     const others = attributes.reduce((sum, item) => sum + (item === key ? 0 : base[item]), 0);
-    const next = Math.max(0, Math.min(Math.round(value * 10) / 10, 100 - others));
+    const capacity = Math.max(0, 100 - others);
+    if (!remove && capacity + 1e-9 < MIN_TOPIC_SHARE) {
+      setMessage('Free at least 1% to add a topic.');
+      return;
+    }
+    const next = remove
+      ? 0
+      : Math.max(MIN_TOPIC_SHARE, Math.min(Math.round(value * 10) / 10, capacity));
     onChange(
       Object.fromEntries(attributes.map((item) => [item, (item === key ? next : base[item]) / 100]))
     );
   };
   const add = (key) => {
     if (disabled || shares[key] > 0) return;
-    if (available < 0.05) {
-      setMessage('Circle full. Shrink or remove a slice to make room.');
+    if (available + 1e-9 < MIN_TOPIC_SHARE) {
+      setMessage('Free at least 1% to add a topic. Shrink or remove a slice to make room.');
       return;
     }
     const size = Math.min(10, available);
@@ -123,7 +133,7 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
       0
     );
     drag.value = Math.max(
-      0.1,
+      MIN_TOPIC_SHARE,
       Math.min(100 - otherTotal, drag.value + (delta * 100) / (Math.PI * 2))
     );
     writeShare(drag.key, drag.value, drag.base);
@@ -154,10 +164,10 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
       <p className="lab-note" id={hintId}>
         Drop a topic into the circle. Drag its edge to resize.
         <HelpTip label="trip weights">
-          Shares cannot exceed 100% altogether. Shrink a slice to free space; other topics stay
-          unchanged. Click a topic to add it, or use the percentage fields. Slice handles also work
-          with arrow keys. At run time, the server scales the chosen shares to sum to 100%; unused
-          space is not an interest.
+          Each topic needs at least 1%. Shares cannot exceed 100% altogether. Shrink a slice to free
+          space; other topics stay unchanged. Click a topic to add it, or use the percentage fields.
+          Slice handles also work with arrow keys. At run time, the server scales the chosen shares
+          to sum to 100%; unused space is not an interest.
         </HelpTip>
       </p>
       <div
@@ -199,8 +209,8 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
             </text>
           )}
         </svg>
-        {slices.map((slice) => {
-          const [x, y] = point(slice.start + slice.size, 113);
+        {layoutHandles(slices).map((slice) => {
+          const { x, y } = slice;
           const max = Math.max(0, 100 - (allocated - slice.size));
           return (
             <button
@@ -213,9 +223,11 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
                 top: `${y / 2.8}%`,
                 '--slice-color': slice.color,
                 '--edge-angle': `${(slice.start + slice.size) * 3.6}deg`,
+                width: `${HANDLE_WIDTH / 2.8}%`,
+                height: `${HANDLE_HEIGHT / 2.8}%`,
               }}
               aria-label={`Resize ${title(slice.key)}`}
-              aria-valuemin={0}
+              aria-valuemin={MIN_TOPIC_SHARE}
               aria-valuemax={Number(max.toFixed(1))}
               aria-valuenow={Number(slice.size.toFixed(1))}
               aria-valuetext={`${slice.size.toFixed(1)} percent`}
@@ -234,7 +246,7 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
                   ArrowUp: slice.size + delta,
                   ArrowLeft: slice.size - delta,
                   ArrowDown: slice.size - delta,
-                  Home: 0,
+                  Home: MIN_TOPIC_SHARE,
                   End: max,
                 };
                 if (event.key in values) {
@@ -249,10 +261,14 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
         })}
         {dragging && !disabled && (
           <div className="interest-drop-overlay" aria-hidden="true">
-            <strong>{available < 0.05 ? 'Circle full' : `Drop ${title(dragging)} here`}</strong>
+            <strong>
+              {available + 1e-9 < MIN_TOPIC_SHARE
+                ? 'Make room first'
+                : `Drop ${title(dragging)} here`}
+            </strong>
             <span>
-              {available < 0.05
-                ? 'Shrink a slice to make room'
+              {available + 1e-9 < MIN_TOPIC_SHARE
+                ? 'A topic needs at least 1%'
                 : `${available.toFixed(0)}% available`}
             </span>
           </div>
@@ -280,7 +296,7 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
                 id={`${hintId}-${slice.key}`}
                 aria-label={`Interest ${title(slice.key)} percentage`}
                 type="number"
-                min="0"
+                min={MIN_TOPIC_SHARE}
                 max={Math.ceil(Math.max(0, 100 - (allocated - slice.size)) * 10) / 10}
                 step="any"
                 value={
@@ -304,7 +320,7 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
               className="interest-remove"
               aria-label={`Remove ${title(slice.key)}`}
               disabled={disabled}
-              onClick={() => writeShare(slice.key, 0)}
+              onClick={() => writeShare(slice.key, 0, shares, true)}
             >
               ×
             </button>

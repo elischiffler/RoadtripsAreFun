@@ -64,16 +64,19 @@ head, not the historical baseline listed above.
 The `/algorithm` trip-interest form now uses a drag-and-drop percentage pie.
 After integrating the shared session-refresh work through `f9f1c31`, the final
 frontend checks pass: locked install, formatting, lint, production build and
-267 tests across 30 files (88.68% lines/statements, 86.30% branches, 80.93%
+271 tests across 31 files (88.67% lines/statements, 86.37% branches, 81.22%
 functions). The clean install required stopping this task's Vite process to
 release its Windows esbuild file lock; the local preview was restarted.
 The existing bundle-size warning remains. No backend or database code changed.
 
-Eight interaction tests cover drop/cancellation, capped allocations, preserving
-other topics, edge dragging, the circular seam, keyboard edits/removal, decimal entry, touch
-and disabled controls. Browser checks on the local authenticated fixture verify
+Nine interaction tests cover drop/cancellation, capped allocations, preserving
+other topics, edge dragging, the circular seam, keyboard edits/removal, decimal entry, the 1% minimum, touch
+and disabled controls. Three geometry tests independently check hit-target polygon
+collisions, including fourteen 1% slices and the circular seam. Browser checks on the local authenticated fixture verify
 actual pointer edge resizing, dragging scenery onto the circle, the 100% cap,
-full-circle guidance and a successful CP-SAT replay with edited weights.
+full-circle guidance and a successful CP-SAT replay with edited weights. The
+follow-up also verifies the 1% floor, dragging a collision-shifted handle, and
+removal of the initial instructional output block.
 This remains fixture evidence, not a live-provider/public release claim.
 
 The chart exposes unallocated space. Positive allocations below 100% are still

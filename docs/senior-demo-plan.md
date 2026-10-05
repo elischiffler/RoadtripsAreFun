@@ -11,7 +11,11 @@ API routes stay `/algorithm-lab/presets` and `/algorithm-lab/run`.
 The trip-interest editor uses a pie chart: drag or click a topic to add a slice,
 then drag its edge, use arrow keys, or enter a percentage to resize. A drop
 overlay identifies the circle while carrying a topic. Allocations are capped at
-100%; shrinking/removing a slice frees space without changing other topics.
+100%, with a 1% minimum per included topic. Shrinking/removing a slice frees
+space without changing other topics. Slim grips use rotated-rectangle collision
+checks and move inward along their own boundary when adjacent grips would overlap.
+The initial instructional output block is removed; output appears during a run,
+on error or with results.
 Unused space is visible and is not a neutral interest: backend normalization
 still scales positive weights to one. An empty mix disables Run.
 

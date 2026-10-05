@@ -206,6 +206,7 @@ function LabWorkspace() {
       </form>
       <div
         className="lab-output-panel"
+        hidden={!busy && !error && !result}
         aria-busy={busy}
         ref={output}
         tabIndex={-1}
@@ -230,33 +231,6 @@ function LabWorkspace() {
           </p>
         )}
         {result && <LabResults key={result.snapshot.id} result={result} previous={previous} />}
-        {!result && !busy && (
-          <div className="lab-empty">
-            <h2>Follow a trip from preferences to places.</h2>
-            <p>
-              Choose a preset and run the experiment to inspect the exact inputs, each place’s score
-              and the solver’s decision.
-            </p>
-            <ol>
-              <li>
-                <strong>Trip profile</strong>
-                <span>Where, when, who and what matters.</span>
-              </li>
-              <li>
-                <strong>Location match</strong>
-                <span>Trip weights × place ratings.</span>
-              </li>
-              <li>
-                <strong>CP-SAT selection</strong>
-                <span>Maximum match within stop and slot limits.</span>
-              </li>
-              <li>
-                <strong>Route checks</strong>
-                <span>Live scheduling, road timing and itinerary.</span>
-              </li>
-            </ol>
-          </div>
-        )}
       </div>
     </div>
   );

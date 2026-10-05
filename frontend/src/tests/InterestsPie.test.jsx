@@ -72,11 +72,15 @@ describe('trip-interest pie interactions', () => {
     expect(value('nature')).toHaveValue(75);
     expect(changed).toHaveBeenLastCalledWith({ nature: 0.75, history: 0.25, food: 0 });
     fireEvent.click(screen.getByRole('button', { name: 'Add food' }));
-    expect(screen.getByRole('status')).toHaveTextContent('Circle full');
+    expect(screen.getByRole('status')).toHaveTextContent('Free at least 1%');
     expect(screen.queryByLabelText('Interest food percentage')).not.toBeInTheDocument();
     fireEvent.change(value('nature'), { target: { value: '74.8' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add food' }));
-    expect(value('food')).toHaveValue(0.2);
+    expect(screen.queryByLabelText('Interest food percentage')).not.toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Free at least 1%');
+    fireEvent.change(value('nature'), { target: { value: '74' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Add food' }));
+    expect(value('food')).toHaveValue(1);
     expect(
       Object.values(changed.mock.lastCall[0]).reduce((sum, item) => sum + item, 0)
     ).toBeCloseTo(1, 12);
@@ -93,6 +97,15 @@ describe('trip-interest pie interactions', () => {
     fireEvent.pointerMove(edge, position(0.75));
     expect(changed).toHaveBeenCalledTimes(calls);
   });
+  it('stops pointer resizing at 1% without removing the topic', () => {
+    mount({ nature: 0.02, history: 0.25, food: 0 });
+    const edge = handle('nature');
+    fireEvent.pointerDown(edge, { button: 0, ...position(0.02) });
+    fireEvent.pointerMove(edge, position(0.99));
+    expect(value('nature')).toHaveValue(1);
+    expect(handle('nature')).toHaveAttribute('aria-valuemin', '1');
+    expect(value('history')).toHaveValue(25);
+  });
   it('unwraps the top seam without a 100% jump, caps at 100%, and cancels cleanly', () => {
     mount({ nature: 0.95, history: 0, food: 0 });
     const edge = handle('nature');
@@ -104,16 +117,16 @@ describe('trip-interest pie interactions', () => {
     fireEvent.pointerCancel(edge);
     expect(handle('nature')).not.toHaveClass('is-resizing');
   });
-  it('keeps the field mounted while entering a decimal, and commits zero on blur', () => {
+  it('keeps the field mounted while typing but clamps sub-percent and zero values to 1%', () => {
     mount();
     fireEvent.change(value('nature'), { target: { value: '' } });
     expect(value('nature')).toHaveValue(null);
     fireEvent.change(value('nature'), { target: { value: '0' } });
     fireEvent.change(value('nature'), { target: { value: '0.5' } });
-    expect(value('nature')).toHaveValue(0.5);
+    expect(value('nature')).toHaveValue(1);
     fireEvent.change(value('nature'), { target: { value: '0' } });
     fireEvent.blur(value('nature'));
-    expect(screen.queryByLabelText('Interest nature percentage')).not.toBeInTheDocument();
+    expect(value('nature')).toHaveValue(1);
   });
   it('supports keyboard resize, removal and click-to-add from an empty circle', () => {
     mount();
@@ -122,6 +135,10 @@ describe('trip-interest pie interactions', () => {
     fireEvent.keyDown(handle('nature'), { key: 'End' });
     expect(value('nature')).toHaveValue(75);
     fireEvent.keyDown(handle('nature'), { key: 'Home' });
+    expect(value('nature')).toHaveValue(1);
+    fireEvent.keyDown(handle('nature'), { key: 'ArrowDown' });
+    expect(value('nature')).toHaveValue(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Remove nature' }));
     fireEvent.click(screen.getByRole('button', { name: 'Remove history' }));
     expect(screen.getByText('Add at least one topic to run.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Add food' }));

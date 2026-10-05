@@ -37,8 +37,6 @@
   position: absolute;
   display: grid;
   place-items: center;
-  width: 10px;
-  height: 24px;
   padding: 0;
   border: 0;
   border-radius: 3px;
@@ -49,8 +47,9 @@
   z-index: 2;
 }
 .interest-edge-grip {
-  width: 6px;
-  height: 18px;
+  width: 50%;
+  height: 80%;
+  box-sizing: border-box;
   border: 1px solid var(--lab-paper);
   border-radius: 2px;
   background: var(--slice-color);
