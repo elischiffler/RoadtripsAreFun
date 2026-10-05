@@ -2,9 +2,12 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { getLabRuns, labError } from '../../services/algorithmLab';
 import HelpTip from './HelpTip';
+import TripEvaluation from './TripEvaluation';
+import SavedTripDialog from './SavedTripDialog';
 
 export default function RunHistory({ revision }) {
   const [data, setData] = useState(null);
+  const [selectedRun, setSelectedRun] = useState(null);
   const [error, setError] = useState('');
   const [offset, setOffset] = useState(0);
   const [refresh, setRefresh] = useState(0);
@@ -23,6 +26,7 @@ export default function RunHistory({ revision }) {
   }, [revision, offset, refresh]);
   return (
     <section className="lab-history" aria-label="Saved run history">
+      {selectedRun && <SavedTripDialog run={selectedRun} onClose={() => setSelectedRun(null)} />}
       <div className="lab-actions">
         <h2>Run history</h2>
         <button type="button" onClick={() => setRefresh(refresh + 1)}>
@@ -43,6 +47,16 @@ export default function RunHistory({ revision }) {
             Saved separately from chats. Showing {data.runs.length} runs
             {offset ? ` from ${offset + 1}` : ''}.
           </p>
+          {data.page_summary && (
+            <p className="lab-note">
+              Current page: {data.page_summary.completed} completed, {data.page_summary.failed}{' '}
+              failed, {data.page_summary.unfinished} unfinished. Completion rate:{' '}
+              {data.page_summary.completion_rate == null
+                ? 'Unassessed'
+                : `${(data.page_summary.completion_rate * 100).toFixed(1)}%`}{' '}
+              ({data.page_summary.completion_assessed} finished runs assessed).
+            </p>
+          )}
           <div className="lab-table-scroll">
             <table>
               <thead>
@@ -58,7 +72,13 @@ export default function RunHistory({ revision }) {
               <tbody>
                 {data.runs.map((run) => {
                   const metrics = run.metrics;
-                  const group = data.groups.find((item) => item.cohort_key === metrics?.cohort_key);
+                  const group = data.groups.find(
+                    (item) =>
+                      item.cohort_key === metrics?.cohort_key &&
+                      (item.metric_version == null ||
+                        item.metric_version === metrics?.metric_version) &&
+                      (item.revision == null || item.revision === metrics?.revision)
+                  );
                   return (
                     <tr key={run.id}>
                       <td>
@@ -85,6 +105,11 @@ export default function RunHistory({ revision }) {
                           : '—'}
                       </td>
                       <td>
+                        {run.has_result && (
+                          <button type="button" onClick={() => setSelectedRun(run)}>
+                            View map and itinerary
+                          </button>
+                        )}
                         <details>
                           <summary>Inspect</summary>
                           <p>
@@ -107,6 +132,23 @@ export default function RunHistory({ revision }) {
                               standard deviation:{' '}
                               {group.objective?.stddev?.toFixed(2) ?? 'unavailable'}.
                             </p>
+                          )}
+                          <TripEvaluation metrics={metrics} />
+                          {group?.trip_evaluation && (
+                            <div aria-label="Current page trip statistics">
+                              <p>
+                                Matching runs on this page only. Mean ± population standard
+                                deviation:
+                              </p>
+                              {Object.entries(group.trip_evaluation).map(([label, stats]) => (
+                                <p key={label}>
+                                  {label.replaceAll('_', ' ')}:{' '}
+                                  {stats
+                                    ? `${stats.mean.toFixed(2)} ± ${stats.stddev.toFixed(2)}; min ${stats.min.toFixed(2)}, max ${stats.max.toFixed(2)} (${stats.count} assessed)`
+                                    : 'Unassessed'}
+                                </p>
+                              ))}
+                            </div>
                           )}
                           <pre>
                             {JSON.stringify(

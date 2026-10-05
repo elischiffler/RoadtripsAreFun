@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -7,21 +8,18 @@ import {
 } from '../../services/routingSettings';
 import { getLabPresets, runLab, labError } from '../../services/algorithmLab';
 import TripInputs from './TripInputs';
+import TripPresetDialog from './TripPresetDialog';
 import LabResults from './LabResults';
 import HelpTip from './HelpTip';
-import BenchmarkDialog from './BenchmarkDialog';
 import RunHistory from './RunHistory';
 import './AlgorithmLab.css';
 
-function LabWorkspace() {
+function LabWorkspace({ historyOpen }) {
   const [catalog, setCatalog] = useState(null);
   const [presetId, setPresetId] = useState('');
   const [inputs, setInputs] = useState(null);
-  const [mode, setMode] = useState('replay');
-  const [snapshotId, setSnapshotId] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [batchBusy, setBatchBusy] = useState(false);
   const [result, setResult] = useState(null);
   const [previous, setPrevious] = useState(null);
   const lastResult = useRef(null);
@@ -45,7 +43,6 @@ function LabWorkspace() {
         setCatalog(data);
         setPresetId(data.presets[0].id);
         setInputs(structuredClone(data.presets[0].inputs));
-        setSnapshotId(data.snapshots[0].id);
       })
       .catch((failure) => {
         if (!controller.signal.aborted) setError(labError(failure));
@@ -83,10 +80,9 @@ function LabWorkspace() {
     try {
       const data = await runLab(
         {
-          mode,
+          mode: 'live',
           preset_id: presetId,
           inputs,
-          ...(mode === 'replay' ? { snapshot_id: snapshotId } : {}),
         },
         controller.signal
       );
@@ -122,62 +118,34 @@ function LabWorkspace() {
     );
   return (
     <div className="lab-layout">
-      <form className="lab-input-panel" onSubmit={submit}>
+      <form
+        className="lab-input-panel"
+        onSubmit={submit}
+        onInvalid={(event) => {
+          let section = event.target.closest('details');
+          while (section) {
+            section.open = true;
+            section = section.parentElement.closest('details');
+          }
+        }}
+      >
         <div className="lab-controls">
-          <label>
-            Trip preset
-            <select
-              disabled={busy}
-              value={presetId}
-              onChange={(event) => choosePreset(event.target.value)}
-            >
-              {catalog.presets.map((preset) => (
-                <option value={preset.id} key={preset.id}>
-                  {preset.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Run mode
-            <select
-              disabled={busy}
-              value={mode}
-              onChange={(event) => {
-                invalidate();
-                setMode(event.target.value);
-              }}
-            >
-              <option value="replay">Replay frozen candidates</option>
-              <option value="live">Live providers</option>
-            </select>
-          </label>
-          {mode === 'replay' && (
-            <label>
-              Candidate snapshot
-              <select
-                disabled={busy}
-                value={snapshotId}
-                onChange={(event) => {
-                  invalidate();
-                  setSnapshotId(event.target.value);
-                }}
-              >
-                {catalog.snapshots.map((snapshot) => (
-                  <option value={snapshot.id} key={snapshot.id}>
-                    {snapshot.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
+          <TripPresetDialog
+            catalog={catalog}
+            presetId={presetId}
+            disabled={busy}
+            modified={
+              JSON.stringify(inputs) !==
+              JSON.stringify(catalog.presets.find((preset) => preset.id === presetId).inputs)
+            }
+            onSelect={choosePreset}
+          />
           <p className="lab-note">
-            {mode === 'replay'
-              ? 'Frozen candidates. Change interests, then compare.'
-              : 'Fresh places and a checked road route. This can take several minutes.'}{' '}
-            <HelpTip label="run modes">
-              Replay uses synthetic places and runs selection only. Live calls providers and builds
-              a route. A failed live run never silently switches to replay.
+            Fresh places and a checked road route. Every run calls live providers and can take
+            several minutes.{' '}
+            <HelpTip label="live providers">
+              Each run verifies cities, discovers places, selects attractions, and builds the road
+              route and itinerary. Trips needing overnight stays also fetch current hotel offers.
             </HelpTip>
           </p>
         </div>
@@ -188,25 +156,10 @@ function LabWorkspace() {
             className="lab-run"
             disabled={busy || !Object.values(inputs.persona_weights).some((weight) => weight > 0)}
           >
-            {busy ? 'Running…' : mode === 'replay' ? 'Run replay' : 'Run live route'}
+            {busy ? 'Running…' : 'Run live route'}
           </button>
-          <BenchmarkDialog
-            catalog={catalog}
-            disabled={busy}
-            onBusy={(value) => {
-              setBusy(value);
-              setBatchBusy(value);
-            }}
-            onResult={(data) => {
-              setPrevious(lastResult.current);
-              setResult(data);
-              lastResult.current = data;
-              setHistoryRevision((value) => value + 1);
-            }}
-          />
           <button
             type="button"
-            disabled={batchBusy}
             onClick={() => {
               lastResult.current = null;
               setPrevious(null);
@@ -226,22 +179,29 @@ function LabWorkspace() {
       </form>
       <div
         className="lab-output-panel"
-        hidden={!busy && !error && !result}
         aria-busy={busy}
         ref={output}
         tabIndex={-1}
         aria-label="Experiment output"
       >
+        {!busy && !error && !result && (
+          <div className="lab-empty">
+            <span className="lab-eyebrow">Your next experiment</span>
+            <h2>Build a trip. See how it fits.</h2>
+            <p>Choose a preset or adjust the trip inputs, then run a live route.</p>
+            <p className="lab-note">
+              Your route and itinerary will appear here. Explore the algorithm details when you want
+              a closer look.
+            </p>
+          </div>
+        )}
         {busy && (
           <div className="lab-pending" role="status">
             <span className="lab-running-dot" />
-            <h2>
-              {mode === 'live' ? 'Building the route' : 'Solving the frozen candidate problem'}
-            </h2>
+            <h2>Building the route</h2>
             <p>
-              {mode === 'live'
-                ? 'Discovering candidates, matching profiles, selecting attractions, then scheduling and checking the drive.'
-                : 'Normalizing weights, scoring candidates and running CP-SAT.'}
+              Discovering candidates, matching profiles, selecting attractions, then scheduling and
+              checking the drive.
             </p>
           </div>
         )}
@@ -257,12 +217,17 @@ function LabWorkspace() {
         )}
         {result && <LabResults key={result.snapshot.id} result={result} previous={previous} />}
       </div>
-      <RunHistory revision={historyRevision} />
+      <div id="lab-history-panel" className="lab-history-panel" hidden={!historyOpen}>
+        {historyOpen && <RunHistory revision={historyRevision} />}
+      </div>
     </div>
   );
 }
 
+LabWorkspace.propTypes = { historyOpen: PropTypes.bool.isRequired };
+
 export default function AlgorithmLab() {
+  const [historyOpen, setHistoryOpen] = useState(false);
   const capability = useRoutingSettings();
   const session = JSON.stringify([
     sessionStorage.getItem('accessToken'),
@@ -275,10 +240,22 @@ export default function AlgorithmLab() {
           <h1>Algorithm Lab</h1>
           <p>See why a road trip fits.</p>
         </div>
-        <Link to="/chat">Back to trip chat</Link>
+        <div className="lab-header-actions">
+          {capability.canSelect && (
+            <button
+              type="button"
+              aria-expanded={historyOpen}
+              aria-controls="lab-history-panel"
+              onClick={() => setHistoryOpen((open) => !open)}
+            >
+              History
+            </button>
+          )}
+          <Link to="/chat">Back to trip chat</Link>
+        </div>
       </header>
       {capability.canSelect ? (
-        <LabWorkspace key={session} />
+        <LabWorkspace key={session} historyOpen={historyOpen} />
       ) : (
         <div className="lab-access" role="status">
           <h2>Owner access required</h2>

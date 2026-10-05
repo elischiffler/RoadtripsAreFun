@@ -7,6 +7,12 @@ const title = (key) => key.replaceAll('_', ' ');
 export default function TripInputs({ inputs, catalog, onChange, disabled }) {
   const set = (key, value) => onChange({ ...inputs, [key]: value });
   const policy = inputs.scheduling_policy;
+  const interests = Object.entries(inputs.persona_weights)
+    .filter(([, weight]) => weight > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([key]) => title(key))
+    .join(', ');
   const setRoom = (index, room) =>
     set(
       'hotel_rooms',
@@ -65,7 +71,6 @@ export default function TripInputs({ inputs, catalog, onChange, disabled }) {
           catalog.limits.min_stops,
           catalog.limits.max_stops
         )}
-        {numberField('traveler_count', 'Travelers', 1)}
         {numberField('budget', 'Hotel target / room / night (USD)', 0)}
       </div>
       <p className="lab-note">
@@ -75,8 +80,11 @@ export default function TripInputs({ inputs, catalog, onChange, disabled }) {
           scheduling. Live departures must be upcoming.
         </HelpTip>
       </p>
-      <details open>
-        <summary>Trip interests</summary>
+      <details>
+        <summary>
+          <span>Trip interests</span>
+          <small>{interests || 'Choose interests'}</small>
+        </summary>
         <InterestsPie
           attributes={catalog.attributes}
           weights={inputs.persona_weights}
@@ -85,7 +93,14 @@ export default function TripInputs({ inputs, catalog, onChange, disabled }) {
         />
       </details>
       <details>
-        <summary>Rooms and travelers</summary>
+        <summary>
+          <span>Travelers and rooms</span>
+          <small>
+            {inputs.traveler_count} {inputs.traveler_count === 1 ? 'traveler' : 'travelers'} ·{' '}
+            {inputs.hotel_rooms.length} {inputs.hotel_rooms.length === 1 ? 'room' : 'rooms'}
+          </small>
+        </summary>
+        {numberField('traveler_count', 'Travelers', 1)}
         <p className="lab-note">Room occupants must add up to the traveler count.</p>
         {inputs.hotel_rooms.map((room, index) => (
           <div className="lab-room" key={index}>
@@ -173,7 +188,15 @@ export default function TripInputs({ inputs, catalog, onChange, disabled }) {
         </button>
       </details>
       <details>
-        <summary>Car and evening schedule</summary>
+        <summary>
+          <span>Car and schedule</span>
+          <small>
+            {inputs.car_status === 'provided'
+              ? [inputs.car?.make, inputs.car?.model].filter(Boolean).join(' ') || 'Car provided'
+              : 'No car details'}{' '}
+            · {policy.late_driving ? 'Late driving allowed' : 'Standard evenings'}
+          </small>
+        </summary>
         <label>
           Car choice
           <select

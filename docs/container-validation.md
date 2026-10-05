@@ -197,3 +197,31 @@ health endpoints remained responsive. This closes the provider-contract portion
 of R3; full trip/database-dependent recovery remains BLOCKED, and this is not the
 combined C3 workload. Live upstream inference was replaced only by Mentro's
 controlled fixture; no real provider call or database mutation occurred.
+
+## Docker validation resumed (October 5)
+
+Validated revision `3fda10f8e7b265493ba1df3f74600419af7e25aa` after Docker Desktop
+started: Docker 28.0.1, Compose v2.33.1-desktop.1 on macOS arm64. These results
+supersede the stopped-daemon blockers for the live-only Lab/preset change.
+
+- PASS: `ROADTRIPS_REVISION=<verified SHA> docker compose --env-file /dev/null
+  up --build --detach --wait --wait-timeout 60`; both preview containers healthy.
+- PASS: `node --test tests/container-smoke.test.mjs`, two tests, initially and
+  after stopping/restarting the preview. The installed Compose does not support
+  `start --wait`; restart used `up --detach --wait --wait-timeout 60` instead.
+- PASS: `docker run --rm --network none -e DATABASE_URL=postgresql://fixture:fixture@127.0.0.1:1/roadtrips
+  -e DATABASE_SSLMODE=disable roadtrips-crud-test-runner:local`: 662 backend tests,
+  86.29% coverage, unchanged 63% floor, Linux Python 3.12.14. The test image was
+  built from this revision by the PostgreSQL runner.
+- PASS: `node tests/postgres/run.mjs`, disposable project
+  `roadtrips-crud-7995c2aae1`: real CRUD/ownership, Lab run records, API readiness,
+  API/database recreation, bounded 503 during DB loss, persisted source data,
+  private backup, restored data and populated-target refusal.
+- Cleanup: preview/test containers stopped. Preserved source/restore volumes
+  `roadtrips-crud-7995c2aae1_source-data` and
+  `roadtrips-crud-7995c2aae1_restore-data`, plus ignored backup
+  `tests/postgres/.artifacts/roadtrips-crud-7995c2aae1.dump`.
+
+This uses only the checked-in local test DDL and isolated test data. It does not
+verify production schema/migration history, configure a production deployment,
+or complete the outstanding live Cognito/provider/browser acceptance gates.

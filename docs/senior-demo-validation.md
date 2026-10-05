@@ -108,3 +108,63 @@ their original scope.
   Existing public-runtime and real Cognito acceptance blockers remain.
 
 Measurement definitions and lifecycle caveats: [algorithm-run-history.md](algorithm-run-history.md).
+
+## Live-only runs and trip preset modal (October 5)
+
+Code tested: `66f8a1e` on `codex/algorithm-live-only`, based on feature
+`ca04cea`; this entry adds only validation documentation. macOS arm64,
+Node 24.12.0/npm 11.11.0, Python 3.12.14 and Ruff 0.16.7.
+
+- PASS: locked `npm ci`; frontend `npm run format:check`, `npm run lint`,
+  `npm run test:coverage` (278 tests, 33 files, existing coverage floors), and
+  `npm run build`. Existing large-bundle warning remains.
+- PASS: pinned backend requirements installation, `ruff format --check .`,
+  `ruff check .`, and `pytest --cov=app --cov-report=term-missing --cov-fail-under=63`
+  with the checked-in default CORS origins set only in the test process:
+  662 tests, 86.29% coverage. No `.env`, test assertions or thresholds changed.
+- Local configuration failure preserved: without the test-process CORS override,
+  `test_dev_frontend_preflight[http://127.0.0.1:5173]` returned 400 (661 passed,
+  1 failed, 86.28% coverage before the preset follow-up). A development-only
+  two-origin override also excluded the preview/public origins required by two
+  container configuration tests; the final run uses all checked-in defaults.
+- PASS, actual existing local browser: Trip presets opens a native modal; choosing
+  Medium two-day closes it and fills Boise, 07:00 departure, four travelers,
+  four attractions and the family/scenery/nature mix. Automated tests verify
+  full room/child/car/policy/evening replacement, reset isolation, close without
+  running, and live-only interactive/batch requests. All six varied benchmark
+  profiles pass authoritative LabInputs/occupancy validation.
+- BLOCKED: `node --test tests/container-smoke.test.mjs` cannot reach preview
+  ports 8002/8082; `node tests/postgres/run.mjs` cannot connect to the Docker
+  daemon. No production data or database migration was used.
+- NOT RUN: complete paid live provider trips and public acceptance. The browser
+  reports run history unavailable; this change does not apply the required Lab
+  table migration or fix target database configuration. New experiments still
+  require storage before provider work begins. Keep the PR draft.
+
+## Docker validation resumed (October 5)
+
+Validated revision `3fda10f8e7b265493ba1df3f74600419af7e25aa` after Docker Desktop
+started: Docker 28.0.1, Compose v2.33.1-desktop.1 on macOS arm64. These results
+supersede the stopped-daemon blockers for the live-only Lab/preset change.
+
+- PASS: `ROADTRIPS_REVISION=<verified SHA> docker compose --env-file /dev/null
+  up --build --detach --wait --wait-timeout 60`; both preview containers healthy.
+- PASS: `node --test tests/container-smoke.test.mjs`, two tests, initially and
+  after stopping/restarting the preview. The installed Compose does not support
+  `start --wait`; restart used `up --detach --wait --wait-timeout 60` instead.
+- PASS: `docker run --rm --network none -e DATABASE_URL=postgresql://fixture:fixture@127.0.0.1:1/roadtrips
+  -e DATABASE_SSLMODE=disable roadtrips-crud-test-runner:local`: 662 backend tests,
+  86.29% coverage, unchanged 63% floor, Linux Python 3.12.14. The test image was
+  built from this revision by the PostgreSQL runner.
+- PASS: `node tests/postgres/run.mjs`, disposable project
+  `roadtrips-crud-7995c2aae1`: real CRUD/ownership, Lab run records, API readiness,
+  API/database recreation, bounded 503 during DB loss, persisted source data,
+  private backup, restored data and populated-target refusal.
+- Cleanup: preview/test containers stopped. Preserved source/restore volumes
+  `roadtrips-crud-7995c2aae1_source-data` and
+  `roadtrips-crud-7995c2aae1_restore-data`, plus ignored backup
+  `tests/postgres/.artifacts/roadtrips-crud-7995c2aae1.dump`.
+
+This uses only the checked-in local test DDL and isolated test data. It does not
+verify production schema/migration history, configure a production deployment,
+or complete the outstanding live Cognito/provider/browser acceptance gates.

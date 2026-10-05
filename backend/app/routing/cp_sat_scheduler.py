@@ -157,16 +157,9 @@ async def schedule_cp_sat_route(
                     seconds_until(now, policy.at(travel_day, policy.preferred_hotel_arrival, zone)),
                 )
             base_drive = min(drive_left, preferred_drive)
-            price_range = services.get_price_range(
-                remaining_budget=options.budget - total_cost,
-                duration_left=max(0.0, route.duration - elapsed - base_drive),
-                stops_left=remaining_visits,
-                daily_drive_time=seconds_until(
-                    policy.at(travel_day, policy.morning_restart, zone),
-                    policy.deadline(travel_day, zone),
-                )
-                / 3600,
-            )
+            # The target is per room per night, not a balance for the whole trip.
+            # Providers retain actual quotes above this advisory band as well.
+            price_range = ((0.0, options.budget), f"0-{options.budget:.2f}")
             hotel = None
             tried = set()
             # Include the hard cutoff as an availability fallback, while keeping

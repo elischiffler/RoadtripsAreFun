@@ -13,6 +13,7 @@ import math
 import re
 from datetime import date, datetime
 from typing import Any, Literal, Protocol
+from urllib.parse import urlparse
 
 import httpx
 from geopy.distance import geodesic
@@ -243,8 +244,20 @@ async def attraction_candidates(
             collected=len(results),
         )
         point = _point(raw_point)
-        proposals = await _propose(ai, "attractions", point, MAX_PROPOSALS_PER_QUERY)
-        if not proposals:
+        records = await places.attractions_near(point)
+        verified_records = []
+        for record in records:
+            try:
+                verified = VerifiedPlace.model_validate(record)
+            except ValueError:
+                continue
+            if (
+                verified.provider_id not in seen
+                and _distance_miles(point, verified.coordinates) <= _ATTRACTION_RADIUS_MI
+            ):
+                verified_records.append(verified)
+        records = verified_records[:MAX_PROPOSALS_PER_QUERY]
+        if not records:
             emit(
                 "attractions.query",
                 query=query_index,
@@ -253,7 +266,15 @@ async def attraction_candidates(
                 collected=len(results),
             )
             continue
-        records = await places.attractions_near(point)
+        # Ground ratings in the live provider's names, as hotel ratings already are.
+        # Independent AI suggestions rarely matched the provider's actual nearby list.
+        proposals = await _propose(
+            ai,
+            "attractions",
+            point,
+            MAX_PROPOSALS_PER_QUERY,
+            names=[record.name for record in records],
+        )
         for proposal in proposals:
             name = _name_key(proposal.name)
             for record in records:
@@ -401,6 +422,11 @@ class LivePlaceProvider:
         for entry in page.data[:30]:
             location = entry.location
             if location is None or location.id is None or location.coordinates is None:
+                continue
+            # Some live nearby responses include other categories despite the
+            # ATTRACTION filter. Require the provider's attraction listing type.
+            listing = urlparse(location.web_url() or "")
+            if not listing.path.startswith("/Attraction_Review-"):
                 continue
             try:
                 records.append(

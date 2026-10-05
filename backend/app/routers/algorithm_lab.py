@@ -1,11 +1,12 @@
-"""Owner-only experiments over the ordinary planning core; never saves a chat."""
+"""Owner-only live provider experiments over the ordinary planning core."""
 
 import asyncio
+import logging
+import traceback
 from datetime import date, datetime
 from time import perf_counter
 from typing import Literal
 from uuid import UUID, uuid4
-from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response
 from fastapi.exceptions import RequestValidationError
@@ -14,7 +15,6 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from app.agent.persona import ATTRIBUTE_KEYS, normalize_weights
 from app.agent.trip_dates import (
-    _localize,
     normalize_departure_time,
     resolve_departure,
     timezone_from_location,
@@ -33,9 +33,7 @@ from app.routing.lab_presets import (
     BENCHMARKS,
     ENDPOINTS,
     PRESETS,
-    SNAPSHOTS,
     preset_catalog,
-    replay_candidates,
 )
 from app.routing.occupancy import (
     MAX_CHILD_AGE,
@@ -45,13 +43,23 @@ from app.routing.occupancy import (
     TravelerCount,
     require_occupancy,
 )
-from app.routing.planners.cp_sat import CPSatPlanner
-from app.routing.run_metrics import aggregate_runs, compile_metrics, measuring, timed
+from app.routing.run_metrics import aggregate_runs, compile_metrics, measuring
 from app.routing.selection import owner_routing_claims
 from app.routing.sources.mapbox import call_route
 from app.routing.sources.persona_candidates import CandidateProviderError
 from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location
+
+logger = logging.getLogger(__name__)
+
+
+def storage_failure(operation, exc):
+    logger.error(
+        "Lab storage failure operation=%s exception_class=%s sqlstate=%s",
+        operation,
+        type(exc).__name__,
+        getattr(exc, "pgcode", None),
+    )
 
 
 class LabRoute(APIRoute):
@@ -117,7 +125,7 @@ class LabInputs(BaseModel):
     @field_validator("persona_weights", mode="before")
     @classmethod
     def weights(cls, value):
-        # Complete overrides make fixture comparisons independent of account state.
+        # Complete overrides make experiments independent of account state.
         normalize_weights(value)
         return value
 
@@ -135,19 +143,16 @@ class LabInputs(BaseModel):
 
 class LabRun(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    mode: Literal["live", "replay"]
+    mode: Literal["live"] = "live"
     preset_id: str
     inputs: LabInputs
     batch_id: UUID | None = None
     repeat_index: int = Field(default=1, strict=True, ge=1, le=10)
-    snapshot_id: Literal["teaching-v1", "empty-v1"] | None = None
 
     @model_validator(mode="after")
-    def mode_rules(self):
+    def preset_rules(self):
         if self.preset_id not in PRESETS and self.preset_id not in BENCHMARKS:
             raise ValueError("Unknown preset")
-        if (self.mode == "replay") != (self.snapshot_id is not None):
-            raise ValueError("Replay requires a fixture snapshot; live must omit snapshot_id")
         return self
 
 
@@ -159,7 +164,6 @@ async def presets(response: Response, user_id: str = Depends(require_lab_owner))
         "attributes": list(ATTRIBUTE_KEYS),
         "endpoints": [{"id": key, "label": value["label"]} for key, value in ENDPOINTS.items()],
         "presets": preset_catalog(),
-        "snapshots": SNAPSHOTS,
         "benchmarks": [item for item in preset_catalog() if item["id"] in BENCHMARKS],
         "limits": {
             "min_stops": MIN_STOPS,
@@ -187,11 +191,9 @@ async def resolve_endpoint(endpoint_id):
     }
 
 
-def _departure(inputs, zone, live):
+def _departure(inputs, zone):
     local = f"{inputs.departure_date.isoformat()}T{inputs.departure_time}"
-    if live:
-        return resolve_departure(local, zone)
-    return _localize(datetime.fromisoformat(local), ZoneInfo(zone)).isoformat()
+    return resolve_departure(local, zone)
 
 
 @router.post("/run")
@@ -201,13 +203,13 @@ async def run(payload: LabRun, response: Response, user_id: str = Depends(requir
         departure = _departure(
             payload.inputs,
             ENDPOINTS[payload.inputs.start_id].get("timezone", "America/Los_Angeles"),
-            payload.mode == "live",
         )
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
     try:
         run_id = await asyncio.to_thread(lab_runs.begin, user_id, payload.model_dump(mode="json"))
     except Exception as exc:
+        storage_failure("begin", exc)
         raise HTTPException(503, "Run storage is unavailable. No experiment was started.") from exc
     started = perf_counter()
     with measuring() as telemetry:
@@ -217,7 +219,8 @@ async def run(payload: LabRun, response: Response, user_id: str = Depends(requir
     try:
         await asyncio.to_thread(lab_runs.finish, user_id, run_id, envelope, metrics)
         envelope["run_record"]["saved"] = True
-    except Exception:
+    except Exception as exc:
+        storage_failure("finish", exc)
         envelope["run_record"]["warning"] = (
             "Could not confirm the result was saved. Check run history; unfinished records must not count as completed."
         )
@@ -235,10 +238,25 @@ async def runs(
     try:
         rows = await asyncio.to_thread(lab_runs.history, user_id, limit, offset)
     except Exception as exc:
+        storage_failure("history", exc)
         raise HTTPException(503, "Run history is unavailable.") from exc
     return {
         "runs": rows,
         "groups": aggregate_runs(rows),
+        "page_summary": {
+            "completed": sum(row.get("status") == "completed" for row in rows),
+            "failed": sum(row.get("status") == "failed" for row in rows),
+            "unfinished": sum(row.get("status") == "running" for row in rows),
+            "completion_assessed": sum(
+                row.get("status") in {"completed", "failed"} for row in rows
+            ),
+            "completion_rate": (
+                sum(row.get("status") == "completed" for row in rows)
+                / sum(row.get("status") in {"completed", "failed"} for row in rows)
+            )
+            if any(row.get("status") in {"completed", "failed"} for row in rows)
+            else None,
+        },
         "limit": limit,
         "offset": offset,
         "summary_scope": "this page only",
@@ -246,26 +264,35 @@ async def runs(
     }
 
 
+@router.get("/runs/{run_id}/result")
+async def saved_result(run_id: UUID, response: Response, user_id: str = Depends(require_lab_owner)):
+    response.headers["Cache-Control"] = "no-store"
+    try:
+        result = await asyncio.to_thread(lab_runs.result, user_id, run_id)
+    except Exception as exc:
+        raise HTTPException(503, "Saved trip results are unavailable.") from exc
+    if not result or not result.get("route"):
+        raise HTTPException(404, "No saved route is available for this run.")
+    return result
+
+
 async def execute_run(payload, user_id, departure):
     inputs = payload.inputs
     weights = normalize_weights(inputs.persona_weights)
-    snapshot = next((item for item in SNAPSHOTS if item["id"] == payload.snapshot_id), None)
     envelope = {
         "schema_version": 1,
         "mode": payload.mode,
         "input_snapshot": {
             **inputs.model_dump(mode="json"),
-            "snapshot_id": payload.snapshot_id,
             "start_date": departure,
             "effective_weights": weights,
             "weights_source": "Complete trip override; account persona is not changed",
             "car_usage": "Recorded only; car is not part of CP-SAT selection or this Lab's cost estimate",
         },
-        "snapshot": snapshot
-        or {
+        "snapshot": {
             "id": f"live-{uuid4()}",
             "label": "Fresh live discovery",
-            "source": "Live provider discovery; not replayable as a server fixture",
+            "source": "Live provider discovery",
         },
         "route": None,
         "itinerary": None,
@@ -279,86 +306,77 @@ async def execute_run(payload, user_id, departure):
             "Validated trip, occupancy, preferences and departure. Nothing is saved to chat or account.",
         )
         try:
-            if payload.mode == "replay":
-                candidates, points = replay_candidates(payload.snapshot_id, weights)
-                record_stage(
-                    "endpoints", "not_run", "Fixture coordinates; no live endpoint verification."
-                )
-                record_stage(
-                    "initial_route", "not_run", "Selection-only fixture; no road route is claimed."
-                )
-                record_stage(
-                    "candidates",
-                    "complete",
-                    "Frozen synthetic attributes, rescored with this trip profile.",
-                )
-                with timed("solving"):
-                    CPSatPlanner._select(candidates, points, inputs.num_stops)
-                record_stage(
-                    "selection",
-                    "complete",
-                    "Same CP-SAT model as live planning; see solver status.",
-                )
-            else:
-                start, destination = await asyncio.gather(
-                    resolve_endpoint(inputs.start_id), resolve_endpoint(inputs.destination_id)
-                )
-                departure = _departure(inputs, start["timezone"], True)
-                trip = TripProfile.model_validate(
-                    {
-                        **inputs.trip_fields(),
-                        "start_address": start["label"],
-                        "start_coords": start["coordinates"],
-                        "start_timezone": start["timezone"],
-                        "destination_address": destination["label"],
-                        "destination_coords": destination["coordinates"],
-                        "start_date": departure,
-                    }
-                )
-                envelope["input_snapshot"].update(
-                    start=start,
-                    destination=destination,
-                    start_date=departure,
-                    trip_profile=trip.model_dump(mode="json"),
-                )
-                record_stage(
-                    "endpoints",
-                    "complete",
-                    "Resolved the explicitly selected catalog cities with the provider.",
-                )
-                initial = await call_route(*start["coordinates"], *destination["coordinates"])
-                record_stage("initial_route", "complete", "Mapbox base driving route received.")
-                route = await plan_final_route(
-                    Route_Payload(
-                        initial_route=initial,
-                        num_stops=trip.num_stops,
-                        budget=trip.budget,
-                        start=datetime.fromisoformat(departure),
-                        persona_weights=inputs.persona_weights,
-                        scheduling_policy=trip.scheduling_policy,
-                        start_timezone=trip.start_timezone,
-                        traveler_count=trip.traveler_count,
-                        hotel_rooms=trip.hotel_rooms,
-                        evening_interests=trip.evening_interests,
-                    ),
-                    user_id=user_id,
-                )
-                envelope["route"] = route.model_dump(mode="json")
-                itinerary = await build_itinerary(
-                    Itinerary_Payload(route=route, start_time=datetime.fromisoformat(departure))
-                )
-                envelope["itinerary"] = [day.model_dump(mode="json") for day in itinerary]
-                record_stage(
-                    "itinerary", "complete", "Built itinerary from the actual validated route."
-                )
+            start, destination = await asyncio.gather(
+                resolve_endpoint(inputs.start_id), resolve_endpoint(inputs.destination_id)
+            )
+            departure = _departure(inputs, start["timezone"])
+            trip = TripProfile.model_validate(
+                {
+                    **inputs.trip_fields(),
+                    "start_address": start["label"],
+                    "start_coords": start["coordinates"],
+                    "start_timezone": start["timezone"],
+                    "destination_address": destination["label"],
+                    "destination_coords": destination["coordinates"],
+                    "start_date": departure,
+                }
+            )
+            envelope["input_snapshot"].update(
+                start=start,
+                destination=destination,
+                start_date=departure,
+                trip_profile=trip.model_dump(mode="json"),
+            )
+            record_stage(
+                "endpoints",
+                "complete",
+                "Resolved the explicitly selected catalog cities with the provider.",
+            )
+            initial = await call_route(*start["coordinates"], *destination["coordinates"])
+            envelope["direct_route"] = {"distance": initial.distance, "duration": initial.duration}
+            record_stage("initial_route", "complete", "Mapbox base driving route received.")
+            route = await plan_final_route(
+                Route_Payload(
+                    initial_route=initial,
+                    num_stops=trip.num_stops,
+                    budget=trip.budget,
+                    start=datetime.fromisoformat(departure),
+                    persona_weights=inputs.persona_weights,
+                    scheduling_policy=trip.scheduling_policy,
+                    start_timezone=trip.start_timezone,
+                    traveler_count=trip.traveler_count,
+                    hotel_rooms=trip.hotel_rooms,
+                    evening_interests=trip.evening_interests,
+                ),
+                user_id=user_id,
+            )
+            envelope["route"] = route.model_dump(mode="json")
+            itinerary = await build_itinerary(
+                Itinerary_Payload(route=route, start_time=datetime.fromisoformat(departure))
+            )
+            envelope["itinerary"] = [day.model_dump(mode="json") for day in itinerary]
+            record_stage(
+                "itinerary", "complete", "Built itinerary from the actual validated route."
+            )
         except Exception as exc:
+            # Log code locations and exception type, never provider payloads or credentials.
+            logger.error(
+                "Lab planning failure exception_class=%s reason=%s frames=%s",
+                type(exc).__name__,
+                exc.detail
+                if isinstance(exc, PlanningError)
+                else str(exc)
+                if isinstance(exc, CandidateProviderError)
+                else "unclassified",
+                [(frame.name, frame.lineno) for frame in traceback.extract_tb(exc.__traceback__)],
+            )
             # Never return upstream request objects, credentials, or raw provider HTML.
             message = (
                 exc.detail
                 if isinstance(exc, PlanningError)
                 else str(exc)
                 if isinstance(exc, CandidateProviderError)
-                else "The live planning stage failed. Check provider configuration and retry; no replay was substituted."
+                else "The live planning stage failed. Check provider configuration and retry."
             )
             code = (
                 str(exc.status_code)
@@ -379,13 +397,7 @@ async def execute_run(payload, user_id, departure):
         ):
             if name not in completed:
                 status = "failed" if failure_pending else "not_run"
-                detail = (
-                    envelope["error"]["message"]
-                    if failure_pending
-                    else "Not run; replay demonstrates selection only."
-                    if payload.mode == "replay"
-                    else "Not reached."
-                )
+                detail = envelope["error"]["message"] if failure_pending else "Not reached."
                 record_stage(name, status, detail)
                 failure_pending = False
         envelope["stages"] = explanation.pop("stages")

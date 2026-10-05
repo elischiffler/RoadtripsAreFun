@@ -33,6 +33,48 @@ const inputs = {
   },
   evening_interests: [],
 };
+const quickTrips = [
+  {
+    id: 'family',
+    label: 'Medium two-day',
+    description: 'Family trip with an early evening.',
+    inputs: {
+      ...inputs,
+      departure_date: '2026-10-08',
+      departure_time: '07:00',
+      num_stops: 4,
+      traveler_count: 4,
+      hotel_rooms: [{ adults: 2, child_ages: [7, 12] }],
+      budget: 180,
+      car_status: 'provided',
+      car: { year: 2023, make: 'Toyota', model: 'RAV4' },
+      persona_weights: { nature: 0.6, history: 0.4 },
+      scheduling_policy: {
+        ...inputs.scheduling_policy,
+        preferred_hotel_arrival: '17:00',
+        latest_hotel_arrival: '19:00',
+        latest_destination_arrival: '19:00',
+        morning_restart: '08:00',
+      },
+      evening_interests: ['food'],
+    },
+  },
+  {
+    id: 'budget',
+    label: 'Tight hotel budget',
+    description: 'Three travelers sharing a room.',
+    inputs: {
+      ...inputs,
+      start_id: 'monterey',
+      destination_id: 'sf',
+      departure_time: '08:30',
+      traveler_count: 3,
+      hotel_rooms: [{ adults: 3, child_ages: [] }],
+      budget: 60,
+      evening_interests: ['food'],
+    },
+  },
+];
 const catalog = {
   schema_version: 1,
   attributes: ['nature', 'history'],
@@ -40,6 +82,7 @@ const catalog = {
     { id: 'sf', label: 'San Francisco' },
     { id: 'monterey', label: 'Monterey' },
   ],
+  benchmarks: quickTrips,
   presets: [
     { id: 'coast', label: 'Coastal nature', inputs },
     {
@@ -47,18 +90,15 @@ const catalog = {
       label: 'Culture trip',
       inputs: { ...inputs, persona_weights: { nature: 0.2, history: 0.8 } },
     },
-  ],
-  snapshots: [
-    { id: 'teaching-v1', label: 'Teaching candidates', source: 'Synthetic fixture' },
-    { id: 'empty-v1', label: 'No eligible candidates', source: 'Synthetic fixture' },
+    ...quickTrips,
   ],
   limits: { min_stops: 1, max_stops: 10, max_rooms: 4, max_guests_per_room: 6, max_child_age: 17 },
 };
 const response = () => ({
   schema_version: 1,
-  mode: 'replay',
+  mode: 'live',
   input_snapshot: inputs,
-  snapshot: catalog.snapshots[0],
+  snapshot: { id: 'live-1', label: 'Fresh live discovery', source: 'Live provider discovery' },
   explanation: {
     weights: { nature: 0.8, history: 0.2 },
     candidates: [
@@ -113,12 +153,19 @@ function capability() {
 }
 async function mount() {
   const view = renderWithProviders(<AlgorithmLab />, { initialPath: '/algorithm' });
-  await screen.findByRole('button', { name: 'Run replay' });
+  await screen.findByRole('button', { name: 'Run live route' });
+  await userEvent.click(screen.getByText('Trip interests'));
   return view;
 }
 
 beforeEach(() => {
   vi.resetAllMocks();
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute('open', '');
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute('open');
+  };
   sessionStorage.clear();
   invalidateRoutingSettings();
   login();
@@ -157,7 +204,7 @@ describe('Algorithm Lab access and lifecycle', () => {
       await waitFor(() => expect(screen.getByText('Owner access required')).toBeInTheDocument());
       expect(axios.get.mock.calls.every(([url]) => url.endsWith('routing-settings'))).toBe(true);
       expect(screen.queryByRole('link', { name: 'Algorithm Lab' })).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'Run replay' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Run live route' })).not.toBeInTheDocument();
     }
   );
 
@@ -177,7 +224,7 @@ describe('Algorithm Lab access and lifecycle', () => {
       </>,
       { initialPath: '/algorithm' }
     );
-    await screen.findByRole('button', { name: 'Run replay' });
+    await screen.findByRole('button', { name: 'Run live route' });
     expect(document.querySelector('.global-header')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back to trip chat' })).toHaveAttribute(
       'href',
@@ -195,7 +242,7 @@ describe('Algorithm Lab access and lifecycle', () => {
     });
     renderWithProviders(<AlgorithmLab />);
     await userEvent.click(await screen.findByRole('button', { name: 'Retry preset loading' }));
-    expect(await screen.findByRole('button', { name: 'Run replay' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Run live route' })).toBeInTheDocument();
   });
 
   it.each(['logout', 'account switch', 'expiry'])(
@@ -209,7 +256,7 @@ describe('Algorithm Lab access and lifecycle', () => {
           })
       );
       await mount();
-      await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
       const signal = axios.post.mock.calls[0][2].signal;
       act(() => {
         if (action === 'logout') sessionStorage.clear();
@@ -226,33 +273,97 @@ describe('Algorithm Lab access and lifecycle', () => {
       expect(signal.aborted).toBe(true);
       expect(screen.getByText('Owner access required')).toBeInTheDocument();
       expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'Run replay' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Run live route' })).not.toBeInTheDocument();
     }
   );
 });
 
 describe('Algorithm Lab experiments', () => {
+  it('opens presets in a modal and dismisses without changing the form or starting a run', async () => {
+    await mount();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    expect(screen.getByRole('dialog', { name: 'Choose a trip preset' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Coastal nature/ })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Close presets' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByText('Selected trip: Coastal nature')).toBeInTheDocument();
+    expect(screen.getByLabelText('Travelers')).toHaveValue(2);
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it('fills the entire form from a trip card without running, and replaces all fields on the next choice', async () => {
+    await mount();
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Medium two-day/ }));
+    expect(axios.post).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog', { name: 'Choose a trip preset' })).not.toBeInTheDocument();
+    expect(screen.getByText('Selected trip: Medium two-day')).toBeInTheDocument();
+    expect(screen.getByLabelText('Travelers')).toHaveValue(4);
+    expect(screen.getByLabelText('Departure date')).toHaveValue('2026-10-08');
+    expect(screen.getByLabelText('Departure time')).toHaveValue('07:00');
+    await userEvent.click(screen.getByText('Travelers and rooms'));
+    expect(screen.getByLabelText('Room 1 child 2 age')).toHaveValue(12);
+    await userEvent.click(screen.getByText('Car and schedule'));
+    expect(screen.getByLabelText('Car model')).toHaveValue('RAV4');
+    expect(screen.getByLabelText('latest hotel arrival')).toHaveValue('19:00');
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    await screen.findByText('OPTIMAL');
+    expect(axios.post.mock.calls[0][1]).toEqual({
+      mode: 'live',
+      preset_id: 'family',
+      inputs: quickTrips[0].inputs,
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Tight hotel budget/ }));
+    expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Start')).toHaveValue('monterey');
+    expect(screen.getByLabelText('Destination')).toHaveValue('sf');
+    expect(screen.getByLabelText('Hotel target / room / night (USD)')).toHaveValue(60);
+    expect(screen.getByLabelText('Travelers')).toHaveValue(3);
+    expect(screen.queryByLabelText('Room 1 child 2 age')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Car model')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    await screen.findByText('OPTIMAL');
+    expect(axios.post.mock.calls[1][1].inputs).toEqual(quickTrips[1].inputs);
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Medium two-day/ }));
+    fireEvent.change(screen.getByLabelText('Room 1 child 2 age'), { target: { value: '13' } });
+    await userEvent.click(screen.getByRole('button', { name: 'Reset preset' }));
+    expect(screen.getByLabelText('Room 1 child 2 age')).toHaveValue(12);
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    expect(screen.getByRole('button', { name: /Medium two-day/ })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+  });
+
   it('sends edited inputs and both tokens, displays actual contributions, and clears stale success on edits', async () => {
     await mount();
     fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '3' } });
     fireEvent.change(screen.getByLabelText('Interest nature percentage'), {
       target: { value: '60' },
     });
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     expect(await screen.findByText('OPTIMAL')).toBeInTheDocument();
     const [, request, config] = axios.post.mock.calls[0];
     expect(request).toMatchObject({
-      mode: 'replay',
+      mode: 'live',
       preset_id: 'coast',
-      snapshot_id: 'teaching-v1',
       inputs: { num_stops: 3, persona_weights: { nature: 0.6 } },
     });
     expect(config.headers).toEqual({
       Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
       'X-Cognito-Id-Token': sessionStorage.getItem('idToken'),
     });
-    expect(screen.getByText('Replay · frozen candidate fixture')).toBeInTheDocument();
-    expect(screen.getByText(/Selection-only replay: no road route/)).toBeInTheDocument();
+    expect(screen.getByText('Live provider run')).toBeInTheDocument();
+    expect(request).not.toHaveProperty('snapshot_id');
+    expect(screen.queryByLabelText('Run mode')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Candidate snapshot')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
     await userEvent.click(screen.getByText('Forest walk'));
     expect(
       screen.getByRole('table', { name: 'Score contributions for Forest walk' })
@@ -273,44 +384,31 @@ describe('Algorithm Lab experiments', () => {
         })
     );
     await mount();
-    await userEvent.dblClick(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.dblClick(screen.getByRole('button', { name: 'Run live route' }));
     expect(axios.post).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('button', { name: 'Running…' })).toBeDisabled();
     expect(screen.getByLabelText('Interest nature percentage')).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Cancel and reset' }));
     await act(async () => resolveRun({ data: response() }));
     expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Run replay' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Run live route' })).toBeEnabled();
   });
 
-  it('compares backend selections and weights only on the same replay snapshot', async () => {
+  it('does not claim same-snapshot comparisons for fresh live discoveries', async () => {
     await mount();
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await screen.findByText('OPTIMAL');
     const next = response();
+    next.snapshot.id = 'live-2';
     next.explanation.weights = { nature: 0.2, history: 0.8 };
     next.explanation.candidates[0].name = 'Historic market';
     axios.post.mockResolvedValue({ data: next });
-    await userEvent.selectOptions(screen.getByLabelText('Trip preset'), 'culture');
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
-    expect(await screen.findByText('Same snapshot comparison')).toBeInTheDocument();
-    expect(screen.getByText('Previous selection: Forest walk')).toBeInTheDocument();
-    expect(screen.getByText('Current selection: Historic market')).toBeInTheDocument();
-    await userEvent.click(screen.getByText('Compare effective trip weights'));
-    expect(screen.getByRole('columnheader', { name: 'Previous' })).toBeInTheDocument();
-    await userEvent.selectOptions(screen.getByLabelText('Candidate snapshot'), 'empty-v1');
-    const empty = structuredClone(next);
-    empty.snapshot = catalog.snapshots[1];
-    empty.explanation.solver.status = 'NOT_RUN';
-    empty.explanation.candidates = [];
-    axios.post.mockResolvedValue({ data: empty });
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
-    expect(await screen.findByText('NOT_RUN')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Culture trip/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    expect(await screen.findByText('Historic market')).toBeInTheDocument();
     expect(screen.queryByText('Same snapshot comparison')).not.toBeInTheDocument();
-    expect(
-      screen.getByText('Selection only · synthetic places · no live route')
-    ).toBeInTheDocument();
-    expect(screen.queryByText(/solver ran on saved inputs/)).not.toBeInTheDocument();
+    expect(axios.post.mock.calls.every(([, body]) => body.mode === 'live')).toBe(true);
   });
 
   it('reveals short explanations by keyboard or tap and keeps the long formula in a disclosure', async () => {
@@ -321,9 +419,10 @@ describe('Algorithm Lab experiments', () => {
     fireEvent.keyDown(help, { key: 'Escape' });
     fireEvent.blur(help);
     await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await screen.findByText('OPTIMAL');
     expect(screen.getByLabelText('Experiment output')).toHaveFocus();
+    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
     await userEvent.click(screen.getByRole('button', { name: 'About integer objective' }));
     expect(await screen.findByRole('tooltip')).toHaveTextContent('not a percentage');
     const formula = screen.getByText('Constraints and objective formula').closest('details');
@@ -340,7 +439,6 @@ describe('Algorithm Lab experiments', () => {
     data.stages[1] = { name: 'scheduling', status: 'failed', detail: 'No verified offers.' };
     axios.post.mockResolvedValue({ data });
     await mount();
-    await userEvent.selectOptions(screen.getByLabelText('Run mode'), 'live');
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     expect(await screen.findByText('OPTIMAL')).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('No hotel offers available.');
@@ -375,9 +473,9 @@ describe('Algorithm Lab experiments', () => {
     ];
     axios.post.mockResolvedValue({ data });
     await mount();
-    await userEvent.selectOptions(screen.getByLabelText('Run mode'), 'live');
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     expect(await screen.findByText('Live route map')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'Itinerary' }));
     expect(screen.getByText('Forest visit')).toBeInTheDocument();
     expect(screen.getByText(/Optimality was not proved/)).toBeInTheDocument();
     expect(screen.getByText('Room quote is above target.')).toBeInTheDocument();
@@ -396,8 +494,10 @@ describe('Algorithm Lab experiments', () => {
     ];
     axios.post.mockResolvedValue({ data });
     await mount();
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
-    await userEvent.click(await screen.findByText('Malformed place'));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    await screen.findByRole('tab', { name: 'Algorithm details' });
+    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
+    await userEvent.click(screen.getByText('Malformed place'));
     expect(
       screen
         .getByRole('table', { name: 'Score contributions for Malformed place' })
@@ -409,7 +509,7 @@ describe('Algorithm Lab experiments', () => {
 
   it.each([422, 503, 401])('handles HTTP %s without showing old output', async (status) => {
     await mount();
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await screen.findByText('OPTIMAL');
     axios.post.mockRejectedValue({
       response: {
@@ -422,7 +522,7 @@ describe('Algorithm Lab experiments', () => {
         },
       },
     });
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     if (status === 401)
       expect(await screen.findByText('Owner access required')).toBeInTheDocument();
     else
@@ -434,18 +534,18 @@ describe('Algorithm Lab experiments', () => {
 
   it('edits room occupancy, car and scheduling values without modifying saved chats', async () => {
     await mount();
-    await userEvent.click(screen.getByText('Rooms and travelers'));
+    await userEvent.click(screen.getByText('Travelers and rooms'));
     await userEvent.click(screen.getByRole('button', { name: 'Add child to room 1' }));
     fireEvent.change(screen.getByLabelText('Room 1 child 1 age'), { target: { value: '9' } });
     fireEvent.change(screen.getByLabelText('Travelers'), { target: { value: '3' } });
-    await userEvent.click(screen.getByText('Car and evening schedule'));
+    await userEvent.click(screen.getByText('Car and schedule'));
     await userEvent.selectOptions(screen.getByLabelText('Car choice'), 'provided');
     fireEvent.change(screen.getByLabelText('Car year'), { target: { value: '2020' } });
     fireEvent.change(screen.getByLabelText('Car make'), { target: { value: 'Toyota' } });
     fireEvent.change(screen.getByLabelText('Car model'), { target: { value: 'Prius' } });
     await userEvent.click(screen.getByLabelText('Allow late driving'));
     await userEvent.click(screen.getByLabelText('food'));
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await screen.findByText('OPTIMAL');
     expect(axios.post.mock.calls[0][1].inputs).toMatchObject({
       traveler_count: 3,
@@ -456,5 +556,131 @@ describe('Algorithm Lab experiments', () => {
       evening_interests: ['food'],
     });
     expect(axios.post).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Algorithm Lab calm workspace', () => {
+  it('starts with an empty result and collapsed optional inputs and history', async () => {
+    renderWithProviders(<AlgorithmLab />, { initialPath: '/algorithm' });
+    await screen.findByRole('button', { name: 'Run live route' });
+    expect(screen.getByText('Build a trip. See how it fits.')).toBeVisible();
+    for (const name of ['Trip interests', 'Travelers and rooms', 'Car and schedule']) {
+      expect(screen.getByText(name).closest('details')).not.toHaveAttribute('open');
+    }
+    expect(screen.getByLabelText('Interest nature percentage')).not.toBeVisible();
+    expect(screen.getByRole('button', { name: 'History' })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    );
+    expect(screen.queryByRole('region', { name: 'Saved run history' })).not.toBeInTheDocument();
+    expect(axios.get.mock.calls.some(([url]) => url.endsWith('algorithm-lab/runs'))).toBe(false);
+  });
+
+  it('marks modified presets and clears the marker on reset or a new preset', async () => {
+    await mount();
+    expect(screen.queryByText('Modified')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '3' } });
+    expect(screen.getByText('Modified')).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Reset preset' }));
+    expect(screen.queryByText('Modified')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Departure time'), { target: { value: '10:00' } });
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Culture trip/ }));
+    expect(screen.queryByText('Modified')).not.toBeInTheDocument();
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it('opens the section containing an invalid field', async () => {
+    await mount();
+    const section = screen.getByText('Travelers and rooms').closest('details');
+    expect(section).not.toHaveAttribute('open');
+    const adults = screen.getByLabelText('Room 1 adults');
+    fireEvent.change(adults, { target: { value: '' } });
+    fireEvent.invalid(adults);
+    expect(section).toHaveAttribute('open');
+    expect(adults).toBeVisible();
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it('toggles history without discarding inputs and refreshes after a run', async () => {
+    await mount();
+    fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '3' } });
+    const toggle = screen.getByRole('button', { name: 'History' });
+    await userEvent.click(toggle);
+    await screen.findByRole('region', { name: 'Saved run history' });
+    await userEvent.click(toggle);
+    expect(screen.queryByRole('region', { name: 'Saved run history' })).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Maximum attractions')).toHaveValue(3);
+    await userEvent.click(toggle);
+    await screen.findByRole('region', { name: 'Saved run history' });
+    const before = axios.get.mock.calls.filter(([url]) =>
+      url.endsWith('algorithm-lab/runs')
+    ).length;
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    await screen.findByRole('tab', { name: 'Route' });
+    await waitFor(() =>
+      expect(
+        axios.get.mock.calls.filter(([url]) => url.endsWith('algorithm-lab/runs')).length
+      ).toBe(before + 1)
+    );
+    expect(screen.getByLabelText('Maximum attractions')).toHaveValue(3);
+  });
+
+  it('supports keyboard tabs, unmounts the map off Route, and starts each response on Route', async () => {
+    const data = response();
+    data.route = {
+      distance: 100000,
+      duration: 7200,
+      cost: 150,
+      geometry: {
+        coordinates: [
+          [-122, 37],
+          [-121, 36],
+        ],
+      },
+      stops: [{ name: 'Forest walk', type: 'attraction' }],
+      warnings: ['Room quote is above target.'],
+    };
+    data.itinerary = [{ date: '2026-10-06', stops: [{ name: 'Forest visit', time: '11:00' }] }];
+    axios.post.mockResolvedValue({ data });
+    await mount();
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    const routeTab = await screen.findByRole('tab', { name: 'Route' });
+    expect(routeTab).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText('Live route map')).toBeVisible();
+    expect(screen.getByText('OPTIMAL')).not.toBeVisible();
+    routeTab.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: 'Itinerary' })).toHaveFocus();
+    expect(screen.getByText('Forest visit')).toBeVisible();
+    expect(screen.queryByText('Live route map')).not.toBeInTheDocument();
+    expect(screen.getByText('Room quote is above target.')).toBeVisible();
+    await userEvent.keyboard('{End}');
+    expect(screen.getByRole('tab', { name: 'Algorithm details' })).toHaveFocus();
+    expect(screen.getByText('OPTIMAL')).toBeVisible();
+    await userEvent.keyboard('{Home}');
+    expect(routeTab).toHaveFocus();
+    expect(screen.getByText('Live route map')).toBeVisible();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(screen.getByRole('tab', { name: 'Algorithm details' })).toHaveFocus();
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    expect(await screen.findByRole('tab', { name: 'Route' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+  });
+
+  it('keeps missing measurements and incomplete output explicit above the tabs', async () => {
+    const data = response();
+    data.route = { stops: [] };
+    axios.post.mockResolvedValue({ data });
+    await mount();
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    await screen.findByRole('tab', { name: 'Route' });
+    expect(screen.getByLabelText('Trip summary')).toHaveTextContent('Not available');
+    expect(screen.getByText('Route available; itinerary generation is incomplete.')).toBeVisible();
+    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
+    expect(screen.getByText('Route available; itinerary generation is incomplete.')).toBeVisible();
+    expect(screen.getByText('OPTIMAL')).toBeVisible();
   });
 });

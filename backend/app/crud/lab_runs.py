@@ -49,12 +49,13 @@ def begin(user_id, payload):
 def finish(user_id, run_id, envelope, metrics):
     rows = _query(
         "UPDATE algorithm_lab_runs SET status=%s, finished_at=now(), input=%s, metrics=%s, "
-        "error_code=%s WHERE id=%s AND user_id=%s AND status='running' RETURNING id",
+        "error_code=%s, result=%s WHERE id=%s AND user_id=%s AND status='running' RETURNING id",
         (
             "failed" if envelope["error"] else "completed",
             Json(envelope["input_snapshot"]),
             Json(metrics),
             (envelope["error"] or {}).get("code"),
+            Json({key: envelope.get(key) for key in ("route", "itinerary")}),
             run_id,
             user_id,
         ),
@@ -67,7 +68,16 @@ def finish(user_id, run_id, envelope, metrics):
 def history(user_id, limit=100, offset=0):
     return _query(
         "SELECT id,started_at,finished_at,status,mode,preset_id,run_type,batch_id,repeat_index,input,"
-        "metrics,error_code FROM algorithm_lab_runs WHERE user_id=%s "
+        "metrics,error_code,(result->'route' IS NOT NULL AND result->'route' != 'null'::jsonb) AS has_result "
+        "FROM algorithm_lab_runs WHERE user_id=%s "
         "ORDER BY started_at DESC,id DESC LIMIT %s OFFSET %s",
         (user_id, limit, offset),
     )
+
+
+def result(user_id, run_id):
+    rows = _query(
+        "SELECT result FROM algorithm_lab_runs WHERE id=%s AND user_id=%s",
+        (str(run_id), user_id),
+    )
+    return rows[0]["result"] if rows else None

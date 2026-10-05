@@ -1,37 +1,44 @@
 # Algorithm Lab experiment history
 
 Only owner-authorized `/algorithm-lab/run` requests are recorded. Ordinary chat
-planning is excluded. The UI at `/algorithm` provides **Benchmark trips** and a
+planning is excluded. The UI at `/algorithm` provides **Trip presets** and a
 persistent **Run history** table, with inputs and measurements in each disclosure.
-Six server-owned trip categories cover short, medium, long, dense, sparse and
-tight hotel budget cases. Driving times and overnight counts are targets to
-measure, not guarantees. The current candidate cap remains 30 even on long routes.
+The nine presets include coastal nature, culture, overnight, short, medium, long,
+dense, sparse and tight hotel budget trips. Driving times and overnight counts
+are targets to measure, not guarantees. The candidate cap remains 30 on long routes.
 
-Select trips and 1, 3, 5 or 10 repeats. Requests execute sequentially with a shared
-batch UUID and repeat index. Stop finishes the current request and skips future
-ones. Closing the page stops the browser queue; it does not cancel work already
-accepted by the server. There is no durable background queue or automatic retry.
-Live runs call providers; selection replay uses the same small synthetic fixture
-for all routes and cannot test real corridor density or hotel scheduling.
+The **Trip presets** button opens a modal. Selecting a card replaces the whole
+editable form and closes the modal without starting a run. Profiles vary departure
+time, travelers/children, rooms, interests, vehicle and evening schedule. Dates
+default to tomorrow when the catalog loads. Reset restores the selected profile.
+The former benchmark batch button and repeat modal have been removed; run a
+selected preset with **Run live route**. Every new run calls live providers through
+the ordinary routing and itinerary pipeline. Hotel and evening discovery follow
+the trip needs. There is no replay or candidate-fixture option. Historical replay
+and benchmark records remain labeled in history.
+
+Successful saved routes have a **View map and itinerary** button. It loads the
+stored route geometry and itinerary in a modal without making another provider
+run. Older records saved before route persistence have no viewer button.
 
 ## Record lifecycle and ownership
 
 `backend/sql/algorithm_lab_runs.sql` is the authoritative additive DDL. It creates
 an independent `algorithm_lab_runs` table with UUID, verified user ID, timestamps,
 status, live/replay mode, interactive/benchmark run type, preset, batch/repeat,
-input JSONB, versioned metrics JSONB and a sanitized error code. Owner/time,
+input JSONB, versioned metrics JSONB, route/itinerary result JSONB and a sanitized error code. Owner/time,
 batch and exact-comparison indexes support later analysis.
 
 Accepted experiments insert `running` before any paid work; storage failure
 returns 503 without starting the experiment. Finalization records `completed` or
-`failed`. A failed final save is explicitly shown to the user and halts a batch.
+`failed`. A failed final save is explicitly shown to the user.
 Interrupted processes can leave `running` rows: these are unfinished, never
 successes or zero-latency samples. Invalid/auth-rejected HTTP requests are not
 experiments. Each explicit request creates a new run; no automatic deduplication
 is claimed for manually repeated requests after a lost network response.
 
 The backend derives identity from verified Cognito claims, never body fields.
-Both listing and finalizing are constrained by user ID. History uses private
+Listing, finalizing and loading saved results are constrained by user ID. History uses private
 `no-store` responses, bounded limit (1–500), offset and stable timestamp/UUID order.
 UI pages contain 50 rows; **statistics describe the current page**, not all-time
 totals. Stored rows remain available through pagination and offline SQL analysis.
@@ -65,7 +72,7 @@ models are unassessed. Quality percent = 100 × score/reference; gap percent =
 counts, assessed feasibility denominators and output repeat counts are calculated
 in the backend. There is currently only one active approach, `cp_sat`.
 
-Metrics use `selection-surplus-v1`. Docker embeds `ROADTRIPS_REVISION` from its
+New metrics use `selection-surplus-v2`; historical `selection-surplus-v1` records retain their original meaning. Docker embeds `ROADTRIPS_REVISION` from its
 build SHA. Local development should set an explicit revision when collecting
 comparisons; otherwise records say `unversioned-local`. Bump the metric version
 when changing score/feasibility/hash semantics; never reinterpret older rows silently.
@@ -75,11 +82,15 @@ when changing score/feasibility/hash semantics; never reinterpret older rows sil
 Apply the additive SQL explicitly to the **approved database target before**
 releasing the new backend. Runtime does not create tables. `/ready` now requires
 the new table; Lab runs fail closed if it is absent. The Neon write gate remains
-authoritative. This task applies the schema only to disposable local databases;
-it does not migrate production or authorize a manual public deployment.
+authoritative. The original table migration was validated in disposable local databases. On
+October 5, the additive result-column migration was tested twice against a
+disposable PostgreSQL instance, then applied to the user-connected Neon database
+for the requested live preset validation. No public backend deployment is included.
 
 Use the existing database operator's transaction/migration workflow to execute
-`backend/sql/algorithm_lab_runs.sql`. Back up and verify the target first per the
+`backend/sql/algorithm_lab_runs.sql` for a new table, or
+`backend/sql/algorithm_lab_run_results.sql` to add saved results to an existing
+compatible table. Back up and verify the target first per the
 container/database runbooks. `IF NOT EXISTS` makes initial application repeatable,
 but does not repair a pre-existing incompatible table. Check columns/indexes after
 application. Backend image rollback can leave this additive table in place;
@@ -90,3 +101,34 @@ and checks real insert/finalize/read, cross-owner isolation, recreation, DB-loss
 readiness, backup and restore. The fixture SQL includes this table in the full
 dump; restoring into a populated target is refused. Production schema history
 and public deployment still require separate verification.
+
+## Trip evaluation (v2)
+
+`metrics.trip_evaluation` retains measurements when a route succeeds but itinerary
+construction fails. Driving records the direct Mapbox baseline, final driving,
+and signed differences in meters/seconds and percentages. Missing/zero baselines
+leave percentages unassessed. Stop fulfillment compares delivered `stop` attractions
+with the requested cap, separately from solver selection; hotels, destination and
+optional evenings are excluded.
+
+Schedule records itinerary days, overnights, final arrival/timezone and UTC elapsed
+trip seconds. Deadline slack uses the backend's recorded deadlines: attraction
+visit departure, hotel/destination arrival. Missing timestamps leave overall
+compliance unassessed, with the count of stops that could be checked.
+
+Hotel totals sum the verified USD room offers at each overnight, not the legacy
+route cost field. Each room offer represents one room-night. A missing room offer,
+invalid price, or mismatch with requested room count makes totals unassessed.
+No-hotel routes have zero quoted hotel cost. Over-target counts and dollar amounts
+compare each room-night against the nightly per-room target; they exclude food,
+fuel, admission and booking guarantees.
+
+Warnings, stage statuses and the first failed stage explain incomplete outcomes.
+Stage detail strings and raw exceptions are not stored in these metrics. Storage
+errors log operation, exception class and SQLSTATE without raw database errors.
+
+History includes a current-page completion summary over finalized rows; unfinished
+rows are counted separately. Comparable cohorts show distributions with assessed
+sample counts for detour distance/time, stop fulfillment and hotel quotes. Version
+and revision separation preserves historical comparisons. Older and unfinished
+records remain readable without v2 fields.

@@ -108,7 +108,7 @@ are outside that model. `base.score_trip()` is a legacy benchmark metric, not
 the solver objective. Ordinary Route output keeps its compatible shape. The owner Lab uses
 request-local `routing/explanation.py` to capture candidates and solver diagnostics
 from `routing/cp_sat_selection.py`. `routers/algorithm_lab.py` reuses existing
-owner auth, trip validation and shared planning; replay skips providers but persists independent experiment history.
+owner auth, trip validation and shared live planning; all new runs persist independent experiment history. Replay requests are rejected.
 The frontend `/algorithm` page uses server catalog values and shows details on
 demand. See `docs/senior-demo-plan.md` for its API and limits. See `docs/cp-sat-explained.md` for the exact formulation.
 

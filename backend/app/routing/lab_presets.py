@@ -1,5 +1,6 @@
-"""Server-owned preset identities and clearly synthetic, frozen teaching inputs."""
+"""Server-owned live trip presets and isolated solver verification fixtures."""
 
+from copy import deepcopy
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -77,6 +78,87 @@ BENCHMARKS = {
     ),
 }
 
+# Complete form variations share the benchmark routes, not candidate/provider data.
+BENCHMARK_PROFILES = {
+    "short-day": {
+        "departure_time": "08:00",
+        "traveler_count": 1,
+        "hotel_rooms": [{"adults": 1, "child_ages": []}],
+        "car_status": "provided",
+        "car": {"year": 2022, "make": "Honda", "model": "Civic"},
+        "persona_weights": {"beaches_water": 0.4, "food": 0.35, "relaxation": 0.25},
+        "scheduling_policy": {"latest_destination_arrival": "19:00"},
+        "evening_interests": [],
+    },
+    "medium-two-day": {
+        "departure_time": "07:00",
+        "traveler_count": 4,
+        "hotel_rooms": [{"adults": 2, "child_ages": [7, 12]}],
+        "car_status": "provided",
+        "car": {"year": 2023, "make": "Toyota", "model": "RAV4"},
+        "persona_weights": {"family_friendliness": 0.4, "nature": 0.35, "scenery": 0.25},
+        "scheduling_policy": {
+            "preferred_hotel_arrival": "17:00",
+            "latest_hotel_arrival": "19:00",
+            "morning_restart": "08:00",
+            "latest_destination_arrival": "19:00",
+        },
+        "evening_interests": ["food"],
+    },
+    "long-multi-day": {
+        "departure_time": "06:30",
+        "traveler_count": 4,
+        "hotel_rooms": [{"adults": 2, "child_ages": []}, {"adults": 2, "child_ages": []}],
+        "car_status": "provided",
+        "car": {"year": 2021, "make": "Subaru", "model": "Outback"},
+        "persona_weights": {"scenery": 0.35, "history": 0.25, "adventure": 0.25, "food": 0.15},
+        "scheduling_policy": {"morning_restart": "07:30", "latest_destination_arrival": "21:00"},
+        "evening_interests": ["food", "culture"],
+    },
+    "dense-corridor": {
+        "departure_time": "09:30",
+        "traveler_count": 2,
+        "hotel_rooms": [{"adults": 2, "child_ages": []}],
+        "car_status": "skipped",
+        "car": None,
+        "persona_weights": {"culture_arts": 0.4, "food": 0.3, "nightlife": 0.2, "shopping": 0.1},
+        "scheduling_policy": {
+            "late_driving": True,
+            "late_cutoff": "23:00",
+            "morning_restart": "09:30",
+        },
+        "evening_interests": ["food", "culture", "nightlife"],
+    },
+    "sparse-corridor": {
+        "departure_time": "07:30",
+        "traveler_count": 2,
+        "hotel_rooms": [{"adults": 2, "child_ages": []}],
+        "car_status": "provided",
+        "car": {"year": 2020, "make": "Toyota", "model": "4Runner"},
+        "persona_weights": {"nature": 0.4, "hiking_outdoors": 0.3, "crowd_avoidance": 0.3},
+        "scheduling_policy": {
+            "preferred_hotel_arrival": "17:30",
+            "latest_hotel_arrival": "19:30",
+            "morning_restart": "07:00",
+        },
+        "evening_interests": [],
+    },
+    "tight-budget": {
+        "departure_time": "08:30",
+        "traveler_count": 3,
+        "hotel_rooms": [{"adults": 3, "child_ages": []}],
+        "car_status": "skipped",
+        "car": None,
+        "persona_weights": {"unique_local_experiences": 0.4, "nature": 0.35, "food": 0.25},
+        "scheduling_policy": {
+            "preferred_hotel_arrival": "18:30",
+            "latest_hotel_arrival": "20:30",
+            "morning_restart": "08:30",
+        },
+        "evening_interests": ["food"],
+    },
+}
+
 PRESETS = {
     "coastal-nature": (
         "Coastal nature",
@@ -135,13 +217,20 @@ def preset_catalog():
     ]
     for key, (label, start, destination, stops, budget, description) in BENCHMARKS.items():
         inputs = {
-            **presets[0]["inputs"],
+            **deepcopy(presets[0]["inputs"]),
             "start_id": start,
             "destination_id": destination,
             "num_stops": stops,
             "budget": budget,
             "persona_weights": dict(presets[0]["inputs"]["persona_weights"]),
         }
+        profile = deepcopy(BENCHMARK_PROFILES[key])
+        inputs.update(profile)
+        inputs["persona_weights"] = {
+            **dict.fromkeys(ATTRIBUTE_KEYS, 0.0),
+            **profile["persona_weights"],
+        }
+        inputs["scheduling_policy"] = SchedulingPolicy(**profile["scheduling_policy"]).model_dump()
         presets.append({"id": key, "label": label, "description": description, "inputs": inputs})
     return presets
 

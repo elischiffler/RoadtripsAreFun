@@ -235,7 +235,7 @@ the walkthrough remains usable after line numbers change.
 | `backend/app/routing/planners/cp_sat.py`: `plan` | Sampling and orchestration |
 | `backend/app/routing/cp_sat_selection.py`: `_prepare`, `_build_model`, `select_attractions` | Filtering, slots, variables, named constraints, coefficients, solve and decode |
 | `backend/app/routing/profiles.py`: `AttributeRatings`, `crossmatch` | Canonical rating schema and per-interest contributions |
-| `backend/app/routers/algorithm_lab.py`, `backend/app/routing/lab_presets.py` | Owner direct runs, presets, replay and stage results |
+| `backend/app/routers/algorithm_lab.py`, `backend/app/routing/lab_presets.py` | Owner live runs, presets and stage results |
 | `backend/app/routing/cp_sat_scheduler.py`: `schedule_cp_sat_route` | Visits, hotel retries, ranking and costs |
 | `backend/app/models/scheduling_policy.py`, `backend/app/routing/travel_timing.py` | Shared local clocks and actual-leg validation |
 | `backend/app/agent/tool_dispatcher.py`: completion tools | Route versus itinerary outcomes and persisted retry |
@@ -261,8 +261,9 @@ bounded candidates. It says nothing about undiscovered places or a global
 time/cost optimum. FEASIBLE is a weaker result.
 
 **Can I reproduce it?** Freeze weights, candidates, ratings and solver version.
-The live pipeline can vary due to model/provider responses. A labeled replay
-isolates the optimization experiment from those changes.
+The live pipeline can vary due to model/provider responses. Algorithm Lab always
+performs fresh provider discovery; deterministic solver fixtures exist only in
+automated tests. Historical measurements can be inspected, but cannot be replayed.
 
 **What would improve it next?** Better evidenced/calibrated location ratings;
 fairer coverage under the candidate cap; explicit travel-time estimates and

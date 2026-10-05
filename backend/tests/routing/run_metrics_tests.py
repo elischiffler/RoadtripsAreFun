@@ -126,3 +126,138 @@ def test_lab_storage_respects_database_write_gate(monkeypatch):
     monkeypatch.setattr(lab_runs.settings, "NEON_READ_ONLY", True)
     with pytest.raises(RuntimeError, match="writes are disabled"):
         lab_runs.begin("owner", {"mode": "replay", "preset_id": "test"})
+
+
+def live_trip():
+    value = envelope()
+    value.update(
+        mode="live",
+        direct_route={"distance": 1000, "duration": 100},
+        itinerary=[{"date": "2026-10-06"}, {"date": "2026-10-07"}],
+        stages=[
+            {"name": "reroute", "status": "complete"},
+            {"name": "itinerary", "status": "complete"},
+        ],
+        route={
+            "distance": 1200,
+            "duration": 150,
+            "warnings": ["Late arrival"],
+            "stops": [
+                {
+                    "type": "stop",
+                    "provider_id": "a",
+                    "arrival_time": "2026-10-06T10:00:00-07:00",
+                    "departure_time": "2026-10-06T12:00:00-07:00",
+                    "deadline": "2026-10-06T13:00:00-07:00",
+                },
+                {
+                    "type": "hotel",
+                    "provider_id": "h",
+                    "room_offers": [{"price": 120}, {"price": 80}],
+                    "arrival_time": "2026-10-06T18:00:00-07:00",
+                    "deadline": "2026-10-06T20:00:00-07:00",
+                    "late_check_in_notice": "Confirm check-in",
+                },
+                {
+                    "type": "hotel",
+                    "provider_id": "h2",
+                    "room_offers": [{"price": 150}, {"price": 90}],
+                    "arrival_time": "2026-10-07T18:00:00-07:00",
+                    "deadline": "2026-10-07T20:00:00-07:00",
+                },
+                {
+                    "type": "end",
+                    "arrival_time": "2026-10-08T19:00:00-06:00",
+                    "deadline": "2026-10-08T21:00:00-06:00",
+                    "timezone": "America/Denver",
+                },
+            ],
+        },
+    )
+    value["input_snapshot"].update(
+        num_stops=2, budget=100, hotel_rooms=[{}, {}], start_date="2026-10-06T09:00:00-07:00"
+    )
+    return value
+
+
+def test_trip_evaluation_arithmetic_and_room_nights():
+    result = metric(live_trip())["trip_evaluation"]
+    assert result["driving"]["extra_distance_meters"] == 200
+    assert result["driving"]["extra_duration_percent"] == 50
+    assert result["stop_fulfillment"]["ratio"] == 0.5
+    assert result["stop_fulfillment"]["delivered"] == 1
+    assert result["hotel_costs"]["quoted_total_usd"] == 440
+    assert result["hotel_costs"]["room_night_count"] == 4
+    assert result["hotel_costs"]["over_target_room_nights"] == 2
+    assert result["hotel_costs"]["above_target_total_usd"] == 70
+    assert result["schedule"]["elapsed_trip_seconds"] == 57 * 3600
+    assert result["schedule_compliance"]["min_deadline_slack_seconds"] == 3600
+    assert result["schedule_compliance"]["violation_count"] == 0
+    assert result["warnings"] == ["Late arrival", "Confirm check-in"]
+
+
+def test_missing_quotes_zero_baselines_and_signed_detours():
+    value = live_trip()
+    value["direct_route"] = {"distance": 0, "duration": 200}
+    value["route"]["stops"][1]["room_offers"].pop()
+    result = metric(value)["trip_evaluation"]
+    assert result["driving"]["extra_distance_percent"] is None
+    assert result["driving"]["extra_duration_seconds"] == -50
+    assert result["hotel_costs"]["quotes_complete"] is False
+    assert result["hotel_costs"]["quoted_total_usd"] is None
+    value.pop("direct_route")
+    assert metric(value)["trip_evaluation"]["driving"]["assessment_reason"] == "baseline_incomplete"
+
+
+def test_partial_failure_keeps_route_measurements_and_missing_deadline_unassessed():
+    value = live_trip()
+    value.update(
+        error={"code": "provider_or_planning_failure"},
+        itinerary=None,
+        stages=[{"name": "itinerary", "status": "failed"}],
+    )
+    value["route"]["stops"][0].pop("deadline")
+    result = metric(value)["trip_evaluation"]
+    assert result["completed"] is False
+    assert result["first_failed_stage"] == "itinerary"
+    assert result["hotel_costs"]["quoted_total_usd"] == 440
+    assert result["schedule"]["itinerary_days"] is None
+    assert result["schedule_compliance"]["violation_count"] is None
+    assert result["schedule_compliance"]["assessed_stops"] == 3
+
+
+def test_no_hotel_trip_and_dst_elapsed_time():
+    value = live_trip()
+    value["route"]["stops"] = [
+        {
+            "type": "end",
+            "arrival_time": "2026-11-01T02:30:00-08:00",
+            "deadline": "2026-11-01T02:00:00-08:00",
+            "timezone": "America/Los_Angeles",
+        }
+    ]
+    value["input_snapshot"]["start_date"] = "2026-11-01T00:30:00-07:00"
+    result = metric(value)["trip_evaluation"]
+    assert result["hotel_costs"]["quoted_total_usd"] == 0
+    assert result["hotel_costs"]["room_night_count"] == 0
+    assert result["schedule"]["elapsed_trip_seconds"] == 3 * 3600
+    assert result["schedule_compliance"]["violation_count"] == 1
+    assert result["schedule_compliance"]["min_deadline_slack_seconds"] == -1800
+
+
+def test_page_cohorts_separate_versions_and_exclude_missing_measurements():
+    current = metric(live_trip())
+    old = copy.deepcopy(current)
+    old["metric_version"] = "selection-surplus-v1"
+    old.pop("trip_evaluation")
+    groups = aggregate_runs(
+        [
+            {"status": "completed", "metrics": current},
+            {"status": "failed", "metrics": current},
+            {"status": "completed", "metrics": old},
+        ]
+    )
+    assert len(groups) == 2
+    assert groups[0]["completion_rate"] == 0.5
+    assert groups[0]["trip_evaluation"]["quoted_hotel_total_usd"]["count"] == 2
+    assert groups[1]["trip_evaluation"]["quoted_hotel_total_usd"] is None

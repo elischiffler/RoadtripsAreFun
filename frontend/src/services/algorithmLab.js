@@ -43,3 +43,11 @@ export async function getLabRuns(signal, offset = 0) {
     throw new Error('Invalid run history response');
   return data;
 }
+
+export async function getLabResult(runId, signal) {
+  const { data } = await axios.get(
+    `${import.meta.env.VITE_BACKEND_SERVER}algorithm-lab/runs/${runId}/result`,
+    { ...backendAuthConfig(), signal }
+  );
+  return data;
+}
