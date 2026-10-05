@@ -208,7 +208,12 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
               type="button"
               role="slider"
               className={`interest-edge ${resizing === slice.key ? 'is-resizing' : ''}`}
-              style={{ left: `${x / 2.8}%`, top: `${y / 2.8}%`, '--slice-color': slice.color }}
+              style={{
+                left: `${x / 2.8}%`,
+                top: `${y / 2.8}%`,
+                '--slice-color': slice.color,
+                '--edge-angle': `${(slice.start + slice.size) * 3.6}deg`,
+              }}
               aria-label={`Resize ${title(slice.key)}`}
               aria-valuemin={0}
               aria-valuemax={Number(max.toFixed(1))}
@@ -238,7 +243,7 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
                 }
               }}
             >
-              <span aria-hidden="true">↔</span>
+              <span className="interest-edge-grip" aria-hidden="true" />
             </button>
           );
         })}
