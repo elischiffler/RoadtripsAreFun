@@ -104,6 +104,17 @@ describe('trip-interest pie interactions', () => {
     fireEvent.pointerCancel(edge);
     expect(handle('nature')).not.toHaveClass('is-resizing');
   });
+  it('keeps the field mounted while entering a decimal, and commits zero on blur', () => {
+    mount();
+    fireEvent.change(value('nature'), { target: { value: '' } });
+    expect(value('nature')).toHaveValue(null);
+    fireEvent.change(value('nature'), { target: { value: '0' } });
+    fireEvent.change(value('nature'), { target: { value: '0.5' } });
+    expect(value('nature')).toHaveValue(0.5);
+    fireEvent.change(value('nature'), { target: { value: '0' } });
+    fireEvent.blur(value('nature'));
+    expect(screen.queryByLabelText('Interest nature percentage')).not.toBeInTheDocument();
+  });
   it('supports keyboard resize, removal and click-to-add from an empty circle', () => {
     mount();
     fireEvent.keyDown(handle('nature'), { key: 'ArrowDown', shiftKey: true });

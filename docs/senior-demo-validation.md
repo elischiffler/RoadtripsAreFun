@@ -62,13 +62,15 @@ head, not the historical baseline listed above.
 ## Pie editor follow-up
 
 The `/algorithm` trip-interest form now uses a drag-and-drop percentage pie.
-The final frontend checks pass: formatting, lint, production build and 214 tests
-across 26 files (87.60% lines/statements, 85.81% branches, 77.37% functions).
-The unchanged lockfile install was verified in the preceding implementation.
+After integrating the shared session-refresh work through `f9f1c31`, the final
+frontend checks pass: locked install, formatting, lint, production build and
+267 tests across 30 files (88.68% lines/statements, 86.30% branches, 80.93%
+functions). The clean install required stopping this task's Vite process to
+release its Windows esbuild file lock; the local preview was restarted.
 The existing bundle-size warning remains. No backend or database code changed.
 
-Seven interaction tests cover drop/cancellation, capped allocations, preserving
-other topics, edge dragging, the circular seam, keyboard edits/removal, touch
+Eight interaction tests cover drop/cancellation, capped allocations, preserving
+other topics, edge dragging, the circular seam, keyboard edits/removal, decimal entry, touch
 and disabled controls. Browser checks on the local authenticated fixture verify
 actual pointer edge resizing, dragging scenery onto the circle, the 100% cap,
 full-circle guidance and a successful CP-SAT replay with edited weights.

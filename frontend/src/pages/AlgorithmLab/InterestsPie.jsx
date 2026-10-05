@@ -46,6 +46,7 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
   const [over, setOver] = useState(false);
   const [resizing, setResizing] = useState(null);
   const [message, setMessage] = useState('');
+  const [emptyDraft, setEmptyDraft] = useState(null);
   const total = attributes.reduce((sum, key) => sum + (Number(weights[key]) || 0), 0);
   // Existing presets may contain relative weights. Display their equivalent shares.
   const divisor = Math.max(1, total);
@@ -72,6 +73,7 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
     });
   const writeShare = (key, value, base = shares) => {
     if (disabled || !Number.isFinite(value)) return;
+    setEmptyDraft(null);
     const others = attributes.reduce((sum, item) => sum + (item === key ? 0 : base[item]), 0);
     const next = Math.max(0, Math.min(Math.round(value * 10) / 10, 100 - others));
     onChange(
@@ -276,9 +278,19 @@ export default function InterestsPie({ attributes, weights, onChange, disabled }
                 min="0"
                 max={Math.ceil(Math.max(0, 100 - (allocated - slice.size)) * 10) / 10}
                 step="any"
-                value={Number(slice.size.toFixed(1))}
+                value={
+                  emptyDraft?.key === slice.key ? emptyDraft.text : Number(slice.size.toFixed(1))
+                }
                 disabled={disabled}
-                onChange={(event) => writeShare(slice.key, Number(event.target.value))}
+                onChange={(event) => {
+                  const text = event.target.value;
+                  // Keep the control mounted while clearing or typing a decimal.
+                  if (text === '' || Number(text) === 0) setEmptyDraft({ key: slice.key, text });
+                  else writeShare(slice.key, Number(text));
+                }}
+                onBlur={() => {
+                  if (emptyDraft?.key === slice.key) writeShare(slice.key, 0);
+                }}
               />
               <span>%</span>
             </div>
