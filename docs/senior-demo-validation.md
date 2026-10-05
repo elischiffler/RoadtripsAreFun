@@ -108,3 +108,35 @@ their original scope.
   Existing public-runtime and real Cognito acceptance blockers remain.
 
 Measurement definitions and lifecycle caveats: [algorithm-run-history.md](algorithm-run-history.md).
+
+## Live-only runs and trip preset modal (October 5)
+
+Code tested: `66f8a1e` on `codex/algorithm-live-only`, based on feature
+`ca04cea`; this entry adds only validation documentation. macOS arm64,
+Node 24.12.0/npm 11.11.0, Python 3.12.14 and Ruff 0.16.7.
+
+- PASS: locked `npm ci`; frontend `npm run format:check`, `npm run lint`,
+  `npm run test:coverage` (278 tests, 33 files, existing coverage floors), and
+  `npm run build`. Existing large-bundle warning remains.
+- PASS: pinned backend requirements installation, `ruff format --check .`,
+  `ruff check .`, and `pytest --cov=app --cov-report=term-missing --cov-fail-under=63`
+  with the checked-in default CORS origins set only in the test process:
+  662 tests, 86.29% coverage. No `.env`, test assertions or thresholds changed.
+- Local configuration failure preserved: without the test-process CORS override,
+  `test_dev_frontend_preflight[http://127.0.0.1:5173]` returned 400 (661 passed,
+  1 failed, 86.28% coverage before the preset follow-up). A development-only
+  two-origin override also excluded the preview/public origins required by two
+  container configuration tests; the final run uses all checked-in defaults.
+- PASS, actual existing local browser: Trip presets opens a native modal; choosing
+  Medium two-day closes it and fills Boise, 07:00 departure, four travelers,
+  four attractions and the family/scenery/nature mix. Automated tests verify
+  full room/child/car/policy/evening replacement, reset isolation, close without
+  running, and live-only interactive/batch requests. All six varied benchmark
+  profiles pass authoritative LabInputs/occupancy validation.
+- BLOCKED: `node --test tests/container-smoke.test.mjs` cannot reach preview
+  ports 8002/8082; `node tests/postgres/run.mjs` cannot connect to the Docker
+  daemon. No production data or database migration was used.
+- NOT RUN: complete paid live provider trips and public acceptance. The browser
+  reports run history unavailable; this change does not apply the required Lab
+  table migration or fix target database configuration. New experiments still
+  require storage before provider work begins. Keep the PR draft.
