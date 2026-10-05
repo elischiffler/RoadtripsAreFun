@@ -26,3 +26,24 @@ migration, Cognito change, or deployment is performed by this change.
 Verification covers case variants, wrong passwords, missing/invalid/expired
 sessions, visitor history isolation, private API rejection, and live planner
 handoff. Existing private owner API tests remain applicable.
+
+## October 5 local validation
+
+Implementation: `21e708d` on `codex/production-release`, included in draft PR #34.
+Frontend format/lint, 287 tests (89.91% line coverage), and build passed. Backend
+Ruff format/lint and 695 tests passed (86.94% coverage, unchanged 63% gate).
+The existing Vite large-bundle warning remains. No dependencies changed; the
+locked dependency installations already completed for this release were reused.
+
+Rebuilt preview containers passed both smoke checks. Disposable PostgreSQL
+project `roadtrips-crud-c3a15f779e` passed CRUD, ownership, saved-result storage,
+connection recovery, recreation and backup/restore; containers stopped and both
+volumes plus the private backup were retained.
+
+Browser checks rejected `wrong`, accepted mixed-case `CP-SaT` and `cP-sAt`,
+and reached Studio from a fresh visitor tab. A real coastal-nature visitor run
+completed in 60.74 seconds with 21 API attempts, 2/2 attractions, and a saved
+118-mile route. The saved map and dated itinerary opened from its own history.
+This is one actual live acceptance run through the new visitor boundary; the
+nine earlier owner preset runs remain separate evidence. No production release
+or main merge occurred.
