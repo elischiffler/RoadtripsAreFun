@@ -44,7 +44,7 @@ from app.routing.runtime import (
     singleflight,
     threaded,
 )
-from app.routing.sources.attractions import _auth_headers, _raise_for_status
+from app.routing.sources.attractions import _auth_headers
 
 MAX_ATTRACTIONS = 60
 MAX_HOTELS = 10
@@ -595,7 +595,7 @@ class LivePlaceProvider:
                 },
                 headers=_auth_headers(),
             )
-            _raise_for_status(response)
+            response.raise_for_status()
             from app.models.routing_models.trip_advisor_models import Terra_Page_Nearby_Location
 
             payload = response.json()

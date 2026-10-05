@@ -78,7 +78,10 @@ def test_bad_sessions_fail_closed(kind):
     assert client.get("/studio/presets", headers={"X-Studio-Session": token}).status_code == 401
 
 
-def test_studio_token_cannot_authorize_owner_api():
+def test_studio_token_cannot_authorize_owner_api(monkeypatch):
+    # Exercise the real algorithm/signature boundary without host dotenv or JWKS.
+    monkeypatch.setenv("COGNITO_USER_POOL_ID", "us-east-1_Fixture")
+    monkeypatch.setenv("COGNITO_APP_CLIENT_ID", "fixture-client")
     token = unlock()["X-Studio-Session"]
     assert (
         client.get(

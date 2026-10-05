@@ -371,3 +371,43 @@ async def test_live_attractions_reject_hotel_and_restaurant_listings(monkeypatch
     )
     records = await source.LivePlaceProvider().attractions_near([40, -74])
     assert [record.name for record in records] == ["Museum"]
+
+
+@pytest.mark.parametrize("status,attempts", [(429, 3), (401, 1)])
+async def test_live_terra_preserves_status_retry_after_and_hard_error_classification(
+    monkeypatch, status, attempts
+):
+    import httpx
+
+    from app.agent.provider_diagnostics import collecting_attempts, diagnostic, retry_async
+    from app.routing.runtime import limited, run_context
+
+    calls, delays = [], []
+
+    async def get(*args, **kwargs):
+        calls.append(1)
+        return httpx.Response(
+            status,
+            headers={"Retry-After": "7"},
+            request=httpx.Request("GET", "https://provider.test"),
+        )
+
+    async def sleep(seconds):
+        delays.append(seconds)
+
+    monkeypatch.setattr(source, "http_get", get)
+    monkeypatch.setattr(source, "_auth_headers", lambda: {})
+    monkeypatch.setattr(source.LivePlaceProvider, "require_attractions", staticmethod(lambda: None))
+    monkeypatch.setattr("app.agent.provider_diagnostics.asyncio.sleep", sleep)
+    with collecting_attempts() as records:
+        async with run_context():
+            with pytest.raises(source.CandidateProviderError) as raised:
+                await retry_async(
+                    lambda: limited(
+                        "nearby", lambda: source.LivePlaceProvider().attractions_near([40, -74])
+                    )
+                )
+    assert len(calls) == attempts
+    assert delays == ([7, 7] if status == 429 else [])
+    assert diagnostic(raised.value)["http_status"] == status
+    assert records[-1]["outcome"] == "failed"
