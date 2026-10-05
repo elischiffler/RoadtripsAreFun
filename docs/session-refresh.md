@@ -11,6 +11,8 @@ omitted refresh token, accepts a rotated token and sends a stored device key.
 Results must contain unexpired matching-owner access/ID tokens of the expected
 token uses. A late response cannot restore credentials after logout or sign-in.
 The SDK makes one attempt so it cannot blindly retry a rotated refresh token.
+A shared 15-second AbortController deadline bounds hung renewal requests; timeout
+retains credentials and uses the temporary-unavailability recovery flow.
 See [Cognito refresh requirements](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html).
 
 Renewal runs within 30 seconds of expiry before protected requests, on protected
@@ -95,7 +97,7 @@ claims or call session renewal; never alter real tokens for this test.
 
 Validation on October 4, 2026 (America/Los_Angeles):
 
-- PASS: frontend format/lint, 258 tests, coverage 88.11% lines/statements,
+- PASS: frontend format/lint, 259 tests, coverage 88.12% lines/statements,
   85.96% branches and 79.57% functions; production build; development launcher tests.
 - PASS: Edge browser through agent-browser, no page errors or Vite overlay.
   Three concurrent renewals plus foreground restoration yielded one refresh,

@@ -158,14 +158,18 @@ export async function ensureSession({ rejectedToken } = {}) {
   const operation = { generation };
   renewal = operation;
   operation.promise = (async () => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
     try {
       const { AuthenticationResult } = await cognitoClient.send(
         new GetTokensFromRefreshTokenCommand({
           ClientId: config.clientId,
           RefreshToken: session.refreshToken,
           ...(session.deviceKey ? { DeviceKey: session.deviceKey } : {}),
-        })
+        }),
+        { abortSignal: controller.signal }
       );
+      if (controller.signal.aborted) throw new SessionError('renewal-unavailable');
       if (!isCurrentSession(session) || getSession().refreshToken !== session.refreshToken)
         throw new SessionError('session-changed');
       const owner = validateResult(AuthenticationResult, session.owner);
@@ -190,6 +194,7 @@ export async function ensureSession({ rejectedToken } = {}) {
       publish('unavailable');
       throw lastFailure;
     } finally {
+      clearTimeout(timeout);
       if (renewal === operation) renewal = undefined;
     }
   })();
