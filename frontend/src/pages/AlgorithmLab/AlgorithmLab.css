@@ -363,8 +363,28 @@
   max-width: 720px;
   margin: 60px auto;
 }
+.lab-access {
+  padding: 32px;
+  border: 1px solid var(--cream-dark);
+  border-radius: 16px;
+  background: var(--cream-light);
+}
+.lab-access label {
+  display: block;
+  margin: 24px 0 8px;
+  font-weight: 600;
+}
+.lab-access input {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  padding: 12px;
+  border: 1px solid var(--cream-dark);
+  border-radius: 8px;
+  font: inherit;
+}
 .lab-access button {
-  margin-left: 20px;
+  margin-top: 16px;
 }
 @keyframes lab-spin {
   to {

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import AuthWrapper from './components/AuthWrapper';
 import RootLayout from './components/RootLayout';
 import HomePage from './pages/HomePage/HomePage';
@@ -40,13 +40,10 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'algorithm',
-        element: (
-          <AuthWrapper>
-            <AlgorithmLab />
-          </AuthWrapper>
-        ),
+        path: 'studio',
+        element: <AlgorithmLab />,
       },
+      { path: 'algorithm', element: <Navigate to="/studio" replace /> },
       {
         path: 'settings',
         element: (

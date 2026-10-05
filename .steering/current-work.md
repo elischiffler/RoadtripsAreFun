@@ -1,5 +1,21 @@
 # Current feature and senior demonstration work
 
+## October 5 Trip Planning Studio access
+
+The current page is `/studio` (old `/algorithm` bookmarks redirect). Visitors,
+including people without accounts, unlock it using the case-insensitive shared
+password `cp-sat`. `/studio/access` issues an eight-hour signed session; all
+`/studio/*` planning/history endpoints enforce that session independently of
+Cognito. Each session receives its own experiment identity, so visitors cannot
+read existing account runs or another visitor's runs. Reload keeps the session
+in that tab; closing it or unlocking after expiry starts a separate history.
+The old owner-only `/algorithm-lab/*` API remains private for compatibility.
+The header's routing gear has been removed; ordinary account auth is unchanged.
+
+Set backend-only `STUDIO_SESSION_SECRET` to the same random secret on deployed
+workers. Without it, local server restart invalidates Studio sessions. No schema
+change is required. See [Studio access](../docs/studio-access.md).
+
 ## October 5 release consolidation
 
 Active integration is now `codex/production-release`, targeting `main` in one

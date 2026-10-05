@@ -1,28 +1,16 @@
-import axios from './protectedRequest';
-import { SessionError } from './session';
-import { backendAuthConfig } from './backendAuth';
+import { studioRequest } from './studioSession';
 
 export async function getLabPresets(signal) {
-  const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}algorithm-lab/presets`, {
-    ...backendAuthConfig(),
-    signal,
-  });
-  return data;
+  return (await studioRequest('get', 'presets', null, signal)).data;
 }
 
 export async function runLab(request, signal) {
-  const { data } = await axios.post(
-    `${import.meta.env.VITE_BACKEND_SERVER}algorithm-lab/run`,
-    request,
-    { ...backendAuthConfig(), signal }
-  );
-  return data;
+  return (await studioRequest('post', 'run', request, signal)).data;
 }
 
 export function labError(error) {
-  if (error instanceof SessionError) return ''; // AuthWrapper owns the single recovery notice.
   if ([401, 403].includes(error.response?.status)) {
-    return 'Algorithm Lab requires the authorized owner account. Sign in again to continue.';
+    return 'Enter the Studio password to continue.';
   }
   const detail = error.response?.data?.detail;
   if (Array.isArray(detail)) {
@@ -34,20 +22,12 @@ export function labError(error) {
 }
 
 export async function getLabRuns(signal, offset = 0) {
-  const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}algorithm-lab/runs`, {
-    ...backendAuthConfig(),
-    signal,
-    params: { limit: 50, offset },
-  });
+  const { data } = await studioRequest('get', 'runs', null, signal, { limit: 50, offset });
   if (!Array.isArray(data.runs) || !Array.isArray(data.groups))
     throw new Error('Invalid run history response');
   return data;
 }
 
 export async function getLabResult(runId, signal) {
-  const { data } = await axios.get(
-    `${import.meta.env.VITE_BACKEND_SERVER}algorithm-lab/runs/${runId}/result`,
-    { ...backendAuthConfig(), signal }
-  );
-  return data;
+  return (await studioRequest('get', `runs/${runId}/result`, null, signal)).data;
 }

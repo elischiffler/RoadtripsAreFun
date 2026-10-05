@@ -1,4 +1,4 @@
-import { fixtureSession, fixtureToken } from './sessionFixtures';
+import { fixtureSession } from './sessionFixtures';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -136,11 +136,6 @@ const response = () => ({
   ],
   error: null,
 });
-function login(sub = 'owner', expiry = Date.now() / 1000 + 600) {
-  fixtureSession(sub);
-  sessionStorage.setItem('accessToken', fixtureToken(sub, expiry));
-  sessionStorage.setItem('idToken', fixtureToken(sub, expiry, 'id'));
-}
 function capability() {
   return {
     data: {
@@ -152,7 +147,7 @@ function capability() {
   };
 }
 async function mount() {
-  const view = renderWithProviders(<AlgorithmLab />, { initialPath: '/algorithm' });
+  const view = renderWithProviders(<AlgorithmLab />, { initialPath: '/studio' });
   await screen.findByRole('button', { name: 'Run live route' });
   await userEvent.click(screen.getByText('Trip interests'));
   return view;
@@ -168,13 +163,17 @@ beforeEach(() => {
   };
   sessionStorage.clear();
   invalidateRoutingSettings();
-  login();
+  fixtureSession('owner');
+  sessionStorage.setItem(
+    'studioSession',
+    JSON.stringify({ token: 'studio-test', expires_at: Date.now() / 1000 + 600 })
+  );
   import.meta.env.VITE_BACKEND_SERVER = 'http://localhost:8000/';
   axios.get.mockImplementation((url) =>
     Promise.resolve(
       url.endsWith('routing-settings')
         ? capability()
-        : url.endsWith('algorithm-lab/runs')
+        : url.endsWith('studio/runs')
           ? { data: { runs: [], groups: [], next_offset: null } }
           : { data: structuredClone(catalog) }
     )
@@ -187,32 +186,49 @@ afterEach(() => {
   sessionStorage.clear();
 });
 
-describe('Algorithm Lab access and lifecycle', () => {
-  it.each(['missing', 'non-owner', 'unavailable'])(
-    'does not load private presets for %s access',
-    async (kind) => {
-      if (kind === 'missing') sessionStorage.clear();
-      else if (kind === 'non-owner')
-        axios.get.mockResolvedValue({ data: { can_select_algorithm: false } });
-      else axios.get.mockRejectedValue(new Error('offline'));
-      renderWithProviders(
-        <>
-          <GlobalHeader />
-          <AlgorithmLab />
-        </>
-      );
-      await waitFor(() => expect(screen.getByText('Owner access required')).toBeInTheDocument());
-      expect(axios.get.mock.calls.every(([url]) => url.endsWith('routing-settings'))).toBe(true);
-      expect(screen.queryByRole('link', { name: 'Algorithm Lab' })).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'Run live route' })).not.toBeInTheDocument();
-    }
-  );
+describe('Trip Planning Studio access and lifecycle', () => {
+  it('requires a password without loading presets, including for signed-in owners', async () => {
+    sessionStorage.removeItem('studioSession');
+    renderWithProviders(<AlgorithmLab />);
+    expect(screen.getByRole('heading', { name: 'Enter Studio password' })).toBeInTheDocument();
+    expect(axios.get).not.toHaveBeenCalled();
+  });
 
-  it('shows the server-authorized navigation link', async () => {
+  it('lets a visitor unlock through the backend and retries incorrect passwords', async () => {
+    sessionStorage.clear();
+    axios.post
+      .mockRejectedValueOnce({ response: { status: 401 } })
+      .mockResolvedValueOnce({ data: { token: 'visitor', expires_at: Date.now() / 1000 + 600 } });
+    renderWithProviders(<AlgorithmLab />);
+    await userEvent.type(screen.getByLabelText('Password'), 'wrong');
+    await userEvent.click(screen.getByRole('button', { name: 'Enter Studio' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Incorrect password');
+    expect(axios.get).not.toHaveBeenCalled();
+    await userEvent.clear(screen.getByLabelText('Password'));
+    await userEvent.type(screen.getByLabelText('Password'), 'CP-SAT');
+    await userEvent.click(screen.getByRole('button', { name: 'Enter Studio' }));
+    expect(await screen.findByRole('button', { name: 'Run live route' })).toBeInTheDocument();
+    expect(axios.post.mock.calls[1][1]).toEqual({ password: 'CP-SAT' });
+    expect(axios.get.mock.calls[0][1].headers).toEqual({ 'X-Studio-Session': 'visitor' });
+  });
+
+  it('relocks when the backend rejects a Studio session', async () => {
+    axios.get.mockRejectedValue({ response: { status: 401 } });
+    renderWithProviders(<AlgorithmLab />);
+    expect(
+      await screen.findByRole('heading', { name: 'Enter Studio password' })
+    ).toBeInTheDocument();
+  });
+
+  it('shows the visitor navigation link without algorithm options', async () => {
+    sessionStorage.clear();
     renderWithProviders(<GlobalHeader />);
-    expect(await screen.findByRole('link', { name: 'Algorithm Lab' })).toHaveAttribute(
+    expect(
+      screen.queryByRole('button', { name: 'routing algorithm settings' })
+    ).not.toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Trip Planning Studio' })).toHaveAttribute(
       'href',
-      '/algorithm'
+      '/studio'
     );
   });
 
@@ -222,7 +238,7 @@ describe('Algorithm Lab access and lifecycle', () => {
         <GlobalHeader />
         <AlgorithmLab />
       </>,
-      { initialPath: '/algorithm' }
+      { initialPath: '/studio' }
     );
     await screen.findByRole('button', { name: 'Run live route' });
     expect(document.querySelector('.global-header')).not.toBeInTheDocument();
@@ -245,7 +261,7 @@ describe('Algorithm Lab access and lifecycle', () => {
     expect(await screen.findByRole('button', { name: 'Run live route' })).toBeInTheDocument();
   });
 
-  it.each(['logout', 'account switch', 'expiry'])(
+  it.each(['session removal', 'expiry'])(
     'removes private results and ignores an in-flight response on %s',
     async (action) => {
       let resolveRun;
@@ -259,26 +275,23 @@ describe('Algorithm Lab access and lifecycle', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
       const signal = axios.post.mock.calls[0][2].signal;
       act(() => {
-        if (action === 'logout') sessionStorage.clear();
-        else if (action === 'account switch') {
-          login('other');
-          axios.get.mockResolvedValue({ data: { can_select_algorithm: false } });
-        } else {
+        if (action === 'session removal') sessionStorage.clear();
+        else {
           vi.useFakeTimers();
           vi.setSystemTime(Date.now() + 700000);
         }
-        window.dispatchEvent(new Event(action === 'expiry' ? 'focus' : 'auth-changed'));
+        window.dispatchEvent(new Event('focus'));
       });
       await act(async () => resolveRun({ data: response() }));
       expect(signal.aborted).toBe(true);
-      expect(screen.getByText('Owner access required')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Enter Studio password' })).toBeInTheDocument();
       expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Run live route' })).not.toBeInTheDocument();
     }
   );
 });
 
-describe('Algorithm Lab experiments', () => {
+describe('Trip Planning Studio experiments', () => {
   it('opens presets in a modal and dismisses without changing the form or starting a run', async () => {
     await mount();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -341,7 +354,7 @@ describe('Algorithm Lab experiments', () => {
     );
   });
 
-  it('sends edited inputs and both tokens, displays actual contributions, and clears stale success on edits', async () => {
+  it('sends edited inputs and the Studio session, displays actual contributions, and clears stale success on edits', async () => {
     await mount();
     fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '3' } });
     fireEvent.change(screen.getByLabelText('Interest nature percentage'), {
@@ -355,10 +368,7 @@ describe('Algorithm Lab experiments', () => {
       preset_id: 'coast',
       inputs: { num_stops: 3, persona_weights: { nature: 0.6 } },
     });
-    expect(config.headers).toEqual({
-      Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
-      'X-Cognito-Id-Token': sessionStorage.getItem('idToken'),
-    });
+    expect(config.headers).toEqual({ 'X-Studio-Session': 'studio-test' });
     expect(screen.getByText('Live provider run')).toBeInTheDocument();
     expect(request).not.toHaveProperty('snapshot_id');
     expect(screen.queryByLabelText('Run mode')).not.toBeInTheDocument();
@@ -524,7 +534,9 @@ describe('Algorithm Lab experiments', () => {
     });
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     if (status === 401)
-      expect(await screen.findByText('Owner access required')).toBeInTheDocument();
+      expect(
+        await screen.findByRole('heading', { name: 'Enter Studio password' })
+      ).toBeInTheDocument();
     else
       expect(await screen.findByRole('alert')).toHaveTextContent(
         status === 422 ? 'Room occupants do not match.' : 'Check your connection'
@@ -559,9 +571,9 @@ describe('Algorithm Lab experiments', () => {
   });
 });
 
-describe('Algorithm Lab calm workspace', () => {
+describe('Trip Planning Studio calm workspace', () => {
   it('starts with an empty result and collapsed optional inputs and history', async () => {
-    renderWithProviders(<AlgorithmLab />, { initialPath: '/algorithm' });
+    renderWithProviders(<AlgorithmLab />, { initialPath: '/studio' });
     await screen.findByRole('button', { name: 'Run live route' });
     expect(screen.getByText('Build a trip. See how it fits.')).toBeVisible();
     for (const name of ['Trip interests', 'Travelers and rooms', 'Car and schedule']) {
@@ -573,7 +585,7 @@ describe('Algorithm Lab calm workspace', () => {
       'false'
     );
     expect(screen.queryByRole('region', { name: 'Saved run history' })).not.toBeInTheDocument();
-    expect(axios.get.mock.calls.some(([url]) => url.endsWith('algorithm-lab/runs'))).toBe(false);
+    expect(axios.get.mock.calls.some(([url]) => url.endsWith('studio/runs'))).toBe(false);
   });
 
   it('marks modified presets and clears the marker on reset or a new preset', async () => {
@@ -613,15 +625,13 @@ describe('Algorithm Lab calm workspace', () => {
     expect(screen.getByLabelText('Maximum attractions')).toHaveValue(3);
     await userEvent.click(toggle);
     await screen.findByRole('region', { name: 'Saved run history' });
-    const before = axios.get.mock.calls.filter(([url]) =>
-      url.endsWith('algorithm-lab/runs')
-    ).length;
+    const before = axios.get.mock.calls.filter(([url]) => url.endsWith('studio/runs')).length;
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await screen.findByRole('tab', { name: 'Route' });
     await waitFor(() =>
-      expect(
-        axios.get.mock.calls.filter(([url]) => url.endsWith('algorithm-lab/runs')).length
-      ).toBe(before + 1)
+      expect(axios.get.mock.calls.filter(([url]) => url.endsWith('studio/runs')).length).toBe(
+        before + 1
+      )
     );
     expect(screen.getByLabelText('Maximum attractions')).toHaveValue(3);
   });

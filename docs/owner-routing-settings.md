@@ -17,9 +17,9 @@ requirements in [Verifying JSON web tokens](https://docs.aws.amazon.com/cognito/
 
 Authenticated `GET /routing-settings` returns only eligibility, registered names,
 the registry default, and the ID-token expiration, with `Cache-Control: no-store`.
-The frontend does not maintain an email allowlist. The gear is mounted only after
-server approval and only under the existing development/`VITE_DEV_TOOLS=true`
-gate. Eligibility is bounded by both token expirations. Logout, login/account
+The frontend does not maintain an email allowlist. The routing gear menu has
+been removed. The public Trip Planning Studio link uses a separate password
+session and grants no account or algorithm-override privileges. Eligibility is bounded by both token expirations. Logout, login/account
 changes, storage events, focus, and a one-second session check invalidate stale
 state. Responses from previous credentials cannot restore access.
 

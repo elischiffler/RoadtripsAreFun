@@ -24,7 +24,7 @@ the changes since the older guidance and implementation still in progress.
 | [Operations](operations.md) | `docs/container-runbook.md`, `docs/aws-api-readiness.md` |
 | [Current work](current-work.md) | Git/PR state and the source map below; refresh before integration |
 | [Product vision](../docs/product-vision.md) | Trip/location profile matching and Tuesday demonstration priorities |
-| [Algorithm Lab](../docs/senior-demo-plan.md) | Owner-only preset runner, explanation contract and acceptance |
+| [Trip Planning Studio](../docs/studio-access.md) | Password-gated visitor presets, live runs and isolated history |
 | [CP-SAT walkthrough](../docs/cp-sat-explained.md) | Actual inputs, weighted score, integer model, outputs and limitations |
 
 ## Current capabilities and contracts
@@ -57,7 +57,7 @@ the changes since the older guidance and implementation still in progress.
 
 ## Documentation boundaries
 
-The senior-demo change adds a header-free owner `/algorithm` page with editable
+The current Trip Planning Studio is a header-free `/studio` page with password-gated visitor access and editable
 presets, contextual help, contribution tables, actual solver diagnostics, live
 route/itinerary results and live-only provider runs. It is not yet a public release.
 See `docs/senior-demo-runbook.md` for public backend parity and MacBook rehearsal.

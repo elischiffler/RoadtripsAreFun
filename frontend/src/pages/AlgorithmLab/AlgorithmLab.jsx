@@ -1,11 +1,7 @@
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  useRoutingSettings,
-  refreshRoutingSettings,
-  invalidateRoutingSettings,
-} from '../../services/routingSettings';
+import { getStudioSession, unlockStudio, clearStudioSession } from '../../services/studioSession';
 import { getLabPresets, runLab, labError } from '../../services/algorithmLab';
 import TripInputs from './TripInputs';
 import TripPresetDialog from './TripPresetDialog';
@@ -94,7 +90,7 @@ function LabWorkspace({ historyOpen }) {
     } catch (failure) {
       if (controller.signal.aborted || request.current !== controller) return;
       setError(labError(failure));
-      if ([401, 403].includes(failure.response?.status)) invalidateRoutingSettings();
+      if ([401, 403].includes(failure.response?.status)) clearStudioSession();
     } finally {
       if (request.current === controller) {
         request.current = null;
@@ -112,7 +108,7 @@ function LabWorkspace({ historyOpen }) {
             <button onClick={() => setReload((value) => value + 1)}>Retry preset loading</button>
           </>
         ) : (
-          'Loading authorized presets…'
+          'Loading trip presets…'
         )}
       </div>
     );
@@ -228,20 +224,49 @@ LabWorkspace.propTypes = { historyOpen: PropTypes.bool.isRequired };
 
 export default function AlgorithmLab() {
   const [historyOpen, setHistoryOpen] = useState(false);
-  const capability = useRoutingSettings();
-  const session = JSON.stringify([
-    sessionStorage.getItem('accessToken'),
-    sessionStorage.getItem('idToken'),
-  ]);
+  const [session, setSession] = useState(getStudioSession);
+  const [password, setPassword] = useState('');
+  const [accessError, setAccessError] = useState('');
+  const [unlocking, setUnlocking] = useState(false);
+  useEffect(() => {
+    const refresh = () => setSession(getStudioSession());
+    window.addEventListener('studio-access-changed', refresh);
+    window.addEventListener('focus', refresh);
+    const timer = session
+      ? setTimeout(refresh, Math.max(0, session.expires_at * 1000 - Date.now()))
+      : null;
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('studio-access-changed', refresh);
+      window.removeEventListener('focus', refresh);
+    };
+  }, [session]);
+  const unlock = async (event) => {
+    event.preventDefault();
+    setUnlocking(true);
+    setAccessError('');
+    try {
+      await unlockStudio(password);
+      setPassword('');
+    } catch (error) {
+      setAccessError(
+        error.response?.status === 401
+          ? 'Incorrect password. Try again.'
+          : 'Studio access is unavailable. Please try again.'
+      );
+    } finally {
+      setUnlocking(false);
+    }
+  };
   return (
     <main className="algorithm-lab">
       <header className="lab-title">
         <div>
-          <h1>Algorithm Lab</h1>
+          <h1>Trip Planning Studio</h1>
           <p>See why a road trip fits.</p>
         </div>
         <div className="lab-header-actions">
-          {capability.canSelect && (
+          {session && (
             <button
               type="button"
               aria-expanded={historyOpen}
@@ -254,18 +279,28 @@ export default function AlgorithmLab() {
           <Link to="/chat">Back to trip chat</Link>
         </div>
       </header>
-      {capability.canSelect ? (
-        <LabWorkspace key={session} historyOpen={historyOpen} />
+      {session ? (
+        <LabWorkspace key={session.token} historyOpen={historyOpen} />
       ) : (
-        <div className="lab-access" role="status">
-          <h2>Owner access required</h2>
-          <p>
-            Access is verified by the server. Sign in with the authorized owner account to load the
-            demonstration.
-          </p>
-          <Link to="/login">Sign in</Link>
-          <button onClick={() => refreshRoutingSettings()}>Check access again</button>
-        </div>
+        <form className="lab-access" onSubmit={unlock}>
+          <h2>Enter Studio password</h2>
+          <p>No account is needed. Enter the shared password to plan live trips.</p>
+          <label htmlFor="studio-password">Password</label>
+          <input
+            id="studio-password"
+            type="password"
+            autoComplete="off"
+            required
+            maxLength={128}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            disabled={unlocking}
+          />
+          <button type="submit" disabled={unlocking}>
+            {unlocking ? 'Checking…' : 'Enter Studio'}
+          </button>
+          {accessError && <p role="alert">{accessError}</p>}
+        </form>
       )}
     </main>
   );

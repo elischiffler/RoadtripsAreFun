@@ -5,24 +5,17 @@ import LogoButton from './LogoButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { UserDataContext } from '../states/UserDataContext';
 import { isAuthenticated } from '../services/authService';
-import AlgorithmSettings from './AlgorithmSettings';
-import { useRoutingSettings } from '../services/routingSettings';
 import './GlobalHeader.css';
 import { signOut } from '../services/session';
 import { useSessionStatus } from '../services/useSessionStatus';
 
-// Show the dev-mode algorithm picker only in local dev (npm run dev), or when
-// VITE_DEV_TOOLS=true is set. It's hidden in a normal production build.
-const SHOW_DEV_TOOLS = import.meta.env.DEV || import.meta.env.VITE_DEV_TOOLS === 'true';
-
-const HIDDEN_ON = ['/login', '/signup', '/algorithm'];
+const HIDDEN_ON = ['/login', '/signup', '/studio'];
 
 export default function GlobalHeader() {
   const location = useLocation();
   const navigate = useNavigate();
   useSessionStatus();
   const authed = isAuthenticated();
-  const routingSettings = useRoutingSettings();
   const { currentStep, clearUserData } = useContext(UserDataContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -55,12 +48,9 @@ export default function GlobalHeader() {
       <LogoButton driving={isDriving} progress={logoProgress} />
 
       <Box className="global-header-right">
-        {routingSettings.canSelect && (
-          <Button component={Link} to="/algorithm" sx={{ color: 'text.primary', px: 1 }}>
-            Algorithm Lab
-          </Button>
-        )}
-        {SHOW_DEV_TOOLS && routingSettings.canSelect && <AlgorithmSettings />}
+        <Button component={Link} to="/studio" sx={{ color: 'text.primary', px: 1 }}>
+          Trip Planning Studio
+        </Button>
         {authed ? (
           <>
             <Box

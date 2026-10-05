@@ -308,17 +308,18 @@ it('rejects a previous-account read closure before dispatch', async () => {
   expect(axios.get).not.toHaveBeenCalled();
 });
 
-it('renews both Algorithm Lab request paths and preserves run inputs', async () => {
-  const { getLabPresets, runLab, labError } = await import('../services/algorithmLab');
-  axios.get.mockRejectedValueOnce(rejection()).mockResolvedValueOnce({ data: { presets: [] } });
-  cognitoClient.send.mockResolvedValue(renewed());
+it('uses an independent Studio session without Cognito renewal and preserves live inputs', async () => {
+  const { getLabPresets, runLab } = await import('../services/algorithmLab');
+  sessionStorage.setItem(
+    'studioSession',
+    JSON.stringify({ token: 'studio-test', expires_at: Date.now() / 1000 + 600 })
+  );
+  axios.get.mockResolvedValue({ data: { presets: [] } });
   expect(await getLabPresets()).toEqual({ presets: [] });
-  axios.post.mockResolvedValue({ data: { mode: 'replay' } });
-  const request = { mode: 'replay', inputs: { budget: 150 } };
-  expect(await runLab(request)).toEqual({ mode: 'replay' });
+  axios.post.mockResolvedValue({ data: { mode: 'live' } });
+  const request = { mode: 'live', inputs: { budget: 150 } };
+  expect(await runLab(request)).toEqual({ mode: 'live' });
   expect(axios.post.mock.calls[0][1]).toEqual(request);
-  expect(axios.post.mock.calls[0][2].headers['X-Cognito-Id-Token']).toBe(getSession().idToken);
-  expect(cognitoClient.send).toHaveBeenCalledTimes(1);
-  const { SessionError } = await import('../services/session');
-  expect(labError(new SessionError('signin-required'))).toBe('');
+  expect(axios.post.mock.calls[0][2].headers).toEqual({ 'X-Studio-Session': 'studio-test' });
+  expect(cognitoClient.send).not.toHaveBeenCalled();
 });

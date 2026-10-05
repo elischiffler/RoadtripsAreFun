@@ -148,3 +148,12 @@ No new table migration is required for these JSON additions. Disposable DDL is
 `app/routing/run_metrics.py` owns request-local instrumentation, canonical hashes
 and statistical aggregation. Only Lab runs activate capture; chat runs are excluded.
 See [run history contract](../docs/algorithm-run-history.md).
+
+## Public Studio session boundary
+
+`routers/studio.py` exposes `/studio/access` and signed visitor-session endpoints
+for presets, runs, history and saved results. It reuses `algorithm_lab.py` planning
+and scoped storage under a random `studio:<uuid>` identity. It grants no Cognito
+account access or algorithm override. Frontend `/studio` uses this session; old
+`/algorithm` links redirect. The owner-only API remains private. See
+[Studio access](../docs/studio-access.md) for expiry and deployment secrets.

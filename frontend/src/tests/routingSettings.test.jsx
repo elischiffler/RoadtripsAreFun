@@ -4,11 +4,10 @@ vi.mock('../services/cognito', () => ({ cognitoClient: { send: vi.fn() } }));
 import { fixtureSession, fixtureToken } from './sessionFixtures';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { act, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import axios from 'axios';
-import GlobalHeader from '../components/GlobalHeader';
 import { renderWithProviders } from './testUtils';
 import {
+  useRoutingSettings,
   refreshRoutingSettings,
   invalidateRoutingSettings,
   chooseRoutingAlgorithm,
@@ -28,7 +27,11 @@ const capability = () => ({
     expires_at: Date.now() / 1000 + 600,
   },
 });
-const gear = () => screen.queryByRole('button', { name: 'routing algorithm settings' });
+function RoutingCapability() {
+  const capability = useRoutingSettings();
+  return capability.canSelect ? <span>Owner eligible</span> : null;
+}
+const ownerEligibility = () => screen.queryByText('Owner eligible');
 function login(sub = 'owner', exp) {
   fixtureSession(sub);
   if (exp) {
@@ -52,65 +55,58 @@ afterEach(() => {
 
 describe('owner routing settings', () => {
   it.each(['missing', 'malformed', 'expired'])(
-    'hides the gear for %s credentials',
+    'hides the owner capability for %s credentials',
     async (kind) => {
       if (kind === 'malformed') {
         sessionStorage.setItem('accessToken', 'bad');
         sessionStorage.setItem('idToken', 'bad');
       } else if (kind === 'expired') login('owner', 1);
-      renderWithProviders(<GlobalHeader />);
-      expect(gear()).not.toBeInTheDocument();
+      renderWithProviders(<RoutingCapability />);
+      expect(ownerEligibility()).not.toBeInTheDocument();
       expect(axios.get).not.toHaveBeenCalled();
       expect(getRoutingAlgorithm()).toBeNull();
     }
   );
 
-  it('hides the gear with a missing identity token', () => {
+  it('hides the owner capability with a missing identity token', () => {
     sessionStorage.setItem('accessToken', token('owner'));
-    renderWithProviders(<GlobalHeader />);
-    expect(gear()).not.toBeInTheDocument();
+    renderWithProviders(<RoutingCapability />);
+    expect(ownerEligibility()).not.toBeInTheDocument();
     expect(axios.get).not.toHaveBeenCalled();
   });
 
   it.each(['non-owner', 'invalid', 'unavailable'])(
-    'fails closed for %s eligibility',
+    'hides the owner capability for %s eligibility',
     async (kind) => {
       login();
       if (kind === 'non-owner')
         axios.get.mockResolvedValue({ data: { can_select_algorithm: false } });
       else axios.get.mockRejectedValue({ response: { status: kind === 'invalid' ? 401 : 503 } });
-      renderWithProviders(<GlobalHeader />);
+      renderWithProviders(<RoutingCapability />);
       await waitFor(() => expect(axios.get).toHaveBeenCalled());
-      expect(gear()).not.toBeInTheDocument();
+      expect(ownerEligibility()).not.toBeInTheDocument();
       expect(getRoutingAlgorithm()).toBeNull();
     }
   );
 
-  it('grants access after login without a privileged flash and closes the picker on logout', async () => {
+  it('shows the owner capability after login without a privileged flash and hides it on logout', async () => {
     let resolve;
     axios.get.mockImplementation(() => new Promise((done) => (resolve = done)));
-    renderWithProviders(<GlobalHeader />);
-    expect(gear()).not.toBeInTheDocument();
+    renderWithProviders(<RoutingCapability />);
+    expect(ownerEligibility()).not.toBeInTheDocument();
     act(() => {
       login();
       window.dispatchEvent(new Event('auth-changed'));
     });
-    expect(gear()).not.toBeInTheDocument();
+    expect(ownerEligibility()).not.toBeInTheDocument();
     await waitFor(() => expect(axios.get).toHaveBeenCalled());
     await act(async () => resolve(capability()));
-    expect(gear()).toBeInTheDocument();
-    const user = userEvent.setup();
-    await user.click(gear());
-    expect(screen.getByText('active: cp_sat')).toBeInTheDocument();
-    await user.click(screen.getByText('test_alternate'));
-    expect(getRoutingAlgorithm()).toBe('test_alternate');
-    await user.click(gear());
+    expect(ownerEligibility()).toBeInTheDocument();
     act(() => {
       sessionStorage.clear();
       window.dispatchEvent(new Event('auth-changed'));
     });
-    expect(gear()).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.queryByText('test_alternate')).not.toBeInTheDocument());
+    expect(ownerEligibility()).not.toBeInTheDocument();
     expect(getRoutingAlgorithm()).toBeNull();
   });
 
@@ -119,29 +115,29 @@ describe('owner routing settings', () => {
     login();
     axios.get.mockImplementationOnce(() => new Promise((done) => (resolveOwner = done)));
     axios.get.mockResolvedValue({ data: { can_select_algorithm: false } });
-    renderWithProviders(<GlobalHeader />);
+    renderWithProviders(<RoutingCapability />);
     await waitFor(() => expect(axios.get).toHaveBeenCalled());
     act(() => {
       login('other');
       window.dispatchEvent(new Event('auth-changed'));
     });
     await act(async () => resolveOwner(capability()));
-    expect(gear()).not.toBeInTheDocument();
+    expect(ownerEligibility()).not.toBeInTheDocument();
     expect(getRoutingAlgorithm()).toBeNull();
   });
 
-  it('invalidates an open owner picker and selection when credentials expire', async () => {
+  it('hides the owner capability and clears selection when credentials expire', async () => {
     login('owner', Date.now() / 1000 + 30);
     axios.get.mockResolvedValue(capability());
-    renderWithProviders(<GlobalHeader />);
-    await waitFor(() => expect(gear()).toBeInTheDocument());
+    renderWithProviders(<RoutingCapability />);
+    await waitFor(() => expect(ownerEligibility()).toBeInTheDocument());
     chooseRoutingAlgorithm('test_alternate');
     vi.useFakeTimers();
     act(() => {
       vi.setSystemTime(Date.now() + 31000);
       window.dispatchEvent(new Event('focus'));
     });
-    expect(gear()).not.toBeInTheDocument();
+    expect(ownerEligibility()).not.toBeInTheDocument();
     expect(getRoutingAlgorithm()).toBeNull();
   });
 
