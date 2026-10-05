@@ -272,3 +272,21 @@ def test_stay_token_changes_at_month_and_year_boundaries():
     assert source.stay_token(
         date(2026, 12, 31), HotelRoom(adults=2, child_ages=[])
     ) != source.stay_token(date(2027, 1, 1), HotelRoom(adults=2, child_ages=[]))
+
+
+def test_family_stay_token_uses_observed_guest_selector_encoding():
+    import base64
+
+    # Captured from Google's guest selector for two adults/two 12-year-olds,
+    # November 2-3, 2026. City/currency metadata is irrelevant to this segment.
+    observed = "CAESFgoCCAMKAggDCgQIAhAMCgQIAhAMEAEaTwoxEi0yJTB4ODA5OTQwYWU5MjkyYTA5ZDoweDQwYzVjNWNlNzQzOGY3ODc6BFJlbm8aABIaEhQKBwjqDxALGAISBwjqDxALGAMYATICEAAqCQoFOgNVU0QaAA"
+    generated = source.stay_token(date(2026, 11, 2), HotelRoom(adults=2, child_ages=[12, 12]))
+
+    def decode(token):
+        return base64.urlsafe_b64decode(token + "=" * (-len(token) % 4))
+
+    expected = decode(observed)
+    actual = decode(generated)
+    # Occupant list and stay-selector flags must agree with the captured request.
+    assert actual[:24] == expected[:24]
+    assert actual[28:54] == expected[79:105]

@@ -37,19 +37,13 @@ def _get_conn():
     pool = _get_pool()
     conn = pool.getconn()
     try:
-        # Lightweight check — if Neon closed the connection while idle this will fail
-        conn.cursor().execute("SELECT 1")
-    except psycopg2.OperationalError:
-        # Connection is dead; close it, open a fresh one, and put that in the pool
-        try:
-            conn.close()
-        except Exception:
-            pass
-        conn = psycopg2.connect(
-            (settings.DATABASE_URL or "").strip(),
-            sslmode=settings.DATABASE_SSLMODE,
-            connect_timeout=5,
-        )
+        # Validate idle connections before use; keep replacements pool-owned.
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1")
+        conn.rollback()
+    except (psycopg2.OperationalError, psycopg2.InterfaceError):
+        pool.putconn(conn, close=True)
+        conn = pool.getconn()
     return conn
 
 

@@ -96,16 +96,16 @@ are included. PR #26 remains draft pending its existing live acceptance requirem
 ## Persistent Algorithm Lab experiments
 
 Algorithm Lab now records live and selection-replay runs in a separate, owner-scoped
-PostgreSQL table. Ordinary chat runs are excluded. A benchmark modal queues the
-six route categories sequentially, with optional repeats and persistent input/metric
-history. See [run history and migration](../docs/algorithm-run-history.md) for scoring, feasibility,
+PostgreSQL table. Ordinary chat runs are excluded. A preset modal fills the complete form for individual live runs, with persistent
+input/metric history and saved map/itinerary viewing. The benchmark batch modal
+has been removed. See [run history and migration](../docs/algorithm-run-history.md) for scoring, feasibility,
 comparison rules and operational boundaries. Apply the additive table migration
 to the approved target before the backend release; local validation is not evidence
 of a public database migration. Replay still needs the backend and this database.
 
 ## Live-only Algorithm Lab runs
 
-The `/algorithm` form and benchmark queue now submit only live provider trips.
+The `/algorithm` form submits only live provider trips.
 The run API accepts `mode: "live"` (also the default), rejects replay and fixture
 snapshot fields, and always uses geocoding, live discovery, road routing and
 itinerary construction. Hotel/evening providers run when the trip needs them.

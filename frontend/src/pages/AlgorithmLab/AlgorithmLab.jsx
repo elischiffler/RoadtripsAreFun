@@ -10,7 +10,6 @@ import TripInputs from './TripInputs';
 import TripPresetDialog from './TripPresetDialog';
 import LabResults from './LabResults';
 import HelpTip from './HelpTip';
-import BenchmarkDialog from './BenchmarkDialog';
 import RunHistory from './RunHistory';
 import './AlgorithmLab.css';
 
@@ -20,7 +19,6 @@ function LabWorkspace() {
   const [inputs, setInputs] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [batchBusy, setBatchBusy] = useState(false);
   const [result, setResult] = useState(null);
   const [previous, setPrevious] = useState(null);
   const lastResult = useRef(null);
@@ -145,23 +143,8 @@ function LabWorkspace() {
           >
             {busy ? 'Running…' : 'Run live route'}
           </button>
-          <BenchmarkDialog
-            catalog={catalog}
-            disabled={busy}
-            onBusy={(value) => {
-              setBusy(value);
-              setBatchBusy(value);
-            }}
-            onResult={(data) => {
-              setPrevious(lastResult.current);
-              setResult(data);
-              lastResult.current = data;
-              setHistoryRevision((value) => value + 1);
-            }}
-          />
           <button
             type="button"
-            disabled={batchBusy}
             onClick={() => {
               lastResult.current = null;
               setPrevious(null);

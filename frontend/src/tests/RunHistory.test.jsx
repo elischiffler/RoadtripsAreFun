@@ -1,10 +1,11 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import RunHistory from '../pages/AlgorithmLab/RunHistory';
-import { getLabRuns } from '../services/algorithmLab';
+import { getLabRuns, getLabResult } from '../services/algorithmLab';
 
 vi.mock('../services/algorithmLab', () => ({
   getLabRuns: vi.fn(),
+  getLabResult: vi.fn(),
   labError: () => 'History unavailable',
 }));
 beforeEach(() => vi.resetAllMocks());
@@ -53,4 +54,33 @@ it('reports history outages without inventing empty history', async () => {
   render(<RunHistory revision={0} />);
   expect(await screen.findByRole('alert')).toHaveTextContent('History unavailable');
   expect(screen.queryByRole('table')).not.toBeInTheDocument();
+});
+
+it('opens a saved trip without generating another provider run', async () => {
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute('open', '');
+  };
+  getLabRuns.mockResolvedValue({
+    runs: [
+      {
+        id: 'saved-run',
+        preset_id: 'coastal-nature',
+        status: 'completed',
+        has_result: true,
+        started_at: '2026-10-05T16:00:00Z',
+      },
+    ],
+    groups: [],
+    next_offset: null,
+  });
+  getLabResult.mockResolvedValue({
+    route: { stops: [{ name: 'Saved attraction' }] },
+    itinerary: [{ date: '2026-10-06', stops: [{ name: 'Saved visit', time: '11:00' }] }],
+  });
+  render(<RunHistory revision={0} />);
+  fireEvent.click(await screen.findByRole('button', { name: 'View map and itinerary' }));
+  expect(await screen.findByText('Saved visit')).toBeInTheDocument();
+  expect(getLabResult).toHaveBeenCalledWith('saved-run', expect.any(AbortSignal));
+  fireEvent.click(screen.getByRole('button', { name: 'Close trip' }));
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });

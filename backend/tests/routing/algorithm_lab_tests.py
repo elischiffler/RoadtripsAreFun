@@ -336,3 +336,24 @@ def test_history_completion_summary_excludes_unfinished_rows(headers, monkeypatc
         "completion_assessed": 2,
         "completion_rate": 0.5,
     }
+
+
+@pytest.mark.parametrize("available", [True, False])
+def test_saved_trip_results_are_owner_scoped(headers, monkeypatch, available):
+    calls = []
+    artifact = {"route": {"stops": []}, "itinerary": [{"date": "2026-10-06"}]}
+
+    def fetch(owner, run_id):
+        calls.append((owner, str(run_id)))
+        return artifact if available else None
+
+    monkeypatch.setattr(lab.lab_runs, "result", fetch)
+    path = "/algorithm-lab/runs/00000000-0000-0000-0000-000000000001/result"
+    client = TestClient(app)
+    assert client.get(path).status_code == 401
+    response = client.get(path, headers=headers)
+    assert response.status_code == (200 if available else 404)
+    assert calls == [("cognito-user-123", "00000000-0000-0000-0000-000000000001")]
+    if available:
+        assert response.json() == artifact
+        assert response.headers["cache-control"] == "no-store"

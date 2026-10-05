@@ -61,6 +61,8 @@ def stay_token(check_in: date, room: HotelRoom) -> str:
     duration = (
         _field(1, day(check_in)) + _field(2, day(check_in + timedelta(days=1))) + _field(3, 1)
     )
+    # The returned selector ignores child guests with the old field-6 shape.
+    # Use the selector encoding observed in Google Hotels; validate every response.
     payload = (
         _field(1, 1)
         + _field(
@@ -69,7 +71,7 @@ def stay_token(check_in: date, room: HotelRoom) -> str:
             + b"".join(_field(1, _field(1, 2) + _field(2, age)) for age in room.provider_child_ages)
             + _field(2, 1),
         )
-        + _field(3, _field(2, _field(2, duration) + _field(6, _field(1, 1))))
+        + _field(3, _field(2, _field(2, duration) + _field(6, _field(2, 0))))
         + _field(5, _field(1, _field(7, b"USD")))
     )
     return base64.urlsafe_b64encode(payload).decode().rstrip("=")

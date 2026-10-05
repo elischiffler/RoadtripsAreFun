@@ -94,7 +94,7 @@ class Settings:
     # (POST {MENTRO_GATEWAY_URL}/api/chat/stream-full, SSE). The backend calls it
     # server-to-server, authenticating with a Supabase JWT minted from a service
     # account in the gateway's own Supabase project. See docs/chat-agent-design.md §6.
-    MENTRO_GATEWAY_URL = os.getenv("MENTRO_GATEWAY_URL", "https://mentro-lucid-dust-3580.fly.dev")
+    MENTRO_GATEWAY_URL = os.getenv("MENTRO_GATEWAY_URL", "https://api.mentro.elischiffler.dev")
     SUPABASE_URL = os.getenv("SUPABASE_URL")
     SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
     MENTRO_SERVICE_EMAIL = os.getenv("MENTRO_SERVICE_EMAIL")

@@ -3,9 +3,11 @@ import { useEffect, useState } from 'react';
 import { getLabRuns, labError } from '../../services/algorithmLab';
 import HelpTip from './HelpTip';
 import TripEvaluation from './TripEvaluation';
+import SavedTripDialog from './SavedTripDialog';
 
 export default function RunHistory({ revision }) {
   const [data, setData] = useState(null);
+  const [selectedRun, setSelectedRun] = useState(null);
   const [error, setError] = useState('');
   const [offset, setOffset] = useState(0);
   const [refresh, setRefresh] = useState(0);
@@ -24,6 +26,7 @@ export default function RunHistory({ revision }) {
   }, [revision, offset, refresh]);
   return (
     <section className="lab-history" aria-label="Saved run history">
+      {selectedRun && <SavedTripDialog run={selectedRun} onClose={() => setSelectedRun(null)} />}
       <div className="lab-actions">
         <h2>Run history</h2>
         <button type="button" onClick={() => setRefresh(refresh + 1)}>
@@ -102,6 +105,11 @@ export default function RunHistory({ revision }) {
                           : '—'}
                       </td>
                       <td>
+                        {run.has_result && (
+                          <button type="button" onClick={() => setSelectedRun(run)}>
+                            View map and itinerary
+                          </button>
+                        )}
                         <details>
                           <summary>Inspect</summary>
                           <p>

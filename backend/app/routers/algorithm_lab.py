@@ -263,6 +263,18 @@ async def runs(
     }
 
 
+@router.get("/runs/{run_id}/result")
+async def saved_result(run_id: UUID, response: Response, user_id: str = Depends(require_lab_owner)):
+    response.headers["Cache-Control"] = "no-store"
+    try:
+        result = await asyncio.to_thread(lab_runs.result, user_id, run_id)
+    except Exception as exc:
+        raise HTTPException(503, "Saved trip results are unavailable.") from exc
+    if not result or not result.get("route"):
+        raise HTTPException(404, "No saved route is available for this run.")
+    return result
+
+
 async def execute_run(payload, user_id, departure):
     inputs = payload.inputs
     weights = normalize_weights(inputs.persona_weights)

@@ -55,20 +55,19 @@ def test_connection_and_reconnect_use_the_explicit_mode(monkeypatch, mode):
     pool_factory = MagicMock()
     pool = pool_factory.return_value
     pool.closed = False
-    stale = pool.getconn.return_value
+    stale = MagicMock()
+    replacement = MagicMock()
+    pool.getconn.side_effect = [stale, replacement]
     stale.cursor.side_effect = psycopg2.OperationalError("connection lost")
-    connect = MagicMock()
     monkeypatch.setattr(chat_crud.psycopg2.pool, "ThreadedConnectionPool", pool_factory)
-    monkeypatch.setattr(chat_crud.psycopg2, "connect", connect)
 
-    assert chat_crud._get_conn() is connect.return_value
+    assert chat_crud._get_conn() is replacement
     pool_factory.assert_called_once_with(
         1, 5, "postgres://test:example@postgres/roadtrips", sslmode=mode, connect_timeout=5
     )
-    connect.assert_called_once_with(
-        "postgres://test:example@postgres/roadtrips", sslmode=mode, connect_timeout=5
-    )
-    stale.close.assert_called_once()
+    pool.putconn.assert_called_once_with(stale, close=True)
+    chat_crud._put_conn(replacement)
+    assert pool.putconn.call_args.args == (replacement,)
 
 
 def test_concurrent_workers_initialize_one_pool(monkeypatch):
@@ -91,3 +90,14 @@ def test_concurrent_workers_initialize_one_pool(monkeypatch):
         results = list(workers.map(get_pool, range(5)))
     assert all(result is pool for result in results)
     factory.assert_called_once()
+
+
+def test_failed_reconnect_releases_the_stale_pool_slot(monkeypatch):
+    pool = MagicMock(closed=False)
+    stale = MagicMock()
+    stale.cursor.side_effect = psycopg2.InterfaceError("connection closed")
+    pool.getconn.side_effect = [stale, psycopg2.OperationalError("database unavailable")]
+    monkeypatch.setattr(chat_crud, "_pool", pool)
+    with pytest.raises(psycopg2.OperationalError):
+        chat_crud._get_conn()
+    pool.putconn.assert_called_once_with(stale, close=True)

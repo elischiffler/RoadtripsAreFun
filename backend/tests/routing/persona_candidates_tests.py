@@ -191,7 +191,17 @@ async def test_unavailable_providers_fail_clearly():
 
     with pytest.raises(source.CandidateProviderError, match="AI candidate"):
         await source.attraction_candidates(
-            None, [[40, -74]], default_weights(), ai=BrokenAI([]), places=FakePlaces()
+            None,
+            [[40, -74]],
+            default_weights(),
+            ai=BrokenAI([]),
+            places=FakePlaces(
+                attractions=[
+                    source.VerifiedPlace(
+                        provider_id="terra:verified", name="Real Museum", coordinates=[40, -74]
+                    )
+                ]
+            ),
         )
 
     class BrokenPlaces(FakePlaces):
@@ -287,3 +297,69 @@ async def test_collection_progress_only_reports_verified_unique_matches():
     assert searches[-1]["collected"] == 1
     assert searches[-1]["query"] == searches[-1]["queries"] == 2
     assert events.index(collected[0]) < events.index(searches[1])
+
+
+@pytest.mark.asyncio
+async def test_attraction_ratings_are_grounded_in_nearby_provider_names():
+    class GroundedAI(FakeAI):
+        def complete(self, messages, tools):
+            assert "Rate only these provider-verified names" in messages[-1].content
+            assert "Real Museum" in messages[-1].content
+            assert "Distant attraction" not in messages[-1].content
+            return super().complete(messages, tools)
+
+    records = [
+        source.VerifiedPlace(provider_id="terra:near", name="Real Museum", coordinates=[40, -74]),
+        source.VerifiedPlace(
+            provider_id="terra:far", name="Distant attraction", coordinates=[50, -74]
+        ),
+    ]
+    candidates = await source.attraction_candidates(
+        None,
+        [[40, -74]],
+        default_weights(),
+        ai=GroundedAI([{"name": "Real Museum", "attribute_ratings": _ratings()}]),
+        places=FakePlaces(attractions=records),
+    )
+    assert [candidate["provider_id"] for candidate in candidates] == ["terra:near"]
+
+
+@pytest.mark.asyncio
+async def test_live_attractions_reject_hotel_and_restaurant_listings(monkeypatch):
+    import httpx
+
+    entries = [
+        {
+            "location": {
+                "id": index,
+                "names": [{"value": name, "primary": True}],
+                "coordinates": {"latitude": 40, "longitude": -74},
+                "urls": {
+                    "tripadvisor": {"main": f"https://www.tripadvisor.com/{kind}-g1-d{index}"}
+                },
+            }
+        }
+        for index, (name, kind) in enumerate(
+            [
+                ("Museum", "Attraction_Review"),
+                ("Hotel", "Hotel_Review"),
+                ("Cafe", "Restaurant_Review"),
+            ],
+            start=1,
+        )
+    ]
+
+    def respond(request):
+        assert request.url.params["category"] == "ATTRACTION"
+        return httpx.Response(200, json={"data": entries})
+
+    client_type = httpx.AsyncClient
+    monkeypatch.setattr(source.LivePlaceProvider, "require_attractions", lambda self: None)
+    monkeypatch.setattr(source, "_auth_headers", lambda: {})
+    monkeypatch.setattr(
+        source.httpx,
+        "AsyncClient",
+        lambda **kwargs: client_type(transport=httpx.MockTransport(respond), **kwargs),
+    )
+    records = await source.LivePlaceProvider().attractions_near([40, -74])
+    assert [record.name for record in records] == ["Museum"]

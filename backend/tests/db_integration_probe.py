@@ -77,11 +77,33 @@ def _raw_connection():
 
 
 def seed():
+    # Reproduce a hosted idle disconnect without using hosted data or changing TLS.
+    idle = chat_crud._get_conn()
+    idle_pid = idle.get_backend_pid()
+    chat_crud._put_conn(idle)
+    with _raw_connection() as killer:
+        with killer.cursor() as cur:
+            cur.execute("SELECT pg_terminate_backend(%s)", (idle_pid,))
+            assert cur.fetchone()[0]
+    recovered = chat_crud._get_conn()
+    with recovered.cursor() as cur:
+        cur.execute("SELECT 1")
+        assert cur.fetchone()[0] == 1
+    recovered.rollback()
+    chat_crud._put_conn(recovered)
     run_id = lab_runs.begin(
         OWNER_A, {"mode": "replay", "preset_id": "probe", "inputs": {"budget": 60}}
     )
     lab_runs.finish(
-        OWNER_A, run_id, {"input_snapshot": {"budget": 60}, "error": None}, {"objective_score": 123}
+        OWNER_A,
+        run_id,
+        {
+            "input_snapshot": {"budget": 60},
+            "error": None,
+            "route": {"geometry": {"coordinates": [[-122, 37], [-121, 36]]}, "stops": []},
+            "itinerary": [{"date": "2026-10-06", "stops": []}],
+        },
+        {"objective_score": 123},
     )
     second = lab_runs.begin(
         OWNER_A, {"mode": "live", "preset_id": "probe-pagination", "inputs": {"budget": 60}}
@@ -97,6 +119,8 @@ def seed():
         },
     )
     assert lab_runs.history(OWNER_B) == []
+    assert lab_runs.result(OWNER_B, run_id) is None
+    assert lab_runs.result(OWNER_A, run_id)["itinerary"][0]["date"] == "2026-10-06"
     assert len(lab_runs.history(OWNER_A, 1)) == 1
     assert lab_runs.history(OWNER_A, 1)[0]["id"] != lab_runs.history(OWNER_A, 1, 1)[0]["id"]
     assert lab_runs.history(OWNER_A, 1, 2) == []
@@ -263,6 +287,12 @@ def seed():
 
 def verify():
     records = lab_runs.history(OWNER_A)
+    saved = next(record for record in records if record["has_result"])
+    assert lab_runs.result(OWNER_A, saved["id"])["route"]["geometry"]["coordinates"] == [
+        [-122, 37],
+        [-121, 36],
+    ]
+    assert lab_runs.result(OWNER_B, saved["id"]) is None
     assert len(records) == 2
     assert records[0]["metrics"]["objective_score"] == 123
     assert records[0]["input"] == {"budget": 60}
