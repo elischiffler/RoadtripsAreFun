@@ -1,5 +1,10 @@
 # Live preset validation — October 5, 2026
 
+The tables below describe the earlier live-preset milestone. Current adaptive
+release outcomes, including provider blockers, are in
+[adaptive planning](adaptive-planning.md). They do not inherit these historical
+acceptance results.
+
 Task base: `c1164d2` (`codex/lab-trip-evaluation`). Changes are on
 `codex/lab-live-presets-results`. No public application deployment is included.
 

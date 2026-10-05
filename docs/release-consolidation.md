@@ -22,6 +22,19 @@ All other old branch tips were already contained in the integrated feature tip.
 - Docker/Windows development workflows, PostgreSQL recovery checks, operations
   runbooks and existing CI coverage thresholds.
 
+## Adaptive planning follow-up
+
+Release sources `14ad5db` and `c4ce3b6` adds adaptive section budgets, measured candidate road
+positions/detours, ten-point average-match bounds and minimized spacing/detour
+selection. Independent provider leaves now overlap under per-run/process limits.
+Studio retains live-only presets, history/maps/itineraries and safe diagnostics;
+unfinished history rows tolerate null attempts, zero-stop trips queue no solver
+job, and recovered retries retain query/section attribution. Terra failures retain actual
+upstream status and Retry-After. Existing experiment JSONB stores explanations;
+no migration is added. Current validation and live provider limitations are in
+[adaptive planning](adaptive-planning.md); earlier snapshots below retain their
+original evidence scope.
+
 ## Verification and release boundaries
 
 Combined checks passed at integration source `1bb0da8`:
