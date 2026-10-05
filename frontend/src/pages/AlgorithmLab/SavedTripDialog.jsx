@@ -1,13 +1,17 @@
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { getLabResult, labError } from '../../services/algorithmLab';
-import Map from '../../components/Map';
+import RouteOverview from './RouteOverview';
 import ItineraryDays from '../../components/ItineraryDays';
 
 export default function SavedTripDialog({ run, onClose }) {
   const dialog = useRef(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const close = () => {
+    dialog.current.close();
+    onClose();
+  };
   useEffect(() => {
     const controller = new AbortController();
     dialog.current.showModal();
@@ -20,17 +24,19 @@ export default function SavedTripDialog({ run, onClose }) {
       });
     return () => controller.abort();
   }, [run.id]);
-  const geometry = result?.route?.geometry?.coordinates;
   return (
     <dialog
       ref={dialog}
       className="lab-saved-trip-dialog"
       aria-labelledby="saved-trip-title"
-      onCancel={onClose}
+      onCancel={(event) => {
+        event.preventDefault();
+        close();
+      }}
     >
       <div className="lab-preset-heading">
         <h2 id="saved-trip-title">Map and itinerary · {run.preset_id}</h2>
-        <button type="button" onClick={onClose}>
+        <button type="button" onClick={close}>
           Close trip
         </button>
       </div>
@@ -38,23 +44,8 @@ export default function SavedTripDialog({ run, onClose }) {
       {!result && !error && <p role="status">Loading saved trip…</p>}
       {result && (
         <>
-          {geometry?.length > 1 && (
-            <div className="lab-map">
-              <Map
-                UserChatData={{
-                  route: result.route,
-                  startConfirmed: { longitude: geometry[0][0], latitude: geometry[0][1] },
-                  endConfirmed: { longitude: geometry.at(-1)[0], latitude: geometry.at(-1)[1] },
-                }}
-              />
-            </div>
-          )}
-          <ol className="lab-route-stops">
-            {result.route.stops?.map((stop, index) => (
-              <li key={index}>{stop.name}</li>
-            ))}
-          </ol>
-          {result.route.warnings?.map((warning, index) => (
+          {result.route && <RouteOverview route={result.route} />}
+          {result.route?.warnings?.map((warning, index) => (
             <p className="lab-warning" key={index}>
               {warning}
             </p>

@@ -60,6 +60,9 @@ it('opens a saved trip without generating another provider run', async () => {
   HTMLDialogElement.prototype.showModal = function () {
     this.setAttribute('open', '');
   };
+  HTMLDialogElement.prototype.close = vi.fn(function () {
+    this.removeAttribute('open');
+  });
   getLabRuns.mockResolvedValue({
     runs: [
       {
@@ -81,6 +84,12 @@ it('opens a saved trip without generating another provider run', async () => {
   fireEvent.click(await screen.findByRole('button', { name: 'View map and itinerary' }));
   expect(await screen.findByText('Saved visit')).toBeInTheDocument();
   expect(getLabResult).toHaveBeenCalledWith('saved-run', expect.any(AbortSignal));
+  fireEvent(screen.getByRole('dialog'), new Event('cancel', { cancelable: true }));
+  expect(HTMLDialogElement.prototype.close).toHaveBeenCalledOnce();
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'View map and itinerary' }));
+  await screen.findByText('Saved visit');
   fireEvent.click(screen.getByRole('button', { name: 'Close trip' }));
+  expect(HTMLDialogElement.prototype.close).toHaveBeenCalledTimes(2);
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });

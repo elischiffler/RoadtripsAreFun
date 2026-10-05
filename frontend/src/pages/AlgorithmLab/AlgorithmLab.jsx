@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -13,7 +14,7 @@ import HelpTip from './HelpTip';
 import RunHistory from './RunHistory';
 import './AlgorithmLab.css';
 
-function LabWorkspace() {
+function LabWorkspace({ historyOpen }) {
   const [catalog, setCatalog] = useState(null);
   const [presetId, setPresetId] = useState('');
   const [inputs, setInputs] = useState(null);
@@ -117,12 +118,26 @@ function LabWorkspace() {
     );
   return (
     <div className="lab-layout">
-      <form className="lab-input-panel" onSubmit={submit}>
+      <form
+        className="lab-input-panel"
+        onSubmit={submit}
+        onInvalid={(event) => {
+          let section = event.target.closest('details');
+          while (section) {
+            section.open = true;
+            section = section.parentElement.closest('details');
+          }
+        }}
+      >
         <div className="lab-controls">
           <TripPresetDialog
             catalog={catalog}
             presetId={presetId}
             disabled={busy}
+            modified={
+              JSON.stringify(inputs) !==
+              JSON.stringify(catalog.presets.find((preset) => preset.id === presetId).inputs)
+            }
             onSelect={choosePreset}
           />
           <p className="lab-note">
@@ -164,12 +179,22 @@ function LabWorkspace() {
       </form>
       <div
         className="lab-output-panel"
-        hidden={!busy && !error && !result}
         aria-busy={busy}
         ref={output}
         tabIndex={-1}
         aria-label="Experiment output"
       >
+        {!busy && !error && !result && (
+          <div className="lab-empty">
+            <span className="lab-eyebrow">Your next experiment</span>
+            <h2>Build a trip. See how it fits.</h2>
+            <p>Choose a preset or adjust the trip inputs, then run a live route.</p>
+            <p className="lab-note">
+              Your route and itinerary will appear here. Explore the algorithm details when you want
+              a closer look.
+            </p>
+          </div>
+        )}
         {busy && (
           <div className="lab-pending" role="status">
             <span className="lab-running-dot" />
@@ -192,12 +217,17 @@ function LabWorkspace() {
         )}
         {result && <LabResults key={result.snapshot.id} result={result} previous={previous} />}
       </div>
-      <RunHistory revision={historyRevision} />
+      <div id="lab-history-panel" className="lab-history-panel" hidden={!historyOpen}>
+        {historyOpen && <RunHistory revision={historyRevision} />}
+      </div>
     </div>
   );
 }
 
+LabWorkspace.propTypes = { historyOpen: PropTypes.bool.isRequired };
+
 export default function AlgorithmLab() {
+  const [historyOpen, setHistoryOpen] = useState(false);
   const capability = useRoutingSettings();
   const session = JSON.stringify([
     sessionStorage.getItem('accessToken'),
@@ -210,10 +240,22 @@ export default function AlgorithmLab() {
           <h1>Algorithm Lab</h1>
           <p>See why a road trip fits.</p>
         </div>
-        <Link to="/chat">Back to trip chat</Link>
+        <div className="lab-header-actions">
+          {capability.canSelect && (
+            <button
+              type="button"
+              aria-expanded={historyOpen}
+              aria-controls="lab-history-panel"
+              onClick={() => setHistoryOpen((open) => !open)}
+            >
+              History
+            </button>
+          )}
+          <Link to="/chat">Back to trip chat</Link>
+        </div>
       </header>
       {capability.canSelect ? (
-        <LabWorkspace key={session} />
+        <LabWorkspace key={session} historyOpen={historyOpen} />
       ) : (
         <div className="lab-access" role="status">
           <h2>Owner access required</h2>

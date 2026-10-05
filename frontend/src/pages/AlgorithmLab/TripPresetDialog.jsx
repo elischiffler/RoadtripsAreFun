@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useRef } from 'react';
 
-export default function TripPresetDialog({ catalog, presetId, disabled, onSelect }) {
+export default function TripPresetDialog({ catalog, presetId, disabled, modified, onSelect }) {
   const dialog = useRef(null);
   const selected = catalog.presets.find((preset) => preset.id === presetId);
   const endpointLabel = (id) => catalog.endpoints.find((endpoint) => endpoint.id === id)?.label;
@@ -17,6 +17,7 @@ export default function TripPresetDialog({ catalog, presetId, disabled, onSelect
           Trip presets
         </button>
         <span>Selected trip: {selected?.label}</span>
+        {modified && <span className="lab-modified">Modified</span>}
       </div>
       <dialog ref={dialog} className="lab-preset-dialog" aria-labelledby="trip-presets-title">
         <div className="lab-preset-heading">
@@ -67,5 +68,6 @@ TripPresetDialog.propTypes = {
   }).isRequired,
   presetId: PropTypes.string.isRequired,
   disabled: PropTypes.bool.isRequired,
+  modified: PropTypes.bool.isRequired,
   onSelect: PropTypes.func.isRequired,
 };

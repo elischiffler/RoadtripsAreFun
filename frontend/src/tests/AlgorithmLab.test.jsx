@@ -154,6 +154,7 @@ function capability() {
 async function mount() {
   const view = renderWithProviders(<AlgorithmLab />, { initialPath: '/algorithm' });
   await screen.findByRole('button', { name: 'Run live route' });
+  await userEvent.click(screen.getByText('Trip interests'));
   return view;
 }
 
@@ -304,9 +305,9 @@ describe('Algorithm Lab experiments', () => {
     expect(screen.getByLabelText('Travelers')).toHaveValue(4);
     expect(screen.getByLabelText('Departure date')).toHaveValue('2026-10-08');
     expect(screen.getByLabelText('Departure time')).toHaveValue('07:00');
-    await userEvent.click(screen.getByText('Rooms and travelers'));
+    await userEvent.click(screen.getByText('Travelers and rooms'));
     expect(screen.getByLabelText('Room 1 child 2 age')).toHaveValue(12);
-    await userEvent.click(screen.getByText('Car and evening schedule'));
+    await userEvent.click(screen.getByText('Car and schedule'));
     expect(screen.getByLabelText('Car model')).toHaveValue('RAV4');
     expect(screen.getByLabelText('latest hotel arrival')).toHaveValue('19:00');
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
@@ -362,6 +363,7 @@ describe('Algorithm Lab experiments', () => {
     expect(request).not.toHaveProperty('snapshot_id');
     expect(screen.queryByLabelText('Run mode')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Candidate snapshot')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
     await userEvent.click(screen.getByText('Forest walk'));
     expect(
       screen.getByRole('table', { name: 'Score contributions for Forest walk' })
@@ -420,6 +422,7 @@ describe('Algorithm Lab experiments', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await screen.findByText('OPTIMAL');
     expect(screen.getByLabelText('Experiment output')).toHaveFocus();
+    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
     await userEvent.click(screen.getByRole('button', { name: 'About integer objective' }));
     expect(await screen.findByRole('tooltip')).toHaveTextContent('not a percentage');
     const formula = screen.getByText('Constraints and objective formula').closest('details');
@@ -472,6 +475,7 @@ describe('Algorithm Lab experiments', () => {
     await mount();
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     expect(await screen.findByText('Live route map')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'Itinerary' }));
     expect(screen.getByText('Forest visit')).toBeInTheDocument();
     expect(screen.getByText(/Optimality was not proved/)).toBeInTheDocument();
     expect(screen.getByText('Room quote is above target.')).toBeInTheDocument();
@@ -491,7 +495,9 @@ describe('Algorithm Lab experiments', () => {
     axios.post.mockResolvedValue({ data });
     await mount();
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
-    await userEvent.click(await screen.findByText('Malformed place'));
+    await screen.findByRole('tab', { name: 'Algorithm details' });
+    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
+    await userEvent.click(screen.getByText('Malformed place'));
     expect(
       screen
         .getByRole('table', { name: 'Score contributions for Malformed place' })
@@ -528,11 +534,11 @@ describe('Algorithm Lab experiments', () => {
 
   it('edits room occupancy, car and scheduling values without modifying saved chats', async () => {
     await mount();
-    await userEvent.click(screen.getByText('Rooms and travelers'));
+    await userEvent.click(screen.getByText('Travelers and rooms'));
     await userEvent.click(screen.getByRole('button', { name: 'Add child to room 1' }));
     fireEvent.change(screen.getByLabelText('Room 1 child 1 age'), { target: { value: '9' } });
     fireEvent.change(screen.getByLabelText('Travelers'), { target: { value: '3' } });
-    await userEvent.click(screen.getByText('Car and evening schedule'));
+    await userEvent.click(screen.getByText('Car and schedule'));
     await userEvent.selectOptions(screen.getByLabelText('Car choice'), 'provided');
     fireEvent.change(screen.getByLabelText('Car year'), { target: { value: '2020' } });
     fireEvent.change(screen.getByLabelText('Car make'), { target: { value: 'Toyota' } });
@@ -550,5 +556,131 @@ describe('Algorithm Lab experiments', () => {
       evening_interests: ['food'],
     });
     expect(axios.post).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('Algorithm Lab calm workspace', () => {
+  it('starts with an empty result and collapsed optional inputs and history', async () => {
+    renderWithProviders(<AlgorithmLab />, { initialPath: '/algorithm' });
+    await screen.findByRole('button', { name: 'Run live route' });
+    expect(screen.getByText('Build a trip. See how it fits.')).toBeVisible();
+    for (const name of ['Trip interests', 'Travelers and rooms', 'Car and schedule']) {
+      expect(screen.getByText(name).closest('details')).not.toHaveAttribute('open');
+    }
+    expect(screen.getByLabelText('Interest nature percentage')).not.toBeVisible();
+    expect(screen.getByRole('button', { name: 'History' })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    );
+    expect(screen.queryByRole('region', { name: 'Saved run history' })).not.toBeInTheDocument();
+    expect(axios.get.mock.calls.some(([url]) => url.endsWith('algorithm-lab/runs'))).toBe(false);
+  });
+
+  it('marks modified presets and clears the marker on reset or a new preset', async () => {
+    await mount();
+    expect(screen.queryByText('Modified')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '3' } });
+    expect(screen.getByText('Modified')).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Reset preset' }));
+    expect(screen.queryByText('Modified')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Departure time'), { target: { value: '10:00' } });
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Culture trip/ }));
+    expect(screen.queryByText('Modified')).not.toBeInTheDocument();
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it('opens the section containing an invalid field', async () => {
+    await mount();
+    const section = screen.getByText('Travelers and rooms').closest('details');
+    expect(section).not.toHaveAttribute('open');
+    const adults = screen.getByLabelText('Room 1 adults');
+    fireEvent.change(adults, { target: { value: '' } });
+    fireEvent.invalid(adults);
+    expect(section).toHaveAttribute('open');
+    expect(adults).toBeVisible();
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it('toggles history without discarding inputs and refreshes after a run', async () => {
+    await mount();
+    fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '3' } });
+    const toggle = screen.getByRole('button', { name: 'History' });
+    await userEvent.click(toggle);
+    await screen.findByRole('region', { name: 'Saved run history' });
+    await userEvent.click(toggle);
+    expect(screen.queryByRole('region', { name: 'Saved run history' })).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Maximum attractions')).toHaveValue(3);
+    await userEvent.click(toggle);
+    await screen.findByRole('region', { name: 'Saved run history' });
+    const before = axios.get.mock.calls.filter(([url]) =>
+      url.endsWith('algorithm-lab/runs')
+    ).length;
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    await screen.findByRole('tab', { name: 'Route' });
+    await waitFor(() =>
+      expect(
+        axios.get.mock.calls.filter(([url]) => url.endsWith('algorithm-lab/runs')).length
+      ).toBe(before + 1)
+    );
+    expect(screen.getByLabelText('Maximum attractions')).toHaveValue(3);
+  });
+
+  it('supports keyboard tabs, unmounts the map off Route, and starts each response on Route', async () => {
+    const data = response();
+    data.route = {
+      distance: 100000,
+      duration: 7200,
+      cost: 150,
+      geometry: {
+        coordinates: [
+          [-122, 37],
+          [-121, 36],
+        ],
+      },
+      stops: [{ name: 'Forest walk', type: 'attraction' }],
+      warnings: ['Room quote is above target.'],
+    };
+    data.itinerary = [{ date: '2026-10-06', stops: [{ name: 'Forest visit', time: '11:00' }] }];
+    axios.post.mockResolvedValue({ data });
+    await mount();
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    const routeTab = await screen.findByRole('tab', { name: 'Route' });
+    expect(routeTab).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText('Live route map')).toBeVisible();
+    expect(screen.getByText('OPTIMAL')).not.toBeVisible();
+    routeTab.focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: 'Itinerary' })).toHaveFocus();
+    expect(screen.getByText('Forest visit')).toBeVisible();
+    expect(screen.queryByText('Live route map')).not.toBeInTheDocument();
+    expect(screen.getByText('Room quote is above target.')).toBeVisible();
+    await userEvent.keyboard('{End}');
+    expect(screen.getByRole('tab', { name: 'Algorithm details' })).toHaveFocus();
+    expect(screen.getByText('OPTIMAL')).toBeVisible();
+    await userEvent.keyboard('{Home}');
+    expect(routeTab).toHaveFocus();
+    expect(screen.getByText('Live route map')).toBeVisible();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(screen.getByRole('tab', { name: 'Algorithm details' })).toHaveFocus();
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    expect(await screen.findByRole('tab', { name: 'Route' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+  });
+
+  it('keeps missing measurements and incomplete output explicit above the tabs', async () => {
+    const data = response();
+    data.route = { stops: [] };
+    axios.post.mockResolvedValue({ data });
+    await mount();
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    await screen.findByRole('tab', { name: 'Route' });
+    expect(screen.getByLabelText('Trip summary')).toHaveTextContent('Not available');
+    expect(screen.getByText('Route available; itinerary generation is incomplete.')).toBeVisible();
+    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
+    expect(screen.getByText('Route available; itinerary generation is incomplete.')).toBeVisible();
+    expect(screen.getByText('OPTIMAL')).toBeVisible();
   });
 });
