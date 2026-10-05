@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import Map from '../../components/Map';
 import ItineraryDays from '../../components/ItineraryDays';
 import HelpTip from './HelpTip';
+import TripEvaluation from './TripEvaluation';
 
 const numeric = (value, digits = 3) =>
   typeof value === 'number'
@@ -311,6 +312,7 @@ export default function LabResults({ result, previous }) {
           route && <p>Route available; itinerary generation is incomplete.</p>
         )}
       </section>
+      <TripEvaluation metrics={result.run_record?.metrics} />
       <details>
         <summary>Validated input snapshot</summary>
         <p className="lab-note">Values returned by the backend for this run.</p>

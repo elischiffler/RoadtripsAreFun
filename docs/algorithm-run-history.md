@@ -73,7 +73,7 @@ models are unassessed. Quality percent = 100 × score/reference; gap percent =
 counts, assessed feasibility denominators and output repeat counts are calculated
 in the backend. There is currently only one active approach, `cp_sat`.
 
-Metrics use `selection-surplus-v1`. Docker embeds `ROADTRIPS_REVISION` from its
+New metrics use `selection-surplus-v2`; historical `selection-surplus-v1` records retain their original meaning. Docker embeds `ROADTRIPS_REVISION` from its
 build SHA. Local development should set an explicit revision when collecting
 comparisons; otherwise records say `unversioned-local`. Bump the metric version
 when changing score/feasibility/hash semantics; never reinterpret older rows silently.
@@ -98,3 +98,34 @@ and checks real insert/finalize/read, cross-owner isolation, recreation, DB-loss
 readiness, backup and restore. The fixture SQL includes this table in the full
 dump; restoring into a populated target is refused. Production schema history
 and public deployment still require separate verification.
+
+## Trip evaluation (v2)
+
+`metrics.trip_evaluation` retains measurements when a route succeeds but itinerary
+construction fails. Driving records the direct Mapbox baseline, final driving,
+and signed differences in meters/seconds and percentages. Missing/zero baselines
+leave percentages unassessed. Stop fulfillment compares delivered `stop` attractions
+with the requested cap, separately from solver selection; hotels, destination and
+optional evenings are excluded.
+
+Schedule records itinerary days, overnights, final arrival/timezone and UTC elapsed
+trip seconds. Deadline slack uses the backend's recorded deadlines: attraction
+visit departure, hotel/destination arrival. Missing timestamps leave overall
+compliance unassessed, with the count of stops that could be checked.
+
+Hotel totals sum the verified USD room offers at each overnight, not the legacy
+route cost field. Each room offer represents one room-night. A missing room offer,
+invalid price, or mismatch with requested room count makes totals unassessed.
+No-hotel routes have zero quoted hotel cost. Over-target counts and dollar amounts
+compare each room-night against the nightly per-room target; they exclude food,
+fuel, admission and booking guarantees.
+
+Warnings, stage statuses and the first failed stage explain incomplete outcomes.
+Stage detail strings and raw exceptions are not stored in these metrics. Storage
+errors log operation, exception class and SQLSTATE without raw database errors.
+
+History includes a current-page completion summary over finalized rows; unfinished
+rows are counted separately. Comparable cohorts show distributions with assessed
+sample counts for detour distance/time, stop fulfillment and hotel quotes. Version
+and revision separation preserves historical comparisons. Older and unfinished
+records remain readable without v2 fields.

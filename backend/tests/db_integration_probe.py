@@ -83,7 +83,30 @@ def seed():
     lab_runs.finish(
         OWNER_A, run_id, {"input_snapshot": {"budget": 60}, "error": None}, {"objective_score": 123}
     )
+    second = lab_runs.begin(
+        OWNER_A, {"mode": "live", "preset_id": "probe-pagination", "inputs": {"budget": 60}}
+    )
+    lab_runs.finish(
+        OWNER_A,
+        second,
+        {"input_snapshot": {"budget": 60}, "error": None},
+        {
+            "objective_score": 123,
+            "metric_version": "selection-surplus-v2",
+            "trip_evaluation": {"hotel_costs": {"quoted_total_usd": 0}},
+        },
+    )
     assert lab_runs.history(OWNER_B) == []
+    assert len(lab_runs.history(OWNER_A, 1)) == 1
+    assert lab_runs.history(OWNER_A, 1)[0]["id"] != lab_runs.history(OWNER_A, 1, 1)[0]["id"]
+    assert lab_runs.history(OWNER_A, 1, 2) == []
+    with _raw_connection() as conn:
+        with conn.cursor() as cur:
+            try:
+                cur.execute("UPDATE algorithm_lab_runs SET repeat_index=11 WHERE id=%s", (second,))
+                raise AssertionError("Invalid repeat index accepted")
+            except psycopg2.errors.CheckViolation:
+                conn.rollback()
     try:
         lab_runs.finish(OWNER_B, run_id, {"input_snapshot": {}, "error": None}, {})
         raise AssertionError("Foreign run was updated")
@@ -240,6 +263,7 @@ def seed():
 
 def verify():
     records = lab_runs.history(OWNER_A)
+    assert len(records) == 2
     assert records[0]["metrics"]["objective_score"] == 123
     assert records[0]["input"] == {"budget": 60}
     assert records[0]["status"] == "completed"

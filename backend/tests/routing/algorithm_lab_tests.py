@@ -256,15 +256,18 @@ def test_live_failure_is_not_replaced_with_replay(headers, monkeypatch):
     )
 
 
-def test_storage_failure_blocks_provider_work(headers, monkeypatch):
+def test_storage_failure_blocks_provider_work(headers, monkeypatch, caplog):
     def unavailable(*args):
         raise RuntimeError("secret connection string")
 
     monkeypatch.setattr(lab.lab_runs, "begin", unavailable)
+    monkeypatch.setattr(lab.logger, "handlers", [caplog.handler])
     response = TestClient(app).post("/algorithm-lab/run", headers=headers, json=request_body())
     assert response.status_code == 503
     assert "secret" not in response.text
     assert "No experiment was started" in response.text
+    assert "operation=begin exception_class=RuntimeError" in caplog.text
+    assert "secret connection string" not in caplog.text
 
 
 def test_failed_finalize_reports_unsaved_result(headers, monkeypatch):
@@ -313,3 +316,23 @@ def test_benchmark_presets_are_validated_and_repeat_count_bounded(headers):
     payload = request_body()
     payload["repeat_index"] = 11
     assert client.post("/algorithm-lab/run", headers=headers, json=payload).status_code == 422
+
+
+def test_history_completion_summary_excludes_unfinished_rows(headers, monkeypatch):
+    monkeypatch.setattr(
+        lab.lab_runs,
+        "history",
+        lambda *args: [
+            {"status": "completed", "metrics": None},
+            {"status": "failed", "metrics": None},
+            {"status": "running", "metrics": None},
+        ],
+    )
+    summary = TestClient(app).get("/algorithm-lab/runs", headers=headers).json()["page_summary"]
+    assert summary == {
+        "completed": 1,
+        "failed": 1,
+        "unfinished": 1,
+        "completion_assessed": 2,
+        "completion_rate": 0.5,
+    }

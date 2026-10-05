@@ -1,6 +1,7 @@
 """Owner-only live provider experiments over the ordinary planning core."""
 
 import asyncio
+import logging
 from datetime import date, datetime
 from time import perf_counter
 from typing import Literal
@@ -47,6 +48,17 @@ from app.routing.sources.mapbox import call_route
 from app.routing.sources.persona_candidates import CandidateProviderError
 from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location
+
+logger = logging.getLogger(__name__)
+
+
+def storage_failure(operation, exc):
+    logger.error(
+        "Lab storage failure operation=%s exception_class=%s sqlstate=%s",
+        operation,
+        type(exc).__name__,
+        getattr(exc, "pgcode", None),
+    )
 
 
 class LabRoute(APIRoute):
@@ -196,6 +208,7 @@ async def run(payload: LabRun, response: Response, user_id: str = Depends(requir
     try:
         run_id = await asyncio.to_thread(lab_runs.begin, user_id, payload.model_dump(mode="json"))
     except Exception as exc:
+        storage_failure("begin", exc)
         raise HTTPException(503, "Run storage is unavailable. No experiment was started.") from exc
     started = perf_counter()
     with measuring() as telemetry:
@@ -205,7 +218,8 @@ async def run(payload: LabRun, response: Response, user_id: str = Depends(requir
     try:
         await asyncio.to_thread(lab_runs.finish, user_id, run_id, envelope, metrics)
         envelope["run_record"]["saved"] = True
-    except Exception:
+    except Exception as exc:
+        storage_failure("finish", exc)
         envelope["run_record"]["warning"] = (
             "Could not confirm the result was saved. Check run history; unfinished records must not count as completed."
         )
@@ -223,10 +237,25 @@ async def runs(
     try:
         rows = await asyncio.to_thread(lab_runs.history, user_id, limit, offset)
     except Exception as exc:
+        storage_failure("history", exc)
         raise HTTPException(503, "Run history is unavailable.") from exc
     return {
         "runs": rows,
         "groups": aggregate_runs(rows),
+        "page_summary": {
+            "completed": sum(row.get("status") == "completed" for row in rows),
+            "failed": sum(row.get("status") == "failed" for row in rows),
+            "unfinished": sum(row.get("status") == "running" for row in rows),
+            "completion_assessed": sum(
+                row.get("status") in {"completed", "failed"} for row in rows
+            ),
+            "completion_rate": (
+                sum(row.get("status") == "completed" for row in rows)
+                / sum(row.get("status") in {"completed", "failed"} for row in rows)
+            )
+            if any(row.get("status") in {"completed", "failed"} for row in rows)
+            else None,
+        },
         "limit": limit,
         "offset": offset,
         "summary_scope": "this page only",
@@ -291,6 +320,7 @@ async def execute_run(payload, user_id, departure):
                 "Resolved the explicitly selected catalog cities with the provider.",
             )
             initial = await call_route(*start["coordinates"], *destination["coordinates"])
+            envelope["direct_route"] = {"distance": initial.distance, "duration": initial.duration}
             record_stage("initial_route", "complete", "Mapbox base driving route received.")
             route = await plan_final_route(
                 Route_Payload(
