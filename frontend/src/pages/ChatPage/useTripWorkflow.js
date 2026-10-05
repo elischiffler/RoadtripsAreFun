@@ -1,3 +1,4 @@
+import { getSession, isCurrentSession, SessionError } from '../../services/session';
 import { createProgressLogger } from './agentProgress';
 import { updateTripProgress } from './tripProgressState';
 /**
@@ -356,8 +357,15 @@ export function useTripWorkflow({
       const idx = ChatLogsData.chatdata.findIndex((c) => c.chatId === snap.chatId);
       if (idx !== -1) ChatLogsData.chatdata[idx] = snap;
       else ChatLogsData.chatdata.push(snap);
+      const session = getSession();
       const saved = await updateUserData(accessToken, snap, chatsRef.current, ChatLogsData);
-      if (!saved) bot("I couldn't save this trip. Please try again before leaving this page.");
+      if (
+        mountedRef.current &&
+        isCurrentSession(session) &&
+        !saved &&
+        getSession().status !== 'signin-required'
+      )
+        bot("I couldn't save this trip. Please try again before leaving this page.");
     },
     [ChatLogsData, accessToken, chatsRef, bot]
   );
@@ -500,6 +508,7 @@ export function useTripWorkflow({
       setIsLoading(true);
 
       const id = chatIdRef.current;
+      const session = getSession();
       try {
         const confirmation = action === 'location_confirmation' ? payload : null;
         const confirmations = action === 'location_confirmations' ? payload : null;
@@ -518,7 +527,7 @@ export function useTripWorkflow({
           chatsRef.current,
           ChatLogsData
         );
-        if (!mountedRef.current) return false;
+        if (!mountedRef.current || !isCurrentSession(session)) return false;
         if (!created) {
           bot(
             "I couldn't create this trip. Your message is still in the input; send it again to retry."
@@ -562,7 +571,9 @@ export function useTripWorkflow({
             ...(getRoutingAlgorithm() ? { algorithm: getRoutingAlgorithm() } : {}),
           },
         });
+        if (!mountedRef.current || !isCurrentSession(session)) return false;
         noLoader();
+        if (response?.sessionError) return false;
 
         if (response && typeof response.reply === 'string') {
           bot(response.reply, response.presentation);
@@ -595,11 +606,16 @@ export function useTripWorkflow({
           );
         }
         return true;
+      } catch (error) {
+        if (error instanceof SessionError || !isCurrentSession(session)) return false;
+        throw error;
       } finally {
-        noLoader();
         submitInFlightRef.current = false;
-        setIsLoading(false);
-        setProcessProgress(null);
+        if (mountedRef.current && isCurrentSession(session)) {
+          noLoader();
+          setIsLoading(false);
+          setProcessProgress(null);
+        }
       }
     },
     [

@@ -1,17 +1,11 @@
-import axios from 'axios';
+import axios from '../../services/protectedRequest';
+import { getSession, isCurrentSession, SessionError, tokenOwner } from '../../services/session';
 import { Data, ChatLogs, ChatData } from '../../states/UserDataContext';
 
 // A lifecycle belongs to the account's ChatLogs instance, survives panel remounts,
 // and is released when clearUserData replaces that instance. Never key by UI id alone.
 const lifecycles = new WeakMap();
-const accountKey = (token) => {
-  try {
-    const claims = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-    return claims.sub && claims.iss ? `${claims.iss}:${claims.sub}` : token;
-  } catch {
-    return token;
-  }
-};
+const accountKey = (token) => tokenOwner(token) || getSession().owner;
 const lifecycleFor = (owner, token) => {
   const account = accountKey(token);
   let lifecycle = lifecycles.get(owner);
@@ -23,6 +17,9 @@ const lifecycleFor = (owner, token) => {
 };
 
 export const ensureChatCreated = async (token, data, chats, owner) => {
+  const session = getSession();
+  if (tokenOwner(token) && tokenOwner(token) !== session.owner)
+    throw new SessionError('session-changed');
   const lifecycle = lifecycleFor(owner, token);
   if (lifecycle.ready.has(data.chatId)) return true;
   if (!lifecycle.pending.has(data.chatId)) {
@@ -36,7 +33,7 @@ export const ensureChatCreated = async (token, data, chats, owner) => {
     lifecycle.pending.set(data.chatId, promise);
   }
   const created = await lifecycle.pending.get(data.chatId);
-  return created && lifecycles.get(owner) === lifecycle;
+  return created && isCurrentSession(session) && lifecycles.get(owner) === lifecycle;
 };
 
 export const createChat = async (auth_token, UserChatData, ChatLog) => {

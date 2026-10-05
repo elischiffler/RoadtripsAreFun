@@ -1,3 +1,4 @@
+import { getSession, isCurrentSession } from '../../services/session';
 import { useState, useRef, useEffect, useContext, useMemo, useCallback } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
@@ -171,7 +172,7 @@ const WorkflowPanel = ({
               scrolls away. While a turn is in flight the send button is disabled
               (isLoading) until the agent finishes and the user should type again. */}
           <Box className="inline-input-area">
-            <ChatInput onSubmit={handleChatSubmit} disabled={isLoading} />
+            <ChatInput draftKey={agentChatId} onSubmit={handleChatSubmit} disabled={isLoading} />
           </Box>
         </Box>
       </Box>
@@ -316,7 +317,9 @@ const ChatPage = () => {
       }
       setIsFetchingChats(true);
       try {
+        const session = getSession();
         const prevChats = await initializeUserData(accessToken);
+        if (!isCurrentSession(session)) return;
         if (cancelled) return;
         if (!prevChats) throw new Error('Chat loading failed');
         if (prevChats) {
@@ -472,7 +475,9 @@ const ChatPage = () => {
 
     setChats(remaining);
     chatsRef.current = remaining;
+    const session = getSession();
     await deleteChat(accessToken, chatId, ChatLogsData);
+    if (!isCurrentSession(session)) return;
 
     if (selectedChatIdRef.current === chatId) {
       // The active chat was deleted — redirect to a new virgin trip

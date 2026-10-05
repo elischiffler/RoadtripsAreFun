@@ -1,6 +1,7 @@
-import axios from 'axios';
+import { getSession, isCurrentSession, SessionError } from '../../services/session';
+import axios from '../../services/protectedRequest';
 import { backendAuthConfig } from '../../services/backendAuth';
-import { getRoutingAlgorithm } from '../../services/routingSettings';
+import { getFreshRoutingAlgorithm } from '../../services/routingSettings';
 export { getRoutingAlgorithm, ROUTING_ALGORITHM_KEY } from '../../services/routingSettings';
 export const getInitialRoute = async (start_lat, start_lon, end_lat, end_lon) => {
   try {
@@ -18,7 +19,10 @@ export const getInitialRoute = async (start_lat, start_lon, end_lat, end_lon) =>
     return route;
   } catch (error) {
     // Log any errors encountered during the request
-    console.error('Error creating initial route:', error);
+    console.error(
+      'Error creating initial route:' + '; status=%s',
+      error.response?.status ?? 'network'
+    );
     return null;
   }
 };
@@ -40,8 +44,10 @@ export const getFinalRoute = async (
       hotel_rooms: hotelRooms,
     };
 
+    const started = getSession();
     // Dev-mode algorithm override: only sent when explicitly chosen.
-    const algorithm = getRoutingAlgorithm();
+    const algorithm = await getFreshRoutingAlgorithm();
+    if (!isCurrentSession(started)) throw new SessionError('session-changed');
     if (algorithm) {
       data.algorithm = algorithm;
     }
@@ -62,7 +68,10 @@ export const getFinalRoute = async (
     return route;
   } catch (error) {
     // Log any errors encountered during the request
-    console.error('Error creating final route:', error);
+    console.error(
+      'Error creating final route:' + '; status=%s',
+      error.response?.status ?? 'network'
+    );
     return null;
   }
 };

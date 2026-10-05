@@ -1,7 +1,10 @@
+import { fixtureSession } from './sessionFixtures';
 import { ReadableStream } from 'node:stream/web';
 import { TextEncoder } from 'node:util';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { streamAgentMessage, createProgressLogger } from '../pages/ChatPage/agentProgress';
+
+beforeEach(() => fixtureSession());
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -41,14 +44,19 @@ describe('agent progress stream', () => {
     const result = await streamAgentMessage(
       '/stream',
       { message: 'plan' },
-      { headers: { Authorization: 'Bearer fixture', 'X-Cognito-Id-Token': 'identity' } },
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+          'X-Cognito-Id-Token': sessionStorage.getItem('idToken'),
+        },
+      },
       progress
     );
     expect(result.reply).toBe('Hôtel ready');
     expect(progress).toHaveBeenCalledWith({ type: 'heartbeat' });
     expect(fetch.mock.calls[0][1].headers).toMatchObject({
-      Authorization: 'Bearer fixture',
-      'X-Cognito-Id-Token': 'identity',
+      Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+      'X-Cognito-Id-Token': sessionStorage.getItem('idToken'),
     });
   });
 

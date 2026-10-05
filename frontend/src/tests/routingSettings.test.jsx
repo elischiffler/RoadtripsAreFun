@@ -1,3 +1,7 @@
+import { cognitoClient } from '../services/cognito';
+import { ensureSession, getSession } from '../services/session';
+vi.mock('../services/cognito', () => ({ cognitoClient: { send: vi.fn() } }));
+import { fixtureSession, fixtureToken } from './sessionFixtures';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -15,8 +19,7 @@ import { sendAgentMessage } from '../pages/ChatPage/agentChat';
 
 vi.mock('axios', () => ({ default: { get: vi.fn(), post: vi.fn() } }));
 
-const token = (sub, exp = Date.now() / 1000 + 600) =>
-  `header.${btoa(JSON.stringify({ sub, exp }))}.fixture-signature`;
+const token = fixtureToken;
 const capability = () => ({
   data: {
     can_select_algorithm: true,
@@ -27,8 +30,11 @@ const capability = () => ({
 });
 const gear = () => screen.queryByRole('button', { name: 'routing algorithm settings' });
 function login(sub = 'owner', exp) {
-  sessionStorage.setItem('accessToken', token(sub, exp));
-  sessionStorage.setItem('idToken', `identity-${sub}`);
+  fixtureSession(sub);
+  if (exp) {
+    sessionStorage.setItem('accessToken', token(sub, exp));
+    sessionStorage.setItem('idToken', token(sub, exp, 'id'));
+  }
 }
 
 beforeEach(() => {
@@ -90,6 +96,7 @@ describe('owner routing settings', () => {
       window.dispatchEvent(new Event('auth-changed'));
     });
     expect(gear()).not.toBeInTheDocument();
+    await waitFor(() => expect(axios.get).toHaveBeenCalled());
     await act(async () => resolve(capability()));
     expect(gear()).toBeInTheDocument();
     const user = userEvent.setup();
@@ -113,6 +120,7 @@ describe('owner routing settings', () => {
     axios.get.mockImplementationOnce(() => new Promise((done) => (resolveOwner = done)));
     axios.get.mockResolvedValue({ data: { can_select_algorithm: false } });
     renderWithProviders(<GlobalHeader />);
+    await waitFor(() => expect(axios.get).toHaveBeenCalled());
     act(() => {
       login('other');
       window.dispatchEvent(new Event('auth-changed'));
@@ -174,8 +182,28 @@ describe('owner routing settings', () => {
     });
     expect(axios.post.mock.calls[0][1].algorithm).toBe('test_alternate');
     expect(axios.post.mock.calls[1][1].clientContext.algorithm).toBe('test_alternate');
-    expect(axios.post.mock.calls[1][2].headers['X-Cognito-Id-Token']).toBe('identity-owner');
+    expect(axios.post.mock.calls[1][2].headers['X-Cognito-Id-Token']).toBe(
+      sessionStorage.getItem('idToken')
+    );
     login('other');
     expect(getRoutingAlgorithm()).toBeNull();
   });
+});
+
+it('revalidates renewed identity tokens while retaining the same-owner selection', async () => {
+  fixtureSession('owner', undefined, 'refresh');
+  axios.get.mockResolvedValue(capability());
+  await refreshRoutingSettings();
+  chooseRoutingAlgorithm('test_alternate');
+  const old = getSession().accessToken;
+  cognitoClient.send.mockResolvedValue({
+    AuthenticationResult: {
+      AccessToken: token('owner', Date.now() / 1000 + 7200),
+      IdToken: token('owner', Date.now() / 1000 + 7200, 'id'),
+    },
+  });
+  await ensureSession({ rejectedToken: old });
+  await refreshRoutingSettings();
+  expect(getRoutingAlgorithm()).toBe('test_alternate');
+  expect(axios.get.mock.calls.at(-1)[1].headers['X-Cognito-Id-Token']).toBe(getSession().idToken);
 });

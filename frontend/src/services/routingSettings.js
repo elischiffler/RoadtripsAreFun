@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
-import axios from 'axios';
+import axios from './protectedRequest';
+import { ensureSession, getSession, tokenClaims } from './session';
 import { backendAuthConfig } from './backendAuth';
 
 export const ROUTING_ALGORITHM_KEY = 'devRoutingAlgorithm';
@@ -10,6 +11,8 @@ let expiresAt = 0;
 let generation = 0;
 const listeners = new Set();
 let stopWatching;
+let pending;
+let owner = null;
 
 function sessionKey() {
   return JSON.stringify([sessionStorage.getItem('accessToken'), sessionStorage.getItem('idToken')]);
@@ -17,13 +20,7 @@ function sessionKey() {
 
 // Local decoding only bounds UI lifetime. Eligibility always comes from the server.
 function accessExpiry() {
-  try {
-    const token = sessionStorage.getItem('accessToken');
-    const claims = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-    return typeof claims.exp === 'number' ? claims.exp * 1000 : 0;
-  } catch {
-    return 0;
-  }
+  return Number(tokenClaims(getSession().accessToken)?.exp ?? 0) * 1000;
 }
 
 function snapshot() {
@@ -36,6 +33,8 @@ function emit() {
 
 export function invalidateRoutingSettings() {
   generation += 1;
+  pending = undefined;
+  owner = null;
   credentials = '';
   state = EMPTY;
   expiresAt = 0;
@@ -48,37 +47,63 @@ export function invalidateRoutingSettings() {
 }
 
 export async function refreshRoutingSettings() {
-  invalidateRoutingSettings();
-  const key = sessionKey();
-  credentials = key;
-  const current = generation;
-  const expiry = accessExpiry();
-  if (expiry <= Date.now() || !sessionStorage.getItem('idToken')) return;
-  try {
-    const { data } = await axios.get(
-      `${import.meta.env.VITE_BACKEND_SERVER}routing-settings`,
-      backendAuthConfig()
-    );
-    if (current !== generation || key !== sessionKey()) return;
-    expiresAt = Math.min(expiry, Number(data.expires_at) * 1000);
-    if (data.can_select_algorithm !== true || expiresAt <= Date.now()) return;
-    state = {
-      canSelect: true,
-      algorithms: data.algorithms,
-      defaultAlgorithm: data.default,
-      selectedAlgorithm: null,
-    };
-    emit();
-  } catch {
-    // Unknown or invalid sessions keep the picker unmounted.
+  const nextOwner = getSession().owner;
+  if (owner !== nextOwner || !nextOwner || getSession().status === 'signin-required') {
+    invalidateRoutingSettings();
+    owner = nextOwner;
   }
+  const key = sessionKey();
+  if (pending?.key === key) return pending.promise;
+  const current = ++generation;
+  credentials = key;
+  const selection = state.selectedAlgorithm;
+  expiresAt = 0;
+  try {
+    localStorage.removeItem(ROUTING_ALGORITHM_KEY);
+  } catch {
+    /* Optional storage. */
+  }
+  emit();
+  const operation = { key };
+  pending = operation;
+  operation.promise = (async () => {
+    try {
+      const session = await ensureSession();
+      if (current !== generation || !session.idToken) return;
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_BACKEND_SERVER}routing-settings`,
+        backendAuthConfig()
+      );
+      if (current !== generation || session.owner !== getSession().owner) return;
+      credentials = sessionKey();
+      owner = session.owner;
+      expiresAt = Math.min(accessExpiry(), Number(data.expires_at) * 1000);
+      if (data.can_select_algorithm !== true || expiresAt <= Date.now()) {
+        state = EMPTY;
+        emit();
+        return;
+      }
+      state = {
+        canSelect: true,
+        algorithms: data.algorithms,
+        defaultAlgorithm: data.default,
+        selectedAlgorithm: data.algorithms.includes(selection) ? selection : null,
+      };
+      emit();
+    } catch {
+      /* Unknown sessions keep the picker unmounted. */
+    } finally {
+      if (pending === operation) pending = undefined;
+    }
+  })();
+  return operation.promise;
 }
 
 function watchSession() {
   // Subscribe while the header is mounted; auth changes invalidate synchronously.
   const checkSession = () => {
     if (credentials !== sessionKey()) void refreshRoutingSettings();
-    else if (state !== EMPTY && Date.now() >= expiresAt) invalidateRoutingSettings();
+    else if (state !== EMPTY && Date.now() >= expiresAt) void refreshRoutingSettings();
     else emit();
   };
   const authChanged = () => void refreshRoutingSettings();
@@ -121,4 +146,10 @@ export function chooseRoutingAlgorithm(algorithm) {
     state = { ...capability, selectedAlgorithm: algorithm };
     emit();
   }
+}
+
+export async function getFreshRoutingAlgorithm() {
+  await ensureSession();
+  if (credentials !== sessionKey() || Date.now() >= expiresAt) await refreshRoutingSettings();
+  return getRoutingAlgorithm();
 }

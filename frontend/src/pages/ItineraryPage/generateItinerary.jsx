@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../services/protectedRequest';
 import { backendAuthConfig } from '../../services/backendAuth';
 
 export const generateItinerary = async (route) => {
@@ -16,7 +16,10 @@ export const generateItinerary = async (route) => {
     return itinerary;
   } catch (error) {
     // Log any errors encountered during the request
-    console.error('Error generating the itinerary:', error);
+    console.error(
+      'Error generating the itinerary:' + '; status=%s',
+      error.response?.status ?? 'network'
+    );
     return null;
   }
 };

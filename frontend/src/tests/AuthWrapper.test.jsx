@@ -1,3 +1,4 @@
+import { fixtureSession } from './sessionFixtures';
 /**
  * AuthWrapper — guards protected routes.
  *
@@ -36,15 +37,24 @@ describe('AuthWrapper', () => {
   beforeEach(() => sessionStorage.clear());
   afterEach(() => sessionStorage.clear());
 
-  it('redirects to /login when no accessToken and visiting /chat', () => {
+  it('does not mount protected children with expired credentials', () => {
+    sessionStorage.setItem(
+      'accessToken',
+      `header.${btoa(JSON.stringify({ sub: 'user', iss: 'fixture', exp: 1 }))}.signature`
+    );
     renderRoute('/chat');
-    expect(screen.getByText('Login Page')).toBeInTheDocument();
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
   });
 
-  it('renders the protected page when accessToken is present', () => {
-    sessionStorage.setItem('accessToken', 'fake-token-abc');
+  it('redirects to /login when no accessToken and visiting /chat', async () => {
     renderRoute('/chat');
-    expect(screen.getByText('Protected Content')).toBeInTheDocument();
+    expect(await screen.findByText('Login Page')).toBeInTheDocument();
+    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+  });
+
+  it('renders the protected page when accessToken is present', async () => {
+    fixtureSession();
+    renderRoute('/chat');
+    expect(await screen.findByText('Protected Content')).toBeInTheDocument();
   });
 });
