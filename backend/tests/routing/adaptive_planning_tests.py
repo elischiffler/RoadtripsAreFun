@@ -615,3 +615,26 @@ async def test_room_allocations_overlap_then_intersect_in_request_order(monkeypa
     assert peak == 2 and active == 0
     assert result[0]["price"] == 150
     assert [offer["room"]["adults"] for offer in result[0]["room_offers"]] == [1, 2]
+
+
+async def test_zero_stops_skips_discovery_and_solver_job(fake_services, start_date, monkeypatch):
+    services = fake_services.bundle()
+
+    async def discovery(*args):
+        pytest.fail("Zero-stop trips must not discover attractions")
+
+    def select(*args):
+        pytest.fail("Zero-stop trips must not queue a solver job")
+
+    async def schedule(*args):
+        return [], 0
+
+    services.cp_sat_candidates = discovery
+    services.cp_sat_hotels = schedule
+    monkeypatch.setattr(CPSatPlanner, "_select", staticmethod(select))
+    monkeypatch.setattr("app.routing.planners.cp_sat.schedule_cp_sat_route", schedule)
+    with capture_explanation() as explanation, measuring() as data:
+        await CPSatPlanner().plan(corridor(1), PlanOptions(0, 100, start_date), services)
+    assert explanation["solver"]["status"] == "NOT_RUN"
+    assert explanation["discovery"]["stop_reason"] == "zero_requested"
+    assert "solver" not in data["providers"]

@@ -64,14 +64,30 @@ class CPSatPlanner(RoutePlanner):
                 f"Collected {len(candidates)} verified candidates; ratings are AI estimates.",
             )
             with stage("route.solver", candidates=len(candidates)):
-                selected = await threaded(
-                    "solver",
-                    self._select,
-                    candidates,
-                    points,
-                    options.num_stops,
-                    initial_route.duration,
-                )
+                if options.num_stops:
+                    selected = await threaded(
+                        "solver",
+                        self._select,
+                        candidates,
+                        points,
+                        options.num_stops,
+                        initial_route.duration,
+                    )
+                else:
+                    selected = []
+                    record_explanation(
+                        candidates=[],
+                        query_points=[],
+                        solver={
+                            "status": "NOT_RUN",
+                            "skip_reason": "zero_requested",
+                            "objective_direction": "minimize",
+                            "requested_stops": 0,
+                            "eligible_count": 0,
+                            "selected_count": 0,
+                            "candidate_count": 0,
+                        },
+                    )
             record_stage(
                 "selection",
                 "complete",

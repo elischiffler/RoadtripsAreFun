@@ -148,3 +148,28 @@ async def test_mapbox_retries_http_faults_and_keeps_real_status(monkeypatch):
     assert measurements["calls"]["mapbox"] == 3
     assert attempts[-1]["http_status"] == 503
     assert "private-token" not in str(attempts)
+
+
+async def test_recovered_retry_keeps_query_and_section_attribution():
+    calls = 0
+
+    async def request():
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise httpx.ConnectError("controlled")
+        return "recovered"
+
+    with diagnostics.collecting_attempts() as records:
+        with stage("attractions.provider", query="s3-r2", section=3):
+            assert await diagnostics.retry_async(request) == "recovered"
+    assert [item["outcome"] for item in records] == ["retrying", "recovered"]
+    assert all(item["query"] == "s3-r2" and item["section"] == 3 for item in records)
+
+
+def test_cyclic_failure_causes_remain_bounded():
+    error = RuntimeError("controlled")
+    error.__cause__ = error
+    with diagnostics.collecting_attempts() as records:
+        assert diagnostics.record_failure(error, 1, "ai.ratings") is False
+    assert len(records[0]["causes"]) == 1

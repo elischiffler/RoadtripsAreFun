@@ -114,7 +114,9 @@ def collecting_attempts():
 def record_failure(exc, attempt, operation):
     again = attempt < MAX_ATTEMPTS and retryable(exc)
     cause = exc
-    while cause is not None:
+    seen = set()
+    while cause is not None and id(cause) not in seen:
+        seen.add(id(cause))
         if (
             operation == "ai.ratings"
             and getattr(cause, "provider_code", None) == "EMPTY_COMPLETION"
@@ -140,6 +142,7 @@ def record_failure(exc, attempt, operation):
 def recovered(attempt, operation):
     if attempt > 1:
         entry = {
+            **current_stage_details(),
             "operation": operation,
             "attempt": attempt,
             "max_attempts": MAX_ATTEMPTS,
