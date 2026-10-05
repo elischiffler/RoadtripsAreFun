@@ -11,8 +11,10 @@ Select trips and 1, 3, 5 or 10 repeats. Requests execute sequentially with a sha
 batch UUID and repeat index. Stop finishes the current request and skips future
 ones. Closing the page stops the browser queue; it does not cancel work already
 accepted by the server. There is no durable background queue or automatic retry.
-Live runs call providers; selection replay uses the same small synthetic fixture
-for all routes and cannot test real corridor density or hotel scheduling.
+Every new run calls live providers through the ordinary routing and itinerary
+pipeline. There is no replay mode or candidate-fixture option in the main form,
+benchmark dialog or run API. Hotel and evening discovery follow the trip needs.
+Historical replay records remain labeled in history; they cannot be rerun.
 
 ## Record lifecycle and ownership
 

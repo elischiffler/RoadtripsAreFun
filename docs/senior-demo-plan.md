@@ -19,9 +19,9 @@ on error or with results.
 Unused space is visible and is not a neutral interest: backend normalization
 still scales positive weights to one. An empty mix disables Run.
 
-Lab weights are explicit complete overrides. Replay uses synthetic selection-only
-fixtures (`teaching-v1` / `empty-v1`), with null route/itinerary and no provider calls. Both modes persist separate run
-history; live candidate models are retained for analysis, not exposed as runnable replay fixtures. Car choice is
+Lab weights are explicit complete overrides. Every run uses live providers and
+persists separate experiment history. Candidate models are retained for analysis;
+they are not runnable replay fixtures. Car choice is
 validated/displayed but this Lab does not estimate fuel. These are deliberate
 milestone boundaries. See [public release/MacBook rehearsal](senior-demo-runbook.md).
 
@@ -31,7 +31,7 @@ The owner-only `/algorithm` screen exposes three stages: **Trip inputs**,
 **Candidate matches**, and **Route and explanation**. Reuse the existing theme,
 map and itinerary rendering. Give the presenter an obvious Run button, editable
 presets, a progress state, clear failure/retry, and comparison of two preference
-profiles against the same candidate snapshot. Disable duplicate submissions.
+profiles using separate live discoveries, with candidate differences visible. Disable duplicate submissions.
 Invalidate prior output after input changes; never show an old success as a new run.
 
 The backend owns validation and computation. Factor a narrow shared orchestration
@@ -47,7 +47,7 @@ Implemented API surface (`backend/app/routers/algorithm_lab.py` owns the schema)
 - Owner-authorized preset catalog with schema version, labels and complete
   editable trip values; canonical interest keys/limits come from backend owners.
 - Owner-authorized run operation taking preset/validated overrides and an
-  explicit live or replay mode; no user ID, eligibility flag, utility or claimed
+  live mode only (default); replay and snapshot fields are rejected. No user ID, eligibility flag, utility or claimed
   verification supplied by the browser is authoritative.
 - Response envelope with `schema_version`, mode, input snapshot, candidate
   snapshot identity, solver explanation, stage outcomes, and existing Route/
@@ -84,7 +84,7 @@ Implemented editable scenarios; live provider availability are **not verified**:
 | Preset | Parameters | Purpose |
 | --- | --- | --- |
 | Coastal nature | San Francisco to Monterey, 2 stops, 2 adults in 1 room, $180/room/night, 09:00 departure, car skipped, nature .6/history .3/food .1 | Small live route and obvious profile matching |
-| Same corridor, culture | Same route/date/occupancy/budget, history/culture/food emphasis | Compare weights on the same candidate snapshot |
+| Same corridor, culture | Same route/date/occupancy/budget, history/culture/food emphasis | Compare live discoveries and effective weights |
 | Overnight road trip | San Francisco to Los Angeles, 3 stops, same occupancy/budget, 09:00 departure, balanced interests | Rehearse hotel/timing behavior; no guarantee an overnight is required until computed |
 
 Preset dates must resolve at run time to a visible upcoming date in the origin
@@ -126,25 +126,23 @@ unbounded provider payloads and account identifiers. Preserve ordinary response
 compatibility and remote routing enforcement. Failed scheduling must not turn a
 selection-only success into a “trip complete” UI.
 
-## Replay and evidence
+## Live provider evidence
 
-Replay uses a versioned, sanitized fixture or recorded provider snapshot with
-its original source/date label. It runs the same candidate-scoring and solver
-code. No network or fresh hotel verification is implied. Use an explicit fixture
-clock/context for recorded dates rather than weakening upcoming-date validation
-for live requests. If showing prerecorded geometry/itinerary, label it recorded;
-do not imply it was rerouted live. Never silently substitute replay for a failed
-live run. Rescoring the same snapshot is distinct from recollecting providers.
+Every Algorithm Lab experiment runs the live trip pipeline. Neither the main
+form nor benchmark dialog offers replay or fixture selection, and the API rejects
+those requests. Each run resolves endpoints, discovers and verifies candidates,
+selects attractions, schedules and checks the road route, and builds an itinerary.
+Hotel and evening APIs run when the trip requires them. Provider failures remain
+visible; synthetic data is never substituted. Saved historical replay measurements
+stay labeled and cannot be submitted as new experiments.
 
-Minimum replay fixtures: two candidates in one slot, a below-threshold candidate,
-more eligible slots than requested stops, no eligible attractions, and two
-complete trip-weight vectors that visibly change the winner. Include a readable
-small numeric example and reproducible expected selection.
+Small deterministic candidate fixtures remain in automated solver tests to verify
+objective arithmetic and constraints; they are not an Algorithm Lab run option.
 
 ## Work split and finish line
 
 1. **Backend profiles/solver/Lab API:** freeze request/response examples first;
-   own Python models, scoring/refactor, auth, presets, replay and backend tests.
+   own Python models, scoring/refactor, auth, presets and backend tests.
 2. **Frontend Algorithm Lab:** start after the backend contract handoff; own
    screen/service/header/router and frontend tests, consume backend values.
 3. **Integration and rehearsal:** after both commits, own integration, complete
@@ -159,7 +157,7 @@ frontend install/format/lint/coverage/build; backend pinned install/Ruff/coverag
 running-container smoke; disposable PostgreSQL CRUD and recovery. Meaningful
 regressions cover scoring provenance, normalization, brute-force optimality of
 small selections, rounding/ties, deterministic frozen inputs, threshold and
-count/slot exclusions, truthful statuses, replay/live separation, invalid
+count/slot exclusions, truthful statuses, rejection of replay requests, invalid
 occupancy/dates, unauthorized requests, account changes and route failures.
 
 Record PASS/FAIL/BLOCKED with exact commit, runtime and command. Add owner login
@@ -168,11 +166,11 @@ preferences, failed provider/retry, reload behavior and ordinary chat regression
 If local-only demo is chosen, record that target; preview CI does not prove its
 backend matches. Keep PR draft while material required acceptance is blocked.
 
-Monday rehearsal: run all scenarios at least once, retain a sanitized replay,
-record provider latency, and practice the explanation. Tuesday: sign in, show
-trip profile, run, inspect one candidate score, show constraints/status, change
-weights on the same snapshot, then show route and timing. Use the labeled replay
-if necessary and state exactly what it demonstrates.
+Monday rehearsal: run all scenarios live at least once, record provider latency,
+and practice the explanation. Tuesday: sign in, show the trip profile, run live,
+inspect one candidate score, show constraints/status, then show route and timing.
+Changing weights starts a fresh provider discovery, so comparisons must account
+for differences in the candidate set. Report provider failures as failures.
 
 Run storage, sequential benchmark batches, metric semantics and migration are owned by
 [algorithm-run-history.md](algorithm-run-history.md). Chat planning is excluded from this table.

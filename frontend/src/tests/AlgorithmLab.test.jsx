@@ -48,17 +48,13 @@ const catalog = {
       inputs: { ...inputs, persona_weights: { nature: 0.2, history: 0.8 } },
     },
   ],
-  snapshots: [
-    { id: 'teaching-v1', label: 'Teaching candidates', source: 'Synthetic fixture' },
-    { id: 'empty-v1', label: 'No eligible candidates', source: 'Synthetic fixture' },
-  ],
   limits: { min_stops: 1, max_stops: 10, max_rooms: 4, max_guests_per_room: 6, max_child_age: 17 },
 };
 const response = () => ({
   schema_version: 1,
-  mode: 'replay',
+  mode: 'live',
   input_snapshot: inputs,
-  snapshot: catalog.snapshots[0],
+  snapshot: { id: 'live-1', label: 'Fresh live discovery', source: 'Live provider discovery' },
   explanation: {
     weights: { nature: 0.8, history: 0.2 },
     candidates: [
@@ -113,7 +109,7 @@ function capability() {
 }
 async function mount() {
   const view = renderWithProviders(<AlgorithmLab />, { initialPath: '/algorithm' });
-  await screen.findByRole('button', { name: 'Run replay' });
+  await screen.findByRole('button', { name: 'Run live route' });
   return view;
 }
 
@@ -157,7 +153,7 @@ describe('Algorithm Lab access and lifecycle', () => {
       await waitFor(() => expect(screen.getByText('Owner access required')).toBeInTheDocument());
       expect(axios.get.mock.calls.every(([url]) => url.endsWith('routing-settings'))).toBe(true);
       expect(screen.queryByRole('link', { name: 'Algorithm Lab' })).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'Run replay' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Run live route' })).not.toBeInTheDocument();
     }
   );
 
@@ -177,7 +173,7 @@ describe('Algorithm Lab access and lifecycle', () => {
       </>,
       { initialPath: '/algorithm' }
     );
-    await screen.findByRole('button', { name: 'Run replay' });
+    await screen.findByRole('button', { name: 'Run live route' });
     expect(document.querySelector('.global-header')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back to trip chat' })).toHaveAttribute(
       'href',
@@ -195,7 +191,7 @@ describe('Algorithm Lab access and lifecycle', () => {
     });
     renderWithProviders(<AlgorithmLab />);
     await userEvent.click(await screen.findByRole('button', { name: 'Retry preset loading' }));
-    expect(await screen.findByRole('button', { name: 'Run replay' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Run live route' })).toBeInTheDocument();
   });
 
   it.each(['logout', 'account switch', 'expiry'])(
@@ -209,7 +205,7 @@ describe('Algorithm Lab access and lifecycle', () => {
           })
       );
       await mount();
-      await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
       const signal = axios.post.mock.calls[0][2].signal;
       act(() => {
         if (action === 'logout') sessionStorage.clear();
@@ -226,7 +222,7 @@ describe('Algorithm Lab access and lifecycle', () => {
       expect(signal.aborted).toBe(true);
       expect(screen.getByText('Owner access required')).toBeInTheDocument();
       expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'Run replay' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Run live route' })).not.toBeInTheDocument();
     }
   );
 });
@@ -238,21 +234,22 @@ describe('Algorithm Lab experiments', () => {
     fireEvent.change(screen.getByLabelText('Interest nature percentage'), {
       target: { value: '60' },
     });
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     expect(await screen.findByText('OPTIMAL')).toBeInTheDocument();
     const [, request, config] = axios.post.mock.calls[0];
     expect(request).toMatchObject({
-      mode: 'replay',
+      mode: 'live',
       preset_id: 'coast',
-      snapshot_id: 'teaching-v1',
       inputs: { num_stops: 3, persona_weights: { nature: 0.6 } },
     });
     expect(config.headers).toEqual({
       Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
       'X-Cognito-Id-Token': sessionStorage.getItem('idToken'),
     });
-    expect(screen.getByText('Replay · frozen candidate fixture')).toBeInTheDocument();
-    expect(screen.getByText(/Selection-only replay: no road route/)).toBeInTheDocument();
+    expect(screen.getByText('Live provider run')).toBeInTheDocument();
+    expect(request).not.toHaveProperty('snapshot_id');
+    expect(screen.queryByLabelText('Run mode')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Candidate snapshot')).not.toBeInTheDocument();
     await userEvent.click(screen.getByText('Forest walk'));
     expect(
       screen.getByRole('table', { name: 'Score contributions for Forest walk' })
@@ -273,44 +270,30 @@ describe('Algorithm Lab experiments', () => {
         })
     );
     await mount();
-    await userEvent.dblClick(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.dblClick(screen.getByRole('button', { name: 'Run live route' }));
     expect(axios.post).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('button', { name: 'Running…' })).toBeDisabled();
     expect(screen.getByLabelText('Interest nature percentage')).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Cancel and reset' }));
     await act(async () => resolveRun({ data: response() }));
     expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Run replay' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Run live route' })).toBeEnabled();
   });
 
-  it('compares backend selections and weights only on the same replay snapshot', async () => {
+  it('does not claim same-snapshot comparisons for fresh live discoveries', async () => {
     await mount();
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await screen.findByText('OPTIMAL');
     const next = response();
+    next.snapshot.id = 'live-2';
     next.explanation.weights = { nature: 0.2, history: 0.8 };
     next.explanation.candidates[0].name = 'Historic market';
     axios.post.mockResolvedValue({ data: next });
     await userEvent.selectOptions(screen.getByLabelText('Trip preset'), 'culture');
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
-    expect(await screen.findByText('Same snapshot comparison')).toBeInTheDocument();
-    expect(screen.getByText('Previous selection: Forest walk')).toBeInTheDocument();
-    expect(screen.getByText('Current selection: Historic market')).toBeInTheDocument();
-    await userEvent.click(screen.getByText('Compare effective trip weights'));
-    expect(screen.getByRole('columnheader', { name: 'Previous' })).toBeInTheDocument();
-    await userEvent.selectOptions(screen.getByLabelText('Candidate snapshot'), 'empty-v1');
-    const empty = structuredClone(next);
-    empty.snapshot = catalog.snapshots[1];
-    empty.explanation.solver.status = 'NOT_RUN';
-    empty.explanation.candidates = [];
-    axios.post.mockResolvedValue({ data: empty });
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
-    expect(await screen.findByText('NOT_RUN')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    expect(await screen.findByText('Historic market')).toBeInTheDocument();
     expect(screen.queryByText('Same snapshot comparison')).not.toBeInTheDocument();
-    expect(
-      screen.getByText('Selection only · synthetic places · no live route')
-    ).toBeInTheDocument();
-    expect(screen.queryByText(/solver ran on saved inputs/)).not.toBeInTheDocument();
+    expect(axios.post.mock.calls.every(([, body]) => body.mode === 'live')).toBe(true);
   });
 
   it('reveals short explanations by keyboard or tap and keeps the long formula in a disclosure', async () => {
@@ -321,7 +304,7 @@ describe('Algorithm Lab experiments', () => {
     fireEvent.keyDown(help, { key: 'Escape' });
     fireEvent.blur(help);
     await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await screen.findByText('OPTIMAL');
     expect(screen.getByLabelText('Experiment output')).toHaveFocus();
     await userEvent.click(screen.getByRole('button', { name: 'About integer objective' }));
@@ -340,7 +323,6 @@ describe('Algorithm Lab experiments', () => {
     data.stages[1] = { name: 'scheduling', status: 'failed', detail: 'No verified offers.' };
     axios.post.mockResolvedValue({ data });
     await mount();
-    await userEvent.selectOptions(screen.getByLabelText('Run mode'), 'live');
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     expect(await screen.findByText('OPTIMAL')).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('No hotel offers available.');
@@ -375,7 +357,6 @@ describe('Algorithm Lab experiments', () => {
     ];
     axios.post.mockResolvedValue({ data });
     await mount();
-    await userEvent.selectOptions(screen.getByLabelText('Run mode'), 'live');
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     expect(await screen.findByText('Live route map')).toBeInTheDocument();
     expect(screen.getByText('Forest visit')).toBeInTheDocument();
@@ -396,7 +377,7 @@ describe('Algorithm Lab experiments', () => {
     ];
     axios.post.mockResolvedValue({ data });
     await mount();
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await userEvent.click(await screen.findByText('Malformed place'));
     expect(
       screen
@@ -409,7 +390,7 @@ describe('Algorithm Lab experiments', () => {
 
   it.each([422, 503, 401])('handles HTTP %s without showing old output', async (status) => {
     await mount();
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await screen.findByText('OPTIMAL');
     axios.post.mockRejectedValue({
       response: {
@@ -422,7 +403,7 @@ describe('Algorithm Lab experiments', () => {
         },
       },
     });
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     if (status === 401)
       expect(await screen.findByText('Owner access required')).toBeInTheDocument();
     else
@@ -445,7 +426,7 @@ describe('Algorithm Lab experiments', () => {
     fireEvent.change(screen.getByLabelText('Car model'), { target: { value: 'Prius' } });
     await userEvent.click(screen.getByLabelText('Allow late driving'));
     await userEvent.click(screen.getByLabelText('food'));
-    await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await screen.findByText('OPTIMAL');
     expect(axios.post.mock.calls[0][1].inputs).toMatchObject({
       traveler_count: 3,

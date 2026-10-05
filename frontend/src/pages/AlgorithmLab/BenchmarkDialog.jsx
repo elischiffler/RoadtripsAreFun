@@ -7,7 +7,6 @@ export default function BenchmarkDialog({ catalog, disabled, onBusy, onResult })
   const stopped = useRef(false);
   const mounted = useRef(true);
   const [selected, setSelected] = useState([]);
-  const [mode, setMode] = useState('live');
   const [repeats, setRepeats] = useState(1);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState('');
@@ -38,12 +37,11 @@ export default function BenchmarkDialog({ catalog, disabled, onBusy, onResult })
         if (stopped.current) break;
         setProgress(`Running ${completed + 1} of ${queue.length}: ${preset.label}`);
         const result = await runLab({
-          mode,
+          mode: 'live',
           preset_id: preset.id,
           inputs: preset.inputs,
           batch_id: batchId,
           repeat_index: index,
-          ...(mode === 'replay' ? { snapshot_id: 'teaching-v1' } : {}),
         });
         if (!mounted.current) break;
         completed += 1;
@@ -105,13 +103,6 @@ export default function BenchmarkDialog({ catalog, disabled, onBusy, onResult })
             </label>
           ))}
           <label>
-            Benchmark mode
-            <select value={mode} onChange={(event) => setMode(event.target.value)}>
-              <option value="live">Live route · provider calls</option>
-              <option value="replay">Selection replay · synthetic fixture</option>
-            </select>
-          </label>
-          <label>
             Runs per trip
             <select value={repeats} onChange={(event) => setRepeats(Number(event.target.value))}>
               {[1, 3, 5, 10].map((count) => (
@@ -123,9 +114,8 @@ export default function BenchmarkDialog({ catalog, disabled, onBusy, onResult })
           </label>
         </fieldset>
         <p className="lab-note">
-          {mode === 'live'
-            ? 'CP-SAT is the active solver. Live discovery uses AI and can vary; repeated runs make provider calls.'
-            : 'All routes use the same five synthetic candidates. Replay does not stress-test route length, corridor density or hotels.'}
+          CP-SAT is the active solver. Every experiment calls live providers for fresh discovery and
+          a checked route. AI discovery can vary between repeated runs.
         </p>
         {progress && <p role="status">{progress}</p>}
         {error && <p role="alert">{error}</p>}

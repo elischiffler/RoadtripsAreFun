@@ -36,7 +36,7 @@ def headers(signed_token):
     }
 
 
-def request_body(mode="replay", preset=0):
+def request_body(mode="live", preset=0):
     selected = preset_catalog()[preset]
     result = {"mode": mode, "preset_id": selected["id"], "inputs": selected["inputs"]}
     if mode == "replay":
@@ -73,55 +73,12 @@ def test_owner_evidence_fails_closed(signed_token, claims):
     assert client.post("/algorithm-lab/run", headers=auth, json=request_body()).status_code == 403
 
 
-def test_replay_is_frozen_rescored_and_never_uses_live_dependencies(headers, monkeypatch):
-    def forbidden(*args, **kwargs):
-        raise AssertionError("Replay must not call provider or database")
-
-    for name in ("resolve_endpoint", "call_route", "plan_final_route", "build_itinerary"):
-        monkeypatch.setattr(lab, name, forbidden)
-    monkeypatch.setattr(routing_api, "load_account_persona", forbidden)
-    client = TestClient(app)
-    catalog = client.get("/algorithm-lab/presets", headers=headers)
+def test_catalog_only_exposes_live_trip_inputs(headers):
+    catalog = TestClient(app).get("/algorithm-lab/presets", headers=headers)
     assert catalog.status_code == 200
     assert catalog.headers["cache-control"] == "no-store"
     assert catalog.json()["attributes"] == list(ATTRIBUTE_KEYS)
-    outputs = [
-        client.post("/algorithm-lab/run", headers=headers, json=request_body(preset=i)).json()
-        for i in (0, 1)
-    ]
-    assert all(result["error"] is None for result in outputs)
-    assert all(result["route"] is None and result["itinerary"] is None for result in outputs)
-    first, second = [result["explanation"] for result in outputs]
-    assert [c["attribute_ratings"] for c in first["candidates"]] == [
-        c["attribute_ratings"] for c in second["candidates"]
-    ]
-    assert {c["provider_id"] for c in first["candidates"] if c["selected"]} != {
-        c["provider_id"] for c in second["candidates"] if c["selected"]
-    }
-    assert first["solver"]["status"] == "OPTIMAL"
-    assert first["solver"]["objective_value"] == first["solver"]["best_bound"]
-    assert first["solver"]["selected_count"] == 2
-    assert all(
-        stage["status"] == "not_run"
-        for stage in outputs[0]["stages"]
-        if stage["name"] in {"scheduling", "reroute", "itinerary"}
-    )
-    for candidate in first["candidates"]:
-        assert candidate["utility"] == pytest.approx(
-            sum(item["contribution"] for item in candidate["contributions"])
-        )
-        assert "synthetic" in candidate["provenance"]["identity_source"]
-
-
-def test_empty_fixture_does_not_claim_solver_ran(headers):
-    body = request_body()
-    body["snapshot_id"] = "empty-v1"
-    result = TestClient(app).post("/algorithm-lab/run", headers=headers, json=body).json()
-    assert result["explanation"]["solver"]["status"] == "NOT_RUN"
-    assert result["explanation"]["solver"]["objective_value"] is None
-    assert all(
-        item["reason"] == "below_utility_threshold" for item in result["explanation"]["candidates"]
-    )
+    assert "snapshots" not in catalog.json()
 
 
 @pytest.mark.parametrize(
@@ -148,9 +105,18 @@ def test_invalid_direct_inputs_rejected(headers, patch):
 
 @pytest.mark.parametrize(
     "patch",
-    [{"preset_id": "unknown"}, {"snapshot_id": None}, {"snapshot_id": "unknown"}, {"mode": "live"}],
+    [
+        {"preset_id": "unknown"},
+        {"snapshot_id": None},
+        {"snapshot_id": "teaching-v1"},
+        {"mode": "replay"},
+    ],
 )
-def test_invalid_mode_or_preset_rejected(headers, patch):
+def test_invalid_mode_or_preset_rejected(headers, monkeypatch, patch):
+    def forbidden(*args):
+        raise AssertionError("Rejected requests must not start experiments")
+
+    monkeypatch.setattr(lab.lab_runs, "begin", forbidden)
     body = request_body()
     body.update(patch)
     assert TestClient(app).post("/algorithm-lab/run", headers=headers, json=body).status_code == 422
@@ -302,13 +268,18 @@ def test_storage_failure_blocks_provider_work(headers, monkeypatch):
 
 
 def test_failed_finalize_reports_unsaved_result(headers, monkeypatch):
+    async def endpoint_unavailable(key):
+        raise PlanningError("Endpoint unavailable", 503)
+
+    monkeypatch.setattr(lab, "resolve_endpoint", endpoint_unavailable)
+
     def unavailable(*args):
         raise RuntimeError("database offline")
 
     monkeypatch.setattr(lab.lab_runs, "finish", unavailable)
     result = TestClient(app).post("/algorithm-lab/run", headers=headers, json=request_body()).json()
     assert result["run_record"]["saved"] is False
-    assert result["explanation"]["solver"]["status"] == "OPTIMAL"
+    assert result["error"]["code"] == "503"
 
 
 def test_history_is_owner_scoped_paginated_and_private(headers, monkeypatch):

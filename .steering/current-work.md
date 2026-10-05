@@ -102,3 +102,13 @@ history. See [run history and migration](../docs/algorithm-run-history.md) for s
 comparison rules and operational boundaries. Apply the additive table migration
 to the approved target before the backend release; local validation is not evidence
 of a public database migration. Replay still needs the backend and this database.
+
+## Live-only Algorithm Lab runs
+
+The `/algorithm` form and benchmark queue now submit only live provider trips.
+The run API accepts `mode: "live"` (also the default), rejects replay and fixture
+snapshot fields, and always uses geocoding, live discovery, road routing and
+itinerary construction. Hotel/evening providers run when the trip needs them.
+The presets API no longer advertises synthetic candidate snapshots. Existing
+replay history remains labeled for accurate historical measurements; offline
+solver fixtures are retained only for unit verification.

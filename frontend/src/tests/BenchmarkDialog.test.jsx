@@ -49,6 +49,11 @@ it('waits for each recorded run before starting the next and shares a batch ID',
   await waitFor(() => expect(onResult).toHaveBeenCalledTimes(2));
   expect(runLab.mock.calls[0][0].batch_id).toBe(runLab.mock.calls[1][0].batch_id);
   expect(runLab.mock.calls[1][0].preset_id).toBe('long');
+  expect(screen.queryByLabelText('Benchmark mode')).not.toBeInTheDocument();
+  for (const [request] of runLab.mock.calls) {
+    expect(request.mode).toBe('live');
+    expect(request).not.toHaveProperty('snapshot_id');
+  }
 });
 it('stops future runs while allowing the current result to be saved', async () => {
   let finish;

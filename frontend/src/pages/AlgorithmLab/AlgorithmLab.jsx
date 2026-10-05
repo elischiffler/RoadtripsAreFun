@@ -17,8 +17,6 @@ function LabWorkspace() {
   const [catalog, setCatalog] = useState(null);
   const [presetId, setPresetId] = useState('');
   const [inputs, setInputs] = useState(null);
-  const [mode, setMode] = useState('replay');
-  const [snapshotId, setSnapshotId] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [batchBusy, setBatchBusy] = useState(false);
@@ -45,7 +43,6 @@ function LabWorkspace() {
         setCatalog(data);
         setPresetId(data.presets[0].id);
         setInputs(structuredClone(data.presets[0].inputs));
-        setSnapshotId(data.snapshots[0].id);
       })
       .catch((failure) => {
         if (!controller.signal.aborted) setError(labError(failure));
@@ -83,10 +80,9 @@ function LabWorkspace() {
     try {
       const data = await runLab(
         {
-          mode,
+          mode: 'live',
           preset_id: presetId,
           inputs,
-          ...(mode === 'replay' ? { snapshot_id: snapshotId } : {}),
         },
         controller.signal
       );
@@ -138,46 +134,12 @@ function LabWorkspace() {
               ))}
             </select>
           </label>
-          <label>
-            Run mode
-            <select
-              disabled={busy}
-              value={mode}
-              onChange={(event) => {
-                invalidate();
-                setMode(event.target.value);
-              }}
-            >
-              <option value="replay">Replay frozen candidates</option>
-              <option value="live">Live providers</option>
-            </select>
-          </label>
-          {mode === 'replay' && (
-            <label>
-              Candidate snapshot
-              <select
-                disabled={busy}
-                value={snapshotId}
-                onChange={(event) => {
-                  invalidate();
-                  setSnapshotId(event.target.value);
-                }}
-              >
-                {catalog.snapshots.map((snapshot) => (
-                  <option value={snapshot.id} key={snapshot.id}>
-                    {snapshot.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
           <p className="lab-note">
-            {mode === 'replay'
-              ? 'Frozen candidates. Change interests, then compare.'
-              : 'Fresh places and a checked road route. This can take several minutes.'}{' '}
-            <HelpTip label="run modes">
-              Replay uses synthetic places and runs selection only. Live calls providers and builds
-              a route. A failed live run never silently switches to replay.
+            Fresh places and a checked road route. Every run calls live providers and can take
+            several minutes.{' '}
+            <HelpTip label="live providers">
+              Each run verifies cities, discovers places, selects attractions, and builds the road
+              route and itinerary. Trips needing overnight stays also fetch current hotel offers.
             </HelpTip>
           </p>
         </div>
@@ -188,7 +150,7 @@ function LabWorkspace() {
             className="lab-run"
             disabled={busy || !Object.values(inputs.persona_weights).some((weight) => weight > 0)}
           >
-            {busy ? 'Running…' : mode === 'replay' ? 'Run replay' : 'Run live route'}
+            {busy ? 'Running…' : 'Run live route'}
           </button>
           <BenchmarkDialog
             catalog={catalog}
@@ -235,13 +197,10 @@ function LabWorkspace() {
         {busy && (
           <div className="lab-pending" role="status">
             <span className="lab-running-dot" />
-            <h2>
-              {mode === 'live' ? 'Building the route' : 'Solving the frozen candidate problem'}
-            </h2>
+            <h2>Building the route</h2>
             <p>
-              {mode === 'live'
-                ? 'Discovering candidates, matching profiles, selecting attractions, then scheduling and checking the drive.'
-                : 'Normalizing weights, scoring candidates and running CP-SAT.'}
+              Discovering candidates, matching profiles, selecting attractions, then scheduling and
+              checking the drive.
             </p>
           </div>
         )}
