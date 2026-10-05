@@ -55,6 +55,8 @@ def provider(
     def handle(request):
         requests.append(request)
         assert request.url.params["curr"] == "USD"
+        assert request.url.params["qs"] == "CAE4DQ"
+        assert request.url.params["ap"] == "MAE"
         assert request.url.params["ts"] == source.stay_token(CHECK_IN, room)
         body = search if request.url.path == "/travel/search" else detail
         return httpx.Response(

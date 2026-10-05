@@ -78,7 +78,16 @@ def stay_token(check_in: date, room: HotelRoom) -> str:
 
 
 def _params(check_in: date, room: HotelRoom) -> dict[str, str]:
-    return {"ts": stay_token(check_in, room), "hl": "en", "gl": "us", "curr": "USD"}
+    # Preserve the applied-filter parameters emitted by the guest selector.
+    # Some city searches otherwise reset children despite a valid stay token.
+    return {
+        "ts": stay_token(check_in, room),
+        "qs": "CAE4DQ",
+        "ap": "MAE",
+        "hl": "en",
+        "gl": "us",
+        "curr": "USD",
+    }
 
 
 def _key(name: str) -> str:
