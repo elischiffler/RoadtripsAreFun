@@ -752,3 +752,37 @@
 .studio-progress-steps .studio-progress-detail {
   font-weight: 600;
 }
+
+.lab-stage-data summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lab-stage-data summary::before {
+  content: '▸';
+}
+.lab-stage-data details[open] > summary::before {
+  content: '▾';
+}
+.lab-stage-summary {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+.lab-stage-summary .lab-note {
+  overflow-wrap: anywhere;
+  font-weight: normal;
+}
+.algorithm-lab .lab-stage-json {
+  max-height: 24rem;
+  overflow: auto;
+  white-space: pre;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.lab-stage-json:focus-visible {
+  outline: 2px solid var(--amber-main);
+  outline-offset: 2px;
+}

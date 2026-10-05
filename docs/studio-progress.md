@@ -57,3 +57,31 @@ Disposable PostgreSQL project `roadtrips-crud-a0d6f31c46` passed CRUD, ownership
 result persistence, recovery, recreation and backup/restore. Test containers were
 stopped; source/restore volumes and the private backup were retained. No production
 deployment or main merge was performed. Live announcements sit outside the busy input form.
+
+## Inspecting a finished run
+
+Algorithm details now contains **Run data by stage** instead of generic completion
+messages. Collapsed rows show useful summaries; expanded rows show precise JSON
+for validated inputs, resolved cities/timezones, retained direct-route metrics,
+candidates/weights/query points, solver output and selected candidates, final
+scheduled stops/hotel quotes, final route geometry/timing, and the dated itinerary.
+Raw distances/durations and coordinate ordering are labeled. Missing data stays
+explicitly unavailable. Failed stages can show the retained sanitized error.
+
+The initial upstream Mapbox response and intermediate scheduler response are not
+retained; their rows say so. Scheduling data is drawn from the final validated
+route, not presented as an intermediate provider response. JSON renders only
+when its disclosure opens and has a bounded scroll area, preserving numeric
+precision without making a large candidate or geometry payload fill the page.
+This frontend change adds no new backend response data or provider calls.
+
+Frontend validation passed 300 tests with 90.14% line coverage, formatting, lint
+and production build. Four new tests verify faithful data/precision, escaped
+place names, lazy rendering, final route/itinerary output, and missing/failure
+records. The existing build bundle-size warning remains.
+
+Browser validation used a fresh live coastal-nature run: 26 retained candidates,
+six route samples, three eligible candidates, two selected attractions and a
+119.8-mile saved route. The selection disclosure showed actual solver objective
+and bound 1,040,004, exact solve time, threshold, selected candidates, scores,
+contributions and provenance. No fixture trip was used for this browser check.

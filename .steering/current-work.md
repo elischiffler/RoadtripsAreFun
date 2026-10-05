@@ -1,5 +1,13 @@
 # Current feature and senior demonstration work
 
+## October 5 inspectable stage data
+
+The Algorithm details tab replaces generic Pipeline outcomes with compact
+Run data by stage disclosures. Each row summarizes actual retained counts or
+measurements and opens formatted JSON for that stage's saved inputs/output.
+Missing/intermediate data is labeled rather than reconstructed as a raw provider
+response. This is frontend-only and uses the existing run envelope.
+
 ## October 5 live Studio progress
 
 The pending box now displays backend-streamed collection/calculation stages,

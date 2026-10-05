@@ -4,6 +4,7 @@ import RouteOverview from './RouteOverview';
 import ItineraryDays from '../../components/ItineraryDays';
 import HelpTip from './HelpTip';
 import TripEvaluation from './TripEvaluation';
+import StageRunData from './StageRunData';
 
 const numeric = (value, digits = 3) =>
   typeof value === 'number' && Number.isFinite(value)
@@ -165,7 +166,7 @@ export default function LabResults({ result, previous }) {
             <p>
               {result.mode === 'replay'
                 ? 'Selection-only replay: no road route or hotel schedule was generated.'
-                : 'No completed road route is available. Review Algorithm details for pipeline outcomes.'}
+                : 'No completed road route is available. Review Algorithm details for stage data and errors.'}
             </p>
           ))}
       </div>
@@ -193,26 +194,7 @@ export default function LabResults({ result, previous }) {
         tabIndex={0}
         className="lab-diagnostics"
       >
-        <section aria-labelledby="lab-stage-heading">
-          <h2 id="lab-stage-heading">Pipeline outcomes</h2>
-          <p className="lab-note">Each stage reports its own result.</p>
-          <ol className="lab-stages">
-            {result.stages.map((stage) => (
-              <li key={stage.name}>
-                <div>
-                  <strong>{words(stage.name)}</strong>
-                  <span className={`lab-status lab-status-${stage.status}`}>
-                    {words(stage.status)}
-                  </span>
-                </div>
-                <details>
-                  <summary>Stage details</summary>
-                  <p>{stage.detail}</p>
-                </details>
-              </li>
-            ))}
-          </ol>
-        </section>
+        <StageRunData result={result} />
         {solver && (
           <section aria-labelledby="lab-solve-heading">
             <h2 id="lab-solve-heading">Attraction selection</h2>
