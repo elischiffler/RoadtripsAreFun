@@ -248,7 +248,10 @@ def test_live_failure_is_not_replaced_with_replay(headers, monkeypatch):
         .json()
     )
     assert result["mode"] == "live"
-    assert result["error"] == {"code": "503", "message": "Endpoint provider unavailable"}
+    assert result["error"]["code"] == "503"
+    assert result["error"]["message"] == "Endpoint provider unavailable"
+    assert result["error"]["stage"] == "endpoints"
+    assert result["error"]["causes"][0]["type"] == "PlanningError"
     assert result["route"] is None
     assert (
         next(stage for stage in result["stages"] if stage["name"] == "endpoints")["status"]

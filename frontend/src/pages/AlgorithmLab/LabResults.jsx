@@ -1,3 +1,4 @@
+import RunError from './RunError';
 import PropTypes from 'prop-types';
 import { useId, useState } from 'react';
 import RouteOverview from './RouteOverview';
@@ -73,11 +74,7 @@ export default function LabResults({ result, previous }) {
           )}
         </details>
       </div>
-      {result.error && (
-        <p role="alert" className="lab-error">
-          {result.error.message} ({result.error.code})
-        </p>
-      )}
+      <RunError error={result.error} attempts={result.attempts} />
       {result.stages
         .filter((stage) => stage.status === 'failed')
         .map((stage) => (

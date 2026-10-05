@@ -93,3 +93,35 @@ it('opens a saved trip without generating another provider run', async () => {
   expect(HTMLDialogElement.prototype.close).toHaveBeenCalledTimes(2);
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
+
+it('retains the failed stage, provider cause and attempts in history after reload', async () => {
+  getLabRuns.mockResolvedValue({
+    runs: [
+      {
+        id: 'failed-run',
+        preset_id: 'medium',
+        mode: 'live',
+        started_at: '2026-10-05T12:00:00Z',
+        status: 'failed',
+        has_result: false,
+        error: {
+          stage: 'candidates',
+          code: 'provider_or_planning_failure',
+          message: 'AI unavailable',
+          http_status: 503,
+          causes: [{ message: 'Gateway returned HTTP 503' }],
+        },
+        attempts: [{ attempt: 3, max_attempts: 3, outcome: 'failed' }],
+      },
+    ],
+    groups: [],
+    next_offset: null,
+  });
+  render(<RunHistory revision={0} />);
+  await screen.findByText('medium');
+  fireEvent.click(screen.getByText('Inspect'));
+  expect(screen.getByRole('alert')).toHaveTextContent('candidates: AI unavailable');
+  expect(screen.getByText('Gateway returned HTTP 503')).toBeInTheDocument();
+  expect(screen.getByLabelText('Error diagnostic')).toHaveTextContent('"attempt": 3');
+  expect(screen.queryByText('View map and itinerary')).not.toBeInTheDocument();
+});

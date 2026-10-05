@@ -55,7 +55,12 @@ def finish(user_id, run_id, envelope, metrics):
             Json(envelope["input_snapshot"]),
             Json(metrics),
             (envelope["error"] or {}).get("code"),
-            Json({key: envelope.get(key) for key in ("route", "itinerary")}),
+            Json(
+                {
+                    key: envelope.get(key)
+                    for key in ("route", "itinerary", "error", "stages", "attempts")
+                }
+            ),
             run_id,
             user_id,
         ),
@@ -68,7 +73,8 @@ def finish(user_id, run_id, envelope, metrics):
 def history(user_id, limit=100, offset=0):
     return _query(
         "SELECT id,started_at,finished_at,status,mode,preset_id,run_type,batch_id,repeat_index,input,"
-        "metrics,error_code,(result->'route' IS NOT NULL AND result->'route' != 'null'::jsonb) AS has_result "
+        "metrics,error_code,result->'error' AS error,result->'stages' AS stages,"
+        "result->'attempts' AS attempts,(result->'route' IS NOT NULL AND result->'route' != 'null'::jsonb) AS has_result "
         "FROM algorithm_lab_runs WHERE user_id=%s "
         "ORDER BY started_at DESC,id DESC LIMIT %s OFFSET %s",
         (user_id, limit, offset),

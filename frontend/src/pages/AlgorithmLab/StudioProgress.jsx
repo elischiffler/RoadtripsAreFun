@@ -64,6 +64,11 @@ function phaseFor(stage) {
 }
 
 function describe(event) {
+  if (event.retry) {
+    const retry = event.retry;
+    const cause = retry.causes?.findLast((item) => item.message);
+    return `${cause?.message || 'Provider request failed.'} ${retry.outcome === 'retrying' ? `Retrying: attempt ${retry.attempt + 1} of ${retry.max_attempts}.` : retry.outcome === 'recovered' ? `Recovered on attempt ${retry.attempt} of ${retry.max_attempts}.` : `Stopped after attempt ${retry.attempt} of ${retry.max_attempts}.`}`;
+  }
   const query = event.query ? `Route sample ${event.query} of ${event.queries}. ` : '';
   switch (event.stage) {
     case 'studio.inputs':

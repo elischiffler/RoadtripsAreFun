@@ -9,6 +9,7 @@ from __future__ import annotations
 import requests
 
 from app.agent.progress import stage
+from app.agent.provider_diagnostics import retry_async
 from app.models.routing_models.routing_models import MapBox
 from app.routing import config
 from app.routing.run_metrics import increment
@@ -48,9 +49,15 @@ async def call_route(
         "access_token": config.MAPBOX_API,
     }
 
-    with stage("mapbox.request"):
-        increment("mapbox")
-        response = requests.get(call_route_url, params=params, timeout=config.HTTP_TIMEOUT)
+    async def request():
+        with stage("mapbox.request"):
+            increment("mapbox")
+            response = requests.get(call_route_url, params=params, timeout=config.HTTP_TIMEOUT)
+            if response.status_code >= 400:
+                response.raise_for_status()
+            return response
+
+    response = await retry_async(request)
     json_data = response.json()
     data = MapBox.model_validate(json_data)
     route = data.routes[

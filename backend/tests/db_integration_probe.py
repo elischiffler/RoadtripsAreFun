@@ -111,13 +111,30 @@ def seed():
     lab_runs.finish(
         OWNER_A,
         second,
-        {"input_snapshot": {"budget": 60}, "error": None},
+        {
+            "input_snapshot": {"budget": 60},
+            "error": {
+                "code": "provider_or_planning_failure",
+                "stage": "candidates",
+                "message": "AI request failed",
+                "http_status": 503,
+            },
+            "stages": [{"name": "candidates", "status": "failed", "detail": "AI request failed"}],
+            "attempts": [{"operation": "attractions.ratings", "attempt": 3, "outcome": "failed"}],
+        },
         {
             "objective_score": 123,
             "metric_version": "selection-surplus-v2",
             "trip_evaluation": {"hotel_costs": {"quoted_total_usd": 0}},
         },
     )
+    failed = next(row for row in lab_runs.history(OWNER_A) if row["id"] == second)
+    assert failed["status"] == "failed"
+    assert failed["error"]["http_status"] == 503
+    assert failed["stages"][0]["status"] == "failed"
+    assert failed["attempts"][0]["attempt"] == 3
+    assert not failed["has_result"]
+    assert lab_runs.result(OWNER_A, second)["error"]["stage"] == "candidates"
     assert lab_runs.history(OWNER_B) == []
     assert lab_runs.result(OWNER_B, run_id) is None
     assert lab_runs.result(OWNER_A, run_id)["itinerary"][0]["date"] == "2026-10-06"
@@ -296,7 +313,10 @@ def verify():
     assert len(records) == 2
     assert records[0]["metrics"]["objective_score"] == 123
     assert records[0]["input"] == {"budget": 60}
-    assert records[0]["status"] == "completed"
+    failed = next(row for row in records if row["status"] == "failed")
+    assert failed["error"]["http_status"] == 503
+    assert failed["stages"][0]["status"] == "failed"
+    assert failed["attempts"][0]["attempt"] == 3
     assert lab_runs.history(OWNER_B) == []
 
     assert chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_data"]["owner"] == OWNER_A

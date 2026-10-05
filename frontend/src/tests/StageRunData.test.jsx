@@ -136,10 +136,32 @@ it('shows retained failure diagnostics and does not turn missing output into fak
   expect(screen.getAllByText('No stage data retained')).toHaveLength(2);
   expect(JSON.parse((await open('Resolved cities and timezones')).textContent)).toEqual({
     error: data.error,
+    attempts: [],
   });
   await userEvent.click(screen.getByText('Dated itinerary'));
   expect(
     await screen.findByText('No input or output data was retained for this stage.')
   ).toBeInTheDocument();
   expect(screen.queryByText('0 itinerary days')).not.toBeInTheDocument();
+});
+
+it('includes the error beside retained candidate inputs when discovery fails', async () => {
+  const data = result();
+  data.stages = [{ name: 'candidates', status: 'failed', detail: 'AI provider failed' }];
+  data.error = {
+    code: 'provider_or_planning_failure',
+    message: 'AI provider failed',
+    stage: 'candidates',
+    http_status: 429,
+    causes: [{ type: 'ProviderError', message: 'Mentro gateway returned HTTP 429' }],
+  };
+  data.attempts = [
+    { operation: 'attractions.ratings', attempt: 3, max_attempts: 3, outcome: 'failed' },
+  ];
+  render(<StageRunData result={data} />);
+  const raw = JSON.parse((await open('Verified candidates and scores')).textContent);
+  expect(raw.error).toEqual(data.error);
+  expect(raw.attempts).toEqual(data.attempts);
+  expect(raw.effective_weights).toEqual(data.explanation.weights);
+  expect(screen.getByText('Provider HTTP status: 429')).toBeInTheDocument();
 });

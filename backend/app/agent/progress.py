@@ -7,6 +7,13 @@ from uuid import uuid4
 
 from app.routing.run_metrics import duration
 
+_stage = ContextVar("provider_stage", default=None)
+
+
+def current_stage():
+    return _stage.get()
+
+
 _reporter = ContextVar("agent_progress", default=None)
 
 
@@ -51,6 +58,7 @@ def emit(stage, state="completed", **details):
 
 @contextmanager
 def stage(name, **details):
+    token = _stage.set(name)
     started = perf_counter()
     emit(name, "started", **details)
     try:
@@ -60,3 +68,5 @@ def stage(name, **details):
         raise
     else:
         emit(name, durationMs=round((perf_counter() - started) * 1000, 3), **details)
+    finally:
+        _stage.reset(token)

@@ -85,3 +85,31 @@ six route samples, three eligible candidates, two selected attractions and a
 119.8-mile saved route. The selection disclosure showed actual solver objective
 and bound 1,040,004, exact solve time, threshold, selected candidates, scores,
 contributions and provenance. No fixture trip was used for this browser check.
+
+## October 5 failure diagnostics and retry validation
+
+The [retry contract](studio-retries.md) adds safe exception causes and upstream
+HTTP statuses to top-level errors and failed-stage data, retaining them together
+with failed/recovered attempt records in experiment JSONB results and history.
+Provider retries use three total attempts without a nested AI retry loop.
+
+Final checks: frontend 305 tests, 90.20% line coverage, format/lint/build passed
+(existing bundle-size warning); backend 710 tests, 87.26% coverage, Ruff checks
+passed with the unchanged 63% gate. Controlled faults verified 429/503 recovery
+and exhaustion, immediate 400/401/403 stops, transport errors through wrapped
+causes, cancellation, credential redaction, honest local versus upstream status,
+Mapbox attempt metrics, and errors beside retained candidate data.
+
+Disposable PostgreSQL project `roadtrips-crud-5142ceb944` verified failed-stage
+errors and attempts in history/results, owner isolation, connection recovery,
+recreation and backup/restore. Its source/restore volumes and backup are retained.
+Final source preview rebuilt under `local-studio-retries` and passed both
+container smoke checks; preview containers were stopped. These isolated checks
+use the checked-in schema, with no production migration/schema claim.
+
+The user's Medium two-day preset was rerun twice with live providers. Both
+completed with 4/4 attractions, a 653.3-mile / 11.5-hour route and a $151 hotel
+quote for two adults and children aged 7 and 12. Map and dated itinerary were
+verified, including final arrival in Boise on October 7. The discarded cause of
+the original AI ratings failure cannot be recovered; neither rerun reproduced
+it, so a provider policy block has not been established.

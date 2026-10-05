@@ -186,7 +186,7 @@ async def test_county_search_with_six_distant_verified_hotels_is_empty():
 
 
 @pytest.mark.parametrize("outcome", ["nearby", "no_nearby", "provider_failure"])
-async def test_live_adapter_scheduler_retries_only_spatial_misses(
+async def test_live_adapter_retries_transient_failures_without_moving_search(
     monkeypatch, route, fake_services, outcome
 ):
     class MovingGeocoder:
@@ -231,7 +231,8 @@ async def test_live_adapter_scheduler_retries_only_spatial_misses(
     if outcome == "provider_failure":
         with pytest.raises(persona_candidates.CandidateProviderError, match="unavailable"):
             await schedule_cp_sat_route(route, [], options, services)
-        assert len(geocoder.points) == 1 and ai.calls == 0
+        assert len(geocoder.points) == 3 and ai.calls == 0
+        assert geocoder.points[0] == geocoder.points[1] == geocoder.points[2]
         return
     if outcome == "no_nearby":
         from app.routing.base import PlanningError

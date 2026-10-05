@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import RunError from './RunError';
 import { useState } from 'react';
 
 const labels = {
@@ -106,7 +107,9 @@ function StageRow({ stage, result }) {
   const [open, setOpen] = useState(false);
   const data = retainedData(stage.name, result);
   const diagnostic =
-    data ?? (stage.status === 'failed' && result.error ? { error: result.error } : null);
+    stage.status === 'failed' && result.error
+      ? { ...(data || {}), error: result.error, attempts: result.attempts || [] }
+      : data;
   const label = labels[stage.name] || stage.name.replaceAll('_', ' ');
   return (
     <li>
@@ -123,6 +126,9 @@ function StageRow({ stage, result }) {
         {open && (
           <>
             <p>{stage.detail}</p>
+            {stage.status === 'failed' && (
+              <RunError error={result.error} attempts={result.attempts} />
+            )}
             {stage.name === 'initial_route' && (
               <p className="lab-note">
                 Only distance and duration were retained for the starting route.

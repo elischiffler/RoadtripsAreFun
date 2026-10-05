@@ -1,3 +1,4 @@
+import RunError from './RunError';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { getLabRuns, labError } from '../../services/algorithmLab';
@@ -133,6 +134,7 @@ export default function RunHistory({ revision }) {
                               {group.objective?.stddev?.toFixed(2) ?? 'unavailable'}.
                             </p>
                           )}
+                          <RunError error={run.error} attempts={run.attempts} />
                           <TripEvaluation metrics={metrics} />
                           {group?.trip_evaluation && (
                             <div aria-label="Current page trip statistics">

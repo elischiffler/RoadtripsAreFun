@@ -27,12 +27,15 @@ strategy can change without touching the HTTP call.
 
 from __future__ import annotations
 
+import json
 import logging
+import re
 import time
 from typing import Protocol, runtime_checkable
 
 import httpx
 
+from app.agent.provider_diagnostics import retry_sync, safe_message
 from app.agent.schemas import AgentUsage, LLMMessage, LLMResponse, ToolSpec
 from app.core.config import settings
 from app.routing.run_metrics import increment
@@ -51,6 +54,20 @@ class ProviderError(Exception):
 
     Raising this signals :class:`FallbackChain` to move on to the next provider.
     """
+
+    def __init__(
+        self, message, *, status_code=None, retryable=False, provider=None, provider_code=None
+    ):
+        super().__init__(message)
+        auth_status = re.search(r"^Supabase auth returned (\d{3})", message)
+        if auth_status:
+            status_code = int(auth_status[1])
+            message = f"Supabase authentication returned HTTP {status_code}"
+        self.public_message = safe_message(message)
+        self.status_code = status_code
+        self.retryable = retryable
+        self.provider = provider
+        self.provider_code = provider_code
 
 
 class ProviderNotConfigured(ProviderError):
@@ -244,30 +261,31 @@ class MentroGatewayProvider:
         payload = {"messages": _messages_to_gateway_payload(messages)}
         endpoint = f"{self._url.rstrip('/')}/api/chat/stream-full"
 
-        last_error: ProviderError | None = None
-        for attempt in range(1, self._MAX_ATTEMPTS + 1):
-            if attempt > 1:
-                increment("llm_empty_retries", "events")
-            token = self._auth.get_token()  # may raise ProviderNotConfigured / ProviderError
+        attempts = 0
+
+        def request():
+            nonlocal attempts
+            attempts += 1
+            token = self._auth.get_token()
             try:
                 response = self._stream(endpoint, token, payload)
             except httpx.HTTPError as exc:
-                raise ProviderError(f"Mentro gateway request failed: {exc}") from exc
-            # Treat an empty completion as a transient failure worth retrying —
-            # the gateway occasionally returns blank content with no usage.
+                raise ProviderError(
+                    "Mentro gateway network request failed", provider=self.name
+                ) from exc
             if response.content.strip():
                 return response
-            last_error = ProviderError(
-                f"Mentro gateway returned an empty completion (attempt {attempt})."
+            if attempts < self._MAX_ATTEMPTS:
+                increment("llm_empty_retries", "events")
+            else:
+                increment("llm_empty_attempt_caps", "events")
+            raise ProviderError(
+                f"Mentro gateway returned an empty completion (attempt {attempts}).",
+                retryable=True,
+                provider=self.name,
             )
-            logger.info(
-                "Mentro gateway empty completion on attempt %s/%s; retrying.",
-                attempt,
-                self._MAX_ATTEMPTS,
-            )
-        increment("llm_empty_attempt_caps", "events")
-        # Exhausted retries with only empty responses.
-        raise last_error or ProviderError("Mentro gateway returned only empty completions.")
+
+        return retry_sync(request)
 
     def _stream(self, endpoint: str, token: str, payload: dict) -> LLMResponse:
         """POST to the gateway and reduce the SSE stream to the final response."""
@@ -282,8 +300,27 @@ class MentroGatewayProvider:
                 # Pre-stream failures (validation/auth/rate-limit) come back as a
                 # plain-JSON body with a non-2xx status, NOT as SSE.
                 if resp.status_code != httpx.codes.OK:
-                    body = resp.read().decode(errors="replace")
-                    raise ProviderError(f"Mentro gateway returned {resp.status_code}: {body[:200]}")
+                    raw = resp.read()
+                    try:
+                        body = json.loads(raw)
+                    except ValueError:
+                        body = {}
+                    if not isinstance(body, dict):
+                        body = {}
+                    error = body.get("error", body)
+                    if isinstance(error, dict):
+                        code = error.get("code")
+                        message = error.get("message")
+                    else:
+                        code = body.get("code")
+                        message = error
+                    detail = f": {safe_message(message)}" if isinstance(message, str) else ""
+                    raise ProviderError(
+                        f"Mentro gateway returned HTTP {resp.status_code}{detail}",
+                        status_code=resp.status_code,
+                        provider=self.name,
+                        provider_code=code if isinstance(code, str) else None,
+                    )
                 return self._reduce_sse(resp.iter_lines())
 
     def _reduce_sse(self, lines) -> LLMResponse:
@@ -294,8 +331,6 @@ class MentroGatewayProvider:
         which can arrive *after* a 200 OK once streaming has begun — is turned
         into a :class:`ProviderError`.
         """
-        import json
-
         event_name = "message"
         data_parts: list[str] = []
 
@@ -318,7 +353,20 @@ class MentroGatewayProvider:
             if event == "error":
                 code = payload.get("code", "STREAM_FAILURE")
                 message = payload.get("message", "unknown gateway error")
-                raise ProviderError(f"Mentro gateway error [{code}]: {message}")
+                raise ProviderError(
+                    f"Mentro gateway error [{code}]: {safe_message(message)}",
+                    provider=self.name,
+                    provider_code=code,
+                    retryable=code
+                    in (
+                        "UPSTREAM_ERROR",
+                        "STREAM_FAILURE",
+                        "RATE_LIMITED",
+                        "RATE_LIMIT_EXCEEDED",
+                        "PROVIDER_ERROR",
+                        "TIMEOUT",
+                    ),
+                )
             return None  # a "chunk" or unknown event — ignored
 
         for raw_line in lines:
@@ -336,7 +384,11 @@ class MentroGatewayProvider:
         result = flush()
         if result is not None:
             return result
-        raise ProviderError("Mentro gateway stream closed without an 'end' event.")
+        raise ProviderError(
+            "Mentro gateway stream closed without an 'end' event.",
+            retryable=True,
+            provider=self.name,
+        )
 
     def _response_from_end(self, payload: dict) -> LLMResponse:
         """Map the gateway's aggregated ``end`` payload into an LLMResponse.
@@ -394,16 +446,21 @@ class FallbackChain:
 
     def complete(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
         errors: list[str] = []
+        last_error = None
         for provider in self._providers:
             # ``configured`` is optional on the Protocol; only skip when a
             # provider explicitly reports itself unconfigured.
             check = getattr(provider, "configured", None)
             if callable(check) and not check():
+                last_error = ProviderNotConfigured(
+                    f"{provider.name}: not configured", provider=provider.name
+                )
                 errors.append(f"{provider.name}: skipped (not configured)")
                 continue
             try:
                 response = provider.complete(messages, tools)
             except ProviderError as exc:
+                last_error = exc
                 errors.append(f"{provider.name}: {exc}")
                 continue
             except Exception as exc:  # noqa: BLE001
@@ -411,7 +468,8 @@ class FallbackChain:
                 # unexpected fault (e.g. a JSON/parse error, an httpx quirk) must
                 # NOT escape the chain as an uncaught 500. Log it and advance so a
                 # provider hiccup degrades to a clean ProvidersExhausted -> 503.
-                logger.exception("provider %s raised an unexpected error", provider.name)
+                last_error = exc
+                logger.error("provider %s raised %s", provider.name, type(exc).__name__)
                 errors.append(f"{provider.name}: unexpected {type(exc).__name__}: {exc}")
                 continue
             # Record who actually served the request.
@@ -420,7 +478,7 @@ class FallbackChain:
             return response
         raise ProvidersExhausted(
             "All LLM providers were unconfigured or failed: " + "; ".join(errors)
-        )
+        ) from last_error
 
 
 def build_default_chain() -> FallbackChain:

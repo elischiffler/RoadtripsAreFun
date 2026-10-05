@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from app.agent.persona import ATTRIBUTE_KEYS, normalize_weights
 from app.agent.progress import emit, stage
+from app.agent.provider_diagnostics import collecting_attempts, diagnostic, retry_async
 from app.agent.trip_dates import (
     normalize_departure_time,
     resolve_departure,
@@ -311,7 +312,7 @@ async def execute_run(payload, user_id, departure):
         "itinerary": None,
         "error": None,
     }
-    with capture_explanation() as explanation:
+    with capture_explanation() as explanation, collecting_attempts() as attempts:
         record_explanation(weights=weights)
         record_stage(
             "inputs",
@@ -321,7 +322,8 @@ async def execute_run(payload, user_id, departure):
         try:
             with stage("studio.endpoints"):
                 start, destination = await asyncio.gather(
-                    resolve_endpoint(inputs.start_id), resolve_endpoint(inputs.destination_id)
+                    retry_async(lambda: resolve_endpoint(inputs.start_id)),
+                    retry_async(lambda: resolve_endpoint(inputs.destination_id)),
                 )
             departure = _departure(inputs, start["timezone"])
             trip = TripProfile.model_validate(
@@ -399,7 +401,7 @@ async def execute_run(payload, user_id, departure):
                 if isinstance(exc, PlanningError)
                 else "provider_or_planning_failure"
             )
-            envelope["error"] = {"code": code, "message": message}
+            envelope["error"] = {"code": code, "message": message, **diagnostic(exc)}
         completed = {item["name"] for item in explanation["stages"]}
         failure_pending = envelope["error"] is not None
         for name in (
@@ -415,7 +417,10 @@ async def execute_run(payload, user_id, departure):
                 status = "failed" if failure_pending else "not_run"
                 detail = envelope["error"]["message"] if failure_pending else "Not reached."
                 record_stage(name, status, detail)
+                if failure_pending:
+                    envelope["error"]["stage"] = name
                 failure_pending = False
         envelope["stages"] = explanation.pop("stages")
         envelope["explanation"] = explanation
+        envelope["attempts"] = attempts
     return envelope

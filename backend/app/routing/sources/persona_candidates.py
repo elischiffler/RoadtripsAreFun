@@ -21,6 +21,7 @@ from pydantic import BaseModel, ConfigDict, field_validator
 
 from app.agent.persona import ATTRIBUTE_KEYS, normalize_weights
 from app.agent.progress import emit, stage
+from app.agent.provider_diagnostics import retry_async
 from app.agent.providers import LLMProvider, build_default_chain
 from app.agent.schemas import LLMMessage
 from app.routing import config
@@ -245,7 +246,7 @@ async def attraction_candidates(
         )
         point = _point(raw_point)
         with stage("attractions.provider", query=query_index, queries=len(query_points)):
-            records = await places.attractions_near(point)
+            records = await retry_async(lambda: places.attractions_near(point))
         verified_records = []
         for record in records:
             try:
@@ -347,7 +348,9 @@ async def _room_candidates(
     places = places or LivePlaceProvider()
     if isinstance(places, LivePlaceProvider):
         places.require_hotels()
-    records = await places.hotels_near(point, check_in, price_range, room)
+    records = await retry_async(
+        lambda: places.hotels_near(point, check_in, price_range, room), "hotels.lookup"
+    )
     if not records:
         return []
     names = [

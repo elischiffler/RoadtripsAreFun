@@ -1,5 +1,12 @@
 # Current feature and senior demonstration work
 
+## October 5 provider failure diagnostics and retries
+
+Studio preserves safe exception causes, failed-stage attribution and bounded
+provider attempt history in existing experiment JSONB storage. Live progress,
+top error, failed-stage dropdown and saved History Inspect expose those records.
+See [retry contract](../docs/studio-retries.md).
+
 ## October 5 inspectable stage data
 
 The Algorithm details tab replaces generic Pipeline outcomes with compact

@@ -25,6 +25,12 @@ from app.agent.schemas import LLMMessage, LLMResponse
 
 from .conftest import FakeProvider
 
+
+@pytest.fixture(autouse=True)
+def skip_retry_backoff(monkeypatch):
+    monkeypatch.setattr("app.agent.provider_diagnostics.time.sleep", lambda _: None)
+
+
 # --- FallbackChain ----------------------------------------------------------
 
 
