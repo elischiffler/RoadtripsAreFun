@@ -40,7 +40,13 @@ def test_wrong_password_does_not_issue_session(password):
 
 @pytest.mark.parametrize(
     "path,method",
-    [("presets", "get"), ("runs", "get"), (f"runs/{uuid4()}/result", "get"), ("run", "post")],
+    [
+        ("presets", "get"),
+        ("runs", "get"),
+        (f"runs/{uuid4()}/result", "get"),
+        ("run", "post"),
+        ("run/stream", "post"),
+    ],
 )
 def test_every_studio_endpoint_requires_session(path, method):
     item = preset_catalog()[0]
@@ -128,3 +134,55 @@ def test_visitor_run_uses_shared_live_planner_and_scoped_storage(monkeypatch):
     assert response.json()["run_record"]["saved"]
     assert calls[0][0] == calls[1] == calls[2]
     assert calls[0][1]["mode"] == "live"
+
+
+def test_stream_validates_access_and_inputs_before_stream_headers():
+    assert client.post("/studio/run/stream", json={}).status_code == 401
+    response = client.post("/studio/run/stream", headers=unlock(), json={})
+    assert response.status_code == 422
+    assert "application/x-ndjson" not in response.headers["content-type"]
+
+
+def test_stream_forwards_actual_progress_and_preserves_saved_envelope(monkeypatch):
+    import json
+
+    from app.agent.progress import emit
+
+    async def run(payload, response, owner):
+        emit("route.model", candidates=8, eligible=4, requestedStops=2)
+        return {"route": {"stops": []}, "run_record": {"saved": True}, "owner": owner}
+
+    monkeypatch.setattr(lab, "run", run)
+    item = preset_catalog()[0]
+    response = client.post(
+        "/studio/run/stream",
+        headers=unlock(),
+        json={"preset_id": item["id"], "inputs": item["inputs"]},
+    )
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["x-accel-buffering"] == "no"
+    events = [json.loads(line) for line in response.text.splitlines()]
+    assert events[0]["stage"] == "studio.run"
+    assert events[1]["stage"] == "route.model"
+    assert events[1]["eligible"] == 4
+    assert events[-1]["type"] == "result"
+    assert events[-1]["response"]["run_record"]["saved"]
+    assert events[-1]["response"]["owner"].startswith("studio:")
+
+
+def test_stream_scrubs_storage_failure(monkeypatch):
+    from fastapi import HTTPException
+
+    async def fail(*args):
+        raise HTTPException(503, "private database credential")
+
+    monkeypatch.setattr(lab, "run", fail)
+    item = preset_catalog()[0]
+    response = client.post(
+        "/studio/run/stream",
+        headers=unlock(),
+        json={"preset_id": item["id"], "inputs": item["inputs"]},
+    )
+    assert '"type":"error","status":503' in response.text
+    assert "private database credential" not in response.text

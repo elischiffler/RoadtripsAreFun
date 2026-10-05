@@ -14,6 +14,7 @@ from fastapi.routing import APIRoute
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.agent.persona import ATTRIBUTE_KEYS, normalize_weights
+from app.agent.progress import emit, stage
 from app.agent.trip_dates import (
     normalize_departure_time,
     resolve_departure,
@@ -206,8 +207,19 @@ async def run(payload: LabRun, response: Response, user_id: str = Depends(requir
         )
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
+    emit(
+        "studio.inputs",
+        requestedStops=payload.inputs.num_stops,
+        travelers=payload.inputs.traveler_count,
+        rooms=len(payload.inputs.hotel_rooms),
+        budget=payload.inputs.budget,
+        attributes=len(ATTRIBUTE_KEYS),
+    )
     try:
-        run_id = await asyncio.to_thread(lab_runs.begin, user_id, payload.model_dump(mode="json"))
+        with stage("studio.storage_begin"):
+            run_id = await asyncio.to_thread(
+                lab_runs.begin, user_id, payload.model_dump(mode="json")
+            )
     except Exception as exc:
         storage_failure("begin", exc)
         raise HTTPException(503, "Run storage is unavailable. No experiment was started.") from exc
@@ -217,7 +229,8 @@ async def run(payload: LabRun, response: Response, user_id: str = Depends(requir
         metrics = compile_metrics(envelope, telemetry, (perf_counter() - started) * 1000)
     envelope["run_record"] = {"id": run_id, "saved": False, "metrics": metrics}
     try:
-        await asyncio.to_thread(lab_runs.finish, user_id, run_id, envelope, metrics)
+        with stage("studio.storage_finish"):
+            await asyncio.to_thread(lab_runs.finish, user_id, run_id, envelope, metrics)
         envelope["run_record"]["saved"] = True
     except Exception as exc:
         storage_failure("finish", exc)
@@ -306,9 +319,10 @@ async def execute_run(payload, user_id, departure):
             "Validated trip, occupancy, preferences and departure. Nothing is saved to chat or account.",
         )
         try:
-            start, destination = await asyncio.gather(
-                resolve_endpoint(inputs.start_id), resolve_endpoint(inputs.destination_id)
-            )
+            with stage("studio.endpoints"):
+                start, destination = await asyncio.gather(
+                    resolve_endpoint(inputs.start_id), resolve_endpoint(inputs.destination_id)
+                )
             departure = _departure(inputs, start["timezone"])
             trip = TripProfile.model_validate(
                 {
@@ -332,7 +346,8 @@ async def execute_run(payload, user_id, departure):
                 "complete",
                 "Resolved the explicitly selected catalog cities with the provider.",
             )
-            initial = await call_route(*start["coordinates"], *destination["coordinates"])
+            with stage("studio.initial_route"):
+                initial = await call_route(*start["coordinates"], *destination["coordinates"])
             envelope["direct_route"] = {"distance": initial.distance, "duration": initial.duration}
             record_stage("initial_route", "complete", "Mapbox base driving route received.")
             route = await plan_final_route(
@@ -351,9 +366,10 @@ async def execute_run(payload, user_id, departure):
                 user_id=user_id,
             )
             envelope["route"] = route.model_dump(mode="json")
-            itinerary = await build_itinerary(
-                Itinerary_Payload(route=route, start_time=datetime.fromisoformat(departure))
-            )
+            with stage("studio.itinerary"):
+                itinerary = await build_itinerary(
+                    Itinerary_Payload(route=route, start_time=datetime.fromisoformat(departure))
+                )
             envelope["itinerary"] = [day.model_dump(mode="json") for day in itinerary]
             record_stage(
                 "itinerary", "complete", "Built itinerary from the actual validated route."

@@ -15,7 +15,7 @@ from app.agent.progress import reporting, stage
 HEARTBEAT_SECONDS = 10
 
 
-async def stream_turn(run):
+async def stream_turn(run, *, stage_name="agent.turn"):
     loop = asyncio.get_running_loop()
     queue = asyncio.Queue(maxsize=256)
     stopped = threading.Event()
@@ -37,7 +37,7 @@ async def stream_turn(run):
         if stopped.is_set():
             return
         try:
-            with reporting(publish), stage("agent.turn"):
+            with reporting(publish), stage(stage_name):
                 result = await run()
             publish({"type": "result", "response": result.model_dump(mode="json")})
         except HTTPException as exc:

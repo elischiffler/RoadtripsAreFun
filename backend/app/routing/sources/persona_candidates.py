@@ -244,7 +244,8 @@ async def attraction_candidates(
             collected=len(results),
         )
         point = _point(raw_point)
-        records = await places.attractions_near(point)
+        with stage("attractions.provider", query=query_index, queries=len(query_points)):
+            records = await places.attractions_near(point)
         verified_records = []
         for record in records:
             try:
@@ -268,13 +269,19 @@ async def attraction_candidates(
             continue
         # Ground ratings in the live provider's names, as hotel ratings already are.
         # Independent AI suggestions rarely matched the provider's actual nearby list.
-        proposals = await _propose(
-            ai,
-            "attractions",
-            point,
-            MAX_PROPOSALS_PER_QUERY,
-            names=[record.name for record in records],
-        )
+        with stage(
+            "attractions.ratings",
+            query=query_index,
+            queries=len(query_points),
+            candidates=len(records),
+        ):
+            proposals = await _propose(
+                ai,
+                "attractions",
+                point,
+                MAX_PROPOSALS_PER_QUERY,
+                names=[record.name for record in records],
+            )
         for proposal in proposals:
             name = _name_key(proposal.name)
             for record in records:

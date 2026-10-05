@@ -1,10 +1,12 @@
 import { studioRequest } from './studioSession';
+import { streamStudioRun } from './studioProgress';
 
 export async function getLabPresets(signal) {
   return (await studioRequest('get', 'presets', null, signal)).data;
 }
 
-export async function runLab(request, signal) {
+export async function runLab(request, signal, onProgress) {
+  if (onProgress) return streamStudioRun(request, signal, onProgress);
   return (await studioRequest('post', 'run', request, signal)).data;
 }
 

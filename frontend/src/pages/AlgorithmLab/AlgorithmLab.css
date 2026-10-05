@@ -708,3 +708,47 @@
     font-size: 0.8rem;
   }
 }
+
+.studio-progress-steps {
+  list-style: none;
+  margin: 24px 0;
+  padding: 0;
+  counter-reset: planning-step;
+}
+.studio-progress-steps li {
+  counter-increment: planning-step;
+  padding: 12px 0;
+  border-top: 1px solid var(--cream-dark);
+}
+.studio-progress-steps summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  cursor: pointer;
+}
+.studio-progress-steps summary::before {
+  content: counter(planning-step) '.';
+  min-width: 20px;
+}
+.studio-progress-steps summary span {
+  flex: 1;
+}
+.studio-progress-steps summary small {
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+.studio-progress-steps li[data-state='active'] summary {
+  color: var(--amber-dark, #93621d);
+  font-weight: 600;
+}
+.studio-progress-steps li[data-state='completed'] summary small {
+  color: #3d6748;
+}
+.studio-progress-steps p {
+  font-size: 0.875rem;
+  margin: 10px 0 0 30px;
+  line-height: 1.6;
+}
+.studio-progress-steps .studio-progress-detail {
+  font-weight: 600;
+}

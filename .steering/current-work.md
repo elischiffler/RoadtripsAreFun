@@ -1,5 +1,14 @@
 # Current feature and senior demonstration work
 
+## October 5 live Studio progress
+
+The pending box now displays backend-streamed collection/calculation stages,
+actual candidate and solver counts, and explanations of CP-SAT inputs versus
+separate scheduling/road validation. `POST /studio/run/stream` preserves the
+shared live planner and signed visitor boundary. See
+[live progress](../docs/studio-progress.md). The exit link is Back to home page
+and targets `/`.
+
 ## October 5 Trip Planning Studio access
 
 The current page is `/studio` (old `/algorithm` bookmarks redirect). Visitors,

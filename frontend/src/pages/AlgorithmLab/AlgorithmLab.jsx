@@ -8,6 +8,7 @@ import TripPresetDialog from './TripPresetDialog';
 import LabResults from './LabResults';
 import HelpTip from './HelpTip';
 import RunHistory from './RunHistory';
+import StudioProgress from './StudioProgress';
 import './AlgorithmLab.css';
 
 function LabWorkspace({ historyOpen }) {
@@ -16,6 +17,7 @@ function LabWorkspace({ historyOpen }) {
   const [inputs, setInputs] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState([]);
   const [result, setResult] = useState(null);
   const [previous, setPrevious] = useState(null);
   const lastResult = useRef(null);
@@ -71,6 +73,7 @@ function LabWorkspace({ historyOpen }) {
     const controller = new AbortController();
     request.current = controller;
     setBusy(true);
+    setProgress([]);
     setResult(null);
     setError('');
     try {
@@ -80,7 +83,18 @@ function LabWorkspace({ historyOpen }) {
           preset_id: presetId,
           inputs,
         },
-        controller.signal
+        controller.signal,
+        (event) => {
+          if (
+            !controller.signal.aborted &&
+            request.current === controller &&
+            event.type === 'progress'
+          )
+            setProgress((previous) => [
+              ...previous.filter((item) => item.stage !== event.stage),
+              event,
+            ]);
+        }
       );
       if (controller.signal.aborted || request.current !== controller) return;
       setPrevious(lastResult.current);
@@ -116,6 +130,7 @@ function LabWorkspace({ historyOpen }) {
     <div className="lab-layout">
       <form
         className="lab-input-panel"
+        aria-busy={busy}
         onSubmit={submit}
         onInvalid={(event) => {
           let section = event.target.closest('details');
@@ -175,7 +190,6 @@ function LabWorkspace({ historyOpen }) {
       </form>
       <div
         className="lab-output-panel"
-        aria-busy={busy}
         ref={output}
         tabIndex={-1}
         aria-label="Experiment output"
@@ -191,16 +205,7 @@ function LabWorkspace({ historyOpen }) {
             </p>
           </div>
         )}
-        {busy && (
-          <div className="lab-pending" role="status">
-            <span className="lab-running-dot" />
-            <h2>Building the route</h2>
-            <p>
-              Discovering candidates, matching profiles, selecting attractions, then scheduling and
-              checking the drive.
-            </p>
-          </div>
-        )}
+        {busy && <StudioProgress events={progress} />}
         {error && (
           <p role="alert" className="lab-error">
             {error} Update the inputs if needed, then run again.
@@ -276,7 +281,7 @@ export default function AlgorithmLab() {
               History
             </button>
           )}
-          <Link to="/chat">Back to trip chat</Link>
+          <Link to="/">Back to home page</Link>
         </div>
       </header>
       {session ? (

@@ -8,8 +8,10 @@ from uuid import UUID, uuid4
 
 import jwt
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response
-from pydantic import BaseModel, ConfigDict, Field
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 
+from app.agent.progress_stream import stream_turn
 from app.routers import algorithm_lab as lab
 
 # A stable deployment secret shares sessions across workers. Local sessions expire
@@ -85,3 +87,17 @@ async def runs(
 @router.get("/runs/{run_id}/result")
 async def result(run_id: UUID, response: Response, user_id: str = Depends(require_studio_session)):
     return await lab.saved_result(run_id, response, user_id)
+
+
+@router.post("/run/stream")
+async def streamed_run(payload: lab.LabRun, user_id: str = Depends(require_studio_session)):
+    # Validate inputs and visitor access before sending streaming response headers.
+    async def execute():
+        result = await lab.run(payload, Response(), user_id)
+        return RootModel[dict](result)
+
+    return StreamingResponse(
+        stream_turn(execute, stage_name="studio.run"),
+        media_type="application/x-ndjson",
+        headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+    )

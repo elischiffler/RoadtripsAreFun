@@ -10,6 +10,7 @@ from typing import Any
 from geopy.distance import geodesic
 from ortools.sat.python import cp_model
 
+from app.agent.progress import emit
 from app.routing.base import PlanningError
 from app.routing.explanation import record_explanation
 
@@ -131,6 +132,14 @@ def select_attractions(candidates, query_points, num_stops):
     eligible, explanations = _prepare(candidates, query_points)
     record_explanation(candidates=explanations)
     summary["eligible_count"] = len(eligible)
+    emit(
+        "route.model",
+        candidates=len(candidates),
+        eligible=len(eligible),
+        requestedStops=num_stops,
+        threshold=MIN_UTILITY,
+        slots=len({item[0] for item in eligible}),
+    )
     if not eligible:
         return []
     model, variables = _build_model(eligible, num_stops)
@@ -166,4 +175,11 @@ def select_attractions(candidates, query_points, num_stops):
             explanation.update(selected=True, reason="selected")
             selected.append((slot, candidate))
     summary["selected_count"] = len(selected)
+    emit(
+        "route.solution",
+        selected=len(selected),
+        solverStatus=summary["status"],
+        eligible=len(eligible),
+        objective=summary["objective_value"],
+    )
     return selected

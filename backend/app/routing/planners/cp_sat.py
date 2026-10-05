@@ -44,6 +44,7 @@ class CPSatPlanner(RoutePlanner):
             if initial_route.duration > 0
             else []
         )
+        emit("route.samples", queries=len(points), requestedStops=options.num_stops)
         try:
             with stage("route.gathering"):
                 candidates = (

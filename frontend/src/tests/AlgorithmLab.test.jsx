@@ -9,6 +9,22 @@ import { invalidateRoutingSettings } from '../services/routingSettings';
 import { renderWithProviders } from './testUtils';
 
 vi.mock('axios', () => ({ default: { get: vi.fn(), post: vi.fn() } }));
+vi.mock('../services/algorithmLab', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    runLab: (request, signal, onProgress) => {
+      onProgress?.({
+        type: 'progress',
+        stage: 'attractions.provider',
+        state: 'started',
+        query: 1,
+        queries: 6,
+      });
+      return actual.runLab(request, signal);
+    },
+  };
+});
 vi.mock('../components/Map', () => ({ default: () => <div>Live route map</div> }));
 
 const inputs = {
@@ -242,10 +258,7 @@ describe('Trip Planning Studio access and lifecycle', () => {
     );
     await screen.findByRole('button', { name: 'Run live route' });
     expect(document.querySelector('.global-header')).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Back to trip chat' })).toHaveAttribute(
-      'href',
-      '/chat'
-    );
+    expect(screen.getByRole('link', { name: 'Back to home page' })).toHaveAttribute('href', '/');
   });
 
   it('retries a failed catalog request', async () => {
@@ -397,6 +410,12 @@ describe('Trip Planning Studio experiments', () => {
     await userEvent.dblClick(screen.getByRole('button', { name: 'Run live route' }));
     expect(axios.post).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('button', { name: 'Running…' })).toBeDisabled();
+    expect(screen.getByRole('status', { name: 'Current planning activity' })).toHaveTextContent(
+      'Route sample 1 of 6'
+    );
+    expect(screen.getByRole('list', { name: 'Live planning stages' })).toHaveTextContent(
+      'Choose attractions with CP-SAT'
+    );
     expect(screen.getByLabelText('Interest nature percentage')).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Cancel and reset' }));
     await act(async () => resolveRun({ data: response() }));
