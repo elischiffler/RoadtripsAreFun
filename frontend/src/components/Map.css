@@ -1,0 +1,70 @@
+.map-container .map-stop-pin {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  min-height: 0;
+  padding: 0;
+  border: 2px solid #fbf8f3;
+  border-radius: 50%;
+  background: #a56b28;
+  color: white;
+  font:
+    700 12px / 1 system-ui,
+    sans-serif;
+  box-shadow: 0 2px 6px #3b2a1a55;
+  cursor: pointer;
+}
+.map-container .map-stop-pin[data-type='hotel'] {
+  background: #234a3c;
+}
+.map-container .map-stop-pin:hover,
+.map-container .map-stop-pin[aria-expanded='true'] {
+  background: #5c3d2e;
+}
+.map-container .map-stop-pin:focus-visible,
+.map-stop-svg-pin:focus-visible {
+  outline: 3px solid #a56b28;
+  outline-offset: 3px;
+}
+.map-stop-svg-pin {
+  cursor: pointer;
+}
+.map-stop-svg-pin text {
+  pointer-events: none;
+}
+.map-stop-popup .mapboxgl-popup-content,
+.map-stop-local-popup {
+  background: #fbf8f3;
+  color: #3b2a1a;
+  font:
+    13px / 1.5 system-ui,
+    sans-serif;
+  border-radius: 8px;
+  padding: 16px 28px 12px 12px;
+  overflow-wrap: anywhere;
+}
+.map-stop-popup p,
+.map-stop-local-popup p {
+  margin: 4px 0 0;
+  text-transform: none;
+}
+.map-stop-local-popup {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  z-index: 3;
+  box-shadow: 0 2px 12px #3b2a1a33;
+}
+.map-stop-local-popup .map-stop-close {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  padding: 2px 6px;
+  border: 0;
+  background: transparent;
+  color: #3b2a1a;
+  font-size: 20px;
+  cursor: pointer;
+}

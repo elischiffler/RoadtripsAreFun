@@ -25,7 +25,9 @@ export default function LabResults({ result, previous }) {
   const trip = result.run_record?.metrics?.trip_evaluation;
   const delivered =
     trip?.stop_fulfillment?.delivered ??
-    (route ? route.stops?.filter((stop) => stop.type === 'attraction').length : null);
+    (route
+      ? route.stops?.filter((stop) => ['stop', 'attraction'].includes(stop.type)).length
+      : null);
   const requested =
     trip?.stop_fulfillment?.requested ??
     solver?.requested_stops ??
