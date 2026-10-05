@@ -55,6 +55,7 @@ const ChatInput = ({ onSubmit, disabled }) => {
               <IconButton
                 aria-label="Send message"
                 className="chat-send-button"
+                disableRipple
                 onClick={handleSend}
                 disabled={disabled || !value.trim()}
                 edge="end"
@@ -67,7 +68,7 @@ const ChatInput = ({ onSubmit, disabled }) => {
         sx={{
           '& .MuiOutlinedInput-root': {
             borderRadius: '24px',
-            backgroundColor: 'var(--cream-light)',
+            backgroundColor: 'color-mix(in srgb, var(--cream-light) 65%, transparent)',
             color: '#000',
             minHeight: '48px',
           },

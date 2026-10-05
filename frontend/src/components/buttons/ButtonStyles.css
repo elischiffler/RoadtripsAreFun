@@ -64,32 +64,35 @@
   border-radius: 50%;
   width: 44px;
   height: 44px;
-  border: 1.5px solid var(--bark-main);
-  background-color: var(--cream-main);
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+  opacity: 0.75;
   transition:
-    background-color 0.15s ease,
+    opacity 0.15s ease,
     transform 0.15s ease;
   cursor: pointer;
 }
 
 .icon-btn:hover {
-  background-color: var(--cream-dark);
-  border-color: var(--bark-dark);
+  background-color: transparent;
+  opacity: 1;
   transform: scale(1.08);
 }
 
 .icon-btn--disabled {
   cursor: default;
   pointer-events: none;
-  border-color: var(--sand-main);
+  opacity: 0.5;
 }
 
 .icon-btn--disabled:hover {
   transform: none;
-  background-color: var(--cream-main);
+  background-color: transparent;
 }
 
-/* Outlined variant — same base style, kept for backwards compat */
-.icon-btn--outlined {
-  /* size and border already on .icon-btn */
+.icon-btn-link:focus-visible {
+  outline: 2px solid var(--bark-main);
+  outline-offset: 2px;
+  border-radius: 50%;
 }

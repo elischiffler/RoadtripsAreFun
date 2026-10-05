@@ -169,8 +169,20 @@
 
 .chat-send-button {
   color: #000 !important;
+  background: transparent !important;
+  opacity: 0.75;
   width: 34px;
   height: 34px;
+}
+
+.chat-send-button:hover,
+.chat-send-button:focus-visible {
+  opacity: 1;
+}
+
+.chat-send-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .chat-send-button.Mui-disabled {
@@ -275,35 +287,36 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: var(--cream-light);
-  border: 1px solid var(--cream-dark);
+  background-color: transparent;
+  border: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: var(--sand-dark, #a08060);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  opacity: 0.75;
   transition:
-    background-color 0.15s ease,
+    opacity 0.15s ease,
     color 0.15s ease,
     transform 0.15s ease;
 }
 
 .fab:hover {
-  background-color: var(--cream-dark);
+  background-color: transparent;
+  opacity: 1;
   color: var(--bark-main);
   transform: scale(1.08);
 }
 
-/* New-trip FAB — dashed border */
-.fab--new {
-  border-style: dashed;
-  border-color: var(--sand-main);
-  color: var(--bark-main);
+.fab:focus-visible {
+  outline: 2px solid var(--bark-main);
+  outline-offset: 2px;
 }
 
-.fab--new:hover {
-  border-color: var(--bark-main);
+/* New-trip icon */
+.fab--new {
+  color: var(--bark-main);
 }
 
 .fab-icon {
