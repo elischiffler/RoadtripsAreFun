@@ -33,7 +33,8 @@ and validated receipts are backend behavior, not evidence that a model always
 extracts all traveler intent correctly.
 
 `TripProfile` owns endpoints/coordinates, pending location choices, stop count,
-nightly budget, local departure time, canonical departure datetime/timezone,
+traveler count and explicit room allocations, per-room nightly budget,
+local departure time, canonical departure datetime/timezone,
 car choice and trip persona overrides. `missing_details()` is shared by prompt
 staging, presentation and completion. `trip_dates.py` rejects invalid, past or
 ambiguous/nonexistent local departure times; `departure.py` shares normalized
@@ -80,20 +81,36 @@ are not trusted. Terra verifies attractions; `sources/google_hotels.py` verifies
 dated totals, identity, addresses and a 30-mile radius. Limits/deadlines and
 failure behavior are owned by source constants and `docs/hotel-prices.md`.
 
-`planners/cp_sat.py` queries `min(30, max(6, 3*n))` route points for positive stop
+Provider verification does not establish subjective attribute ratings: those
+are model estimates. `LocationProfile` now types provider facts, canonical ratings and provenance.
+`routing/profiles.py` owns the shared crossmatch/contributions, with ratings
+generated from the canonical persona vocabulary.
+
+`planners/cp_sat.py` uses shared `cp_sat_selection.query_count()` to query `min(30, max(6, 3*n))` route points for positive stop
 counts, accepts at most 30 candidates, selects utility >=0.60, at most the
 requested count and one candidate per nearest query slot. A deterministic
 one-worker/seed-zero/five-second solve accepts only feasible/optimal outcomes.
 Fewer attractions than requested can result; this is not a globally optimal
 joint solve of real driving, hotel prices and venue opening hours.
 
-At the inspected feature head, `cp_sat_scheduler.py` schedules two-hour visits,
-uses `PlanOptions`' 09:00–16:00 day and retries up to six overnight points backward
-by 30 driving minutes. It prefers in-budget verified hotels but retains actual
-over-budget totals/warnings. `itinerary_api.py` consumes actual leg durations and
-restarts after hotels at hardcoded 09:00. The upcoming shared scheduling policy
-is described in [current work](current-work.md); these defaults are not 18:00/20:00
-yet in the inspected shared head.
+At inspected head `53fd0bf`, `cp_sat_scheduler.py` schedules two-hour visits and
+uses `models/scheduling_policy.py`: preferred hotel 18:00, hotel cutoff 20:00,
+restart 09:00, default final destination cutoff 21:00, with optional overrides.
+It tries up to six overnight positions around the preferred point and ranks
+usable hotels by per-room budget compliance, utility, price, distance and ID.
+`routing/travel_timing.py` shares actual-leg timing with itinerary construction.
+See `docs/flexible-hotel-evenings.md`, `docs/chat-creation-arrival-timing.md` and
+`docs/travelers-and-hotel-occupancy.md` for integrated scheduling/occupancy rules.
+
+The CP-SAT objective maximizes integer-scaled match surplus above 0.60 plus a
+small stable tie preference. Scheduling, hotel cost and real detour durations
+are outside that model. `base.score_trip()` is a legacy benchmark metric, not
+the solver objective. Ordinary Route output keeps its compatible shape. The owner Lab uses
+request-local `routing/explanation.py` to capture candidates and solver diagnostics
+from `routing/cp_sat_selection.py`. `routers/algorithm_lab.py` reuses existing
+owner auth, trip validation and shared planning; replay skips providers/database.
+The frontend `/algorithm` page uses server catalog values and shows details on
+demand. See `docs/senior-demo-plan.md` for its API and limits. See `docs/cp-sat-explained.md` for the exact formulation.
 
 Stop dictionaries carry `name`, `type`, `coordinates` in **[lat, lon]**, leg
 `duration`, and hotel `price` with optional address/url/warning. Mapbox geometry

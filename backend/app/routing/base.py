@@ -23,10 +23,11 @@ from app.routing.occupancy import HotelRoom
 if TYPE_CHECKING:  # avoid a runtime import cycle (services imports base)
     from app.routing.services import RoutingServices
 
-# Default objective weights (see docs/algorithm-analysis.md §2). A trip is scored:
+# Historical benchmark weights, NOT the active CP-SAT selection objective.
+# See docs/algorithm-analysis.md §2. A completed trip is scored for comparison:
 #   score = w_v * attraction_value - w_c * hotel_cost - w_d * detour_hours
 # These encode a balanced "see things, but don't overspend or over-detour"
-# traveler. Override per-run via PlanOptions.weights.
+# traveler. The active planner's PlanOptions.weights instead holds 14 persona weights.
 DEFAULT_WEIGHTS: dict[str, float] = {
     "value": 100.0,  # reward per unit of attraction value (per attraction ~= 1.0)
     "cost": 1.0,  # penalty per dollar of hotel spend
@@ -68,10 +69,9 @@ class PlanOptions:
     """Everything a planner needs about *what* trip to build.
 
     Kept as a single object so the :meth:`RoutePlanner.plan` signature stays
-    stable as future algorithms need more inputs. ``preferences`` and
-    ``weights`` are unused by the greedy/knapsack planners today but reserved so
-    the preference-aware (AI/hybrid) planners in the analysis doc can slot in
-    without a signature change.
+    stable as future algorithms need more inputs. ``weights`` contains the active
+    CP-SAT planner's 14 effective normalized persona weights. ``preferences`` is
+    reserved; the legacy greedy/knapsack planners do not consume persona weights.
     """
 
     num_stops: int
@@ -81,7 +81,6 @@ class PlanOptions:
     hotel_rooms: list[HotelRoom] | None = None
     daily_start: int = 9
     daily_end: int = 16
-    # Reserved for future preference-aware planners (see docs/algorithm-analysis.md).
     preferences: dict[str, Any] | None = None
     weights: dict[str, float] | None = None
     scheduling_policy: SchedulingPolicy = field(default_factory=SchedulingPolicy)
@@ -161,7 +160,7 @@ def score_trip(
     total_cost: float,
     weights: dict[str, float] | None = None,
 ) -> tuple[float, dict[str, float]]:
-    """Compute the scalar objective score for a finished trip (see analysis §2).
+    """Compute the historical benchmark score, not CP-SAT's solver objective.
 
     Returns ``(score, components)`` where components holds the raw
     value/cost/detour terms so the benchmark can report them individually.

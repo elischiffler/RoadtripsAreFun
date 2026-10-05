@@ -1,5 +1,13 @@
 # Route-Finding: Algorithm Analysis
 
+> **Historical research, not the current algorithm specification.** Sections
+> below use the earlier greedy model and proposed cost/time objective. Current
+> CP-SAT selects attractions using preference utility and count/slot constraints;
+> hotels and timing are handled afterward. Read [the exact current formulation](cp-sat-explained.md)
+> and [product vision](product-vision.md). The [Algorithm Lab plan](senior-demo-plan.md)
+> supersedes this document's implementation roadmap. `base.score_trip()` retains
+> a historical benchmark metric; it is not the CP-SAT objective.
+
 An analytical companion to [route-finding.md](./route-finding.md). Where that
 document explains *how the current code works*, this one frames the underlying
 problem, defines how we measure a "better" trip, classifies the current

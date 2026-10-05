@@ -7,6 +7,14 @@ The local preview does not establish production Auth or provider acceptance.
 
 A road trip planning application. This monorepo contains two services:
 
+The [product vision](docs/product-vision.md) prioritizes explainable matching
+between a trip profile and candidate location profiles. For the October 6 senior
+project demonstration, the [Algorithm Lab plan](docs/senior-demo-plan.md) adds a
+owner-only preset runner at `/algorithm`. The [CP-SAT walkthrough](docs/cp-sat-explained.md)
+explains the current code, implemented demo features and limits of selection
+compared with future joint optimization. See the
+[public release and MacBook rehearsal runbook](docs/senior-demo-runbook.md).
+
 | Service | Stack | Deployed at |
 |---|---|---|
 | [`backend/`](./backend) | Python 3.12 / FastAPI / Neon Postgres | [api.roadtrips.elischiffler.dev](https://api.roadtrips.elischiffler.dev/health) (AWS EC2) |
@@ -31,6 +39,7 @@ The frontend uses an earthy design system (cream, sand, bark, amber) with Playfa
 | `/chat` | Main chat interface for planning a trip |
 | `/map` | Interactive Mapbox route view |
 | `/itinerary` | Day-by-day trip itinerary |
+| `/algorithm` | Owner-only Algorithm Lab, presets and on-demand solver explanations; no global header |
 | `/login` | Auth — AWS Cognito sign in |
 | `/signup` | Auth — new account |
 
@@ -82,8 +91,9 @@ Technical docs live in [`docs/`](./docs):
 - PostgreSQL for native persistence; use the disposable local test stack for fixtures
 
 See [development context](.steering/development.md) for environment names and
-platform limitations. The root Makefile uses POSIX shell syntax; the pinned
-backend includes `uvloop`, which is not a native Windows dependency.
+platform details. The root Makefile delegates local startup to a Node launcher
+that selects the native virtualenv. The pinned `uvloop` dependency is excluded
+on Windows by its platform marker.
 
 ### 1. Clone the repo
 

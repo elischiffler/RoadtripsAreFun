@@ -13,7 +13,7 @@ import './GlobalHeader.css';
 // VITE_DEV_TOOLS=true is set. It's hidden in a normal production build.
 const SHOW_DEV_TOOLS = import.meta.env.DEV || import.meta.env.VITE_DEV_TOOLS === 'true';
 
-const HIDDEN_ON = ['/login', '/signup'];
+const HIDDEN_ON = ['/login', '/signup', '/algorithm'];
 
 export default function GlobalHeader() {
   const location = useLocation();
@@ -55,6 +55,11 @@ export default function GlobalHeader() {
       <LogoButton driving={isDriving} progress={logoProgress} />
 
       <Box className="global-header-right">
+        {routingSettings.canSelect && (
+          <Button component={Link} to="/algorithm" sx={{ color: 'text.primary', px: 1 }}>
+            Algorithm Lab
+          </Button>
+        )}
         {SHOW_DEV_TOOLS && routingSettings.canSelect && <AlgorithmSettings />}
         {authed ? (
           <>

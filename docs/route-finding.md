@@ -3,6 +3,12 @@
 How MyRoadtrip turns a start and end point into a multi-day road trip with
 attractions and overnight hotels.
 
+For the actual current inputs, scoring, constraints and output, read the
+[CP-SAT walkthrough](cp-sat-explained.md). The [product vision](product-vision.md)
+and [Algorithm Lab](senior-demo-plan.md) cover profile matching and the
+owner-only preset demonstration. Historical diagrams below do not describe
+the active CP-SAT selection model or current scheduling defaults.
+
 > **Current behavior.** `cp_sat` is the default and the only registered planner.
 > The `/algorithms` selector remains available for future CP-SAT variants.
 > `greedy` and `ortools` remain in the source tree for historical reference but

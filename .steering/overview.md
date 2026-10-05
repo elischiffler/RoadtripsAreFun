@@ -5,8 +5,8 @@ road trip planning, maps, itineraries, saved chats and conversational preference
 The repository remote is `https://github.com/elischiffler/RoadtripsAreFun.git`.
 Manifests, schemas, source and `AGENTS.md` take precedence over these notes.
 
-This refresh inspected shared feature commit `6247a1e` against main `92ac3af` on
-October 3, 2026 (America/Los_Angeles). The feature implementation is in draft
+This refresh inspected shared feature commit `53fd0bf` against main `92ac3af` on
+October 4, 2026 (America/Los_Angeles). The feature implementation is in draft
 [PR #26](https://github.com/elischiffler/RoadtripsAreFun/pull/26); it is not merged
 main or evidence of a production release. See [current work](current-work.md) for
 the changes since the older guidance and implementation still in progress.
@@ -19,6 +19,9 @@ the changes since the older guidance and implementation still in progress.
 | [Development](development.md) | `frontend/package.json`, `backend/requirements.txt`, `.github/workflows/` |
 | [Operations](operations.md) | `docs/container-runbook.md`, `docs/aws-api-readiness.md` |
 | [Current work](current-work.md) | Git/PR state and the source map below; refresh before integration |
+| [Product vision](../docs/product-vision.md) | Trip/location profile matching and Tuesday demonstration priorities |
+| [Algorithm Lab](../docs/senior-demo-plan.md) | Owner-only preset runner, explanation contract and acceptance |
+| [CP-SAT walkthrough](../docs/cp-sat-explained.md) | Actual inputs, weighted score, integer model, outputs and limitations |
 
 ## Current capabilities and contracts
 
@@ -37,9 +40,10 @@ the changes since the older guidance and implementation still in progress.
 - The chat shows deterministic saved-detail lists and at most two missing-detail
   questions, plus one transient animated process line. See
   `docs/agent-trip-detail-lists.md` and `docs/agent-progress.md`.
-- CP-SAT hotel prices are verified dated Google Hotels one-night totals for two
-  adults in USD, with taxes/fees and comparison links. Hotel budget is a nightly
-  target; usable over-budget hotels produce warnings. See `docs/hotel-prices.md`.
+- CP-SAT hotel prices are dated Google Hotels quotes for explicit room occupants
+  in USD, with taxes/fees and comparison links. Hotel budget is a nightly target
+  per room; usable over-budget rooms produce warnings. Multiple rooms retain
+  independent quotes. See `docs/travelers-and-hotel-occupancy.md`.
 - [Flexible hotel evenings](../docs/flexible-hotel-evenings.md) adds shared local
   arrival deadlines and optional nearby suggestions; see the current-work handoff
   for the integration and remaining live acceptance gates.
@@ -48,6 +52,11 @@ the changes since the older guidance and implementation still in progress.
   Current schemas and ownership are described in [architecture](architecture.md).
 
 ## Documentation boundaries
+
+The senior-demo change adds a header-free owner `/algorithm` page with editable
+presets, contextual help, contribution tables, actual solver diagnostics, live
+route/itinerary results and selection-only replay. It is not yet a public release.
+See `docs/senior-demo-runbook.md` for public backend parity and MacBook rehearsal.
 
 `.steering/` is the current implementation map. `.kiro/steering/` contains
 compatibility pointers to it. `docs/route-finding.md` mixes current CP-SAT notes

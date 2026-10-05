@@ -7,6 +7,7 @@ import LoginPage from './pages/AuthPages/LoginPage';
 import ChatPage from './pages/ChatPage/ChatPage';
 import MapPage from './pages/MapPage/MapPage';
 import SettingsPage from './pages/SettingsPage';
+import AlgorithmLab from './pages/AlgorithmLab/AlgorithmLab';
 import SignUpPage from './pages/AuthPages/SignUpPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -35,6 +36,14 @@ const router = createBrowserRouter([
         element: (
           <AuthWrapper>
             <MapPage />
+          </AuthWrapper>
+        ),
+      },
+      {
+        path: 'algorithm',
+        element: (
+          <AuthWrapper>
+            <AlgorithmLab />
           </AuthWrapper>
         ),
       },

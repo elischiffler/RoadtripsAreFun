@@ -31,6 +31,20 @@ their columns, migration history or a complete authenticated trip.
 
 ## Deployment documentation versus live state
 
+The senior-demo read-only release inspection on October 4 found website/API
+health/readiness 200, but public `/algorithms` still advertised greedy/ortools
+with greedy default. The deployed API therefore lacked the inspected CP-SAT
+feature; its exact revision was not exposed over HTTP. The public frontend
+bundle targeted the documented API. GitHub main was `92ac3af`; its latest
+recorded successful Vercel Production deployment used that SHA. See
+`docs/senior-demo-runbook.md` for matching frontend/backend release gates.
+The Lab's owner page is `/algorithm`; backend endpoints are `/algorithm-lab/*`.
+No new deployment pipeline or production configuration was introduced.
+
+Recovery docs disagree on whether off-host backups are active or proposed.
+Re-verify host evidence before public release; this task did not inspect or
+change production backup jobs. The Lab itself adds no schema migration.
+
 README and `docs/aws-api-readiness.md` record AWS API with external Neon and Vercel
 frontend targets; the Render service is retired. No live host/provider inventory,
 DNS, runtime commit or production credentials were inspected during this refresh.

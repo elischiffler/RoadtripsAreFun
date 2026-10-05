@@ -1,5 +1,10 @@
 # Pluggable Routing Algorithms — Refactor Plan
 
+Current implementation work is scoped by [product-vision.md](product-vision.md)
+and [senior-demo-plan.md](senior-demo-plan.md). The implemented refactor exposes the
+existing CP-SAT model and profile crossmatch; it preserves the planner registry
+and ordinary route contract. See [the current algorithm](cp-sat-explained.md).
+
 > Historical design record. The current registered/default planner is `cp_sat`.
 > Greedy and OR-Tools remain as source references but are not selectable; the
 > registry and algorithm selector are retained for future CP-SAT variants.

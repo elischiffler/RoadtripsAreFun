@@ -1,5 +1,11 @@
 # Chat Agent: Design & Contracts
 
+The [current product vision](product-vision.md) treats chat and the
+[owner preset screen](senior-demo-plan.md) as two input paths into shared trip
+validation and planning. The chat does not own a separate routing algorithm.
+See [CP-SAT inputs and outputs](cp-sat-explained.md). Any live-validation statements
+below are historical, not acceptance evidence for the current feature head.
+
 > This document retains earlier design plans and contract examples. For the
 > inspected current implementation, start with [the architecture map](../.steering/architecture.md)
 > and [active change map](../.steering/current-work.md). Current schemas and source

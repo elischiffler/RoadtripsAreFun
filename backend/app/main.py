@@ -10,7 +10,15 @@ from fastapi.responses import JSONResponse
 
 from app.core.config import settings
 from app.core.ops_events import format_http_event
-from app.routers import agent_api, car_api, chat_api, itinerary_api, location_api, routing_api
+from app.routers import (
+    agent_api,
+    algorithm_lab,
+    car_api,
+    chat_api,
+    itinerary_api,
+    location_api,
+    routing_api,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -117,6 +125,7 @@ async def operational_http_event(request, call_next):
 
 
 app.include_router(routing_api.router)
+app.include_router(algorithm_lab.router)
 app.include_router(location_api.router)
 app.include_router(itinerary_api.router)
 app.include_router(car_api.router)

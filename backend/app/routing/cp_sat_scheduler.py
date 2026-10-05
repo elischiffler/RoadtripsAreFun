@@ -14,6 +14,7 @@ from app.agent.progress import emit
 from app.models.routing_models.routing_models import MapBox
 from app.models.scheduling_policy import advance, local_time, seconds_until
 from app.routing.base import PlanningError, PlanOptions
+from app.routing.cp_sat_selection import query_count
 from app.routing.occupancy import require_occupancy
 from app.routing.services import RoutingServices
 
@@ -90,10 +91,9 @@ async def schedule_cp_sat_route(
     if services.cp_sat_hotels is None:
         raise PlanningError("CP-SAT verified hotel service is not configured", 503)
 
-    query_count = min(30, max(6, 3 * options.num_stops)) if options.num_stops else 0
+    count = query_count(options.num_stops)
     events = [
-        (route.duration * (index + 1) / (query_count + 1), candidate)
-        for index, candidate in selected
+        (route.duration * (index + 1) / (count + 1), candidate) for index, candidate in selected
     ]
     events.append((route.duration, None))
     elapsed, total_cost, overnights = 0.0, 0.0, 0

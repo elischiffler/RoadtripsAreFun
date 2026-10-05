@@ -1,99 +1,79 @@
-# Change map and active implementation
+# Current feature and senior demonstration work
 
-Snapshot: October 3, 2026, America/Los_Angeles. Inspected shared feature head
-`6247a1e` (`codex/cp-sat-solver`) against main `92ac3af`. Git comparison covers
-123 changed files, including tests, since main. Shared feature
-[PR #26](https://github.com/elischiffler/RoadtripsAreFun/pull/26) is draft/unmerged.
-The original primary checkout was clean at `620df3c`, two commits behind the
-fetched feature head; refresh edits use an isolated worktree. Git and open work
-can change while these notes are read: check status/fetch before integrating.
+Snapshot: October 4, 2026, America/Los_Angeles. Inspected and fetched shared
+feature `53fd0bf9d03f31103b909818ee646fb19ce5b825` (`codex/cp-sat-solver`) against
+main `92ac3af4155afc99704dc6072e6f25e57a4dc488`. The primary checkout was clean
+and matched its remote. This refresh uses isolated `codex/senior-demo-plan`.
 
-## Implemented in the inspected feature head
+[PR #26](https://github.com/elischiffler/RoadtripsAreFun/pull/26) is open,
+draft and unmerged. GitHub reported successful backend, frontend test/build,
+container, disposable PostgreSQL and Vercel checks for `53fd0bf`. The new milestone passes the local suites recorded in
+[demo validation](../docs/senior-demo-validation.md); live-trip acceptance remains
+pending. Re-fetch before integration; concurrent branches may advance the feature.
 
-| Change from older context | Evidence and owners |
+## Implemented in this baseline
+
+| Capability | Current owner / evidence |
 | --- | --- |
-| Persona and verified candidates; CP-SAT became the sole default | `3ec2eaf`, `bfeb368`, `fbabe9f`, `ff370b5`; `agent/persona.py`, `routing/planners/cp_sat.py`, `routing/sources/persona_candidates.py`, registry/selection |
-| Short stage prompts and aggregate turn usage | `5ecb9f9`; `agent/prompt.py`, `agent.py`, `backend/tests/agent/token_benchmark.py` |
-| Independent validated detail recording, timezone-aware dates, optional car and single completion tool | `c919494`, `28ccfa8`, `1e2fb29`; `agent/trip_profile.py`, `trip_dates.py`, `departure.py`, `tool_dispatcher.py` |
-| Mandatory extraction on each ordinary turn, outage/validation recovery, exact car-model lookup | `74c55d9`, `91a4666`, `21855b9`, `7c5981e`, `e7a83ab`; `agent/extraction.py`, `agent.py`, `routers/car_api.py`; legacy parsing removed |
-| Account-owner-only interactive algorithm selection and Node 24 declaration | `5a32c71`, `180b525`; `utils/auth.py`, `routing/selection.py`, `services/routingSettings.js`, `frontend/package.json` |
-| Dated Google Hotels totals/links; retired provider removed | `456c22a`, `1c1714f`; `routing/sources/google_hotels.py`, `persona_candidates.py`, `docs/hotel-prices.md`; old provider model/config removed |
-| NDJSON progress, one animated status line and live verified collection facts | `570fe28`, `8b53940`, `999a96a`, `648ff41`; `agent/progress.py`, `progress_stream.py`, chat stream helpers/components; the intermediate expandable card was superseded |
-| Rural all-outside-radius hotel results allow bounded earlier-stop retries | `ec9ecb0`; Google hotel source and candidate/scheduler regression suites; malformed/upstream failures remain terminal |
-| Complete canonical profile context and explicit ambiguous-location choices | `9d2d006`, `620df3c`; `utils/location_resolution.py`, `agent/location_confirmation.py`, pending profile, frontend buttons/reload; provider precision is not intent confidence |
-| Persisted validated detail lists, narrow summary/collection requests and truthful direct-tool outcomes | `d2e77f9`, `6247a1e`; `agent/presentation.py`, `schemas.py`, `ChatMessage.jsx`, `useTripWorkflow.js`, JSON/NDJSON and PostgreSQL probes |
-| Local runtime, readiness and persistence support | `9ac43d0`, `51bd9ee`, `2220fe1` plus CRUD changes; local CORS/Neon readiness, `make debug`, backend virtualenv paths, thread-safe shared pool and saved planned-route support |
+| Sole registered `cp_sat` default, retained registry/switcher seam | `routing/registry.py`, `routing/selection.py`, `planners/cp_sat.py` |
+| Account baseline, trip personality and provider-verified candidates | `agent/persona.py`, `routing/sources/persona_candidates.py`; ratings remain AI estimates |
+| Mandatory extraction and independently validated detail recording | `agent/extraction.py`, `trip_profile.py`, `tool_dispatcher.py` |
+| Confirmed locations, local departures, optional car and completion/retry | `agent/location_confirmation.py`, `trip_dates.py`, `departure.py`, completion tools |
+| Saved detail lists, bounded questions and transient streaming progress | `agent/presentation.py`, `questions.py`, `progress.py`, `progress_stream.py`; frontend chat components |
+| Owner-only algorithm override verified by Cognito ID/access subjects | `utils/auth.py`, `routing/selection.py`, `frontend/src/services/routingSettings.js` |
+| Integrated local scheduling policy and optional hotel evenings | `models/scheduling_policy.py`, `routing/travel_timing.py`, `cp_sat_scheduler.py`, `sources/evenings.py` |
+| Traveler total, explicit room occupancy and independent dated room quotes | `routing/occupancy.py`, `sources/google_hotels.py`, `docs/travelers-and-hotel-occupancy.md` |
+| Chat creation before agent turns and bounded final-evening arrivals | `5f12124`; `docs/chat-creation-arrival-timing.md`; default final arrival through 21:00 |
+| JSON-safe dated route persistence and failed-save tool-chain stop | `0eaa54a`, fixture follow-up `fab38ea`; `agent/tool_dispatcher.py` and tests |
+| Current chat visual polish | `53fd0bf`; frontend chat icon/composer styles |
 
-Backend relative paths in the table are beneath `backend/app/`; frontend service
-and component paths are beneath `frontend/src/`. Changes include practical
-regression coverage and disposable database probe extensions. They do not prove
-the draft feature has been deployed. Signed Cognito verification, container
-templates and much local recovery tooling already existed in inspected main;
-the old Kiro descriptions of unsigned auth/Render/path-filtered CI were stale
-even before this feature diff.
+Backend paths are beneath `backend/app/` unless otherwise stated. Existing
+feature docs retain dated validation reports; consult source for later behavior.
+The prior October 3 snapshot at `6247a1e` is preserved in Git history.
 
-## Integrated flexible hotel evenings
+Scheduling defaults are preferred hotel 18:00, latest hotel 20:00, morning 09:00,
+and default destination deadline 21:00. Explicit late-driving/destination rules
+and arrival-local IANA/DST handling refine those values. Hotels retain independent
+room quotes and per-room budget warnings. Optional evenings remain distinct from
+daytime attractions; unverified opening hours and hotel reception stay labeled.
 
-The `codex/flexible-hotel-evenings` implementation builds on shared feature head
-`cd03486`, preserving the concurrent receipts, direct-reply guards and context
-refresh. See [the scheduling contract, example and validation](../docs/flexible-hotel-evenings.md).
-The overlapping hotel-evenings worktree retained its independent prototype,
-then based `codex/hotel-evenings-integration` on shared head `079dc41` instead.
-Follow-up `87a91c9` preserves this implementation and recovers saved departures
-for direct itinerary requests; the duplicate scheduling abstraction is excluded.
+## New direction: Tuesday, October 6
 
-`backend/app/models/scheduling_policy.py` owns preferred hotel arrival **18:00**,
-normal latest arrival **20:00**, morning restart **09:00**, and explicit late
-driving through at most **24:00**. It flows through profile/extraction/tools,
-HTTP/remote payloads, CP-SAT scheduling, shared actual-leg timing, itinerary and
-persistence. Preferred arrival is soft; actual rerouted hotel/destination arrivals
-must meet the arrival-local hard deadline while retaining selected attractions.
-`routing/travel_timing.py` shares the clock logic rather than introducing a
-second independently maintained itinerary policy.
+[Product vision](../docs/product-vision.md) is the single current product plan.
+The [Algorithm Lab contract](../docs/senior-demo-plan.md) implements an owner-only
+preset screen, explicit location profiles, backend score contributions, actual
+solver diagnostics and labeled replay. **These additions are implemented on the senior-demo task branch; public
+release/live-provider acceptance remains pending.** The [CP-SAT walkthrough](../docs/cp-sat-explained.md)
+explains current inputs, integer objective, constraints, scheduling and outputs.
 
-Arrival-local IANA/DST deadlines retain the preceding booking night at midnight
-and restart that same following morning. Existing saved routes without a policy
-keep their legacy timing. Late reception remains unverified and is labeled
-**Confirm late check-in with the hotel**.
+Delivery order: backend contract/profiles/solver diagnostics and authorized run
+API, then frontend Lab, then integrated validation and rehearsal. Independent
+frontend layout work may start after the response contract is frozen. Related
+implementation returns exact commits to the coordinator for PR #26 integration;
+do not let several agents push to its branch concurrently.
 
-`routing/sources/evenings.py` provides at most two optional alternatives around
-the selected hotel, separate from daytime stops and waypoints, within 2 km and
-15 minutes each way. Discovery has an eight-second total budget. Existing Terra
-weekly hours do not verify date-specific exceptions, so live suggestions are
-unscheduled **Check opening hours** options. Dated verified interval fixtures
-exercise scheduled suggestions. Failures or insufficient time do not invalidate
-a successful route. No new service, reservation or deployment is introduced.
+## Structural findings addressed by this milestone
 
-The integrated local checks pass: 541 backend tests at 85.08% coverage, pinned
-Ruff checks, all required frontend checks with 164 tests, two rebuilt container smoke tests and
-real disposable PostgreSQL persistence/recovery. See the feature validation
-ledger for scope and retained recovery data. Live provider/model/Cognito trip
-acceptance and late reception remain blocked; PR #26 stays draft. Each later
-shared-head change still requires its own CI evidence.
+- `cp_sat_selection.py` separates preparation, model construction and decoding;
+  the exact objective and named constraints feed both solve and explanation.
+- `profiles.py` derives rating fields from canonical persona keys and returns
+  contribution arithmetic; `LocationProfile` separates provider facts/ratings
+  from the trip-specific match.
+- Benchmark comments distinguish historical value/cost/detour measurements from
+  CP-SAT's actual match-surplus objective.
+- Selection and scheduling use one query-count function.
+- The direct Lab adapter reuses TripProfile and occupancy validation, preserving
+  strict stop bounds, finite budget and complete weights.
+- Frontend reuses the extracted `ItineraryDays` renderer and existing Map;
+  `/algorithm` omits the header and uses accessible contextual help/disclosures.
 
-## Verification and structural follow-ups
+A joint time/budget/hotel optimization model is a separate later behavior-change
+PR; the current grouped attraction selection is not that model.
 
-At inspected head `6247a1e`, GitHub Actions backend, frontend test/build, container
-and disposable PostgreSQL checks and Vercel preview reported success. PR notes
-record 480 backend tests/84.29% coverage and 162 frontend tests from that delivery;
-this context refresh did not rerun those suites. Live full-trip acceptance remains
-unverified and the PR stays draft. Later commits require their own CI evidence.
+## Remaining evidence
 
-Concrete structural issue: scheduler, final route validation and itinerary owned
-different clock logic. The integrated policy refactor provides this bounded
-fix; avoid a second parallel scheduling abstraction. A separate documentation
-follow-up can reconcile the long historical `docs/chat-agent-design.md` and
-mixed algorithm documents with the current contracts. Keep historical rationale,
-but link current examples to schemas to prevent renewed drift.
-
-
-## Chat question separation
-
-The chat-question change extends structured presentation to model-originated
-follow-ups on unchanged/no-tool turns. Required asks share the saved-profile
-collection helper; optional scheduling/evening asks use a separate Questions
-list and never become blockers. Car choice and individual vehicle values are
-separate asks, with at most two questions per response. Legacy paragraph model
-output gets one bounded formatting call; malformed output fails to saved-state
-questions plus a retry notice. See `docs/agent-trip-detail-lists.md` and
-`backend/app/agent/questions.py`. This does not establish live provider compliance.
+Live owner/non-owner Cognito, complete model/provider route and itinerary,
+browser reload/persistence, and runtime parity remain unverified in this refresh.
+No deployment, live account write, schema change or production setting was made.
+Required repository checks and live demonstration gates remain separate. Keep
+the feature draft until the applicable acceptance gates actually pass.

@@ -11,6 +11,13 @@ current interactive routing policy. Current contracts also live in
 
 Technical documentation for MyRoadtrip.
 
+For current product direction, start with [Product vision](product-vision.md),
+[Algorithm Lab implementation contract](senior-demo-plan.md), and
+[CP-SAT code walkthrough](cp-sat-explained.md). The Lab is implemented on the senior-demo task branch. The walkthrough describes
+feature `53fd0bf` plus this refactor; public acceptance remains pending. See the
+[public/MacBook runbook](senior-demo-runbook.md) and
+[validation evidence](senior-demo-validation.md).
+
 | Doc | Description |
 |---|---|
 | [Route-Finding Algorithm](./route-finding.md) | Current CP-SAT notes plus historical greedy scheduling/discovery and model diagrams. |

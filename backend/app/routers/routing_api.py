@@ -36,6 +36,7 @@ from app.models.routing_models.routing_models import MapBox, Route, Route_Payloa
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
 from app.routing import PlanningError, PlanOptions, RoutingServices, get_planner
 from app.routing.config import geolocator  # shared reverse-geocoder
+from app.routing.explanation import record_stage
 from app.routing.geometry import find_position as _find_position  # noqa: F401
 from app.routing.occupancy import require_occupancy
 from app.routing.pricing import get_price_range as _get_price_range  # noqa: F401
@@ -281,6 +282,7 @@ async def plan_final_route(
             for stop in stopping_points:
                 stop["timezone"] = await services.timezone_at(stop["coordinates"])
         apply_timing(stopping_points, start, payload.scheduling_policy, start_timezone)
+        record_stage("reroute", "complete", "Mapbox actual legs passed local timing checks.")
         await enrich_evenings(
             stopping_points, evening_interests(payload.evening_interests, weights)
         )

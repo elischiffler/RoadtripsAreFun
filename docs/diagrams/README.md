@@ -2,6 +2,9 @@
 
 Source and rendered versions of the diagrams used in the docs.
 
+These saved algorithm diagrams are historical designs. The current pipeline
+diagram and mathematical explanation are in [cp-sat-explained.md](../cp-sat-explained.md).
+
 ```
 diagrams/
 ├── src/        # Mermaid source (.mmd) — edit these
@@ -13,7 +16,7 @@ Each file pairs by name: `src/algorithm-overview.mmd` renders to
 
 | Diagram (`src` / `rendered` basename) | Algorithm type | Used in |
 |---|---|---|
-| `algorithm-overview` | Greedy single-pass heuristic (current) | [route-finding.md](../route-finding.md), [algorithm-analysis.md](../algorithm-analysis.md) |
+| `algorithm-overview` | Historical greedy single-pass heuristic | [route-finding.md](../route-finding.md), [algorithm-analysis.md](../algorithm-analysis.md) |
 | `approach-1-classical` | Classical constrained optimization (1a library / 1b custom SA) | [algorithm-analysis.md](../algorithm-analysis.md) |
 | `approach-2-pure-ai` | Pure AI (LLM builds the whole itinerary; layered validation) | [algorithm-analysis.md](../algorithm-analysis.md) |
 | `approach-3-hybrid` | Hybrid (AI generation + validation loop + optimizer; 3a library / 3b custom) | [algorithm-analysis.md](../algorithm-analysis.md) |

@@ -24,6 +24,7 @@ from app.agent.providers import LLMProvider, build_default_chain
 from app.agent.schemas import LLMMessage
 from app.routing import config
 from app.routing.occupancy import MAX_ROOMS, HotelRoom
+from app.routing.profiles import AttributeRatings, crossmatch
 from app.routing.sources.attractions import _auth_headers, _raise_for_status
 
 MAX_ATTRACTIONS = 30
@@ -36,35 +37,6 @@ _HOTEL_RADIUS_MI = 30.0
 
 class CandidateProviderError(RuntimeError):
     """Required AI or place provider is unavailable or returned unusable data."""
-
-
-class AttributeRatings(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    scenery: float
-    nature: float
-    hiking_outdoors: float
-    food: float
-    history: float
-    culture_arts: float
-    nightlife: float
-    shopping: float
-    beaches_water: float
-    adventure: float
-    relaxation: float
-    unique_local_experiences: float
-    family_friendliness: float
-    crowd_avoidance: float
-
-    @field_validator("*", mode="before")
-    @classmethod
-    def _unit_interval(cls, value):
-        if isinstance(value, bool) or not isinstance(value, (int, float)):
-            raise ValueError("attribute ratings must be numbers in [0, 1]")
-        value = float(value)
-        if not math.isfinite(value) or not 0 <= value <= 1:
-            raise ValueError("attribute ratings must be numbers in [0, 1]")
-        return value
 
 
 class ProposedPlace(BaseModel):
@@ -108,6 +80,13 @@ class VerifiedPlace(BaseModel):
         if not (-90 <= lat <= 90 and -180 <= lon <= 180):
             raise ValueError("coordinates outside geographic bounds")
         return [float(lat), float(lon)]
+
+
+class LocationProfile(VerifiedPlace):
+    """Reusable place attributes, separate from the active trip's match score."""
+
+    attribute_ratings: AttributeRatings
+    provenance: dict[str, str | None]
 
 
 class VerifiedHotel(VerifiedPlace):
@@ -212,9 +191,19 @@ def _candidate(
     place: VerifiedPlace, proposal: ProposedPlace, weights: dict[str, float]
 ) -> dict[str, Any]:
     ratings = proposal.attribute_ratings.model_dump()
-    utility = math.fsum(weights[key] * ratings[key] for key in ATTRIBUTE_KEYS)
+    match = crossmatch(weights, ratings, already_normalized=True)
+    profile = LocationProfile(
+        **place.model_dump(include={"provider_id", "name", "coordinates", "address", "url"}),
+        attribute_ratings=proposal.attribute_ratings,
+        provenance={
+            "identity_source": place.provider_id.split(":", 1)[0],
+            "ratings_source": "AI estimates; provider verifies identity, not ratings",
+            "verified_at": None,
+        },
+    )
     result = place.model_dump(exclude={"check_in_date", "price", "stars", "review_count"})
-    result.update(attribute_ratings=ratings, utility=min(1.0, max(0.0, utility)))
+    result.update(profile.model_dump())
+    result.update(match.model_dump())
     return result
 
 
