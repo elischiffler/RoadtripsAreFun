@@ -15,6 +15,12 @@ Task base: `c1164d2` (`codex/lab-trip-evaluation`). Changes are on
   selector URL with the generated token. A live lookup confirmed both children
   (ages 7 and 12) and six verified hotel quotes. Dates, occupancy, currency,
   price and location verification remain enforced.
+- Guest confirmation compares child ages irrespective of display order while
+  retaining each age and duplicate count. Contradictory occupancy still fails.
+- CP-SAT keeps the hotel search band equal to the per-room nightly target on
+  every night. Subtracting previous nights from that target produced a negative
+  price range and crashed long trips. Actual over-target costs and warnings are
+  retained; a multi-night regression covers this case.
 - Idle database recovery discards the stale pooled connection and checks out its
   replacement through the pool. Untracked replacements previously caused
   `PoolError` on return, making history unavailable.

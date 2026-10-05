@@ -290,3 +290,11 @@ def test_family_stay_token_uses_observed_guest_selector_encoding():
     # Occupant list and stay-selector flags must agree with the captured request.
     assert actual[:24] == expected[:24]
     assert actual[28:54] == expected[79:105]
+
+
+async def test_guest_confirmation_matches_child_ages_independent_of_display_order():
+    room = HotelRoom(adults=2, child_ages=[7, 12])
+    controls = CONTROLS.replace('data-children=""', 'data-children="12,7"')
+    places, _ = provider(search=controls + CARD, detail=controls + DETAIL, room=room)
+    records = await places.hotels_near([39.74, -104.99], CHECK_IN, room)
+    assert records[0]["room"] == room.model_dump()

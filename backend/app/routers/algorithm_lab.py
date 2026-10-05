@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import traceback
 from datetime import date, datetime
 from time import perf_counter
 from typing import Literal
@@ -358,6 +359,17 @@ async def execute_run(payload, user_id, departure):
                 "itinerary", "complete", "Built itinerary from the actual validated route."
             )
         except Exception as exc:
+            # Log code locations and exception type, never provider payloads or credentials.
+            logger.error(
+                "Lab planning failure exception_class=%s reason=%s frames=%s",
+                type(exc).__name__,
+                exc.detail
+                if isinstance(exc, PlanningError)
+                else str(exc)
+                if isinstance(exc, CandidateProviderError)
+                else "unclassified",
+                [(frame.name, frame.lineno) for frame in traceback.extract_tb(exc.__traceback__)],
+            )
             # Never return upstream request objects, credentials, or raw provider HTML.
             message = (
                 exc.detail

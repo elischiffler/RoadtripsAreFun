@@ -357,3 +357,23 @@ def test_saved_trip_results_are_owner_scoped(headers, monkeypatch, available):
     if available:
         assert response.json() == artifact
         assert response.headers["cache-control"] == "no-store"
+
+
+def test_planning_failure_logs_code_locations_without_provider_secrets(headers, monkeypatch):
+    logged = []
+    monkeypatch.setattr(lab.logger, "error", lambda *args: logged.append(args))
+
+    async def unavailable(key):
+        raise RuntimeError("secret provider credentials")
+
+    monkeypatch.setattr(lab, "resolve_endpoint", unavailable)
+    result = (
+        TestClient(app)
+        .post("/algorithm-lab/run", headers=headers, json=request_body("live"))
+        .json()
+    )
+    assert result["error"]["code"] == "provider_or_planning_failure"
+    assert logged[0][1] == "RuntimeError"
+    assert any(name == "unavailable" for name, line in logged[0][3])
+    assert "secret provider credentials" not in str(logged)
+    assert "secret provider credentials" not in str(result)

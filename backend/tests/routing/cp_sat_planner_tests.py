@@ -250,6 +250,33 @@ async def test_over_budget_hotel_keeps_actual_price(route, start_date, fake_serv
 
 
 @pytest.mark.asyncio
+async def test_multi_night_budget_remains_a_per_room_nightly_target(
+    route, start_date, fake_services
+):
+    short_route(route, 35 * 3600)
+    services, calls = configure(fake_services)
+
+    async def find_hotels(position, check_in, price_range, weights, hotel_rooms):
+        calls["hotels"].append((position, check_in, price_range, weights))
+        return [hotel(f"night-{check_in}", position, 400, 0.8)]
+
+    services.cp_sat_hotels = find_hotels
+    stops, cost = await schedule_cp_sat_route(
+        route,
+        [],
+        PlanOptions(
+            0, 100, start_date, traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
+        ),
+        services,
+    )
+    hotels = [stop for stop in stops if stop["type"] == "hotel"]
+    assert len(hotels) >= 3
+    assert cost == 400 * len(hotels)
+    assert all(call[2] == ((0.0, 100), "0-100.00") for call in calls["hotels"])
+    assert all("$100 per-room nightly target" in stop["warning"] for stop in hotels)
+
+
+@pytest.mark.asyncio
 async def test_missing_hotel_fails_after_bounded_retries(route, start_date, fake_services):
     short_route(route, 13 * 3600)
     services, calls = configure(fake_services)

@@ -95,7 +95,8 @@ def _validate_stay(root, check_in: date, room: HotelRoom) -> None:
     guests = root.xpath("//*[@data-adults]")
     if not guests or any(
         e.get("data-adults") != str(room.adults)
-        or e.get("data-children", "") != ",".join(map(str, room.provider_child_ages))
+        or sorted(e.get("data-children", "").split(","))
+        != sorted(map(str, room.provider_child_ages or [""]))
         for e in guests
     ):
         raise GoogleHotelLookupError(
