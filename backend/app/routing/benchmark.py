@@ -27,6 +27,7 @@ from typing import Any
 
 from app.models.routing_models.routing_models import MapBox
 from app.routing.base import PlanMetrics, PlanOptions
+from app.routing.discovery import DiscoveryResult
 from app.routing.geometry import find_position
 from app.routing.occupancy import HotelRoom
 from app.routing.pricing import get_price_range
@@ -157,18 +158,24 @@ class CachedServices:
             )
         return out
 
-    async def cp_sat_candidates(self, route, points, weights):
-        return [
-            {
-                "provider_id": f"benchmark-attraction-{i}",
-                "name": f"Candidate {i}",
-                "coordinates": point,
-                "utility": 0.9 - i * 0.01,
-                "address": f"{i} Candidate St",
-                "url": "https://example.com/c",
-            }
-            for i, point in enumerate(points[: self.pool_size])
-        ]
+    async def cp_sat_candidates(self, route, plan, weights):
+        self.baseline = route
+        return DiscoveryResult(
+            [
+                {
+                    "provider_id": f"benchmark-attraction-{i}",
+                    "name": f"Candidate {i}",
+                    "coordinates": query.coordinates,
+                    "route_progress_seconds": query.progress_seconds,
+                    "section_id": query.section_id,
+                    "utility": 0.9 - i * 0.01,
+                    "address": f"{i} Candidate St",
+                    "url": "https://example.com/c",
+                }
+                for i, query in enumerate(plan.queries[: self.pool_size])
+            ],
+            {"source": "offline benchmark fixture"},
+        )
 
     async def cp_sat_hotels(self, position, check_in, price_range, weights, hotel_rooms):
         return [
@@ -186,6 +193,11 @@ class CachedServices:
             }
         ]
 
+    async def candidate_route(self, *args):
+        route = self.baseline.model_copy(deep=True)
+        route.legs = [route.legs[0], route.legs[0]]
+        return route
+
     def bundle(self) -> RoutingServices:
         return RoutingServices(
             find_stop=self.find_stop,
@@ -195,6 +207,7 @@ class CachedServices:
             gather_candidates=self.gather_candidates,
             cp_sat_candidates=self.cp_sat_candidates,
             cp_sat_hotels=self.cp_sat_hotels,
+            candidate_route=self.candidate_route,
         )
 
 

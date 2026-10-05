@@ -137,7 +137,7 @@ def _mock_requests_get(url, **kwargs):
 )
 def test_get_initial_route(params):
     """Returns 200 with a valid route shape for any origin/destination pair."""
-    with patch("app.routing.sources.mapbox.requests.get", side_effect=_mock_requests_get):
+    with patch("app.routing.sources.mapbox.http_get", side_effect=_mock_requests_get):
         response = client.get("/get-initial-route", params=params)
     assert response.status_code == 200
     data = response.json()
@@ -155,7 +155,7 @@ def test_get_initial_route_returns_steps():
         "end_lat": 40.647306,
         "end_lon": -74.157289,
     }
-    with patch("app.routing.sources.mapbox.requests.get", side_effect=_mock_requests_get):
+    with patch("app.routing.sources.mapbox.http_get", side_effect=_mock_requests_get):
         response = client.get("/get-initial-route", params=params)
     assert response.status_code == 200
     assert len(response.json()["legs"][0]["steps"]) > 0
@@ -184,7 +184,7 @@ def test_generate_final_route_zero_stops():
     mock_location.raw = {"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
 
     with (
-        patch("app.routing.sources.mapbox.requests.get", return_value=mock_resp),
+        patch("app.routing.sources.mapbox.http_get", return_value=mock_resp),
         patch("app.routers.routing_api.get_location", return_value=mock_location),
         patch(
             "app.routers.routing_api.load_account_persona", return_value=AccountPersona.default()
@@ -245,7 +245,7 @@ def test_generate_final_route_unknown_algorithm_returns_400():
     mock_location.raw = {"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
 
     with (
-        patch("app.routing.sources.mapbox.requests.get", return_value=mock_resp),
+        patch("app.routing.sources.mapbox.http_get", return_value=mock_resp),
         patch("app.routers.routing_api.get_location", return_value=mock_location),
         patch("app.routers.routing_api.owner_routing_claims", return_value={"sub": "fixture-user"}),
     ):

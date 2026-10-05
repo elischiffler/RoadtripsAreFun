@@ -202,7 +202,9 @@ async def test_live_adapter_retries_transient_failures_without_moving_search(
             return SimpleNamespace(latitude=coords[0], longitude=coords[1])
 
     geocoder = MovingGeocoder()
-    places, _ = provider(geocoder=geocoder, status=429 if outcome == "provider_failure" else 200)
+    places, requests = provider(
+        geocoder=geocoder, status=429 if outcome == "provider_failure" else 200
+    )
     monkeypatch.setattr(source, "GoogleHotelProvider", lambda _: places)
     monkeypatch.setattr(persona_candidates.config, "OPENCAGE_KEY", "fixture")
     ai = FakeAI([{"name": "Example Hotel", "attribute_ratings": _ratings()}])
@@ -231,8 +233,8 @@ async def test_live_adapter_retries_transient_failures_without_moving_search(
     if outcome == "provider_failure":
         with pytest.raises(persona_candidates.CandidateProviderError, match="unavailable"):
             await schedule_cp_sat_route(route, [], options, services)
-        assert len(geocoder.points) == 3 and ai.calls == 0
-        assert geocoder.points[0] == geocoder.points[1] == geocoder.points[2]
+        assert len(geocoder.points) == 1 and ai.calls == 0
+        assert len(requests) == 3  # Three HTTP attempts; reverse geocode is not restarted.
         return
     if outcome == "no_nearby":
         from app.routing.base import PlanningError

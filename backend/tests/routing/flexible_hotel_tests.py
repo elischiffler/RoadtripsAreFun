@@ -18,6 +18,7 @@ from app.routers import routing_api
 from app.routers.itinerary_api import build_itinerary
 from app.routing.base import PlanningError, PlanOptions, PlanResult
 from app.routing.cp_sat_scheduler import schedule_cp_sat_route
+from app.routing.geometry import RouteMeasure
 from app.routing.occupancy import HotelRoom
 from app.routing.travel_timing import apply_timing
 
@@ -226,9 +227,7 @@ async def test_hotel_search_around_soft_target(route, fake_services, misses, exp
     )
     assert len(calls) == misses + 1
     # The search point is the corridor position reached at that local hour.
-    expected = services.find_position(
-        route.geometry.coordinates, route.legs[0].steps, (expected_hour - 9) * 3600
-    )
+    expected = RouteMeasure(route).position((expected_hour - 9) * 3600)
     assert stops[0]["coordinates"] == expected
     assert stops[0]["check_in_date"] == "2035-11-21"
     assert cost == 120 and "warning" in stops[0]
@@ -269,9 +268,7 @@ async def test_later_available_hotel_can_reach_effective_cutoff(route, fake_serv
         ),
         services,
     )
-    expected = services.find_position(
-        route.geometry.coordinates, route.legs[0].steps, (hour - 9) * 3600
-    )
+    expected = RouteMeasure(route).position((hour - 9) * 3600)
     assert calls[4][0] == expected and stops[0]["coordinates"] == expected
     assert calls[4][1].isoformat() == "2035-11-21"
 
@@ -279,11 +276,11 @@ async def test_later_available_hotel_can_reach_effective_cutoff(route, fake_serv
 @pytest.mark.asyncio
 async def test_late_mode_avoids_unnecessary_hotel_without_dropping_stops(route, fake_services):
     route.duration = 12 * 3600
-    attraction = {"provider_id": "a", "name": "a", "coordinates": [34, -118]}
+    attraction = {"provider_id": "a", "name": "a", "coordinates": [34, -118], "detour_seconds": 0}
     services, calls = services_with_hotels(fake_services, [True])
     normal, _ = await schedule_cp_sat_route(
         route,
-        [(2, attraction)],
+        [(route.duration * 3 / 7, attraction)],
         PlanOptions(
             1, 100, START, traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
         ),
@@ -291,7 +288,7 @@ async def test_late_mode_avoids_unnecessary_hotel_without_dropping_stops(route, 
     )
     late, _ = await schedule_cp_sat_route(
         route,
-        [(2, attraction)],
+        [(route.duration * 3 / 7, attraction)],
         PlanOptions(
             1,
             100,

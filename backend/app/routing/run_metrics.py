@@ -12,7 +12,7 @@ from statistics import mean, pstdev
 from threading import Lock
 from time import perf_counter
 
-METRIC_VERSION = "selection-surplus-v2"
+METRIC_VERSION = "balanced-route-v3"
 _active = ContextVar("lab_measurements", default=None)
 
 
@@ -24,7 +24,14 @@ def fingerprint(value):
 
 @contextmanager
 def measuring():
-    data = {"calls": {}, "durations": {}, "events": {}, "lock": Lock()}
+    data = {
+        "calls": {},
+        "requests": {},
+        "durations": {},
+        "events": {},
+        "providers": {},
+        "lock": Lock(),
+    }
     token = _active.set(data)
     try:
         yield data
@@ -51,6 +58,26 @@ def timed(name):
         yield
     finally:
         duration(name, (perf_counter() - started) * 1000)
+
+
+def provider_activity(name, delta, wait_ms, elapsed_ms):
+    if data := _active.get():
+        with data["lock"]:
+            item = data["providers"].setdefault(
+                name,
+                {
+                    "active": 0,
+                    "peak_active": 0,
+                    "attempts": 0,
+                    "queue_wait_ms": 0,
+                    "accumulated_duration_ms": 0,
+                },
+            )
+            item["active"] += delta
+            item["peak_active"] = max(item["peak_active"], item["active"])
+            item["attempts"] += int(delta > 0)
+            item["queue_wait_ms"] += wait_ms
+            item["accumulated_duration_ms"] += elapsed_ms
 
 
 def _number(value):
@@ -245,8 +272,10 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
                 "coordinates",
                 "attribute_ratings",
                 "utility",
-                "slot",
-                "objective_coefficient",
+                "section_id",
+                "source_query_ids",
+                "route_progress_seconds",
+                "detour_seconds",
             )
         }
         for item in candidates
@@ -342,6 +371,20 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
     objective = solver.get("objective_value")
     return {
         "metric_version": METRIC_VERSION,
+        "provider_measurements": telemetry.get("providers", {}),
+        "distinct_requests": telemetry.get("requests", {}),
+        "discovery_requests": len((explanation.get("discovery") or {}).get("queries", [])),
+        "selection_measurements": {
+            key: solver.get(key)
+            for key in (
+                "average_match",
+                "best_average_match",
+                "quality_loss",
+                "spacing_deviation_seconds",
+                "estimated_detour_seconds",
+            )
+        },
+        "objective_direction": "minimize",
         "trip_evaluation": trip_evaluation(envelope),
         "revision": revision,
         "algorithm": "cp_sat",
@@ -398,6 +441,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
                 "tripadvisor",
                 "mapbox",
                 "language_model",
+                "gateway_auth",
                 "google_hotels",
                 "opencage",
             )
@@ -446,10 +490,27 @@ def aggregate_runs(rows):
                 and m["objective_score"] is not None
             ):
                 references[m["comparison_key"]] = m["objective_score"]
-        quality = [
-            100 * m["objective_score"] / references[m["comparison_key"]]
+        minimized = version == "balanced-route-v3"
+        quality = (
+            []
+            if minimized
+            else [
+                100 * m["objective_score"] / references[m["comparison_key"]]
+                for m in metrics
+                if m["objective_score"] is not None and references.get(m["comparison_key"], 0) > 0
+            ]
+        )
+        cost_excess = [
+            m["objective_score"] - references[m["comparison_key"]]
             for m in metrics
-            if m["objective_score"] is not None and references.get(m["comparison_key"], 0) > 0
+            if minimized and m["objective_score"] is not None and m["comparison_key"] in references
+        ]
+        cost_gap = [
+            100 * (m["objective_score"] / references[m["comparison_key"]] - 1)
+            for m in metrics
+            if minimized
+            and m["objective_score"] is not None
+            and references.get(m["comparison_key"], 0) > 0
         ]
 
         def stats(values):
@@ -507,6 +568,9 @@ def aggregate_runs(rows):
                 "deterministic_observed": len(set(outputs)) == 1 if len(outputs) >= 2 else None,
                 "successful_outputs": len(outputs),
                 "optimal_references": references,
+                "objective_direction": "minimize" if minimized else "maximize",
+                "selection_cost_excess_seconds": stats(cost_excess),
+                "selection_cost_gap_percent": stats(cost_gap),
                 "quality_percent": stats(quality),
                 "quality_gap_percent": stats([100 - value for value in quality]),
             }

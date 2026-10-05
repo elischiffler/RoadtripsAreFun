@@ -127,23 +127,22 @@ def test_local_planning_status_is_not_mislabeled_as_provider_http():
 
 @pytest.mark.asyncio
 async def test_mapbox_retries_http_faults_and_keeps_real_status(monkeypatch):
-    import requests
+    import httpx
 
     from app.routing.run_metrics import measuring
     from app.routing.sources import mapbox
 
     calls = []
 
-    def fail(*args, **kwargs):
+    async def fail(*args, **kwargs):
         calls.append(1)
-        response = requests.Response()
-        response.status_code = 503
-        response.url = "https://example.test?access_token=private-token"
-        return response
+        return httpx.Response(
+            503, request=httpx.Request("GET", "https://example.test?access_token=private-token")
+        )
 
-    monkeypatch.setattr(mapbox.requests, "get", fail)
+    monkeypatch.setattr(mapbox, "http_get", fail)
     with diagnostics.collecting_attempts() as attempts, measuring() as measurements:
-        with pytest.raises(requests.HTTPError):
+        with pytest.raises(httpx.HTTPStatusError):
             await mapbox.call_route(37, -122, 36, -121)
     assert len(calls) == 3
     assert measurements["calls"]["mapbox"] == 3

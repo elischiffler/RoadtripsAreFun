@@ -7,6 +7,7 @@ lives here as a reusable utility.
 
 from __future__ import annotations
 
+import numpy as np
 from geopy.distance import geodesic
 
 from app.models.routing_models.routing_models import MapBox
@@ -33,7 +34,7 @@ def find_position(
         step_duration = step.duration  # Duration of the current step
 
         # Check if the elapsed time falls within the current step
-        if accumulated_time + step_duration >= elapsed_time:
+        if step_duration > 0 and accumulated_time + step_duration >= elapsed_time:
             # Get a ratio for interpolation (Percentage of the step you are currently at)
             ratio = (elapsed_time - accumulated_time) / step_duration
 
@@ -98,4 +99,102 @@ def find_position(
         accumulated_time += step_duration
 
     # If the elapsed time exceeds the total duration, return the last coordinate
-    return coordinates[-1]
+    return [coordinates[-1][1], coordinates[-1][0]]
+
+
+class RouteMeasure:
+    """Distance along step polylines mapped to their measured driving durations.
+
+    Crossing ties choose the occurrence nearest the source query time, then the
+    earliest occurrence. A query hint only resolves equal-distance projections.
+    """
+
+    def __init__(self, route):
+        self.segments = []
+        steps = [step for leg in route.legs for step in leg.steps]
+        total = sum(max(0, step.duration) for step in steps)
+        if not steps or total <= 0:
+            pieces = [(route.geometry.coordinates, max(0, route.duration))]
+        else:
+            scale = max(0, route.duration) / total
+            pieces = [(step.geometry.coordinates, max(0, step.duration) * scale) for step in steps]
+        elapsed = 0.0
+        for coords, duration in pieces:
+            lengths = [
+                geodesic((a[1], a[0]), (b[1], b[0])).meters for a, b in zip(coords, coords[1:])
+            ]
+            length = sum(lengths)
+            if len(coords) == 1:
+                self.segments.append((coords[0], coords[0], elapsed, elapsed + duration))
+            travelled = 0.0
+            for a, b, distance in zip(coords, coords[1:], lengths):
+                start = elapsed + (duration * travelled / length if length else 0)
+                travelled += distance
+                end = elapsed + (duration * travelled / length if length else duration)
+                self.segments.append((a, b, start, end))
+            elapsed += duration
+        self.duration = max(0, route.duration)
+        self.coordinates = route.geometry.coordinates
+        self._projection_segments = np.array(
+            [[*a, *b, start, end] for a, b, start, end in self.segments], dtype=float
+        ).reshape(-1, 6)
+
+    def position(self, seconds):
+        seconds = max(0, min(self.duration, seconds))
+        for a, b, start, end in self.segments:
+            if end > start and start <= seconds <= end:
+                fraction = (seconds - start) / (end - start)
+                return [a[1] + fraction * (b[1] - a[1]), a[0] + fraction * (b[0] - a[0])]
+        last = self.coordinates[-1]
+        return [last[1], last[0]]
+
+    def project(self, point, hint_seconds=None):
+        if not self.segments:
+            return {
+                "route_progress_seconds": 0.0,
+                "distance_meters": geodesic(point, self.position(0)).meters,
+                "segment_index": None,
+            }
+        # Vectorized local tangent-plane projection avoids one expensive geodesic
+        # per road vertex per place. Final off-route distance uses WGS84 geodesic.
+        lat, lon = point
+        a_lon, a_lat, b_lon, b_lat, starts, ends = self._projection_segments.T
+        scale = np.cos(np.radians((lat + a_lat + b_lat) / 3))
+        dx, dy = (b_lon - a_lon) * scale, b_lat - a_lat
+        px, py = (lon - a_lon) * scale, lat - a_lat
+        length_squared = dx * dx + dy * dy
+        fraction = np.clip(
+            np.divide(
+                px * dx + py * dy,
+                length_squared,
+                out=np.zeros_like(length_squared),
+                where=length_squared > 0,
+            ),
+            0,
+            1,
+        )
+        distances = np.hypot(px - fraction * dx, py - fraction * dy) * 111195.08
+        seconds = starts + fraction * (ends - starts)
+        ties = np.flatnonzero(distances <= distances.min() + 0.001)
+        index = min(
+            ties,
+            key=lambda i: (
+                abs(seconds[i] - hint_seconds) if hint_seconds is not None else seconds[i],
+                seconds[i],
+                i,
+            ),
+        )
+        coordinate = [
+            a_lat[index] + fraction[index] * (b_lat[index] - a_lat[index]),
+            a_lon[index] + fraction[index] * (b_lon[index] - a_lon[index]),
+        ]
+        return {
+            "route_progress_seconds": float(seconds[index]),
+            "distance_meters": geodesic(point, coordinate).meters,
+            "segment_index": int(index),
+        }
+
+
+def project_place(route, coordinates, hint_seconds=None):
+    """Pure public projection seam; coordinates are [lat, lon]."""
+    return RouteMeasure(route).project(coordinates, hint_seconds)

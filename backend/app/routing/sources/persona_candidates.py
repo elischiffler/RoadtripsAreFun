@@ -7,7 +7,6 @@ access. Neither AI coordinates nor AI prices are accepted as source data.
 
 from __future__ import annotations
 
-import asyncio
 import json
 import math
 import re
@@ -15,7 +14,6 @@ from datetime import date, datetime
 from typing import Any, Literal, Protocol
 from urllib.parse import urlparse
 
-import httpx
 from geopy.distance import geodesic
 from pydantic import BaseModel, ConfigDict, field_validator
 
@@ -25,12 +23,30 @@ from app.agent.provider_diagnostics import retry_async
 from app.agent.providers import LLMProvider, build_default_chain
 from app.agent.schemas import LLMMessage
 from app.routing import config
+from app.routing.discovery import (
+    DiscoveryPlan,
+    DiscoveryResult,
+    SearchQuery,
+    balanced_pool,
+    category_order,
+)
+from app.routing.explanation import record_explanation
+from app.routing.geometry import RouteMeasure
 from app.routing.occupancy import MAX_ROOMS, HotelRoom
 from app.routing.profiles import AttributeRatings, crossmatch
 from app.routing.run_metrics import increment, timed
+from app.routing.runtime import (
+    http_get,
+    in_run,
+    joined,
+    limited,
+    run_resource,
+    singleflight,
+    threaded,
+)
 from app.routing.sources.attractions import _auth_headers, _raise_for_status
 
-MAX_ATTRACTIONS = 30
+MAX_ATTRACTIONS = 60
 MAX_HOTELS = 10
 MAX_PROPOSALS_PER_QUERY = 5
 MAX_HOTEL_PROPOSALS = 15
@@ -65,6 +81,8 @@ class VerifiedPlace(BaseModel):
     coordinates: list[float]
     address: str | None = None
     url: str | None = None
+    categories: list[str] = []
+    provider_rank: int = 0
 
     @field_validator("provider_id", "name")
     @classmethod
@@ -176,16 +194,24 @@ async def _propose(
             " Rate only these provider-verified names, preserving each exactly: "
             + json.dumps(names)
         )
-    try:
+
+    async def generate():
         with timed("generation"):
-            response = await asyncio.to_thread(
-                ai.complete,
-                [
-                    LLMMessage(role="system", content="Return strict JSON only."),
-                    LLMMessage(role="user", content=prompt),
-                ],
-                [],
+            return await retry_async(
+                lambda: threaded(
+                    "ai",
+                    getattr(ai, "complete_once", ai.complete),
+                    [
+                        LLMMessage(role="system", content="Return strict JSON only."),
+                        LLMMessage(role="user", content=prompt),
+                    ],
+                    [],
+                ),
+                "ai.ratings",
             )
+
+    try:
+        response = await singleflight(("ratings", kind, tuple(point), tuple(names or [])), generate)
     except Exception as exc:
         raise CandidateProviderError("AI candidate provider unavailable") from exc
     return _parse_proposals(response.content, limit)
@@ -197,7 +223,17 @@ def _candidate(
     ratings = proposal.attribute_ratings.model_dump()
     match = crossmatch(weights, ratings, already_normalized=True)
     profile = LocationProfile(
-        **place.model_dump(include={"provider_id", "name", "coordinates", "address", "url"}),
+        **place.model_dump(
+            include={
+                "provider_id",
+                "name",
+                "coordinates",
+                "address",
+                "url",
+                "categories",
+                "provider_rank",
+            }
+        ),
         attribute_ratings=proposal.attribute_ratings,
         provenance={
             "identity_source": place.provider_id.split(":", 1)[0],
@@ -211,118 +247,261 @@ def _candidate(
     return result
 
 
+@in_run
 async def attraction_candidates(
     raw_route: Any,
-    query_points: list[list[float]],
+    plan: DiscoveryPlan,
     effective_weights: dict[str, float],
     *,
     ai: LLMProvider | None = None,
     places: PlaceProvider | None = None,
-) -> list[dict[str, Any]]:
-    """Return at most 30 unique Terra-verified attraction candidates.
-
-    ``raw_route`` is accepted for the planner's fixed injected signature; query
-    points have already been sampled in drive-time order by the solver.
-    """
-    del raw_route
+) -> DiscoveryResult:
+    """Fresh live rounds with frozen rating pools and balanced capacity."""
     weights = normalize_weights(effective_weights)
-    if not query_points:
-        return []
-    if len(query_points) > MAX_ATTRACTIONS:
-        raise ValueError("at most 30 attraction query points are allowed")
-    ai = ai or build_default_chain()
+    if not plan.requested_stops:
+        return DiscoveryResult([], {"plan": plan.snapshot(), "stop_reason": "zero_requested"})
+    ai = ai or run_resource("rating_provider", build_default_chain)
     places = places or LivePlaceProvider()
     if isinstance(places, LivePlaceProvider):
         places.require_attractions()
-    results: list[dict[str, Any]] = []
-    seen: set[str] = set()
-    for query_index, raw_point in enumerate(query_points, start=1):
+    measure = RouteMeasure(raw_route)
+    raw, rated, attempted, queried = {}, {}, set(), []
+    observations, rounds = [], []
+    used_coordinates = set()
+    explanation = {"plan": plan.snapshot(), "queries": observations, "rounds": rounds}
+    record_explanation(discovery=explanation)
+    ready = list(plan.queries)
+
+    async def query(query):
         emit(
             "attractions.query",
             "started",
-            query=query_index,
-            queries=len(query_points),
-            collected=len(results),
+            query=query.id,
+            section=query.section_id,
+            queries=plan.maximum_searches,
+            adaptive=True,
         )
-        point = _point(raw_point)
-        with stage("attractions.provider", query=query_index, queries=len(query_points)):
-            records = await retry_async(lambda: places.attractions_near(point))
-        verified_records = []
-        for record in records:
+        point = _point(query.coordinates)
+
+        async def lookup():
+            with stage("attractions.provider", query=query.id, section=query.section_id):
+                return await retry_async(
+                    lambda: limited("nearby", lambda: places.attractions_near(point))
+                )
+
+        records = await singleflight(("nearby", tuple(point)), lookup)
+        output = []
+        for rank, record in enumerate(records):
             try:
-                verified = VerifiedPlace.model_validate(record)
+                place = VerifiedPlace.model_validate(record)
             except ValueError:
                 continue
-            if (
-                verified.provider_id not in seen
-                and _distance_miles(point, verified.coordinates) <= _ATTRACTION_RADIUS_MI
-            ):
-                verified_records.append(verified)
-        records = verified_records[:MAX_PROPOSALS_PER_QUERY]
-        if not records:
-            emit(
-                "attractions.query",
-                query=query_index,
-                queries=len(query_points),
-                candidates=0,
-                collected=len(results),
+            if _distance_miles(point, place.coordinates) > _ATTRACTION_RADIUS_MI:
+                continue
+            projection = measure.project(place.coordinates, query.progress_seconds)
+            output.append(
+                {
+                    "place": place,
+                    "section_id": plan.section(projection["route_progress_seconds"]),
+                    "source_query_ids": [query.id],
+                    "projection": projection,
+                    "provider_rank": place.provider_rank or rank,
+                }
             )
-            continue
-        # Ground ratings in the live provider's names, as hotel ratings already are.
-        # Independent AI suggestions rarely matched the provider's actual nearby list.
+        emit(
+            "attractions.query",
+            query=query.id,
+            section=query.section_id,
+            queries=plan.maximum_searches,
+            adaptive=True,
+            candidates=len(output),
+        )
+        return output
+
+    async def rate(batch):
+        point = batch[0]["place"].coordinates
         with stage(
             "attractions.ratings",
-            query=query_index,
-            queries=len(query_points),
-            candidates=len(records),
+            candidates=len(batch),
+            sections=sorted({item["section_id"] for item in batch}),
+            queryIds=sorted({query for item in batch for query in item["source_query_ids"]}),
         ):
             proposals = await _propose(
                 ai,
                 "attractions",
                 point,
                 MAX_PROPOSALS_PER_QUERY,
-                names=[record.name for record in records],
+                names=[item["place"].name for item in batch],
             )
+        by_name = {}
         for proposal in proposals:
-            name = _name_key(proposal.name)
-            for record in records:
-                try:
-                    verified = VerifiedPlace.model_validate(record)
-                except ValueError:
-                    continue
-                if (
-                    _name_key(verified.name) != name
-                    or verified.provider_id in seen
-                    or _distance_miles(point, verified.coordinates) > _ATTRACTION_RADIUS_MI
-                ):
-                    continue
-                seen.add(verified.provider_id)
-                results.append(_candidate(verified, proposal, weights))
+            by_name.setdefault(_name_key(proposal.name), proposal)
+        output = []
+        for item in batch:
+            place = item["place"]
+            proposal = by_name.get(_name_key(place.name))
+            if proposal is not None:
+                candidate = _candidate(place, proposal, weights)
+                candidate.update(
+                    section_id=item["section_id"],
+                    source_query_ids=item["source_query_ids"],
+                    **item["projection"],
+                )
+                output.append(candidate)
+        return output
+
+    while ready:
+        frozen_queries = []
+        for query_item in ready:
+            coordinate = tuple(round(v, 7) for v in query_item.coordinates)
+            if coordinate in used_coordinates:
+                continue
+            used_coordinates.add(coordinate)
+            frozen_queries.append(query_item)
+        if not frozen_queries:
+            break
+        query_results = await joined([query(item) for item in frozen_queries])
+        # Completion order never determines identity, category quotas or rating order.
+        for query_item, records in zip(frozen_queries, query_results):
+            queried.append(query_item)
+            observations.append({**query_item.__dict__, "verified_count": len(records)})
+            for item in records:
+                key = item["place"].provider_id
+                if key in raw:
+                    raw[key]["source_query_ids"] = sorted(
+                        set(raw[key]["source_query_ids"] + item["source_query_ids"])
+                    )
+                else:
+                    raw[key] = item
+        ranked = []
+        for section in range(plan.section_count):
+            for order, item in enumerate(
+                category_order([item for item in raw.values() if item["section_id"] == section])
+            ):
+                item["variety_order"] = order
+                ranked.append(item)
+        pool = balanced_pool(
+            ranked,
+            plan.raw_pool_cap,
+            plan.section_count,
+            lambda item: (item["variety_order"], item["place"].provider_id),
+        )
+        raw = {item["place"].provider_id: item for item in pool}
+        remaining = plan.rating_cap - len(attempted)
+        # Reserve a second candidate-cap of ratings for refinement.
+        capacity = min(remaining, plan.candidate_cap)
+        frozen = balanced_pool(
+            [item for item in pool if item["place"].provider_id not in attempted],
+            capacity,
+            plan.section_count,
+            lambda item: (item["variety_order"], item["place"].provider_id),
+        )
+        attempted.update(item["place"].provider_id for item in frozen)
+        batches = [
+            frozen[i : i + MAX_PROPOSALS_PER_QUERY]
+            for i in range(0, len(frozen), MAX_PROPOSALS_PER_QUERY)
+        ]
+        round_record = {
+            "queries": [item.id for item in frozen_queries],
+            "rating_pool": [item["place"].provider_id for item in frozen],
+        }
+        rounds.append(round_record)
+        results = await joined([rate(batch) for batch in batches])
+        for batch_result in results:
+            for candidate in batch_result:
+                rated[candidate["provider_id"]] = candidate
                 emit(
                     "attractions.collected",
-                    name=verified.name[:100],
-                    collected=len(results),
-                    query=query_index,
-                    queries=len(query_points),
+                    name=candidate["name"][:100],
+                    collected=len(rated),
+                    section=candidate["section_id"],
                 )
-                break
-            if len(results) >= MAX_ATTRACTIONS:
-                emit(
-                    "attractions.query",
-                    query=query_index,
-                    queries=len(query_points),
-                    candidates=len(records),
-                    collected=len(results),
-                )
-                return results
+        eligible = [item for item in rated.values() if item["utility"] >= 0.60]
+        counts = [
+            sum(item["section_id"] == i for item in eligible) for i in range(plan.section_count)
+        ]
+        round_record["eligible_by_section"] = counts
         emit(
-            "attractions.query",
-            query=query_index,
-            queries=len(query_points),
-            candidates=len(records),
-            collected=len(results),
+            "attractions.round",
+            eligible=len(eligible),
+            rated=len(attempted),
+            completed=len(queried),
+            queries=plan.maximum_searches,
+            adaptive=True,
         )
-    return results
+        if len(eligible) >= 3 * plan.requested_stops and all(counts):
+            explanation["stop_reason"] = "eligible_target_and_sections_reached"
+            break
+        if len(attempted) >= plan.rating_cap:
+            explanation["stop_reason"] = "rating_budget_exhausted"
+            break
+        if len(queried) >= plan.maximum_searches:
+            explanation["stop_reason"] = "search_budget_exhausted"
+            break
+        ready = []
+        for section in sorted(range(plan.section_count), key=lambda i: (counts[i], i)):
+            lo = plan.baseline_seconds * section / plan.section_count
+            hi = plan.baseline_seconds * (section + 1) / plan.section_count
+            positions = sorted(
+                [lo, hi] + [item.progress_seconds for item in queried if item.section_id == section]
+            )
+            intervals = sorted(
+                zip(positions, positions[1:]), key=lambda pair: (-(pair[1] - pair[0]), pair[0])
+            )
+            for left, right in intervals:
+                midpoint = (left + right) / 2
+                coords = measure.position(midpoint)
+                if tuple(round(v, 7) for v in coords) not in used_coordinates:
+                    ready.append(
+                        SearchQuery(f"s{section}-r{len(rounds)}", section, midpoint, coords)
+                    )
+                    break
+            if len(queried) + len(ready) >= plan.maximum_searches:
+                break
+    explanation.setdefault("stop_reason", "no_distinct_search_points")
+    eligible = [item for item in rated.values() if item["utility"] >= 0.60]
+    for key, item in rated.items():
+        if key in raw:
+            item["source_query_ids"] = raw[key]["source_query_ids"]
+    shortlist = balanced_pool(
+        eligible,
+        plan.candidate_cap,
+        plan.section_count,
+        lambda item: (-item["utility"], item["provider_id"]),
+    )
+    explanation.update(
+        distinct_rated=len(attempted),
+        successful_ratings=len(rated),
+        raw_pool_count=len(raw),
+        eligible_count=len(eligible),
+        shortlist_count=len(shortlist),
+        rated_candidates=list(rated.values()),
+        sparse_sections=[
+            i
+            for i in range(plan.section_count)
+            if not any(item["section_id"] == i for item in eligible)
+        ],
+        coverage_note="Five-mile nearby samples; intervals between samples are unsearched, not continuous coverage.",
+    )
+    gaps = []
+    for section in range(plan.section_count):
+        positions = sorted(
+            [
+                plan.baseline_seconds * section / plan.section_count,
+                plan.baseline_seconds * (section + 1) / plan.section_count,
+            ]
+            + [item.progress_seconds for item in queried if item.section_id == section]
+        )
+        gaps.append(
+            {
+                "section_id": section,
+                "largest_unsearched_interval_seconds": max(
+                    (b - a for a, b in zip(positions, positions[1:])), default=0
+                ),
+            }
+        )
+    explanation["unsearched_gaps"] = gaps
+    return DiscoveryResult(shortlist, explanation)
 
 
 async def _room_candidates(
@@ -344,13 +523,11 @@ async def _room_candidates(
     low, high = price_range[0]
     if not all(math.isfinite(v) for v in (low, high)) or low < 0 or high < low:
         raise ValueError("invalid hotel price range")
-    ai = ai or build_default_chain()
+    ai = ai or run_resource("rating_provider", build_default_chain)
     places = places or LivePlaceProvider()
     if isinstance(places, LivePlaceProvider):
         places.require_hotels()
-    records = await retry_async(
-        lambda: places.hotels_near(point, check_in, price_range, room), "hotels.lookup"
-    )
+    records = await places.hotels_near(point, check_in, price_range, room)
     if not records:
         return []
     names = [
@@ -405,20 +582,19 @@ class LivePlaceProvider:
     async def attractions_near(self, point: list[float]) -> list[VerifiedPlace]:
         self.require_attractions()
         try:
-            async with httpx.AsyncClient(timeout=config.HTTP_TIMEOUT) as client:
-                increment("tripadvisor")
-                response = await client.get(
-                    f"{config.TRIPADVISOR_BASE_URL}/locations/nearby",
-                    params={
-                        "lat": point[0],
-                        "lon": point[1],
-                        "radius": 5,
-                        "unit": "MI",
-                        "category": "ATTRACTION",
-                        "sort": "rating,desc",
-                    },
-                    headers=_auth_headers(),
-                )
+            increment("tripadvisor")
+            response = await http_get(
+                f"{config.TRIPADVISOR_BASE_URL}/locations/nearby",
+                params={
+                    "lat": point[0],
+                    "lon": point[1],
+                    "radius": 5,
+                    "unit": "MI",
+                    "category": "ATTRACTION",
+                    "sort": "rating,desc",
+                },
+                headers=_auth_headers(),
+            )
             _raise_for_status(response)
             from app.models.routing_models.trip_advisor_models import Terra_Page_Nearby_Location
 
@@ -429,7 +605,7 @@ class LivePlaceProvider:
         except Exception as exc:
             raise CandidateProviderError("TripAdvisor Terra attraction lookup failed") from exc
         records = []
-        for entry in page.data[:30]:
+        for rank, entry in enumerate(page.data):
             location = entry.location
             if location is None or location.id is None or location.coordinates is None:
                 continue
@@ -446,6 +622,8 @@ class LivePlaceProvider:
                         coordinates=[location.coordinates.latitude, location.coordinates.longitude],
                         address=location.formatted_address(),
                         url=location.web_url(),
+                        provider_rank=rank,
+                        categories=_provider_categories(location),
                     )
                 )
             except (TypeError, ValueError):
@@ -472,6 +650,7 @@ class LivePlaceProvider:
             raise CandidateProviderError(str(exc)) from exc
 
 
+@in_run
 async def hotel_candidates(
     overnight_position: list[float],
     check_in_date: date | datetime,
@@ -489,20 +668,34 @@ async def hotel_candidates(
     rooms = [HotelRoom.model_validate(room) for room in hotel_rooms]
     if not 1 <= len(rooms) <= MAX_ROOMS:
         raise ValueError("Hotel lookup supports 1-4 rooms")
-    by_room = []
-    for room in rooms:
-        candidates = await _room_candidates(
-            overnight_position,
-            check_in_date,
-            price_range,
-            effective_weights,
-            room,
-            ai=ai,
-            places=places,
+    ai = ai or run_resource("rating_provider", build_default_chain)
+    places = places or LivePlaceProvider()
+
+    async def room_lookup(room):
+        key = (
+            "room",
+            tuple(overnight_position),
+            str(check_in_date),
+            room.adults,
+            tuple(room.child_ages),
         )
-        if not candidates:
-            return []
-        by_room.append({item["provider_id"]: item for item in candidates})
+        return await singleflight(
+            key,
+            lambda: _room_candidates(
+                overnight_position,
+                check_in_date,
+                price_range,
+                effective_weights,
+                room,
+                ai=ai,
+                places=places,
+            ),
+        )
+
+    room_results = await joined([room_lookup(room) for room in rooms])
+    if any(not candidates for candidates in room_results):
+        return []
+    by_room = [{item["provider_id"]: item for item in candidates} for candidates in room_results]
     results = []
     for key, first in by_room[0].items():
         if not all(key in lookup for lookup in by_room):
@@ -531,3 +724,14 @@ async def hotel_candidates(
             }
         )
     return results
+
+
+def _provider_categories(location):
+    values = getattr(location, "categories", None) or []
+    if not isinstance(values, list):
+        return []
+    return [
+        value if isinstance(value, str) else value["name"]
+        for value in values
+        if isinstance(value, str) or isinstance(value, dict) and isinstance(value.get("name"), str)
+    ]

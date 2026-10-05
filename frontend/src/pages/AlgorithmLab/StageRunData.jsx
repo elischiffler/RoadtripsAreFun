@@ -40,6 +40,8 @@ function retainedData(name, result) {
             effective_weights: explanation.weights,
             query_points: explanation.query_points,
             candidates: explanation.candidates,
+            discovery: explanation.discovery,
+            road_checks: explanation.road_checks,
           }
         : null;
     case 'selection':

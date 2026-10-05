@@ -13,6 +13,7 @@ from app.main import app
 from app.routers import algorithm_lab as lab
 from app.routers import routing_api
 from app.routing.base import PlanningError
+from app.routing.discovery import DiscoveryResult
 from app.routing.explanation import capture_explanation
 from app.routing.lab_presets import preset_catalog, replay_candidates
 from app.routing.planners.cp_sat import CPSatPlanner
@@ -137,14 +138,17 @@ def test_solver_objective_matches_exhaustive_subsets(preset):
     weights = preset_catalog()[preset]["inputs"]["persona_weights"]
     candidates, points = replay_candidates("teaching-v1", weights)
     with capture_explanation() as result:
-        CPSatPlanner._select(candidates, points, 2)
-    eligible = [item for item in result["candidates"] if item["objective_coefficient"] is not None]
-    feasible_totals = []
-    for count in range(3):
-        for subset in itertools.combinations(eligible, count):
-            if len({item["slot"] for item in subset}) == count:
-                feasible_totals.append(sum(item["objective_coefficient"] for item in subset))
-    assert result["solver"]["objective_value"] == max(feasible_totals)
+        CPSatPlanner._select(candidates, points, 2, 3000)
+    eligible = [item for item in result["candidates"] if item.get("utility", 0) >= 0.60]
+    count = min(2, len(eligible))
+    best_quality = sum(sorted((item["utility"] for item in eligible), reverse=True)[:count])
+    costs = []
+    for subset in itertools.combinations(eligible, count):
+        if sum(item["utility"] for item in subset) + 1e-6 < best_quality - 0.10 * count:
+            continue
+        positions = [0] + sorted(item["route_progress_seconds"] for item in subset) + [3000]
+        costs.append(sum(abs(b - a - 3000 / (count + 1)) for a, b in zip(positions, positions[1:])))
+    assert result["solver"]["objective_value"] == pytest.approx(min(costs))
 
 
 def test_score_preserves_existing_effective_weight_arithmetic():
@@ -160,7 +164,7 @@ def test_explanations_distinguish_duplicates_threshold_and_cap():
     candidates, points = replay_candidates("teaching-v1", weights)
     candidates += [copy.deepcopy(candidates[0]), {"provider_id": "broken"}]
     with capture_explanation() as result:
-        CPSatPlanner._select(candidates, points, 1)
+        CPSatPlanner._select(candidates, points, 1, 3000)
     reasons = {item["reason"] for item in result["candidates"]}
     assert {
         "selected",
@@ -210,7 +214,7 @@ def test_live_reuses_normal_pipeline_and_builds_itinerary(
         return final
 
     async def candidates(*args):
-        return []
+        return DiscoveryResult([], {})
 
     monkeypatch.setattr(lab, "resolve_endpoint", endpoint)
     monkeypatch.setattr(lab, "call_route", driving)
@@ -224,7 +228,7 @@ def test_live_reuses_normal_pipeline_and_builds_itinerary(
     if detour_invalid:
         assert result["error"]["code"] == "422"
         assert result["route"] is None
-        assert result["explanation"]["solver"]["status"] == "NOT_RUN"
+        assert result["explanation"]["solver"]["status"] == "EMPTY"
         stages = {stage["name"]: stage["status"] for stage in result["stages"]}
         assert stages["scheduling"] == "complete"
         assert stages["reroute"] == "failed"
@@ -234,7 +238,7 @@ def test_live_reuses_normal_pipeline_and_builds_itinerary(
     assert result["route"]["stops"][-1]["type"] == "end"
     assert result["itinerary"]
     assert all(stage["status"] == "complete" for stage in result["stages"])
-    assert result["explanation"]["solver"]["status"] == "NOT_RUN"
+    assert result["explanation"]["solver"]["status"] == "EMPTY"
 
 
 def test_live_failure_is_not_replaced_with_replay(headers, monkeypatch):

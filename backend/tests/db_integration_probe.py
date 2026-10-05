@@ -99,6 +99,11 @@ def seed():
         run_id,
         {
             "input_snapshot": {"budget": 60},
+            "explanation": {
+                "discovery": {"sparse_sections": [2], "queries": [{"id": "s2-q1"}]},
+                "road_checks": [{"detour_raw_seconds": -4}],
+                "solver": {"objective_direction": "minimize", "quality_loss": 0.05},
+            },
             "error": None,
             "route": {"geometry": {"coordinates": [[-122, 37], [-121, 36]]}, "stops": []},
             "itinerary": [{"date": "2026-10-06", "stops": []}],
@@ -124,7 +129,7 @@ def seed():
         },
         {
             "objective_score": 123,
-            "metric_version": "selection-surplus-v2",
+            "metric_version": "balanced-route-v3",
             "trip_evaluation": {"hotel_costs": {"quoted_total_usd": 0}},
         },
     )
@@ -138,6 +143,7 @@ def seed():
     assert lab_runs.history(OWNER_B) == []
     assert lab_runs.result(OWNER_B, run_id) is None
     assert lab_runs.result(OWNER_A, run_id)["itinerary"][0]["date"] == "2026-10-06"
+    assert lab_runs.result(OWNER_A, run_id)["explanation"]["discovery"]["sparse_sections"] == [2]
     assert len(lab_runs.history(OWNER_A, 1)) == 1
     assert lab_runs.history(OWNER_A, 1)[0]["id"] != lab_runs.history(OWNER_A, 1, 1)[0]["id"]
     assert lab_runs.history(OWNER_A, 1, 2) == []
@@ -310,6 +316,10 @@ def verify():
         [-121, 36],
     ]
     assert lab_runs.result(OWNER_B, saved["id"]) is None
+    recovered_explanation = lab_runs.result(OWNER_A, saved["id"])["explanation"]
+    assert recovered_explanation["discovery"]["queries"] == [{"id": "s2-q1"}]
+    assert recovered_explanation["road_checks"][0]["detour_raw_seconds"] == -4
+    assert recovered_explanation["solver"]["quality_loss"] == 0.05
     assert len(records) == 2
     assert records[0]["metrics"]["objective_score"] == 123
     assert records[0]["input"] == {"budget": 60}

@@ -17,6 +17,7 @@ export default function LabResults({ result, previous }) {
   const { explanation, route, itinerary } = result;
   const solver = explanation?.solver;
   const candidates = explanation?.candidates || [];
+  const balanced = solver?.objective_direction === 'minimize';
   const [tab, setTab] = useState('route');
   const tabId = useId();
   const tabs = [
@@ -218,10 +219,11 @@ export default function LabResults({ result, previous }) {
             <dl className="lab-metrics">
               <div>
                 <dt>
-                  Integer objective{' '}
+                  {balanced ? 'Selection cost (seconds)' : 'Integer objective'}{' '}
                   <HelpTip label="integer objective">
-                    The solver’s maximized integer score: rounded match surplus plus small tie
-                    preferences. It is not a percentage.
+                    {balanced
+                      ? 'Minimized sum of all route-gap deviations and estimated solo detours, in seconds.'
+                      : 'Historical maximized match surplus plus small tie preferences. It is not a percentage.'}
                   </HelpTip>
                 </dt>
                 <dd>{numeric(solver.objective_value, 0)}</dd>
@@ -230,8 +232,10 @@ export default function LabResults({ result, previous }) {
                 <dt>
                   Best bound{' '}
                   <HelpTip label="best bound">
-                    An upper limit on the best possible objective. Matching the objective proves
-                    optimality for this model.
+                    {balanced
+                      ? 'A lower bound on the minimum selection cost.'
+                      : 'An upper limit on the historical maximized objective.'}{' '}
+                    Matching the objective proves optimality for this model.
                   </HelpTip>
                 </dt>
                 <dd>{numeric(solver.best_bound, 0)}</dd>
@@ -250,23 +254,78 @@ export default function LabResults({ result, previous }) {
                 <dd>{numeric(solver.utility_threshold)}</dd>
               </div>
             </dl>
+            {balanced && (
+              <dl className="lab-metrics">
+                <div>
+                  <dt>Average match</dt>
+                  <dd>{numeric(solver.average_match)}</dd>
+                </div>
+                <div>
+                  <dt>Best achievable average</dt>
+                  <dd>{numeric(solver.best_average_match)}</dd>
+                </div>
+                <div>
+                  <dt>Quality loss</dt>
+                  <dd>{numeric(solver.quality_loss * 100)} percentage points</dd>
+                </div>
+                <div>
+                  <dt>Gap deviation</dt>
+                  <dd>{numeric(solver.spacing_deviation_seconds / 60)} minutes</dd>
+                </div>
+                <div>
+                  <dt>Estimated solo detours</dt>
+                  <dd>{numeric(solver.estimated_detour_seconds / 60)} minutes</dd>
+                </div>
+              </dl>
+            )}
             <details>
               <summary>Constraints and objective formula</summary>
-              <p className="lab-note">
-                At most one attraction per route slot, within the requested stop cap. The objective
-                rewards rounded match surplus with a small tie preference. Hotel cost and drive time
-                are checked in later stages.
-              </p>
-              <pre>
-                {
-                  'x[i] ∈ {0, 1}\nsum(x[i]) ≤ requested stops\nsum(x[i] in a slot) ≤ 1\n\nq[i] = round((utility[i] − threshold) × 1,000,000)\nB = m × (m + 1)\nc[i] = q[i] × (B + 1) + m − i\nmaximize sum(c[i] × x[i])'
-                }
-              </pre>
-              <p className="lab-note">
-                m is the eligible candidate count. i is the zero-based index after sorting by slot
-                and provider ID. Coefficients and results above come from the backend.
-              </p>
+              {balanced ? (
+                <>
+                  <p className="lab-note">
+                    Select K = min(requested, eligible). Average match must be at least the best
+                    achievable average minus 0.10. Each minute of gap deviation and detour has the
+                    same cost.
+                  </p>
+                  <pre>
+                    {
+                      'sum(x[i]) = K\naverage match ≥ best average − 0.10\nminimize sum(abs(gap − baseline / (K + 1))) + sum(detour)\nGaps include origin-to-first and last-to-destination.'
+                    }
+                  </pre>
+                  <p className="lab-note">
+                    Candidates are ordered by measured route progress and provider ID. Final road
+                    legs and the daily schedule receive separate validation.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="lab-note">
+                    At most one attraction per route slot, within the requested stop cap. The
+                    objective rewards rounded match surplus with a small tie preference. Hotel cost
+                    and drive time are checked in later stages.
+                  </p>
+                  <pre>
+                    {
+                      'x[i] ∈ {0, 1}\nsum(x[i]) ≤ requested stops\nsum(x[i] in a slot) ≤ 1\n\nq[i] = round((utility[i] − threshold) × 1,000,000)\nB = m × (m + 1)\nc[i] = q[i] × (B + 1) + m − i\nmaximize sum(c[i] × x[i])'
+                    }
+                  </pre>
+                  <p className="lab-note">
+                    m is the eligible candidate count. i is the zero-based index after sorting by
+                    slot and provider ID. Coefficients and results above come from the backend.
+                  </p>
+                </>
+              )}
             </details>
+          </section>
+        )}
+        {explanation?.discovery && (
+          <section aria-label="Discovery coverage">
+            <h2>Discovery coverage</h2>
+            <p>{explanation.discovery.coverage_note}</p>
+            <p>
+              {words(explanation.discovery.stop_reason)}. Sparse sections:{' '}
+              {explanation.discovery.sparse_sections?.map((id) => id + 1).join(', ') || 'None'}.
+            </p>
           </section>
         )}
         <section aria-labelledby="lab-match-heading">
@@ -277,9 +336,10 @@ export default function LabResults({ result, previous }) {
               Match utility is the sum of trip weight × location rating. It models preference match,
               not probability of enjoyment.
             </HelpTip>
-            <HelpTip label="route slot">
-              Candidates share a slot when they are closest to the same sampled route point. The
-              solver can select at most one per slot.
+            <HelpTip label="route section">
+              {balanced
+                ? 'Sections divide baseline driving time. Discovery balances capacity across them; selection uses measured progress without a one-per-section constraint.'
+                : 'Historical candidates share a slot when closest to the same sampled route point.'}
             </HelpTip>
           </p>
           {sameSnapshot && (
@@ -342,15 +402,22 @@ export default function LabResults({ result, previous }) {
                 <span>
                   <strong>{candidate.name}</strong>
                   <span className="lab-candidate-meta">
-                    {candidate.selected ? 'Selected' : words(candidate.reason)} · slot{' '}
-                    {candidate.slot ?? 'unassigned'}
+                    {candidate.selected ? 'Selected' : words(candidate.reason)} ·{' '}
+                    {balanced ? 'section' : 'slot'}{' '}
+                    {(balanced
+                      ? candidate.section_id == null
+                        ? null
+                        : candidate.section_id + 1
+                      : candidate.slot) ?? 'unassigned'}
                   </span>
                 </span>
                 <span className="lab-utility">{numeric(candidate.utility)}</span>
               </summary>
               <p>
-                Selection reason: {words(candidate.reason)}. Integer coefficient:{' '}
-                {numeric(candidate.objective_coefficient, 0)}.
+                Selection reason: {words(candidate.reason)}.{' '}
+                {balanced
+                  ? `Route progress: ${numeric(candidate.route_progress_seconds / 60)} minutes; solo detour: ${numeric(candidate.detour_seconds / 60)} minutes.`
+                  : `Integer coefficient: ${numeric(candidate.objective_coefficient, 0)}.`}
               </p>
               <div className="lab-table-scroll">
                 <table>

@@ -22,6 +22,7 @@ from datetime import date, datetime
 from typing import Any
 
 from app.models.routing_models.routing_models import MapBox
+from app.routing.discovery import DiscoveryPlan, DiscoveryResult
 
 MapBox_route = MapBox.MapBox_Route
 Mapbox_step = MapBox.MapBox_Route.Mapbox_leg.Mapbox_step
@@ -50,7 +51,7 @@ GatherCandidates = Callable[..., Awaitable[list[dict[str, Any]]]]
 # Verified, persona-scored records supplied by the candidate layer. The CP-SAT
 # planner owns selection and timing, not provider verification or AI scoring.
 FindCPSatCandidates = Callable[
-    [MapBox_route, list[list[float]], dict[str, float]], Awaitable[list[dict[str, Any]]]
+    [MapBox_route, DiscoveryPlan, dict[str, float]], Awaitable[DiscoveryResult]
 ]
 FindCPSatHotels = Callable[
     [list[float], date, PriceRange, dict[str, float], list], Awaitable[list[dict[str, Any]]]
@@ -72,6 +73,7 @@ class RoutingServices:
     gather_candidates: GatherCandidates | None = None
     cp_sat_candidates: FindCPSatCandidates | None = None
     cp_sat_hotels: FindCPSatHotels | None = None
+    candidate_route: Callable[..., Awaitable[MapBox_route]] | None = None
     timezone_at: Callable[[list[float]], Awaitable[str]] | None = None
 
     def require_gather(self) -> GatherCandidates:
@@ -111,6 +113,7 @@ class CountingServices(RoutingServices):
             ),
             cp_sat_hotels=(self._wrap(inner.cp_sat_hotels) if inner.cp_sat_hotels else None),
             timezone_at=inner.timezone_at,
+            candidate_route=inner.candidate_route,
         )
 
     def _wrap(self, fn):

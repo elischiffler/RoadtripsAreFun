@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from fastapi import HTTPException
@@ -11,10 +12,13 @@ from app.agent.progress import emit, stage
 from app.models.routing_models.routing_models import MapBox
 from app.routing.base import PlanningError, PlanOptions, PlanResult, RoutePlanner
 from app.routing.cp_sat_scheduler import schedule_cp_sat_route
-from app.routing.cp_sat_selection import query_count, select_attractions
+from app.routing.cp_sat_selection import select_attractions
+from app.routing.discovery import DiscoveryResult, SelectedAttraction, make_discovery_plan
 from app.routing.explanation import record_explanation, record_stage
 from app.routing.registry import register_planner
+from app.routing.runtime import in_run, joined, threaded
 from app.routing.services import RoutingServices
+from app.routing.sources.mapbox import UnusableRoadRoute
 
 MapBox_route = MapBox.MapBox_Route
 
@@ -22,6 +26,7 @@ MapBox_route = MapBox.MapBox_Route
 class CPSatPlanner(RoutePlanner):
     name = "cp_sat"
 
+    @in_run
     async def plan(
         self, initial_route: MapBox_route, options: PlanOptions, services: RoutingServices
     ) -> PlanResult:
@@ -30,35 +35,43 @@ class CPSatPlanner(RoutePlanner):
         if options.num_stops < 0:
             raise PlanningError("num_stops must be nonnegative", 400)
 
-        count = query_count(options.num_stops)
+        plan = make_discovery_plan(initial_route, options.num_stops)
+        points = [query.coordinates for query in plan.queries]
         record_explanation(weights=options.weights or {})
-        points = (
-            [
-                services.find_position(
-                    initial_route.geometry.coordinates,
-                    initial_route.legs[0].steps,
-                    initial_route.duration * j / (count + 1),
-                )
-                for j in range(1, count + 1)
-            ]
-            if initial_route.duration > 0
-            else []
+        emit(
+            "route.samples",
+            queries=len(points),
+            maximumQueries=plan.maximum_searches,
+            sections=plan.section_count,
+            requestedStops=options.num_stops,
         )
-        emit("route.samples", queries=len(points), requestedStops=options.num_stops)
         try:
             with stage("route.gathering"):
-                candidates = (
-                    await services.cp_sat_candidates(initial_route, points, options.weights or {})
-                    if points
-                    else []
+                discovery = (
+                    await services.cp_sat_candidates(initial_route, plan, options.weights or {})
+                    if options.num_stops
+                    else DiscoveryResult(
+                        [], {"plan": plan.snapshot(), "stop_reason": "zero_requested"}
+                    )
                 )
+                candidates = discovery.candidates
+                record_explanation(discovery=discovery.explanation)
+            with stage("route.detours", candidates=len(candidates)):
+                candidates = await self._verify_detours(initial_route, candidates, services)
             record_stage(
                 "candidates",
                 "complete",
                 f"Collected {len(candidates)} verified candidates; ratings are AI estimates.",
             )
             with stage("route.solver", candidates=len(candidates)):
-                selected = self._select(candidates, points, options.num_stops)
+                selected = await threaded(
+                    "solver",
+                    self._select,
+                    candidates,
+                    points,
+                    options.num_stops,
+                    initial_route.duration,
+                )
             record_stage(
                 "selection",
                 "complete",
@@ -80,9 +93,69 @@ class CPSatPlanner(RoutePlanner):
 
     @staticmethod
     def _select(
-        candidates: list[dict[str, Any]], query_points: list[list[float]], num_stops: int
-    ) -> list[tuple[int, dict[str, Any]]]:
-        return select_attractions(candidates, query_points, num_stops)
+        candidates: list[dict[str, Any]],
+        query_points: list[list[float]],
+        num_stops: int,
+        baseline_seconds: float,
+    ) -> list[SelectedAttraction]:
+        return select_attractions(candidates, query_points, num_stops, baseline_seconds)
+
+    @staticmethod
+    async def _verify_detours(route, candidates, services):
+        if not candidates:
+            return []
+        if services.candidate_route is None:
+            raise PlanningError("Live candidate road verification is not configured", 503)
+        start_lon, start_lat = route.geometry.coordinates[0]
+        end_lon, end_lat = route.geometry.coordinates[-1]
+
+        records = [{**candidate, "road_check_status": "pending"} for candidate in candidates]
+        record_explanation(road_checks=records)
+
+        async def verify(index, candidate):
+            lat, lon = candidate["coordinates"]
+            with stage("attractions.detour", providerId=candidate["provider_id"]):
+                try:
+                    measured = await services.candidate_route(
+                        start_lat, start_lon, end_lat, end_lon, f"{lon},{lat}"
+                    )
+                except UnusableRoadRoute:
+                    return {**candidate, "road_exclusion_reason": "no_road_route"}
+            if (
+                measured is None
+                or len(measured.legs) != 2
+                or not math.isfinite(measured.duration)
+                or measured.duration < 0
+                or any(not math.isfinite(leg.duration) or leg.duration < 0 for leg in measured.legs)
+            ):
+                return {**candidate, "road_exclusion_reason": "unusable_solo_road_route"}
+            extra = measured.duration - route.duration
+            return {
+                **candidate,
+                "detour_seconds": max(0.0, extra),
+                "detour_raw_seconds": extra,
+                "detour_provenance": {
+                    "source": "live_mapbox_origin_via_candidate_to_destination",
+                    "solo_duration_seconds": measured.duration,
+                    "baseline_seconds": route.duration,
+                },
+            }
+
+        async def retain(index, candidate):
+            result = await verify(index, candidate)
+            records[index] = {
+                **result,
+                "road_check_status": "excluded"
+                if "road_exclusion_reason" in result
+                else "verified",
+            }
+            return records[index]
+
+        records = await joined(
+            [retain(index, candidate) for index, candidate in enumerate(candidates)]
+        )
+        record_explanation(road_checks=records)
+        return [item for item in records if "road_exclusion_reason" not in item]
 
 
 register_planner(CPSatPlanner())

@@ -34,7 +34,8 @@ export default function RunHistory({ revision }) {
           Refresh history
         </button>
         <HelpTip label="run measurements">
-          Scores measure attraction selection, not the whole trip. Replay does not verify roads or
+          Objectives measure attraction selection. Current runs minimize spacing and detour cost in
+          seconds; historical runs retain their original scores. Replay does not verify roads or
           hotels. Feasibility checks places, driving and the nightly room target; total-trip budget
           is not enforced. Repeated-input statistics use matching inputs and scoring versions;
           quality ratios additionally require identical candidates on this page only.
@@ -64,7 +65,7 @@ export default function RunHistory({ revision }) {
                 <tr>
                   <th>Experiment</th>
                   <th>Status</th>
-                  <th>Selection score</th>
+                  <th>Selection objective</th>
                   <th>Time</th>
                   <th>API attempts</th>
                   <th>Details</th>
@@ -89,7 +90,12 @@ export default function RunHistory({ revision }) {
                         </small>
                       </td>
                       <td>{run.status}</td>
-                      <td>{metrics?.objective_score?.toLocaleString() ?? 'Unassessed'}</td>
+                      <td>
+                        {metrics?.objective_score?.toLocaleString() ?? 'Unassessed'}
+                        {metrics?.objective_direction === 'minimize' && (
+                          <small>seconds · lower cost is better</small>
+                        )}
+                      </td>
                       <td>
                         {metrics
                           ? metrics.latency_ms.total < 1000
@@ -135,6 +141,14 @@ export default function RunHistory({ revision }) {
                             </p>
                           )}
                           <RunError error={run.error} attempts={run.attempts} />
+                          {group?.objective_direction === 'minimize' && (
+                            <p className="lab-note">
+                              Cost above the proven optimum for identical candidates:{' '}
+                              {group.selection_cost_excess_seconds?.mean?.toFixed(2) ??
+                                'unassessed'}{' '}
+                              seconds on average. Average-match loss is measured separately.
+                            </p>
+                          )}
                           <TripEvaluation metrics={metrics} />
                           {group?.trip_evaluation && (
                             <div aria-label="Current page trip statistics">

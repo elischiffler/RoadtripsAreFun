@@ -24,7 +24,7 @@ const phases = [
   [
     'selection',
     'Choose attractions with CP-SAT',
-    'Candidates need a match of at least 0.60. Each gets a yes/no variable. CP-SAT maximizes integer-scaled match surplus, with a stable tie preference, under your attraction cap and at most one choice per route sample.',
+    'Candidates need a match of at least 0.60 and a verified road detour. CP-SAT selects the available requested count, keeps average match within 10 percentage points of the best achievable average, and minimizes route-gap deviation plus detour time.',
   ],
   [
     'schedule',
@@ -48,11 +48,13 @@ const phases = [
   ],
 ];
 
-function phaseFor(stage) {
+function phaseFor(stage, event) {
+  if (stage === 'providers.activity') return phaseFor(event.operation);
   if (stage === 'studio.inputs' || stage === 'studio.storage_begin') return 'inputs';
   if (stage === 'studio.endpoints') return 'endpoints';
   if (stage === 'studio.initial_route' || stage === 'route.samples') return 'base';
-  if (stage === 'route.gathering' || stage?.startsWith('attractions.')) return 'candidates';
+  if (stage === 'route.gathering' || stage === 'route.detours' || stage?.startsWith('attractions.'))
+    return 'candidates';
   if (['route.solver', 'route.model', 'route.solution', 'route.selected'].includes(stage))
     return 'selection';
   if (stage === 'route.schedule' || stage === 'route.overnight' || stage?.startsWith('hotels.'))
@@ -69,8 +71,16 @@ function describe(event) {
     const cause = retry.causes?.findLast((item) => item.message);
     return `${cause?.message || 'Provider request failed.'} ${retry.outcome === 'retrying' ? `Retrying: attempt ${retry.attempt + 1} of ${retry.max_attempts}.` : retry.outcome === 'recovered' ? `Recovered on attempt ${retry.attempt} of ${retry.max_attempts}.` : `Stopped after attempt ${retry.attempt} of ${retry.max_attempts}.`}`;
   }
-  const query = event.query ? `Route sample ${event.query} of ${event.queries}. ` : '';
+  const query = event.query
+    ? `Route sample ${event.query} of ${event.adaptive ? 'up to ' : ''}${event.queries}${event.section != null ? `, section ${event.section + 1}` : ''}. `
+    : '';
   switch (event.stage) {
+    case 'providers.activity':
+      return `${event.provider}: ${event.active} active, ${event.completed} completed calls (peak ${event.peak}).`;
+    case 'attractions.round':
+      return `${event.completed} of up to ${event.queries} nearby searches completed; ${event.rated} places rated, ${event.eligible} eligible.`;
+    case 'attractions.detour':
+      return `Verifying the live road detour for ${event.providerId}.`;
     case 'studio.inputs':
       return `${event.travelers} traveler${event.travelers === 1 ? '' : 's'}, ${event.rooms} room${event.rooms === 1 ? '' : 's'}, up to ${event.requestedStops} attractions, ${event.attributes} interest weights; $${event.budget} nightly target per room.`;
     case 'route.samples':
@@ -80,11 +90,11 @@ function describe(event) {
     case 'attractions.ratings':
       return `${query}AI is estimating interest ratings for ${event.candidates} provider-verified places.`;
     case 'attractions.query':
-      return `${query}${event.collected} verified and scored candidates collected so far.`;
+      return `${query}${event.candidates ?? 0} nearby provider records in this sample.`;
     case 'attractions.collected':
       return `${query}Scored ${event.name}. ${event.collected} candidates collected.`;
     case 'route.model':
-      return `${event.eligible} of ${event.candidates} candidates meet the ${event.threshold} match threshold, across ${event.slots} route slots. Attraction cap: ${event.requestedStops}.`;
+      return `${event.eligible} of ${event.candidates} candidates meet the ${event.threshold} match threshold, across ${event.sections ?? event.slots} route sections. Attraction cap: ${event.requestedStops}.`;
     case 'route.solution':
       return `${event.solverStatus}: selected ${event.selected} of ${event.eligible} eligible attractions.`;
     case 'route.selected':
@@ -113,9 +123,11 @@ export default function StudioProgress({ events }) {
   let current = null;
   let latestDetail = null;
   let elapsed = 0;
+  const providers = {};
   for (const event of events) {
     if (event.type !== 'progress') continue;
-    const phase = phaseFor(event.stage);
+    if (event.stage === 'providers.activity') providers[event.provider] = event;
+    const phase = phaseFor(event.stage, event);
     if (!phase) continue;
     const resolved = phase;
     current = resolved;
@@ -163,6 +175,15 @@ export default function StudioProgress({ events }) {
             'Waiting for the backend to validate your trip and report its first stage.'}
         </p>
       </div>
+      {Object.keys(providers).length > 0 && (
+        <p className="lab-note" aria-label="Provider call counts">
+          {Object.values(providers)
+            .map(
+              (event) => `${event.provider}: ${event.active} active / ${event.completed} completed`
+            )
+            .join(' · ')}
+        </p>
+      )}
       {elapsed > 0 && (
         <p className="lab-note">
           Latest server update: {(elapsed / 1000).toFixed(1)} seconds into the run.

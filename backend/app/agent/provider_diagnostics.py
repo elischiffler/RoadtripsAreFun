@@ -5,11 +5,15 @@ import re
 import time
 from contextlib import contextmanager
 from contextvars import ContextVar
+from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
 
 import httpx
 import requests
+from geopy.exc import GeocoderRateLimited, GeocoderTimedOut, GeocoderUnavailable
 
-from app.agent.progress import current_stage, emit
+from app.agent.progress import current_stage, current_stage_details, emit
+from app.routing.run_metrics import increment
 
 _records = ContextVar("provider_attempts", default=None)
 MAX_ATTEMPTS = 3
@@ -78,6 +82,9 @@ def retryable(exc):
         if isinstance(
             exc,
             (
+                GeocoderTimedOut,
+                GeocoderUnavailable,
+                GeocoderRateLimited,
                 TimeoutError,
                 httpx.TimeoutException,
                 httpx.NetworkError,
@@ -106,7 +113,17 @@ def collecting_attempts():
 
 def record_failure(exc, attempt, operation):
     again = attempt < MAX_ATTEMPTS and retryable(exc)
+    cause = exc
+    while cause is not None:
+        if (
+            operation == "ai.ratings"
+            and getattr(cause, "provider_code", None) == "EMPTY_COMPLETION"
+        ):
+            increment("llm_empty_retries" if again else "llm_empty_attempt_caps", "events")
+            break
+        cause = cause.__cause__
     entry = {
+        **current_stage_details(),
         "operation": operation,
         "attempt": attempt,
         "max_attempts": MAX_ATTEMPTS,
@@ -133,6 +150,30 @@ def recovered(attempt, operation):
         emit(operation, "started", retry=entry)
 
 
+def retry_delay(exc, attempt):
+    seen = set()
+    while exc is not None and id(exc) not in seen:
+        seen.add(id(exc))
+        response = getattr(exc, "response", None)
+        value = (
+            response.headers.get("Retry-After")
+            if response is not None
+            else getattr(exc, "retry_after", None)
+        )
+        if value:
+            try:
+                return max(0, float(value))
+            except (ValueError, TypeError):
+                try:
+                    return max(
+                        0, (parsedate_to_datetime(value) - datetime.now(UTC)).total_seconds()
+                    )
+                except (ValueError, TypeError, OverflowError):
+                    pass
+        exc = exc.__cause__
+    return attempt
+
+
 def retry_sync(call):
     operation = current_stage() or "ai.provider"
     for attempt in range(1, MAX_ATTEMPTS + 1):
@@ -141,7 +182,7 @@ def retry_sync(call):
         except Exception as exc:
             if not record_failure(exc, attempt, operation):
                 raise
-            time.sleep(attempt)
+            time.sleep(retry_delay(exc, attempt))
         else:
             recovered(attempt, operation)
             return result
@@ -155,7 +196,7 @@ async def retry_async(call, operation=None):
         except Exception as exc:
             if not record_failure(exc, attempt, operation):
                 raise
-            await asyncio.sleep(attempt)
+            await asyncio.sleep(retry_delay(exc, attempt))
         else:
             recovered(attempt, operation)
             return result

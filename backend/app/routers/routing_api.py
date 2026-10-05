@@ -17,7 +17,6 @@ Candidate-sourcing functions are re-exported at module level (``get_location``,
 whatever those names resolve to at call time (including test patches).
 """
 
-import asyncio
 import logging
 import math
 import os
@@ -30,6 +29,7 @@ from requests.exceptions import RequestException
 from app.agent.departure import is_upcoming_departure
 from app.agent.persona import effective_weights
 from app.agent.progress import stage
+from app.agent.provider_diagnostics import retry_async
 from app.agent.trip_dates import timezone_from_location
 from app.crud.memory_crud import load_account_persona
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
@@ -41,6 +41,7 @@ from app.routing.geometry import find_position as _find_position  # noqa: F401
 from app.routing.occupancy import require_occupancy
 from app.routing.pricing import get_price_range as _get_price_range  # noqa: F401
 from app.routing.registry import DEFAULT_ALGORITHM
+from app.routing.runtime import in_run, singleflight, threaded
 from app.routing.selection import owner_routing_claims, select_algorithm
 from app.routing.sources.attractions import find_stop as _find_stop  # noqa: F401
 from app.routing.sources.attractions import gather_candidates as _gather_candidates
@@ -75,7 +76,12 @@ def _build_services() -> RoutingServices:
     async def timezone_at(coords):
         key = tuple(coords)
         if key not in timezone_cache:
-            location = await asyncio.to_thread(get_location, geocoder=geolocator, coords=coords)
+            location = await singleflight(
+                ("timezone", key),
+                lambda: retry_async(
+                    lambda: threaded("geocoding", get_location, geocoder=geolocator, coords=coords)
+                ),
+            )
             timezone = timezone_from_location(location)
             if timezone is None:
                 raise PlanningError(
@@ -94,6 +100,7 @@ def _build_services() -> RoutingServices:
         cp_sat_candidates=attraction_candidates,
         cp_sat_hotels=hotel_candidates,
         timezone_at=timezone_at,
+        candidate_route=_call_route,
     )
 
 
@@ -161,6 +168,7 @@ async def get_final_route(
         raise HTTPException(status_code=502, detail=f"Unexpected value or key: {str(exception)}")
 
 
+@in_run
 async def plan_final_route(
     payload: Route_Payload, user_id: str | None = None, *, can_select_algorithm: bool = False
 ) -> Route:
@@ -257,13 +265,22 @@ async def plan_final_route(
                 leg.duration
             )  # For each stopping point add the duration to each
             if stopping_points[idx].get("address") is None:
-                location = get_location(
-                    geocoder=geolocator, coords=stopping_points[idx]["coordinates"]
+                location = await retry_async(
+                    lambda: threaded(
+                        "geocoding",
+                        get_location,
+                        geocoder=geolocator,
+                        coords=stopping_points[idx]["coordinates"],
+                    )
                 )
                 if location:
                     stopping_points[idx]["address"] = location.address  # Add the address to each
         else:
-            location = get_location(geocoder=geolocator, coords=[end_lat, end_lon])
+            location = await retry_async(
+                lambda: threaded(
+                    "geocoding", get_location, geocoder=geolocator, coords=[end_lat, end_lon]
+                )
+            )
             # Include the duration to get to the end
             stopping_points.append(
                 {

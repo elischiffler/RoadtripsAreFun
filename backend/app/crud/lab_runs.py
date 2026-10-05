@@ -58,7 +58,16 @@ def finish(user_id, run_id, envelope, metrics):
             Json(
                 {
                     key: envelope.get(key)
-                    for key in ("route", "itinerary", "error", "stages", "attempts")
+                    for key in (
+                        "route",
+                        "itinerary",
+                        "error",
+                        "stages",
+                        "attempts",
+                        "explanation",
+                        "direct_route",
+                        "input_snapshot",
+                    )
                 }
             ),
             run_id,

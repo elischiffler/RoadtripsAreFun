@@ -262,5 +262,13 @@ def replay_candidates(snapshot_id, weights):
                 "snapshot_version": "1",
             },
         )
-        candidates.append({**profile.model_dump(), **crossmatch(weights, ratings).model_dump()})
+        candidates.append(
+            {
+                **profile.model_dump(),
+                **crossmatch(weights, ratings).model_dump(),
+                "route_progress_seconds": (slot + 1) * 600,
+                "detour_seconds": 0,
+                "section_id": slot,
+            }
+        )
     return candidates, points

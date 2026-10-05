@@ -1,5 +1,16 @@
 # Current feature and senior demonstration work
 
+## October 5 adaptive discovery and balanced selection
+
+Current release work replaces the early 30-place pool and nearest-query slots
+with measured route sections, budgeted refinement and live solo-detour checks.
+Selection fills the eligible requested count within a ten-point average match
+bound, then minimizes spacing plus detour time. Bounded leaf concurrency shares
+no async client or semaphore across worker loops. Studio and chat retain shared
+live planning, occupancy/scheduling validation and existing UI features.
+See [adaptive contract and validation](../docs/adaptive-planning.md). Older dated
+snapshots below describe their original source; current source supersedes them.
+
 ## October 5 provider failure diagnostics and retries
 
 Studio preserves safe exception causes, failed-stage attribution and bounded

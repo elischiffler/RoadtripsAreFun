@@ -31,6 +31,7 @@ import json
 import logging
 import re
 import time
+from threading import RLock
 from typing import Protocol, runtime_checkable
 
 import httpx
@@ -130,12 +131,17 @@ class SupabaseServiceAuth:
         self._access_token: str | None = None
         self._refresh_token: str | None = None
         self._expires_at: float = 0.0
+        self._lock = RLock()
 
     def configured(self) -> bool:
         """True when all Supabase service-account credentials are present."""
         return bool(self._url and self._anon_key and self._email and self._password)
 
     def get_token(self) -> str:
+        with self._lock:
+            return self._get_token()
+
+    def _get_token(self) -> str:
         """Return a valid access token, refreshing/logging in as needed.
 
         Raises:
@@ -162,6 +168,7 @@ class SupabaseServiceAuth:
     def _grant(self, grant_type: str, body: dict) -> str:
         token_url = f"{self._url.rstrip('/')}/auth/v1/token"
         try:
+            increment("gateway_auth")
             resp = httpx.post(
                 token_url,
                 params={"grant_type": grant_type},
@@ -172,7 +179,9 @@ class SupabaseServiceAuth:
         except httpx.HTTPError as exc:
             raise ProviderError(f"Supabase auth request failed: {exc}") from exc
         if resp.status_code != httpx.codes.OK:
-            raise ProviderError(f"Supabase auth returned {resp.status_code}: {resp.text[:200]}")
+            error = ProviderError(f"Supabase auth returned {resp.status_code}: {resp.text[:200]}")
+            error.retry_after = resp.headers.get("Retry-After")
+            raise error
         try:
             data = resp.json()
         except ValueError as exc:
@@ -255,7 +264,13 @@ class MentroGatewayProvider:
         """True when we have a gateway URL and the auth seam is configured."""
         return bool(self._url) and self._auth.configured()
 
+    def complete_once(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
+        return self._complete(messages, tools, retry=False)
+
     def complete(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
+        return self._complete(messages, tools, retry=True)
+
+    def _complete(self, messages, tools, *, retry):
         if not self._url:
             raise ProviderNotConfigured("MENTRO_GATEWAY_URL is not set.")
         payload = {"messages": _messages_to_gateway_payload(messages)}
@@ -275,17 +290,21 @@ class MentroGatewayProvider:
                 ) from exc
             if response.content.strip():
                 return response
-            if attempts < self._MAX_ATTEMPTS:
-                increment("llm_empty_retries", "events")
-            else:
-                increment("llm_empty_attempt_caps", "events")
+            if retry:
+                if attempts < self._MAX_ATTEMPTS:
+                    increment("llm_empty_retries", "events")
+                else:
+                    increment("llm_empty_attempt_caps", "events")
             raise ProviderError(
-                f"Mentro gateway returned an empty completion (attempt {attempts}).",
+                f"Mentro gateway returned an empty completion (attempt {attempts})."
+                if retry
+                else "Mentro gateway returned an empty completion.",
                 retryable=True,
                 provider=self.name,
+                provider_code="EMPTY_COMPLETION",
             )
 
-        return retry_sync(request)
+        return retry_sync(request) if retry else request()
 
     def _stream(self, endpoint: str, token: str, payload: dict) -> LLMResponse:
         """POST to the gateway and reduce the SSE stream to the final response."""
@@ -294,9 +313,17 @@ class MentroGatewayProvider:
             "Content-Type": "application/json",
             "Accept": "text/event-stream",
         }
-        with httpx.Client(timeout=(_CONNECT_TIMEOUT, _READ_TIMEOUT)) as client:
+        from app.routing.runtime import sync_http_client
+
+        with sync_http_client() as client:
             increment("language_model")
-            with client.stream("POST", endpoint, headers=headers, json=payload) as resp:
+            with client.stream(
+                "POST",
+                endpoint,
+                headers=headers,
+                json=payload,
+                timeout=(_CONNECT_TIMEOUT, _READ_TIMEOUT),
+            ) as resp:
                 # Pre-stream failures (validation/auth/rate-limit) come back as a
                 # plain-JSON body with a non-2xx status, NOT as SSE.
                 if resp.status_code != httpx.codes.OK:
@@ -315,12 +342,14 @@ class MentroGatewayProvider:
                         code = body.get("code")
                         message = error
                     detail = f": {safe_message(message)}" if isinstance(message, str) else ""
-                    raise ProviderError(
+                    error = ProviderError(
                         f"Mentro gateway returned HTTP {resp.status_code}{detail}",
                         status_code=resp.status_code,
                         provider=self.name,
                         provider_code=code if isinstance(code, str) else None,
                     )
+                    error.retry_after = getattr(resp, "headers", {}).get("Retry-After")
+                    raise error
                 return self._reduce_sse(resp.iter_lines())
 
     def _reduce_sse(self, lines) -> LLMResponse:
@@ -444,7 +473,13 @@ class FallbackChain:
     def __init__(self, providers: list[LLMProvider]):
         self._providers = list(providers)
 
+    def complete_once(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
+        return self._complete(messages, tools, once=True)
+
     def complete(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
+        return self._complete(messages, tools, once=False)
+
+    def _complete(self, messages, tools, *, once):
         errors: list[str] = []
         last_error = None
         for provider in self._providers:
@@ -458,7 +493,11 @@ class FallbackChain:
                 errors.append(f"{provider.name}: skipped (not configured)")
                 continue
             try:
-                response = provider.complete(messages, tools)
+                response = (
+                    getattr(provider, "complete_once", provider.complete)
+                    if once
+                    else provider.complete
+                )(messages, tools)
             except ProviderError as exc:
                 last_error = exc
                 errors.append(f"{provider.name}: {exc}")

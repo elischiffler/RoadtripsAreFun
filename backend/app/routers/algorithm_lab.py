@@ -46,6 +46,7 @@ from app.routing.occupancy import (
     require_occupancy,
 )
 from app.routing.run_metrics import aggregate_runs, compile_metrics, measuring
+from app.routing.runtime import in_run, joined, threaded
 from app.routing.selection import owner_routing_claims
 from app.routing.sources.mapbox import call_route
 from app.routing.sources.persona_candidates import CandidateProviderError
@@ -178,8 +179,8 @@ async def presets(response: Response, user_id: str = Depends(require_lab_owner))
 
 
 async def resolve_endpoint(endpoint_id):
-    location = await asyncio.to_thread(
-        get_location, geocoder=geolocator, address=ENDPOINTS[endpoint_id]["label"]
+    location = await threaded(
+        "geocoding", get_location, geocoder=geolocator, address=ENDPOINTS[endpoint_id]["label"]
     )
     if location is None or not (zone := timezone_from_location(location)):
         raise PlanningError(
@@ -290,6 +291,7 @@ async def saved_result(run_id: UUID, response: Response, user_id: str = Depends(
     return result
 
 
+@in_run
 async def execute_run(payload, user_id, departure):
     inputs = payload.inputs
     weights = normalize_weights(inputs.persona_weights)
@@ -321,9 +323,11 @@ async def execute_run(payload, user_id, departure):
         )
         try:
             with stage("studio.endpoints"):
-                start, destination = await asyncio.gather(
-                    retry_async(lambda: resolve_endpoint(inputs.start_id)),
-                    retry_async(lambda: resolve_endpoint(inputs.destination_id)),
+                start, destination = await joined(
+                    [
+                        retry_async(lambda: resolve_endpoint(inputs.start_id)),
+                        retry_async(lambda: resolve_endpoint(inputs.destination_id)),
+                    ]
                 )
             departure = _departure(inputs, start["timezone"])
             trip = TripProfile.model_validate(

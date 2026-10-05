@@ -86,12 +86,13 @@ are model estimates. `LocationProfile` now types provider facts, canonical ratin
 `routing/profiles.py` owns the shared crossmatch/contributions, with ratings
 generated from the canonical persona vocabulary.
 
-`planners/cp_sat.py` uses shared `cp_sat_selection.query_count()` to query `min(30, max(6, 3*n))` route points for positive stop
-counts, accepts at most 30 candidates, selects utility >=0.60, at most the
-requested count and one candidate per nearest query slot. A deterministic
-one-worker/seed-zero/five-second solve accepts only feasible/optimal outcomes.
-Fewer attractions than requested can result; this is not a globally optimal
-joint solve of real driving, hotel prices and venue opening hours.
+`planners/cp_sat.py` builds a typed adaptive discovery plan, balances bounded
+nearby/rating pools across equal baseline driving-time sections, and road-checks
+all shortlisted candidates before solving. The solver selects K eligible places
+within ten percentage points of the best achievable average match, minimizing
+all baseline gap deviations plus measured solo detour time. Candidate capacity is
+18–60; query/rating budgets and sparse coverage remain inspectable.
+See `docs/adaptive-planning.md` and `docs/cp-sat-explained.md`.
 
 At inspected head `53fd0bf`, `cp_sat_scheduler.py` schedules two-hour visits and
 uses `models/scheduling_policy.py`: preferred hotel 18:00, hotel cutoff 20:00,
@@ -102,15 +103,17 @@ usable hotels by per-room budget compliance, utility, price, distance and ID.
 See `docs/flexible-hotel-evenings.md`, `docs/chat-creation-arrival-timing.md` and
 `docs/travelers-and-hotel-occupancy.md` for integrated scheduling/occupancy rules.
 
-The CP-SAT objective maximizes integer-scaled match surplus above 0.60 plus a
-small stable tie preference. Scheduling, hotel cost and real detour durations
-are outside that model. `base.score_trip()` is a legacy benchmark metric, not
-the solver objective. Ordinary Route output keeps its compatible shape. The owner Lab uses
-request-local `routing/explanation.py` to capture candidates and solver diagnostics
-from `routing/cp_sat_selection.py`. `routers/algorithm_lab.py` reuses existing
-owner auth, trip validation and shared live planning; all new runs persist independent experiment history. Replay requests are rejected.
-The frontend `/algorithm` page uses server catalog values and shows details on
-demand. See `docs/senior-demo-plan.md` for its API and limits. See `docs/cp-sat-explained.md` for the exact formulation.
+The current objective minimizes spacing and detour seconds (`balanced-route-v3`).
+Scheduling and hotel cost remain separate, with final live road timing validation.
+Historical surplus scores retain their original meanings. `base.score_trip()` is
+a legacy benchmark metric, not this objective. Ordinary Route output stays
+compatible. Request-local explanation captures discovery budgets, road checks,
+quality bounds, selection and solver diagnostics through existing JSONB storage.
+Studio `/studio` uses shared live planning; `/algorithm` redirects. Replay requests
+are rejected. Thread-compatible process permits bound leaf calls across private
+worker event loops; HTTP clients and request deduplication are confined to one
+run. Ratings/geocoders/solver work use bounded threads. See the adaptive contract
+for dependency barriers, retries and cancellation behavior.
 
 Stop dictionaries carry `name`, `type`, `coordinates` in **[lat, lon]**, leg
 `duration`, and hotel `price` with optional address/url/warning. Mapbox geometry

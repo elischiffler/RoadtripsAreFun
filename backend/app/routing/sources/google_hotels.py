@@ -20,8 +20,10 @@ from lxml import html
 from lxml.etree import LxmlError
 
 from app.agent.progress import emit, stage
+from app.agent.provider_diagnostics import retry_async
 from app.routing.occupancy import HotelRoom
 from app.routing.run_metrics import increment
+from app.routing.runtime import hotel_client, in_run, joined, limited, singleflight, threaded
 
 BASE = "https://www.google.com"
 MAX_DETAILS = 6
@@ -144,18 +146,34 @@ class GoogleHotelProvider:
         self.transport = transport
 
     async def _page(self, client: httpx.AsyncClient, path: str, params: dict):
-        increment("google_hotels")
-        async with client.stream("GET", BASE + path, params=params) as response:
-            response.raise_for_status()
-            if "text/html" not in response.headers.get("content-type", ""):
-                raise GoogleHotelLookupError("Google Hotels returned an unsupported response.")
-            data = bytearray()
-            async for chunk in response.aiter_bytes():
-                data.extend(chunk)
-                if len(data) > MAX_HTML_BYTES:
-                    raise GoogleHotelLookupError("Google Hotels returned an oversized response.")
-        return html.fromstring(bytes(data))
+        async def attempt():
+            increment("google_hotels")
+            async with client.stream(
+                "GET",
+                BASE + path,
+                params=params,
+                timeout=httpx.Timeout(20, connect=5),
+                headers={"User-Agent": USER_AGENT, "Accept-Language": "en-US,en;q=0.9"},
+                follow_redirects=False,
+            ) as response:
+                response.raise_for_status()
+                if "text/html" not in response.headers.get("content-type", ""):
+                    raise GoogleHotelLookupError("Google Hotels returned an unsupported response.")
+                data = bytearray()
+                async for chunk in response.aiter_bytes():
+                    data.extend(chunk)
+                    if len(data) > MAX_HTML_BYTES:
+                        raise GoogleHotelLookupError(
+                            "Google Hotels returned an oversized response."
+                        )
+            return html.fromstring(bytes(data))
 
+        return await singleflight(
+            ("google_page", path, tuple(sorted(params.items()))),
+            lambda: retry_async(lambda: limited("hotels", attempt)),
+        )
+
+    @in_run
     async def hotels_near(self, point: list[float], check_in: date, room: HotelRoom) -> list[dict]:
         try:
             async with asyncio.timeout(LOOKUP_TIMEOUT):
@@ -177,8 +195,14 @@ class GoogleHotelProvider:
             ) from exc
 
     async def _lookup(self, point: list[float], check_in: date, room: HotelRoom) -> list[dict]:
-        increment("opencage")
-        location = await asyncio.to_thread(self.geocoder.reverse, point, timeout=5)
+        async def reverse():
+            def request():
+                increment("opencage")
+                return self.geocoder.reverse(point, timeout=5)
+
+            return await retry_async(lambda: threaded("geocoding", request))
+
+        location = await singleflight(("hotel_city", tuple(point)), reverse)
         components = location.raw.get("components", {}) if location else {}
         city = next(
             (components[k] for k in ("city", "town", "village", "county") if components.get(k)),
@@ -190,12 +214,7 @@ class GoogleHotelProvider:
             str(v) for v in (city, components.get("state"), components.get("country")) if v
         )
         emit("hotels.search_area", city=str(city)[:100], checkIn=check_in.isoformat())
-        async with httpx.AsyncClient(
-            timeout=httpx.Timeout(20, connect=5),
-            headers={"User-Agent": USER_AGENT, "Accept-Language": "en-US,en;q=0.9"},
-            transport=self.transport,
-            follow_redirects=False,
-        ) as client:
+        async with hotel_client(self.transport) as client:
             with stage("hotels.google_search"):
                 root = await self._page(
                     client, "/travel/search", {**_params(check_in, room), "q": "hotels in " + query}
@@ -216,7 +235,7 @@ class GoogleHotelProvider:
             }
             emit("hotels.listings", candidates=len(cards))
             seen = set()
-            details = 0
+            ready = []
             for card in cards[:20]:
                 names = card.xpath(".//h2//text()")
                 name = " ".join(names).strip()
@@ -233,45 +252,58 @@ class GoogleHotelProvider:
                 ):
                     rejected["unusablePriceOrLink"] += 1
                     continue
-                if details >= MAX_DETAILS:
+                if len(ready) >= MAX_DETAILS:
                     break
                 path = paths[0]
                 seen.add(path)
-                details += 1
-                with stage("hotels.verify_listing", attempt=details):
+                ready.append((name, path, price))
+
+            async def verify(item):
+                name, path, price = item
+                with stage("hotels.verify_listing", hotel=name[:100]):
                     detail = await self._page(client, path, _params(check_in, room))
                 _validate_stay(detail, check_in, room)
                 if _key(" ".join(detail.xpath("//h1//text()"))) != _key(name):
                     rejected["identity"] += 1
-                    continue
+                    return None
                 addresses = detail.xpath('//div[@class="K4nuhf"]/span[@class="CFH2De"]/text()')
                 if not addresses:
                     rejected["address"] += 1
-                    continue
+                    return None
                 address = addresses[0].strip()
-                increment("opencage")
-                geo = await asyncio.to_thread(self.geocoder.geocode, address, timeout=5)
+
+                async def geocode():
+                    def request():
+                        increment("opencage")
+                        return self.geocoder.geocode(address, timeout=5)
+
+                    return await retry_async(lambda: threaded("geocoding", request))
+
+                geo = await singleflight(("hotel_address", address), geocode)
                 if not geo:
                     rejected["geocode"] += 1
-                    continue
+                    return None
                 coordinates = [geo.latitude, geo.longitude]
                 if geodesic(point, coordinates).miles > 30:
                     rejected["radius"] += 1
-                    continue
-                records.append(
-                    {
-                        "provider_id": "google:" + path.rsplit("/", 1)[1],
-                        "name": name,
-                        "coordinates": coordinates,
-                        "address": address,
-                        "url": BASE + path + "?" + urlencode(_params(check_in, room)),
-                        "price": price,
-                        "room": room.model_dump(),
-                        "price_scope": "one_room_one_night_including_taxes_fees",
-                        "check_in_date": check_in,
-                    }
-                )
-                emit("hotels.collected", name=name[:100], hotels=len(records))
+                    return None
+                return {
+                    "provider_id": "google:" + path.rsplit("/", 1)[1],
+                    "name": name,
+                    "coordinates": coordinates,
+                    "address": address,
+                    "url": BASE + path + "?" + urlencode(_params(check_in, room)),
+                    "price": price,
+                    "room": room.model_dump(),
+                    "price_scope": "one_room_one_night_including_taxes_fees",
+                    "check_in_date": check_in,
+                }
+
+            verified = await joined([verify(item) for item in ready])
+            records = [item for item in verified if item is not None]
+            details = len(ready)
+            for index, record in enumerate(records, start=1):
+                emit("hotels.collected", name=record["name"][:100], hotels=index)
             emit("hotels.rejections", checked=details, verified=len(records), **rejected)
             if not records:
                 if details > 0 and rejected["radius"] == details:

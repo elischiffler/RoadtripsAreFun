@@ -7,6 +7,8 @@ from ortools.sat.python import cp_model
 
 from app.routing.base import PlanningError, PlanOptions
 from app.routing.cp_sat_scheduler import schedule_cp_sat_route
+from app.routing.discovery import DiscoveryResult
+from app.routing.geometry import project_place
 from app.routing.occupancy import HotelRoom
 from app.routing.planners.cp_sat import CPSatPlanner
 from app.routing.registry import available_planners
@@ -38,6 +40,8 @@ def attraction(provider_id, coordinates, utility):
         "url": None,
         "attribute_ratings": dict.fromkeys(_PERSONA_KEYS, 0.5),
         "utility": utility,
+        "route_progress_seconds": max(0, coordinates[1]),
+        "detour_seconds": 0,
     }
 
 
@@ -60,15 +64,24 @@ def hotel(provider_id, coordinates, price, utility):
 def configure(fake_services, attractions=(), hotels=()):
     calls = {"attractions": [], "hotels": []}
 
-    async def candidates(route, points, weights):
-        calls["attractions"].append((route, points, weights))
-        return list(attractions)
+    async def candidates(route, plan, weights):
+        calls["attractions"].append((route, [q.coordinates for q in plan.queries], weights))
+        return DiscoveryResult(
+            [{**item, **project_place(route, item["coordinates"])} for item in attractions], {}
+        )
 
     async def hotel_candidates(position, check_in, price_range, weights, hotel_rooms):
         calls["hotels"].append((position, check_in, price_range, weights))
         return list(hotels)
 
     services = fake_services.bundle()
+
+    async def roads(*args):
+        baseline = calls["attractions"][-1][0].model_copy(deep=True)
+        baseline.legs = [baseline.legs[0], baseline.legs[0]]
+        return baseline
+
+    services.candidate_route = roads
     services.cp_sat_candidates = candidates
     services.cp_sat_hotels = hotel_candidates
     return services, calls
@@ -117,7 +130,7 @@ async def test_sparse_and_weak_candidates_are_not_forced(route, start_date, fake
     assert calls["attractions"][0][1][0] != calls["attractions"][0][1][1]
 
 
-def test_query_slot_tie_uses_lower_index_and_deduplicates():
+def test_same_position_places_can_be_selected_and_identity_deduplicates():
     points = [[0, -1], [0, 1]]
     selected = CPSatPlanner._select(
         [
@@ -128,8 +141,13 @@ def test_query_slot_tie_uses_lower_index_and_deduplicates():
         ],
         points,
         3,
+        10,
     )
-    assert [(slot, item["provider_id"]) for slot, item in selected] == [(0, "b"), (1, "c")]
+    assert [(slot, item["provider_id"]) for slot, item in selected] == [
+        (0, "a"),
+        (0, "b"),
+        (1, "c"),
+    ]
 
 
 def test_stable_selection_with_duplicate_slot_and_order():
@@ -141,10 +159,11 @@ def test_stable_selection_with_duplicate_slot_and_order():
         attraction("m", [0, 2], 0.95),
     ]
     outputs = [
-        [(slot, item["provider_id"]) for slot, item in CPSatPlanner._select(records, points, 3)]
+        [(slot, item["provider_id"]) for slot, item in CPSatPlanner._select(records, points, 3, 10)]
         for _ in range(3)
     ]
-    assert outputs == [[(0, "a"), (1, "m"), (2, "z")]] * 3
+    assert outputs == [outputs[0]] * 3
+    assert len(outputs[0]) == 3
 
 
 @pytest.mark.parametrize("status", [cp_model.FEASIBLE, cp_model.OPTIMAL])
@@ -159,7 +178,7 @@ def test_usable_solver_statuses_return_only_selected(monkeypatch, status):
             return 1
 
     monkeypatch.setattr(cp_model, "CpSolver", FakeSolver)
-    selected = CPSatPlanner._select([attraction("a", [0, 0], 0.9)], [[0, 0]], 1)
+    selected = CPSatPlanner._select([attraction("a", [0, 0], 0.9)], [[0, 0]], 1, 10)
     assert selected[0][1]["provider_id"] == "a"
 
 
@@ -173,7 +192,7 @@ def test_unsolved_status_never_returns_candidates(monkeypatch, status):
 
     monkeypatch.setattr(cp_model, "CpSolver", FakeSolver)
     with pytest.raises(PlanningError):
-        CPSatPlanner._select([attraction("a", [0, 0], 0.9)], [[0, 0]], 1)
+        CPSatPlanner._select([attraction("a", [0, 0], 0.9)], [[0, 0]], 1, 10)
 
 
 @pytest.mark.asyncio

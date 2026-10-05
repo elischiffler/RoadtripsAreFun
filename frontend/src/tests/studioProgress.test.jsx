@@ -167,7 +167,9 @@ it('shows actual candidate counts and explains the distinction between AI rating
   expect(screen.getByRole('list', { name: 'Live planning stages' })).toHaveTextContent(
     'Ratings are estimates, not provider facts'
   );
-  expect(screen.getByRole('list')).toHaveTextContent('maximizes integer-scaled match surplus');
+  expect(screen.getByRole('list')).toHaveTextContent(
+    'minimizes route-gap deviation plus detour time'
+  );
   view.rerender(
     <StudioProgress
       events={[

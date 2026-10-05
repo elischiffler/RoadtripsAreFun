@@ -42,12 +42,14 @@ def test_stable_output_and_comparison_ignore_provider_timestamps():
     assert first["external_calls"]["mapbox"] == 0
     summary = aggregate_runs([{"metrics": first}, {"metrics": second}])[0]
     assert summary["deterministic_observed"] is True
-    assert summary["quality_percent"]["mean"] == 100
+    assert summary["quality_percent"] is None
+    assert summary["selection_cost_excess_seconds"]["mean"] == 0
     assert summary["feasibility_rate"] is None
 
 
 def test_quality_needs_matching_candidates_and_proven_optimum():
     baseline = metric()
+    baseline["metric_version"] = "selection-surplus-v2"
     approximate = copy.deepcopy(baseline)
     approximate.update(algorithm="future", solver_status="FEASIBLE", objective_score=80)
     summary = aggregate_runs([{"metrics": baseline}, {"metrics": approximate}])[0]
@@ -110,12 +112,12 @@ async def test_provider_attempt_is_counted_even_when_request_fails(monkeypatch):
 
     monkeypatch.setattr(mapbox.config, "MAPBOX_API", "fixture-key")
 
-    def fail(*args, **kwargs):
-        raise mapbox.requests.RequestException("offline")
+    async def fail(*args, **kwargs):
+        raise ValueError("offline")
 
-    monkeypatch.setattr(mapbox.requests, "get", fail)
+    monkeypatch.setattr(mapbox, "http_get", fail)
     with measuring() as data:
-        with pytest.raises(mapbox.requests.RequestException):
+        with pytest.raises(ValueError):
             await mapbox.call_route(37, -122, 36, -121)
     assert data["calls"] == {"mapbox": 1}
 
@@ -261,3 +263,18 @@ def test_page_cohorts_separate_versions_and_exclude_missing_measurements():
     assert groups[0]["completion_rate"] == 0.5
     assert groups[0]["trip_evaluation"]["quoted_hotel_total_usd"]["count"] == 2
     assert groups[1]["trip_evaluation"]["quoted_hotel_total_usd"] is None
+
+
+def test_minimized_cost_excess_supports_zero_optima_without_inverting_quality():
+    baseline = metric()
+    baseline["objective_score"] = 0
+    worse = copy.deepcopy(baseline)
+    worse.update(solver_status="FEASIBLE", objective_score=20)
+    summary = aggregate_runs([{"metrics": baseline}, {"metrics": worse}])[0]
+    assert summary["objective_direction"] == "minimize"
+    assert summary["quality_percent"] is None
+    assert summary["selection_cost_gap_percent"] is None
+    assert summary["selection_cost_excess_seconds"]["max"] == 20
+    baseline["objective_score"] = 10
+    summary = aggregate_runs([{"metrics": baseline}, {"metrics": worse}])[0]
+    assert summary["selection_cost_gap_percent"]["max"] == 100

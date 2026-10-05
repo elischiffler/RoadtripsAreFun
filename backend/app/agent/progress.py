@@ -2,16 +2,22 @@
 
 from contextlib import contextmanager
 from contextvars import ContextVar
+from threading import RLock
 from time import perf_counter
 from uuid import uuid4
 
 from app.routing.run_metrics import duration
 
 _stage = ContextVar("provider_stage", default=None)
+_stage_details = ContextVar("provider_stage_details", default=None)
 
 
 def current_stage():
     return _stage.get()
+
+
+def current_stage_details():
+    return _stage_details.get() or {}
 
 
 _reporter = ContextVar("agent_progress", default=None)
@@ -23,8 +29,13 @@ class ProgressReporter:
         self.request_id = uuid4().hex[:12]
         self.started = perf_counter()
         self.sequence = 0
+        self.lock = RLock()
 
     def emit(self, stage, state, **details):
+        with self.lock:
+            self._emit(stage, state, **details)
+
+    def _emit(self, stage, state, **details):
         self.sequence += 1
         self.sink(
             {
@@ -59,6 +70,7 @@ def emit(stage, state="completed", **details):
 @contextmanager
 def stage(name, **details):
     token = _stage.set(name)
+    detail_token = _stage_details.set(details)
     started = perf_counter()
     emit(name, "started", **details)
     try:
@@ -69,4 +81,5 @@ def stage(name, **details):
     else:
         emit(name, durationMs=round((perf_counter() - started) * 1000, 3), **details)
     finally:
+        _stage_details.reset(detail_token)
         _stage.reset(token)

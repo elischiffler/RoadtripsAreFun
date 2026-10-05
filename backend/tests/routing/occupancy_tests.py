@@ -100,9 +100,11 @@ async def test_multi_room_prices_are_independent_verified_quotes_with_each_link(
     records = await hotel_candidates(
         [40, -74], CHECK_IN, ((0, 200), "0-200"), default_weights(), rooms, ai=ai, places=places
     )
-    assert len(places.calls) == 2
+    assert len(places.calls) == len(set(room.model_dump_json() for room in rooms))
     hotel = records[0]
-    assert hotel["price"] == 295  # Even identical allocations are separately requested.
+    assert hotel["price"] == (
+        240 if identical else 295
+    )  # Identical requests share one live quote; retain both room allocations.
     assert hotel["url"] is None
     assert hotel["price_scope"] == "independent_room_quotes_not_combined_inventory"
     assert hotel["hotel_rooms"] == [room.model_dump() for room in rooms]

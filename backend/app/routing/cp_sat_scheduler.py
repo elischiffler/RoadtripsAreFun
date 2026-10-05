@@ -14,7 +14,8 @@ from app.agent.progress import emit
 from app.models.routing_models.routing_models import MapBox
 from app.models.scheduling_policy import advance, local_time, seconds_until
 from app.routing.base import PlanningError, PlanOptions
-from app.routing.cp_sat_selection import query_count
+from app.routing.discovery import SelectedAttraction
+from app.routing.geometry import RouteMeasure
 from app.routing.occupancy import require_occupancy
 from app.routing.services import RoutingServices
 
@@ -62,7 +63,7 @@ def _over_budget(hotel: dict, budget: float, room_count: int) -> bool:
 
 async def schedule_cp_sat_route(
     route: MapBox_route,
-    selected: list[tuple[int, dict[str, Any]]],
+    selected: list[SelectedAttraction],
     options: PlanOptions,
     services: RoutingServices,
 ) -> tuple[list[dict[str, Any]], float]:
@@ -73,7 +74,7 @@ async def schedule_cp_sat_route(
     """
     policy = options.scheduling_policy
     now = options.start
-    coordinates, steps = route.geometry.coordinates, route.legs[0].steps
+    coordinates = route.geometry.coordinates
 
     async def zone_at(position):
         if services.timezone_at is not None:
@@ -91,11 +92,27 @@ async def schedule_cp_sat_route(
     if services.cp_sat_hotels is None:
         raise PlanningError("CP-SAT verified hotel service is not configured", 503)
 
-    count = query_count(options.num_stops)
-    events = [
-        (route.duration * (index + 1) / (count + 1), candidate) for index, candidate in selected
-    ]
-    events.append((route.duration, None))
+    events, mapping = [], [(0.0, 0.0)]
+    detours = 0.0
+    for progress, candidate in sorted(selected, key=lambda item: (item[0], item[1]["provider_id"])):
+        half = candidate["detour_seconds"] / 2
+        target = progress + detours + half
+        events.append((target, candidate))
+        mapping.extend([(target, progress), (target + half, progress)])
+        detours += candidate["detour_seconds"]
+    total_drive = route.duration + detours
+    events.append((total_drive, None))
+    mapping.append((total_drive, route.duration))
+    measure = RouteMeasure(route)
+
+    def estimated_position(seconds):
+        for (a, baseline_a), (b, baseline_b) in zip(mapping, mapping[1:]):
+            if a <= seconds <= b and b > a:
+                return measure.position(
+                    baseline_a + (seconds - a) / (b - a) * (baseline_b - baseline_a)
+                )
+        return measure.position(route.duration)
+
     elapsed, total_cost, overnights = 0.0, 0.0, 0
     stops = []
     end_zone = await zone_at([coordinates[-1][1], coordinates[-1][0]])
@@ -111,7 +128,7 @@ async def schedule_cp_sat_route(
             )
             event_zone = await zone_at(position)
             remaining_visits = sum(item is not None for _, item in events[event_index:])
-            finish_seconds = route.duration - elapsed + remaining_visits * _VISIT_SECONDS
+            finish_seconds = total_drive - elapsed + remaining_visits * _VISIT_SECONDS
             can_finish = (
                 finish_seconds
                 <= seconds_until(now, policy.deadline(travel_day, end_zone, final=True)) + 1e-6
@@ -150,7 +167,7 @@ async def schedule_cp_sat_route(
             )
             for _ in range(3):
                 trial = min(drive_left, preferred_drive)
-                position = services.find_position(coordinates, steps, elapsed + trial)
+                position = estimated_position(elapsed + trial)
                 zone = await zone_at(position)
                 preferred_drive = max(
                     0.0,
@@ -171,7 +188,7 @@ async def schedule_cp_sat_route(
                 if trial_elapsed in tried:
                     continue
                 tried.add(trial_elapsed)
-                position = services.find_position(coordinates, steps, trial_elapsed)
+                position = estimated_position(trial_elapsed)
                 zone = await zone_at(position)
                 arrival = advance(now, trial_drive).astimezone(zone)
                 if seconds_until(arrival, policy.deadline(travel_day, zone)) < -1e-6:

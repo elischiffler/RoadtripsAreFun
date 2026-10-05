@@ -6,6 +6,7 @@ import pytest
 from app.agent.persona import ATTRIBUTE_KEYS, default_weights
 from app.agent.progress import reporting
 from app.agent.schemas import LLMResponse
+from app.routing.discovery import DiscoveryPlan, SearchQuery
 from app.routing.occupancy import HotelRoom
 from app.routing.sources import persona_candidates as source
 
@@ -41,6 +42,19 @@ class FakePlaces:
         return self.hotels
 
 
+async def discover(raw_route, points, weights, **kwargs):
+    from tests.routing.conftest import build_route
+
+    route = build_route(3600)
+    lat, lon = points[0]
+    coords = [[lon, lat], [lon + 0.05, lat]]
+    route.geometry.coordinates = coords
+    route.legs[0].steps[0].geometry.coordinates = coords
+    queries = [SearchQuery(f"q{i}", 0, 0, point) for i, point in enumerate(points)]
+    plan = DiscoveryPlan(1, 3600, 1, 18, len(points), len(points), 36, 54, queries)
+    return (await source.attraction_candidates(route, plan, weights, **kwargs)).candidates
+
+
 @pytest.mark.asyncio
 async def test_attractions_verify_identity_coordinates_ratings_and_utility():
     proposals = [
@@ -57,7 +71,7 @@ async def test_attractions_verify_identity_coordinates_ratings_and_utility():
             source.VerifiedPlace(provider_id="terra:8", name="Bad Ratings", coordinates=[40, -74]),
         ]
     )
-    result = await source.attraction_candidates(
+    result = await discover(
         object(), [[40, -74]], default_weights(), ai=FakeAI(proposals), places=places
     )
     assert len(result) == 1
@@ -79,22 +93,16 @@ async def test_attractions_reject_distant_malformed_and_cap_output():
 
     ai = FakeAI([{"name": "Park", "attribute_ratings": _ratings()}])
     places = IndexedPlaces()
-    result = await source.attraction_candidates(
-        None, [[40, -74]] * 30, default_weights(), ai=ai, places=places
-    )
-    assert len(result) == 30
-    assert ai.calls == 30 and places.calls == 30
-    with pytest.raises(ValueError, match="at most 30"):
-        await source.attraction_candidates(None, [[40, -74]] * 31, default_weights(), ai=ai)
+    result = await discover(None, [[40, -74]] * 30, default_weights(), ai=ai, places=places)
+    assert len(result) == 3
+    assert ai.calls == 3 and places.calls == 3
 
     distant = FakePlaces(
         attractions=[
             source.VerifiedPlace(provider_id="terra:9", name="Park", coordinates=[41, -74])
         ]
     )
-    assert not await source.attraction_candidates(
-        None, [[40, -74]], default_weights(), ai=ai, places=distant
-    )
+    assert not await discover(None, [[40, -74]], default_weights(), ai=ai, places=distant)
 
 
 @pytest.mark.asyncio
@@ -190,7 +198,7 @@ async def test_unavailable_providers_fail_clearly():
             raise RuntimeError("offline")
 
     with pytest.raises(source.CandidateProviderError, match="AI candidate"):
-        await source.attraction_candidates(
+        await discover(
             None,
             [[40, -74]],
             default_weights(),
@@ -209,7 +217,7 @@ async def test_unavailable_providers_fail_clearly():
             raise source.CandidateProviderError("Terra unavailable")
 
     with pytest.raises(source.CandidateProviderError, match="Terra unavailable"):
-        await source.attraction_candidates(
+        await discover(
             None,
             [[40, -74]],
             default_weights(),
@@ -282,7 +290,7 @@ async def test_collection_progress_only_reports_verified_unique_matches():
         ]
     )
     with reporting(events.append):
-        result = await source.attraction_candidates(
+        result = await discover(
             {},
             [[40, -74], [40, -74]],
             default_weights(),
@@ -294,9 +302,9 @@ async def test_collection_progress_only_reports_verified_unique_matches():
     assert collected[0]["name"] == "Real Museum"
     assert collected[0]["collected"] == 1
     searches = [event for event in events if event["stage"] == "attractions.query"]
-    assert searches[-1]["collected"] == 1
-    assert searches[-1]["query"] == searches[-1]["queries"] == 2
-    assert events.index(collected[0]) < events.index(searches[1])
+    assert sum(event["state"] == "started" for event in searches) == 2
+    assert all("section" in event for event in searches)
+    assert any(event["stage"] == "attractions.round" for event in events)
 
 
 @pytest.mark.asyncio
@@ -314,7 +322,7 @@ async def test_attraction_ratings_are_grounded_in_nearby_provider_names():
             provider_id="terra:far", name="Distant attraction", coordinates=[50, -74]
         ),
     ]
-    candidates = await source.attraction_candidates(
+    candidates = await discover(
         None,
         [[40, -74]],
         default_weights(),
@@ -357,7 +365,7 @@ async def test_live_attractions_reject_hotel_and_restaurant_listings(monkeypatch
     monkeypatch.setattr(source.LivePlaceProvider, "require_attractions", lambda self: None)
     monkeypatch.setattr(source, "_auth_headers", lambda: {})
     monkeypatch.setattr(
-        source.httpx,
+        httpx,
         "AsyncClient",
         lambda **kwargs: client_type(transport=httpx.MockTransport(respond), **kwargs),
     )
