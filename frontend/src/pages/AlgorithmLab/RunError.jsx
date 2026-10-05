@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 
 export default function RunError({ error, attempts = [] }) {
-  if (!error && !attempts.length) return null;
+  const records = Array.isArray(attempts) ? attempts : [];
+  if (!error && !records.length) return null;
   const cause = error?.causes?.findLast((item) => item.message);
   return (
     <div role={error ? 'alert' : undefined} className={error ? 'lab-error' : 'lab-note'}>
@@ -13,10 +14,10 @@ export default function RunError({ error, attempts = [] }) {
       )}
       {cause?.message && <p>{cause.message}</p>}
       {error?.http_status && <p>Provider HTTP status: {error.http_status}</p>}
-      {attempts.length > 0 && (
+      {records.length > 0 && (
         <p>
-          {attempts.filter((item) => item.outcome === 'retrying').length} automatic retries
-          recorded. Each retryable request gets up to 3 attempts; completed steps are kept.
+          {records.filter((item) => item.outcome === 'retrying').length} automatic retries recorded.
+          Each retryable request gets up to 3 attempts; completed steps are kept.
         </p>
       )}
       <details>
@@ -24,7 +25,7 @@ export default function RunError({ error, attempts = [] }) {
           {error ? 'Saved error and attempt details' : 'Saved provider retry details'}
         </summary>
         <pre className="lab-stage-json" tabIndex={0} aria-label="Error diagnostic">
-          <code>{JSON.stringify({ error, attempts }, null, 2)}</code>
+          <code>{JSON.stringify({ error, attempts: records }, null, 2)}</code>
         </pre>
       </details>
     </div>

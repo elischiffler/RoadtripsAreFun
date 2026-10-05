@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import LabResults from '../pages/AlgorithmLab/LabResults';
 import StudioProgress from '../pages/AlgorithmLab/StudioProgress';
 import StageRunData from '../pages/AlgorithmLab/StageRunData';
+import RunError from '../pages/AlgorithmLab/RunError';
 
 const result = {
   mode: 'live',
@@ -96,4 +97,17 @@ it('shows adaptive upper bounds, query sections and durable actual call counts',
   expect(screen.getByLabelText('Provider call counts')).toHaveTextContent(
     'nearby: 4 active / 8 completed'
   );
+});
+
+it('handles nullable attempts from unfinished and historical saved rows without hiding errors', () => {
+  const view = render(<RunError error={null} attempts={null} />);
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  view.rerender(
+    <RunError
+      error={{ code: 'provider_failure', message: 'Rate limited', http_status: 429 }}
+      attempts={null}
+    />
+  );
+  expect(screen.getByRole('alert')).toHaveTextContent('Provider HTTP status: 429');
+  expect(screen.getByLabelText('Error diagnostic')).toHaveTextContent('"attempts": []');
 });
