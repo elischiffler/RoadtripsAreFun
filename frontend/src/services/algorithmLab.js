@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios from './protectedRequest';
+import { SessionError } from './session';
 import { backendAuthConfig } from './backendAuth';
 
 export async function getLabPresets(signal) {
@@ -19,6 +20,7 @@ export async function runLab(request, signal) {
 }
 
 export function labError(error) {
+  if (error instanceof SessionError) return ''; // AuthWrapper owns the single recovery notice.
   if ([401, 403].includes(error.response?.status)) {
     return 'Algorithm Lab requires the authorized owner account. Sign in again to continue.';
   }

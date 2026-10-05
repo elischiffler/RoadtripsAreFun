@@ -47,7 +47,7 @@ The replay allowlist was checked against these rejection boundaries:
 | Chat create/update | `chat_api.py` verifies `PartitionKey` before CRUD |
 | Agent JSON | `run_turn` verifies `partitionKey` before memory loading, extraction or tools |
 | Agent NDJSON | `agent_chat_stream` verifies before constructing StreamingResponse |
-| Routing/settings/car/provider and itinerary | Auth dependency runs before endpoint body |
+| Routing/settings/car/provider, owner Algorithm Lab and itinerary | Auth dependency runs before endpoint body |
 
 Application/provider failures with different detail are terminal even if 401.
 There is no idempotency guarantee for uncertain mutations or disconnected agent
@@ -59,6 +59,7 @@ Protected children wait for restoration. Definitive expiry produces one login
 notice and an allowlisted local return path. The context keeps chat selection,
 route/itinerary, agent conversation IDs and in-memory unsent drafts through
 same-account renewal or interactive recovery. Drafts are never automatically sent.
+The protected `/algorithm` return path and Lab requests use the same session contract.
 Another account or explicit logout clears that state and account-scoped browser
 hints. Drafts survive navigation in the mounted application, not closing/reloading
 the tab. Renewed identity tokens revalidate server-owned routing eligibility while
@@ -94,8 +95,8 @@ claims or call session renewal; never alter real tokens for this test.
 
 Validation on October 4, 2026 (America/Los_Angeles):
 
-- PASS: frontend format/lint, 234 tests, coverage 85.03% lines/statements,
-  84.99% branches and 78.07% functions; production build; development launcher tests.
+- PASS: frontend format/lint, 258 tests, coverage 88.11% lines/statements,
+  85.96% branches and 79.57% functions; production build; development launcher tests.
 - PASS: Edge browser through agent-browser, no page errors or Vite overlay.
   Three concurrent renewals plus foreground restoration yielded one refresh,
   preserving the unsent draft, selected chat and conversation ID.

@@ -77,3 +77,16 @@ browser reload/persistence, and runtime parity remain unverified in this refresh
 No deployment, live account write, schema change or production setting was made.
 Required repository checks and live demonstration gates remain separate. Keep
 the feature draft until the applicable acceptance gates actually pass.
+
+## Session expiry recovery
+
+Frontend session renewal is owned by `services/session.js`; protected Axios and
+NDJSON dispatch rebuild headers and legacy body tokens from one fresh session.
+The Cognito SDK uses `GetTokensFromRefreshToken`, preserving rotation/device keys,
+with coalesced renewal and one bounded verifier-rejection replay. Logout/account
+changes invalidate late results. Same-account recovery keeps chat state and drafts;
+server eligibility is rechecked with renewed identity tokens. The owner Algorithm
+Lab uses the same protected transport. See [session renewal](../docs/session-refresh.md)
+for the rejection audit, local/browser evidence and outstanding live Cognito gates.
+No AWS settings, backend auth validation, schema or production deployment changes
+are included. PR #26 remains draft pending its existing live acceptance requirements.

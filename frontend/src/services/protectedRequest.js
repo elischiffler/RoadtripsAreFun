@@ -31,8 +31,8 @@ function replayable(url, method) {
   if (!base || !url.startsWith(base)) return false;
   const path = url.slice(base.length).split('?')[0];
   return {
-    get: /^(chats|routing-settings|get-initial-route|get-car-details|get-gas-price|get-location)$/,
-    post: /^(chats\/create\/[^/]+|agent\/chat|generate-final-route|generate-itinerary)$/,
+    get: /^(chats|routing-settings|get-initial-route|get-car-details|get-gas-price|get-location|algorithm-lab\/presets)$/,
+    post: /^(chats\/create\/[^/]+|agent\/chat|generate-final-route|generate-itinerary|algorithm-lab\/run)$/,
     put: /^chats\/update\/[^/]+$/,
     delete: /^chats\/delete\/[^/]+$/,
   }[method]?.test(path);
