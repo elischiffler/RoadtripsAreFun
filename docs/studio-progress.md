@@ -34,3 +34,26 @@ is included in streamed errors. The final envelope still feeds the existing map,
 itinerary, evaluation and saved-result viewer.
 
 The header link now reads **Back to home page** and navigates to `/`.
+
+## October 5 verification
+
+On `codex/production-release`, all 699 backend tests passed with 87.00% coverage
+and all 296 frontend tests passed with 90.05% line coverage. Ruff and frontend
+format/lint checks passed; the production build passed with the existing bundle
+size warning. Locked dependencies from the validated release were reused.
+Stream tests cover split Unicode frames, heartbeats, interrupted transport,
+HTTP/stream errors, pre-header authorization/validation, callback failure,
+cancellation, and late authentication rejection against a newer visitor session.
+Existing worker tests verify progress delivery during blocking I/O and cancellation.
+
+A real coastal-nature run displayed six actual route samples with changing
+provider/rating counts before delivering 2/2 attractions, a 118-mile route and
+a saved dated itinerary. The building box was captured during live AI rating
+collection, not simulated. The home link was confirmed as `/` in the browser
+and component tests.
+
+Rebuilt preview containers at implementation `9f053ee` passed both smoke checks.
+Disposable PostgreSQL project `roadtrips-crud-a0d6f31c46` passed CRUD, ownership,
+result persistence, recovery, recreation and backup/restore. Test containers were
+stopped; source/restore volumes and the private backup were retained. No production
+deployment or main merge was performed. Live announcements sit outside the busy input form.

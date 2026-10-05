@@ -188,12 +188,7 @@ function LabWorkspace({ historyOpen }) {
           </HelpTip>
         </p>
       </form>
-      <div
-        className="lab-output-panel"
-        ref={output}
-        tabIndex={-1}
-        aria-label="Experiment output"
-      >
+      <div className="lab-output-panel" ref={output} tabIndex={-1} aria-label="Experiment output">
         {!busy && !error && !result && (
           <div className="lab-empty">
             <span className="lab-eyebrow">Your next experiment</span>
