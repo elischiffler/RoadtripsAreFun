@@ -87,3 +87,13 @@ PR #26 through an explicit coordinator handoff. Never merge or push main.
 Required CI plus live owner/non-owner, browser, provider and persistence checks
 have distinct evidence scopes. No cloud spending or production deployment is
 authorized by this plan.
+
+## Persistent Algorithm Lab experiments
+
+Algorithm Lab now records live and selection-replay runs in a separate, owner-scoped
+PostgreSQL table. Ordinary chat runs are excluded. A benchmark modal queues the
+six route categories sequentially, with optional repeats and persistent input/metric
+history. See [run history and migration](algorithm-run-history.md) for scoring, feasibility,
+comparison rules and operational boundaries. Apply the additive table migration
+to the approved target before the backend release; local validation is not evidence
+of a public database migration. Replay still needs the backend and this database.

@@ -423,3 +423,80 @@
   font-weight: 400;
   color: var(--bark-dark, #5c3d2e);
 }
+
+.lab-history {
+  grid-column: 1 / -1;
+  padding: 1.5rem;
+  background: var(--lab-panel, #fff);
+  border: 1px solid #dbe4de;
+  border-radius: 18px;
+}
+.lab-table-scroll {
+  overflow-x: auto;
+}
+.lab-history table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: left;
+}
+.lab-history th,
+.lab-history td {
+  padding: 0.8rem;
+  border-bottom: 1px solid #e2e8e4;
+  vertical-align: top;
+}
+.lab-history small,
+.lab-benchmark-choice small {
+  display: block;
+  margin-top: 0.3rem;
+  color: #64756c;
+}
+.lab-history pre {
+  max-width: 34rem;
+  max-height: 20rem;
+  overflow: auto;
+  font-size: 0.75rem;
+}
+.lab-benchmark-dialog {
+  width: min(620px, calc(100vw - 2rem));
+  max-height: 85vh;
+  overflow-y: auto;
+  border: 1px solid #dbe4de;
+  border-radius: 20px;
+  padding: 1.5rem;
+  color: #183b2b;
+}
+.lab-benchmark-dialog::backdrop {
+  background: #10251db3;
+  backdrop-filter: blur(3px);
+}
+.lab-benchmark-dialog fieldset {
+  border: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.8rem;
+}
+.lab-benchmark-choice {
+  display: flex;
+  align-items: start;
+  gap: 0.7rem;
+  padding: 0.8rem;
+  background: #f4f8f5;
+  border-radius: 10px;
+}
+.lab-benchmark-choice input {
+  margin-top: 0.3rem;
+}
+
+.algorithm-lab .lab-benchmark-choice {
+  flex-direction: row;
+  margin-bottom: 0;
+}
+.algorithm-lab .lab-benchmark-choice input {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0;
+  flex: 0 0 18px;
+}

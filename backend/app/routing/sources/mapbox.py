@@ -11,6 +11,7 @@ import requests
 from app.agent.progress import stage
 from app.models.routing_models.routing_models import MapBox
 from app.routing import config
+from app.routing.run_metrics import increment
 
 MapBox_route = MapBox.MapBox_Route
 
@@ -48,6 +49,7 @@ async def call_route(
     }
 
     with stage("mapbox.request"):
+        increment("mapbox")
         response = requests.get(call_route_url, params=params, timeout=config.HTTP_TIMEOUT)
     json_data = response.json()
     data = MapBox.model_validate(json_data)

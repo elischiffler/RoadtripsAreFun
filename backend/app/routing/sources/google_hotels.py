@@ -21,6 +21,7 @@ from lxml.etree import LxmlError
 
 from app.agent.progress import emit, stage
 from app.routing.occupancy import HotelRoom
+from app.routing.run_metrics import increment
 
 BASE = "https://www.google.com"
 MAX_DETAILS = 6
@@ -131,6 +132,7 @@ class GoogleHotelProvider:
         self.transport = transport
 
     async def _page(self, client: httpx.AsyncClient, path: str, params: dict):
+        increment("google_hotels")
         async with client.stream("GET", BASE + path, params=params) as response:
             response.raise_for_status()
             if "text/html" not in response.headers.get("content-type", ""):
@@ -163,6 +165,7 @@ class GoogleHotelProvider:
             ) from exc
 
     async def _lookup(self, point: list[float], check_in: date, room: HotelRoom) -> list[dict]:
+        increment("opencage")
         location = await asyncio.to_thread(self.geocoder.reverse, point, timeout=5)
         components = location.raw.get("components", {}) if location else {}
         city = next(
@@ -234,6 +237,7 @@ class GoogleHotelProvider:
                     rejected["address"] += 1
                     continue
                 address = addresses[0].strip()
+                increment("opencage")
                 geo = await asyncio.to_thread(self.geocoder.geocode, address, timeout=5)
                 if not geo:
                     rejected["geocode"] += 1

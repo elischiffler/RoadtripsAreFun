@@ -7,7 +7,7 @@ Status: **IMPLEMENTED ON TASK BRANCH**, public release/live acceptance pending. 
 
 The header-free page uses short subtitles, hover/focus/click help for definitions,
 and disclosures for formulas/provenance. The in-page link returns to chat.
-API routes stay `/algorithm-lab/presets` and `/algorithm-lab/run`.
+API routes are `/algorithm-lab/presets`, `/algorithm-lab/run` and `/algorithm-lab/runs`.
 The trip-interest editor uses a pie chart: drag or click a topic to add a slice,
 then drag its edge, use arrow keys, or enter a percentage to resize. A drop
 overlay identifies the circle while carrying a topic. Allocations are capped at
@@ -20,8 +20,8 @@ Unused space is visible and is not a neutral interest: backend normalization
 still scales positive weights to one. An empty mix disables Run.
 
 Lab weights are explicit complete overrides. Replay uses synthetic selection-only
-fixtures (`teaching-v1` / `empty-v1`), with null route/itinerary and no database or
-provider calls. Live snapshots are not retained for replay. Car choice is
+fixtures (`teaching-v1` / `empty-v1`), with null route/itinerary and no provider calls. Both modes persist separate run
+history; live candidate models are retained for analysis, not exposed as runnable replay fixtures. Car choice is
 validated/displayed but this Lab does not estimate fuel. These are deliberate
 milestone boundaries. See [public release/MacBook rehearsal](senior-demo-runbook.md).
 
@@ -173,3 +173,6 @@ record provider latency, and practice the explanation. Tuesday: sign in, show
 trip profile, run, inspect one candidate score, show constraints/status, change
 weights on the same snapshot, then show route and timing. Use the labeled replay
 if necessary and state exactly what it demonstrates.
+
+Run storage, sequential benchmark batches, metric semantics and migration are owned by
+[algorithm-run-history.md](algorithm-run-history.md). Chat planning is excluded from this table.

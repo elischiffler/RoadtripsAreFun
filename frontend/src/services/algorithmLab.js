@@ -32,3 +32,14 @@ export function labError(error) {
     ? detail
     : 'The run could not finish. Check your connection and try again.';
 }
+
+export async function getLabRuns(signal, offset = 0) {
+  const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}algorithm-lab/runs`, {
+    ...backendAuthConfig(),
+    signal,
+    params: { limit: 50, offset },
+  });
+  if (!Array.isArray(data.runs) || !Array.isArray(data.groups))
+    throw new Error('Invalid run history response');
+  return data;
+}

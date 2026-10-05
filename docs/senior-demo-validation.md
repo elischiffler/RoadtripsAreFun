@@ -84,3 +84,27 @@ normalized by the existing backend; an empty mix disables Run. Numeric controls
 and keyboard-accessible handles provide alternatives to dragging. The final
 PR head's CI covers integration; earlier backend/database results above retain
 their original scope.
+
+## Algorithm Lab history and sequential benchmarks (October 4)
+
+- PASS: frontend 276 tests / 33 files, coverage thresholds, format, lint and build.
+  Existing large-bundle warning remains. Docker performed a fresh locked npm install.
+- PASS: Linux Python 3.12.14 full suite, 663 tests, 86.32% coverage (63% floor).
+  Final high-resolution timing adjustment: 44 targeted progress/Lab/metrics tests pass.
+  An earlier Windows run had one timing-sensitive progress/heartbeat failure under
+  concurrent load; it passed alone and in Linux. No assertion or timeout was weakened.
+- PASS: Ruff format/lint and two container smoke tests. API revision is embedded
+  from the Docker build SHA for future measurement comparisons.
+- PASS: real PostgreSQL run insert/finalize/read and cross-owner rejection, source
+  volume recreation, DB-loss readiness, backup/restore and populated-target refusal.
+  Latest disposable project: `roadtrips-crud-74680e184a`; five application tables.
+- PASS, local fixture scope: browser six-run sequential batch persisted and remained
+  after reload. A further three-repeat short-route selection batch produced the same
+  3,380,003 objective each time. History contains inputs, zero outbound calls for replay,
+  actual timing, selected IDs, comparison grouping and truthful unassessed road feasibility.
+  Dialog controls were inspected visually; no real provider batch was run.
+- Production migration / live provider benchmarks: NOT RUN. Apply the additive SQL
+  to an approved target before backend release. `/ready` now requires the new table.
+  Existing public-runtime and real Cognito acceptance blockers remain.
+
+Measurement definitions and lifecycle caveats: [algorithm-run-history.md](algorithm-run-history.md).

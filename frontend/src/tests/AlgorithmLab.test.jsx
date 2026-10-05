@@ -125,7 +125,11 @@ beforeEach(() => {
   import.meta.env.VITE_BACKEND_SERVER = 'http://localhost:8000/';
   axios.get.mockImplementation((url) =>
     Promise.resolve(
-      url.endsWith('routing-settings') ? capability() : { data: structuredClone(catalog) }
+      url.endsWith('routing-settings')
+        ? capability()
+        : url.endsWith('algorithm-lab/runs')
+          ? { data: { runs: [], groups: [], next_offset: null } }
+          : { data: structuredClone(catalog) }
     )
   );
   axios.post.mockResolvedValue({ data: response() });

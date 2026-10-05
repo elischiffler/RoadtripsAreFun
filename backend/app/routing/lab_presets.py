@@ -13,6 +13,70 @@ ENDPOINTS = {
     "monterey": {"label": "Monterey, California, USA", "coordinates": [36.6002, -121.8947]},
     "la": {"label": "Los Angeles, California, USA", "coordinates": [34.0522, -118.2437]},
 }
+
+ENDPOINTS.update(
+    {
+        "san-diego": {"label": "San Diego, California, USA", "timezone": "America/Los_Angeles"},
+        "boise": {"label": "Boise, Idaho, USA", "timezone": "America/Boise"},
+        "chicago": {"label": "Chicago, Illinois, USA", "timezone": "America/Chicago"},
+        "ely": {"label": "Ely, Nevada, USA", "timezone": "America/Los_Angeles"},
+        "reno": {"label": "Reno, Nevada, USA", "timezone": "America/Los_Angeles"},
+    }
+)
+
+# Driving times and hotel counts are experiment targets, not promised outcomes.
+
+BENCHMARKS = {
+    "short-day": (
+        "Short single-day",
+        "la",
+        "san-diego",
+        2,
+        180,
+        "Target: 3–4 hours driving, two stops, no overnight.",
+    ),
+    "medium-two-day": (
+        "Medium two-day",
+        "sf",
+        "boise",
+        4,
+        180,
+        "Target: 12–14 hours driving and one overnight.",
+    ),
+    "long-multi-day": (
+        "Long multi-day",
+        "sf",
+        "chicago",
+        8,
+        180,
+        "Target: 30+ hours driving, eight stops, several hotels.",
+    ),
+    "dense-corridor": (
+        "Dense corridor",
+        "sf",
+        "la",
+        4,
+        180,
+        "Urban California corridor; inspect the observed candidate pool.",
+    ),
+    "sparse-corridor": (
+        "Sparse corridor",
+        "ely",
+        "reno",
+        3,
+        180,
+        "Remote Nevada corridor; inspect candidate and hotel availability.",
+    ),
+    "tight-budget": (
+        "Tight hotel budget",
+        "sf",
+        "boise",
+        4,
+        60,
+        "Medium trip with a $60 nightly room target; this is not a hard total budget.",
+    ),
+}
+
 PRESETS = {
     "coastal-nature": (
         "Coastal nature",
@@ -28,6 +92,7 @@ PRESETS = {
     ),
     "overnight": ("Overnight road trip", "la", 3, default_weights()),
 }
+
 SNAPSHOTS = [
     {
         "id": "teaching-v1",
@@ -46,7 +111,7 @@ def preset_catalog():
     tomorrow = (
         (datetime.now(ZoneInfo("America/Los_Angeles")) + timedelta(days=1)).date().isoformat()
     )
-    return [
+    presets = [
         {
             "id": key,
             "label": label,
@@ -68,6 +133,17 @@ def preset_catalog():
         }
         for key, (label, destination, stops, weights) in PRESETS.items()
     ]
+    for key, (label, start, destination, stops, budget, description) in BENCHMARKS.items():
+        inputs = {
+            **presets[0]["inputs"],
+            "start_id": start,
+            "destination_id": destination,
+            "num_stops": stops,
+            "budget": budget,
+            "persona_weights": dict(presets[0]["inputs"]["persona_weights"]),
+        }
+        presets.append({"id": key, "label": label, "description": description, "inputs": inputs})
+    return presets
 
 
 def replay_candidates(snapshot_id, weights):

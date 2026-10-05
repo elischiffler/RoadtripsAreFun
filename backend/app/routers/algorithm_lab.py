@@ -2,11 +2,12 @@
 
 import asyncio
 from datetime import date, datetime
+from time import perf_counter
 from typing import Literal
-from uuid import uuid4
+from uuid import UUID, uuid4
 from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Response
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -19,6 +20,7 @@ from app.agent.trip_dates import (
     timezone_from_location,
 )
 from app.agent.trip_profile import MAX_STOPS, MIN_STOPS, Car, TripProfile
+from app.crud import lab_runs
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import Route_Payload
 from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
@@ -27,7 +29,14 @@ from app.routers.routing_api import plan_final_route
 from app.routing.base import PlanningError
 from app.routing.config import geolocator
 from app.routing.explanation import capture_explanation, record_explanation, record_stage
-from app.routing.lab_presets import ENDPOINTS, PRESETS, SNAPSHOTS, preset_catalog, replay_candidates
+from app.routing.lab_presets import (
+    BENCHMARKS,
+    ENDPOINTS,
+    PRESETS,
+    SNAPSHOTS,
+    preset_catalog,
+    replay_candidates,
+)
 from app.routing.occupancy import (
     MAX_CHILD_AGE,
     MAX_ROOM_GUESTS,
@@ -37,6 +46,7 @@ from app.routing.occupancy import (
     require_occupancy,
 )
 from app.routing.planners.cp_sat import CPSatPlanner
+from app.routing.run_metrics import aggregate_runs, compile_metrics, measuring, timed
 from app.routing.selection import owner_routing_claims
 from app.routing.sources.mapbox import call_route
 from app.routing.sources.persona_candidates import CandidateProviderError
@@ -128,11 +138,13 @@ class LabRun(BaseModel):
     mode: Literal["live", "replay"]
     preset_id: str
     inputs: LabInputs
+    batch_id: UUID | None = None
+    repeat_index: int = Field(default=1, strict=True, ge=1, le=10)
     snapshot_id: Literal["teaching-v1", "empty-v1"] | None = None
 
     @model_validator(mode="after")
     def mode_rules(self):
-        if self.preset_id not in PRESETS:
+        if self.preset_id not in PRESETS and self.preset_id not in BENCHMARKS:
             raise ValueError("Unknown preset")
         if (self.mode == "replay") != (self.snapshot_id is not None):
             raise ValueError("Replay requires a fixture snapshot; live must omit snapshot_id")
@@ -148,6 +160,7 @@ async def presets(response: Response, user_id: str = Depends(require_lab_owner))
         "endpoints": [{"id": key, "label": value["label"]} for key, value in ENDPOINTS.items()],
         "presets": preset_catalog(),
         "snapshots": SNAPSHOTS,
+        "benchmarks": [item for item in preset_catalog() if item["id"] in BENCHMARKS],
         "limits": {
             "min_stops": MIN_STOPS,
             "max_stops": MAX_STOPS,
@@ -184,13 +197,57 @@ def _departure(inputs, zone, live):
 @router.post("/run")
 async def run(payload: LabRun, response: Response, user_id: str = Depends(require_lab_owner)):
     response.headers["Cache-Control"] = "no-store"
-    inputs = payload.inputs
-    # Reject invalid live dates before incurring any provider requests. All catalog
-    # cities have the same timezone; re-resolve using provider timezone below.
     try:
-        departure = _departure(inputs, "America/Los_Angeles", payload.mode == "live")
+        departure = _departure(
+            payload.inputs,
+            ENDPOINTS[payload.inputs.start_id].get("timezone", "America/Los_Angeles"),
+            payload.mode == "live",
+        )
     except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+        raise HTTPException(422, str(exc)) from exc
+    try:
+        run_id = await asyncio.to_thread(lab_runs.begin, user_id, payload.model_dump(mode="json"))
+    except Exception as exc:
+        raise HTTPException(503, "Run storage is unavailable. No experiment was started.") from exc
+    started = perf_counter()
+    with measuring() as telemetry:
+        envelope = await execute_run(payload, user_id, departure)
+        metrics = compile_metrics(envelope, telemetry, (perf_counter() - started) * 1000)
+    envelope["run_record"] = {"id": run_id, "saved": False, "metrics": metrics}
+    try:
+        await asyncio.to_thread(lab_runs.finish, user_id, run_id, envelope, metrics)
+        envelope["run_record"]["saved"] = True
+    except Exception:
+        envelope["run_record"]["warning"] = (
+            "Could not confirm the result was saved. Check run history; unfinished records must not count as completed."
+        )
+    return envelope
+
+
+@router.get("/runs")
+async def runs(
+    response: Response,
+    limit: int = Query(100, ge=1, le=500),
+    offset: int = Query(0, ge=0),
+    user_id: str = Depends(require_lab_owner),
+):
+    response.headers["Cache-Control"] = "no-store"
+    try:
+        rows = await asyncio.to_thread(lab_runs.history, user_id, limit, offset)
+    except Exception as exc:
+        raise HTTPException(503, "Run history is unavailable.") from exc
+    return {
+        "runs": rows,
+        "groups": aggregate_runs(rows),
+        "limit": limit,
+        "offset": offset,
+        "summary_scope": "this page only",
+        "next_offset": offset + limit if len(rows) == limit else None,
+    }
+
+
+async def execute_run(payload, user_id, departure):
+    inputs = payload.inputs
     weights = normalize_weights(inputs.persona_weights)
     snapshot = next((item for item in SNAPSHOTS if item["id"] == payload.snapshot_id), None)
     envelope = {
@@ -198,6 +255,7 @@ async def run(payload: LabRun, response: Response, user_id: str = Depends(requir
         "mode": payload.mode,
         "input_snapshot": {
             **inputs.model_dump(mode="json"),
+            "snapshot_id": payload.snapshot_id,
             "start_date": departure,
             "effective_weights": weights,
             "weights_source": "Complete trip override; account persona is not changed",
@@ -234,7 +292,8 @@ async def run(payload: LabRun, response: Response, user_id: str = Depends(requir
                     "complete",
                     "Frozen synthetic attributes, rescored with this trip profile.",
                 )
-                CPSatPlanner._select(candidates, points, inputs.num_stops)
+                with timed("solving"):
+                    CPSatPlanner._select(candidates, points, inputs.num_stops)
                 record_stage(
                     "selection",
                     "complete",

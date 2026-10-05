@@ -45,11 +45,12 @@ class CPSatPlanner(RoutePlanner):
             else []
         )
         try:
-            candidates = (
-                await services.cp_sat_candidates(initial_route, points, options.weights or {})
-                if points
-                else []
-            )
+            with stage("route.gathering"):
+                candidates = (
+                    await services.cp_sat_candidates(initial_route, points, options.weights or {})
+                    if points
+                    else []
+                )
             record_stage(
                 "candidates",
                 "complete",

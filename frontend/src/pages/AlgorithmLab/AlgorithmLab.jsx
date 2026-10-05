@@ -9,6 +9,8 @@ import { getLabPresets, runLab, labError } from '../../services/algorithmLab';
 import TripInputs from './TripInputs';
 import LabResults from './LabResults';
 import HelpTip from './HelpTip';
+import BenchmarkDialog from './BenchmarkDialog';
+import RunHistory from './RunHistory';
 import './AlgorithmLab.css';
 
 function LabWorkspace() {
@@ -19,12 +21,14 @@ function LabWorkspace() {
   const [snapshotId, setSnapshotId] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [batchBusy, setBatchBusy] = useState(false);
   const [result, setResult] = useState(null);
   const [previous, setPrevious] = useState(null);
   const lastResult = useRef(null);
   const request = useRef(null);
   const output = useRef(null);
   const [reload, setReload] = useState(0);
+  const [historyRevision, setHistoryRevision] = useState(0);
 
   useEffect(() => {
     if (!result && !error && !busy) return;
@@ -90,6 +94,7 @@ function LabWorkspace() {
       setPrevious(lastResult.current);
       setResult(data);
       lastResult.current = data;
+      setHistoryRevision((value) => value + 1);
     } catch (failure) {
       if (controller.signal.aborted || request.current !== controller) return;
       setError(labError(failure));
@@ -185,8 +190,23 @@ function LabWorkspace() {
           >
             {busy ? 'Running…' : mode === 'replay' ? 'Run replay' : 'Run live route'}
           </button>
+          <BenchmarkDialog
+            catalog={catalog}
+            disabled={busy}
+            onBusy={(value) => {
+              setBusy(value);
+              setBatchBusy(value);
+            }}
+            onResult={(data) => {
+              setPrevious(lastResult.current);
+              setResult(data);
+              lastResult.current = data;
+              setHistoryRevision((value) => value + 1);
+            }}
+          />
           <button
             type="button"
+            disabled={batchBusy}
             onClick={() => {
               lastResult.current = null;
               setPrevious(null);
@@ -197,10 +217,10 @@ function LabWorkspace() {
           </button>
         </div>
         <p className="lab-note">
-          Temporary experiment; reloading clears it.{' '}
+          Runs are saved to a separate experiment history.{' '}
           <HelpTip label="experiment storage">
-            Runs do not update account preferences or saved chats. Results remain in this page until
-            reset, logout or reload.
+            Runs do not update account preferences or saved chats. Inputs and measurements persist
+            in run history after reload. Chat runs are not recorded here.
           </HelpTip>
         </p>
       </form>
@@ -230,8 +250,14 @@ function LabWorkspace() {
             {error} Update the inputs if needed, then run again.
           </p>
         )}
+        {result?.run_record && (
+          <p role="status" className="lab-note">
+            {result.run_record.saved ? 'Run saved to history.' : result.run_record.warning}
+          </p>
+        )}
         {result && <LabResults key={result.snapshot.id} result={result} previous={previous} />}
       </div>
+      <RunHistory revision={historyRevision} />
     </div>
   );
 }

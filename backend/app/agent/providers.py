@@ -35,6 +35,7 @@ import httpx
 
 from app.agent.schemas import AgentUsage, LLMMessage, LLMResponse, ToolSpec
 from app.core.config import settings
+from app.routing.run_metrics import increment
 
 logger = logging.getLogger(__name__)
 
@@ -245,6 +246,8 @@ class MentroGatewayProvider:
 
         last_error: ProviderError | None = None
         for attempt in range(1, self._MAX_ATTEMPTS + 1):
+            if attempt > 1:
+                increment("llm_empty_retries", "events")
             token = self._auth.get_token()  # may raise ProviderNotConfigured / ProviderError
             try:
                 response = self._stream(endpoint, token, payload)
@@ -262,6 +265,7 @@ class MentroGatewayProvider:
                 attempt,
                 self._MAX_ATTEMPTS,
             )
+        increment("llm_empty_attempt_caps", "events")
         # Exhausted retries with only empty responses.
         raise last_error or ProviderError("Mentro gateway returned only empty completions.")
 
@@ -273,6 +277,7 @@ class MentroGatewayProvider:
             "Accept": "text/event-stream",
         }
         with httpx.Client(timeout=(_CONNECT_TIMEOUT, _READ_TIMEOUT)) as client:
+            increment("language_model")
             with client.stream("POST", endpoint, headers=headers, json=payload) as resp:
                 # Pre-stream failures (validation/auth/rate-limit) come back as a
                 # plain-JSON body with a non-2xx status, NOT as SSE.

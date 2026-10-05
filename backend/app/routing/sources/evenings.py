@@ -14,6 +14,7 @@ from app.agent.progress import emit
 from app.models.routing_models.trip_advisor_models import Terra_Page_Nearby_Location
 from app.models.scheduling_policy import advance, seconds_until
 from app.routing import config
+from app.routing.run_metrics import increment
 from app.routing.sources.attractions import _auth_headers
 from app.routing.sources.persona_candidates import VerifiedPlace
 
@@ -58,6 +59,7 @@ class LiveEveningProvider:
         records = []
         async with httpx.AsyncClient(timeout=3) as client:
             for category in categories:
+                increment("tripadvisor")
                 response = await client.get(
                     f"{config.TRIPADVISOR_BASE_URL}/locations/nearby",
                     params={
@@ -128,6 +130,7 @@ class LiveEveningProvider:
             raise ValueError("Optional travel directions are unavailable")
         points = ";".join(f"{lon},{lat}" for lat, lon in (hotel, venue, hotel))
         async with httpx.AsyncClient(timeout=3) as client:
+            increment("mapbox")
             response = await client.get(
                 f"https://api.mapbox.com/directions/v5/mapbox/driving/{points}",
                 params={"access_token": config.MAPBOX_API, "overview": "false", "steps": "false"},

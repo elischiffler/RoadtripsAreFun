@@ -2,6 +2,8 @@ import geopy
 from fastapi import HTTPException
 from geopy.exc import GeopyError
 
+from app.routing.run_metrics import increment
+
 
 def get_location(
     geocoder: geopy.geocoders,
@@ -12,6 +14,8 @@ def get_location(
 ) -> geopy.location.Location:
     try:
         location = None
+        if coords or address:
+            increment("opencage")
         if coords:
             coordinates = f"{coords[0]}, {coords[1]}"
             location = geocoder.reverse(coordinates, timeout=10)

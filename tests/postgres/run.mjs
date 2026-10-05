@@ -28,13 +28,14 @@ const objectsQuery =
 function assertSchemaMatchesSources() {
   const readme = readFileSync(join(repositoryRoot, "README.md"), "utf8");
   const memory = readFileSync(join(repositoryRoot, "backend/app/crud/memory_crud.py"), "utf8");
+  const labDdl = readFileSync(join(repositoryRoot, "backend/sql/algorithm_lab_runs.sql"), "utf8");
   const schema = readFileSync(join(directory, "schema.sql"), "utf8");
   const readmeDdl = /## Database Schema[\s\S]*?```sql\s*([\s\S]*?)```/.exec(readme)?.[1];
   const memoryDdl = /_CREATE_TABLE_SQL = """([\s\S]*?)"""/.exec(memory)?.[1];
   if (!readmeDdl || !memoryDdl) throw new Error("Authoritative schema source missing");
   const canonical = (value) =>
     value.replace(/--[^\n]*/g, "").replace(/[\s;]/g, "").toLowerCase();
-  if (canonical(schema) !== canonical(`${readmeDdl}\n${memoryDdl}`)) {
+  if (canonical(schema) !== canonical(`${readmeDdl}\n${memoryDdl}\n${labDdl}`)) {
     throw new Error("Disposable schema drifted from README or memory_crud DDL");
   }
   console.log("Schema matches checked-in README and memory CRUD DDL");

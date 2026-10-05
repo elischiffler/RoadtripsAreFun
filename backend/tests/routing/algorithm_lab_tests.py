@@ -20,6 +20,12 @@ from app.routing.profiles import AttributeRatings, crossmatch
 from app.routing.selection import OWNER_EMAIL
 
 
+@pytest.fixture(autouse=True)
+def lab_storage(monkeypatch):
+    monkeypatch.setattr(lab.lab_runs, "begin", lambda *args: "00000000-0000-0000-0000-000000000001")
+    monkeypatch.setattr(lab.lab_runs, "finish", lambda *args: None)
+
+
 @pytest.fixture
 def headers(signed_token):
     return {
@@ -282,3 +288,48 @@ def test_live_failure_is_not_replaced_with_replay(headers, monkeypatch):
         next(stage for stage in result["stages"] if stage["name"] == "endpoints")["status"]
         == "failed"
     )
+
+
+def test_storage_failure_blocks_provider_work(headers, monkeypatch):
+    def unavailable(*args):
+        raise RuntimeError("secret connection string")
+
+    monkeypatch.setattr(lab.lab_runs, "begin", unavailable)
+    response = TestClient(app).post("/algorithm-lab/run", headers=headers, json=request_body())
+    assert response.status_code == 503
+    assert "secret" not in response.text
+    assert "No experiment was started" in response.text
+
+
+def test_failed_finalize_reports_unsaved_result(headers, monkeypatch):
+    def unavailable(*args):
+        raise RuntimeError("database offline")
+
+    monkeypatch.setattr(lab.lab_runs, "finish", unavailable)
+    result = TestClient(app).post("/algorithm-lab/run", headers=headers, json=request_body()).json()
+    assert result["run_record"]["saved"] is False
+    assert result["explanation"]["solver"]["status"] == "OPTIMAL"
+
+
+def test_history_is_owner_scoped_paginated_and_private(headers, monkeypatch):
+    calls = []
+    monkeypatch.setattr(lab.lab_runs, "history", lambda *args: calls.append(args) or [])
+    client = TestClient(app)
+    assert client.get("/algorithm-lab/runs").status_code == 401
+    response = client.get("/algorithm-lab/runs?limit=50&offset=100", headers=headers)
+    assert response.status_code == 200
+    assert calls == [("cognito-user-123", 50, 100)]
+    assert response.headers["cache-control"] == "no-store"
+    assert response.json()["groups"] == []
+    assert client.get("/algorithm-lab/runs?limit=501", headers=headers).status_code == 422
+
+
+def test_benchmark_presets_are_validated_and_repeat_count_bounded(headers):
+    client = TestClient(app)
+    catalog = client.get("/algorithm-lab/presets", headers=headers).json()
+    assert len(catalog["benchmarks"]) == 6
+    for preset in catalog["benchmarks"]:
+        lab.LabInputs.model_validate(preset["inputs"])
+    payload = request_body()
+    payload["repeat_index"] = 11
+    assert client.post("/algorithm-lab/run", headers=headers, json=payload).status_code == 422

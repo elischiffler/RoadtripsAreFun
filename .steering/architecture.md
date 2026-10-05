@@ -108,7 +108,7 @@ are outside that model. `base.score_trip()` is a legacy benchmark metric, not
 the solver objective. Ordinary Route output keeps its compatible shape. The owner Lab uses
 request-local `routing/explanation.py` to capture candidates and solver diagnostics
 from `routing/cp_sat_selection.py`. `routers/algorithm_lab.py` reuses existing
-owner auth, trip validation and shared planning; replay skips providers/database.
+owner auth, trip validation and shared planning; replay skips providers but persists independent experiment history.
 The frontend `/algorithm` page uses server catalog values and shows details on
 demand. See `docs/senior-demo-plan.md` for its API and limits. See `docs/cp-sat-explained.md` for the exact formulation.
 
@@ -140,3 +140,11 @@ Reads/writes use authenticated owner/chat scope; the frontend owns verbatim
 ChatLog writes. `schemas/chat_schemas.py` accepts optional presentation in JSONB.
 No new table migration is required for these JSON additions. Disposable DDL is
 `tests/postgres/schema.sql`; production schema/history remain unverified.
+
+## Algorithm Lab run measurements
+
+`app/crud/lab_runs.py` owns owner-scoped `algorithm_lab_runs` storage;
+`backend/sql/algorithm_lab_runs.sql` owns its additive migration.
+`app/routing/run_metrics.py` owns request-local instrumentation, canonical hashes
+and statistical aggregation. Only Lab runs activate capture; chat runs are excluded.
+See [run history contract](../docs/algorithm-run-history.md).

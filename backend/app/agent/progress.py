@@ -2,8 +2,10 @@
 
 from contextlib import contextmanager
 from contextvars import ContextVar
-from time import monotonic
+from time import perf_counter
 from uuid import uuid4
+
+from app.routing.run_metrics import duration
 
 _reporter = ContextVar("agent_progress", default=None)
 
@@ -12,7 +14,7 @@ class ProgressReporter:
     def __init__(self, sink):
         self.sink = sink
         self.request_id = uuid4().hex[:12]
-        self.started = monotonic()
+        self.started = perf_counter()
         self.sequence = 0
 
     def emit(self, stage, state, **details):
@@ -24,7 +26,7 @@ class ProgressReporter:
                 "sequence": self.sequence,
                 "stage": stage,
                 "state": state,
-                "elapsedMs": round((monotonic() - self.started) * 1000),
+                "elapsedMs": round((perf_counter() - self.started) * 1000),
                 **details,
             }
         )
@@ -40,6 +42,8 @@ def reporting(sink):
 
 
 def emit(stage, state="completed", **details):
+    if "durationMs" in details:
+        duration(stage, details["durationMs"])
     reporter = _reporter.get()
     if reporter:
         reporter.emit(stage, state, **details)
@@ -47,12 +51,12 @@ def emit(stage, state="completed", **details):
 
 @contextmanager
 def stage(name, **details):
-    started = monotonic()
+    started = perf_counter()
     emit(name, "started", **details)
     try:
         yield
     except BaseException:
-        emit(name, "failed", durationMs=round((monotonic() - started) * 1000), **details)
+        emit(name, "failed", durationMs=round((perf_counter() - started) * 1000, 3), **details)
         raise
     else:
-        emit(name, durationMs=round((monotonic() - started) * 1000), **details)
+        emit(name, durationMs=round((perf_counter() - started) * 1000, 3), **details)

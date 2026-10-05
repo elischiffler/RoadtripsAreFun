@@ -159,7 +159,7 @@ def ready():
             # through the same pooled Neon URL used by normal requests.
             cur.execute("SET statement_timeout = 5000")
             cur.execute(
-                "SELECT to_regclass('public.chats'), to_regclass('public.route_segments'), to_regclass('public.steps'), to_regclass('public.chat_memory')"
+                "SELECT to_regclass('public.chats'), to_regclass('public.route_segments'), to_regclass('public.steps'), to_regclass('public.chat_memory'), to_regclass('public.algorithm_lab_runs')"
             )
             if not all(cur.fetchone()):
                 return JSONResponse(

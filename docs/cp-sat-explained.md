@@ -289,3 +289,16 @@ candidates lets us demonstrate personalization reproducibly.
 
 Our optimality claim is limited to attraction selection over these candidates.
 We do not yet jointly optimize hotels, real travel time and total trip cost.”
+
+## Explaining experiment results
+
+The Benchmark trips modal runs selected trips one at a time; every Lab run is
+recorded independently of chat. Open Run history and Inspect to show the exact
+input, normalized weights, candidate-model fingerprint, objective and timing.
+Three repeats test observed variability; one deterministic replay is only a
+sanity check. Identical live inputs may discover different candidates, so an
+OPTIMAL score only supplies a quality reference for that identical candidate
+model. A 100% quality ratio is not proof that the whole road trip is globally
+optimal. Budget feasibility currently compares dated room quotes with the nightly
+room target; it cannot certify a hard total-trip budget. These definitions and
+the source modules are in [algorithm-run-history.md](algorithm-run-history.md).

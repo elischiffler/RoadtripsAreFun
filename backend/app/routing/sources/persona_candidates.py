@@ -25,6 +25,7 @@ from app.agent.schemas import LLMMessage
 from app.routing import config
 from app.routing.occupancy import MAX_ROOMS, HotelRoom
 from app.routing.profiles import AttributeRatings, crossmatch
+from app.routing.run_metrics import increment, timed
 from app.routing.sources.attractions import _auth_headers, _raise_for_status
 
 MAX_ATTRACTIONS = 30
@@ -174,14 +175,15 @@ async def _propose(
             + json.dumps(names)
         )
     try:
-        response = await asyncio.to_thread(
-            ai.complete,
-            [
-                LLMMessage(role="system", content="Return strict JSON only."),
-                LLMMessage(role="user", content=prompt),
-            ],
-            [],
-        )
+        with timed("generation"):
+            response = await asyncio.to_thread(
+                ai.complete,
+                [
+                    LLMMessage(role="system", content="Return strict JSON only."),
+                    LLMMessage(role="user", content=prompt),
+                ],
+                [],
+            )
     except Exception as exc:
         raise CandidateProviderError("AI candidate provider unavailable") from exc
     return _parse_proposals(response.content, limit)
@@ -373,6 +375,7 @@ class LivePlaceProvider:
         self.require_attractions()
         try:
             async with httpx.AsyncClient(timeout=config.HTTP_TIMEOUT) as client:
+                increment("tripadvisor")
                 response = await client.get(
                     f"{config.TRIPADVISOR_BASE_URL}/locations/nearby",
                     params={

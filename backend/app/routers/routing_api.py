@@ -277,11 +277,12 @@ async def plan_final_route(
         idx += 1
     start_timezone = payload.start_timezone
     if algorithm.startswith("cp_sat"):
-        if services.timezone_at is not None:
-            start_timezone = await services.timezone_at([start_lat, start_lon])
-            for stop in stopping_points:
-                stop["timezone"] = await services.timezone_at(stop["coordinates"])
-        apply_timing(stopping_points, start, payload.scheduling_policy, start_timezone)
+        with stage("route.validation"):
+            if services.timezone_at is not None:
+                start_timezone = await services.timezone_at([start_lat, start_lon])
+                for stop in stopping_points:
+                    stop["timezone"] = await services.timezone_at(stop["coordinates"])
+            apply_timing(stopping_points, start, payload.scheduling_policy, start_timezone)
         record_stage("reroute", "complete", "Mapbox actual legs passed local timing checks.")
         await enrich_evenings(
             stopping_points, evening_interests(payload.evening_interests, weights)

@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from app.agent.memory import ConversationMemory, MemoryFact
 from app.agent.trip_dates import PendingDeparture
 from app.agent.trip_profile import TripProfile
-from app.crud import chat_crud, memory_crud
+from app.crud import chat_crud, lab_runs, memory_crud
 from app.models.scheduling_policy import SchedulingPolicy
 from app.schemas.chat_schemas import ChatLogSchema
 from app.utils.location_resolution import LocationCandidate, PendingLocation
@@ -77,6 +77,19 @@ def _raw_connection():
 
 
 def seed():
+    run_id = lab_runs.begin(
+        OWNER_A, {"mode": "replay", "preset_id": "probe", "inputs": {"budget": 60}}
+    )
+    lab_runs.finish(
+        OWNER_A, run_id, {"input_snapshot": {"budget": 60}, "error": None}, {"objective_score": 123}
+    )
+    assert lab_runs.history(OWNER_B) == []
+    try:
+        lab_runs.finish(OWNER_B, run_id, {"input_snapshot": {}, "error": None}, {})
+        raise AssertionError("Foreign run was updated")
+    except ValueError:
+        pass
+
     for owner in (OWNER_A, OWNER_B):
         chat_crud.create_chat(owner, CHAT_ID, {"owner": owner}, {"messages": []})
     assert chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_data"]["owner"] == OWNER_A
@@ -226,6 +239,12 @@ def seed():
 
 
 def verify():
+    records = lab_runs.history(OWNER_A)
+    assert records[0]["metrics"]["objective_score"] == 123
+    assert records[0]["input"] == {"budget": 60}
+    assert records[0]["status"] == "completed"
+    assert lab_runs.history(OWNER_B) == []
+
     assert chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_data"]["owner"] == OWNER_A
     assert chat_crud.get_chat(OWNER_B, CHAT_ID)["chat_data"]["owner"] == OWNER_B
     assert (

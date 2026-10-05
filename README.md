@@ -239,3 +239,10 @@ pytest
 ```
 
 Tests live in `backend/tests/`. Configuration is in `backend/pytest.ini`.
+
+### Algorithm Lab database addition
+
+Before releasing the Algorithm Lab run-history feature, explicitly apply
+[`backend/sql/algorithm_lab_runs.sql`](backend/sql/algorithm_lab_runs.sql) to the
+approved database. It is additive and required by `/ready`; requests never create
+tables. See [measurement and migration contract](docs/algorithm-run-history.md).

@@ -110,3 +110,13 @@ For classroom reliability, rehearse the exact public account, browser and networ
 before Tuesday. Keep the teaching guide and a clearly labeled recording or
 screenshots of a successful rehearsal on the MacBook if you choose to capture
 them. A saved demonstration is evidence of that run, not current provider health.
+
+## Persistent Algorithm Lab experiments
+
+Algorithm Lab now records live and selection-replay runs in a separate, owner-scoped
+PostgreSQL table. Ordinary chat runs are excluded. A benchmark modal queues the
+six route categories sequentially, with optional repeats and persistent input/metric
+history. See [run history and migration](algorithm-run-history.md) for scoring, feasibility,
+comparison rules and operational boundaries. Apply the additive table migration
+to the approved target before the backend release; local validation is not evidence
+of a public database migration. Replay still needs the backend and this database.
