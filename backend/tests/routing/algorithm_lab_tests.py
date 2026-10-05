@@ -299,8 +299,17 @@ def test_benchmark_presets_are_validated_and_repeat_count_bounded(headers):
     client = TestClient(app)
     catalog = client.get("/algorithm-lab/presets", headers=headers).json()
     assert len(catalog["benchmarks"]) == 6
+    all_presets = {preset["id"]: preset["inputs"] for preset in catalog["presets"]}
+    profiles = {preset["id"]: preset["inputs"] for preset in catalog["benchmarks"]}
+    assert profiles["medium-two-day"]["hotel_rooms"][0]["child_ages"] == [7, 12]
+    assert len(profiles["long-multi-day"]["hotel_rooms"]) == 2
+    assert profiles["dense-corridor"]["scheduling_policy"]["late_driving"] is True
+    assert profiles["tight-budget"]["budget"] == 60
+    assert len({item["departure_time"] for item in profiles.values()}) == 6
+    assert len({tuple(item["persona_weights"].values()) for item in profiles.values()}) == 6
     for preset in catalog["benchmarks"]:
         lab.LabInputs.model_validate(preset["inputs"])
+        assert preset["inputs"] == all_presets[preset["id"]]
     payload = request_body()
     payload["repeat_index"] = 11
     assert client.post("/algorithm-lab/run", headers=headers, json=payload).status_code == 422

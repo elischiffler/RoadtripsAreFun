@@ -33,6 +33,48 @@ const inputs = {
   },
   evening_interests: [],
 };
+const quickTrips = [
+  {
+    id: 'family',
+    label: 'Medium two-day',
+    description: 'Family trip with an early evening.',
+    inputs: {
+      ...inputs,
+      departure_date: '2026-10-08',
+      departure_time: '07:00',
+      num_stops: 4,
+      traveler_count: 4,
+      hotel_rooms: [{ adults: 2, child_ages: [7, 12] }],
+      budget: 180,
+      car_status: 'provided',
+      car: { year: 2023, make: 'Toyota', model: 'RAV4' },
+      persona_weights: { nature: 0.6, history: 0.4 },
+      scheduling_policy: {
+        ...inputs.scheduling_policy,
+        preferred_hotel_arrival: '17:00',
+        latest_hotel_arrival: '19:00',
+        latest_destination_arrival: '19:00',
+        morning_restart: '08:00',
+      },
+      evening_interests: ['food'],
+    },
+  },
+  {
+    id: 'budget',
+    label: 'Tight hotel budget',
+    description: 'Three travelers sharing a room.',
+    inputs: {
+      ...inputs,
+      start_id: 'monterey',
+      destination_id: 'sf',
+      departure_time: '08:30',
+      traveler_count: 3,
+      hotel_rooms: [{ adults: 3, child_ages: [] }],
+      budget: 60,
+      evening_interests: ['food'],
+    },
+  },
+];
 const catalog = {
   schema_version: 1,
   attributes: ['nature', 'history'],
@@ -40,6 +82,7 @@ const catalog = {
     { id: 'sf', label: 'San Francisco' },
     { id: 'monterey', label: 'Monterey' },
   ],
+  benchmarks: quickTrips,
   presets: [
     { id: 'coast', label: 'Coastal nature', inputs },
     {
@@ -47,6 +90,7 @@ const catalog = {
       label: 'Culture trip',
       inputs: { ...inputs, persona_weights: { nature: 0.2, history: 0.8 } },
     },
+    ...quickTrips,
   ],
   limits: { min_stops: 1, max_stops: 10, max_rooms: 4, max_guests_per_room: 6, max_child_age: 17 },
 };
@@ -115,6 +159,12 @@ async function mount() {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute('open', '');
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute('open');
+  };
   sessionStorage.clear();
   invalidateRoutingSettings();
   login();
@@ -228,6 +278,68 @@ describe('Algorithm Lab access and lifecycle', () => {
 });
 
 describe('Algorithm Lab experiments', () => {
+  it('opens presets in a modal and dismisses without changing the form or starting a run', async () => {
+    await mount();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    expect(screen.getByRole('dialog', { name: 'Choose a trip preset' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Coastal nature/ })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Close presets' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByText('Selected trip: Coastal nature')).toBeInTheDocument();
+    expect(screen.getByLabelText('Travelers')).toHaveValue(2);
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it('fills the entire form from a trip card without running, and replaces all fields on the next choice', async () => {
+    await mount();
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Medium two-day/ }));
+    expect(axios.post).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog', { name: 'Choose a trip preset' })).not.toBeInTheDocument();
+    expect(screen.getByText('Selected trip: Medium two-day')).toBeInTheDocument();
+    expect(screen.getByLabelText('Travelers')).toHaveValue(4);
+    expect(screen.getByLabelText('Departure date')).toHaveValue('2026-10-08');
+    expect(screen.getByLabelText('Departure time')).toHaveValue('07:00');
+    await userEvent.click(screen.getByText('Rooms and travelers'));
+    expect(screen.getByLabelText('Room 1 child 2 age')).toHaveValue(12);
+    await userEvent.click(screen.getByText('Car and evening schedule'));
+    expect(screen.getByLabelText('Car model')).toHaveValue('RAV4');
+    expect(screen.getByLabelText('latest hotel arrival')).toHaveValue('19:00');
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    await screen.findByText('OPTIMAL');
+    expect(axios.post.mock.calls[0][1]).toEqual({
+      mode: 'live',
+      preset_id: 'family',
+      inputs: quickTrips[0].inputs,
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Tight hotel budget/ }));
+    expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Start')).toHaveValue('monterey');
+    expect(screen.getByLabelText('Destination')).toHaveValue('sf');
+    expect(screen.getByLabelText('Hotel target / room / night (USD)')).toHaveValue(60);
+    expect(screen.getByLabelText('Travelers')).toHaveValue(3);
+    expect(screen.queryByLabelText('Room 1 child 2 age')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Car model')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+    await screen.findByText('OPTIMAL');
+    expect(axios.post.mock.calls[1][1].inputs).toEqual(quickTrips[1].inputs);
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Medium two-day/ }));
+    fireEvent.change(screen.getByLabelText('Room 1 child 2 age'), { target: { value: '13' } });
+    await userEvent.click(screen.getByRole('button', { name: 'Reset preset' }));
+    expect(screen.getByLabelText('Room 1 child 2 age')).toHaveValue(12);
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    expect(screen.getByRole('button', { name: /Medium two-day/ })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+  });
+
   it('sends edited inputs and both tokens, displays actual contributions, and clears stale success on edits', async () => {
     await mount();
     fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '3' } });
@@ -289,7 +401,8 @@ describe('Algorithm Lab experiments', () => {
     next.explanation.weights = { nature: 0.2, history: 0.8 };
     next.explanation.candidates[0].name = 'Historic market';
     axios.post.mockResolvedValue({ data: next });
-    await userEvent.selectOptions(screen.getByLabelText('Trip preset'), 'culture');
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Culture trip/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     expect(await screen.findByText('Historic market')).toBeInTheDocument();
     expect(screen.queryByText('Same snapshot comparison')).not.toBeInTheDocument();

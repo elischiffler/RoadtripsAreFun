@@ -112,3 +112,8 @@ itinerary construction. Hotel/evening providers run when the trip needs them.
 The presets API no longer advertises synthetic candidate snapshots. Existing
 replay history remains labeled for accurate historical measurements; offline
 solver fixtures are retained only for unit verification.
+
+The Trip presets button opens a native modal with all nine presets. Selecting a
+card deep-copies every form field and closes the modal; running remains explicit.
+The six benchmark profiles also vary departure times, party/room/child occupancy,
+interests, vehicles and evening policy while retaining their route categories.

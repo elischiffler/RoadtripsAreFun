@@ -7,6 +7,7 @@ import {
 } from '../../services/routingSettings';
 import { getLabPresets, runLab, labError } from '../../services/algorithmLab';
 import TripInputs from './TripInputs';
+import TripPresetDialog from './TripPresetDialog';
 import LabResults from './LabResults';
 import HelpTip from './HelpTip';
 import BenchmarkDialog from './BenchmarkDialog';
@@ -120,20 +121,12 @@ function LabWorkspace() {
     <div className="lab-layout">
       <form className="lab-input-panel" onSubmit={submit}>
         <div className="lab-controls">
-          <label>
-            Trip preset
-            <select
-              disabled={busy}
-              value={presetId}
-              onChange={(event) => choosePreset(event.target.value)}
-            >
-              {catalog.presets.map((preset) => (
-                <option value={preset.id} key={preset.id}>
-                  {preset.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <TripPresetDialog
+            catalog={catalog}
+            presetId={presetId}
+            disabled={busy}
+            onSelect={choosePreset}
+          />
           <p className="lab-note">
             Fresh places and a checked road route. Every run calls live providers and can take
             several minutes.{' '}

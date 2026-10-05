@@ -7,7 +7,13 @@ Six server-owned trip categories cover short, medium, long, dense, sparse and
 tight hotel budget cases. Driving times and overnight counts are targets to
 measure, not guarantees. The current candidate cap remains 30 even on long routes.
 
-Select trips and 1, 3, 5 or 10 repeats. Requests execute sequentially with a shared
+The **Trip presets** button opens a modal with the existing three trip presets
+and six benchmark categories. Selecting a card replaces the whole editable form
+and closes the modal without starting a run. Benchmark profiles vary departure
+time, travelers/children, rooms, interests, vehicle and evening schedule. Dates
+default to tomorrow when the catalog loads. Reset restores the selected profile.
+
+Select benchmark trips and 1, 3, 5 or 10 repeats. Requests execute sequentially with a shared
 batch UUID and repeat index. Stop finishes the current request and skips future
 ones. Closing the page stops the browser queue; it does not cancel work already
 accepted by the server. There is no durable background queue or automatic retry.

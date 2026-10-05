@@ -55,7 +55,7 @@ the changes since the older guidance and implementation still in progress.
 
 The senior-demo change adds a header-free owner `/algorithm` page with editable
 presets, contextual help, contribution tables, actual solver diagnostics, live
-route/itinerary results and selection-only replay. It is not yet a public release.
+route/itinerary results and live-only provider runs. It is not yet a public release.
 See `docs/senior-demo-runbook.md` for public backend parity and MacBook rehearsal.
 
 `.steering/` is the current implementation map. `.kiro/steering/` contains

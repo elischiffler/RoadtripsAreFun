@@ -40,7 +40,7 @@ on a MacBook does not update either public service.
 6. Check public `/algorithms` reports only/default `cp_sat`; inspect host image
    labels for exact backend revision. Test the public owner `/algorithm` screen,
    non-owner API denial, a complete live route and itinerary, provider failure,
-   replay, reload and ordinary chat. Record the actual target and evidence.
+   reload and ordinary chat. Record the actual target and evidence.
 
 The current owner authorization reuses verified Cognito access and ID tokens,
 matching subjects and verified owner email. Use normal login on the MacBook;
@@ -73,35 +73,28 @@ not transfer ignored secrets. Use the existing protected configuration process.
 For a local frontend/backend pair, set `VITE_BACKEND_SERVER` to the local API
 and allow the exact local origin. Never copy server keys into `VITE_*` values.
 
-Replay avoids place providers and the database, but normal login still needs
-Cognito connectivity. It is not an offline authentication bypass. Local live
-mode also needs backend providers and account-persona reads; it may be limited
-by IP allowlists. The Lab runs the local shared planner directly and does not
-silently forward to an older remote planner. Test on the actual MacBook/network.
+All Lab runs need live backend providers, Cognito connectivity, account-persona
+reads and experiment storage; access may be limited by IP allowlists. The Lab
+runs the shared planner directly and does not silently forward to an older remote
+planner. Test on the actual MacBook/network.
 
 ## Screen and presentation flow
 
 1. Sign in with the owner account and open `/algorithm` from the header.
-2. Select **Coastal nature** and **Replay frozen candidates** for a predictable
-   introduction. Explain that it uses synthetic place profiles and real scoring/
-   selection, without a live road route or hotel availability claim.
-3. Adjust interests with the pie editor: shrink an edge to free space, then drag
-   a topic onto the highlighted circle. Percentages and keyboard arrows provide
-   precise alternatives. Run and inspect one selected candidate. Use contextual help for short terms;
-   open the contribution table for arithmetic. Explain weights × ratings and
-   the .60 threshold, stop cap and one-candidate-per-slot rule.
-4. Select **Same corridor, culture** using the same snapshot and run again.
-   The default fixture changes from scenic museum/local gardens to historic
-   market/scenic museum. The locations stay fixed; trip preferences change.
-5. Switch to **Live providers**, check the visible upcoming date and complete
-   occupancy, then run. Show the actual status of discovery, selection,
-   scheduling, rerouting and itinerary. A route can survive an itinerary error;
-   a failure is not silently replaced with replay.
+2. Click **Trip presets** to open the modal. Pick **Coastal nature** or one of
+   the six varied benchmark trips. Selection fills every field and closes the
+   modal without starting provider work.
+3. Review the upcoming date, travelers, room occupants, vehicle and schedule.
+   Adjust interests with the pie editor, percentage fields or keyboard controls.
+4. Click **Run live route**. Inspect discovery, selection, scheduling, rerouting
+   and itinerary outcomes. Open one candidate's contribution table to explain
+   weights × ratings, the .60 threshold, stop cap and one-candidate-per-slot rule.
+5. Choose **Same corridor, culture** or another preset and run again. Each run
+   discovers fresh places; differences may reflect both weights and candidates.
 6. Show map and schedule only if produced. Explain that CP-SAT selection's
-   optimality does not prove a globally optimal full road trip.
+   optimality does not prove a globally optimal full road trip. Provider failures
+   remain visible and are never replaced with synthetic data.
 
-The **No eligible attractions** replay should display `NOT_RUN`, zero selected,
-and threshold reasons. It is a useful answer to “what if nothing matches?”
 The page is intentionally transient: edits invalidate output, reset cancels
 display of stale requests, and reloading clears the experiment. Browser abort
 does not guarantee every already-started provider request was canceled server-side.
@@ -113,10 +106,10 @@ them. A saved demonstration is evidence of that run, not current provider health
 
 ## Persistent Algorithm Lab experiments
 
-Algorithm Lab now records live and selection-replay runs in a separate, owner-scoped
+Algorithm Lab records live provider runs in a separate, owner-scoped
 PostgreSQL table. Ordinary chat runs are excluded. A benchmark modal queues the
 six route categories sequentially, with optional repeats and persistent input/metric
 history. See [run history and migration](algorithm-run-history.md) for scoring, feasibility,
 comparison rules and operational boundaries. Apply the additive table migration
 to the approved target before the backend release; local validation is not evidence
-of a public database migration. Replay still needs the backend and this database.
+of a public database migration. Historical replay records remain labeled, but new replay runs are rejected.
