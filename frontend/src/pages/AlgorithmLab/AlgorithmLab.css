@@ -133,22 +133,6 @@
 .algorithm-lab details[open] > summary {
   margin-bottom: 12px;
 }
-.lab-weight-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 18px;
-}
-.lab-weight-grid label {
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  font-weight: 400;
-}
-.lab-weight-grid input {
-  width: 70px;
-  flex-shrink: 0;
-}
 .lab-room {
   border-left: 3px solid var(--sand-main, #c4a882);
   margin: 16px 0;
@@ -454,7 +438,6 @@
     gap: 8px;
   }
   .lab-field-grid,
-  .lab-weight-grid,
   .lab-weights {
     grid-template-columns: 1fr;
   }

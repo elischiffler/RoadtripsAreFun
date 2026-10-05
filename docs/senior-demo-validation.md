@@ -58,3 +58,24 @@ See the [public/MacBook runbook](senior-demo-runbook.md) for the release and
 rehearsal gates, and the [walkthrough](cp-sat-explained.md) for what the measured
 solver status actually proves. Final remote checks belong to the PR's final
 head, not the historical baseline listed above.
+
+## Pie editor follow-up
+
+The `/algorithm` trip-interest form now uses a drag-and-drop percentage pie.
+The final frontend checks pass: formatting, lint, production build and 214 tests
+across 26 files (87.60% lines/statements, 85.81% branches, 77.37% functions).
+The unchanged lockfile install was verified in the preceding implementation.
+The existing bundle-size warning remains. No backend or database code changed.
+
+Seven interaction tests cover drop/cancellation, capped allocations, preserving
+other topics, edge dragging, the circular seam, keyboard edits/removal, touch
+and disabled controls. Browser checks on the local authenticated fixture verify
+actual pointer edge resizing, dragging scenery onto the circle, the 100% cap,
+full-circle guidance and a successful CP-SAT replay with edited weights.
+This remains fixture evidence, not a live-provider/public release claim.
+
+The chart exposes unallocated space. Positive allocations below 100% are still
+normalized by the existing backend; an empty mix disables Run. Numeric controls
+and keyboard-accessible handles provide alternatives to dragging. The final
+PR head's CI covers integration; earlier backend/database results above retain
+their original scope.

@@ -85,7 +85,9 @@ silently forward to an older remote planner. Test on the actual MacBook/network.
 2. Select **Coastal nature** and **Replay frozen candidates** for a predictable
    introduction. Explain that it uses synthetic place profiles and real scoring/
    selection, without a live road route or hotel availability claim.
-3. Run and inspect one selected candidate. Use contextual help for short terms;
+3. Adjust interests with the pie editor: shrink an edge to free space, then drag
+   a topic onto the highlighted circle. Percentages and keyboard arrows provide
+   precise alternatives. Run and inspect one selected candidate. Use contextual help for short terms;
    open the contribution table for arithmetic. Explain weights × ratings and
    the .60 threshold, stop cap and one-candidate-per-slot rule.
 4. Select **Same corridor, culture** using the same snapshot and run again.

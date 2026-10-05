@@ -178,7 +178,11 @@ function LabWorkspace() {
         </div>
         <TripInputs inputs={inputs} catalog={catalog} onChange={changeInputs} disabled={busy} />
         <div className="lab-actions">
-          <button type="submit" className="lab-run" disabled={busy}>
+          <button
+            type="submit"
+            className="lab-run"
+            disabled={busy || !Object.values(inputs.persona_weights).some((weight) => weight > 0)}
+          >
             {busy ? 'Running…' : mode === 'replay' ? 'Run replay' : 'Run live route'}
           </button>
           <button

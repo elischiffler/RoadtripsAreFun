@@ -1,0 +1,197 @@
+.interest-editor {
+  margin-top: 12px;
+}
+.interest-chart {
+  position: relative;
+  width: min(100%, 320px);
+  aspect-ratio: 1;
+  margin: 8px auto 0;
+}
+.interest-chart svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.interest-empty-circle {
+  fill: var(--lab-paper);
+  stroke: var(--sand-dark, #a08060);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.interest-slice-label {
+  fill: white;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
+}
+.interest-empty-label {
+  fill: var(--lab-ink);
+  font-size: 12px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+.algorithm-lab .interest-edge {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid var(--slice-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--slice-color);
+  background: var(--lab-paper);
+  touch-action: none;
+  cursor: grab;
+  z-index: 2;
+  box-shadow: 0 1px 4px #3b2a1a25;
+}
+.algorithm-lab .interest-edge.is-resizing {
+  cursor: grabbing;
+  outline: 3px solid var(--slice-color);
+  outline-offset: 2px;
+  z-index: 3;
+}
+.interest-drop-overlay {
+  position: absolute;
+  inset: 9%;
+  border: 3px dashed var(--lab-accent);
+  border-radius: 50%;
+  background: #fbf8f3ed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  pointer-events: none;
+  z-index: 4;
+}
+.interest-drop-overlay strong {
+  font-size: 1rem;
+  line-height: 1.3;
+}
+.interest-drop-overlay span {
+  font-size: 0.78rem;
+  margin-top: 8px;
+}
+.interest-chart.is-over .interest-drop-overlay {
+  border-style: solid;
+  background: #eef4eaf5;
+}
+.interest-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--lab-line);
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+.interest-total > span {
+  color: var(--bark-dark, #5c3d2e);
+  font-size: 0.75rem;
+}
+.interest-row {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) 80px 32px;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 0;
+}
+.interest-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.algorithm-lab .interest-row label {
+  display: block;
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 400;
+  text-transform: capitalize;
+}
+.interest-percent {
+  position: relative;
+}
+.algorithm-lab .interest-percent input {
+  padding: 7px 23px 7px 7px;
+  min-height: 36px;
+  text-align: right;
+  font-size: 0.8rem;
+  appearance: textfield;
+}
+.interest-percent input::-webkit-inner-spin-button {
+  appearance: none;
+}
+.interest-percent > span {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+.algorithm-lab .interest-remove {
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  border-color: transparent;
+}
+.interest-topics-label {
+  display: flex;
+  justify-content: space-between;
+  margin: 18px 0 8px;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+.interest-topics-label span {
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+.interest-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.algorithm-lab .interest-topic {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 9px;
+  border-radius: 18px;
+  font-size: 0.72rem;
+  cursor: grab;
+  touch-action: none;
+}
+.interest-topic-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--slice-color);
+  flex-shrink: 0;
+}
+.interest-feedback {
+  min-height: 2.8em;
+  margin: 10px 0 0;
+  font-size: 0.75rem;
+  color: var(--bark-dark, #5c3d2e);
+}
+@media (max-width: 380px) {
+  .interest-row {
+    grid-template-columns: 8px minmax(0, 1fr) 70px 30px;
+    gap: 5px;
+  }
+}
+
+.algorithm-lab .interest-percent input,
+.algorithm-lab .interest-edge,
+.algorithm-lab .interest-remove {
+  box-sizing: border-box;
+}

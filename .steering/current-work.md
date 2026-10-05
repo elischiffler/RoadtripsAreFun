@@ -66,6 +66,8 @@ do not let several agents push to its branch concurrently.
   strict stop bounds, finite budget and complete weights.
 - Frontend reuses the extracted `ItineraryDays` renderer and existing Map;
   `/algorithm` omits the header and uses accessible contextual help/disclosures.
+  Trip interests use a capped percentage pie with pointer drag/drop, edge resizing,
+  keyboard controls and precise numeric inputs; the backend still normalizes weights.
 
 A joint time/budget/hotel optimization model is a separate later behavior-change
 PR; the current grouped attraction selection is not that model.

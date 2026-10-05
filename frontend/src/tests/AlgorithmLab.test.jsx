@@ -232,7 +232,9 @@ describe('Algorithm Lab experiments', () => {
   it('sends edited inputs and both tokens, displays actual contributions, and clears stale success on edits', async () => {
     await mount();
     fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '3' } });
-    fireEvent.change(screen.getByLabelText('Interest nature'), { target: { value: '0.6' } });
+    fireEvent.change(screen.getByLabelText('Interest nature percentage'), {
+      target: { value: '60' },
+    });
     await userEvent.click(screen.getByRole('button', { name: 'Run replay' }));
     expect(await screen.findByText('OPTIMAL')).toBeInTheDocument();
     const [, request, config] = axios.post.mock.calls[0];
@@ -256,7 +258,7 @@ describe('Algorithm Lab experiments', () => {
     expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Reset preset' }));
     expect(screen.getByLabelText('Maximum attractions')).toHaveValue(2);
-    expect(screen.getByLabelText('Interest nature')).toHaveValue(0.8);
+    expect(screen.getByLabelText('Interest nature percentage')).toHaveValue(80);
   });
 
   it('prevents duplicate submissions and discards a cancelled response', async () => {
@@ -271,7 +273,7 @@ describe('Algorithm Lab experiments', () => {
     await userEvent.dblClick(screen.getByRole('button', { name: 'Run replay' }));
     expect(axios.post).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('button', { name: 'Running…' })).toBeDisabled();
-    expect(screen.getByLabelText('Interest nature')).toBeDisabled();
+    expect(screen.getByLabelText('Interest nature percentage')).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Cancel and reset' }));
     await act(async () => resolveRun({ data: response() }));
     expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
@@ -312,7 +314,7 @@ describe('Algorithm Lab experiments', () => {
     await mount();
     const help = screen.getByRole('button', { name: 'About trip weights' });
     fireEvent.focus(help);
-    expect(await screen.findByRole('tooltip')).toHaveTextContent('sum to one');
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('sum to 100%');
     fireEvent.keyDown(help, { key: 'Escape' });
     fireEvent.blur(help);
     await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import HelpTip from './HelpTip';
+import InterestsPie from './InterestsPie';
 
 const title = (key) => key.replaceAll('_', ' ');
 
@@ -76,35 +77,12 @@ export default function TripInputs({ inputs, catalog, onChange, disabled }) {
       </p>
       <details open>
         <summary>Trip interests</summary>
-        <p className="lab-note">
-          Relative importance, from 0 to 1.{' '}
-          <HelpTip label="trip weights">
-            The server divides each weight by the total so they sum to one. Keep at least one
-            positive. Complete preset weights override account preferences for this run only.
-          </HelpTip>
-        </p>
-        <div className="lab-weight-grid">
-          {catalog.attributes.map((key) => (
-            <label key={key}>
-              {title(key)}
-              <input
-                type="number"
-                aria-label={`Interest ${title(key)}`}
-                required
-                min="0"
-                max="1"
-                step="0.01"
-                value={inputs.persona_weights[key]}
-                onChange={(e) =>
-                  set('persona_weights', {
-                    ...inputs.persona_weights,
-                    [key]: e.target.value === '' ? '' : Number(e.target.value),
-                  })
-                }
-              />
-            </label>
-          ))}
-        </div>
+        <InterestsPie
+          attributes={catalog.attributes}
+          weights={inputs.persona_weights}
+          onChange={(weights) => set('persona_weights', weights)}
+          disabled={disabled}
+        />
       </details>
       <details>
         <summary>Rooms and travelers</summary>

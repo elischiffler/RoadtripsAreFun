@@ -8,6 +8,13 @@ Status: **IMPLEMENTED ON TASK BRANCH**, public release/live acceptance pending. 
 The header-free page uses short subtitles, hover/focus/click help for definitions,
 and disclosures for formulas/provenance. The in-page link returns to chat.
 API routes stay `/algorithm-lab/presets` and `/algorithm-lab/run`.
+The trip-interest editor uses a pie chart: drag or click a topic to add a slice,
+then drag its edge, use arrow keys, or enter a percentage to resize. A drop
+overlay identifies the circle while carrying a topic. Allocations are capped at
+100%; shrinking/removing a slice frees space without changing other topics.
+Unused space is visible and is not a neutral interest: backend normalization
+still scales positive weights to one. An empty mix disables Run.
+
 Lab weights are explicit complete overrides. Replay uses synthetic selection-only
 fixtures (`teaching-v1` / `empty-v1`), with null route/itinerary and no database or
 provider calls. Live snapshots are not retained for replay. Car choice is
