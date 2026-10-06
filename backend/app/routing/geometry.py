@@ -149,47 +149,53 @@ class RouteMeasure:
         return [last[1], last[0]]
 
     def project(self, point, hint_seconds=None):
+        """Map a [lat, lon] place to its nearest baseline driving-time position."""
         if not self.segments:
             return {
                 "route_progress_seconds": 0.0,
                 "distance_meters": geodesic(point, self.position(0)).meters,
                 "segment_index": None,
             }
-        # Vectorized local tangent-plane projection avoids one expensive geodesic
-        # per road vertex per place. Final off-route distance uses WGS84 geodesic.
+        # Project onto all road segments at once, then measure the winner geodesically.
         lat, lon = point
         a_lon, a_lat, b_lon, b_lat, starts, ends = self._projection_segments.T
-        scale = np.cos(np.radians((lat + a_lat + b_lat) / 3))
-        dx, dy = (b_lon - a_lon) * scale, b_lat - a_lat
-        px, py = (lon - a_lon) * scale, lat - a_lat
-        length_squared = dx * dx + dy * dy
-        fraction = np.clip(
+        longitude_scale = np.cos(np.radians((lat + a_lat + b_lat) / 3))
+        segment_dx, segment_dy = (b_lon - a_lon) * longitude_scale, b_lat - a_lat
+        point_dx, point_dy = (lon - a_lon) * longitude_scale, lat - a_lat
+        segment_length_squared = segment_dx * segment_dx + segment_dy * segment_dy
+        fractions = np.clip(
             np.divide(
-                px * dx + py * dy,
-                length_squared,
-                out=np.zeros_like(length_squared),
-                where=length_squared > 0,
+                point_dx * segment_dx + point_dy * segment_dy,
+                segment_length_squared,
+                out=np.zeros_like(segment_length_squared),
+                where=segment_length_squared > 0,
             ),
             0,
             1,
         )
-        distances = np.hypot(px - fraction * dx, py - fraction * dy) * 111195.08
-        seconds = starts + fraction * (ends - starts)
+        distances = (
+            np.hypot(point_dx - fractions * segment_dx, point_dy - fractions * segment_dy)
+            * 111195.08
+        )
+        projected_seconds = starts + fractions * (ends - starts)
         ties = np.flatnonzero(distances <= distances.min() + 0.001)
+        # At crossings, the search point's time identifies the intended route occurrence.
         index = min(
             ties,
             key=lambda i: (
-                abs(seconds[i] - hint_seconds) if hint_seconds is not None else seconds[i],
-                seconds[i],
+                abs(projected_seconds[i] - hint_seconds)
+                if hint_seconds is not None
+                else projected_seconds[i],
+                projected_seconds[i],
                 i,
             ),
         )
         coordinate = [
-            a_lat[index] + fraction[index] * (b_lat[index] - a_lat[index]),
-            a_lon[index] + fraction[index] * (b_lon[index] - a_lon[index]),
+            a_lat[index] + fractions[index] * (b_lat[index] - a_lat[index]),
+            a_lon[index] + fractions[index] * (b_lon[index] - a_lon[index]),
         ]
         return {
-            "route_progress_seconds": float(seconds[index]),
+            "route_progress_seconds": float(projected_seconds[index]),
             "distance_meters": geodesic(point, coordinate).meters,
             "segment_index": int(index),
         }

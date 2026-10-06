@@ -221,6 +221,7 @@ async def _propose(
 def _candidate(
     place: VerifiedPlace, proposal: ProposedPlace, weights: dict[str, float]
 ) -> dict[str, Any]:
+    """Combine provider facts, estimated ratings, and the backend's match score."""
     ratings = proposal.attribute_ratings.model_dump()
     match = crossmatch(weights, ratings, already_normalized=True)
     profile = LocationProfile(
@@ -242,10 +243,8 @@ def _candidate(
             "verified_at": None,
         },
     )
-    result = place.model_dump(exclude={"check_in_date", "price", "stars", "review_count"})
-    result.update(profile.model_dump())
-    result.update(match.model_dump())
-    return result
+    provider_fields = place.model_dump(exclude={"check_in_date", "price", "stars", "review_count"})
+    return {**provider_fields, **profile.model_dump(), **match.model_dump()}
 
 
 @in_run
@@ -257,7 +256,7 @@ async def attraction_candidates(
     ai: LLMProvider | None = None,
     places: PlaceProvider | None = None,
 ) -> DiscoveryResult:
-    """Fresh live rounds with frozen rating pools and balanced capacity."""
+    """Discover and rate nearby places, then balance the shortlist across route sections."""
     weights = normalize_weights(effective_weights)
     if not plan.requested_stops:
         return DiscoveryResult([], {"plan": plan.snapshot(), "stop_reason": "zero_requested"})
@@ -274,6 +273,7 @@ async def attraction_candidates(
     ready = list(plan.queries)
 
     async def query(query):
+        """Validate nearby provider records and attach their baseline route positions."""
         emit(
             "attractions.query",
             "started",
@@ -320,6 +320,7 @@ async def attraction_candidates(
         return output
 
     async def rate(batch):
+        """Match estimated ratings to verified names before calculating utility."""
         point = batch[0]["place"].coordinates
         with stage(
             "attractions.ratings",

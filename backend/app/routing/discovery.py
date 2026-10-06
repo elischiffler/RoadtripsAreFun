@@ -50,29 +50,46 @@ class SelectedAttraction(NamedTuple):
 
 
 def make_discovery_plan(route, requested_stops):
-    hours = route.duration / 3600
-    sections = min(12, max(1, math.ceil(hours / 2)))
-    cap = min(60, max(18, 6 * requested_stops + 2 * sections))
-    initial = (
-        min(36, max(2 * sections, 3 * requested_stops, math.ceil(hours))) if requested_stops else 0
+    """Budget discovery and distribute searches across equal driving-time sections."""
+    driving_hours = route.duration / 3600
+    section_count = min(12, max(1, math.ceil(driving_hours / 2)))
+    candidate_cap = min(60, max(18, 6 * requested_stops + 2 * section_count))
+    initial_searches = (
+        min(36, max(2 * section_count, 3 * requested_stops, math.ceil(driving_hours)))
+        if requested_stops
+        else 0
     )
-    maximum = (
-        min(60, max(initial + sections, math.ceil(route.distance / 1609.344 / 10)))
+    maximum_searches = (
+        min(60, max(initial_searches + section_count, math.ceil(route.distance / 1609.344 / 10)))
         if requested_stops
         else 0
     )
     plan = DiscoveryPlan(
-        requested_stops, route.duration, sections, cap, initial, maximum, 2 * cap, 3 * cap
+        requested_stops=requested_stops,
+        baseline_seconds=route.duration,
+        section_count=section_count,
+        candidate_cap=candidate_cap,
+        initial_searches=initial_searches,
+        maximum_searches=maximum_searches,
+        rating_cap=2 * candidate_cap,
+        raw_pool_cap=3 * candidate_cap,
     )
     measure = RouteMeasure(route)
-    per_section = [initial // sections + int(i < initial % sections) for i in range(sections)]
-    for offset in range(max(per_section, default=0)):
-        for section, count in enumerate(per_section):
+    searches_per_section = [
+        initial_searches // section_count + int(i < initial_searches % section_count)
+        for i in range(section_count)
+    ]
+    # Round-robin order gives every section a search before returning to earlier sections.
+    for offset in range(max(searches_per_section, default=0)):
+        for section, count in enumerate(searches_per_section):
             if offset < count:
-                seconds = route.duration * (section + (offset + 1) / (count + 1)) / sections
+                seconds = route.duration * (section + (offset + 1) / (count + 1)) / section_count
                 plan.queries.append(
                     SearchQuery(
-                        f"s{section}-q{offset}", section, seconds, measure.position(seconds)
+                        id=f"s{section}-q{offset}",
+                        section_id=section,
+                        progress_seconds=seconds,
+                        coordinates=measure.position(seconds),
                     )
                 )
     return plan

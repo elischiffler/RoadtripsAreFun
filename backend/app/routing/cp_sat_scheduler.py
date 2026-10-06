@@ -67,7 +67,7 @@ async def schedule_cp_sat_route(
     options: PlanOptions,
     services: RoutingServices,
 ) -> tuple[list[dict[str, Any]], float]:
-    """Prefer hotels around the target, retaining every selected daytime stop.
+    """Schedule selected visits and dated hotels within the local driving windows.
 
     Initial corridor times are estimates. Final Mapbox legs must pass the same
     local deadline before this plan can be returned to the traveler.
@@ -95,10 +95,11 @@ async def schedule_cp_sat_route(
     events, mapping = [], [(0.0, 0.0)]
     detours = 0.0
     for progress, candidate in sorted(selected, key=lambda item: (item[0], item[1]["provider_id"])):
-        half = candidate["detour_seconds"] / 2
-        target = progress + detours + half
+        # Split each solo detour around its visit for the initial timing estimate.
+        half_detour = candidate["detour_seconds"] / 2
+        target = progress + detours + half_detour
         events.append((target, candidate))
-        mapping.extend([(target, progress), (target + half, progress)])
+        mapping.extend([(target, progress), (target + half_detour, progress)])
         detours += candidate["detour_seconds"]
     total_drive = route.duration + detours
     events.append((total_drive, None))

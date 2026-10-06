@@ -238,11 +238,9 @@ async def plan_final_route(
     result = await planner.plan(initial_route, options, services)
     stopping_points, total_cost = result.stopping_points, result.total_cost
 
-    coordinates = []
-    for stop in stopping_points:
-        coordinates.append(stop["coordinates"])
+    coordinates = [stop["coordinates"] for stop in stopping_points]
 
-    # Construct waypoints string and make new route with stopping points
+    # Stop records use [lat, lon]; Mapbox waypoints require lon,lat.
     waypoints = ";".join([f"{lon},{lat}" for lat, lon in coordinates])
     with stage("route.final_reroute", waypoints=len(coordinates)):
         route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
@@ -259,11 +257,8 @@ async def plan_final_route(
 
     idx = 0
     for leg in route.legs:
-        # Add the duration to each stop
         if idx < len(stopping_points) and stopping_points[idx]["type"] != "generic":
-            stopping_points[idx]["duration"] = (
-                leg.duration
-            )  # For each stopping point add the duration to each
+            stopping_points[idx]["duration"] = leg.duration
             if stopping_points[idx].get("address") is None:
                 location = await retry_async(
                     lambda: threaded(
@@ -274,14 +269,13 @@ async def plan_final_route(
                     )
                 )
                 if location:
-                    stopping_points[idx]["address"] = location.address  # Add the address to each
+                    stopping_points[idx]["address"] = location.address
         else:
             location = await retry_async(
                 lambda: threaded(
                     "geocoding", get_location, geocoder=geolocator, coords=[end_lat, end_lon]
                 )
             )
-            # Include the duration to get to the end
             stopping_points.append(
                 {
                     "name": "Arrive at your destination",
@@ -304,11 +298,7 @@ async def plan_final_route(
         await enrich_evenings(
             stopping_points, evening_interests(payload.evening_interests, weights)
         )
-    # NOTE: `steps` is intentionally left empty. Turn-by-turn Route_Step data is
-    # not consumed by any client (the frontend and itinerary endpoint read `stops`
-    # and `geometry`, never `steps`), so we skip building it. Populate this from
-    # `leg.steps` here if a client ever needs per-maneuver instructions.
-    # Add all stopping coordinates to a single variable
+    # Clients consume stops and geometry; turn-by-turn steps remain empty.
     coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
     return Route(
         coordinates=coordinates,

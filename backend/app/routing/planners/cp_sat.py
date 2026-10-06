@@ -6,7 +6,6 @@ import math
 from typing import Any
 
 from fastapi import HTTPException
-from ortools.sat.python import cp_model  # noqa: F401 - existing injected solver tests
 
 from app.agent.progress import emit, stage
 from app.models.routing_models.routing_models import MapBox
@@ -30,30 +29,32 @@ class CPSatPlanner(RoutePlanner):
     async def plan(
         self, initial_route: MapBox_route, options: PlanOptions, services: RoutingServices
     ) -> PlanResult:
+        """Discover and road-check candidates, select attractions, then schedule visits."""
         if services.cp_sat_hotels is None or services.cp_sat_candidates is None:
             raise PlanningError("CP-SAT verified candidate services are not configured", 503)
         if options.num_stops < 0:
             raise PlanningError("num_stops must be nonnegative", 400)
 
-        plan = make_discovery_plan(initial_route, options.num_stops)
-        points = [query.coordinates for query in plan.queries]
+        discovery_plan = make_discovery_plan(initial_route, options.num_stops)
+        query_points = [query.coordinates for query in discovery_plan.queries]
         record_explanation(weights=options.weights or {})
         emit(
             "route.samples",
-            queries=len(points),
-            maximumQueries=plan.maximum_searches,
-            sections=plan.section_count,
+            queries=len(query_points),
+            maximumQueries=discovery_plan.maximum_searches,
+            sections=discovery_plan.section_count,
             requestedStops=options.num_stops,
         )
         try:
             with stage("route.gathering"):
-                discovery = (
-                    await services.cp_sat_candidates(initial_route, plan, options.weights or {})
-                    if options.num_stops
-                    else DiscoveryResult(
-                        [], {"plan": plan.snapshot(), "stop_reason": "zero_requested"}
+                if options.num_stops:
+                    discovery = await services.cp_sat_candidates(
+                        initial_route, discovery_plan, options.weights or {}
                     )
-                )
+                else:
+                    discovery = DiscoveryResult(
+                        [], {"plan": discovery_plan.snapshot(), "stop_reason": "zero_requested"}
+                    )
                 candidates = discovery.candidates
                 record_explanation(discovery=discovery.explanation)
             with stage("route.detours", candidates=len(candidates)):
@@ -69,7 +70,7 @@ class CPSatPlanner(RoutePlanner):
                         "solver",
                         self._select,
                         candidates,
-                        points,
+                        query_points,
                         options.num_stops,
                         initial_route.duration,
                     )
@@ -118,6 +119,7 @@ class CPSatPlanner(RoutePlanner):
 
     @staticmethod
     async def _verify_detours(route, candidates, services):
+        """Measure each solo detour before solving; exclude unusable road routes."""
         if not candidates:
             return []
         if services.candidate_route is None:
@@ -128,7 +130,7 @@ class CPSatPlanner(RoutePlanner):
         records = [{**candidate, "road_check_status": "pending"} for candidate in candidates]
         record_explanation(road_checks=records)
 
-        async def verify(index, candidate):
+        async def verify(candidate):
             lat, lon = candidate["coordinates"]
             with stage("attractions.detour", providerId=candidate["provider_id"]):
                 try:
@@ -146,6 +148,7 @@ class CPSatPlanner(RoutePlanner):
             ):
                 return {**candidate, "road_exclusion_reason": "unusable_solo_road_route"}
             extra = measured.duration - route.duration
+            # Solo detours estimate selection cost; the full route is validated later.
             return {
                 **candidate,
                 "detour_seconds": max(0.0, extra),
@@ -158,7 +161,7 @@ class CPSatPlanner(RoutePlanner):
             }
 
         async def retain(index, candidate):
-            result = await verify(index, candidate)
+            result = await verify(candidate)
             records[index] = {
                 **result,
                 "road_check_status": "excluded"

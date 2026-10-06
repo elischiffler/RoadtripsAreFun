@@ -1,4 +1,4 @@
-"""Pure trip/location crossmatching; subjective ratings are never provider facts."""
+"""Calculate attraction match scores from interest weights and estimated ratings."""
 
 import math
 
@@ -20,7 +20,7 @@ class _RatingFields(BaseModel):
         return float(value)
 
 
-# Generate the typed fields from the authoritative interest vocabulary.
+# Use the same categories for user preferences and attraction ratings.
 AttributeRatings = create_model(
     "AttributeRatings", __base__=_RatingFields, **dict.fromkeys(ATTRIBUTE_KEYS, (float, ...))
 )
@@ -41,21 +41,20 @@ class ProfileMatch(BaseModel):
 def crossmatch(
     weights: dict[str, float], ratings: dict[str, float], *, already_normalized: bool = False
 ) -> ProfileMatch:
-    """Return the same normalized dot product used as the solver's input."""
-    normalized = normalize_weights(weights)
+    """Return the weighted match score and each category's contribution."""
+    normalized_weights = normalize_weights(weights)
     if already_normalized:
         if not math.isclose(math.fsum(weights.values()), 1.0, abs_tol=1e-12):
             raise ValueError("effective weights must sum to one")
-        # Live candidate sources already normalized once. Preserve their exact
-        # floating-point arithmetic before integer objective rounding.
-        normalized = weights
-    values = AttributeRatings.model_validate(ratings).model_dump()
+        # Preserve the source's normalized values to avoid additional rounding.
+        normalized_weights = weights
+    validated_ratings = AttributeRatings.model_validate(ratings).model_dump()
     contributions = [
         MatchContribution(
             attribute=key,
-            weight=normalized[key],
-            rating=values[key],
-            contribution=normalized[key] * values[key],
+            weight=normalized_weights[key],
+            rating=validated_ratings[key],
+            contribution=normalized_weights[key] * validated_ratings[key],
         )
         for key in ATTRIBUTE_KEYS
     ]
