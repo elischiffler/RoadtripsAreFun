@@ -1,22 +1,17 @@
 # EC2 deployment workflow
 
-The proposed `Deploy EC2` workflow redeploys this repository’s backend services
-once CI passes on the exact current main commit. A manual dispatch on main can
-retry the same release. PR, fork, stale, and failed-check runs cannot deploy.
+After all required CI passes on the exact current main commit, Deploy EC2 replaces
+this backend API container on the existing shared EC2 host and verifies health.
+A manual dispatch on main can retry a release. The host also checks CI and main,
+serializes deployments, rejects stale SHAs, and rolls back a failed release.
 
-Activation is pending verified host access and installation of the shared
-`/usr/local/sbin/deploy-ec2` command. The job stays disabled until the repository
-variable `EC2_DEPLOY_ENABLED` is `true`; this change alone does not update EC2.
+The production environment holds EC2_DEPLOY_URL=https://ops.elischiffler.dev and
+an app-specific EC2_DEPLOY_TOKEN secret. EC2_DEPLOY_ENABLED=true is a repository
+variable. The environment permits main only. Automatic runs activate when the
+owner merges this workflow PR; production dispatch is not available before merge.
+Runtime secrets remain on the host. No SSH/AWS key is stored in Actions.
 
-The `production` environment needs `EC2_HOST` and `EC2_USER` variables, plus
-`EC2_SSH_KEY` and `EC2_KNOWN_HOSTS` secrets. Use a restricted deployment identity
-and a host fingerprint obtained through an already trusted connection. Runtime
-application secrets stay on the host and are never copied from developer machines.
-
-The host serializes deployments, verifies main again after the image build,
-preserves the existing Compose project and data volumes, checks service health,
-and restarts the recorded previous release if the new release fails. Databases,
-DNS, and unrelated services are not replaced. Frontend hosting remains unchanged.
-
-Host installation, configuration, rollback, and activation are described in the
-[shared deployment runbook](https://github.com/elischiffler/hosting-ops/blob/codex/ec2-deployment/docs/ec2-deployments.md).
+Only the API is deployed. Existing Compose project identities, external databases,
+volumes, frontends, and other applications are preserved. Database migrations
+remain a separate reviewed operation. See the shared deployment and recovery
+[runbook](https://github.com/elischiffler/hosting-ops/blob/codex/ec2-deployment/docs/ec2-deployments.md).
