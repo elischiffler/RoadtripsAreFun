@@ -221,7 +221,12 @@ async def _propose(
 def _candidate(
     place: VerifiedPlace, proposal: ProposedPlace, weights: dict[str, float]
 ) -> dict[str, Any]:
-    """Combine provider facts, estimated ratings, and the backend's match score."""
+    """Build one candidate record from provider facts, AI ratings, and trip weights.
+
+    Returns identity and location fields, estimated category ratings, backend
+    utility, and score contributions. AI prices, coordinates, and final scores
+    are not used as provider facts.
+    """
     ratings = proposal.attribute_ratings.model_dump()
     match = crossmatch(weights, ratings, already_normalized=True)
     profile = LocationProfile(
@@ -256,7 +261,12 @@ async def attraction_candidates(
     ai: LLMProvider | None = None,
     places: PlaceProvider | None = None,
 ) -> DiscoveryResult:
-    """Discover and rate nearby places, then balance the shortlist across route sections."""
+    """Discover attractions along the baseline route and calculate their match scores.
+
+    Inputs are the route, a bounded discovery plan, and effective interest weights.
+    Returns a section-balanced candidate shortlist and discovery diagnostics.
+    Road detour measurements are added by the planner after discovery completes.
+    """
     weights = normalize_weights(effective_weights)
     if not plan.requested_stops:
         return DiscoveryResult([], {"plan": plan.snapshot(), "stop_reason": "zero_requested"})
@@ -273,7 +283,7 @@ async def attraction_candidates(
     ready = list(plan.queries)
 
     async def query(query):
-        """Validate nearby provider records and attach their baseline route positions."""
+        """Search one route point and return validated places with route projections."""
         emit(
             "attractions.query",
             "started",
@@ -320,7 +330,7 @@ async def attraction_candidates(
         return output
 
     async def rate(batch):
-        """Match estimated ratings to verified names before calculating utility."""
+        """Rate a batch of verified places and return candidates with match scores."""
         point = batch[0]["place"].coordinates
         with stage(
             "attractions.ratings",

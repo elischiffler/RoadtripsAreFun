@@ -172,27 +172,13 @@ async def get_final_route(
 async def plan_final_route(
     payload: Route_Payload, user_id: str | None = None, *, can_select_algorithm: bool = False
 ) -> Route:
-    """Plan and shape the full multi-day route from a validated payload.
+    """Build and validate the complete road trip for both HTTP and chat callers.
 
-    The core of :func:`get_final_route`, factored out so both the HTTP endpoint
-    and the chat-agent tool (``generate_final_route``) share one implementation
-    of planner selection, the Mapbox re-route through the chosen waypoints, and
-    the final :class:`Route` shaping. This keeps the fixed stop-dict contract
-    (``name`` / ``type`` / ``coordinates`` ``[lat, lon]`` / ``price``) in one
-    place. Callers validate the payload and map raised exceptions.
-
-    Args:
-        payload: A validated :class:`Route_Payload` (initial route, num_stops,
-            budget, start, optional algorithm).
-
-    Returns:
-        Route: the shaped multi-day route with ``stops`` and ``cost``.
-
-    Raises:
-        PlanningError: When a feasible trip cannot be produced.
-        ValueError: When ``num_stops`` is not a non-negative integer.
-        requests.exceptions.RequestException / pydantic.ValidationError: On
-            Mapbox transport / response failures.
+    Inputs are the validated trip payload, authenticated identity, and planner
+    selection eligibility. Account/trip interests become effective match weights.
+    Runs the planner, reroutes through its stops, and checks actual road timing.
+    Returns a Route with stops, geometry, distance, duration, and hotel quote total.
+    Invalid trip inputs and required provider failures propagate to the caller.
     """
     try:
         require_occupancy(payload.traveler_count, payload.hotel_rooms)
@@ -240,7 +226,7 @@ async def plan_final_route(
 
     coordinates = [stop["coordinates"] for stop in stopping_points]
 
-    # Stop records use [lat, lon]; Mapbox waypoints require lon,lat.
+    # Final road route: stop records use [lat, lon], Mapbox waypoints use lon,lat.
     waypoints = ";".join([f"{lon},{lat}" for lat, lon in coordinates])
     with stage("route.final_reroute", waypoints=len(coordinates)):
         route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
@@ -287,6 +273,7 @@ async def plan_final_route(
             )
         idx += 1
     start_timezone = payload.start_timezone
+    # Final timing validation
     if algorithm.startswith("cp_sat"):
         with stage("route.validation"):
             if services.timezone_at is not None:

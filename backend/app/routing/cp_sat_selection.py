@@ -28,7 +28,12 @@ def valid_coordinates(value: Any) -> bool:
 
 
 def _prepare(candidates, baseline_seconds):
-    """Filter invalid, duplicate, and low-match records; retain exclusion reasons."""
+    """Prepare eligible attractions for the solver.
+
+    Inputs are candidate records and the baseline drive duration in seconds.
+    Returns (candidate, explanation) pairs in route order, plus explanations
+    for every input record, including invalid, duplicate, and low-match places.
+    """
     eligible = []
     explanations = []
     seen = set()
@@ -75,14 +80,21 @@ def _prepare(candidates, baseline_seconds):
 
 
 def _build_model(eligible, requested, baseline_seconds):
-    """Select the available count within the quality bound, then minimize route cost."""
+    """Build the attraction selection model without running the solver.
+
+    Inputs are eligible records in route order, a positive requested count,
+    and the baseline drive duration. The records supply utility, route progress,
+    and solo detour seconds. Returns the model, selection variables, best
+    achievable average match, and available stop count.
+    """
     candidates = [candidate for candidate, _ in eligible]
     model = cp_model.CpModel()
+    # Stop count
     stop_count = min(requested, len(candidates))
     selected_vars = [model.NewBoolVar(f"candidate_{i}") for i in range(len(candidates))]
     model.Add(sum(selected_vars) == stop_count).WithName("exact_available_stop_count")
 
-    # Floor candidate scores and ceil the required total so rounding cannot weaken the bound.
+    # Match quality: rounding must not weaken the ten-percentage-point bound.
     scaled_utilities = [
         math.floor(candidate["utility"] * UTILITY_SCALE) for candidate in candidates
     ]
@@ -97,7 +109,7 @@ def _build_model(eligible, requested, baseline_seconds):
         >= minimum_utility_total
     ).WithName("ten_percentage_point_quality_bound")
 
-    # Forward edges form a path in baseline route order; no cycle constraints are needed.
+    # Route spacing: forward edges form a path without cycles.
     positions = (
         [0]
         + [round(candidate["route_progress_seconds"]) for candidate in candidates]
@@ -123,6 +135,7 @@ def _build_model(eligible, requested, baseline_seconds):
         model.Add(sum(edges[start, node] for start in range(node)) == selected)
         model.Add(sum(edges[node, end] for end in range(node + 1, destination + 1)) == selected)
 
+    # Route cost: spacing deviation plus solo detours, both scaled by K+1.
     detour_costs = [
         round(candidate["detour_seconds"]) * gap_count * selected
         for candidate, selected in zip(candidates, selected_vars)
@@ -132,7 +145,13 @@ def _build_model(eligible, requested, baseline_seconds):
 
 
 def select_attractions(candidates, query_points, num_stops, baseline_seconds):
-    """Return chosen records in route order; query points are used only for diagnostics."""
+    """Filter candidates, build the CP-SAT model, and return selected attractions.
+
+    Inputs are road-checked candidate records, the requested stop count, and
+    baseline driving seconds. Query points are retained only for diagnostics.
+    Returns SelectedAttraction records in route order and records solver metrics.
+    An empty eligible set returns []; an unsuccessful solve raises PlanningError.
+    """
     if not isinstance(candidates, list) or len(candidates) > MAX_CANDIDATES:
         raise PlanningError("Verified attraction candidate limit exceeded", 502)
     summary = {
@@ -172,6 +191,7 @@ def select_attractions(candidates, query_points, num_stops, baseline_seconds):
     model, selected_vars, best_average, stop_count = _build_model(
         eligible, num_stops, baseline_seconds
     )
+    # Solve the model
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = TIME_LIMIT_SECONDS
     solver.parameters.num_search_workers = 1
@@ -193,6 +213,7 @@ def select_attractions(candidates, query_points, num_stops, baseline_seconds):
             else "CP-SAT selection timed out without a feasible solution",
             503,
         )
+    # Selected attractions and diagnostics
     selected = []
     for selected_var, (candidate, explanation) in zip(selected_vars, eligible):
         if solver.Value(selected_var):

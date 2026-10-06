@@ -69,8 +69,10 @@ async def schedule_cp_sat_route(
 ) -> tuple[list[dict[str, Any]], float]:
     """Schedule selected visits and dated hotels within the local driving windows.
 
-    Initial corridor times are estimates. Final Mapbox legs must pass the same
-    local deadline before this plan can be returned to the traveler.
+    Inputs are the baseline route, selected attractions, trip options, and providers.
+    Returns ordered attraction/hotel stops and the total of dated hotel quotes.
+    Initial driving times use solo-detour estimates; final Mapbox legs must pass
+    the same local deadlines before the plan is returned to the traveler.
     """
     policy = options.scheduling_policy
     now = options.start

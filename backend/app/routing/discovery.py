@@ -50,7 +50,12 @@ class SelectedAttraction(NamedTuple):
 
 
 def make_discovery_plan(route, requested_stops):
-    """Budget discovery and distribute searches across equal driving-time sections."""
+    """Create the search plan from a baseline route and requested attraction count.
+
+    Returns search points distributed across equal driving-time sections,
+    along with limits for nearby searches, AI ratings, and solver candidates.
+    A zero requested count produces no search points.
+    """
     driving_hours = route.duration / 3600
     section_count = min(12, max(1, math.ceil(driving_hours / 2)))
     candidate_cap = min(60, max(18, 6 * requested_stops + 2 * section_count))

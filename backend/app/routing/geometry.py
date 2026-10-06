@@ -149,7 +149,12 @@ class RouteMeasure:
         return [last[1], last[0]]
 
     def project(self, point, hint_seconds=None):
-        """Map a [lat, lon] place to its nearest baseline driving-time position."""
+        """Project a place onto the baseline route.
+
+        Input is a [lat, lon] point; hint_seconds resolves ties at route crossings.
+        Returns driving-time progress, distance from the route in meters, and
+        the matched segment index. The hint does not override a nearer segment.
+        """
         if not self.segments:
             return {
                 "route_progress_seconds": 0.0,

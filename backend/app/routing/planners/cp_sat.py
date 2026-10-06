@@ -29,7 +29,12 @@ class CPSatPlanner(RoutePlanner):
     async def plan(
         self, initial_route: MapBox_route, options: PlanOptions, services: RoutingServices
     ) -> PlanResult:
-        """Discover and road-check candidates, select attractions, then schedule visits."""
+        """Run discovery, road checks, CP-SAT selection, and daily scheduling.
+
+        Inputs are the baseline route, validated trip options, and provider services.
+        Returns scheduled attraction/hotel stops and their hotel quote total.
+        The caller recalculates the complete road route and validates final timing.
+        """
         if services.cp_sat_hotels is None or services.cp_sat_candidates is None:
             raise PlanningError("CP-SAT verified candidate services are not configured", 503)
         if options.num_stops < 0:
@@ -115,11 +120,17 @@ class CPSatPlanner(RoutePlanner):
         num_stops: int,
         baseline_seconds: float,
     ) -> list[SelectedAttraction]:
+        """Pass road-checked records and trip limits to the CP-SAT selection function."""
         return select_attractions(candidates, query_points, num_stops, baseline_seconds)
 
     @staticmethod
     async def _verify_detours(route, candidates, services):
-        """Measure each solo detour before solving; exclude unusable road routes."""
+        """Measure the extra road driving through each candidate before selection.
+
+        Inputs are the baseline route, candidate records, and the road provider.
+        Returns usable candidates with detour seconds and measurement provenance.
+        Unusable individual routes are excluded; general provider errors propagate.
+        """
         if not candidates:
             return []
         if services.candidate_route is None:

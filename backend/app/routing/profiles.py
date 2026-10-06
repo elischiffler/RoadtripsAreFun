@@ -41,7 +41,12 @@ class ProfileMatch(BaseModel):
 def crossmatch(
     weights: dict[str, float], ratings: dict[str, float], *, already_normalized: bool = False
 ) -> ProfileMatch:
-    """Return the weighted match score and each category's contribution."""
+    """Calculate how well a place matches the traveler's interests.
+
+    Inputs are interest weights and estimated ratings for all canonical categories.
+    Returns utility in [0, 1] and the weight-times-rating contribution of each
+    category. Already-normalized weights must sum to one.
+    """
     normalized_weights = normalize_weights(weights)
     if already_normalized:
         if not math.isclose(math.fsum(weights.values()), 1.0, abs_tol=1e-12):
