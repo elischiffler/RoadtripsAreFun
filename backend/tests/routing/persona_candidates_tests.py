@@ -381,8 +381,17 @@ async def test_live_terra_preserves_status_retry_after_and_hard_error_classifica
 
     from app.agent.provider_diagnostics import collecting_attempts, diagnostic, retry_async
     from app.routing.runtime import limited, run_context
+    from app.routing.terra_pacing import TerraPacer
 
     calls, delays = [], []
+    now = [0.0]
+
+    async def pacing_sleep(seconds):
+        now[0] += seconds
+
+    monkeypatch.setattr(
+        source, "terra_requests", TerraPacer(1, clock=lambda: now[0], sleep=pacing_sleep)
+    )
 
     async def get(*args, **kwargs):
         calls.append(1)

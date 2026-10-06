@@ -17,6 +17,7 @@ from app.routing import config
 from app.routing.run_metrics import increment
 from app.routing.sources.attractions import _auth_headers
 from app.routing.sources.persona_candidates import VerifiedPlace
+from app.routing.terra_pacing import terra_requests
 
 MAX_DISTANCE_KM = 2
 MAX_TRAVEL_SECONDS = 15 * 60  # Each direction, verified by driving directions.
@@ -60,18 +61,20 @@ class LiveEveningProvider:
         async with httpx.AsyncClient(timeout=3) as client:
             for category in categories:
                 increment("tripadvisor")
-                response = await client.get(
-                    f"{config.TRIPADVISOR_BASE_URL}/locations/nearby",
-                    params={
-                        "lat": hotel[0],
-                        "lon": hotel[1],
-                        "radius": MAX_DISTANCE_KM,
-                        "unit": "KM",
-                        "category": category,
-                        "sort": "distance",
-                        "size": 10,
-                    },
-                    headers=_auth_headers(),
+                response = await terra_requests.call(
+                    lambda: client.get(
+                        f"{config.TRIPADVISOR_BASE_URL}/locations/nearby",
+                        params={
+                            "lat": hotel[0],
+                            "lon": hotel[1],
+                            "radius": MAX_DISTANCE_KM,
+                            "unit": "KM",
+                            "category": category,
+                            "sort": "distance",
+                            "size": 10,
+                        },
+                        headers=_auth_headers(),
+                    )
                 )
                 response.raise_for_status()
                 page = Terra_Page_Nearby_Location.model_validate(response.json())

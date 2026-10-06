@@ -6,6 +6,7 @@ modules don't each re-read the environment. Loaded once at import.
 
 from __future__ import annotations
 
+import math
 import os
 from pathlib import Path
 
@@ -38,6 +39,16 @@ OPENCAGE_KEY = os.getenv("OPENCAGE_KEY")
 # ``TRIPADVISOR_API`` now holds a UUID rather than the old 32-char key.
 TRIPADVISOR_BASE_URL = os.getenv("TRIPADVISOR_BASE_URL", "https://terra.tripadvisor.com/api")
 TRIPADVISOR_API_KEY_HEADER = "X-API-Key"
+
+# Search/nearby share a 1 rps bucket on every package; leave arrival-time headroom.
+TRIPADVISOR_REQUEST_INTERVAL_SECONDS = float(
+    os.getenv("TRIPADVISOR_REQUEST_INTERVAL_SECONDS", "1.1")
+)
+if (
+    not math.isfinite(TRIPADVISOR_REQUEST_INTERVAL_SECONDS)
+    or TRIPADVISOR_REQUEST_INTERVAL_SECONDS < 1
+):
+    raise ValueError("TRIPADVISOR_REQUEST_INTERVAL_SECONDS must be finite and at least 1 second")
 
 # Terra caps the nearby-search radius at 5.0 miles (400 constraint-violation past
 # that), where the old Content API accepted 25-30. Requested radii are clamped to

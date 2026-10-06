@@ -45,6 +45,7 @@ from app.routing.runtime import (
     threaded,
 )
 from app.routing.sources.attractions import _auth_headers
+from app.routing.terra_pacing import terra_requests
 
 MAX_ATTRACTIONS = 60
 MAX_HOTELS = 10
@@ -583,17 +584,19 @@ class LivePlaceProvider:
         self.require_attractions()
         try:
             increment("tripadvisor")
-            response = await http_get(
-                f"{config.TRIPADVISOR_BASE_URL}/locations/nearby",
-                params={
-                    "lat": point[0],
-                    "lon": point[1],
-                    "radius": 5,
-                    "unit": "MI",
-                    "category": "ATTRACTION",
-                    "sort": "rating,desc",
-                },
-                headers=_auth_headers(),
+            response = await terra_requests.call(
+                lambda: http_get(
+                    f"{config.TRIPADVISOR_BASE_URL}/locations/nearby",
+                    params={
+                        "lat": point[0],
+                        "lon": point[1],
+                        "radius": 5,
+                        "unit": "MI",
+                        "category": "ATTRACTION",
+                        "sort": "rating,desc",
+                    },
+                    headers=_auth_headers(),
+                )
             )
             response.raise_for_status()
             from app.models.routing_models.trip_advisor_models import Terra_Page_Nearby_Location
