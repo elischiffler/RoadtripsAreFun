@@ -26,4 +26,6 @@ Preserve thresholds and baseline failures.
 Use task branches and PRs, never merge or push main. Draft PRs are appropriate
 while required verification is blocked. CI runs on every PR/main change without
 production credentials; repository settings must be checked separately before
-claiming enforcement. No new production Docker deployment is configured.
+claiming enforcement. Backend production releases follow
+[the EC2 deployment contract](docs/ec2-deployment.md); see
+[operations context](.steering/operations.md) for dated verified runtime state.

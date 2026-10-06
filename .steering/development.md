@@ -14,6 +14,11 @@ time. Configure browser/backend Cognito pool/client consistently; agent use also
 needs the Mentro gateway service credentials. A routing proxy reaches a deployed
 backend and is not an isolated provider fixture.
 
+Visitor Studio is separate from Cognito: `backend/app/routers/studio.py` uses
+backend-only `STUDIO_SESSION_SECRET`. Without a stable secret, a local server
+restart invalidates its sessions. See `docs/studio-access.md`; never embed that
+secret in a browser build.
+
 On POSIX/WSL, from the root:
 
 ```sh
