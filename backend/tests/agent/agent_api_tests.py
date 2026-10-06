@@ -85,3 +85,37 @@ def test_agent_chat_maps_unexpected_error_to_503_not_500():
         app.dependency_overrides.pop(get_agent_dependencies, None)
 
     assert resp.status_code == 503
+
+
+def test_stream_returns_progress_and_same_final_response():
+    import json
+
+    provider = FakeProvider(responses=[LLMResponse(content="Hi streamed")])
+    app.dependency_overrides[get_agent_dependencies] = _override(
+        FallbackChain([provider]), tools=FakeTools()
+    )
+    try:
+        response = client.post("/agent/chat/stream", json=_BODY)
+    finally:
+        app.dependency_overrides.pop(get_agent_dependencies, None)
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store"
+    events = [json.loads(line) for line in response.text.splitlines()]
+    assert events[0]["type"] == "progress"
+    assert events[-1]["response"]["reply"] == "Hi streamed"
+    assert any(event.get("stage") == "agent.extract_details" for event in events)
+    assert not any(
+        "user-123" in json.dumps(event) for event in events if event["type"] == "progress"
+    )
+
+
+def test_stream_rejects_invalid_token_before_emitting_events(monkeypatch):
+    from fastapi import HTTPException
+
+    def invalid(token):
+        raise HTTPException(status_code=401, detail="invalid")
+
+    monkeypatch.setattr("app.agent.agent.get_user_id_from_token", invalid)
+    response = client.post("/agent/chat/stream", json=_BODY)
+    assert response.status_code == 401
+    assert "application/x-ndjson" not in response.headers["content-type"]

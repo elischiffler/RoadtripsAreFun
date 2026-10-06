@@ -24,6 +24,8 @@ from app.agent.memory import MemoryFact
 from app.agent.schemas import ToolCall
 from app.agent.tool_dispatcher import AppToolDispatcher
 from app.agent.tools import ToolContext
+from app.agent.trip_profile import TripProfile
+from app.routing.occupancy import HotelRoom
 
 from .conftest import FakeMemory
 
@@ -31,19 +33,34 @@ pytestmark = pytest.mark.asyncio
 
 
 EXPECTED_TOOLS = {
+    "get_account_persona",
+    "update_account_persona",
     "validate_location",
     "get_initial_route",
     "generate_final_route",
     "generate_itinerary",
+    "complete_trip",
     "get_car_budget",
     "recall_facts",
     "remember_fact",
     "get_trip_profile",
+    "record_trip_details",
     "update_trip_profile",
 }
 
 
-def _ctx(memory=None) -> ToolContext:
+def _ctx(memory=None, *, car_skipped=False) -> ToolContext:
+    if car_skipped:
+        memory = FakeMemory()
+        memory.save_trip_profile(
+            "user-1",
+            "42",
+            TripProfile(
+                car_status="skipped",
+                traveler_count=2,
+                hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+            ).to_json(),
+        )
     return ToolContext(user_id="user-1", chat_id="42", memory=memory)
 
 
@@ -112,7 +129,7 @@ async def test_validate_location_missing_args_returns_error():
 
 async def test_get_initial_route_success(monkeypatch):
     fake_route = SimpleNamespace(
-        distance=1000.0, duration=600.0, model_dump=lambda: {"distance": 1000.0}
+        distance=1000.0, duration=600.0, model_dump=lambda **kwargs: {"distance": 1000.0}
     )
 
     async def fake_call_route(start_lat, start_lon, end_lat, end_lon, *args, **kwargs):
@@ -167,10 +184,13 @@ async def test_generate_final_route_success_has_action(monkeypatch):
         stops=[{"name": "Red Rocks", "type": "stop", "coordinates": [39.6, -105.2]}],
         cost=320.0,
         distance=500000.0,
-        model_dump=lambda: {"cost": 320.0},
+        model_dump=lambda **kwargs: {
+            "cost": 320.0,
+            "stops": [{"name": "Red Rocks", "type": "stop", "coordinates": [39.6, -105.2]}],
+        },
     )
 
-    async def fake_plan(payload):
+    async def fake_plan(payload, user_id=None, *, can_select_algorithm=False):
         return fake_route
 
     monkeypatch.setattr(td, "plan_final_route", fake_plan)
@@ -181,7 +201,7 @@ async def test_generate_final_route_success_has_action(monkeypatch):
 
     # Seed the artifact store with an initial route + get its handle (mirrors
     # get_initial_route running first).
-    ctx = _ctx()
+    ctx = _ctx(car_skipped=True)
     handle = ctx.artifacts.put("initial_route", {})
 
     result = await _dispatcher().dispatch(
@@ -205,7 +225,7 @@ async def test_generate_final_route_success_has_action(monkeypatch):
 async def test_generate_final_route_failure_returns_error(monkeypatch):
     from app.routing import PlanningError
 
-    async def boom(payload):
+    async def boom(payload, user_id=None, *, can_select_algorithm=False):
         raise PlanningError("no feasible trip", status_code=422)
 
     monkeypatch.setattr(td, "plan_final_route", boom)
@@ -217,7 +237,7 @@ async def test_generate_final_route_failure_returns_error(monkeypatch):
             name="generate_final_route",
             arguments={"initial_route": {}, "num_stops": 2, "budget": 400},
         ),
-        _ctx(),
+        _ctx(car_skipped=True),
     )
     # PlanningError is a generic Exception here -> caught, not raised.
     assert result.ok is False
@@ -230,7 +250,7 @@ async def test_generate_final_route_failure_returns_error(monkeypatch):
 
 
 async def test_generate_itinerary_success_has_action(monkeypatch):
-    fake_day = SimpleNamespace(model_dump=lambda: {"date": "Monday", "stops": []})
+    fake_day = SimpleNamespace(model_dump=lambda **kwargs: {"date": "Monday", "stops": []})
 
     async def fake_build(payload):
         return [fake_day]
@@ -239,7 +259,14 @@ async def test_generate_itinerary_success_has_action(monkeypatch):
     monkeypatch.setattr(td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v))
 
     result = await _dispatcher().dispatch(
-        ToolCall(name="generate_itinerary", arguments={"route": {}}), _ctx()
+        ToolCall(
+            name="generate_itinerary",
+            arguments={
+                "route": {"traveler_count": 2, "hotel_rooms": [{"adults": 2, "child_ages": []}]},
+                "start_time": "2030-01-01T09:00:00Z",
+            },
+        ),
+        _ctx(car_skipped=True),
     )
     assert result.ok is True
     assert result.result["action"] == "itinerary_updated"
@@ -254,7 +281,14 @@ async def test_generate_itinerary_failure_returns_error(monkeypatch):
     monkeypatch.setattr(td.Itinerary_Payload, "model_validate", classmethod(lambda cls, v: v))
 
     result = await _dispatcher().dispatch(
-        ToolCall(name="generate_itinerary", arguments={"route": {}}), _ctx()
+        ToolCall(
+            name="generate_itinerary",
+            arguments={
+                "route": {"traveler_count": 2, "hotel_rooms": [{"adults": 2, "child_ages": []}]},
+                "start_time": "2030-01-01T09:00:00Z",
+            },
+        ),
+        _ctx(car_skipped=True),
     )
     assert result.ok is False
     assert "Incomplete route" in result.error
@@ -357,3 +391,15 @@ async def test_remember_fact_without_memory_returns_error():
     )
     assert result.ok is False
     assert "memory" in result.error.lower()
+
+
+async def test_required_candidate_provider_failure_is_not_retryable():
+    async def failed_provider(arguments, context):
+        raise td.CandidateProviderError("Google Hotels did not confirm the requested stay dates.")
+
+    dispatcher = _dispatcher()
+    dispatcher._handlers["generate_final_route"] = failed_provider
+    result = await dispatcher.dispatch(ToolCall(name="generate_final_route", arguments={}), _ctx())
+    assert not result.ok and not result.retryable
+    assert "requested stay dates" in result.error
+    assert result.result is None

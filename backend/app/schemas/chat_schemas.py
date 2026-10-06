@@ -2,12 +2,14 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from app.agent.schemas import TripDetailPresentation
 from app.models.routing_models.routing_models import MapBox, Route
 
 
 class ChatDataSchema(BaseModel):
     chatId: int
     agentChatId: str | None = None
+    tripProfile: dict | None = None  # UI snapshot only; agent memory is authoritative
     action: str | None = None
     locationType: str
     startCoords: list[float] | None = None
@@ -37,6 +39,7 @@ class ChatLogSchema(BaseModel):
     class ChatMessage(BaseModel):
         text: str
         sender: str
+        presentation: TripDetailPresentation | None = None
         buttons: list[Any] | None = None
 
     id: int

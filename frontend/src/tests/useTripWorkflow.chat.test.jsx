@@ -27,27 +27,28 @@ vi.mock('../pages/ChatPage/agentChat', () => ({
   sendAgentMessage: vi.fn(),
 }));
 vi.mock('../pages/ChatPage/DatabaseUtils', () => ({
+  ensureChatCreated: vi.fn().mockResolvedValue(true),
   updateUserData: vi.fn().mockResolvedValue(true),
 }));
 
 import { sendAgentMessage } from '../pages/ChatPage/agentChat';
-import { updateUserData } from '../pages/ChatPage/DatabaseUtils';
+import { ensureChatCreated, updateUserData } from '../pages/ChatPage/DatabaseUtils';
 import { useTripWorkflow } from '../pages/ChatPage/useTripWorkflow';
 
 const CHAT_ID = 5;
 
 // Minimal harness: drives the hook and renders messages live from `chats`.
-function Harness({ chatLogsData, onChatReady = () => {}, agentChatId }) {
+function Harness({ chatLogsData, onChatReady = () => {}, agentChatId, savedData = null }) {
   const [chats, setChats] = useState([{ id: CHAT_ID, title: 'Trip', messages: [] }]);
   const chatsRef = useRef(chats);
   chatsRef.current = chats;
 
-  const { submit } = useTripWorkflow({
+  const { submit, processProgress, pendingLocations } = useTripWorkflow({
     chatId: CHAT_ID,
     agentChatId,
     setChats,
     setCurrentStep: () => {},
-    savedData: null,
+    savedData,
     chatsRef,
     accessToken: 'test-token',
     ChatLogsData: chatLogsData ?? { chatdata: [], currentId: CHAT_ID },
@@ -59,6 +60,37 @@ function Harness({ chatLogsData, onChatReady = () => {}, agentChatId }) {
   return (
     <div>
       <button onClick={() => submit('chat_message', 'make it cheaper')}>send</button>
+      {Object.entries(pendingLocations).flatMap(([field, pending]) =>
+        pending.candidates.map((candidate) => (
+          <button
+            key={candidate.id}
+            onClick={() =>
+              submit('location_confirmation', {
+                field,
+                candidateId: candidate.id,
+                address: candidate.address,
+              })
+            }
+          >
+            {candidate.address}
+          </button>
+        ))
+      )}
+      <button
+        onClick={() =>
+          submit(
+            'location_confirmations',
+            Object.entries(pendingLocations).map(([field, pending]) => ({
+              field,
+              candidateId: pending.candidates[0].id,
+              address: pending.candidates[0].address,
+            }))
+          )
+        }
+      >
+        confirm both
+      </button>
+      <output data-testid="progress">{JSON.stringify(processProgress)}</output>
       <ul>
         {messages.map((m, i) => (
           <li key={i} data-sender={m.sender} data-type={m.type}>
@@ -74,15 +106,182 @@ Harness.propTypes = {
   chatLogsData: PropTypes.object,
   onChatReady: PropTypes.func,
   agentChatId: PropTypes.string,
+  savedData: PropTypes.object,
 };
 
 beforeEach(() => {
   vi.clearAllMocks();
+  localStorage.clear();
   updateUserData.mockResolvedValue(true);
+  ensureChatCreated.mockResolvedValue(true);
   import.meta.env.VITE_BACKEND_SERVER = 'http://localhost:8000/';
 });
 
 describe("submit('chat_message')", () => {
+  it('confirms both locations with one request and one user message', async () => {
+    const pending_locations = {
+      start_address: { candidates: [{ id: 'start', address: 'Boulder' }] },
+      destination_address: { candidates: [{ id: 'end', address: 'Minneapolis' }] },
+    };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Both saved.',
+      tripProfile: { pending_locations: {} },
+      actions: [],
+    });
+    const { container } = render(<Harness savedData={{ tripProfile: { pending_locations } }} />);
+    await userEvent.click(screen.getByText('confirm both'));
+    await waitFor(() => expect(sendAgentMessage).toHaveBeenCalledTimes(1));
+    expect(sendAgentMessage.mock.calls[0][0].locationConfirmations).toEqual([
+      { field: 'start_address', candidateId: 'start' },
+      { field: 'destination_address', candidateId: 'end' },
+    ]);
+    expect(sendAgentMessage.mock.calls[0][0].message).toBe('Use Boulder and Minneapolis');
+    expect(container.querySelectorAll('[data-sender="user"]')).toHaveLength(1);
+    await waitFor(() => expect(screen.queryByText('Boulder')).not.toBeInTheDocument());
+    expect(screen.queryByText('Minneapolis')).not.toBeInTheDocument();
+  });
+
+  it.each(['traveler_count', 'hotel_rooms'])(
+    'invalidates restored prices and itinerary when %s changes',
+    async (field) => {
+      const tripProfile = { traveler_count: 2, hotel_rooms: [{ adults: 2, child_ages: [] }] };
+      const next = {
+        ...tripProfile,
+        [field]: field === 'traveler_count' ? 3 : [{ adults: 1, child_ages: [5] }],
+      };
+      const savedData = {
+        route: {
+          coordinates: [
+            [35, -120],
+            [36, -115],
+          ],
+          cost: 120,
+        },
+        itinerary: [{ date: 'Day 1', stops: [] }],
+        tripProfile,
+      };
+      sendAgentMessage.mockResolvedValueOnce({
+        reply: 'Updated rooms.',
+        tripProfile: next,
+        actions: [{ type: 'trip_profile_updated', payload: { trip_profile: next } }],
+      });
+      render(<Harness savedData={savedData} />);
+      await userEvent.click(screen.getByText('send'));
+      await waitFor(() => expect(updateUserData).toHaveBeenCalled());
+      const snapshot = updateUserData.mock.calls[0][1];
+      expect(snapshot.tripProfile).toEqual(next);
+      expect(snapshot.route).toBeNull();
+      expect(snapshot.itinerary).toBeNull();
+      expect(snapshot.isComplete).toBe(false);
+    }
+  );
+
+  it('persists new pending matches and selects a restored candidate by ID', async () => {
+    const pending_locations = {
+      start_address: {
+        query: 'SLO',
+        candidates: [{ id: 'candidate-1', address: 'Salem-Leckrone Airport, Illinois' }],
+      },
+    };
+    const chatLogsData = { chatdata: [{ chatId: CHAT_ID }], currentId: CHAT_ID };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Choose a location.',
+      tripProfile: { pending_locations },
+      actions: [],
+    });
+    const view = render(<Harness chatLogsData={chatLogsData} />);
+    await userEvent.click(screen.getByText('send'));
+    await waitFor(() => expect(updateUserData).toHaveBeenCalled());
+    expect(updateUserData.mock.calls[0][1].tripProfile.pending_locations).toEqual(
+      pending_locations
+    );
+    view.unmount();
+    render(<Harness savedData={{ tripProfile: { pending_locations } }} />);
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Saved.',
+      tripProfile: { pending_locations: {} },
+      actions: [],
+    });
+    await userEvent.click(screen.getByText('Salem-Leckrone Airport, Illinois'));
+    await waitFor(() => expect(sendAgentMessage).toHaveBeenCalledTimes(2));
+    expect(sendAgentMessage.mock.calls[1][0].locationConfirmation).toEqual({
+      field: 'start_address',
+      candidateId: 'candidate-1',
+    });
+    await waitFor(() =>
+      expect(screen.queryByText('Salem-Leckrone Airport, Illinois')).not.toBeInTheDocument()
+    );
+  });
+  it('persists list replies even when the turn has no data actions', async () => {
+    const presentation = {
+      title: 'Updated trip details',
+      updated: [],
+      needed: ['What date would you like to leave?'],
+      notes: [],
+    };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Still needed: departure date',
+      presentation,
+      actions: [],
+    });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    await waitFor(() => expect(updateUserData).toHaveBeenCalled());
+    const savedMessages = updateUserData.mock.calls[0][2][0].messages;
+    expect(savedMessages).toContainEqual({
+      sender: 'bot',
+      text: 'Still needed: departure date',
+      presentation,
+    });
+    expect(savedMessages.some((message) => message.type === 'loading-chat')).toBe(false);
+  });
+  it('streams visible progress in production, clears it after failure and resets the next turn', async () => {
+    vi.stubEnv('DEV', false);
+    let finish;
+    sendAgentMessage.mockImplementationOnce(({ onProgress }) => {
+      onProgress({ type: 'progress', stage: 'hotels.lookup', state: 'started' });
+      return new Promise((resolve) => {
+        finish = resolve;
+      });
+    });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    expect(screen.getByTestId('progress')).toHaveTextContent('Finding hotels near your route');
+    finish({ ok: false, status: 503 });
+    await screen.findByText(/trouble reaching my planning service/);
+    expect(screen.getByTestId('progress')).toHaveTextContent('null');
+    sendAgentMessage.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        })
+    );
+    await userEvent.click(screen.getByText('send'));
+    expect(screen.getByTestId('progress')).not.toHaveTextContent('Finding hotels');
+    finish({ reply: 'Ready', actions: [] });
+    await screen.findByText('Ready');
+    vi.unstubAllEnvs();
+  });
+
+  it('logs the backend profile snapshot even when no action was emitted', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const tripProfile = { car_status: 'unanswered' };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Please tell me your starting city.',
+      toolsUsed: [],
+      actions: [],
+      tripProfile,
+    });
+
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    await screen.findByText('Please tell me your starting city.');
+
+    expect(log).toHaveBeenCalledWith('[TripProfile] tools this turn: %s', 'none');
+    expect(log).toHaveBeenCalledWith('[TripProfile] current state:', tripProfile);
+    log.mockRestore();
+  });
+
   it('appends the user message, calls the agent, and renders the bot reply', async () => {
     sendAgentMessage.mockResolvedValueOnce({
       reply: 'Sure — I lowered your hotel budget.',
@@ -128,6 +327,15 @@ describe("submit('chat_message')", () => {
     );
   });
 
+  it('ignores a saved CP-SAT variant without verified eligibility', async () => {
+    localStorage.setItem('devRoutingAlgorithm', 'cp_sat_scenic');
+    sendAgentMessage.mockResolvedValueOnce({ reply: 'ok', toolsUsed: [], actions: [] });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    await waitFor(() => expect(sendAgentMessage).toHaveBeenCalledTimes(1));
+    expect(sendAgentMessage.mock.calls[0][0].clientContext).not.toHaveProperty('algorithm');
+  });
+
   it('shows a generic fallback when the agent returns null', async () => {
     sendAgentMessage.mockResolvedValueOnce(null);
 
@@ -152,6 +360,34 @@ describe("submit('chat_message')", () => {
 });
 
 describe('applyAgentActions', () => {
+  it('clears the old route and itinerary after an endpoint is confirmed elsewhere', async () => {
+    const tp = {
+      destination_address: 'Nashville, Tennessee',
+      destination_coords: [36.16, -86.77],
+      pending_locations: {},
+    };
+    const savedData = {
+      route: {
+        coordinates: [
+          [35, -120],
+          [38, -88],
+        ],
+      },
+      itinerary: [{ day: 1 }],
+      tripProfile: { destination_coords: [38, -88] },
+    };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Saved destination.',
+      tripProfile: tp,
+      actions: [{ type: 'trip_profile_updated', payload: { trip_profile: tp } }],
+    });
+    render(<Harness savedData={savedData} />);
+    await userEvent.click(screen.getByText('send'));
+    await waitFor(() => expect(updateUserData).toHaveBeenCalled());
+    expect(updateUserData.mock.calls[0][1].route).toBeNull();
+    expect(updateUserData.mock.calls[0][1].itinerary).toBeNull();
+    expect(updateUserData.mock.calls[0][1].tripProfile).toEqual(tp);
+  });
   it('warns in the chat when the trip snapshot was not saved', async () => {
     updateUserData.mockResolvedValueOnce(false);
     sendAgentMessage.mockResolvedValueOnce({
@@ -174,6 +410,7 @@ describe('applyAgentActions', () => {
   it('writes a route_updated payload into the persisted ChatData snapshot', async () => {
     const routeObj = {
       duration: 3600,
+      warnings: ['Hotel exceeds the $100 nightly target.'],
       geometry: { coordinates: [] },
       coordinates: [
         [40.0, -105.0], // start [lat, lon]
@@ -205,13 +442,14 @@ describe('applyAgentActions', () => {
     expect(snap.agentChatId).toBe('uuid-abc-123');
     // Route written verbatim
     expect(snap.route).toBe(routeObj);
-    expect(snap.isComplete).toBe(true);
+    expect(snap.isComplete).toBe(false);
     expect(snap.budget).toBe(250);
     // startConfirmed / endConfirmed derived from route.coordinates[0] / [-1]
     expect(snap.startConfirmed).toEqual({ latitude: 40.0, longitude: -105.0, address: '' });
     expect(snap.endConfirmed).toEqual({ latitude: 42.5, longitude: -103.5, address: '' });
     // Also mirrored into ChatLogsData so Map/Itinerary read it
     expect(chatLogsData.chatdata[0].route).toBe(routeObj);
+    expect(await screen.findByText('Hotel exceeds the $100 nightly target.')).toBeInTheDocument();
   });
 
   it('writes an itinerary_updated payload into the persisted ChatData snapshot', async () => {
@@ -235,6 +473,95 @@ describe('applyAgentActions', () => {
     const snap = updateUserData.mock.calls[0][1];
     expect(snap.itinerary).toBe(itin);
     expect(chatLogsData.chatdata[0].itinerary).toBe(itin);
+  });
+
+  it('applies both completion actions in one snapshot', async () => {
+    const routeObj = {
+      coordinates: [
+        [40, -105],
+        [42, -104],
+      ],
+      stops: [],
+    };
+    const itin = [{ date: 'Day 1', stops: [] }];
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Your trip is ready.',
+      toolsUsed: ['complete_trip'],
+      actions: [
+        { type: 'route_updated', payload: { route: routeObj, stops: [], cost: 90 } },
+        { type: 'itinerary_updated', payload: { itinerary: itin } },
+      ],
+    });
+    const chatLogsData = { chatdata: [{ chatId: CHAT_ID }], currentId: CHAT_ID };
+    render(<Harness chatLogsData={chatLogsData} />);
+    await userEvent.click(screen.getByText('send'));
+
+    await waitFor(() => expect(updateUserData).toHaveBeenCalledTimes(1));
+    const snap = updateUserData.mock.calls[0][1];
+    expect(snap.route).toBe(routeObj);
+    expect(snap.itinerary).toBe(itin);
+    expect(snap.isComplete).toBe(true);
+    expect(chatLogsData.chatdata[0]).toBe(snap);
+  });
+
+  it('keeps an itinerary failure visibly partial while saving its route', async () => {
+    const routeObj = {
+      coordinates: [
+        [40, -105],
+        [42, -104],
+      ],
+      stops: [],
+    };
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'The route is ready, but I could not create the itinerary. Please retry.',
+      toolsUsed: ['complete_trip'],
+      actions: [{ type: 'route_updated', payload: { route: routeObj, stops: [], cost: 90 } }],
+    });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+
+    await waitFor(() => expect(updateUserData).toHaveBeenCalledTimes(1));
+    expect(updateUserData.mock.calls[0][1].route).toBe(routeObj);
+    expect(updateUserData.mock.calls[0][1].isComplete).toBe(false);
+    expect(await screen.findByText(/could not create the itinerary/i)).toBeInTheDocument();
+  });
+
+  it('clears an older itinerary when a later route has no new itinerary', async () => {
+    const firstRoute = {
+      coordinates: [
+        [40, -105],
+        [42, -104],
+      ],
+    };
+    const nextRoute = {
+      coordinates: [
+        [40, -105],
+        [43, -103],
+      ],
+    };
+    const itinerary = [{ date: 'Day 1', stops: [] }];
+    sendAgentMessage
+      .mockResolvedValueOnce({
+        reply: 'First trip ready.',
+        actions: [
+          { type: 'route_updated', payload: { route: firstRoute } },
+          { type: 'itinerary_updated', payload: { itinerary } },
+        ],
+      })
+      .mockResolvedValueOnce({
+        reply: 'New route ready, but the itinerary failed.',
+        actions: [{ type: 'route_updated', payload: { route: nextRoute } }],
+      });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send'));
+    expect(await screen.findByText('First trip ready.')).toBeInTheDocument();
+    await waitFor(() => expect(updateUserData).toHaveBeenCalledTimes(1));
+    await userEvent.click(screen.getByText('send'));
+    await waitFor(() => expect(updateUserData).toHaveBeenCalledTimes(2));
+    const snap = updateUserData.mock.calls[1][1];
+    expect(snap.route).toBe(nextRoute);
+    expect(snap.itinerary).toBeNull();
+    expect(snap.isComplete).toBe(false);
   });
 
   it('writes a trip_profile_updated payload into the persisted ChatData snapshot', async () => {
@@ -282,4 +609,44 @@ describe('applyAgentActions', () => {
     // Persisted to ChatLogsData too
     expect(chatLogsData.chatdata[0].stops).toBe(3);
   });
+});
+
+it('awaits creation before the agent, blocks rapid submission and retries failures', async () => {
+  let finish;
+  ensureChatCreated.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+  );
+  sendAgentMessage.mockResolvedValue({ reply: 'Saved', actions: [] });
+  render(<Harness />);
+  await userEvent.click(screen.getByText('send'));
+  await userEvent.click(screen.getByText('send'));
+  expect(ensureChatCreated).toHaveBeenCalledTimes(1);
+  expect(sendAgentMessage).not.toHaveBeenCalled();
+  expect(updateUserData).not.toHaveBeenCalled();
+  finish(false);
+  await screen.findByText(/couldn't create this trip/);
+  expect(sendAgentMessage).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByText('send'));
+  await waitFor(() => expect(sendAgentMessage).toHaveBeenCalledTimes(1));
+  await waitFor(() => expect(updateUserData).toHaveBeenCalledTimes(1));
+});
+
+it('does not send an agent turn after the account panel unmounts during creation', async () => {
+  let finish;
+  ensureChatCreated.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      })
+  );
+  const view = render(<Harness />);
+  await userEvent.click(screen.getByText('send'));
+  view.unmount();
+  finish(true);
+  await Promise.resolve();
+  expect(sendAgentMessage).not.toHaveBeenCalled();
+  expect(updateUserData).not.toHaveBeenCalled();
 });

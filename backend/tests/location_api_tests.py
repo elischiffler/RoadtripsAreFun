@@ -41,6 +41,21 @@ def test_post_location_by_address():
     assert isinstance(data["longitude"], float)
 
 
+def test_post_location_abbreviation_requires_choice_even_with_one_result():
+    with patch(
+        "app.routers.location_api.get_location",
+        return_value=[_mock_location("Salem-Leckrone Airport, Illinois")],
+    ):
+        response = client.post(
+            "/validate-location", json={"is_coordinates": False, "location": {"address": "SLO"}}
+        )
+    assert response.status_code == 409
+    assert response.json()["detail"]["code"] == "location_confirmation_required"
+    assert (
+        response.json()["detail"]["candidates"][0]["address"] == "Salem-Leckrone Airport, Illinois"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Happy-path: coordinate reverse-geocode
 # ---------------------------------------------------------------------------

@@ -65,7 +65,7 @@ docker compose ps
 node --test tests/container-smoke.test.mjs
 docker compose logs --tail 100
 docker compose stop
-docker compose start --wait --wait-timeout 60
+docker compose up --detach --wait --wait-timeout 60
 docker compose down
 ```
 

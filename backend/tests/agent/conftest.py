@@ -7,11 +7,14 @@ with no network and no DB. This is the fake-injection template for the agent.
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 
 import pytest
 
+from app.agent.extraction import EXTRACTION_PROMPT
 from app.agent.memory import ConversationMemory, MemoryFact
+from app.agent.questions import QUESTION_FORMAT_PROMPT
 from app.agent.schemas import (
     AgentUsage,
     LLMMessage,
@@ -53,13 +56,19 @@ class FakeProvider:
         configured: bool = True,
         fail: bool = False,
         error: Exception | None = None,
+        extraction_responses: list[str] | None = None,
+        question_responses: list[str] | None = None,
     ):
         self.name = name
         self._responses = list(responses or [LLMResponse(content="Hi there!")])
         self._configured = configured
         self._fail = fail
         self._error = error
+        self.question_responses = question_responses
+        self.question_calls = 0
         self.calls = 0
+        self.extraction_calls = 0
+        self._extraction_responses = list(extraction_responses or ['{"details":{}}'])
         # Capture the message list passed to each provider call so tests can
         # assert what context (recent turns, summary, facts) was assembled.
         self.seen_messages: list[list[LLMMessage]] = []
@@ -68,12 +77,38 @@ class FakeProvider:
         return self._configured
 
     def complete(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
-        self.calls += 1
         self.seen_messages.append(list(messages))
+        if messages and messages[0].content == QUESTION_FORMAT_PROMPT:
+            self.question_calls += 1
+            if self._fail:
+                from app.agent.providers import ProviderError
+
+                raise self._error or ProviderError(f"{self.name} failed")
+            content = (
+                self.question_responses[
+                    min(self.question_calls - 1, len(self.question_responses) - 1)
+                ]
+                if self.question_responses
+                else json.dumps(
+                    {
+                        "introduction": json.loads(messages[-1].content)["assistant_reply"],
+                        "requests": [],
+                    }
+                )
+            )
+            return LLMResponse(content=content, provider=self.name)
+        is_extraction = bool(messages and messages[0].content == EXTRACTION_PROMPT)
+        if is_extraction:
+            self.extraction_calls += 1
+        else:
+            self.calls += 1
         if self._fail:
             from app.agent.providers import ProviderError
 
             raise self._error or ProviderError(f"{self.name} failed")
+        if is_extraction:
+            idx = min(self.extraction_calls - 1, len(self._extraction_responses) - 1)
+            return LLMResponse(content=self._extraction_responses[idx], provider=self.name)
         # Serve the next scripted response; repeat the last one after exhaustion.
         idx = min(self.calls - 1, len(self._responses) - 1)
         response = self._responses[idx].model_copy(deep=True)
@@ -99,6 +134,7 @@ class FakeMemory:
         self.upserted: list[MemoryFact] = []
         # Per-chat trip-profile JSON strings, keyed by (user_id, chat_id).
         self._trip_profiles: dict[tuple[str, str], str] = {}
+        self._planned_routes: dict[tuple[str, str], dict] = {}
         self._seed = facts or []
         # Optional short-term window (verbatim recent turns). When set, this fake
         # satisfies the loop's duck-typed ``load_recent_turns`` probe.
@@ -129,6 +165,12 @@ class FakeMemory:
 
     def save_trip_profile(self, user_id: str, chat_id: str, profile_json: str) -> None:
         self._trip_profiles[(user_id, chat_id)] = profile_json
+
+    def load_planned_route(self, user_id: str, chat_id: str) -> dict | None:
+        return self._planned_routes.get((user_id, chat_id))
+
+    def save_planned_route(self, user_id: str, chat_id: str, route: dict) -> None:
+        self._planned_routes[(user_id, chat_id)] = route
 
     def load_recent_turns(self, user_id: str, chat_id: str, limit: int = 10) -> list[LLMMessage]:
         if self._recent_turns is None:
@@ -174,3 +216,23 @@ def fake_memory():
 @pytest.fixture
 def fake_tools():
     return FakeTools()
+
+
+def confirm_pending_locations(memory, user_id, chat_id):
+    """Model the traveler explicitly selecting each saved provider suggestion."""
+    from app.agent.location_confirmation import confirm_location
+    from app.agent.trip_profile import TripProfile
+    from app.utils.location_resolution import LocationConfirmation
+
+    profile = TripProfile.from_json(memory.load_trip_profile(user_id, chat_id))
+    for field, pending in list(profile.pending_locations.items()):
+        profile = confirm_location(
+            memory,
+            user_id,
+            chat_id,
+            LocationConfirmation(
+                field=field,
+                candidateId=pending.candidates[0].id,
+            ),
+        )
+    return profile

@@ -1,23 +1,24 @@
 import {
-  CognitoIdentityProviderClient,
   InitiateAuthCommand,
   InitiateAuthCommandInput,
   SignUpCommand,
   ConfirmSignUpCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import config from '../../config';
-import { v4 as uuidv4 } from 'uuid';
+import { cognitoClient } from './cognito';
+import {
+  acceptSignIn,
+  getSession,
+  hasUsableSession,
+  isCurrentSession,
+  SessionError,
+} from './session';
+export { cognitoClient } from './cognito';
 
-export const cognitoClient = new CognitoIdentityProviderClient({
-  region: config.region,
-  ...(import.meta.env.VITE_COGNITO_ENDPOINT
-    ? { endpoint: import.meta.env.VITE_COGNITO_ENDPOINT }
-    : {}),
-});
-
-export const isAuthenticated = (): boolean => !!sessionStorage.getItem('accessToken');
+export const isAuthenticated = (): boolean => hasUsableSession();
 
 export const signIn = async (username: string, password: string) => {
+  const session = getSession();
   const params: InitiateAuthCommandInput = {
     AuthFlow: 'USER_PASSWORD_AUTH',
     ClientId: config.clientId,
@@ -26,23 +27,15 @@ export const signIn = async (username: string, password: string) => {
       PASSWORD: password,
     },
   };
-  try {
-    const command = new InitiateAuthCommand(params);
-    const { AuthenticationResult } = await cognitoClient.send(command);
-    if (AuthenticationResult) {
-      sessionStorage.setItem('idToken', AuthenticationResult.IdToken || '');
-      sessionStorage.setItem('accessToken', AuthenticationResult.AccessToken || '');
-      sessionStorage.setItem('refreshToken', AuthenticationResult.RefreshToken || '');
-      return AuthenticationResult;
-    }
-  } catch (error) {
-    console.error('Error signing in: ', error);
-    throw error;
-  }
+  const command = new InitiateAuthCommand(params);
+  const { AuthenticationResult } = await cognitoClient.send(command);
+  if (!isCurrentSession(session)) throw new SessionError('session-changed');
+  acceptSignIn(AuthenticationResult);
+  return AuthenticationResult;
 };
 
 export const signUp = async (email: string, password: string) => {
-  const username = uuidv4(); // Generate a unique username
+  const username = crypto.randomUUID(); // Generate a unique username
   const params = {
     ClientId: config.clientId,
     Username: username,

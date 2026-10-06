@@ -1,3 +1,4 @@
+import { fixtureSession } from './sessionFixtures';
 /**
  * GlobalHeader — top navigation bar tests.
  */
@@ -48,16 +49,14 @@ describe('GlobalHeader', () => {
   });
 
   it('shows the avatar when authenticated', () => {
-    sessionStorage.setItem('accessToken', 'fake-token');
+    fixtureSession();
     renderWithProviders(<GlobalHeader />, { initialPath: '/chat' });
     // The avatar renders a "U" placeholder
     expect(screen.getByText('U')).toBeInTheDocument();
   });
 
   it('clears tokens and closes menu on Sign out click', async () => {
-    sessionStorage.setItem('accessToken', 'fake-token');
-    sessionStorage.setItem('idToken', 'id-tok');
-    sessionStorage.setItem('refreshToken', 'ref-tok');
+    fixtureSession();
     const user = userEvent.setup();
 
     renderWithProviders(<GlobalHeader />, { initialPath: '/chat' });
@@ -75,7 +74,7 @@ describe('GlobalHeader', () => {
   });
 
   it('removes the previous owner trip from client state on sign out', async () => {
-    sessionStorage.setItem('accessToken', 'owner-token');
+    fixtureSession();
     const user = userEvent.setup();
     renderWithProviders(
       <>

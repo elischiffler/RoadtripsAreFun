@@ -1,3 +1,6 @@
+import { getSession, isCurrentSession, SessionError } from '../../services/session';
+import { createProgressLogger } from './agentProgress';
+import { updateTripProgress } from './tripProgressState';
 /**
  * useTripWorkflow — thin agent-chat hook.
  *
@@ -24,8 +27,9 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { updateUserData } from './DatabaseUtils';
+import { ensureChatCreated, updateUserData } from './DatabaseUtils';
 import { sendAgentMessage } from './agentChat';
+import { getRoutingAlgorithm } from './getRoute';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -33,30 +37,42 @@ const BOT = 'bot';
 const USER = 'user';
 
 /** Append a message to the named chat in `chats` state. */
-export const addMessage = (chatId, setChats, text, sender) => {
+const updateMessages = (setChats, chatsRef, update) => {
+  // React may batch the setter until after persistence starts. Keep the same
+  // immutable update in the persistence ref so this turn's reply is saved.
+  if (chatsRef) chatsRef.current = update(chatsRef.current);
+  setChats(update);
+};
+
+export const addMessage = (chatId, setChats, text, sender, presentation, chatsRef) => {
   if (text === 'loading') {
-    setChats((prev) =>
+    updateMessages(setChats, chatsRef, (prev) =>
       prev.map((c) =>
         c.id === chatId ? { ...c, messages: [...c.messages, { type: 'loading-chat' }] } : c
       )
     );
     return;
   }
-  const msg = { text: String(text), sender };
-  setChats((prev) => {
+  const msg = { text: String(text), sender, ...(presentation ? { presentation } : {}) };
+  updateMessages(setChats, chatsRef, (prev) => {
     return prev.map((c) => {
       if (c.id !== chatId) return c;
       const last = c.messages[c.messages.length - 1];
       // Deduplicate consecutive identical messages
-      if (last?.text === msg.text) return c;
+      if (
+        last?.text === msg.text &&
+        last?.sender === sender &&
+        JSON.stringify(last?.presentation) === JSON.stringify(presentation)
+      )
+        return c;
       return { ...c, messages: [...c.messages, msg] };
     });
   });
 };
 
 /** Remove the loading bubble from a chat. */
-export const removeLoader = (chatId, setChats) => {
-  setChats((prev) =>
+export const removeLoader = (chatId, setChats, chatsRef) => {
+  updateMessages(setChats, chatsRef, (prev) =>
     prev.map((c) =>
       c.id === chatId ? { ...c, messages: c.messages.filter((m) => m.type !== 'loading-chat') } : c
     )
@@ -101,12 +117,15 @@ const confirmedFromCoord = (coord) => {
 const TRIP_PROFILE_FIELDS = [
   'start_address',
   'start_coords',
+  'start_timezone',
   'destination_address',
   'destination_coords',
   'num_stops',
   'budget',
   'start_date',
+  'departure_time',
   'car',
+  'car_status',
 ];
 
 /** Structural equality for trip-profile values (handles arrays/objects/scalars). */
@@ -165,48 +184,34 @@ export const logTripProfileChanges = (prev, next) => {
 };
 
 /**
- * Turn-level trace of the agent's trip-data tooling. Logs which tools ran, prints
- * any tool errors the backend surfaced (`toolErrors`), and flags a likely
- * VALIDATION FAILURE when the agent attempted `update_trip_profile` but no
- * `trip_profile_updated` action came back (a failed update is fed back to the
- * model, so it never appears in `actions`). Exported for testing.
+ * Turn-level trace of the agent's trip-data tooling. Logs every turn, including
+ * turns with no tools, plus backend tool errors and field-specific clarifications.
  *
  * @param {string[]} toolsUsed   response.toolsUsed
- * @param {Array}    actions      response.actions
  * @param {Array}    [toolErrors] response.toolErrors — [{ name, error }]
- * @returns {boolean} true when a probable trip-profile validation failure was detected
+ * @param {object}   [validationIssues] response.validationIssues — field to clarification
+ * @param {string[]} [extractedFields] response.extractedFields — fields identified in this turn
+ * @returns {boolean} true when the backend reported a validation issue or tool error
  */
-export const logTripToolActivity = (toolsUsed, actions, toolErrors) => {
+export const logTripToolActivity = (toolsUsed, toolErrors, validationIssues, extractedFields) => {
   const tools = Array.isArray(toolsUsed) ? toolsUsed : [];
-  const acts = Array.isArray(actions) ? actions : [];
   const errors = Array.isArray(toolErrors) ? toolErrors : [];
-  if (tools.length > 0) {
-    console.log('[TripProfile] tools this turn: %s', tools.join(', '));
-  }
-  // Print the exact backend error for every failed tool (e.g. the validation
-  // message from a rejected update_trip_profile) so debugging stays in-browser.
+  console.log('[TripProfile] tools this turn: %s', tools.length ? tools.join(', ') : 'none');
+  console.log(
+    '[TripProfile] extracted fields this turn: %s',
+    Array.isArray(extractedFields) && extractedFields.length ? extractedFields.join(', ') : 'none'
+  );
+  // Print backend validation errors so debugging stays in-browser.
   for (const e of errors) {
     if (e?.name && e?.error) {
       console.warn('[TripProfile] tool %s failed: %s', e.name, e.error);
     }
   }
-  const attemptedUpdate = tools.filter((t) => t === 'update_trip_profile').length;
-  const appliedUpdate = acts.filter((a) => a?.type === 'trip_profile_updated').length;
-  if (attemptedUpdate > appliedUpdate) {
-    const detail = errors
-      .filter((e) => e?.name === 'update_trip_profile' && e?.error)
-      .map((e) => e.error)
-      .join(' | ');
-    console.warn(
-      '[TripProfile] VALIDATION FAILURE: update_trip_profile ran %d time(s) but only %d ' +
-        'applied — the agent tried to store a value that failed validation.%s',
-      attemptedUpdate,
-      appliedUpdate,
-      detail ? ` Detail: ${detail}` : ' (no error detail returned; check the backend agent log.)'
-    );
-    return true;
+  const issues = validationIssues && typeof validationIssues === 'object' ? validationIssues : {};
+  for (const [field, detail] of Object.entries(issues)) {
+    console.warn('[TripProfile] %s needs clarification: %s', field, detail);
   }
-  return false;
+  return errors.length > 0 || Object.keys(issues).length > 0;
 };
 
 // ─── hook ────────────────────────────────────────────────────────────────────
@@ -249,13 +254,22 @@ export function useTripWorkflow({
 
   // Prevents concurrent submit calls (StrictMode double-invoke / rapid clicks).
   const submitInFlightRef = useRef(false);
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
   // Drives the ChatInput disabled state while a turn is in flight, so the send
   // button can't be used until the agent finishes and the user should type again.
   const [isLoading, setIsLoading] = useState(false);
+  const [processProgress, setProcessProgress] = useState(null);
 
   // Last trip-profile snapshot the agent reported, so we can diff each turn's
   // trip_profile_updated action and log field-level ADDED/REMOVED/CHANGED.
   const tripProfileRef = useRef(savedData?.tripProfile ?? {});
+  const [tripProfile, setTripProfile] = useState(savedData?.tripProfile ?? {});
 
   // Keep chatId in a ref so callbacks always use the live value.
   const chatIdRef = useRef(chatId);
@@ -277,12 +291,19 @@ export function useTripWorkflow({
   }, [route, setCurrentStep]);
 
   // ── Message shorthands ───────────────────────────────────────────────────
-  const bot = useCallback((text) => addMessage(chatIdRef.current, setChats, text, BOT), [setChats]);
-  const loading = useCallback(
-    () => addMessage(chatIdRef.current, setChats, 'loading', BOT),
-    [setChats]
+  const bot = useCallback(
+    (text, presentation) =>
+      addMessage(chatIdRef.current, setChats, text, BOT, presentation, chatsRef),
+    [setChats, chatsRef]
   );
-  const noLoader = useCallback(() => removeLoader(chatIdRef.current, setChats), [setChats]);
+  const loading = useCallback(
+    () => addMessage(chatIdRef.current, setChats, 'loading', BOT, undefined, chatsRef),
+    [setChats, chatsRef]
+  );
+  const noLoader = useCallback(
+    () => removeLoader(chatIdRef.current, setChats, chatsRef),
+    [setChats, chatsRef]
+  );
 
   // ── Build a ChatData-shaped snapshot for DB persistence ──────────────────
   // Same 24 positional fields the ChatData constructor / DatabaseUtils expect.
@@ -295,6 +316,7 @@ export function useTripWorkflow({
       const end = overrides.endConfirmed !== undefined ? overrides.endConfirmed : endConfirmed;
       const stopCount = overrides.stops !== undefined ? overrides.stops : stops;
       const b = overrides.budget !== undefined ? overrides.budget : budget;
+      const plannedItinerary = overrides.itinerary !== undefined ? overrides.itinerary : itinerary;
       return {
         chatId: chatIdRef.current,
         agentChatId: agentChatIdRef.current,
@@ -314,13 +336,14 @@ export function useTripWorkflow({
         endConfirmed: end,
         initial: null,
         route: r,
-        itinerary: overrides.itinerary !== undefined ? overrides.itinerary : itinerary,
+        itinerary: plannedItinerary,
         loading: false,
         hotelBudget: overrides.hotelBudget !== undefined ? overrides.hotelBudget : hotelBudget,
         carBudget: 0,
         carDetails: new Array(3).fill(''),
         budget: b,
-        isComplete: !!r,
+        isComplete: !!r && Array.isArray(plannedItinerary) && plannedItinerary.length > 0,
+        tripProfile: tripProfileRef.current,
       };
     },
     [route, startConfirmed, endConfirmed, stops, budget, itinerary, hotelBudget]
@@ -334,8 +357,15 @@ export function useTripWorkflow({
       const idx = ChatLogsData.chatdata.findIndex((c) => c.chatId === snap.chatId);
       if (idx !== -1) ChatLogsData.chatdata[idx] = snap;
       else ChatLogsData.chatdata.push(snap);
-      const saved = await updateUserData(accessToken, snap, chatsRef.current);
-      if (!saved) bot("I couldn't save this trip. Please try again before leaving this page.");
+      const session = getSession();
+      const saved = await updateUserData(accessToken, snap, chatsRef.current, ChatLogsData);
+      if (
+        mountedRef.current &&
+        isCurrentSession(session) &&
+        !saved &&
+        getSession().status !== 'signin-required'
+      )
+        bot("I couldn't save this trip. Please try again before leaving this page.");
     },
     [ChatLogsData, accessToken, chatsRef, bot]
   );
@@ -345,8 +375,8 @@ export function useTripWorkflow({
   // itinerary_updated → payload.itinerary drives the itinerary
   // Then persist a ChatData snapshot so Map/Itinerary/DB see it.
   const applyAgentActions = useCallback(
-    async (actions) => {
-      if (!Array.isArray(actions) || actions.length === 0) return;
+    async (actions, presentedNotes = []) => {
+      actions = Array.isArray(actions) ? actions : [];
 
       const overrides = {};
       let sawRoute = false;
@@ -356,9 +386,18 @@ export function useTripWorkflow({
 
         if (action.type === 'route_updated' && action.payload?.route) {
           const newRoute = action.payload.route;
+          if (Array.isArray(newRoute.warnings)) {
+            newRoute.warnings
+              .filter((warning) => !presentedNotes.includes(warning))
+              .forEach((warning) => bot(warning));
+          }
           setRoute(newRoute);
           overrides.route = newRoute;
           sawRoute = true;
+          // A newly planned route invalidates any itinerary from an older route.
+          // A following itinerary_updated action in this response replaces it.
+          setItinerary(null);
+          overrides.itinerary = null;
 
           const coords = newRoute.coordinates;
           if (Array.isArray(coords) && coords.length >= 2) {
@@ -404,7 +443,19 @@ export function useTripWorkflow({
           const tp = action.payload.trip_profile;
           // Turn-level trace: what was added / removed / changed this turn.
           logTripProfileChanges(tripProfileRef.current, tp);
+          const previous = tripProfileRef.current;
+          if (
+            ['start_coords', 'destination_coords', 'traveler_count', 'hotel_rooms'].some(
+              (field) => JSON.stringify(tp[field]) !== JSON.stringify(previous[field])
+            )
+          ) {
+            setRoute(null);
+            setItinerary(null);
+            overrides.route = null;
+            overrides.itinerary = null;
+          }
           tripProfileRef.current = tp;
+          overrides.tripProfile = tp;
           if (Array.isArray(tp.start_coords) && tp.start_coords.length >= 2) {
             const start = confirmedFromCoord(tp.start_coords);
             if (start) {
@@ -432,8 +483,6 @@ export function useTripWorkflow({
         }
       }
 
-      if (Object.keys(overrides).length === 0) return;
-
       const snap = buildSnapshot(overrides);
 
       // Title the chat once a route first lands (agent gathered the destination).
@@ -444,42 +493,106 @@ export function useTripWorkflow({
 
       await persistSnapshot(snap);
     },
-    [buildSnapshot, persistSnapshot, onChatReady]
+    [buildSnapshot, persistSnapshot, onChatReady, bot]
   );
 
   // ── Public: submit user input (agent chat only) ───────────────────────────
   const submit = useCallback(
     async (action, payload) => {
-      if (action !== 'chat_message') return;
+      if (!['chat_message', 'location_confirmation', 'location_confirmations'].includes(action))
+        return;
 
       // Guard against StrictMode double-invoke or rapid double-clicks.
-      if (submitInFlightRef.current) return;
+      if (submitInFlightRef.current) return false;
       submitInFlightRef.current = true;
       setIsLoading(true);
 
       const id = chatIdRef.current;
+      const session = getSession();
       try {
-        const text = typeof payload === 'string' ? payload.trim() : '';
+        const confirmation = action === 'location_confirmation' ? payload : null;
+        const confirmations = action === 'location_confirmations' ? payload : null;
+        const text = confirmations
+          ? `Use ${confirmations.map((selection) => selection.address).join(' and ')}`
+          : confirmation
+            ? `Use ${confirmation.address}`
+            : typeof payload === 'string'
+              ? payload.trim()
+              : '';
         if (!text) return;
 
-        addMessage(id, setChats, text, USER);
+        const created = await ensureChatCreated(
+          accessToken,
+          buildSnapshot(),
+          chatsRef.current,
+          ChatLogsData
+        );
+        if (!mountedRef.current || !isCurrentSession(session)) return false;
+        if (!created) {
+          bot(
+            "I couldn't create this trip. Your message is still in the input; send it again to retry."
+          );
+          return false;
+        }
+        addMessage(id, setChats, text, USER, undefined, chatsRef);
         loading();
+        setProcessProgress({ startedAt: Date.now(), entries: [] });
+        const logProgress = import.meta.env.DEV ? createProgressLogger() : null;
         const response = await sendAgentMessage({
           accessToken,
+          onProgress: (event) => {
+            logProgress?.(event);
+            setProcessProgress((previous) => updateTripProgress(previous, event));
+          },
           // Use the globally-unique agent conversation key (a UUID), NOT the
           // reused integer chat id, so per-chat memory never collides.
           chatId: agentChatIdRef.current,
           message: text,
-          clientContext: { hasRoute: !!route, stops, hotelBudget },
+          ...(confirmation
+            ? {
+                locationConfirmation: {
+                  field: confirmation.field,
+                  candidateId: confirmation.candidateId,
+                },
+              }
+            : {}),
+          ...(confirmations
+            ? {
+                locationConfirmations: confirmations.map(({ field, candidateId }) => ({
+                  field,
+                  candidateId,
+                })),
+              }
+            : {}),
+          clientContext: {
+            hasRoute: !!route,
+            stops,
+            hotelBudget,
+            ...(getRoutingAlgorithm() ? { algorithm: getRoutingAlgorithm() } : {}),
+          },
         });
+        if (!mountedRef.current || !isCurrentSession(session)) return false;
         noLoader();
+        if (response?.sessionError) return false;
 
         if (response && typeof response.reply === 'string') {
-          bot(response.reply);
-          // Turn-level trace: tools run, any tool errors, and a flag for a probable
-          // trip-profile validation failure (attempted update with no applied action).
-          logTripToolActivity(response.toolsUsed, response.actions, response.toolErrors);
-          await applyAgentActions(response.actions);
+          bot(response.reply, response.presentation);
+          if (response.tripProfile) setTripProfile(response.tripProfile);
+          // Trace tool activity and the backend's authoritative profile on every turn.
+          logTripToolActivity(
+            response.toolsUsed,
+            response.toolErrors,
+            response.validationIssues,
+            response.extractedFields
+          );
+          if (
+            response.tripProfile &&
+            !response.actions?.some((action) => action?.type === 'trip_profile_updated')
+          ) {
+            logTripProfileChanges(tripProfileRef.current, response.tripProfile);
+            tripProfileRef.current = response.tripProfile;
+          }
+          await applyAgentActions(response.actions, response.presentation?.notes);
         } else {
           // The turn produced NO reply (network / 503 / other). This is not an
           // agent-recoverable tool error — those are fed back within the turn and
@@ -492,12 +605,33 @@ export function useTripWorkflow({
               : 'Something went wrong on my end. Please try sending that again.'
           );
         }
+        return true;
+      } catch (error) {
+        if (error instanceof SessionError || !isCurrentSession(session)) return false;
+        throw error;
       } finally {
         submitInFlightRef.current = false;
-        setIsLoading(false);
+        if (mountedRef.current && isCurrentSession(session)) {
+          noLoader();
+          setIsLoading(false);
+          setProcessProgress(null);
+        }
       }
     },
-    [accessToken, route, stops, hotelBudget, bot, loading, noLoader, setChats, applyAgentActions]
+    [
+      accessToken,
+      buildSnapshot,
+      ChatLogsData,
+      route,
+      stops,
+      hotelBudget,
+      bot,
+      loading,
+      noLoader,
+      setChats,
+      chatsRef,
+      applyAgentActions,
+    ]
   );
 
   return {
@@ -506,6 +640,8 @@ export function useTripWorkflow({
     itinerary,
     // true while a turn is in flight — drives the ChatInput disabled state.
     isLoading,
+    processProgress,
+    pendingLocations: tripProfile.pending_locations ?? {},
     // kept for potential compatibility; the persistent ChatInput is the only input now.
     inputMode: 'none',
   };

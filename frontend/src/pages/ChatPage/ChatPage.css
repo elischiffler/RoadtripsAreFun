@@ -5,6 +5,7 @@
   display: flex;
   height: 100vh;
   box-sizing: border-box;
+  background-color: var(--cream-main);
 }
 
 /* ── Main content — full width, no sidebar ── */
@@ -22,10 +23,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: var(--cream-main);
-  display: flex;
+  background-color: transparent;
+  display: grid;
   position: fixed;
-  flex-direction: column;
+  grid-template-rows: minmax(0, 1fr) auto;
   box-sizing: border-box;
 }
 
@@ -39,9 +40,14 @@
   overflow-y: auto;
   box-sizing: border-box;
   max-width: 100%;
-  /* Grow to fill the chat-box so the input bar below stays pinned to the bottom. */
-  flex: 1;
+  /* Scroll only the conversation; the composer owns a separate grid row. */
   min-height: 0;
+  scroll-padding-bottom: 24px;
+}
+
+/* Preserve natural message heights so overflowing text stays inside the scroller. */
+.chat-messages > * {
+  flex-shrink: 0;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -69,14 +75,28 @@
 
 .message.bot {
   align-self: flex-start;
-  background-color: var(--cream-light);
-  border: 1px solid var(--cream-dark);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 12px 0;
+  color: #000;
+  max-width: 100%;
 }
 
 .message.user {
   align-self: flex-end;
-  background-color: var(--bark-main);
-  color: var(--cream-light);
+  background-color: var(--cream-light);
+  color: #000;
+}
+
+@media (max-width: 600px) {
+  .chat-messages {
+    padding-right: 20px;
+  }
+
+  .message.bot {
+    max-width: 100%;
+  }
 }
 
 .message-container {
@@ -118,12 +138,10 @@
   /* Span the full message column: from the left edge of the bot messages to the
      right edge of the user messages, matching .chat-messages' horizontal padding. */
   margin: 8px max(72px, calc(50% - 380px)) 24px;
-  background-color: var(--cream-light);
-  border: 1px solid var(--cream-dark);
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(58, 42, 26, 0.1);
-  padding: 14px 16px;
-  box-sizing: border-box;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
   animation: input-float-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -147,6 +165,53 @@
 .split-input-bar {
   flex: 1;
   box-sizing: border-box;
+}
+
+.chat-send-button {
+  color: #000 !important;
+  background: transparent !important;
+  opacity: 0.75;
+  width: 34px;
+  height: 34px;
+}
+
+.chat-send-button:hover,
+.chat-send-button:focus-visible {
+  opacity: 1;
+}
+
+.chat-send-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.chat-send-button.Mui-disabled {
+  color: var(--sand-main) !important;
+}
+
+.location-confirm-button {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: #000 !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  min-width: 0 !important;
+  padding: 4px 0 !important;
+}
+
+.location-confirm-button:hover {
+  background: transparent !important;
+  text-decoration: underline;
+}
+
+.location-confirm-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.location-confirm-button.Mui-disabled {
+  opacity: 0.45;
 }
 
 /* ── Location input bar ── */
@@ -222,37 +287,58 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: var(--cream-light);
-  border: 1px solid var(--cream-dark);
+  background-color: transparent;
+  border: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: var(--sand-dark, #a08060);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  opacity: 0.75;
   transition:
-    background-color 0.15s ease,
+    opacity 0.15s ease,
     color 0.15s ease,
     transform 0.15s ease;
 }
 
 .fab:hover {
-  background-color: var(--cream-dark);
+  background-color: transparent;
+  opacity: 1;
   color: var(--bark-main);
   transform: scale(1.08);
 }
 
-/* New-trip FAB — dashed border */
-.fab--new {
-  border-style: dashed;
-  border-color: var(--sand-main);
-  color: var(--bark-main);
+.fab:focus-visible {
+  outline: 2px solid var(--bark-main);
+  outline-offset: 2px;
 }
 
-.fab--new:hover {
-  border-color: var(--bark-main);
+/* New-trip icon */
+.fab--new {
+  color: var(--bark-main);
 }
 
 .fab-icon {
   font-size: 18px !important;
+}
+
+.trip-progress {
+  color: #000;
+  font-size: 0.9rem;
+  animation: trip-progress-thinking 1.8s ease-in-out infinite;
+}
+@keyframes trip-progress-thinking {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trip-progress {
+    animation: none;
+  }
 }

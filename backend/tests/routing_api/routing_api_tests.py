@@ -1,8 +1,10 @@
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
 
+from app.agent.persona import AccountPersona
 from app.main import app
 
 client = TestClient(app)
@@ -135,7 +137,7 @@ def _mock_requests_get(url, **kwargs):
 )
 def test_get_initial_route(params):
     """Returns 200 with a valid route shape for any origin/destination pair."""
-    with patch("app.routing.sources.mapbox.requests.get", side_effect=_mock_requests_get):
+    with patch("app.routing.sources.mapbox.http_get", side_effect=_mock_requests_get):
         response = client.get("/get-initial-route", params=params)
     assert response.status_code == 200
     data = response.json()
@@ -153,7 +155,7 @@ def test_get_initial_route_returns_steps():
         "end_lat": 40.647306,
         "end_lon": -74.157289,
     }
-    with patch("app.routing.sources.mapbox.requests.get", side_effect=_mock_requests_get):
+    with patch("app.routing.sources.mapbox.http_get", side_effect=_mock_requests_get):
         response = client.get("/get-initial-route", params=params)
     assert response.status_code == 200
     assert len(response.json()["legs"][0]["steps"]) > 0
@@ -179,10 +181,14 @@ def test_generate_final_route_zero_stops():
 
     mock_location = MagicMock()
     mock_location.address = "Somewhere, USA"
+    mock_location.raw = {"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
 
     with (
-        patch("app.routing.sources.mapbox.requests.get", return_value=mock_resp),
+        patch("app.routing.sources.mapbox.http_get", return_value=mock_resp),
         patch("app.routers.routing_api.get_location", return_value=mock_location),
+        patch(
+            "app.routers.routing_api.load_account_persona", return_value=AccountPersona.default()
+        ),
     ):
         init_resp = client.get(
             "/get-initial-route",
@@ -197,8 +203,11 @@ def test_generate_final_route_zero_stops():
 
         payload = {
             "initial_route": init_resp.json(),
+            "traveler_count": 2,
+            "hotel_rooms": [{"adults": 2, "child_ages": []}],
             "num_stops": 0,
             "budget": 400,
+            "start": (datetime.now() + timedelta(days=1)).replace(hour=9, minute=0).isoformat(),
         }
         response = client.post("/generate-final-route", json=payload)
 
@@ -211,9 +220,16 @@ def test_generate_final_route_zero_stops():
 def test_generate_final_route_invalid_payload():
     """Returns 502 when the payload cannot be validated."""
     response = client.post(
-        "/generate-final-route", json={"initial_route": {}, "num_stops": 1, "budget": 200}
+        "/generate-final-route",
+        json={
+            "initial_route": {},
+            "traveler_count": 2,
+            "hotel_rooms": [{"adults": 2, "child_ages": []}],
+            "num_stops": 1,
+            "budget": 200,
+        },
     )
-    assert response.status_code == 502
+    assert response.status_code == 422
 
 
 def test_generate_final_route_unknown_algorithm_returns_400():
@@ -226,10 +242,12 @@ def test_generate_final_route_unknown_algorithm_returns_400():
     mock_resp.json.return_value = short_trip_mapbox
     mock_location = MagicMock()
     mock_location.address = "Somewhere, USA"
+    mock_location.raw = {"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
 
     with (
-        patch("app.routing.sources.mapbox.requests.get", return_value=mock_resp),
+        patch("app.routing.sources.mapbox.http_get", return_value=mock_resp),
         patch("app.routers.routing_api.get_location", return_value=mock_location),
+        patch("app.routers.routing_api.owner_routing_claims", return_value={"sub": "fixture-user"}),
     ):
         init_resp = client.get(
             "/get-initial-route",
@@ -244,6 +262,8 @@ def test_generate_final_route_unknown_algorithm_returns_400():
             "/generate-final-route",
             json={
                 "initial_route": init_resp.json(),
+                "traveler_count": 2,
+                "hotel_rooms": [{"adults": 2, "child_ages": []}],
                 "num_stops": 0,
                 "budget": 400,
                 "algorithm": "does-not-exist",
@@ -272,10 +292,10 @@ def test_benchmark_enabled_returns_table():
     import os
 
     with patch.dict(os.environ, {"BENCHMARK_ENABLED": "true"}):
-        response = client.get("/benchmark", params={"algorithms": "greedy,ortools"})
+        response = client.get("/benchmark", params={"algorithms": "cp_sat"})
     assert response.status_code == 200
     data = response.json()
-    assert data["algorithms"] == ["greedy", "ortools"]
+    assert data["algorithms"] == ["cp_sat"]
     assert len(data["cases"]) >= 1
 
 

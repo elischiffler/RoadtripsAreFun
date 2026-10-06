@@ -121,7 +121,6 @@ be copied from a developer machine. The relevant environment names are:
 | `COGNITO_USER_POOL_ID`, `COGNITO_APP_CLIENT_ID` | Trusted access-token issuer and client. |
 | `MAPBOX_API`, `TRIPADVISOR_API`, `OPENCAGE_KEY` | Routing and geocoding provider credentials. |
 | `CAR_DATA_API`, `GOOGLE_PLACES_API` | Provider credentials where the corresponding routes are enabled. |
-| `AMADEUS_ENABLED`, `AMADEUS_KEY`, `AMADEUS_SECRET` | Optional hotel fallback and credentials. |
 | `MENTRO_GATEWAY_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `MENTRO_SERVICE_EMAIL`, `MENTRO_SERVICE_PASSWORD` | Optional agent gateway and dedicated service account; leave service credentials unset when the agent is disabled. |
 
 Both templates fix `LOCAL_PREVIEW=false`, `ROUTING_REMOTE_URL=''`, and the

@@ -23,20 +23,28 @@ import logging
 from datetime import UTC, datetime
 
 from app.agent import debug
+from app.agent.extraction import ExtractionFormatError, extract_trip_patch
+from app.agent.location_confirmation import confirm_locations
 from app.agent.memory import ConversationMemory, MemoryStore
-from app.agent.prompt import build_messages
-from app.agent.providers import LLMProvider
+from app.agent.presentation import detail_request, present_details
+from app.agent.progress import emit, stage
+from app.agent.prompt import RECENT_MESSAGE_LIMIT, build_messages
+from app.agent.providers import LLMProvider, ProvidersExhausted
+from app.agent.questions import parse_question_reply, present_questions, question_format_messages
 from app.agent.schemas import (
     AgentAction,
     AgentChatRequest,
     AgentChatResponse,
     AgentToolError,
+    AgentUsage,
     LLMMessage,
+    ToolCall,
     ToolResult,
 )
 from app.agent.toolcall_parser import parse_tool_calls, strip_tool_blocks
 from app.agent.tools import ToolContext, ToolDispatcher
 from app.agent.trip_profile import TripProfile
+from app.routing.selection import owner_routing_claims
 from app.utils.auth import get_user_id_from_token
 
 logger = logging.getLogger(__name__)
@@ -65,11 +73,11 @@ _INTERNAL_REPLY_MARKERS = (
 # summary (design doc §7 step 6). The verbatim window itself lives in the
 # frontend-owned ``ChatLog``; this only governs when we fold older context into
 # the rolling ``ConversationMemory.summary``.
-SUMMARY_WINDOW = 10
+SUMMARY_WINDOW = RECENT_MESSAGE_LIMIT
 
 # Bound the rolling summary so it can never blow the context window. When a new
 # note would push past this, the oldest characters are dropped.
-_MAX_SUMMARY_CHARS = 2000
+_MAX_SUMMARY_CHARS = 600
 
 
 def _load_recent_turns(memory: MemoryStore, user_id: str, chat_id: str) -> list[LLMMessage]:
@@ -82,7 +90,7 @@ def _load_recent_turns(memory: MemoryStore, user_id: str, chat_id: str) -> list[
     """
     getter = getattr(memory, "load_recent_turns", None)
     if callable(getter):
-        return list(getter(user_id, chat_id))
+        return list(getter(user_id, chat_id, RECENT_MESSAGE_LIMIT))[-RECENT_MESSAGE_LIMIT:]
     return []
 
 
@@ -158,7 +166,7 @@ def _roll_summary(
     (design doc §10). The note is intentionally terse so the bound holds for
     long chats.
     """
-    note = f"User: {user_message.strip()} | Assistant: {reply.strip()}"
+    note = f"User: {user_message.strip()[:200]} | Assistant: {reply.strip()[:200]}"
     summary = (conversation.summary + "\n" + note).strip() if conversation.summary else note
     if len(summary) > _MAX_SUMMARY_CHARS:
         # Drop the oldest characters so the newest exchange always survives.
@@ -200,7 +208,13 @@ def _persist_memory(
         #
         # b. Roll the summary once the verbatim window is large enough.
         if len(recent_turns) >= SUMMARY_WINDOW:
-            rolled = _roll_summary(conversation, user_message, reply)
+            # The oldest two messages fall out of the six-message window once
+            # the frontend persists this exchange. Roll those, not the current
+            # exchange, so the model does not receive both verbatim and summary.
+            oldest = recent_turns[:2]
+            user = next((m.content for m in oldest if m.role == "user"), "")
+            assistant = next((m.content for m in oldest if m.role == "assistant"), "")
+            rolled = _roll_summary(conversation, user, assistant)
             memory.save_conversation(user_id, chat_id, rolled)
     except Exception as exc:  # persistence is best-effort; never break the reply
         logger.warning(
@@ -215,6 +229,8 @@ async def run_turn(
     providers: LLMProvider,
     memory: MemoryStore,
     tools: ToolDispatcher,
+    *,
+    identity_token: str | None = None,
 ) -> AgentChatResponse:
     """Run one conversational turn.
 
@@ -242,8 +258,208 @@ async def run_turn(
     recent_turns = _load_recent_turns(memory, user_id, chat_id)
     trip = _load_trip(memory, user_id, chat_id)
     debug.trip_snapshot("before", trip)
+    initial_trip = trip
+    presentation_request = detail_request(request.message)
+    completion_status = None
 
-    # 3. Assemble messages + advertise tools.
+    # 3. Extract a structured patch on every turn, then validate it through the
+    # existing backend recorder. The model never owns the saved profile.
+    tools_used: list[str] = []
+    tool_errors: list[AgentToolError] = []
+    validation_issues: dict[str, str] = {}
+    actions: list[AgentAction] = []
+    partial_completion = False
+    ctx = ToolContext(
+        user_id=user_id,
+        chat_id=chat_id,
+        auth_token=request.partitionKey,
+        algorithm=request.clientContext.algorithm if request.clientContext else None,
+        can_select_algorithm=owner_routing_claims(user_id, identity_token) is not None,
+        identity_token=identity_token,
+        memory=memory,
+    )
+    try:
+        selections = request.locationConfirmations or (
+            [request.locationConfirmation] if request.locationConfirmation else []
+        )
+        if selections:
+            try:
+                trip = confirm_locations(memory, user_id, chat_id, selections)
+            except ValueError as exc:
+                return AgentChatResponse(reply=str(exc), tripProfile=trip.model_dump(mode="json"))
+            actions.append(
+                AgentAction(
+                    type="trip_profile_updated",
+                    chatId=chat_id,
+                    payload={"trip_profile": trip.model_dump(mode="json")},
+                )
+            )
+            presentation = present_details(initial_trip, trip, {})
+            return AgentChatResponse(
+                reply=presentation.readable_reply(),
+                presentation=presentation,
+                actions=actions,
+                tripProfile=trip.model_dump(mode="json"),
+            )
+        if trip.pending_locations and request.message.strip().lower().rstrip(".!?") in {
+            "yes",
+            "yes please",
+            "yep",
+            "yeah",
+            "ok",
+            "okay",
+            "confirm",
+            "correct",
+        }:
+            # A generic assent cannot become a location via model inference.
+            patch, extraction_responses = {}, []
+        else:
+            with stage("agent.extract_details"):
+                patch, extraction_responses = extract_trip_patch(
+                    providers, request.message, trip, recent_turns=recent_turns
+                )
+    except ExtractionFormatError as exc:
+        reply = "I couldn't read the trip details in that message. Please try sending them again."
+        debug.trip_snapshot("after", trip)
+        debug.turn_end(reply, [], [])
+        prompt_usage = [
+            response.usage.promptTokens
+            for response in exc.responses
+            if response.usage and response.usage.promptTokens is not None
+        ]
+        completion_usage = [
+            response.usage.completionTokens
+            for response in exc.responses
+            if response.usage and response.usage.completionTokens is not None
+        ]
+        return AgentChatResponse(
+            reply=reply,
+            tripProfile=trip.model_dump(mode="json", exclude_none=True),
+            provider=exc.responses[-1].provider or None,
+            modelCalls=len(exc.responses),
+            usage=AgentUsage(
+                promptTokens=sum(prompt_usage) if prompt_usage else None,
+                completionTokens=sum(completion_usage) if completion_usage else None,
+            )
+            if prompt_usage or completion_usage
+            else None,
+        )
+    except ProvidersExhausted:
+        if trip.is_empty() and not presentation_request:
+            raise
+        presentation = present_details(
+            trip,
+            trip,
+            {},
+            full=presentation_request == "summary",
+            notes=["The planning assistant is temporarily unavailable; please try again shortly."],
+        )
+        return AgentChatResponse(
+            reply=presentation.readable_reply(),
+            presentation=presentation,
+            tripProfile=trip.model_dump(mode="json", exclude_none=True),
+            modelCalls=1,
+        )
+    model_calls = len(extraction_responses)
+    prompt_tokens = 0
+    completion_tokens = 0
+    has_prompt_usage = False
+    has_completion_usage = False
+
+    def add_usage(current: AgentUsage | None) -> None:
+        nonlocal prompt_tokens, completion_tokens, has_prompt_usage, has_completion_usage
+        if current is None:
+            return
+        if current.promptTokens is not None:
+            prompt_tokens += current.promptTokens
+            has_prompt_usage = True
+        if current.completionTokens is not None:
+            completion_tokens += current.completionTokens
+            has_completion_usage = True
+
+    def outcome_notes() -> list[str]:
+        notes = [error.error for error in tool_errors]
+        for action in actions:
+            if action.type == "route_updated" and action.payload:
+                warnings = (action.payload.get("route") or {}).get("warnings") or []
+                notes.extend(warning for warning in warnings if isinstance(warning, str))
+        if partial_completion and not any(action.type == "itinerary_updated" for action in actions):
+            notes.append(
+                "Your route is ready, but the itinerary could not be created. Please retry it."
+            )
+        elif completion_status == "complete":
+            notes.append("Your route and itinerary are ready.")
+        elif any(action.type == "itinerary_updated" for action in actions):
+            notes.append("Your itinerary has been created.")
+        elif any(action.type == "route_updated" for action in actions):
+            notes.append("Your route has been created. Ask me to create its itinerary next.")
+        return list(dict.fromkeys(notes))
+
+    def validated_response_during_outage() -> AgentChatResponse:
+        """Return already validated effects if a later model call fails."""
+        final_trip = _load_trip(memory, user_id, chat_id)
+        notes = outcome_notes()
+        notes.append("The planning assistant is temporarily unavailable; please try again shortly.")
+        presentation = format_details(final_trip, notes)
+        reply = presentation.readable_reply()
+        debug.trip_snapshot("after", final_trip)
+        debug.turn_end(reply, tools_used, actions)
+        return AgentChatResponse(
+            reply=reply,
+            presentation=presentation,
+            toolsUsed=tools_used,
+            toolErrors=tool_errors,
+            actions=actions,
+            tripProfile=final_trip.model_dump(mode="json", exclude_none=True),
+            validationIssues=validation_issues,
+            extractedFields=list(patch),
+            provider=extraction_responses[-1].provider or None,
+            modelCalls=model_calls + 1,
+            usage=AgentUsage(
+                promptTokens=prompt_tokens if has_prompt_usage else None,
+                completionTokens=completion_tokens if has_completion_usage else None,
+            )
+            if has_prompt_usage or has_completion_usage
+            else None,
+        )
+
+    def format_details(profile: TripProfile, notes: list[str] | None = None):
+        full = presentation_request == "summary" or completion_status == "complete"
+        return present_details(initial_trip, profile, validation_issues, full=full, notes=notes)
+
+    for extracted_response in extraction_responses:
+        add_usage(extracted_response.usage)
+    if patch:
+        call = ToolCall(name="record_trip_details", arguments=patch)
+        result = await tools.dispatch(call, ctx)
+        tools_used.append(call.name)
+        debug.tool_fired(call.name, call.arguments, result.ok, result.result, result.error)
+        if not result.ok and result.error:
+            tool_errors.append(AgentToolError(name=call.name, error=result.error))
+        if result.ok and result.result:
+            validation_issues.update(result.result.get("clarifications") or {})
+        _collect_action(result, chat_id, actions)
+
+    trip = _load_trip(memory, user_id, chat_id)
+    if trip.pending_locations:
+        presentation = format_details(trip, outcome_notes())
+        return AgentChatResponse(
+            reply=presentation.readable_reply(),
+            presentation=presentation,
+            actions=actions,
+            toolsUsed=tools_used,
+            toolErrors=tool_errors,
+            tripProfile=trip.model_dump(mode="json"),
+            validationIssues=validation_issues,
+            extractedFields=list(patch),
+            modelCalls=model_calls,
+            usage=AgentUsage(
+                promptTokens=prompt_tokens if has_prompt_usage else None,
+                completionTokens=completion_tokens if has_completion_usage else None,
+            )
+            if has_prompt_usage or has_completion_usage
+            else None,
+        )
     messages = build_messages(
         facts=facts,
         trip=trip,
@@ -252,15 +468,32 @@ async def run_turn(
         user_message=request.message,
         client_context=request.clientContext,
     )
-    specs = tools.specs()
-
-    tools_used: list[str] = []
-    tool_errors: list[AgentToolError] = []
-    actions: list[AgentAction] = []
-    ctx = ToolContext(user_id=user_id, chat_id=chat_id, memory=memory)
-
-    # 4. First provider call.
-    response = providers.complete(messages, specs)
+    if validation_issues or tool_errors:
+        messages.append(
+            LLMMessage(
+                role="system",
+                content="Backend validation results for the latest message: "
+                + str(
+                    {
+                        "clarifications": validation_issues,
+                        "tool_errors": [error.model_dump() for error in tool_errors],
+                    }
+                ),
+            )
+        )
+    specs = [spec for spec in tools.specs() if spec.name != "record_trip_details"]
+    try:
+        with stage("agent.model", iteration=0):
+            response = providers.complete(messages, specs)
+    except ProvidersExhausted:
+        if patch or not trip.is_empty() or presentation_request:
+            return validated_response_during_outage()
+        raise
+    model_calls += 1
+    add_usage(response.usage)
+    calls = [
+        call for call in parse_tool_calls(response.content) if call.name != "record_trip_details"
+    ]
 
     # 5. Tool loop — driven by the TEXT protocol, not response.tool_calls.
     # The gateway has no native function-calling, so tool requests arrive as
@@ -268,7 +501,7 @@ async def run_turn(
     # them, dispatch, feed results back, and re-ask. Capped to guarantee
     # termination.
     iterations = 0
-    calls = parse_tool_calls(response.content)
+    terminal_error = None
     while calls and iterations < MAX_TOOL_ITERATIONS:
         iterations += 1
         # Record the assistant turn that requested the tools (verbatim content,
@@ -277,6 +510,10 @@ async def run_turn(
         for call in calls:
             result = await tools.dispatch(call, ctx)
             tools_used.append(call.name)
+            if call.name == "complete_trip" and result.result:
+                if result.ok:
+                    completion_status = result.result.get("status")
+                    partial_completion |= completion_status == "partial"
             debug.tool_fired(call.name, call.arguments, result.ok, result.result, result.error)
             # A failed tool is fed back to the model (not raised) and never becomes
             # an action, so record its error for the client to log/debug.
@@ -290,9 +527,39 @@ async def run_turn(
                     tool_call_id=call.name,
                 )
             )
+            if not result.ok and not result.retryable:
+                terminal_error = result.error or "A required trip provider is unavailable."
+                break
+        if terminal_error:
+            calls = []
+            break
+        emit("agent.tools", iteration=iterations, tools=len(calls))
+        # Tools may have changed persisted state. Replace the snapshot rather
+        # than accumulating stale profiles in the model's context.
+        trip = _load_trip(memory, user_id, chat_id)
+        messages[0] = build_messages(
+            facts=facts,
+            trip=trip,
+            conversation=conversation,
+            recent_turns=recent_turns,
+            user_message=request.message,
+            client_context=request.clientContext,
+        )[0]
         # Ask the model again now that it has the tool results.
-        response = providers.complete(messages, specs)
-        calls = parse_tool_calls(response.content)
+        try:
+            with stage("agent.model", iteration=iterations):
+                response = providers.complete(messages, specs)
+        except ProvidersExhausted:
+            if actions or validation_issues or tool_errors:
+                return validated_response_during_outage()
+            raise
+        model_calls += 1
+        add_usage(response.usage)
+        calls = [
+            call
+            for call in parse_tool_calls(response.content)
+            if call.name != "record_trip_details"
+        ]
 
     if calls:
         # Hit the cap with tool blocks still pending — stop looping and let the
@@ -306,37 +573,96 @@ async def run_turn(
 
     # The user-facing reply is the model's prose with any tool blocks stripped
     # out (raw tool JSON must never surface to the traveler).
-    reply = strip_tool_blocks(response.content) or ""
+    reply = (
+        "I couldn't finish creating the trip. " + terminal_error
+        if terminal_error
+        else strip_tool_blocks(response.content) or ""
+    )
+    if not reply and not calls:
+        reply = "I recorded the details I could verify. What would you like to add next?"
+    if partial_completion and not any(action.type == "itinerary_updated" for action in actions):
+        # A model can misread a partial tool result and claim the whole trip is
+        # ready. The route action still reaches the UI, but the reply stays true.
+        reply = "Your route is ready, but the itinerary could not be created. Please retry it."
+
+    final_trip = _load_trip(memory, user_id, chat_id)
+    presentation = None
+    if (
+        patch
+        or validation_issues
+        or presentation_request
+        or completion_status
+        or set(tools_used) & {"complete_trip", "generate_final_route", "generate_itinerary"}
+        or final_trip != initial_trip
+    ):
+        notes = outcome_notes()
+        if terminal_error:
+            notes.insert(0, "I couldn't finish creating the trip.")
+        if not final_trip.missing_details() and not tool_errors and not notes:
+            notes.append("The details are saved. Ask me to create the route and itinerary.")
+        presentation = format_details(final_trip, notes)
+        reply = presentation.readable_reply()
+
+    if presentation is None:
+        try:
+            try:
+                question_reply = parse_question_reply(reply)
+            except ValueError:
+                # One bounded compatibility call; no sentence splitting or tools.
+                with stage("agent.model", iteration=iterations + 1):
+                    model_calls += 1
+                    formatted = providers.complete(question_format_messages(reply), [])
+                add_usage(formatted.usage)
+                question_reply = parse_question_reply(formatted.content)
+            presentation = present_questions(final_trip, question_reply)
+            reply = presentation.readable_reply() if presentation else question_reply.introduction
+        except (ValueError, ProvidersExhausted):
+            presentation = format_details(
+                final_trip, ["I couldn't format the assistant's response. Please try again."]
+            )
+            reply = presentation.readable_reply()
 
     # Monitor: flag (don't rewrite) any INTERNAL context that leaked into the
     # reply — the client hint, trip-profile internals, raw coords, tool syntax.
-    _scan_reply_for_leaks(reply, trip, chat_id)
+    _scan_reply_for_leaks(reply, final_trip, chat_id)
 
     # 6. Persist memory (best-effort). Fact extraction + rolling summary go
     # through the injected MemoryStore. We do NOT write the verbatim ChatLog —
     # the frontend owns that write. A persistence failure must never break the
     # reply, so this is wrapped and swallowed with a warning.
-    _persist_memory(
-        memory=memory,
-        user_id=user_id,
-        chat_id=chat_id,
-        user_message=request.message,
-        reply=reply,
-        conversation=conversation,
-        recent_turns=recent_turns,
-    )
+    with stage("agent.persist_memory"):
+        _persist_memory(
+            memory=memory,
+            user_id=user_id,
+            chat_id=chat_id,
+            user_message=request.message,
+            reply=reply,
+            conversation=conversation,
+            recent_turns=recent_turns,
+        )
 
     # 7. Return.
     if debug.enabled():
         debug.trip_snapshot("after", _load_trip(memory, user_id, chat_id))
         debug.turn_end(reply, tools_used, actions)
+    final_trip = _load_trip(memory, user_id, chat_id)
     return AgentChatResponse(
         reply=reply,
+        presentation=presentation,
         toolsUsed=tools_used,
         toolErrors=tool_errors,
         actions=actions,
+        tripProfile=final_trip.model_dump(mode="json", exclude_none=True),
+        validationIssues=validation_issues,
+        extractedFields=list(patch),
         provider=response.provider or None,
-        usage=response.usage,
+        modelCalls=model_calls,
+        usage=AgentUsage(
+            promptTokens=prompt_tokens if has_prompt_usage else None,
+            completionTokens=completion_tokens if has_completion_usage else None,
+        )
+        if has_prompt_usage or has_completion_usage
+        else None,
     )
 
 
@@ -345,7 +671,16 @@ async def run_turn(
 # request-size limit (the 413). Tools that produce these also return a
 # ``route_handle`` + ``summary`` for the model, and the full data still reaches
 # the frontend via the action payload (see ``_collect_action``).
-_MODEL_HIDDEN_KEYS = ("route", "stops", "itinerary", "coordinates", "geometry", "legs", "steps")
+_MODEL_HIDDEN_KEYS = (
+    "route",
+    "stops",
+    "itinerary",
+    "actions",
+    "coordinates",
+    "geometry",
+    "legs",
+    "steps",
+)
 
 
 def _tool_result_content(result: ToolResult) -> str:
@@ -378,8 +713,12 @@ def _collect_action(result: ToolResult, chat_id: str, actions: list[AgentAction]
     """
     if not result.ok or not result.result:
         return
-    action_type = result.result.get("action")
-    if not isinstance(action_type, str) or not action_type:
-        return
-    payload = {k: result.result[k] for k in _ACTION_PAYLOAD_KEYS if k in result.result}
-    actions.append(AgentAction(type=action_type, chatId=chat_id, payload=payload or None))
+    results = result.result.get("actions")
+    if results is None:
+        results = [result.result]
+    for item in results:
+        action_type = item.get("action")
+        if not isinstance(action_type, str) or not action_type:
+            continue
+        payload = {k: item[k] for k in _ACTION_PAYLOAD_KEYS if k in item}
+        actions.append(AgentAction(type=action_type, chatId=chat_id, payload=payload or None))

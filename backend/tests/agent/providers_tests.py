@@ -25,6 +25,12 @@ from app.agent.schemas import LLMMessage, LLMResponse
 
 from .conftest import FakeProvider
 
+
+@pytest.fixture(autouse=True)
+def skip_retry_backoff(monkeypatch):
+    monkeypatch.setattr("app.agent.provider_diagnostics.time.sleep", lambda _: None)
+
+
 # --- FallbackChain ----------------------------------------------------------
 
 
@@ -221,7 +227,7 @@ class _FakeClient:
     def __exit__(self, *exc):
         return False
 
-    def stream(self, method, url, headers=None, json=None):
+    def stream(self, method, url, headers=None, json=None, timeout=None):
         return self._response
 
 
@@ -332,7 +338,7 @@ class _SequenceClient:
     def __exit__(self, *exc):
         return False
 
-    def stream(self, method, url, headers=None, json=None):
+    def stream(self, method, url, headers=None, json=None, timeout=None):
         resp = self._responses[min(self.calls, len(self._responses) - 1)]
         self.calls += 1
         return resp
@@ -369,3 +375,18 @@ def test_gateway_all_empty_raises_provider_error(monkeypatch):
     assert "empty" in str(exc.value).lower()
     # Bounded by _MAX_ATTEMPTS.
     assert client.calls == MentroGatewayProvider._MAX_ATTEMPTS
+
+
+def test_auth_rate_limit_retains_retry_after(monkeypatch):
+    from app.agent.provider_diagnostics import retry_delay, retryable
+
+    monkeypatch.setattr(
+        httpx,
+        "post",
+        lambda *a, **k: httpx.Response(429, headers={"Retry-After": "7"}),
+    )
+    with pytest.raises(ProviderError) as raised:
+        _auth().get_token()
+    assert retryable(raised.value)
+    assert retry_delay(raised.value, 1) == 7
+    assert raised.value.status_code == 429

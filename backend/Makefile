@@ -1,4 +1,4 @@
 .PHONY: run
 
 run:
-	uvicorn app.main:app --reload --reload-dir app --reload-exclude "venv" --reload-exclude "site-packages"
+	cd app && uvicorn app.main:app --app-dir .. --reload --reload-dir .

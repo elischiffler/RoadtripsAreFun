@@ -78,3 +78,32 @@ def get_user_id_from_token(token: str) -> str:
     except (jwt.PyJWTError, ValueError, TypeError) as exc:
         logger.warning("Cognito token validation failed: %s", type(exc).__name__)
         raise HTTPException(status_code=401, detail="Invalid authentication token") from None
+
+
+def verified_identity_claims(token: str | None, subject: str) -> dict | None:
+    """Verify an optional ID token against the access-token subject; fail closed.
+
+    ID tokens use the app client as audience, unlike Cognito access tokens.
+    No attribute lookup, additional OAuth scope or IAM permission is required.
+    """
+    if not token:
+        return None
+    try:
+        issuer, client_id = _cognito_settings()
+        header = jwt.get_unverified_header(token)
+        if header.get("alg") != "RS256" or not header.get("kid"):
+            return None
+        key = _jwks_client(issuer).get_signing_key_from_jwt(token)
+        claims = jwt.decode(
+            token,
+            key.key,
+            algorithms=["RS256"],
+            issuer=issuer,
+            audience=client_id,
+            options={"require": ["exp", "iat", "iss", "sub", "aud", "token_use"]},
+        )
+        if claims["token_use"] != "id" or claims["sub"] != subject:
+            return None
+        return claims
+    except (jwt.PyJWTError, ValueError, TypeError, HTTPException):
+        return None

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import AuthWrapper from './components/AuthWrapper';
 import RootLayout from './components/RootLayout';
 import HomePage from './pages/HomePage/HomePage';
@@ -7,6 +7,7 @@ import LoginPage from './pages/AuthPages/LoginPage';
 import ChatPage from './pages/ChatPage/ChatPage';
 import MapPage from './pages/MapPage/MapPage';
 import SettingsPage from './pages/SettingsPage';
+import AlgorithmLab from './pages/AlgorithmLab/AlgorithmLab';
 import SignUpPage from './pages/AuthPages/SignUpPage';
 import NotFoundPage from './pages/NotFoundPage';
 
@@ -38,6 +39,11 @@ const router = createBrowserRouter([
           </AuthWrapper>
         ),
       },
+      {
+        path: 'studio',
+        element: <AlgorithmLab />,
+      },
+      { path: 'algorithm', element: <Navigate to="/studio" replace /> },
       {
         path: 'settings',
         element: (

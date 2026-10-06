@@ -6,6 +6,7 @@ modules don't each re-read the environment. Loaded once at import.
 
 from __future__ import annotations
 
+import math
 import os
 from pathlib import Path
 
@@ -15,7 +16,7 @@ from geopy.geocoders import OpenCage
 # app/routing/config.py -> parents[3] == the repo root, where .env lives (matches
 # app/core/config.py and the routers). parents[2] would be backend/, which has no .env.
 # Use the default non-overriding behavior so real deployment environment variables
-# (e.g. MAPBOX_API, AMADEUS_ENABLED set on Render) take precedence over any .env file
+# (e.g. MAPBOX_API set in the runtime) take precedence over any .env file
 # that happens to be present; dotenv only fills in values that aren't already set.
 load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
@@ -39,6 +40,16 @@ OPENCAGE_KEY = os.getenv("OPENCAGE_KEY")
 TRIPADVISOR_BASE_URL = os.getenv("TRIPADVISOR_BASE_URL", "https://terra.tripadvisor.com/api")
 TRIPADVISOR_API_KEY_HEADER = "X-API-Key"
 
+# Search/nearby share a 1 rps bucket on every package; leave arrival-time headroom.
+TRIPADVISOR_REQUEST_INTERVAL_SECONDS = float(
+    os.getenv("TRIPADVISOR_REQUEST_INTERVAL_SECONDS", "1.1")
+)
+if (
+    not math.isfinite(TRIPADVISOR_REQUEST_INTERVAL_SECONDS)
+    or TRIPADVISOR_REQUEST_INTERVAL_SECONDS < 1
+):
+    raise ValueError("TRIPADVISOR_REQUEST_INTERVAL_SECONDS must be finite and at least 1 second")
+
 # Terra caps the nearby-search radius at 5.0 miles (400 constraint-violation past
 # that), where the old Content API accepted 25-30. Requested radii are clamped to
 # this ceiling in the sourcing layer.
@@ -55,11 +66,6 @@ TRIPADVISOR_CATEGORY_MAP = {
     "hotels": "HOTEL",
     "hotel": "HOTEL",
 }
-
-# The Amadeus hotel API is currently nonfunctional, so the fallback is disabled by
-# default. Set AMADEUS_ENABLED=true in the environment to re-enable the fallback path
-# in find_hotel once the upstream API is working again.
-AMADEUS_ENABLED = os.getenv("AMADEUS_ENABLED", "false").lower() == "true"
 
 # A single shared reverse-geocoder.
 geolocator = OpenCage(api_key=OPENCAGE_KEY, user_agent="RP-Hotels", timeout=10)

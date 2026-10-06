@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from app.models.location_models import location_model, location_payload
 from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location
+from app.utils.location_resolution import needs_confirmation, resolve_location
 
 load_dotenv(Path(__file__).resolve().parents[3] / ".env", override=True)
 
@@ -43,7 +44,22 @@ async def validate_location(request: Request) -> location_model:
         if data.is_coordinates:
             location = get_location(geocoder=geolocator, coords=data.location.coordinates)
         else:
-            location = get_location(geocoder=geolocator, address=data.location.address)
+            resolution = resolve_location(geolocator, data.location.address, lookup=get_location)
+            if not resolution.candidates:
+                raise HTTPException(status_code=404, detail="Location not found")
+            if needs_confirmation(resolution):
+                raise HTTPException(
+                    status_code=409,
+                    detail={
+                        "code": "location_confirmation_required",
+                        "query": resolution.query,
+                        "candidates": [
+                            candidate.model_dump(exclude={"id"})
+                            for candidate in resolution.candidates
+                        ],
+                    },
+                )
+            location = resolution.candidates[0]
 
         # return the str address if location is valid
         if location is None:

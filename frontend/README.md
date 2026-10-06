@@ -9,7 +9,7 @@ See the [root README](../README.md) for full setup instructions.
 ## Commands
 
 ```bash
-npm install     # install dependencies
+npm ci          # install the committed lockfile (Node 24)
 npm run dev     # dev server at http://localhost:5173
 npm run build   # production build
 npm run lint    # ESLint

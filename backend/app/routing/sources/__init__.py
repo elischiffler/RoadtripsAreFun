@@ -5,7 +5,7 @@ These modules own every external API call the routing layer makes:
 * ``mapbox`` — driving route geometry (:func:`call_route`).
 * ``attractions`` — TripAdvisor attraction search (:func:`find_stop`) plus a
   batch corridor gather (:func:`gather_candidates`) for optimizer planners.
-* ``hotels`` — Google Hotels scraping + Google Places + Amadeus fallback
+* ``hotels`` — Google Hotels scraping + Google Places
   (:func:`find_hotel`).
 
 Planners receive these through :class:`~app.routing.services.RoutingServices`

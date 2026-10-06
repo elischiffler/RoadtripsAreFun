@@ -1,5 +1,40 @@
-import axios from 'axios';
+import axios from '../../services/protectedRequest';
+import { getSession, isCurrentSession, SessionError, tokenOwner } from '../../services/session';
 import { Data, ChatLogs, ChatData } from '../../states/UserDataContext';
+
+// A lifecycle belongs to the account's ChatLogs instance, survives panel remounts,
+// and is released when clearUserData replaces that instance. Never key by UI id alone.
+const lifecycles = new WeakMap();
+const accountKey = (token) => tokenOwner(token) || getSession().owner;
+const lifecycleFor = (owner, token) => {
+  const account = accountKey(token);
+  let lifecycle = lifecycles.get(owner);
+  if (!lifecycle || lifecycle.account !== account) {
+    lifecycle = { account, ready: new Set(), pending: new Map() };
+    lifecycles.set(owner, lifecycle);
+  }
+  return lifecycle;
+};
+
+export const ensureChatCreated = async (token, data, chats, owner) => {
+  const session = getSession();
+  if (tokenOwner(token) && tokenOwner(token) !== session.owner)
+    throw new SessionError('session-changed');
+  const lifecycle = lifecycleFor(owner, token);
+  if (lifecycle.ready.has(data.chatId)) return true;
+  if (!lifecycle.pending.has(data.chatId)) {
+    const chat = chats.find((item) => item.id === data.chatId);
+    if (!token || !chat) return false;
+    const promise = createChat(token, data, chat).then((created) => {
+      if (created) lifecycle.ready.add(data.chatId);
+      lifecycle.pending.delete(data.chatId);
+      return created;
+    });
+    lifecycle.pending.set(data.chatId, promise);
+  }
+  const created = await lifecycle.pending.get(data.chatId);
+  return created && isCurrentSession(session) && lifecycles.get(owner) === lifecycle;
+};
 
 export const createChat = async (auth_token, UserChatData, ChatLog) => {
   try {
@@ -33,7 +68,8 @@ export const createChat = async (auth_token, UserChatData, ChatLog) => {
   }
 };
 
-export const deleteChat = async (auth_token, chatId) => {
+export const deleteChat = async (auth_token, chatId, owner) => {
+  if (owner) lifecycleFor(owner, auth_token).ready.delete(chatId);
   try {
     await axios.delete(`${import.meta.env.VITE_BACKEND_SERVER}chats/delete/${chatId}`, {
       headers: { Authorization: `Bearer ${auth_token}` },
@@ -56,38 +92,40 @@ export const initializeUserData = async (auth_token) => {
     for (const entry of user_data) {
       chats.push(entry[1]);
       const chat_d = entry[0];
-      chatdata.push(
-        new ChatData(
-          chat_d['chatId'],
-          chat_d['action'],
-          chat_d['locationType'],
-          chat_d['startCoords'],
-          chat_d['startAddress'],
-          chat_d['endCoords'],
-          chat_d['endAddress'],
-          chat_d['stops'],
-          chat_d['showInputBar'],
-          chat_d['showStopSlider'],
-          chat_d['showBudgetSlider'],
-          chat_d['showAddressInput'],
-          false,
-          chat_d['startConfirmed'],
-          chat_d['endConfirmed'],
-          chat_d['initial'],
-          chat_d['route'],
-          chat_d['itinerary'],
-          false,
-          chat_d['hotelBudget'],
-          chat_d['carBudget'],
-          chat_d['carDetails'],
-          chat_d['budget'],
-          chat_d['isComplete'] || false,
-          chat_d['agentChatId'] || null
-        )
+      const restored = new ChatData(
+        chat_d['chatId'],
+        chat_d['action'],
+        chat_d['locationType'],
+        chat_d['startCoords'],
+        chat_d['startAddress'],
+        chat_d['endCoords'],
+        chat_d['endAddress'],
+        chat_d['stops'],
+        chat_d['showInputBar'],
+        chat_d['showStopSlider'],
+        chat_d['showBudgetSlider'],
+        chat_d['showAddressInput'],
+        false,
+        chat_d['startConfirmed'],
+        chat_d['endConfirmed'],
+        chat_d['initial'],
+        chat_d['route'],
+        chat_d['itinerary'],
+        false,
+        chat_d['hotelBudget'],
+        chat_d['carBudget'],
+        chat_d['carDetails'],
+        chat_d['budget'],
+        chat_d['isComplete'] || false,
+        chat_d['agentChatId'] || null
       );
+      restored.tripProfile = chat_d.tripProfile ?? {};
+      chatdata.push(restored);
     }
     const logs = new ChatLogs(chatdata);
     const UserData = new Data(logs);
+    const lifecycle = lifecycleFor(logs, auth_token);
+    chatdata.forEach((chat) => lifecycle.ready.add(chat.chatId));
     return { chats: chats, UserData: UserData };
   } catch (error) {
     console.error('Error retrieving saved chats; status=%s', error.response?.status ?? 'network');
@@ -95,7 +133,8 @@ export const initializeUserData = async (auth_token) => {
   }
 };
 
-export const updateUserData = async (access_token, UserChatData, chats) => {
+export const updateUserData = async (access_token, UserChatData, chats, owner) => {
+  if (owner && !(await ensureChatCreated(access_token, UserChatData, chats, owner))) return false;
   const newChat = chats.find(
     (
       Chat // Find the currently selected chat in chats
@@ -140,8 +179,7 @@ export const updateUserData = async (access_token, UserChatData, chats) => {
     return true;
   } catch (error) {
     if (error.response?.status === 404) {
-      // A new trip is only local until the first agent action supplies data.
-      // The update endpoint correctly rejects that missing owner-scoped row.
+      // Recover a genuinely stale/deleted row; ordinary new trips create before PUT.
       return createChat(access_token, UserChatData, sanitizedChat);
     }
     console.error(

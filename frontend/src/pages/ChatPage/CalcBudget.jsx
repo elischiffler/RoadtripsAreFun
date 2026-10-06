@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../services/protectedRequest';
 import { backendAuthConfig } from '../../services/backendAuth';
 import { addMessage, removeLoader } from './useTripWorkflow';
 
@@ -43,7 +43,10 @@ export const calcGasBudget = async (
       );
       liveGasPrice = priceResponse.data;
     } catch (error) {
-      console.error('Error fetching live gas price, using fallback.', error);
+      console.error(
+        'Error fetching live gas price, using fallback.' + '; status=%s',
+        error.response?.status ?? 'network'
+      );
     }
 
     const gasBudget = gasUsed * liveGasPrice;
@@ -69,7 +72,7 @@ const getCarInfo = async (year, make, model, chatId, setChats, UserChatData) => 
     return carInfo;
   } catch (error) {
     removeLoader(chatId, setChats);
-    console.error('Error getting car info:', error);
+    console.error('Error getting car info:' + '; status=%s', error.response?.status ?? 'network');
 
     if (error.response?.status === 500) {
       handleElectricCar(chatId, setChats);

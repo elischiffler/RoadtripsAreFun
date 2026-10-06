@@ -11,7 +11,12 @@ import psycopg2
 from pydantic import BaseModel
 
 from app.agent.memory import ConversationMemory, MemoryFact
-from app.crud import chat_crud, memory_crud
+from app.agent.trip_dates import PendingDeparture
+from app.agent.trip_profile import TripProfile
+from app.crud import chat_crud, lab_runs, memory_crud
+from app.models.scheduling_policy import SchedulingPolicy
+from app.schemas.chat_schemas import ChatLogSchema
+from app.utils.location_resolution import LocationCandidate, PendingLocation
 
 
 class RouteComponent(BaseModel):
@@ -22,9 +27,38 @@ class InitialComponent(BaseModel):
     initial: dict
 
 
-class LogComponent(BaseModel):
-    messages: list[dict]
+POLICY = SchedulingPolicy(late_driving=True, morning_restart="10:30").model_dump()
+EVENING_OPTIONS = [
+    {
+        "name": "Provider cafe fixture",
+        "optional": True,
+        "status": "tentative",
+        "notice": "Check opening hours",
+        "visit_time": None,
+        "return_by": "2035-11-22T00:00:00-08:00",
+    }
+]
 
+PENDING_JSON = TripProfile(
+    scheduling_policy=POLICY,
+    evening_interests=["food"],
+    departure_time="10:00",
+    pending_departure=PendingDeparture(date="October 10th", requested_at="2099-10-03T17:00:00Z"),
+    pending_locations={
+        "start_address": PendingLocation(
+            query="SLO",
+            candidates=[
+                LocationCandidate(
+                    id="fixture-pending-location",
+                    address="Salem-Leckrone Airport, Illinois",
+                    latitude=38.64,
+                    longitude=-88.96,
+                    timezone="America/Chicago",
+                )
+            ],
+        )
+    },
+).to_json()
 
 RUN_ID = os.environ["DB_TEST_RUN_ID"]
 OWNER_A = f"dbtest-{RUN_ID}-a"
@@ -43,6 +77,89 @@ def _raw_connection():
 
 
 def seed():
+    # Reproduce a hosted idle disconnect without using hosted data or changing TLS.
+    idle = chat_crud._get_conn()
+    idle_pid = idle.get_backend_pid()
+    chat_crud._put_conn(idle)
+    with _raw_connection() as killer:
+        with killer.cursor() as cur:
+            cur.execute("SELECT pg_terminate_backend(%s)", (idle_pid,))
+            assert cur.fetchone()[0]
+    recovered = chat_crud._get_conn()
+    with recovered.cursor() as cur:
+        cur.execute("SELECT 1")
+        assert cur.fetchone()[0] == 1
+    recovered.rollback()
+    chat_crud._put_conn(recovered)
+    run_id = lab_runs.begin(
+        OWNER_A, {"mode": "replay", "preset_id": "probe", "inputs": {"budget": 60}}
+    )
+    lab_runs.finish(
+        OWNER_A,
+        run_id,
+        {
+            "input_snapshot": {"budget": 60},
+            "explanation": {
+                "discovery": {"sparse_sections": [2], "queries": [{"id": "s2-q1"}]},
+                "road_checks": [{"detour_raw_seconds": -4}],
+                "solver": {"objective_direction": "minimize", "quality_loss": 0.05},
+            },
+            "error": None,
+            "route": {"geometry": {"coordinates": [[-122, 37], [-121, 36]]}, "stops": []},
+            "itinerary": [{"date": "2026-10-06", "stops": []}],
+        },
+        {"objective_score": 123},
+    )
+    second = lab_runs.begin(
+        OWNER_A, {"mode": "live", "preset_id": "probe-pagination", "inputs": {"budget": 60}}
+    )
+    lab_runs.finish(
+        OWNER_A,
+        second,
+        {
+            "input_snapshot": {"budget": 60},
+            "error": {
+                "code": "provider_or_planning_failure",
+                "stage": "candidates",
+                "message": "AI request failed",
+                "http_status": 503,
+            },
+            "stages": [{"name": "candidates", "status": "failed", "detail": "AI request failed"}],
+            "attempts": [{"operation": "attractions.ratings", "attempt": 3, "outcome": "failed"}],
+        },
+        {
+            "objective_score": 123,
+            "metric_version": "balanced-route-v3",
+            "trip_evaluation": {"hotel_costs": {"quoted_total_usd": 0}},
+        },
+    )
+    failed = next(row for row in lab_runs.history(OWNER_A) if row["id"] == second)
+    assert failed["status"] == "failed"
+    assert failed["error"]["http_status"] == 503
+    assert failed["stages"][0]["status"] == "failed"
+    assert failed["attempts"][0]["attempt"] == 3
+    assert not failed["has_result"]
+    assert lab_runs.result(OWNER_A, second)["error"]["stage"] == "candidates"
+    assert lab_runs.history(OWNER_B) == []
+    assert lab_runs.result(OWNER_B, run_id) is None
+    assert lab_runs.result(OWNER_A, run_id)["itinerary"][0]["date"] == "2026-10-06"
+    assert lab_runs.result(OWNER_A, run_id)["explanation"]["discovery"]["sparse_sections"] == [2]
+    assert len(lab_runs.history(OWNER_A, 1)) == 1
+    assert lab_runs.history(OWNER_A, 1)[0]["id"] != lab_runs.history(OWNER_A, 1, 1)[0]["id"]
+    assert lab_runs.history(OWNER_A, 1, 2) == []
+    with _raw_connection() as conn:
+        with conn.cursor() as cur:
+            try:
+                cur.execute("UPDATE algorithm_lab_runs SET repeat_index=11 WHERE id=%s", (second,))
+                raise AssertionError("Invalid repeat index accepted")
+            except psycopg2.errors.CheckViolation:
+                conn.rollback()
+    try:
+        lab_runs.finish(OWNER_B, run_id, {"input_snapshot": {}, "error": None}, {})
+        raise AssertionError("Foreign run was updated")
+    except ValueError:
+        pass
+
     for owner in (OWNER_A, OWNER_B):
         chat_crud.create_chat(owner, CHAT_ID, {"owner": owner}, {"messages": []})
     assert chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_data"]["owner"] == OWNER_A
@@ -52,7 +169,15 @@ def seed():
     chat_crud.update_chat_component(
         OWNER_A,
         CHAT_ID,
-        RouteComponent(route={"geometry": {"coordinates": GOOD_COORDS}}),
+        RouteComponent(
+            route={
+                "geometry": {"coordinates": GOOD_COORDS},
+                "scheduling_policy": POLICY,
+                "stops": [
+                    {"name": "Hotel", "type": "hotel", "evening_suggestions": EVENING_OPTIONS}
+                ],
+            }
+        ),
         "ChatData",
     )
     chat_crud.update_chat_component(
@@ -69,7 +194,27 @@ def seed():
     chat_crud.update_chat_component(
         OWNER_A,
         CHAT_ID,
-        LogComponent(messages=[{"sender": "user", "text": "fixture hello"}]),
+        ChatLogSchema(
+            id=1,
+            title="Fixture trip",
+            messages=[
+                {"sender": "user", "text": "fixture hello"},
+                {
+                    "sender": "bot",
+                    "text": "Updated trip details: Hotel budget: $200 per night",
+                    "presentation": {
+                        "title": "Updated trip details",
+                        "updated": ["Hotel budget: $200 per night"],
+                        "needed": ["What date would you like to leave?"],
+                        "introduction": "A few details remain.",
+                        "questions": [
+                            "Which evening interests would you like suggestions for (optional)?"
+                        ],
+                        "notes": [],
+                    },
+                },
+            ],
+        ),
         "ChatLog",
     )
     assert chat_crud.get_segments(OWNER_A, CHAT_ID, ROUTE_A) == GOOD_COORDS
@@ -86,13 +231,35 @@ def seed():
     memory_crud.save_conversation(
         OWNER_A, CHAT_ID, ConversationMemory(chat_id=CHAT_ID, summary="Pacific coast")
     )
-    memory_crud.save_trip_profile(OWNER_A, CHAT_ID, '{"pace":"slow"}')
+    memory_crud.save_trip_profile(OWNER_A, CHAT_ID, PENDING_JSON)
+    memory_crud.save_planned_route(
+        OWNER_A,
+        CHAT_ID,
+        {
+            "route": {
+                "stops": [
+                    {"name": "Museum"},
+                    {"name": "Hotel", "type": "hotel", "evening_suggestions": EVENING_OPTIONS},
+                ],
+                "scheduling_policy": POLICY,
+            },
+            "departure": "2030-01-01T09:00:00Z",
+        },
+    )
     assert memory_crud.load_facts(OWNER_A)[0].value == "San Luis Obispo"
     assert memory_crud.load_facts(OWNER_B)[0].value == "Boston"
     assert memory_crud.load_conversation(OWNER_A, CHAT_ID).summary == "Pacific coast"
     assert memory_crud.load_conversation(OWNER_B, CHAT_ID).summary == ""
-    assert memory_crud.load_trip_profile(OWNER_A, CHAT_ID) == '{"pace":"slow"}'
+    assert memory_crud.load_trip_profile(OWNER_A, CHAT_ID) == PENDING_JSON
+    saved_route = memory_crud.load_planned_route(OWNER_A, CHAT_ID)["route"]
+    assert saved_route["scheduling_policy"] == POLICY
+    assert saved_route["stops"][1]["evening_suggestions"] == EVENING_OPTIONS
+    saved_chat = chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_data"]["route"]
+    assert saved_chat["scheduling_policy"] == POLICY
+    assert saved_chat["stops"][0]["evening_suggestions"] == EVENING_OPTIONS
     assert memory_crud.load_trip_profile(OWNER_B, CHAT_ID) is None
+    assert memory_crud.load_planned_route(OWNER_A, CHAT_ID)["route"]["stops"][0]["name"] == "Museum"
+    assert memory_crud.load_planned_route(OWNER_B, CHAT_ID) is None
 
     chat_crud.create_chat(OWNER_A, DELETE_CHAT, {"temporary": True}, {})
     chat_crud.create_chat(OWNER_B, DELETE_CHAT, {"keeper": True}, {})
@@ -142,17 +309,53 @@ def seed():
 
 
 def verify():
+    records = lab_runs.history(OWNER_A)
+    saved = next(record for record in records if record["has_result"])
+    assert lab_runs.result(OWNER_A, saved["id"])["route"]["geometry"]["coordinates"] == [
+        [-122, 37],
+        [-121, 36],
+    ]
+    assert lab_runs.result(OWNER_B, saved["id"]) is None
+    recovered_explanation = lab_runs.result(OWNER_A, saved["id"])["explanation"]
+    assert recovered_explanation["discovery"]["queries"] == [{"id": "s2-q1"}]
+    assert recovered_explanation["road_checks"][0]["detour_raw_seconds"] == -4
+    assert recovered_explanation["solver"]["quality_loss"] == 0.05
+    assert len(records) == 2
+    assert records[0]["metrics"]["objective_score"] == 123
+    assert records[0]["input"] == {"budget": 60}
+    failed = next(row for row in records if row["status"] == "failed")
+    assert failed["error"]["http_status"] == 503
+    assert failed["stages"][0]["status"] == "failed"
+    assert failed["attempts"][0]["attempt"] == 3
+    assert lab_runs.history(OWNER_B) == []
+
     assert chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_data"]["owner"] == OWNER_A
     assert chat_crud.get_chat(OWNER_B, CHAT_ID)["chat_data"]["owner"] == OWNER_B
     assert (
         chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_log"]["messages"][0]["text"] == "fixture hello"
     )
+    restored_log = ChatLogSchema.model_validate(chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_log"])
+    assert restored_log.messages[0].presentation is None
+    assert restored_log.messages[1].presentation.updated == ["Hotel budget: $200 per night"]
+    assert restored_log.messages[1].presentation.needed == ["What date would you like to leave?"]
+    assert restored_log.messages[1].presentation.introduction == "A few details remain."
+    assert restored_log.messages[1].presentation.questions == [
+        "Which evening interests would you like suggestions for (optional)?"
+    ]
     assert chat_crud.get_segments(OWNER_A, CHAT_ID, ROUTE_A) == GOOD_COORDS
     assert chat_crud.get_segments(OWNER_B, CHAT_ID, ROUTE_A) == []
     assert memory_crud.load_facts(OWNER_A)[0].value == "San Luis Obispo"
     assert memory_crud.load_facts(OWNER_B)[0].value == "Boston"
     assert memory_crud.load_conversation(OWNER_A, CHAT_ID).summary == "Pacific coast"
-    assert memory_crud.load_trip_profile(OWNER_A, CHAT_ID) == '{"pace":"slow"}'
+    assert memory_crud.load_trip_profile(OWNER_A, CHAT_ID) == PENDING_JSON
+    saved_route = memory_crud.load_planned_route(OWNER_A, CHAT_ID)["route"]
+    assert saved_route["scheduling_policy"] == POLICY
+    assert saved_route["stops"][1]["evening_suggestions"] == EVENING_OPTIONS
+    saved_chat = chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_data"]["route"]
+    assert saved_chat["scheduling_policy"] == POLICY
+    assert saved_chat["stops"][0]["evening_suggestions"] == EVENING_OPTIONS
+    assert memory_crud.load_planned_route(OWNER_A, CHAT_ID)["departure"] == "2030-01-01T09:00:00Z"
+    assert memory_crud.load_planned_route(OWNER_B, CHAT_ID) is None
     assert chat_crud.get_chat(OWNER_A, DELETE_CHAT) is None
     assert chat_crud.get_chat(OWNER_B, DELETE_CHAT)["chat_data"] == {"keeper": True}
     with _raw_connection() as conn, conn.cursor() as cur:

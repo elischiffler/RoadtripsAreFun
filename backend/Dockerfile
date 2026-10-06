@@ -18,7 +18,7 @@ RUN test -n "$VCS_REF" && groupadd --gid 10001 app && useradd --uid 10001 --gid 
 WORKDIR /app
 COPY --from=runtime-dependencies /opt/venv /opt/venv
 COPY backend/app ./app
-ENV PATH="/opt/venv/bin:$PATH" PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ENV PATH="/opt/venv/bin:$PATH" PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 ROADTRIPS_REVISION=$VCS_REF
 LABEL org.opencontainers.image.revision=$VCS_REF org.opencontainers.image.source="https://github.com/elischiffler/RoadtripsAreFun"
 USER 10001:10001
 EXPOSE 8000

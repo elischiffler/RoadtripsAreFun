@@ -34,6 +34,7 @@ from __future__ import annotations
 import json
 import logging
 from collections.abc import Awaitable, Callable
+from datetime import datetime
 from typing import Any
 
 from fastapi import HTTPException
@@ -41,18 +42,33 @@ from pydantic import ValidationError
 from requests.exceptions import RequestException
 
 from app.agent import routing_remote
+from app.agent.departure import normalize_departure
 from app.agent.memory import MemoryFact
+from app.agent.persona import ATTRIBUTE_KEYS, PersonaWeightUpdate
+from app.agent.progress import emit, stage
 from app.agent.schemas import ToolCall, ToolResult, ToolSpec
 from app.agent.tools import ToolContext
+from app.agent.trip_dates import PendingDeparture, normalize_departure_time
 from app.agent.trip_profile import TripProfile, TripProfileUpdate
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import MapBox, Route_Payload
+from app.models.scheduling_policy import SchedulingPolicy
 from app.routers.car_api import get_car_details, get_gas_price
 from app.routers.itinerary_api import build_itinerary
 from app.routers.routing_api import plan_final_route
 from app.routing.config import geolocator
+from app.routing.occupancy import (
+    MAX_ROOMS,
+    MAX_TRAVELERS,
+    UNSUPPORTED_OCCUPANCY,
+    HotelRoom,
+    require_occupancy,
+)
+from app.routing.selection import select_algorithm
 from app.routing.sources.mapbox import call_route
+from app.routing.sources.persona_candidates import CandidateProviderError
 from app.utils.geolocation_helpers import get_location
+from app.utils.location_resolution import resolve_location
 
 logger = logging.getLogger(__name__)
 
@@ -163,6 +179,10 @@ def _extract_endpoints(args: dict[str, Any]) -> tuple[float, float, float, float
     )
 
 
+class RouteUnavailableError(RuntimeError):
+    """A planned route must be saved before it can be advertised as usable."""
+
+
 class AppToolDispatcher:
     """Real :class:`~app.agent.tools.ToolDispatcher` over existing capabilities."""
 
@@ -174,11 +194,15 @@ class AppToolDispatcher:
             "get_initial_route": self._get_initial_route,
             "generate_final_route": self._generate_final_route,
             "generate_itinerary": self._generate_itinerary,
+            "complete_trip": self._complete_trip,
             "get_car_budget": self._get_car_budget,
             "recall_facts": self._recall_facts,
             "remember_fact": self._remember_fact,
             "get_trip_profile": self._get_trip_profile,
+            "record_trip_details": self._record_trip_details,
             "update_trip_profile": self._update_trip_profile,
+            "get_account_persona": self._get_account_persona,
+            "update_account_persona": self._update_account_persona,
         }
 
     # ------------------------------------------------------------------ #
@@ -252,8 +276,9 @@ class AppToolDispatcher:
                 description=(
                     "Plan the full multi-day trip: insert attraction/hotel stops into the "
                     "initial route. Takes the `route_handle` from get_initial_route. "
-                    "num_stops/budget/algorithm default from the traveler's profile if "
-                    "omitted. Returns a new `route_handle` (pass it to "
+                    "num_stops/budget default from the traveler's trip profile; the "
+                    "algorithm defaults to CP-SAT if omitted. Requires an upcoming "
+                    "start date. Returns a new `route_handle` (pass it to "
                     "generate_itinerary). Mutates trip state."
                 ),
                 parameters={
@@ -274,7 +299,7 @@ class AppToolDispatcher:
                         },
                         "algorithm": {
                             "type": "string",
-                            "description": "Optional planner name (e.g. 'greedy', 'ortools').",
+                            "description": "Optional planner name, such as 'cp_sat' or a future CP-SAT variant.",
                         },
                     },
                     "required": ["route_handle"],
@@ -284,8 +309,9 @@ class AppToolDispatcher:
                 name="generate_itinerary",
                 description=(
                     "Turn a finalized route into a day-by-day itinerary with arrival times "
-                    "and addresses. Takes the `route_handle` returned by "
-                    "generate_final_route. Mutates itinerary state."
+                    "and addresses. Pass the `route_handle` returned by "
+                    "generate_final_route during this turn. Omit it to retry a saved route "
+                    "in a later turn. Mutates itinerary state."
                 ),
                 parameters={
                     "type": "object",
@@ -299,8 +325,18 @@ class AppToolDispatcher:
                             "description": "Optional ISO-8601 trip start datetime.",
                         },
                     },
-                    "required": ["route_handle"],
                 },
+            ),
+            ToolSpec(
+                name="complete_trip",
+                description=(
+                    "Complete the saved trip profile in one call. Requires validated start "
+                    "and destination, stops, budget, an upcoming departure with a UTC "
+                    "offset, and a selected or explicitly skipped car. Creates the route "
+                    "and itinerary with the same departure. If the itinerary fails, "
+                    "returns a partial result and keeps the route for an itinerary retry."
+                ),
+                parameters={"type": "object", "properties": {}},
             ),
             ToolSpec(
                 name="get_car_budget",
@@ -336,7 +372,7 @@ class AppToolDispatcher:
                 description=(
                     "Store a durable free-form fact the user stated that does NOT fit a "
                     "trip-profile field. For this trip's details (start, destination, "
-                    "stops, budget, dates, car), use update_trip_profile instead."
+                    "stops, budget, dates, car), use record_trip_details instead."
                 ),
                 parameters={
                     "type": "object",
@@ -359,59 +395,88 @@ class AppToolDispatcher:
                 parameters={"type": "object", "properties": {}},
             ),
             ToolSpec(
-                name="update_trip_profile",
+                name="get_account_persona",
+                description="Read this authenticated traveler's cross-chat preference weights.",
+                parameters={"type": "object", "properties": {}},
+            ),
+            ToolSpec(
+                name="update_account_persona",
+                description="Update account preference weights only when the traveler explicitly asks to save preferences across trips.",
+                parameters={
+                    "type": "object",
+                    "properties": {
+                        "weights": {
+                            "type": "object",
+                            "properties": {
+                                key: {"type": "number", "minimum": 0} for key in ATTRIBUTE_KEYS
+                            },
+                            "additionalProperties": False,
+                        }
+                    },
+                    "required": ["weights"],
+                },
+            ),
+            ToolSpec(
+                name="record_trip_details",
                 description=(
-                    "Record trip details into THIS chat's trip profile as the traveler "
-                    "confirms them (start, destination, number of stops, nightly hotel "
-                    "budget, start date, car). Call this whenever you learn or confirm a "
-                    "trip detail — e.g. when the user gives the starting location or "
-                    "destination. Only include the fields you learned; others are left "
-                    "unchanged. Prefer storing coordinates from validate_location "
-                    "alongside the address."
+                    "Record all trip details supplied in one message. Geocode each location, "
+                    "normalize departure in the start timezone, save valid fields independently, "
+                    "and request clarification for invalid fields. Pass extracted departure_date "
+                    "and departure_time separately so a time can be retained before a date. "
+                    "A car may be skipped."
                 ),
                 parameters={
                     "type": "object",
                     "properties": {
-                        "start_address": {
-                            "type": "string",
-                            "description": "Where the trip starts (address or city).",
-                        },
-                        "start_coords": {
-                            "type": "array",
-                            "items": {"type": "number"},
-                            "minItems": 2,
-                            "maxItems": 2,
-                            "description": "[lat, lon] of the start (from validate_location).",
-                        },
-                        "destination_address": {
-                            "type": "string",
-                            "description": "Where the trip is headed (address or city).",
-                        },
-                        "destination_coords": {
-                            "type": "array",
-                            "items": {"type": "number"},
-                            "minItems": 2,
-                            "maxItems": 2,
-                            "description": "[lat, lon] of the destination.",
-                        },
-                        "num_stops": {
+                        "start_address": {"type": "string"},
+                        "destination_address": {"type": "string"},
+                        "num_stops": {"type": "integer", "minimum": 1, "maximum": 10},
+                        "traveler_count": {
                             "type": "integer",
                             "minimum": 1,
-                            "maximum": 10,
-                            "description": "Number of attraction stops.",
+                            "maximum": MAX_TRAVELERS,
                         },
-                        "budget": {
-                            "type": "number",
-                            "description": "Nightly hotel budget in dollars.",
+                        "hotel_rooms": {
+                            "type": "array",
+                            "minItems": 1,
+                            "maxItems": MAX_ROOMS,
+                            "items": HotelRoom.model_json_schema(),
                         },
-                        "start_date": {
-                            "type": "string",
-                            "description": "Optional ISO-8601 trip start date/time.",
+                        "budget": {"type": "number", "minimum": 0},
+                        "departure_date": {"type": "string"},
+                        "departure_time": {"type": "string"},
+                        "scheduling_policy": SchedulingPolicy.model_json_schema(),
+                        "evening_interests": {
+                            "type": "array",
+                            "items": {"type": "string", "enum": ["food", "culture", "nightlife"]},
                         },
                         "car_year": {"type": "integer"},
                         "car_make": {"type": "string"},
                         "car_model": {"type": "string"},
+                        "car_status": {
+                            "type": "string",
+                            "enum": ["skipped"],
+                            "description": "Use skipped for skip or no car; complete car details set provided.",
+                        },
                     },
+                },
+            ),
+            ToolSpec(
+                name="update_trip_profile",
+                description="Update Trip personality preference weights for this trip only.",
+                parameters={
+                    "type": "object",
+                    "properties": {
+                        "persona_weights": {
+                            "type": "object",
+                            "properties": {
+                                key: {"type": "number", "minimum": 0} for key in ATTRIBUTE_KEYS
+                            },
+                            "additionalProperties": False,
+                            "description": "Trip-only preference weight changes.",
+                        },
+                    },
+                    "required": ["persona_weights"],
                 },
             ),
         ]
@@ -428,8 +493,27 @@ class AppToolDispatcher:
 
         arguments = call.arguments if isinstance(call.arguments, dict) else {}
         try:
-            result = await handler(arguments, ctx)
+            if (
+                call.name
+                in {
+                    "complete_trip",
+                    "get_initial_route",
+                    "generate_final_route",
+                    "generate_itinerary",
+                }
+                and self._load_trip_profile(ctx).pending_locations
+            ):
+                raise ValueError("Choose or clarify the pending locations before planning.")
+            with stage("agent.tool", tool=call.name):
+                result = await handler(arguments, ctx)
             return ToolResult(name=call.name, ok=True, result=result)
+        except RouteUnavailableError as exception:
+            emit("agent.tool_error", "failed", tool=call.name, retryable=False)
+            return ToolResult(name=call.name, ok=False, error=str(exception), retryable=False)
+        except CandidateProviderError as exception:
+            emit("agent.tool_error", "failed", tool=call.name, retryable=False)
+            logger.warning("tool %s: required candidate provider unavailable", call.name)
+            return ToolResult(name=call.name, ok=False, error=str(exception), retryable=False)
         except HTTPException as exception:
             # Surface the upstream detail (already scrubbed of secrets by sources).
             return ToolResult(name=call.name, ok=False, error=str(exception.detail))
@@ -512,7 +596,9 @@ class AppToolDispatcher:
                 handle,
             )
             if routing_remote.remote_enabled():
-                return await routing_remote.call_route_remote(start[0], start[1], end[0], end[1])
+                return await routing_remote.call_route_remote(
+                    start[0], start[1], end[0], end[1], ctx.auth_token
+                )
             return await call_route(start[0], start[1], end[0], end[1])
 
         raise ValueError(
@@ -524,7 +610,7 @@ class AppToolDispatcher:
     def _resolve_route_for_itinerary(self, args: dict[str, Any], ctx: ToolContext):
         """Resolve the planned Route from a handle, or an inline object fallback."""
         handle = args.get("route_handle")
-        if isinstance(handle, str):
+        if isinstance(handle, str) and ctx.artifacts.has(handle):
             obj = ctx.artifacts.get(handle)
             # build_itinerary wants a validatable route payload; a stored Route
             # model is dumped back to a dict so Itinerary_Payload can validate it.
@@ -532,6 +618,14 @@ class AppToolDispatcher:
         inline = args.get("route")
         if inline is not None:
             return inline
+        if ctx.memory is not None:
+            saved = ctx.memory.load_planned_route(ctx.user_id, ctx.chat_id)
+            if (
+                saved
+                and isinstance(saved.get("profile"), dict)
+                and TripProfile.model_validate(saved["profile"]) == self._load_trip_profile(ctx)
+            ):
+                return saved["route"]
         raise ValueError("generate_itinerary needs route_handle (from generate_final_route).")
 
     async def _get_initial_route(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
@@ -539,7 +633,9 @@ class AppToolDispatcher:
         # Proxy to the deployed backend (whitelisted IP) in local dev; run
         # locally on the deployed backend itself. Same MapBox_Route either way.
         if routing_remote.remote_enabled():
-            route = await routing_remote.call_route_remote(start_lat, start_lon, end_lat, end_lon)
+            route = await routing_remote.call_route_remote(
+                start_lat, start_lon, end_lat, end_lon, ctx.auth_token
+            )
         else:
             route = await call_route(start_lat, start_lon, end_lat, end_lon)
         # Store the heavy Mapbox route server-side; hand the model only a handle
@@ -561,6 +657,12 @@ class AppToolDispatcher:
         # the coordinates used to rebuild the initial route when the route_handle
         # from an earlier turn is no longer in this turn's artifact store.
         trip = self._load_trip_profile(ctx)
+        require_occupancy(trip.traveler_count, trip.hotel_rooms)
+        if trip.car_status == "unanswered":
+            raise ValueError(
+                "Ask whether the traveler wants to provide a car year, make, and model "
+                "or skip the optional car before planning."
+            )
         # Resolve the initial route: this-turn handle → inline object → rebuild
         # from the trip's stored coordinates. The model never carries the raw
         # Mapbox geometry either way.
@@ -584,30 +686,60 @@ class AppToolDispatcher:
 
         payload_data: dict[str, Any] = {
             "initial_route": initial_route,
+            "traveler_count": trip.traveler_count,
+            "hotel_rooms": [room.model_dump() for room in trip.hotel_rooms],
             "num_stops": int(num_stops),
             "budget": float(budget),
+            "scheduling_policy": trip.scheduling_policy.model_dump(),
+            "start_timezone": trip.start_timezone,
+            "evening_interests": trip.evening_interests,
         }
-        if args.get("algorithm"):
-            payload_data["algorithm"] = args["algorithm"]
+        payload_data["algorithm"] = select_algorithm(
+            args.get("algorithm") or ctx.algorithm, ctx.can_select_algorithm
+        )
         start = args.get("start") or trip.start_date
         if start:
             payload_data["start"] = start
+        if trip.persona_weights or args.get("persona_weights"):
+            payload_data["persona_weights"] = args.get("persona_weights") or trip.persona_weights
         payload = Route_Payload.model_validate(payload_data)
         # Proxy planning (and its whitelisted TripAdvisor/hotel calls) to the
         # deployed backend in local dev; run locally on the deployed backend.
         if routing_remote.remote_enabled():
-            route = await routing_remote.plan_final_route_remote(payload)
+            route = await routing_remote.plan_final_route_remote(
+                payload, ctx.auth_token, identity_token=ctx.identity_token
+            )
         else:
-            route = await plan_final_route(payload)
+            route = await plan_final_route(
+                payload, user_id=ctx.user_id, can_select_algorithm=ctx.can_select_algorithm
+            )
         # Store the planned Route; hand the model a handle + summary. The FULL
         # route still rides to the frontend via `route` (promoted onto the
         # action payload by run_turn), so Map/Itinerary render.
+        try:
+            route_dict = route.model_dump(mode="json")
+            if ctx.memory is not None:
+                ctx.memory.save_planned_route(
+                    ctx.user_id,
+                    ctx.chat_id,
+                    {
+                        "route": route_dict,
+                        "departure": start,
+                        "profile": trip.model_dump(mode="json"),
+                    },
+                )
+        except Exception as exception:  # noqa: BLE001 — stop this turn on persistence failure
+            logger.exception("Could not save the planned route")
+            raise RouteUnavailableError(
+                "I couldn't save the planned route. Please try creating the route and itinerary again."
+            ) from exception
         handle = ctx.artifacts.put("route", route)
         stop_count = len([s for s in (route.stops or []) if s.get("type") == "stop"])
         return {
             "action": "route_updated",
             "route_handle": handle,
             "cost": route.cost,
+            "warnings": getattr(route, "warnings", None),
             "stop_count": stop_count,
             "summary": (
                 f"Trip planned: {stop_count} stop(s), ${route.cost:.0f} hotels, "
@@ -616,26 +748,127 @@ class AppToolDispatcher:
             ),
             # Full payload for the frontend (trimmed out of the model-visible
             # message by run_turn — see _MODEL_HIDDEN_KEYS).
-            "route": route.model_dump(),
-            "stops": route.stops,
+            "route": route_dict,
+            "stops": route_dict.get("stops"),
         }
 
     async def _generate_itinerary(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         # Resolve the planned route from its handle (fallback: inline `route`).
+        trip = self._load_trip_profile(ctx)
+        require_occupancy(trip.traveler_count, trip.hotel_rooms)
         route_obj = self._resolve_route_for_itinerary(args, ctx)
-        payload_data: dict[str, Any] = {"route": route_obj}
-        if args.get("start_time"):
-            payload_data["start_time"] = args["start_time"]
+        route_data = route_obj.model_dump() if hasattr(route_obj, "model_dump") else route_obj
+        if route_data.get("traveler_count") != trip.traveler_count or route_data.get(
+            "hotel_rooms"
+        ) != [room.model_dump() for room in trip.hotel_rooms]:
+            raise ValueError(
+                "Traveler occupancy changed or is unverified; regenerate the route before its itinerary."
+            )
+        start_time = args.get("start_time")
+        if not start_time and ctx.memory is not None:
+            saved = ctx.memory.load_planned_route(ctx.user_id, ctx.chat_id)
+            if saved:
+                start_time = saved.get("departure")
+            if not start_time:
+                start_time = self._load_trip_profile(ctx).start_date
+        if not start_time:
+            raise ValueError("A departure date and time is required for the itinerary.")
+        # An explicit, shared departure prevents the itinerary model's legacy
+        # fixed 2024 default from reaching any agent call.
+        payload_data: dict[str, Any] = {"route": route_obj, "start_time": start_time}
         payload = Itinerary_Payload.model_validate(payload_data)
         # Itinerary building is pure (no whitelisted external calls), but proxy
         # it too when remote is enabled to keep the routing path uniform.
         if routing_remote.remote_enabled():
-            days = await routing_remote.build_itinerary_remote(payload)
+            days = await routing_remote.build_itinerary_remote(payload, ctx.auth_token)
         else:
             days = await build_itinerary(payload)
         return {
             "action": "itinerary_updated",
             "itinerary": [day.model_dump() for day in days],
+        }
+
+    async def _complete_trip(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
+        """Finish a saved profile using the existing route and itinerary tools."""
+        if ctx.memory is None:
+            raise ValueError("A saved trip profile is required.")
+        trip = self._load_trip_profile(ctx)
+        require_occupancy(trip.traveler_count, trip.hotel_rooms)
+        labels = {
+            "traveler_count": "total travelers including you",
+            "hotel_rooms": "room allocation including adults and child ages",
+            "start_address": "validated start location",
+            "destination_address": "validated destination",
+            "num_stops": "number of stops",
+            "budget": "nightly hotel budget",
+            "departure_date": "upcoming departure",
+            "car": "car choice or explicit skip",
+        }
+        missing = [labels[field] for field in trip.missing_details()]
+        if missing:
+            raise ValueError("Complete the saved trip profile: " + ", ".join(missing) + ".")
+
+        departure = normalize_departure(trip.start_date)
+        start = departure.isoformat()
+        # Use the persisted provider coordinates the traveler selected. A new
+        # geocode could silently move the endpoint after confirmation.
+        initial = await self.dispatch(
+            ToolCall(
+                name="get_initial_route",
+                arguments={
+                    "start_lat": trip.start_coords[0],
+                    "start_lon": trip.start_coords[1],
+                    "end_lat": trip.destination_coords[0],
+                    "end_lon": trip.destination_coords[1],
+                },
+            ),
+            ctx,
+        )
+        if not initial.ok:
+            raise ValueError(f"Initial route creation failed: {initial.error}")
+        # Reuse the existing adapters and their error handling. Their artifact
+        # handles remain valid throughout this agent turn.
+        route_result = await self.dispatch(
+            ToolCall(
+                name="generate_final_route",
+                arguments={"route_handle": initial.result["route_handle"], "start": start},
+            ),
+            ctx,
+        )
+        if not route_result.ok:
+            if not route_result.retryable:
+                raise RouteUnavailableError(route_result.error or "Route creation failed")
+            raise HTTPException(
+                status_code=422, detail=route_result.error or "Route creation failed"
+            )
+        route = route_result.result
+        route_action = {
+            key: route[key] for key in ("action", "route", "stops", "cost") if key in route
+        }
+        itinerary_result = await self.dispatch(
+            ToolCall(
+                name="generate_itinerary",
+                arguments={"route_handle": route["route_handle"], "start_time": start},
+            ),
+            ctx,
+        )
+        if not itinerary_result.ok:
+            return {
+                "status": "partial",
+                "route_handle": route["route_handle"],
+                "itinerary_error": itinerary_result.error,
+                "summary": (
+                    "The route was created, but the itinerary failed. The route is saved; "
+                    "retry generate_itinerary with the returned route_handle during this turn. "
+                    f"Reason: {itinerary_result.error}"
+                ),
+                "actions": [route_action],
+            }
+        return {
+            "status": "complete",
+            "route_handle": route["route_handle"],
+            "summary": "The route and day-by-day itinerary were both created.",
+            "actions": [route_action, itinerary_result.result],
         }
 
     async def _get_car_budget(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
@@ -698,9 +931,26 @@ class AppToolDispatcher:
         trip = self._load_trip_profile(ctx)
         return {"trip_profile": trip.model_dump(mode="json", exclude_none=True)}
 
+    async def _get_account_persona(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
+        if ctx.memory is None:
+            raise ValueError("No memory store is available.")
+        return {"weights": ctx.memory.load_account_persona(ctx.user_id).weights}
+
+    async def _update_account_persona(
+        self, args: dict[str, Any], ctx: ToolContext
+    ) -> dict[str, Any]:
+        if ctx.memory is None:
+            raise ValueError("No memory store is available.")
+        update = PersonaWeightUpdate.model_validate(args)
+        return {"weights": ctx.memory.update_account_persona(ctx.user_id, update).weights}
+
     async def _update_trip_profile(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
         if ctx.memory is None:
             raise ValueError("No memory store is available.")
+        if set(args) != {"persona_weights"}:
+            raise ValueError(
+                "Use record_trip_details for trip details; only persona_weights may be updated here."
+            )
         # Validate the partial update (raises ValidationError -> caught by dispatch).
         update = TripProfileUpdate.model_validate(args)
         current = self._load_trip_profile(ctx)
@@ -711,3 +961,189 @@ class AppToolDispatcher:
         # Emit an action so the frontend can reflect the gathered trip data live
         # (and persist a ChatData snapshot -> the [DB] updateUserData log).
         return {"action": "trip_profile_updated", "trip_profile": profile_dict}
+
+    async def _record_trip_details(self, args: dict[str, Any], ctx: ToolContext) -> dict[str, Any]:
+        """Persist independently validated details without losing valid siblings."""
+        if ctx.memory is None:
+            raise ValueError("No memory store is available.")
+        current = self._load_trip_profile(ctx)
+        values = current.model_dump()
+        clarifications: dict[str, str] = {}
+        changed = False
+
+        for field in ("start_address", "destination_address"):
+            if field not in args:
+                continue
+            supplied = args[field]
+            if isinstance(supplied, str):
+                query = supplied.strip().casefold()
+                pending = current.pending_locations.get(field)
+                if pending and pending.candidates and pending.query.casefold() == query:
+                    continue  # Keep visible choices valid when extraction repeats the same input.
+                if (
+                    not pending
+                    and getattr(current, field)
+                    and getattr(current, field.replace("address", "coords"))
+                    and getattr(current, field).casefold() == query
+                ):
+                    continue  # Repeating the saved canonical address is not a replacement.
+            # A replacement search invalidates old choice IDs even on failure.
+            values["pending_locations"][field] = {"query": str(supplied)[:1000], "candidates": []}
+            changed = True
+            if not isinstance(supplied, str) or not supplied.strip():
+                clarifications[field] = "Please provide a specific city or address."
+                continue
+            try:
+                resolution = resolve_location(geolocator, supplied.strip(), lookup=get_location)
+            except (HTTPException, RequestException, ValueError):
+                resolution = None
+            if resolution is None or not resolution.candidates:
+                clarifications[field] = "I could not find that location; please clarify it."
+                continue
+            # Provider order supplies a suggestion, not permission to plan with it.
+            values["pending_locations"][field] = resolution.model_dump()
+            clarifications[field] = (
+                f"Confirm the suggested address: {resolution.candidates[0].address}"
+            )
+
+        for field in ("num_stops", "budget", "traveler_count", "hotel_rooms"):
+            if field not in args:
+                continue
+            try:
+                validated = TripProfileUpdate.model_validate({field: args[field]})
+                value = getattr(validated, field)
+                if value is None:
+                    raise ValueError("missing")
+            except (ValidationError, ValueError, TypeError):
+                if field in {"traveler_count", "hotel_rooms"}:
+                    clarifications[field] = (
+                        UNSUPPORTED_OCCUPANCY
+                        if field == "hotel_rooms"
+                        else "Please give a whole number from 1 to 24, including you. Up to four rooms of six guests can be searched."
+                    )
+                    values["hotel_rooms"] = None
+                    if field == "traveler_count":
+                        values["traveler_count"] = None
+                    changed = True
+                    continue
+                clarifications[field] = (
+                    "Please give a whole number from 1 to 10."
+                    if field == "num_stops"
+                    else "Please give a nonnegative nightly budget in dollars."
+                )
+                continue
+            if field == "traveler_count" and values[field] != value:
+                values["hotel_rooms"] = None
+            values[field] = value
+            changed = True
+
+        if "scheduling_policy" in args:
+            try:
+                patch = args["scheduling_policy"]
+                if not isinstance(patch, dict) or not patch:
+                    raise ValueError("Supply at least one scheduling preference")
+                values["scheduling_policy"] = SchedulingPolicy.model_validate(
+                    {**values["scheduling_policy"], **patch}
+                ).model_dump()
+                changed = True
+            except (ValidationError, ValueError, TypeError) as exc:
+                clarifications["scheduling_policy"] = str(exc)
+        if "evening_interests" in args:
+            try:
+                update = TripProfileUpdate.model_validate(
+                    {"evening_interests": args["evening_interests"]}
+                )
+                if update.evening_interests is None:
+                    raise ValueError(
+                        "Choose food, culture, nightlife, or an empty list to disable suggestions"
+                    )
+                values["evening_interests"] = update.evening_interests
+                changed = True
+            except (ValidationError, ValueError) as exc:
+                clarifications["evening_interests"] = str(exc)
+
+        if "departure_time" in args:
+            try:
+                values["departure_time"] = normalize_departure_time(args["departure_time"])
+                changed = True
+            except ValueError as exc:
+                clarifications["departure_time"] = str(exc)
+
+        date_wording = args.get("departure_date")
+        if (
+            date_wording is None
+            and "departure_time" in args
+            and values["start_date"]
+            and not values["pending_departure"]
+            and "start_address" not in values["pending_locations"]
+        ):
+            date_wording = datetime.fromisoformat(values["start_date"]).date().isoformat()
+        if date_wording is not None:
+            try:
+                values["pending_departure"] = PendingDeparture(date=date_wording).model_dump()
+                values["start_date"] = None
+                changed = True
+            except ValidationError:
+                clarifications["departure_date"] = "Please provide a departure date."
+        if values["pending_departure"]:
+            if not values["start_timezone"] or "start_address" in values["pending_locations"]:
+                clarifications["departure_date"] = (
+                    "Your departure date is saved; confirm the starting location to finish setting it."
+                )
+            else:
+                try:
+                    values["start_date"] = PendingDeparture.model_validate(
+                        values["pending_departure"]
+                    ).resolve(values["departure_time"], values["start_timezone"])
+                    values["pending_departure"] = None
+                    changed = True
+                except ValueError as exc:
+                    clarifications["departure_date"] = str(exc)
+
+        if set(args) & {"car", "car_year", "car_make", "car_model", "car_status"}:
+            try:
+                car_args = {
+                    key: args[key]
+                    for key in ("car", "car_year", "car_make", "car_model", "car_status")
+                    if key in args
+                }
+                car_update = TripProfileUpdate.model_validate(car_args)
+                if car_update.car is not None:
+                    # Validate the year/make/model combination against the existing
+                    # car provider before treating the choice as provided.
+                    await get_car_details(
+                        model=car_update.car.model,
+                        make=car_update.car.make,
+                        year=car_update.car.year,
+                    )
+                car_profile = TripProfile.model_validate(values).merged_with(car_update)
+                values["car"] = car_profile.car
+                values["car_status"] = car_profile.car_status
+                changed = True
+            except ValidationError:
+                clarifications["car"] = (
+                    "Please give a valid year, make, and model, or say skip/no car."
+                )
+            except HTTPException as exc:
+                if exc.status_code == 400:
+                    clarifications["car"] = str(exc.detail)
+                elif exc.status_code == 404:
+                    clarifications["car"] = (
+                        "I could not verify that year, make, and model. "
+                        "Please correct them or say skip/no car."
+                    )
+                else:
+                    clarifications["car"] = (
+                        "Car verification is unavailable; please try again or say skip/no car."
+                    )
+
+        profile = TripProfile.model_validate(values)
+        if changed:
+            ctx.memory.save_trip_profile(ctx.user_id, ctx.chat_id, profile.to_json())
+        result = {
+            "trip_profile": profile.model_dump(mode="json", exclude_none=True),
+            "clarifications": clarifications,
+        }
+        if changed:
+            result["action"] = "trip_profile_updated"
+        return result

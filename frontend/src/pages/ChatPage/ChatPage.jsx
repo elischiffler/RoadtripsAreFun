@@ -1,10 +1,12 @@
+import { getSession, isCurrentSession } from '../../services/session';
 import { useState, useRef, useEffect, useContext, useMemo, useCallback } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import { UserDataContext } from '../../states/UserDataContext';
-import { ring } from 'ldrs';
+import TripProgress from './TripProgress';
+import ChatMessage from './ChatMessage';
 import ThemedTooltip from '../../components/ThemedTooltip';
 import ItineraryButton from '../../components/buttons/ItineraryButton';
 import MapButton from '../../components/buttons/MapButton';
@@ -14,8 +16,6 @@ import { useTripWorkflow, deriveProgress, renameChatToRoute } from './useTripWor
 import { deleteChat, initializeUserData } from './DatabaseUtils';
 import { chooseRestoredChatId, forgetAgentChatId, getOrCreateAgentChatId } from './chatSession';
 import './ChatPage.css';
-
-ring.register('loading-chat');
 
 // ── WorkflowPanel: isolated component so `key` can reset the workflow hook ──
 const WorkflowPanel = ({
@@ -31,21 +31,31 @@ const WorkflowPanel = ({
   savedData,
   onChatReady,
 }) => {
-  const { submit, route, itinerary, isLoading } = useTripWorkflow({
-    chatId,
-    agentChatId,
-    setChats,
-    setCurrentStep,
-    savedData,
-    chatsRef,
-    accessToken,
-    ChatLogsData,
-    onChatReady,
-  });
+  const { submit, route, itinerary, isLoading, processProgress, pendingLocations } =
+    useTripWorkflow({
+      chatId,
+      agentChatId,
+      setChats,
+      setCurrentStep,
+      savedData,
+      chatsRef,
+      accessToken,
+      ChatLogsData,
+      onChatReady,
+    });
 
   const handleChatSubmit = (text) => submit('chat_message', text);
 
   const currentProgress = deriveProgress({ route });
+  const locationSelections = Object.entries(pendingLocations ?? {}).flatMap(([field, pending]) =>
+    pending.candidates.length
+      ? [{ field, candidateId: pending.candidates[0].id, address: pending.candidates[0].address }]
+      : []
+  );
+
+  const latestBotIndex = activeMessages.findLastIndex(
+    (message) => message.sender === 'bot' && message.text != null
+  );
 
   return (
     <>
@@ -67,7 +77,7 @@ const WorkflowPanel = ({
               if (message.type === 'loading-chat') {
                 return (
                   <Box key={index} className="message-container">
-                    <loading-chat size="30" color="black" />
+                    <TripProgress progress={processProgress} />
                   </Box>
                 );
               }
@@ -75,7 +85,7 @@ const WorkflowPanel = ({
                 return (
                   <Box key={index} className="message-container user">
                     <Box className="message user">
-                      <Typography variant="body1">{message.text}</Typography>
+                      <ChatMessage message={message} />
                     </Box>
                     <Box className="button-container">
                       {message.buttons.map((btn, bi) => (
@@ -95,13 +105,66 @@ const WorkflowPanel = ({
               if (message.text != null) {
                 return (
                   <Box key={index} className={`message ${message.sender}`}>
-                    <Typography variant="body1">{message.text}</Typography>
+                    <ChatMessage
+                      message={message}
+                      pendingLocationFields={
+                        index === latestBotIndex ? Object.keys(pendingLocations ?? {}) : []
+                      }
+                    />
                   </Box>
                 );
               }
               return null;
             })}
 
+            {Object.entries(pendingLocations ?? {}).map(([field, pending]) => (
+              <Box
+                key={field}
+                role="group"
+                aria-label={
+                  field === 'start_address' ? 'Confirm starting location' : 'Confirm destination'
+                }
+                className="message bot"
+                sx={{ maxWidth: '100%' }}
+              >
+                <Typography sx={{ fontWeight: 600 }}>
+                  {field === 'start_address' ? 'Starting location' : 'Destination'}
+                </Typography>
+                {pending.candidates.length ? (
+                  <>
+                    <Typography>Suggested address: {pending.candidates[0].address}</Typography>
+                  </>
+                ) : (
+                  <Typography>No match found for &quot;{pending.query}&quot;.</Typography>
+                )}
+              </Box>
+            ))}
+            {locationSelections.length > 0 && (
+              <Box className="message bot">
+                <Button
+                  variant="text"
+                  size="small"
+                  className="location-confirm-button"
+                  disableRipple
+                  aria-label={
+                    locationSelections.length > 1
+                      ? 'Confirm both locations'
+                      : locationSelections[0].field === 'start_address'
+                        ? 'Confirm starting location'
+                        : 'Confirm destination'
+                  }
+                  disabled={isLoading}
+                  onClick={() => submit('location_confirmations', locationSelections)}
+                >
+                  {locationSelections.length > 1 ? 'Confirm both locations' : 'Confirm'}
+                </Button>
+              </Box>
+            )}
+            {Object.keys(pendingLocations ?? {}).length > 0 && (
+              <Typography className="message bot" variant="body2">
+                Wrong location? Type a different city or address below.
+              </Typography>
+            )}
             <div ref={chatEndRef} />
           </Box>
 
@@ -109,7 +172,7 @@ const WorkflowPanel = ({
               scrolls away. While a turn is in flight the send button is disabled
               (isLoading) until the agent finishes and the user should type again. */}
           <Box className="inline-input-area">
-            <ChatInput onSubmit={handleChatSubmit} disabled={isLoading} />
+            <ChatInput draftKey={agentChatId} onSubmit={handleChatSubmit} disabled={isLoading} />
           </Box>
         </Box>
       </Box>
@@ -156,8 +219,9 @@ const ChatPage = () => {
   );
 
   // Fresh trip scaffolded immediately — no waiting for DB
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const freshChatData = useMemo(() => ChatLogsData.createChatData(1), []);
+  const [freshChatData] = useState(
+    () => ChatLogsData.getChatDataById(1) ?? ChatLogsData.createChatData(1)
+  );
   const freshChat = useMemo(
     () => ({ id: 1, title: 'New Trip', messages: initialMessage }),
     [initialMessage]
@@ -191,6 +255,7 @@ const ChatPage = () => {
   });
 
   const [isFetchingChats, setIsFetchingChats] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const chatEndRef = useRef(null);
   // Holds a { id, title, messages } for a new trip that hasn't had its destination confirmed yet.
@@ -242,6 +307,7 @@ const ChatPage = () => {
 
   // Background DB fetch — only runs on first mount (chats context is empty)
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       // If chats context already has data, this is a remount after navigation — skip the fetch.
       // The context already holds the correct state from the previous mount.
@@ -251,7 +317,11 @@ const ChatPage = () => {
       }
       setIsFetchingChats(true);
       try {
+        const session = getSession();
         const prevChats = await initializeUserData(accessToken);
+        if (!isCurrentSession(session)) return;
+        if (cancelled) return;
+        if (!prevChats) throw new Error('Chat loading failed');
         if (prevChats) {
           const savedChats = prevChats.chats ?? [];
           if (savedChats.length > 0) {
@@ -288,12 +358,16 @@ const ChatPage = () => {
           }
         }
       } catch {
-        // silently continue with fresh trip
+        // Do not allocate a reused integer id when saved rows could not be read.
+        if (!cancelled) setLoadError(true);
       } finally {
-        setIsFetchingChats(false);
+        if (!cancelled) setIsFetchingChats(false);
       }
     };
     fetchData();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -401,7 +475,9 @@ const ChatPage = () => {
 
     setChats(remaining);
     chatsRef.current = remaining;
-    await deleteChat(accessToken, chatId);
+    const session = getSession();
+    await deleteChat(accessToken, chatId, ChatLogsData);
+    if (!isCurrentSession(session)) return;
 
     if (selectedChatIdRef.current === chatId) {
       // The active chat was deleted — redirect to a new virgin trip
@@ -442,7 +518,14 @@ const ChatPage = () => {
       {/* Trip management buttons — top-left (below header) */}
       <Box className="fab-group fab-group--top">
         <ThemedTooltip title="New trip" placement="right" arrow>
-          <Box className="fab fab--new" onClick={handleNewChat} role="button" aria-label="New trip">
+          <Box
+            className="fab fab--new"
+            onClick={() => {
+              if (!isFetchingChats && !loadError) handleNewChat();
+            }}
+            role="button"
+            aria-label="New trip"
+          >
             <AddIcon className="fab-icon" />
           </Box>
         </ThemedTooltip>
@@ -458,21 +541,31 @@ const ChatPage = () => {
         </ThemedTooltip>
       </Box>
 
+      {loadError && (
+        <Box className="main-content" role="alert">
+          <Typography>
+            Saved trips could not be loaded. Retry before starting a new trip.
+          </Typography>
+          <Button onClick={() => window.location.reload()}>Retry loading trips</Button>
+        </Box>
+      )}
       {/* WorkflowPanel: keyed so bumping workflowKey resets the hook */}
-      <WorkflowPanel
-        key={workflowKey}
-        chatId={selectedChatId}
-        agentChatId={getAgentChatId(selectedChatId)}
-        setChats={setChats}
-        setCurrentStep={setCurrentStep}
-        chatsRef={chatsRef}
-        accessToken={accessToken}
-        ChatLogsData={ChatLogsData}
-        activeMessages={activeMessages}
-        chatEndRef={chatEndRef}
-        savedData={savedData}
-        onChatReady={handleChatReady}
-      />
+      {!isFetchingChats && !loadError && (
+        <WorkflowPanel
+          key={workflowKey}
+          chatId={selectedChatId}
+          agentChatId={getAgentChatId(selectedChatId)}
+          setChats={setChats}
+          setCurrentStep={setCurrentStep}
+          chatsRef={chatsRef}
+          accessToken={accessToken}
+          ChatLogsData={ChatLogsData}
+          activeMessages={activeMessages}
+          chatEndRef={chatEndRef}
+          savedData={savedData}
+          onChatReady={handleChatReady}
+        />
+      )}
     </Box>
   );
 };

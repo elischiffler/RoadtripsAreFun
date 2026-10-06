@@ -5,29 +5,6 @@ import pytest
 
 from app.routing.sources.hotels import find_hotel as _find_hotel
 
-# These are re-exported from app.routers.routing_api, but their real
-# implementations live in app.routing.sources.hotels — patch there so the
-# functions' own module-level lookups (requests, get_location, ...) are affected.
-from app.routing.sources.hotels import get_amadeus_token as _get_amadeus_token
-
-# ---------------------------------------------------------------------------
-# Mock helpers
-# ---------------------------------------------------------------------------
-
-
-def _amadeus_token_response():
-    return {
-        "type": "amadeusOAuth2Token",
-        "username": "test@example.com",
-        "application_name": "TestApp",
-        "client_id": "test_client_id",
-        "token_type": "Bearer",
-        "access_token": "test_access_token_abc123",
-        "expires_in": 1799,
-        "state": "approved",
-        "scope": "",
-    }
-
 
 def _mock_location(address="South Holland, IL, United States", lat=41.583, lon=-87.604):
     loc = MagicMock()
@@ -35,29 +12,6 @@ def _mock_location(address="South Holland, IL, United States", lat=41.583, lon=-
     loc.latitude = lat
     loc.longitude = lon
     return loc
-
-
-# ---------------------------------------------------------------------------
-# _get_amadeus_token
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.asyncio
-async def test_get_amadeus_token():
-    """Returns the access_token string from a mocked Amadeus auth response."""
-    mock_resp = MagicMock()
-    mock_resp.json.return_value = _amadeus_token_response()
-
-    with patch("app.routing.sources.hotels.requests.post", return_value=mock_resp):
-        token = await _get_amadeus_token("fake_key", "fake_secret")
-
-    assert isinstance(token, str)
-    assert token == "test_access_token_abc123"
-
-
-# ---------------------------------------------------------------------------
-# _find_hotel  (via Google Hotels scraping path)
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
@@ -109,3 +63,23 @@ async def test_find_hotel_no_location_raises_404():
 
 if __name__ == "__main__":
     pytest.main()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("status", [404, 502])
+async def test_google_scraper_failure_propagates_without_another_provider(status):
+    from fastapi import HTTPException
+
+    with (
+        patch("app.routing.sources.hotels.get_location", return_value=_mock_location()),
+        patch("app.routing.sources.hotels.get_nearby_city", return_value="San Diego"),
+        patch(
+            "app.routing.sources.hotels.find_google_hotels",
+            side_effect=HTTPException(status_code=status, detail="Google lookup failed"),
+        ) as scrape,
+    ):
+        with pytest.raises(HTTPException) as failure:
+            await _find_hotel(33.32, -117.48, ((0, 200), "0-200"), datetime(2026, 11, 20))
+    assert failure.value.status_code == status
+    assert failure.value.detail == "Google lookup failed"
+    scrape.assert_called_once()

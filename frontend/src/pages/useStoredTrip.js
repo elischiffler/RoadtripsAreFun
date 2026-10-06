@@ -1,3 +1,4 @@
+import { getSession, isCurrentSession } from '../services/session';
 import { useContext, useEffect } from 'react';
 import { UserDataContext } from '../states/UserDataContext';
 import { initializeUserData } from './ChatPage/DatabaseUtils';
@@ -8,11 +9,13 @@ export function useStoredTrip() {
   const { UserData, setUserData } = useContext(UserDataContext);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('accessToken');
+    const session = getSession();
+    const token = session.accessToken;
     if (!token || UserData.chatlogs.chatdata.length) return;
     let cancelled = false;
     initializeUserData(token).then((result) => {
-      if (cancelled || !result?.UserData?.chatlogs?.chatdata?.length) return;
+      if (cancelled || !isCurrentSession(session) || !result?.UserData?.chatlogs?.chatdata?.length)
+        return;
       const logs = result.UserData.chatlogs;
       const selectedId = Number(sessionStorage.getItem('selectedChatId'));
       logs.currentId = logs.getChatDataById(selectedId) ? selectedId : logs.chatdata[0].chatId;

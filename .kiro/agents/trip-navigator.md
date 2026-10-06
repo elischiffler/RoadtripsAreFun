@@ -91,7 +91,7 @@ When adding or modifying a planner:
    plus a `register_planner(...)` call in `registry.py`. `GET /algorithms` then lists it.
 2. **Go only through injected `RoutingServices`** (`find_stop`, `find_hotel`,
    `find_position`, `get_price_range`, `gather_candidates`). Planners NEVER call external
-   APIs (Mapbox/TripAdvisor/Google/Amadeus/OpenCage) directly — that lives in `sources/`.
+   APIs (Mapbox/TripAdvisor/Google/OpenCage) directly — that lives in `sources/`.
    This is what makes planners testable with fakes.
 3. **Reuse the shared scheduler** (`scheduler.py`). Planners differ ONLY in *selection*
    (which attractions). *Scheduling* — the 09:00–16:00 day window, overnight hotel

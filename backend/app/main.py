@@ -10,7 +10,16 @@ from fastapi.responses import JSONResponse
 
 from app.core.config import settings
 from app.core.ops_events import format_http_event
-from app.routers import agent_api, car_api, chat_api, itinerary_api, location_api, routing_api
+from app.routers import (
+    agent_api,
+    algorithm_lab,
+    car_api,
+    chat_api,
+    itinerary_api,
+    location_api,
+    routing_api,
+    studio,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -117,6 +126,8 @@ async def operational_http_event(request, call_next):
 
 
 app.include_router(routing_api.router)
+app.include_router(algorithm_lab.router)
+app.include_router(studio.router)
 app.include_router(location_api.router)
 app.include_router(itinerary_api.router)
 app.include_router(car_api.router)
@@ -143,11 +154,14 @@ def ready():
             settings.DATABASE_URL or "",
             sslmode=settings.DATABASE_SSLMODE,
             connect_timeout=5,
-            options="-c statement_timeout=5000",
         )
         with conn.cursor() as cur:
+            # Transaction poolers reject PostgreSQL startup options. Set the
+            # query deadline after connecting so the readiness check works
+            # through the same pooled Neon URL used by normal requests.
+            cur.execute("SET statement_timeout = 5000")
             cur.execute(
-                "SELECT to_regclass('public.chats'), to_regclass('public.route_segments'), to_regclass('public.steps'), to_regclass('public.chat_memory')"
+                "SELECT to_regclass('public.chats'), to_regclass('public.route_segments'), to_regclass('public.steps'), to_regclass('public.chat_memory'), to_regclass('public.algorithm_lab_runs')"
             )
             if not all(cur.fetchone()):
                 return JSONResponse(

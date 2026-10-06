@@ -12,32 +12,45 @@ in ``app.routing.sources``. This module's job is to:
 
 Candidate-sourcing functions are re-exported at module level (``get_location``,
 ``find_google_hotels``, ``_get_nearby_city``, ``_find_hotel``,
-``_get_amadeus_token``, ``requests``) so existing tests that patch
+``requests``) so existing tests that patch
 ``app.routers.routing_api.<name>`` keep working, and so the injected services use
 whatever those names resolve to at call time (including test patches).
 """
 
 import logging
+import math
 import os
 
 import requests  # noqa: F401  (re-exported: tests patch app.routers.routing_api.requests.get)
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
 from pydantic import ValidationError
 from requests.exceptions import RequestException
 
+from app.agent.departure import is_upcoming_departure
+from app.agent.persona import effective_weights
+from app.agent.progress import stage
+from app.agent.provider_diagnostics import retry_async
+from app.agent.trip_dates import timezone_from_location
+from app.crud.memory_crud import load_account_persona
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
 from app.routing import PlanningError, PlanOptions, RoutingServices, get_planner
 from app.routing.config import geolocator  # shared reverse-geocoder
+from app.routing.explanation import record_stage
 from app.routing.geometry import find_position as _find_position  # noqa: F401
+from app.routing.occupancy import require_occupancy
 from app.routing.pricing import get_price_range as _get_price_range  # noqa: F401
 from app.routing.registry import DEFAULT_ALGORITHM
+from app.routing.runtime import in_run, singleflight, threaded
+from app.routing.selection import owner_routing_claims, select_algorithm
 from app.routing.sources.attractions import find_stop as _find_stop  # noqa: F401
 from app.routing.sources.attractions import gather_candidates as _gather_candidates
+from app.routing.sources.evenings import enrich_evenings, evening_interests
 from app.routing.sources.hotels import find_hotel as _find_hotel  # noqa: F401
-from app.routing.sources.hotels import get_amadeus_token as _get_amadeus_token  # noqa: F401
 from app.routing.sources.hotels import get_nearby_city as _get_nearby_city  # noqa: F401
 from app.routing.sources.mapbox import call_route as _call_route
+from app.routing.sources.persona_candidates import attraction_candidates, hotel_candidates
+from app.routing.travel_timing import apply_timing
 from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location  # noqa: F401  (patched in tests)
 
@@ -58,12 +71,37 @@ def _build_services() -> RoutingServices:
     References this module's names so tests patching
     ``app.routers.routing_api.<name>`` take effect.
     """
+    timezone_cache = {}
+
+    async def timezone_at(coords):
+        """Resolve the IANA timezone for [lat, lon] coordinates and cache it for this run."""
+        key = tuple(coords)
+        if key not in timezone_cache:
+            location = await singleflight(
+                ("timezone", key),
+                lambda: retry_async(
+                    lambda: threaded("geocoding", get_location, geocoder=geolocator, coords=coords)
+                ),
+            )
+            timezone = timezone_from_location(location)
+            if timezone is None:
+                raise PlanningError(
+                    "The provider could not verify the arrival location timezone; replan after geocoding is available",
+                    503,
+                )
+            timezone_cache[key] = timezone
+        return timezone_cache[key]
+
     return RoutingServices(
         find_stop=_find_stop,
         find_hotel=_find_hotel,
         find_position=_find_position,
         get_price_range=_get_price_range,
         gather_candidates=_gather_candidates,
+        cp_sat_candidates=attraction_candidates,
+        cp_sat_hotels=hotel_candidates,
+        timezone_at=timezone_at,
+        candidate_route=_call_route,
     )
 
 
@@ -71,6 +109,10 @@ def _build_services() -> RoutingServices:
 async def get_initial_route(
     start_lat: float, start_lon: float, end_lat: float, end_lon: float
 ) -> MapBox_route:
+    """Return the baseline Mapbox route between the supplied endpoint coordinates.
+
+    Provider and response validation failures are translated to HTTP errors.
+    """
     try:
         # Construct initial route without stops
         initial_route = await _call_route(start_lat, start_lon, end_lat, end_lon)
@@ -88,9 +130,12 @@ async def get_initial_route(
 @router.post(
     "/generate-final-route",
     response_model=Route,
-    dependencies=[Depends(require_authenticated_user)],
 )
-async def get_final_route(request: Request) -> Route:
+async def get_final_route(
+    request: Request,
+    user_id: str = Depends(require_authenticated_user),
+    x_cognito_id_token: str | None = Header(default=None),
+) -> Route:
     """
     Retrieves a route from Mapbox API, adds intermediate stops via the selected
     planner, and returns the detailed route information.
@@ -110,7 +155,11 @@ async def get_final_route(request: Request) -> Route:
         # Validate provided payload and delegate to the shared planning core.
         json_data = await request.json()
         payload = Route_Payload.model_validate(json_data)
-        return await plan_final_route(payload)
+        return await plan_final_route(
+            payload,
+            user_id=user_id,
+            can_select_algorithm=owner_routing_claims(user_id, x_cognito_id_token) is not None,
+        )
 
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail)
@@ -119,34 +168,27 @@ async def get_final_route(request: Request) -> Route:
     except RequestException as exception:
         raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
     except ValidationError as exception:
-        raise HTTPException(status_code=502, detail=f"Improper Mapbox response: {str(exception)}")
+        raise HTTPException(status_code=422, detail=f"Invalid route request: {str(exception)}")
     except (KeyError, ValueError) as exception:
         raise HTTPException(status_code=502, detail=f"Unexpected value or key: {str(exception)}")
 
 
-async def plan_final_route(payload: Route_Payload) -> Route:
-    """Plan and shape the full multi-day route from a validated payload.
+@in_run
+async def plan_final_route(
+    payload: Route_Payload, user_id: str | None = None, *, can_select_algorithm: bool = False
+) -> Route:
+    """Build and validate the complete road trip for both HTTP and chat callers.
 
-    The core of :func:`get_final_route`, factored out so both the HTTP endpoint
-    and the chat-agent tool (``generate_final_route``) share one implementation
-    of planner selection, the Mapbox re-route through the chosen waypoints, and
-    the final :class:`Route` shaping. This keeps the fixed stop-dict contract
-    (``name`` / ``type`` / ``coordinates`` ``[lat, lon]`` / ``price``) in one
-    place. Callers validate the payload and map raised exceptions.
-
-    Args:
-        payload: A validated :class:`Route_Payload` (initial route, num_stops,
-            budget, start, optional algorithm).
-
-    Returns:
-        Route: the shaped multi-day route with ``stops`` and ``cost``.
-
-    Raises:
-        PlanningError: When a feasible trip cannot be produced.
-        ValueError: When ``num_stops`` is not a non-negative integer.
-        requests.exceptions.RequestException / pydantic.ValidationError: On
-            Mapbox transport / response failures.
+    Inputs are the validated trip payload, authenticated identity, and planner
+    selection eligibility. Account/trip interests become effective match weights.
+    Runs the planner, reroutes through its stops, and checks actual road timing.
+    Returns a Route with stops, geometry, distance, duration, and hotel quote total.
+    Invalid trip inputs and required provider failures propagate to the caller.
     """
+    try:
+        require_occupancy(payload.traveler_count, payload.hotel_rooms)
+    except ValueError as exc:
+        raise PlanningError(str(exc), 422) from exc
     initial_route = payload.initial_route
     start_lon, start_lat = initial_route.geometry.coordinates[0]
     end_lon, end_lat = initial_route.geometry.coordinates[-1]
@@ -158,57 +200,97 @@ async def plan_final_route(payload: Route_Payload) -> Route:
     if not isinstance(num_stops, int) or num_stops < 0:
         raise ValueError("Number of stops must be a non-negative integer")
 
-    # Select the routing algorithm: request field > env var > default.
-    algorithm = payload.algorithm or os.getenv("ROUTING_ALGORITHM", DEFAULT_ALGORITHM)
+    algorithm = select_algorithm(payload.algorithm, can_select_algorithm)
     planner = get_planner(algorithm)
     services = _build_services()
-    options = PlanOptions(num_stops=num_stops, budget=budget, start=start)
+    weights = None
+    if algorithm.startswith("cp_sat"):
+        if user_id is None:
+            raise PlanningError("Authenticated identity is required for CP-SAT", 401)
+        if (
+            "start" not in payload.model_fields_set
+            or start is None
+            or not is_upcoming_departure(start)
+        ):
+            raise PlanningError("CP-SAT requires an upcoming trip start date", 422)
+        account = load_account_persona(user_id)
+        weights = effective_weights(account.weights, payload.persona_weights)
+    options = PlanOptions(
+        num_stops=num_stops,
+        budget=budget,
+        start=start,
+        weights=weights,
+        scheduling_policy=payload.scheduling_policy,
+        traveler_count=payload.traveler_count,
+        hotel_rooms=payload.hotel_rooms,
+    )
 
     # Run the planner to find stopping points.
     result = await planner.plan(initial_route, options, services)
     stopping_points, total_cost = result.stopping_points, result.total_cost
 
-    coordinates = []
-    for stop in stopping_points:
-        coordinates.append(stop["coordinates"])
+    coordinates = [stop["coordinates"] for stop in stopping_points]
 
-    # Construct waypoints string and make new route with stopping points
+    # Final road route: stop records use [lat, lon], Mapbox waypoints use lon,lat.
     waypoints = ";".join([f"{lon},{lat}" for lat, lon in coordinates])
-    route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
+    with stage("route.final_reroute", waypoints=len(coordinates)):
+        route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
+    if algorithm.startswith("cp_sat"):
+        if (
+            len(route.legs) != len(coordinates) + 1
+            or not math.isfinite(route.duration)
+            or route.duration < 0
+        ):
+            raise PlanningError("Mapbox returned an incomplete final route", 502)
     distance, duration = route.distance, route.duration
     geometry = route.geometry
     steps = []
 
     idx = 0
     for leg in route.legs:
-        # Add the duration to each stop
         if idx < len(stopping_points) and stopping_points[idx]["type"] != "generic":
-            stopping_points[idx]["duration"] = (
-                leg.duration
-            )  # For each stopping point add the duration to each
+            stopping_points[idx]["duration"] = leg.duration
             if stopping_points[idx].get("address") is None:
-                location = get_location(
-                    geocoder=geolocator, coords=stopping_points[idx]["coordinates"]
+                location = await retry_async(
+                    lambda: threaded(
+                        "geocoding",
+                        get_location,
+                        geocoder=geolocator,
+                        coords=stopping_points[idx]["coordinates"],
+                    )
                 )
                 if location:
-                    stopping_points[idx]["address"] = location.address  # Add the address to each
+                    stopping_points[idx]["address"] = location.address
         else:
-            location = get_location(geocoder=geolocator, coords=[end_lat, end_lon])
-            # Include the duration to get to the end
+            location = await retry_async(
+                lambda: threaded(
+                    "geocoding", get_location, geocoder=geolocator, coords=[end_lat, end_lon]
+                )
+            )
             stopping_points.append(
                 {
                     "name": "Arrive at your destination",
                     "duration": leg.duration,
                     "type": "end",
+                    "coordinates": [end_lat, end_lon],
                     "address": location.address if location else None,
                 }
             )
         idx += 1
-    # NOTE: `steps` is intentionally left empty. Turn-by-turn Route_Step data is
-    # not consumed by any client (the frontend and itinerary endpoint read `stops`
-    # and `geometry`, never `steps`), so we skip building it. Populate this from
-    # `leg.steps` here if a client ever needs per-maneuver instructions.
-    # Add all stopping coordinates to a single variable
+    start_timezone = payload.start_timezone
+    # Final timing validation
+    if algorithm.startswith("cp_sat"):
+        with stage("route.validation"):
+            if services.timezone_at is not None:
+                start_timezone = await services.timezone_at([start_lat, start_lon])
+                for stop in stopping_points:
+                    stop["timezone"] = await services.timezone_at(stop["coordinates"])
+            apply_timing(stopping_points, start, payload.scheduling_policy, start_timezone)
+        record_stage("reroute", "complete", "Mapbox actual legs passed local timing checks.")
+        await enrich_evenings(
+            stopping_points, evening_interests(payload.evening_interests, weights)
+        )
+    # Clients consume stops and geometry; turn-by-turn steps remain empty.
     coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
     return Route(
         coordinates=coordinates,
@@ -218,6 +300,12 @@ async def plan_final_route(payload: Route_Payload) -> Route:
         stops=stopping_points,
         geometry=geometry,
         cost=total_cost,
+        scheduling_policy=payload.scheduling_policy,
+        start_timezone=start_timezone,
+        departure_time=start,
+        traveler_count=payload.traveler_count,
+        hotel_rooms=payload.hotel_rooms,
+        warnings=[stop["warning"] for stop in stopping_points if stop.get("warning")] or None,
     )
 
 
@@ -230,8 +318,26 @@ async def list_algorithms() -> dict:
     """
     from app.routing.registry import available_planners
 
-    default = os.getenv("ROUTING_ALGORITHM", DEFAULT_ALGORITHM)
-    return {"algorithms": available_planners(), "default": default}
+    return {"algorithms": available_planners(), "default": DEFAULT_ALGORITHM}
+
+
+@router.get("/routing-settings")
+async def routing_settings(
+    response: Response,
+    user_id: str = Depends(require_authenticated_user),
+    x_cognito_id_token: str | None = Header(default=None),
+) -> dict:
+    """Minimal authenticated capability; never return email or credential data."""
+    from app.routing.registry import available_planners
+
+    claims = owner_routing_claims(user_id, x_cognito_id_token)
+    response.headers["Cache-Control"] = "no-store"
+    return {
+        "can_select_algorithm": claims is not None,
+        "algorithms": available_planners() if claims else [],
+        "default": DEFAULT_ALGORITHM,
+        "expires_at": claims["exp"] if claims else None,
+    }
 
 
 @router.get("/benchmark", dependencies=[Depends(require_authenticated_user)])

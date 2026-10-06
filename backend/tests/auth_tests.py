@@ -11,44 +11,109 @@ from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.routing.selection import OWNER_EMAIL, owner_routing_claims
 from app.utils.auth import _jwks_client, get_user_id_from_token
-
-POOL = "us-west-1_fixture"
-CLIENT = "fixture-client"
-ISSUER = f"https://cognito-idp.us-west-1.amazonaws.com/{POOL}"
-
-
-@pytest.fixture
-def signed_token(monkeypatch):
-    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    public_jwk = jwt.algorithms.RSAAlgorithm.to_jwk(private_key.public_key(), as_dict=True)
-    public_jwk.update({"kid": "local-fixture", "use": "sig", "alg": "RS256"})
-    monkeypatch.setenv("COGNITO_USER_POOL_ID", POOL)
-    monkeypatch.setenv("COGNITO_APP_CLIENT_ID", CLIENT)
-    monkeypatch.setattr(jwt.PyJWKClient, "fetch_data", lambda self: {"keys": [public_jwk]})
-    _jwks_client.cache_clear()
-
-    def sign(*, omit=(), **overrides):
-        now = datetime.now(UTC)
-        claims = {
-            "iss": ISSUER,
-            "sub": "cognito-user-123",
-            "client_id": CLIENT,
-            "token_use": "access",
-            "iat": now,
-            "exp": now + timedelta(minutes=10),
-        }
-        claims.update(overrides)
-        for claim in omit:
-            claims.pop(claim)
-        return jwt.encode(claims, private_key, algorithm="RS256", headers={"kid": "local-fixture"})
-
-    yield sign
-    _jwks_client.cache_clear()
+from tests.conftest import CLIENT, ISSUER
 
 
 def test_valid_locally_signed_access_token(signed_token):
     assert get_user_id_from_token(signed_token()) == "cognito-user-123"
+
+
+def test_verified_owner_capability(signed_token, monkeypatch):
+    monkeypatch.setenv("ROUTING_ALGORITHM", "unregistered-environment-choice")
+    response = TestClient(app).get(
+        "/routing-settings",
+        headers={
+            "Authorization": f"Bearer {signed_token()}",
+            "X-Cognito-Id-Token": signed_token(
+                token_use="id", aud=CLIENT, email=OWNER_EMAIL, email_verified=True
+            ),
+        },
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "can_select_algorithm": True,
+        "algorithms": ["cp_sat"],
+        "default": "cp_sat",
+        "expires_at": response.json()["expires_at"],
+    }
+    assert isinstance(response.json()["expires_at"], int)
+    assert response.headers["cache-control"] == "no-store"
+    assert OWNER_EMAIL not in response.text
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"email_verified": False},
+        {"email_verified": "true"},
+        {"email": "someone@example.test"},
+        {"sub": "another-user"},
+        {"aud": "another-client"},
+        {"iss": "https://evil.example/pool"},
+        {"token_use": "access"},
+        {"exp": datetime(2000, 1, 1, tzinfo=UTC)},
+        {"iat": datetime.now(UTC) + timedelta(days=1)},
+    ],
+)
+def test_identity_evidence_fails_closed_without_breaking_access(signed_token, overrides):
+    claims = {"token_use": "id", "aud": CLIENT, "email": OWNER_EMAIL, "email_verified": True}
+    claims.update(overrides)
+    response = TestClient(app).get(
+        "/routing-settings",
+        headers={
+            "Authorization": f"Bearer {signed_token()}",
+            "X-Cognito-Id-Token": signed_token(**claims),
+        },
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "can_select_algorithm": False,
+        "algorithms": [],
+        "default": "cp_sat",
+        "expires_at": None,
+    }
+
+
+@pytest.mark.parametrize(
+    "omit", ["exp", "iat", "iss", "sub", "aud", "token_use", "email", "email_verified"]
+)
+def test_incomplete_identity_cannot_grant_selection(signed_token, omit):
+    token = signed_token(
+        omit=(omit,), token_use="id", aud=CLIENT, email=OWNER_EMAIL, email_verified=True
+    )
+    assert owner_routing_claims("cognito-user-123", token) is None
+
+
+def test_missing_forged_and_unavailable_identity(signed_token, monkeypatch):
+    token = signed_token(token_use="id", aud=CLIENT, email=OWNER_EMAIL, email_verified=True)
+    header, payload, signature = token.split(".")
+    tampered = f"{header}.{payload}.{('A' if signature[0] != 'A' else 'B') + signature[1:]}"
+    forged = jwt.encode(
+        {"email": OWNER_EMAIL, "email_verified": True},
+        "untrusted-fixture-secret-32-bytes-long",
+        algorithm="HS256",
+        headers={"kid": "local-fixture"},
+    )
+    for evidence in (None, "malformed", tampered, forged):
+        assert owner_routing_claims("cognito-user-123", evidence) is None
+    _jwks_client.cache_clear()
+
+    def unavailable(self):
+        raise jwt.PyJWKClientConnectionError("offline fixture")
+
+    monkeypatch.setattr(jwt.PyJWKClient, "fetch_data", unavailable)
+    assert owner_routing_claims("cognito-user-123", token) is None
+
+
+def test_capability_requires_valid_access_even_with_owner_identity(signed_token):
+    identity = signed_token(token_use="id", aud=CLIENT, email=OWNER_EMAIL, email_verified=True)
+    for access in (None, "malformed", signed_token(exp=datetime(2000, 1, 1, tzinfo=UTC))):
+        headers = {"X-Cognito-Id-Token": identity}
+        if access:
+            headers["Authorization"] = f"Bearer {access}"
+        assert TestClient(app).get("/routing-settings", headers=headers).status_code == 401
 
 
 @pytest.mark.parametrize(

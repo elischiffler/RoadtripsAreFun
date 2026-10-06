@@ -7,6 +7,14 @@ The local preview does not establish production Auth or provider acceptance.
 
 A road trip planning application. This monorepo contains two services:
 
+The [product vision](docs/product-vision.md) prioritizes explainable matching
+between a trip profile and candidate location profiles. For the October 6 senior
+project demonstration, the [Algorithm Lab plan](docs/senior-demo-plan.md) adds a
+owner-only preset runner at `/algorithm`. The [CP-SAT walkthrough](docs/cp-sat-explained.md)
+explains the current code, implemented demo features and limits of selection
+compared with future joint optimization. See the
+[public release and MacBook rehearsal runbook](docs/senior-demo-runbook.md).
+
 | Service | Stack | Deployed at |
 |---|---|---|
 | [`backend/`](./backend) | Python 3.12 / FastAPI / Neon Postgres | [api.roadtrips.elischiffler.dev](https://api.roadtrips.elischiffler.dev/health) (AWS EC2) |
@@ -31,6 +39,7 @@ The frontend uses an earthy design system (cream, sand, bark, amber) with Playfa
 | `/chat` | Main chat interface for planning a trip |
 | `/map` | Interactive Mapbox route view |
 | `/itinerary` | Day-by-day trip itinerary |
+| `/algorithm` | Owner-only Algorithm Lab, presets and on-demand solver explanations; no global header |
 | `/login` | Auth — AWS Cognito sign in |
 | `/signup` | Auth — new account |
 
@@ -57,24 +66,40 @@ All colours are defined in `frontend/src/components/Theme.jsx` and exposed as CS
 
 Technical docs live in [`docs/`](./docs):
 
-- [Route-Finding Algorithm](./docs/route-finding.md) — the two-phase route
-  generation flow, day-by-day scheduling, attraction and hotel discovery, and
-  data models, with Mermaid diagrams.
+- [Current repository context](.steering/overview.md) — source ownership,
+  repeatable checks, operational boundaries and the [active change map](.steering/current-work.md).
+
+- [Trip detail lists](docs/agent-trip-detail-lists.md),
+  [location confirmations](docs/agent-location-confirmations.md),
+  [process status](docs/agent-progress.md) and [dated hotel prices](docs/hotel-prices.md)
+  — current feature contracts and verification limits.
+
+- [Owner routing settings](./docs/owner-routing-settings.md) — verified Cognito
+  eligibility, session lifecycle, shared planner enforcement, and validation limits.
+
+- [Route-Finding Algorithm](./docs/route-finding.md) — current CP-SAT notes and
+  historical greedy design, with Mermaid diagrams. Use the
+  [architecture map](.steering/architecture.md) for current planner ownership.
 
 ---
 
 ## Local Setup
 
 ### Prerequisites
-- Python 3.9
-- Node.js (LTS)
-- A [Neon](https://neon.tech) Postgres database
+- Python 3.12 on POSIX/WSL, or Docker for the pinned backend
+- Node.js 24
+- PostgreSQL for native persistence; use the disposable local test stack for fixtures
+
+See [development context](.steering/development.md) for environment names and
+platform details. The root Makefile delegates local startup to a Node launcher
+that selects the native virtualenv. The pinned `uvloop` dependency is excluded
+on Windows by its platform marker.
 
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/elischiffler/MyRoadtrip.git
-cd MyRoadtrip
+git clone https://github.com/elischiffler/RoadtripsAreFun.git
+cd RoadtripsAreFun
 ```
 
 ### 2. Configure environment variables
@@ -90,25 +115,40 @@ See `.env.example` for all required keys. The `.env` at the repo root is shared 
 
 ```bash
 cd backend
-python3.9 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt 'ruff==0.16.7'
 ```
 
 ### 4. Frontend
 
 ```bash
 cd frontend
-npm install
+npm ci
 ```
 
-From the repo root:
+On Windows PowerShell, use Python 3.12 and Node 24, then run from the root:
+
+```powershell
+py -3.12 -m venv backend/.venv
+./backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt ruff==0.16.7
+npm ci --prefix frontend
+make run
+```
+
+Install GNU Make if `make` is unavailable (for example, `winget install --id
+GnuWin32.Make --exact`). Add its `bin` folder to PATH and reopen PowerShell.
+You can also start both services with `node scripts/dev.mjs`.
+
+From the repo root (Windows, macOS, Linux, or WSL):
 
 ```bash
 make run
 ```
 
 This starts the backend at `http://localhost:8000` and the frontend at `http://localhost:5173` concurrently. Ctrl+C stops both.
+
+To see the agent's per-turn tool arguments and trip-profile changes in the backend terminal, stop `make run` and start `make debug` from the repo root. Debug logging includes trip details, so use it only while troubleshooting.
 
 Or run them individually:
 
@@ -121,7 +161,10 @@ make run-frontend
 
 ## Database Schema
 
-Run once against your Neon database (via `psql` or the Neon SQL editor):
+The following is the checked-in local schema reference used by disposable tests.
+Production schema and migration history remain unverified; do not apply this DDL
+to a hosted database to satisfy local test gates. The disposable test's exact DDL
+is [tests/postgres/schema.sql](tests/postgres/schema.sql).
 
 ```sql
 CREATE TABLE IF NOT EXISTS chats (
@@ -159,16 +202,28 @@ CREATE INDEX IF NOT EXISTS idx_steps_leg_id ON steps(leg_id);
 
 ## CI
 
-GitHub Actions runs on every PR, path-filtered per service:
+GitHub Actions runs on every PR and main push, without service path filters:
 
-- `backend/**` changes → runs `pytest` ([workflow](.github/workflows/backend-ci.yml))
-- `frontend/**` changes → runs `npm run build` ([workflow](.github/workflows/frontend-ci.yml))
+- [Backend](.github/workflows/backend-ci.yml): Ruff format/lint and pytest coverage >=63%.
+- [Frontend](.github/workflows/frontend-ci.yml): Node 24, npm ci, format/lint,
+  coverage tests and build.
+- [Containers](.github/workflows/container-ci.yml): diagnostic preview smoke and
+  isolated backend tests.
+- [Disposable PostgreSQL](.github/workflows/disposable-postgres-ci.yml): CRUD,
+  ownership, recreation, loss recovery and backup/restore.
+
+Repository check enforcement was not verified by this context refresh. No
+automatic production Docker deployment is configured in these workflows.
 
 ---
 
 ## Running Tests
 
-All tests use mocks — no real API keys or database connection needed.
+Unit tests use controlled provider/database responses. Separate container,
+disposable real PostgreSQL and signed local journey tests have their own
+prerequisites. They do not establish actual Cognito or full live provider acceptance.
+Required format/lint/coverage/build commands are in [AGENTS.md](AGENTS.md) and
+the [development map](.steering/development.md).
 
 **From the repo root:**
 
@@ -184,3 +239,10 @@ pytest
 ```
 
 Tests live in `backend/tests/`. Configuration is in `backend/pytest.ini`.
+
+### Algorithm Lab database addition
+
+Before releasing the Algorithm Lab run-history feature, explicitly apply
+[`backend/sql/algorithm_lab_runs.sql`](backend/sql/algorithm_lab_runs.sql) to the
+approved database. It is additive and required by `/ready`; requests never create
+tables. See [measurement and migration contract](docs/algorithm-run-history.md).

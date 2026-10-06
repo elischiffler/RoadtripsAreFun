@@ -3,15 +3,18 @@
 How MyRoadtrip turns a start and end point into a multi-day road trip with
 attractions and overnight hotels.
 
-> **Architecture note (pluggable planners).** The route-planning *algorithm* now
-> lives behind a swappable interface in the `backend/app/routing/` package, not
-> inline in the router. `backend/app/routers/routing_api.py` is a thin controller
-> that picks a planner by name and assembles the response. Two planners ship
-> today: `greedy` (the algorithm described below) and `ortools` (an OR-Tools
-> knapsack selector). See
-> [pluggable-routing-refactor.md](./pluggable-routing-refactor.md) for the layer
-> layout and how to add a new algorithm. The rest of this document describes the
-> **greedy** planner's behavior, which is unchanged by that refactor.
+For the actual current inputs, scoring, constraints and output, read the
+[CP-SAT walkthrough](cp-sat-explained.md). The [product vision](product-vision.md)
+and [Algorithm Lab](senior-demo-plan.md) cover profile matching and the
+owner-only preset demonstration. Historical diagrams below do not describe
+the active CP-SAT selection model or current scheduling defaults.
+
+> **Current behavior.** `cp_sat` is the default and the only registered planner.
+> The `/algorithms` selector remains available for future CP-SAT variants.
+> `greedy` and `ortools` remain in the source tree for historical reference but
+> cannot be selected. The rest of this document describes that historical greedy
+> implementation; see [pluggable-routing-refactor.md](./pluggable-routing-refactor.md)
+> for the planner interface.
 
 The greedy algorithm below is defined by its *selection* logic in
 `backend/app/routing/planners/greedy.py`. The day-by-day *scheduling* loop it
@@ -165,7 +168,43 @@ the full polyline (`geometry.coordinates`), a single `leg`, `duration`, and
 
 ## Phase 2: `POST /generate-final-route`
 
-`get_final_route(request)` validates the body into `Route_Payload`, then:
+`get_final_route(request)` validates the body into `Route_Payload` and calls the
+same planning core as the chat tool.
+
+### Trip personality and the CP-SAT planner
+
+`algorithm: "cp_sat"` selects the verified-candidate planner, and omitting the
+field uses the same default. The authenticated endpoint loads the account's 14
+preference weights using the verified Cognito subject. Missing account weights
+are equal. A partial `persona_weights` request field changes only that trip;
+it is validated and normalized with the account baseline. The chat agent can
+read or update account weights when the traveler explicitly requests a saved
+preference, and stores trip-only weights in that chat's trip profile.
+
+The planner samples up to 30 points in drive-time order, asks AI for named
+attractions, and matches proposals to TripAdvisor Terra records before using
+their identity or coordinates. It computes utility from the 14 attribute
+ratings and effective weights. CP-SAT selects at most the requested number
+of attractions, with at most one per query point and utility at least 0.60.
+The final route preserves that point order.
+
+For each overnight, hotel ratings must match a verified Google Hotels identity
+and a displayed one-night USD total for the requested check-in date (two adults,
+taxes and fees included). Dated comparison links are retained. The nightly budget is advisory:
+an otherwise usable hotel above it is returned with a visible `warnings` list;
+no usable verified hotel fails planning. The final Mapbox reroute must contain
+one leg per selected waypoint plus the destination and fit each day's drive
+window after attraction visits. A detour that breaks the schedule is rejected.
+
+Live CP-SAT needs the AI gateway, Terra credentials, Google Hotels HTML,
+OpenCage location verification, Mapbox, authenticated Cognito requests, and access to `chat_memory` for
+account persona storage. Fixture tests do not establish provider availability, production
+schema history, or deployment readiness.
+
+CP-SAT requests must include an upcoming `start` date because hotel offers are
+dated; the legacy planner's old default date is not used for CP-SAT.
+
+For the existing planners, the core:
 
 1. Derives start/end coords from the initial route's geometry.
 2. Calls `_add_stops(...)` to get the scheduled stops and total hotel cost.
@@ -232,8 +271,7 @@ on what's left:
 - `days_left = (duration_left + stops_left * 2h) // daily_drive_time`
 - `remaining_avg = remaining_budget / days_left`
 - Band is `remaining_avg ± 75` (with a floored minimum), returned both as a
-  numeric tuple (used by the Google scraper) and as a `"min-max"` string (used by
-  the Amadeus fallback).
+  numeric tuple (used by the Google scraper) and a `"min-max"` display string.
 
 ### Position interpolation: `_find_position`
 
@@ -260,12 +298,11 @@ later.
 
 ## Hotel finding: `_find_hotel`
 
-Hotels come primarily from scraping Google Hotels, with Amadeus as an optional
-fallback (disabled by default — see below). `_find_hotel` reverse-geocodes the
-target point, builds a search query (a nearby city from Google Places, falling
-back to the geocoded address), then scrapes Google Hotels. If the scraper finds
-nothing and the Amadeus fallback is enabled, it tries Amadeus; otherwise it
-raises a 404 that `_add_stops` retries.
+The legacy `_find_hotel` reverse-geocodes the target point, builds a search
+query (a nearby city from Google Places, falling back to the geocoded address),
+and scrapes Google Hotels. If the scraper finds nothing it raises a 404 that
+`_add_stops` retries. CP-SAT uses the separate dated and verified Google Hotels
+adapter described in [dated hotel prices](hotel-prices.md).
 
 ### Google Hotels scraping (`find_google_hotels`)
 
@@ -281,23 +318,6 @@ Lives in `webscraping_fns.py`:
    hotel only if it is within `radius` miles of the target coordinates.
 5. Return the first qualifying hotel, else raise 404.
 
-### Amadeus fallback
-
-The Amadeus fallback is **disabled by default** because the upstream API is
-currently nonfunctional. It is controlled by the `AMADEUS_ENABLED` environment
-variable: set `AMADEUS_ENABLED=true` to re-enable it. When enabled, the fallback
-runs whenever the Google scraper returns a 404 (no hotel found). It lists hotels
-by geocode, fetches offers within the price range, gets sentiment ratings, and
-returns the highest-rated hotel that fits.
-
-> **History:** this was previously gated on `exception.status_code == 600` — a
-> status code the scraper never raises — which silently made the branch dead and
-> misleading. It is now an explicit `AMADEUS_ENABLED` flag checked against the
-> scraper's real 404. While disabling the branch, two latent bugs in it were also
-> fixed so it works if re-enabled: the check-out date now uses
-> `timedelta(days=1)` (the old `day + 1` raised `ValueError` on month-end dates),
-> and offers now carry the `hotel_id` key that `_find_hotel` reads back.
-
 ---
 
 ## Data models
@@ -306,10 +326,10 @@ Defined in `backend/app/models/routing_models/routing_models.py`.
 
 | Model | Role |
 |---|---|
-| `Route_Payload` | Request body for `/generate-final-route` — `initial_route`, `num_stops`, `budget`, optional `start`. |
+| `Route_Payload` | Request body for `/generate-final-route` — `initial_route`, `num_stops`, `budget`, optional `start`, `algorithm`, and trip-only `persona_weights`. |
 | `MapBox` / `MapBox_Route` | The full Mapbox Directions response. `MapBox_Route` (aliased `MapBox_route`) is what phase 1 returns. Nesting: `MapBox → routes → legs → steps`. |
 | `Mapbox_geo` | `coordinates` (`[lon, lat]`) + `type`. Used for both raw and final geometry. |
-| `Route` | The final response — `coordinates` (`[lat, lon]`), `distance`, `duration`, `steps`, `stops`, `geometry`, `cost`. |
+| `Route` | The final response — `coordinates` (`[lat, lon]`), `distance`, `duration`, `steps`, `stops`, `geometry`, `cost`, and optional `warnings`. |
 | `Route_Step` | `distance`, `duration`, `instruction`, `location` — the shape a turn-by-turn step would take. Not currently emitted (see note below); kept for when a client needs per-maneuver instructions. |
 
 ---
@@ -321,12 +341,12 @@ Defined in `backend/app/models/routing_models/routing_models.py`.
 - **`Route.steps` is always empty by design** — no client consumes it, so the
   turn-by-turn list isn't built. See the `NOTE` in `get_final_route` for where to
   populate it if that changes.
-- **The Amadeus fallback is disabled by default** via `AMADEUS_ENABLED` (the
-  upstream API is nonfunctional). It previously relied on an unreachable HTTP 600
-  gate; that has been made explicit and its latent bugs fixed.
+
 - **`_add_stops` schedules against the single-leg initial route**; the accurate
   multi-leg route is only computed afterward to get per-segment leg durations.
 - **No status-code checks precede `.model_validate`** on external responses, so
   upstream failures manifest as `ValidationError` → HTTP 502.
 - **Route generation does no database writes.** Persistence (route segmentation
   via `segment_route`) happens separately in the chat CRUD layer.
+
+Traveler counts and family room pricing use the [occupancy contract](travelers-and-hotel-occupancy.md).

@@ -1,3 +1,4 @@
+import { fixtureSession } from './sessionFixtures';
 /**
  * DatabaseUtils — API call wrappers for chat CRUD.
  * axios is mocked so no real network calls happen.
@@ -9,6 +10,7 @@ vi.mock('axios');
 
 import {
   createChat,
+  ensureChatCreated,
   deleteChat,
   initializeUserData,
   updateUserData,
@@ -17,12 +19,13 @@ import {
 // Provide a fake VITE_BACKEND_SERVER so import.meta.env works in tests
 beforeEach(() => {
   vi.clearAllMocks();
+  AUTH_TOKEN = fixtureSession().AccessToken;
   // Vitest automatically processes import.meta.env via vite config;
   // set a predictable value via the env object if needed.
   import.meta.env.VITE_BACKEND_SERVER = 'http://localhost:8000/';
 });
 
-const AUTH_TOKEN = 'test-token';
+let AUTH_TOKEN;
 const CHAT_DATA = {
   chatId: 1,
   action: null,
@@ -66,7 +69,10 @@ describe('deleteChat', () => {
     expect(axios.delete).toHaveBeenCalledTimes(1);
     expect(axios.delete.mock.calls[0][0]).toMatch(/chats\/delete\/1/);
     expect(axios.delete.mock.calls[0][1]).toEqual({
-      headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
+      headers: {
+        Authorization: `Bearer ${AUTH_TOKEN}`,
+        'X-Cognito-Id-Token': sessionStorage.getItem('idToken'),
+      },
     });
   });
 
@@ -82,6 +88,19 @@ describe('deleteChat', () => {
 });
 
 describe('initializeUserData', () => {
+  it('restores pending candidate IDs with the saved profile', async () => {
+    const tripProfile = {
+      pending_locations: {
+        start_address: {
+          query: 'SLO',
+          candidates: [{ id: 'pending-id', address: 'Salem, Illinois' }],
+        },
+      },
+    };
+    axios.get.mockResolvedValueOnce({ data: [[{ chatId: 1, tripProfile }, CHAT_LOG]] });
+    const result = await initializeUserData(AUTH_TOKEN);
+    expect(result.UserData.chatlogs.getChatDataById(1).tripProfile).toEqual(tripProfile);
+  });
   it('restores the agent conversation ID from saved ChatData', async () => {
     axios.get.mockResolvedValueOnce({
       data: [[{ chatId: 1, agentChatId: 'saved-agent-id' }, CHAT_LOG]],
@@ -96,7 +115,10 @@ describe('initializeUserData', () => {
     expect(result).not.toBeNull();
     expect(axios.get.mock.calls[0][0]).toMatch(/\/chats$/);
     expect(axios.get.mock.calls[0][1]).toEqual({
-      headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
+      headers: {
+        Authorization: `Bearer ${AUTH_TOKEN}`,
+        'X-Cognito-Id-Token': sessionStorage.getItem('idToken'),
+      },
     });
   });
 
@@ -160,4 +182,60 @@ describe('updateUserData', () => {
     expect(axios.put).not.toHaveBeenCalled();
     expect(result).toBe(false);
   });
+});
+
+describe('chat creation lifecycle', () => {
+  it('shares creation across remounts and blocks PUT until POST completes', async () => {
+    const owner = {};
+    let finish;
+    axios.post.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        })
+    );
+    axios.put.mockResolvedValueOnce({ status: 200 });
+    const creation = ensureChatCreated(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG], owner);
+    const save = updateUserData(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG], owner);
+    await vi.waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
+    expect(axios.put).not.toHaveBeenCalled();
+    finish({ status: 200 });
+    expect(await creation).toBe(true);
+    expect(await save).toBe(true);
+    await ensureChatCreated(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG], owner);
+    expect(axios.post).toHaveBeenCalledTimes(1);
+  });
+  it('retries creation without PUT and isolates accounts', async () => {
+    const owner = {};
+    axios.post.mockRejectedValueOnce(new Error('offline'));
+    expect(await updateUserData(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG], owner)).toBe(false);
+    expect(axios.put).not.toHaveBeenCalled();
+    axios.post.mockResolvedValue({ status: 200 });
+    expect(await ensureChatCreated(AUTH_TOKEN, CHAT_DATA, [CHAT_LOG], owner)).toBe(true);
+    const other = fixtureSession('other').AccessToken;
+    expect(await ensureChatCreated(other, CHAT_DATA, [CHAT_LOG], owner)).toBe(true);
+    expect(axios.post).toHaveBeenCalledTimes(3);
+  });
+  it('recognizes restored rows without recreating them', async () => {
+    axios.get.mockResolvedValueOnce({ data: [[CHAT_DATA, CHAT_LOG]] });
+    const restored = await initializeUserData(AUTH_TOKEN);
+    expect(
+      await ensureChatCreated(AUTH_TOKEN, CHAT_DATA, restored.chats, restored.UserData.chatlogs)
+    ).toBe(true);
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+});
+
+it('keeps created rows across token refresh and forgets deleted rows', async () => {
+  const owner = {};
+  const token = (expiration) =>
+    `header.${btoa(JSON.stringify({ iss: 'fixture', sub: 'user', exp: expiration }))}.signature`;
+  axios.post.mockResolvedValue({ status: 200 });
+  expect(await ensureChatCreated(token(1), CHAT_DATA, [CHAT_LOG], owner)).toBe(true);
+  expect(await ensureChatCreated(token(2), CHAT_DATA, [CHAT_LOG], owner)).toBe(true);
+  expect(axios.post).toHaveBeenCalledTimes(1);
+  axios.delete.mockResolvedValueOnce({ status: 200 });
+  await deleteChat(token(2), 1, owner);
+  expect(await ensureChatCreated(token(2), CHAT_DATA, [CHAT_LOG], owner)).toBe(true);
+  expect(axios.post).toHaveBeenCalledTimes(2);
 });

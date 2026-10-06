@@ -1,11 +1,11 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { signIn } from '../../services/authService';
 import { Box, Container, TextField, Button, Typography } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import LogoButton from '../../components/LogoButton';
 import './AuthPage.css';
 import PasswordField from './PasswordField';
-import { UserDataContext } from '../../states/UserDataContext';
+import { safeReturnPath } from '../../services/session';
 
 const LoginPage = () => {
   // initializes all login dynamic state variable
@@ -21,7 +21,7 @@ const LoginPage = () => {
 
   // navigation helper function
   const navigate = useNavigate();
-  const { clearUserData } = useContext(UserDataContext);
+  const location = useLocation();
 
   // Attempt sign in to AWS and navigate or display errors
   const handleSubmit = async (event) => {
@@ -29,12 +29,12 @@ const LoginPage = () => {
     try {
       const authResult = await signIn(username, password);
       if (authResult) {
-        clearUserData();
-        navigate('/');
+        navigate(location.state?.returnTo ? safeReturnPath(location.state.returnTo) : '/', {
+          replace: true,
+        });
       }
     } catch (error) {
       setError('Failed to sign in. Please check your credentials and try again.');
-      console.error('Error signing in: ', error);
     }
   };
 
@@ -49,6 +49,12 @@ const LoginPage = () => {
             </Typography>
             <LogoButton />
           </Box>
+          {location.state?.sessionExpired && (
+            <Typography role="status">
+              Your session expired. Sign in again to continue. Your unsent message is kept for this
+              account.
+            </Typography>
+          )}
           {/* Actual form components design and functionality */}
           <form onSubmit={handleSubmit}>
             <TextField

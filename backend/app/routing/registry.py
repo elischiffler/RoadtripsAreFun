@@ -2,16 +2,16 @@
 
 Adding a new algorithm is a two-line change: implement a
 :class:`~app.routing.base.RoutePlanner` under ``planners/`` and register it here.
-The router resolves a planner by name (from the request or the
-``ROUTING_ALGORITHM`` env var) via :func:`get_planner`.
+Interactive callers enforce owner eligibility through ``routing.selection``
+before resolving a registered planner via :func:`get_planner`.
 """
 
 from __future__ import annotations
 
 from app.routing.base import PlanningError, RoutePlanner
 
-# Default algorithm when neither the request nor the environment specifies one.
-DEFAULT_ALGORITHM = "greedy"
+# Canonical interactive default, including owners who have not chosen a planner.
+DEFAULT_ALGORITHM = "cp_sat"
 
 _REGISTRY: dict[str, RoutePlanner] = {}
 
@@ -60,11 +60,9 @@ def _ensure_loaded() -> None:
     global _BUILTINS_LOADED
     if _BUILTINS_LOADED:
         return
-    # Importing each module triggers its register_planner(...) call.
-    from app.routing.planners import (
-        greedy,  # noqa: F401
-        ortools_knapsack,  # noqa: F401
-    )
+    # Importing a module registers an active planner. Legacy implementations
+    # remain in the tree for reference but are no longer selectable.
+    from app.routing.planners import cp_sat  # noqa: F401
 
     # Set only after the built-ins have registered, so an earlier user
     # register_planner(...) can't cause this to short-circuit.

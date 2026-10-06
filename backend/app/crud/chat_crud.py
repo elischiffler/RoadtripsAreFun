@@ -1,5 +1,6 @@
 import json
 import logging
+from threading import Lock
 from typing import Any
 
 import psycopg2
@@ -14,19 +15,21 @@ from ..utils.crud_helpers import segment_route
 
 logger = logging.getLogger(__name__)
 
-# Module-level connection pool — created once on first import.
+# Module-level connection pool, initialized lazily for concurrent agent workers.
 # minconn=1 keeps one connection warm; maxconn=5 handles burst traffic.
-_pool: psycopg2.pool.SimpleConnectionPool = None
+_pool: psycopg2.pool.ThreadedConnectionPool | None = None
+_pool_lock = Lock()
 
 
-def _get_pool() -> psycopg2.pool.SimpleConnectionPool:
+def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
     global _pool
-    if _pool is None or _pool.closed:
-        url = (settings.DATABASE_URL or "").strip()
-        _pool = psycopg2.pool.SimpleConnectionPool(
-            1, 5, url, sslmode=settings.DATABASE_SSLMODE, connect_timeout=5
-        )
-    return _pool
+    with _pool_lock:
+        if _pool is None or _pool.closed:
+            url = (settings.DATABASE_URL or "").strip()
+            _pool = psycopg2.pool.ThreadedConnectionPool(
+                1, 5, url, sslmode=settings.DATABASE_SSLMODE, connect_timeout=5
+            )
+        return _pool
 
 
 def _get_conn():
@@ -34,19 +37,13 @@ def _get_conn():
     pool = _get_pool()
     conn = pool.getconn()
     try:
-        # Lightweight check — if Neon closed the connection while idle this will fail
-        conn.cursor().execute("SELECT 1")
-    except psycopg2.OperationalError:
-        # Connection is dead; close it, open a fresh one, and put that in the pool
-        try:
-            conn.close()
-        except Exception:
-            pass
-        conn = psycopg2.connect(
-            (settings.DATABASE_URL or "").strip(),
-            sslmode=settings.DATABASE_SSLMODE,
-            connect_timeout=5,
-        )
+        # Validate idle connections before use; keep replacements pool-owned.
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1")
+        conn.rollback()
+    except (psycopg2.OperationalError, psycopg2.InterfaceError):
+        pool.putconn(conn, close=True)
+        conn = pool.getconn()
     return conn
 
 

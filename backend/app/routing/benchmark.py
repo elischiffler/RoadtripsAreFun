@@ -27,7 +27,9 @@ from typing import Any
 
 from app.models.routing_models.routing_models import MapBox
 from app.routing.base import PlanMetrics, PlanOptions
+from app.routing.discovery import DiscoveryResult
 from app.routing.geometry import find_position
+from app.routing.occupancy import HotelRoom
 from app.routing.pricing import get_price_range
 from app.routing.registry import available_planners, get_planner
 from app.routing.services import CountingServices, RoutingServices
@@ -156,6 +158,46 @@ class CachedServices:
             )
         return out
 
+    async def cp_sat_candidates(self, route, plan, weights):
+        self.baseline = route
+        return DiscoveryResult(
+            [
+                {
+                    "provider_id": f"benchmark-attraction-{i}",
+                    "name": f"Candidate {i}",
+                    "coordinates": query.coordinates,
+                    "route_progress_seconds": query.progress_seconds,
+                    "section_id": query.section_id,
+                    "utility": 0.9 - i * 0.01,
+                    "address": f"{i} Candidate St",
+                    "url": "https://example.com/c",
+                }
+                for i, query in enumerate(plan.queries[: self.pool_size])
+            ],
+            {"source": "offline benchmark fixture"},
+        )
+
+    async def cp_sat_hotels(self, position, check_in, price_range, weights, hotel_rooms):
+        return [
+            {
+                "provider_id": "benchmark-hotel",
+                "hotel_rooms": [room.model_dump() for room in hotel_rooms],
+                "room_offers": [],
+                "price_scope": "one_room_one_night_including_taxes_fees",
+                "name": "Cached Hotel",
+                "coordinates": position,
+                "utility": 0.8,
+                "price": self.hotel_price,
+                "address": "1 Hotel Rd",
+                "url": "https://example.com/h",
+            }
+        ]
+
+    async def candidate_route(self, *args):
+        route = self.baseline.model_copy(deep=True)
+        route.legs = [route.legs[0], route.legs[0]]
+        return route
+
     def bundle(self) -> RoutingServices:
         return RoutingServices(
             find_stop=self.find_stop,
@@ -163,6 +205,9 @@ class CachedServices:
             find_position=find_position,
             get_price_range=get_price_range,
             gather_candidates=self.gather_candidates,
+            cp_sat_candidates=self.cp_sat_candidates,
+            cp_sat_hotels=self.cp_sat_hotels,
+            candidate_route=self.candidate_route,
         )
 
 
@@ -207,7 +252,11 @@ async def run_case(case: BenchmarkCase, algorithms: list[str]) -> list[PlanMetri
         # Fresh services + counter per run so api_calls is isolated.
         services = CountingServices(case.services().bundle())
         options = PlanOptions(
-            num_stops=case.num_stops, budget=case.budget, start=datetime(2025, 6, 1, 9, 0, 0)
+            traveler_count=2,
+            hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+            num_stops=case.num_stops,
+            budget=case.budget,
+            start=datetime(2025, 6, 1, 9, 0, 0),
         )
         result = await planner.run(case.route(), options, services)
         metrics = result.metrics or PlanMetrics(algorithm=name, feasible=False)

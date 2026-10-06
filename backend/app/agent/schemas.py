@@ -17,7 +17,9 @@ Contracts implemented:
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
+
+from app.utils.location_resolution import LocationConfirmation
 
 # --------------------------------------------------------------------------- #
 # Shared tool primitives (design doc §5) — live here to avoid an import cycle
@@ -49,13 +51,15 @@ class ToolResult(BaseModel):
 
     Tool failures are captured as ``ok=False`` with an ``error`` string and fed
     back to the model rather than raised — the agent can retry, pick another
-    tool, or explain.
+    tool, or explain. Required provider outages use ``retryable=False`` to
+    return an error immediately instead of repeating the same lookup.
     """
 
     name: str
     ok: bool
     result: dict | None = None
     error: str | None = None
+    retryable: bool = True
 
 
 # --------------------------------------------------------------------------- #
@@ -73,6 +77,7 @@ class AgentClientContext(BaseModel):
     hasRoute: bool = False
     stops: int | None = None
     hotelBudget: int | None = None
+    algorithm: str | None = None
 
 
 class AgentChatRequest(BaseModel):
@@ -87,6 +92,20 @@ class AgentChatRequest(BaseModel):
     chatId: str
     message: str
     clientContext: AgentClientContext | None = None
+    locationConfirmation: LocationConfirmation | None = None
+    locationConfirmations: list[LocationConfirmation] | None = Field(
+        default=None, min_length=1, max_length=2
+    )
+
+    @model_validator(mode="after")
+    def distinct_location_selections(self):
+        if self.locationConfirmation and self.locationConfirmations:
+            raise ValueError("Use one location confirmation format.")
+        if self.locationConfirmations and len({s.field for s in self.locationConfirmations}) != len(
+            self.locationConfirmations
+        ):
+            raise ValueError("Confirm each location only once.")
+        return self
 
 
 class AgentAction(BaseModel):
@@ -116,15 +135,43 @@ class AgentToolError(BaseModel):
     error: str
 
 
+class TripDetailPresentation(BaseModel):
+    """Plain text sections, rendered as native lists; also stored in ChatLog."""
+
+    title: str = "Updated trip details"
+    updated: list[str] = Field(default_factory=list)
+    needed: list[str] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+    introduction: str = ""
+    questions: list[str] = Field(default_factory=list)
+
+    def readable_reply(self) -> str:
+        sections = [self.introduction] if self.introduction else []
+        for label, items in (
+            (self.title, self.updated),
+            ("Still needed", self.needed),
+            ("Questions", self.questions),
+        ):
+            if items:
+                sections.append(label + "\n" + "\n".join("• " + item for item in items))
+        sections.extend(self.notes)
+        return "\n\n".join(sections)
+
+
 class AgentChatResponse(BaseModel):
     """``POST /agent/chat`` response body."""
 
     reply: str
+    presentation: TripDetailPresentation | None = None
     toolsUsed: list[str] = Field(default_factory=list)
     toolErrors: list[AgentToolError] = Field(default_factory=list)
     actions: list[AgentAction] = Field(default_factory=list)
+    tripProfile: dict | None = None
+    validationIssues: dict[str, str] = Field(default_factory=dict)
+    extractedFields: list[str] = Field(default_factory=list)
     provider: str | None = None
     usage: AgentUsage | None = None
+    modelCalls: int = 0
 
 
 # --------------------------------------------------------------------------- #
