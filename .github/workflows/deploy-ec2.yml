@@ -1,0 +1,54 @@
+name: Deploy EC2
+
+on:
+  workflow_run:
+    workflows:
+      [
+        "Backend CI",
+        "Frontend CI",
+        "Local containers",
+        "Disposable PostgreSQL CRUD",
+      ]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ec2-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      vars.EC2_DEPLOY_ENABLED == 'true' &&
+      ((github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+       (github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        github.event.workflow_run.head_repository.full_name == github.repository))
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+      - name: Require successful CI on the current main commit
+        id: checked
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_WORKFLOWS: '["Backend CI", "Frontend CI", "Local containers", "Disposable PostgreSQL CRUD"]'
+        run: python3 scripts/check_deployment.py
+      - name: Deploy checked main release and verify health
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EC2_DEPLOY_URL: ${{ vars.EC2_DEPLOY_URL }}
+          EC2_DEPLOY_TOKEN: ${{ secrets.EC2_DEPLOY_TOKEN }}
+          DEPLOY_SHA: ${{ steps.checked.outputs.revision }}
+          DEPLOY_APP: roadtrips
+        run: python3 scripts/request_deployment.py
