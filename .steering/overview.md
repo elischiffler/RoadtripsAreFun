@@ -1,72 +1,56 @@
 # RoadtripsAreFun context
 
-RoadtripsAreFun is a React/Vite frontend and Python/FastAPI backend for authenticated
+RoadtripsAreFun combines a React/Vite frontend and Python/FastAPI backend for
 road trip planning, maps, itineraries, saved chats and conversational preferences.
-The repository remote is `https://github.com/elischiffler/RoadtripsAreFun.git`.
-Manifests, schemas, source and `AGENTS.md` take precedence over these notes.
+The remote is `https://github.com/elischiffler/RoadtripsAreFun.git`.
+Source, manifests, schemas and `AGENTS.md` take precedence over these notes.
 
-October 5 integration is consolidated on `codex/production-release`, targeting
-main through one release PR. See [release consolidation](../docs/release-consolidation.md)
-for preserved branch history, verification and outstanding deployment gates.
-
-This refresh inspected shared feature commit `53fd0bf` against main `92ac3af` on
-October 4, 2026 (America/Los_Angeles). The feature implementation is in draft
-[PR #26](https://github.com/elischiffler/RoadtripsAreFun/pull/26); it is not merged
-main or evidence of a production release. See [current work](current-work.md) for
-the changes since the older guidance and implementation still in progress.
+This refresh inspected merged main `56ac6dbd3eccbd03e105385cf5561582376c0b17`
+on October 5, 2026 (America/Los_Angeles), using an isolated task checkout.
+The Studio release in PR #34 and EC2 deployment workflow in PR #38 are merged.
+The running backend's image revision matches that main commit. See
+[current work](current-work.md) and [operations](operations.md) for evidence and
+the limits of live acceptance.
 
 ## Read next
 
-| Context | Authoritative entry points |
-| --- | --- |
-| [Architecture](architecture.md) | `backend/app/main.py`, `frontend/src/Router.jsx` |
-| [Development](development.md) | `frontend/package.json`, `backend/requirements.txt`, `.github/workflows/` |
-| [Operations](operations.md) | `docs/container-runbook.md`, `docs/aws-api-readiness.md` |
-| [Current work](current-work.md) | Git/PR state and the source map below; refresh before integration |
-| [Product vision](../docs/product-vision.md) | Trip/location profile matching and Tuesday demonstration priorities |
-| [Trip Planning Studio](../docs/studio-access.md) | Password-gated visitor presets, live runs and isolated history |
-| [CP-SAT walkthrough](../docs/cp-sat-explained.md) | Actual inputs, weighted score, integer model, outputs and limitations |
+| Context                                           | Authoritative entry points                                                            |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| [Architecture](architecture.md)                   | `backend/app/main.py`, `frontend/src/Router.jsx`                                      |
+| [Development](development.md)                     | `frontend/package.json`, `backend/requirements.txt`, `Makefile`, `.github/workflows/` |
+| [Operations](operations.md)                       | `docs/ec2-deployment.md`, `compose.neon.yaml`, `.github/workflows/deploy-ec2.yml`     |
+| [Current work](current-work.md)                   | Merged release, source ownership and remaining acceptance boundaries                  |
+| [Product vision](../docs/product-vision.md)       | Trip/location matching and demonstration priorities                                   |
+| [Trip Planning Studio](../docs/studio-access.md)  | Visitor sessions, live presets, streamed runs and isolated history                    |
+| [Adaptive planning](../docs/adaptive-planning.md) | Discovery budgets, road checks, concurrency and provider retries                      |
+| [CP-SAT walkthrough](../docs/cp-sat-explained.md) | Actual inputs, model, objective, diagnostics and limits                               |
 
-## Current capabilities and contracts
+## Current contracts
 
-- `backend/app/routing/registry.py` registers only `cp_sat`; legacy greedy and
-  knapsack implementations remain source references. Account persona weights
-  inform provider-verified candidate utility; the backend owns selection,
-  scheduling, validation and budget warnings.
-- Every ordinary chat turn extracts supplied details before replying.
-  `backend/app/agent/trip_profile.py` owns saved validated trip state;
-  `record_trip_details` and `complete_trip` in `tool_dispatcher.py` collect and
-  complete it. An explicit skipped car is valid; an unanswered choice blocks
-  completion. Relative dates resolve in the starting location's IANA timezone.
-- New endpoints receive a suggested address and require explicit owner/chat-scoped selection;
-  pending endpoints block agent route and itinerary tools. See
-  `docs/agent-location-confirmations.md`.
-- The chat shows deterministic saved-detail lists and at most two missing-detail
-  questions, plus one transient animated process line. See
-  `docs/agent-trip-detail-lists.md` and `docs/agent-progress.md`.
-- CP-SAT hotel prices are dated Google Hotels quotes for explicit room occupants
-  in USD, with taxes/fees and comparison links. Hotel budget is a nightly target
-  per room; usable over-budget rooms produce warnings. Multiple rooms retain
-  independent quotes. See `docs/travelers-and-hotel-occupancy.md`.
-- [Flexible hotel evenings](../docs/flexible-hotel-evenings.md) adds shared local
-  arrival deadlines and optional nearby suggestions; see the current-work handoff
-  for the integration and remaining live acceptance gates.
-- The frontend saves chats, route/itinerary actions, presentation and stable agent
-  conversation IDs. PostgreSQL stores owner-scoped chat data and agent memory.
-  Current schemas and ownership are described in [architecture](architecture.md).
+- `backend/app/routing/registry.py` registers only `cp_sat`. The selection model
+  chooses eligible attractions within a ten-percentage-point average-match bound,
+  minimizing spacing and measured solo detours. Scheduling, hotels and final
+  Mapbox timing validation remain separate responsibilities.
+- The backend owns validated trip details, confirmed endpoints, departure dates,
+  explicit room occupancy, optional car choice and completion. Agent tools reuse
+  the ordinary planning capabilities; persisted state and tool outcomes determine
+  completion. See [architecture](architecture.md).
+- `/studio` is a header-free visitor page; `/algorithm` redirects to it. Signed
+  Studio sessions are independent of Cognito accounts. New runs use live providers;
+  replay requests are rejected. Existing historical replay records retain their
+  original meaning.
+- Cognito continues to protect account chats, maps, itineraries and settings.
+  Frontend renewal and narrowly bounded authentication retries are owned by
+  `frontend/src/services/session.js` and `protectedRequest.js`.
+- The production API uses EC2 with external Neon. Successful CI on the exact
+  current main commit gates automatic API deployment; the frontend remains a
+  separate Vercel deployment boundary.
 
 ## Documentation boundaries
 
-The current Trip Planning Studio is a header-free `/studio` page with password-gated visitor access and editable
-presets, contextual help, contribution tables, actual solver diagnostics, live
-route/itinerary results and live-only provider runs. It is not yet a public release.
-See `docs/senior-demo-runbook.md` for public backend parity and MacBook rehearsal.
-
-`.steering/` is the current implementation map. `.kiro/steering/` contains
-compatibility pointers to it. `docs/route-finding.md` mixes current CP-SAT notes
-with explicitly historical greedy sections; `docs/pluggable-routing-refactor.md`
-and `docs/algorithm-analysis.md` retain earlier designs. `docs/chat-agent-design.md`
-also contains older contracts/plans: inspect the current schemas before using its
-examples. Operational validation files contain dated evidence, not live status.
-Avoid treating old planner defaults, unsigned JWT descriptions or Render targets
-as current implementation facts.
+`.steering/` is the current implementation index; `.kiro/steering/` contains
+compatibility pointers. Release plans, README descriptions and validation reports
+may preserve earlier owner-only Lab, greedy planner or pre-deployment snapshots.
+Use current router/source contracts and [operations](operations.md) when those
+dated descriptions disagree. Historical local/fixture results do not establish
+current Cognito, complete provider-trip, persistence or recovery acceptance.

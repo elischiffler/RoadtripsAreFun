@@ -1,90 +1,99 @@
 # Runtime, CI and operational boundaries
 
-## Configured repository behavior
+## CI and automatic deployment
 
-All four workflows run on every PR and pushes to main, without service path
-filters or production credentials:
+Four validation workflows run on PRs and pushes to main without production
+credentials or service path filters:
 
-| Workflow | Checks |
-| --- | --- |
-| `.github/workflows/backend-ci.yml` | Python 3.12, pinned Ruff format/lint, pytest coverage >=63% |
-| `.github/workflows/frontend-ci.yml` | Node 24, npm ci, format/lint/Vitest coverage and separate Vite build |
-| `.github/workflows/container-ci.yml` | Guarded Compose preview, container smoke and isolated Python test image |
-| `.github/workflows/disposable-postgres-ci.yml` | Real disposable CRUD/ownership, recreation, loss recovery, backup/restore |
+| Workflow                                       | Checks                                                                               |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `.github/workflows/backend-ci.yml`             | Python 3.12, Ruff 0.16.7 format/lint, pytest coverage >=63%                          |
+| `.github/workflows/frontend-ci.yml`            | Node 24, npm ci, launcher tests, format/lint/Vitest coverage and separate Vite build |
+| `.github/workflows/container-ci.yml`           | Guarded Compose preview, container smoke and isolated Python test image              |
+| `.github/workflows/disposable-postgres-ci.yml` | Disposable real CRUD/ownership, recreation, connection recovery, backup/restore      |
 
-Repository settings and required-check enforcement were not inspected in this
-refresh. No production deployment job exists in these workflows. The intended
-automatic deployment after an approved merge still needs a verified release
-pipeline; do not infer it from green CI or Vercel previews.
+`.github/workflows/deploy-ec2.yml` runs after successful main-push CI completion
+or manual dispatch on main. `scripts/check_deployment.py` waits for the latest
+successful execution of every required workflow on the exact current main SHA.
+PR/fork events, stale commits and failed required checks cannot authorize a release.
+The job uses the production environment, a 90-minute timeout and non-cancelling
+`ec2-production` concurrency. Multiple completed checks can trigger runs; a retry
+of the already healthy revision does not recreate the API container.
+
+`scripts/request_deployment.py` posts the checked SHA to the authenticated HTTPS
+deployment endpoint and requires an exact healthy response for that app/revision.
+The shared host independently verifies current main and CI before and after the
+build, serializes releases across applications, checks container revision labels,
+waits for health/readiness and restores the previous release on failure. It deploys
+only this API, without running migrations or deleting volumes.
+
+[EC2 deployment](../docs/ec2-deployment.md) owns application configuration;
+the shared [host runbook](https://github.com/elischiffler/hosting-ops/blob/main/docs/ec2-deployments.md)
+owns the listener, protected files, release directories, rollback and token rotation.
+Do not duplicate host scripts in this repository.
+
+## Verified repository and runtime state
+
+October 5, 2026 (America/Los_Angeles), inspected main
+`56ac6dbd3eccbd03e105385cf5561582376c0b17`:
+
+- Repository variable `EC2_DEPLOY_ENABLED=true` is configured.
+- The production environment has `EC2_DEPLOY_URL=https://ops.elischiffler.dev`,
+  an `EC2_DEPLOY_TOKEN` secret entry and a deployment policy permitting main only.
+  Secret contents were not printed. No SSH or AWS key is stored by this workflow.
+- The classic main branch-protection API returned 404 (not protected). Repository
+  ruleset enforcement was not audited. Successful CI gating in the deployment
+  scripts is verified separately from GitHub merge enforcement.
+- [Successful Actions deployment](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/37411743425)
+  and fresh host inspection confirmed healthy container `roadtrips-neon-api-1`,
+  image tag `roadtrips-api:56ac6dbd3eccbd03e105385cf5561582376c0b17`, matching OCI
+  revision label and recorded release metadata.
+- Public `https://api.roadtrips.elischiffler.dev` health/readiness, algorithms,
+  Studio session/presets/history, anonymous rejection and production CORS passed.
+  These checks do not establish a new complete trip or live Cognito acceptance.
+
+The backend runs on shared EC2 with external Neon using `compose.neon.yaml`:
+API-only, host-loopback port 8002, egress networking, verified database TLS,
+explicit write gate, non-root image, read-only root, tmpfs, bounded logs and
+768 MiB/1 CPU limits. Runtime secrets stay in protected host files.
+The frontend is a separate Vercel boundary; this workflow does not deploy it.
+The retired Render target is not a rollback destination (`README.md`).
+
+## Container and readiness boundaries
 
 `backend/Dockerfile` and `frontend/Dockerfile` use digest-pinned bases and locked
-dependencies. Runtime images carry commit-revision labels, omit dotenv files
-and run as non-root users. Backend runtime removes test packages/source; frontend
-serves a Vite build through nginx. `compose.yaml` provides read-only roots, tmpfs,
-resource caps, bounded logs and healthchecks. API is 768 MiB/1 CPU; web is
-128 MiB/0.5 CPU. These caps are configuration, not shared-host capacity evidence.
+dependencies, revision labels and non-root runtime users. The diagnostic
+`compose.yaml` preview publishes web8082/API8002 on loopback and sets
+`LOCAL_PREVIEW=true`, blocking business routes. It is not the production topology.
+`compose.prod.yaml` describes a separate same-host PostgreSQL alternative; the
+current deployment uses the external-Neon stack, not a database migration.
 
-`/health` is process liveness. `/ready` tests connection and presence of the four
-expected application tables with bounded database operations; it does not verify
-their columns, migration history or a complete authenticated trip.
-`LOCAL_PREVIEW=true` validates isolated configuration and blocks business routes.
-
-## Deployment documentation versus live state
-
-The senior-demo read-only release inspection on October 4 found website/API
-health/readiness 200, but public `/algorithms` still advertised greedy/ortools
-with greedy default. The deployed API therefore lacked the inspected CP-SAT
-feature; its exact revision was not exposed over HTTP. The public frontend
-bundle targeted the documented API. GitHub main was `92ac3af`; its latest
-recorded successful Vercel Production deployment used that SHA. See
-`docs/senior-demo-runbook.md` for matching frontend/backend release gates.
-The Lab's owner page is `/algorithm`; backend endpoints are `/algorithm-lab/*`.
-No new deployment pipeline or production configuration was introduced.
-
-Recovery docs disagree on whether off-host backups are active or proposed.
-Re-verify host evidence before public release; this task did not inspect or
-change production backup jobs. The Lab itself adds no schema migration.
-
-README and `docs/aws-api-readiness.md` record AWS API with external Neon and Vercel
-frontend targets; the Render service is retired. No live host/provider inventory,
-DNS, runtime commit or production credentials were inspected during this refresh.
-Treat recorded host state and historical validation as dated evidence.
-
-`compose.neon.yaml` is an API-only Neon template with loopback publishing, egress,
-verified TLS and an explicit write gate. `compose.prod.yaml` is the proposed
-same-host PostgreSQL topology, depending on a separately owned external database
-network. Neither creates the production database nor configures automatic release.
-`backend/app/core/config.py` owns fail-closed target/TLS/preview configuration.
-`docs/self-hosted-postgres.md` owns TLS semantics; use weaker local TLS only on
-the explicitly isolated network, never as a hosted test workaround.
+`backend/app/main.py` defines `/health` process liveness and `/ready` database
+readiness. Readiness checks connection and presence of `chats`, `route_segments`,
+`steps`, `chat_memory` and `algorithm_lab_runs` with bounded operations. It does
+not verify all columns, ownership rules or migration history. `backend/app/core/config.py`
+owns fail-closed target/TLS/preview configuration; `docs/self-hosted-postgres.md`
+owns TLS semantics. Weaker local TLS is limited to disposable isolated networks.
 
 ## Persistence and recovery
 
-The checked-in local DDL and memory CRUD support disposable tests, not a claim
-about production schema compatibility. `tests/postgres/run.mjs` and
-`tests/journey/run.py` use unique test stacks, distinct source/restore volumes,
-backup verification and populated-target refusal. Retain recovery data; never
-use volume deletion as deployment or cleanup procedure.
+`backend/app/crud/chat_crud.py` and `memory_crud.py` own chat and memory storage.
+`lab_runs.py` shares their pool for subject-scoped experiment history/results.
+`backend/sql/algorithm_lab_runs.sql` owns the explicitly applied Lab migration;
+ordinary chat runs are not recorded as Lab experiments. The historical replay
+storage enum does not change the live-only request contract.
 
-`docs/container-runbook.md` owns container commands, shutdown/recreation and
-recovery. `docs/off-host-neon-recovery.md` and `docs/aws-api-readiness.md` own the
-hosted recovery proposal and release gates. Backup schedules/results mentioned
-there need live re-verification before operational use. An image rollback does
-not undo data writes or incompatible schema changes.
+`tests/postgres/schema.sql` and the memory DDL support disposable tests.
+`tests/postgres/run.mjs` and `tests/journey/run.py` use isolated stacks and recovery
+fixtures; those results do not establish production schema compatibility.
+`docs/container-runbook.md` owns local recreation and recovery commands.
+`docs/off-host-neon-recovery.md` and `docs/aws-api-readiness.md` contain dated hosted
+recovery plans/evidence. Backup schedules and an off-host restore were not verified
+in this refresh. Never delete production volumes as a deployment step; image
+rollback does not undo database writes or incompatible migrations.
 
-Feature PR #26 remains draft pending full live Cognito owner/non-owner, provider,
-model, browser persistence/reload and recovery acceptance. `docs/hotel-prices.md`
-records a limited live hotel lookup, not a complete booking or full trip. Offline
-signatures, mocked model/geocoder tests, local journeys and disposable real
-PostgreSQL have distinct evidence scopes. Preserve those distinctions when
-reporting PASS/BLOCKED; use `docs/container-validation.md` as historical evidence,
-not the current feature's complete validation ledger.
-
-## Persistent Algorithm Lab experiments
-
-Algorithm Lab now records live and selection-replay runs in a separate, owner-scoped
-PostgreSQL table. Ordinary chat runs are excluded. Individual live presets fill the complete form, with persistent inputs, metrics
-and saved map/itinerary results. The benchmark batch modal has been removed. See [run history and migration](../docs/algorithm-run-history.md) for scoring, feasibility,
-comparison rules and operational boundaries. Apply the additive table migration
-to the approved target before the backend release; local validation is not evidence
-of a public database migration. Replay still needs the backend and this database.
+Studio requires stable backend-only `STUDIO_SESSION_SECRET` across deployed workers
+to retain signed sessions through restarts (`docs/studio-access.md`). It grants
+visitor-scoped experiment access independently of Cognito, not account access.
+Complete provider/model trips, browser persistence and two-account authorization
+require separate live evidence. Keep local, fixture, CI and live results distinct.

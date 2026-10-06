@@ -2,11 +2,14 @@
 
 ## Application boundaries
 
-`backend/app/main.py` registers routing, location, car, itinerary, chat and agent
-routers, CORS, process health and database readiness. HTTP inputs are Pydantic
+`backend/app/main.py` registers routing, location, car, itinerary, chat, agent,
+Algorithm Lab and visitor Studio routers, CORS, process health and database
+readiness. HTTP inputs are Pydantic
 models; routers translate errors and reuse capability functions also called by
 agent tools. `frontend/src/main.jsx` mounts the app; `Router.jsx` defines home,
-login/signup and protected chat/map/itinerary/settings pages.
+login/signup, protected chat/map/itinerary/settings pages and visitor `/studio`.
+The old `/algorithm` page redirects to `/studio`; `GlobalHeader.jsx` hides the
+header on Studio, login and signup.
 
 `backend/app/utils/auth.py` verifies Cognito access tokens using RS256/JWKS,
 issuer, expiry/issued-at, token use and configured app client. Verified `sub`
@@ -42,8 +45,9 @@ departure handling. `persona.py` owns the 14 canonical weights, equal defaults,
 normalization and account-versus-trip override rules.
 
 `utils/location_resolution.py` yields up to five validated, deduplicated provider
-candidates. Multiple candidates or bare two/three-letter abbreviations require
-confirmation, even for a single match. `agent/location_confirmation.py` resolves
+candidates. `tool_dispatcher.py` keeps newly supplied endpoints pending and asks
+the traveler to confirm the suggested address, including a single provider match.
+`agent/location_confirmation.py` resolves
 only opaque IDs in the authenticated chat's saved pending state; no model tool
 can confirm them. Origin selection clears the old date while retaining local
 time. Endpoint changes invalidate displayed route/itinerary. Failed revisions
@@ -94,7 +98,7 @@ all baseline gap deviations plus measured solo detour time. Candidate capacity i
 18–60; query/rating budgets and sparse coverage remain inspectable.
 See `docs/adaptive-planning.md` and `docs/cp-sat-explained.md`.
 
-At inspected head `53fd0bf`, `cp_sat_scheduler.py` schedules two-hour visits and
+`cp_sat_scheduler.py` schedules two-hour visits and
 uses `models/scheduling_policy.py`: preferred hotel 18:00, hotel cutoff 20:00,
 restart 09:00, default final destination cutoff 21:00, with optional overrides.
 It tries up to six overnight positions around the preferred point and ranks
@@ -142,7 +146,8 @@ cross-chat facts/persona, per-chat summary, trip profile and saved planned route
 Reads/writes use authenticated owner/chat scope; the frontend owns verbatim
 ChatLog writes. `schemas/chat_schemas.py` accepts optional presentation in JSONB.
 No new table migration is required for these JSON additions. Disposable DDL is
-`tests/postgres/schema.sql`; production schema/history remain unverified.
+`tests/postgres/schema.sql`; production readiness confirms expected table presence,
+not complete column/schema compatibility or migration history.
 
 ## Algorithm Lab run measurements
 
