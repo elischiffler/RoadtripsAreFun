@@ -110,6 +110,11 @@ class RouteMeasure:
     """
 
     def __init__(self, route):
+        """Build road segments with driving-time intervals from the baseline route.
+
+        Step geometry supplies distances; step durations are scaled to the route duration.
+        Without usable steps, use the overall route geometry and duration.
+        """
         self.segments = []
         steps = [step for leg in route.legs for step in leg.steps]
         total = sum(max(0, step.duration) for step in steps)
@@ -140,6 +145,7 @@ class RouteMeasure:
         ).reshape(-1, 6)
 
     def position(self, seconds):
+        """Return [lat, lon] at a baseline driving time clamped to the route duration."""
         seconds = max(0, min(self.duration, seconds))
         for a, b, start, end in self.segments:
             if end > start and start <= seconds <= end:

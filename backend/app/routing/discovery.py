@@ -28,6 +28,7 @@ class DiscoveryPlan:
     queries: list[SearchQuery] = field(default_factory=list)
 
     def section(self, seconds):
+        """Return the zero-based route section containing the given baseline driving seconds."""
         return (
             min(self.section_count - 1, int(seconds * self.section_count / self.baseline_seconds))
             if self.baseline_seconds
@@ -35,6 +36,7 @@ class DiscoveryPlan:
         )
 
     def snapshot(self):
+        """Return the plan and its search queries as a dictionary for stored diagnostics."""
         return asdict(self)
 
 

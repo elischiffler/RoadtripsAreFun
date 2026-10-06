@@ -13,6 +13,7 @@ class _RatingFields(BaseModel):
     @field_validator("*", mode="before", check_fields=False)
     @classmethod
     def unit_interval(cls, value):
+        """Validate a numeric rating in [0, 1] and return it as a float; reject booleans."""
         if isinstance(value, bool) or not isinstance(value, (int, float)):
             raise ValueError("attribute ratings must be numbers in [0, 1]")
         if not math.isfinite(value) or not 0 <= value <= 1:

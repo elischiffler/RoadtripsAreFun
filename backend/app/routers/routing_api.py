@@ -74,6 +74,7 @@ def _build_services() -> RoutingServices:
     timezone_cache = {}
 
     async def timezone_at(coords):
+        """Resolve the IANA timezone for [lat, lon] coordinates and cache it for this run."""
         key = tuple(coords)
         if key not in timezone_cache:
             location = await singleflight(
@@ -108,6 +109,10 @@ def _build_services() -> RoutingServices:
 async def get_initial_route(
     start_lat: float, start_lon: float, end_lat: float, end_lon: float
 ) -> MapBox_route:
+    """Return the baseline Mapbox route between the supplied endpoint coordinates.
+
+    Provider and response validation failures are translated to HTTP errors.
+    """
     try:
         # Construct initial route without stops
         initial_route = await _call_route(start_lat, start_lon, end_lat, end_lon)

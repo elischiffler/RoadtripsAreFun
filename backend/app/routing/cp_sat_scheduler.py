@@ -28,6 +28,7 @@ _MAX_OVERNIGHTS = 60
 
 
 def _usable_hotel(hotel: Any) -> bool:
+    """Return whether a hotel record has usable identity, coordinates, price, and utility."""
     if not isinstance(hotel, dict):
         return False
     coords = hotel.get("coordinates")
@@ -53,6 +54,10 @@ def _usable_hotel(hotel: Any) -> bool:
 
 
 def _over_budget(hotel: dict, budget: float, room_count: int) -> bool:
+    """Check whether any room quote exceeds the per-room nightly budget.
+
+    Without individual offers, compare the hotel total against budget times room count.
+    """
     offers = hotel.get("room_offers") or []
     return (
         any(offer["price"] > budget for offer in offers)
@@ -79,6 +84,7 @@ async def schedule_cp_sat_route(
     coordinates = route.geometry.coordinates
 
     async def zone_at(position):
+        """Resolve a position's local zone, using the fixture clock when no resolver is supplied."""
         if services.timezone_at is not None:
             return ZoneInfo(await services.timezone_at(list(position)))
         # Injected offline services/benchmarks may use a fixed fixture clock.
@@ -109,6 +115,7 @@ async def schedule_cp_sat_route(
     measure = RouteMeasure(route)
 
     def estimated_position(seconds):
+        """Convert elapsed driving seconds, including estimated detours, to baseline coordinates."""
         for (a, baseline_a), (b, baseline_b) in zip(mapping, mapping[1:]):
             if a <= seconds <= b and b > a:
                 return measure.position(

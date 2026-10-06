@@ -68,6 +68,7 @@ class ProposedPlace(BaseModel):
     @field_validator("name")
     @classmethod
     def _named(cls, value: str) -> str:
+        """Trim an estimated place name and reject empty names or names longer than 180 characters."""
         value = value.strip()
         if not value or len(value) > 180:
             raise ValueError("place name must be nonempty and bounded")
@@ -88,6 +89,7 @@ class VerifiedPlace(BaseModel):
     @field_validator("provider_id", "name")
     @classmethod
     def _nonempty(cls, value: str) -> str:
+        """Trim a provider ID or place name and reject an empty result."""
         value = value.strip()
         if not value:
             raise ValueError("verified place requires ID and name")
@@ -96,6 +98,7 @@ class VerifiedPlace(BaseModel):
     @field_validator("coordinates")
     @classmethod
     def _coordinates(cls, value: list[float]) -> list[float]:
+        """Validate a finite [lat, lon] pair within geographic bounds and return floats."""
         if len(value) != 2 or not all(math.isfinite(v) for v in value):
             raise ValueError("coordinates must be a finite [lat, lon] pair")
         lat, lon = value
@@ -124,13 +127,16 @@ class VerifiedHotel(VerifiedPlace):
     @field_validator("price")
     @classmethod
     def _price(cls, value: float) -> float:
+        """Require a finite, strictly positive hotel quote."""
         if not math.isfinite(value) or value <= 0:
             raise ValueError("hotel price must be finite and positive")
         return value
 
 
 class PlaceProvider(Protocol):
-    async def attractions_near(self, point: list[float]) -> list[VerifiedPlace]: ...
+    async def attractions_near(self, point: list[float]) -> list[VerifiedPlace]:
+        """Return provider-verified attraction records near the supplied [lat, lon] point."""
+        ...
 
     async def hotels_near(
         self,
@@ -138,22 +144,31 @@ class PlaceProvider(Protocol):
         check_in: date,
         price_range: tuple[tuple[float, float], str],
         room: HotelRoom,
-    ) -> list[VerifiedHotel]: ...
+    ) -> list[VerifiedHotel]:
+        """Return dated hotel offers near a point for the requested room occupants."""
+        ...
 
 
 def _name_key(name: str) -> str:
+    """Normalize case, punctuation, and spacing for matching provider names to AI proposals."""
     return " ".join(re.findall(r"\w+", name.casefold()))
 
 
 def _point(value: list[float]) -> list[float]:
+    """Validate a [lat, lon] search point using the provider-coordinate rules."""
     return VerifiedPlace(provider_id="point", name="point", coordinates=value).coordinates
 
 
 def _distance_miles(first: list[float], second: list[float]) -> float:
+    """Return the geodesic distance in miles between two [lat, lon] points."""
     return geodesic(first, second).miles
 
 
 def _parse_proposals(text: str, limit: int) -> list[ProposedPlace]:
+    """Parse AI JSON into at most limit validated name-and-rating proposals.
+
+    Optional JSON fences are removed; malformed responses and invalid entries are skipped.
+    """
     text = text.strip()
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.IGNORECASE)
@@ -177,6 +192,11 @@ def _parse_proposals(text: str, limit: int) -> list[ProposedPlace]:
 async def _propose(
     ai: LLMProvider, kind: str, point: list[float], limit: int, names: list[str] | None = None
 ) -> list[ProposedPlace]:
+    """Request estimated place ratings, optionally restricted to provider-verified names.
+
+    Returns a bounded list of valid proposals. AI provider failures raise
+    CandidateProviderError; identity and offer verification happen separately.
+    """
     example = json.dumps(
         {
             "candidates": [
@@ -197,6 +217,7 @@ async def _propose(
         )
 
     async def generate():
+        """Return the AI response using bounded worker execution and transient-failure retries."""
         with timed("generation"):
             return await retry_async(
                 lambda: threaded(
@@ -295,6 +316,7 @@ async def attraction_candidates(
         point = _point(query.coordinates)
 
         async def lookup():
+            """Fetch nearby provider records with query diagnostics, concurrency limits, and retries."""
             with stage("attractions.provider", query=query.id, section=query.section_id):
                 return await retry_async(
                     lambda: limited("nearby", lambda: places.attractions_near(point))
@@ -583,15 +605,22 @@ class LivePlaceProvider:
 
     @staticmethod
     def require_attractions() -> None:
+        """Require Terra attraction credentials or raise CandidateProviderError."""
         if not config.TRIPADVISOR_API:
             raise CandidateProviderError("TripAdvisor Terra is not configured")
 
     @staticmethod
     def require_hotels() -> None:
+        """Require the geocoding key used to verify Google Hotels locations."""
         if not config.OPENCAGE_KEY:
             raise CandidateProviderError("Google Hotels location verification is not configured")
 
     async def attractions_near(self, point: list[float]) -> list[VerifiedPlace]:
+        """Fetch Terra attraction listings within five miles of a [lat, lon] point.
+
+        Returns validated identities and coordinates in provider rank order;
+        non-attraction listings and unusable records are skipped.
+        """
         self.require_attractions()
         try:
             increment("tripadvisor")
@@ -651,6 +680,10 @@ class LivePlaceProvider:
         price_range: tuple[tuple[float, float], str],
         room: HotelRoom,
     ) -> list[VerifiedHotel]:
+        """Fetch and validate Google Hotels offers for a location, date, and room.
+
+        The price range is advisory, so usable offers above the target are retained.
+        """
         del price_range  # Advisory budget: keep usable over-budget hotels.
         self.require_hotels()
         from app.routing.sources.google_hotels import GoogleHotelLookupError, GoogleHotelProvider
@@ -686,6 +719,7 @@ async def hotel_candidates(
     places = places or LivePlaceProvider()
 
     async def room_lookup(room):
+        """Fetch scored offers for one room, sharing identical requests within the current run."""
         key = (
             "room",
             tuple(overnight_position),
@@ -741,6 +775,7 @@ async def hotel_candidates(
 
 
 def _provider_categories(location):
+    """Extract category names from provider strings or named category objects."""
     values = getattr(location, "categories", None) or []
     if not isinstance(values, list):
         return []

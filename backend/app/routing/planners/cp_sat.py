@@ -142,6 +142,7 @@ class CPSatPlanner(RoutePlanner):
         record_explanation(road_checks=records)
 
         async def verify(candidate):
+            """Return one candidate with measured solo-detour data or a road-exclusion reason."""
             lat, lon = candidate["coordinates"]
             with stage("attractions.detour", providerId=candidate["provider_id"]):
                 try:
@@ -172,6 +173,7 @@ class CPSatPlanner(RoutePlanner):
             }
 
         async def retain(index, candidate):
+            """Store a candidate's road-check result at its original index and return the record."""
             result = await verify(candidate)
             records[index] = {
                 **result,

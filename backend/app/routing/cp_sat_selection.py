@@ -18,6 +18,7 @@ TIME_LIMIT_SECONDS = 5.0
 
 
 def valid_coordinates(value: Any) -> bool:
+    """Return whether a value is a finite [latitude, longitude] pair within geographic bounds."""
     return (
         isinstance(value, (list, tuple))
         and len(value) == 2
