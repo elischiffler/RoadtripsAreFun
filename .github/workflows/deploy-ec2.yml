@@ -1,0 +1,75 @@
+name: Deploy EC2
+
+on:
+  workflow_run:
+    workflows:
+      [
+        "Backend CI",
+        "Frontend CI",
+        "Local containers",
+        "Disposable PostgreSQL CRUD",
+      ]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ec2-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      vars.EC2_DEPLOY_ENABLED == 'true' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_repository.full_name == github.repository))
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: production
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Require successful CI on the current main commit
+        id: checked
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_WORKFLOWS: '["Backend CI", "Frontend CI", "Local containers", "Disposable PostgreSQL CRUD"]'
+        run: python3 scripts/check_deployment.py
+      - name: Configure verified SSH access
+        env:
+          EC2_HOST: ${{ vars.EC2_HOST }}
+          EC2_USER: ${{ vars.EC2_USER }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_KNOWN_HOSTS: ${{ secrets.EC2_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          test -n "$EC2_HOST" && test -n "$EC2_USER"
+          test -n "$EC2_SSH_KEY" && test -n "$EC2_KNOWN_HOSTS"
+          [[ "$EC2_HOST" =~ ^[a-zA-Z0-9.-]+$ ]]
+          [[ "$EC2_USER" =~ ^[a-z_][a-z0-9_-]*$ ]]
+          umask 077
+          mkdir -p "$RUNNER_TEMP/ec2-ssh"
+          printf '%s\n' "$EC2_SSH_KEY" > "$RUNNER_TEMP/ec2-ssh/key"
+          printf '%s\n' "$EC2_KNOWN_HOSTS" > "$RUNNER_TEMP/ec2-ssh/known_hosts"
+      - name: Deploy checked main release and verify health
+        env:
+          EC2_HOST: ${{ vars.EC2_HOST }}
+          EC2_USER: ${{ vars.EC2_USER }}
+          DEPLOY_SHA: ${{ steps.checked.outputs.revision }}
+        run: |
+          set -euo pipefail
+          ssh -i "$RUNNER_TEMP/ec2-ssh/key" \
+            -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$RUNNER_TEMP/ec2-ssh/known_hosts" \
+            -o ConnectTimeout=20 "$EC2_USER@$EC2_HOST" \
+            "sudo -n /usr/local/sbin/deploy-ec2 roadtrips $DEPLOY_SHA"
+      - name: Remove runner SSH credentials
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/ec2-ssh"
