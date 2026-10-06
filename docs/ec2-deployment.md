@@ -14,4 +14,4 @@ Runtime secrets remain on the host. No SSH/AWS key is stored in Actions.
 Only the API is deployed. Existing Compose project identities, external databases,
 volumes, frontends, and other applications are preserved. Database migrations
 remain a separate reviewed operation. See the shared deployment and recovery
-[runbook](https://github.com/elischiffler/hosting-ops/blob/codex/ec2-deployment/docs/ec2-deployments.md).
+[runbook](https://github.com/elischiffler/hosting-ops/blob/main/docs/ec2-deployments.md).
