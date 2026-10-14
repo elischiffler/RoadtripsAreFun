@@ -50,6 +50,47 @@ Use the [500-place pilot plan](catalog-pilot-plan.md) to track review and covera
 Unknown rights or access evidence remain exclusion reasons even when a category
 target cannot be met.
 
+## Offline GeoNames schema inspection
+
+The [upstream readme](https://download.geonames.org/export/dump/readme.txt) and
+[feature-code reference](https://www.geonames.org/export/codes.html) were read on
+October 14. They document a 19-column UTF-8 TSV, WGS84 latitude then longitude,
+US ISO state codes, native integer IDs and modification dates. The readme states
+CC-BY-4.0; the unavailable Kaggle mirror's rights/version/format are still unresolved.
+
+`scripts/inspect_geonames.py` can inspect a supplied **local uncompressed TSV**
+using those documented positions. It performs no downloads and never connects
+to a database. This is a review-queue parser, not an approved Kaggle importer or
+proof that the mirror follows the upstream schema. Only selected fields are
+validated; it does not certify every column of a dump. It guesses no CSV layouts
+or headers. Example after an original file and metadata are legitimately supplied:
+
+```sh
+/workspace/roadtrips-venv/bin/python scripts/inspect_geonames.py \
+  --input /workspace/catalog-data/supplied-geonames.txt \
+  --region CA --region AK --region HI \
+  --feature-code S.MUS --feature-code L.AMUS \
+  --output /workspace/catalog-data/geonames-review-leads.jsonl
+```
+
+The example selects documented museum/amusement-park codes for inspection; it
+does not establish public access, current operation, category balance or a driving
+arrival. No authentic file has been run. Synthetic rows exist only inside unit tests.
+Limits cannot exceed 500 unique review leads, 10,000 scanned lines, 20 MiB read,
+64 KiB per line and 30 seconds checked between reads. Scanning stops on the first
+limit; a selected prefix is not a representative sample or complete coverage.
+The report records truncation/rejects, exact inspected-prefix and output checksums,
+plus state/code counts. A prefix checksum is not a full archive checksum.
+
+Every lead is marked `review_only: true`, `import_eligible: false`, with source
+coordinates explicitly unverified as arrivals, no arrival point or operation
+evidence, and unresolved rights. The separate `.review.json` report always has
+`accepted_for_import: 0` and `kaggle_compatibility: "unverified"`. It is not an
+import manifest and the existing importer rejects it. Exact duplicate IDs are
+counted; conflicting records abort publication. Existing outputs are preserved.
+This prepares bounded inspection once access changes, without relaxing any gate
+or adding an application runtime path.
+
 ## Candidate 1: Biodiversity in National Parks
 
 - Kaggle: https://www.kaggle.com/datasets/nationalparkservice/park-biodiversity

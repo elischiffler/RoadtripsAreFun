@@ -38,6 +38,10 @@ Independent checks:
   [Local containers](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/38647990157)
   and [Disposable PostgreSQL CRUD](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/38647990198)
   all completed successfully. Vercel and CodeRabbit statuses also reported success.
+  At documentation head `345b218b70d87fba7c99e65ae40610680ea62c2d`, CodeRabbit's
+  exact green-status description was `Review skipped: draft pull request`.
+  PR #40 had no submitted reviews or inline review threads when checked. Neither
+  the green status nor skipped draft review constitutes a completed code review.
 - Neon project metadata: PostgreSQL 18, Free plan, 1 GiB branch logical-size
   ceiling, production branch `br-noisy-forest-aqidrq92`, 46,145,536 logical bytes
   (44.01 MiB). Project-reported compute time was 306,256 seconds (85.07 CU-hours)
@@ -54,6 +58,29 @@ requested category and geography remains a coverage gap. No live chat, Studio,
 route, evening, saved-history or browser-reload journey was validated against
 Neon catalog data. The [pilot plan](catalog-pilot-plan.md) records the requested
 variety and the remaining Kaggle adapter work; it is not a fabricated batch.
+
+## Offline intake follow-up
+
+While source downloads and production-origin access remain paused, a standalone
+`scripts/inspect_geonames.py` review parser was implemented against the published
+upstream TSV documentation. See [schema evidence and limits](catalog-source-review.md#offline-geonames-schema-inspection).
+It performs no network/database operations and does not alter application
+discovery, licensing admission, staging or activation. No actual source file
+was run and Kaggle-mirror compatibility remains unverified.
+
+The 25 new synthetic tests cover selected-field/schema rejection, state/code
+filtering, coordinate order and finite bounds, duplicate/conflicting identities,
+prefix checksums, partial-row/scan/candidate/time limits, publication collisions
+and rejection of the review report by the approved importer. Full backend recheck:
+**834 passed, four opt-in PostgreSQL tests skipped, 87.30% application coverage**,
+above the unchanged 63% floor. Backend and script Ruff format/lint, CLI help and
+`git diff --check` pass. The coverage measurement targets `app`, not the standalone
+script; synthetic parser tests do not verify a real archive. The earlier 88.12%
+measurement included the opt-in PostgreSQL catalog tests.
+
+No frontend/runtime/schema code changed in this follow-up. Authentic acquired,
+accepted, staged and activated counts remain zero; Neon and production remain
+unchanged. Resume source and live-flow work only after the access blocker changes.
 
 ## Passed checks
 
