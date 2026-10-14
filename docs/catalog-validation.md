@@ -4,6 +4,57 @@ Implementation evidence for issue #36; production rollout remains blocked.
 All database tests and benchmarks used synthetic disposable local data.
 No real Overture or Kaggle archive was imported; Neon remains unchanged.
 
+## Fresh saved-environment recheck
+
+At approximately 22:42 UTC on October 14, the saved checkout was recovered from
+base `56ac6dbd3eccbd03e105385cf5561582376c0b17` onto the existing
+`codex/neon-places-catalog` branch. GitHub and `git ls-remote` both confirmed
+draft PR #40 at `23fd423c235e88229fa1aec6f5a31aa3a2a1f247`; all implementation
+changes were preserved. `AGENTS.md` and its steering map were read. The workspace
+`.agents` directory was empty; the repository had no `.agents` directory.
+
+`KAGGLE_API_TOKEN` was present in the fresh process. A single Python urllib
+request used that existing token in an Authorization header for the small pinned
+candidate archive:
+
+`https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1`
+
+The request had a 30-second timeout and a 5 MiB read ceiling. It failed with
+`URLError: Tunnel connection failed: 403 Forbidden`, before contacting Kaggle.
+No archive or dataset bytes were received; no credential value was printed or
+written. Token validity, dataset availability, archive size and schema therefore
+remain untested. No alternate host, proxy change, elevation, or alternate download
+transport was used after the denial. This is a network blocker, not evidence of
+bad Kaggle credentials. The pinned version is an attempted probe, not a verified
+dataset release.
+
+Independent checks:
+
+- Catalog unit/extraction/combination tests: **60 passed, four PostgreSQL tests
+  skipped** because `CATALOG_TEST_DATABASE_URL` was not configured. This recheck
+  does not claim a new local PostgreSQL, container, or whole-suite run.
+- GitHub Actions for the implementation commit above: [Backend CI](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/38647990169),
+  [Frontend CI](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/38647990174),
+  [Local containers](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/38647990157)
+  and [Disposable PostgreSQL CRUD](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/38647990198)
+  all completed successfully. Vercel and CodeRabbit statuses also reported success.
+- Neon project metadata: PostgreSQL 18, Free plan, 1 GiB branch logical-size
+  ceiling, production branch `br-noisy-forest-aqidrq92`, 46,145,536 logical bytes
+  (44.01 MiB). Project-reported compute time was 306,256 seconds (85.07 CU-hours)
+  for October 1–November 1 UTC. This is a consumption snapshot, not remaining
+  capacity promised to the pilot.
+- One read-only Neon query returned server version `180006`, database size
+  22,134,784 bytes (21.11 MiB), and `NULL` for all three catalog table names.
+  Branch logical storage and `pg_database_size` measure different things. No
+  private application rows were read. No Neon schema, catalog, pointer, billing,
+  credentials or deployment configuration was changed.
+
+Authentic acquired/accepted/staged/activated places: **0 / 0 / 0 / 0**. Every
+requested category and geography remains a coverage gap. No live chat, Studio,
+route, evening, saved-history or browser-reload journey was validated against
+Neon catalog data. The [pilot plan](catalog-pilot-plan.md) records the requested
+variety and the remaining Kaggle adapter work; it is not a fabricated batch.
+
 ## Passed checks
 
 - Backend: **813 tests, 88.12% coverage**, above the unchanged 63% floor.

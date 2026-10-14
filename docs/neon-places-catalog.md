@@ -41,6 +41,15 @@ by state/category, sampled coordinate/access accuracy, duplicates and omissions;
 exercise urban, rural, interstate, Alaska and Hawaii routes and evening fallback.
 A bounded city pilot is insufficient for nationwide activation. Kaggle is an
 explicit additional requirement; see [source review](catalog-source-review.md).
+The requested next step is a balanced initial batch of roughly 500 unique
+destinations, not a national bulk import; see [pilot scope and acceptance](catalog-pilot-plan.md).
+
+The current extractor, manifest validator, normalizer and discovery identity are
+Overture-specific. They do **not** yet ingest arbitrary Kaggle CSVs. An authentic
+Kaggle archive must first be inspected and cleared, then receive an explicit
+reviewed adapter and provenance/identity handling. Do not relabel Kaggle records
+as Overture, add a blanket Kaggle license allowlist, or bypass the existing
+natural-area access-point guard to make a batch pass.
 
 ## Bounded extraction and isolated validation
 

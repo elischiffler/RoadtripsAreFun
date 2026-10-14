@@ -4,7 +4,15 @@ No Kaggle archive was downloaded or imported. No new credentials, accounts or te
 
 ## Access evidence
 
-Unauthenticated Python urllib requests to each URL returned `URLError: Tunnel connection failed: 403 Forbidden` from the environment proxy before reaching the origin:
+The fresh saved environment now exposes `KAGGLE_API_TOKEN`. A single bounded,
+authenticated attempt to download version 1 of
+`paultimothymooney/trailstrailheadsandrockformationsinboulder` still failed with
+proxy `CONNECT 403 Forbidden` before reaching Kaggle. No token was printed,
+archive downloaded, or alternative route attempted. See the exact endpoint,
+limits and independent checks in [validation](catalog-validation.md). Kaggle
+authentication has not been accepted or rejected by the origin.
+
+Earlier unauthenticated Python urllib requests to each URL returned `URLError: Tunnel connection failed: 403 Forbidden` from the environment proxy before reaching the origin:
 
 - https://www.kaggle.com/api/v1/datasets/list?search=us%20museums&pageSize=10
 - https://www.kaggle.com/api/v1/datasets/download/imls/museum-directory
@@ -13,6 +21,34 @@ Unauthenticated Python urllib requests to each URL returned `URLError: Tunnel co
 - https://catalog.data.gov/api/3/action/package_search?q=Museum%20Universe%20Data%20File&rows=2
 
 The web tool resolves the two Kaggle pages and their titles, but returns no metadata/body. API view/list URLs are also unavailable through web. Therefore exact archive bytes, current version/update time, column names and counts cannot be verified in this environment. This is not evidence that Kaggle itself requires authentication.
+
+## Expanded candidate queue
+
+The requested pilot includes roadside/niche stops, entertainment, nature, beaches,
+landmarks, museums and national parks. These six leads came from the task handoff;
+archive contents and Kaggle metadata were not independently fetched in this
+recheck. No row is approved by appearing in this table. Do not treat uploader
+license labels as clearance of upstream content.
+
+| Candidate | Intended contribution | Review before acceptance |
+| --- | --- | --- |
+| [Boulder trails, trailheads and rock formations](https://www.kaggle.com/datasets/paultimothymooney/trailstrailheadsandrockformationsinboulder) | Regional nature/trailheads | Match actual archive layers and fields to the City of Boulder distribution and applicable CC0 policy identified in the handoff. Verify current public trailhead/parking points, seasonal closures and road access. Rock/area centers and trail geometry are not driving arrivals. One regional dataset cannot supply national variety. |
+| [GeoNames allCountries](https://www.kaggle.com/datasets/jwilda3/geonames-allcountries) | Candidate landmarks, beaches and natural features | Resolve the handoff's mirror CC-BY-SA label versus upstream CC-BY before reuse. Inspect exact version/schema and original notices; retain feature/native IDs. Filter explicit US/state and eligible feature codes outside Neon. Do not acquire an unbounded worldwide dump for this pilot. Feature coordinates do not establish an entrance or current visitor access. |
+| [Rollercoaster database](https://www.kaggle.com/datasets/robikscube/rollercoaster-database) | Entertainment/amusement-park destinations | Inspect the actual Wikipedia-derived field provenance and applicable reuse requirements. Keep independently permitted facts and attribution; do not assume article text/photos are unrestricted. Collapse rides to an operating destination with its own source identity and verified public arrival point; historical or removed rides do not establish an open park. |
+| [US roadside-attractions photographs](https://www.kaggle.com/datasets/headsortails/us-roadside-attractions-photographs) | Leads for niche/roadside curation | Verify the exact Library of Congress collection/item rights and metadata provenance. The handoff reports historical metadata without coordinates: confirm the archive and independently verify surviving destinations, current use, public access and practical arrival. Historical photographs alone do not establish a current stop. Photos are outside this pilot. |
+| [IMLS museum directory](https://www.kaggle.com/datasets/imls/museum-directory) | Museums and cultural variety | Resolve contributor/geocoding rights described below; review historical/administrative addresses, duplicates, relocations, museum qualification and current operation. A nonprofit's office is not necessarily a visitor destination. |
+| [NPS park biodiversity](https://www.kaggle.com/datasets/nationalparkservice/park-biodiversity) | National-park leads | The handoff reports that version 1 lacks coordinates; verify the actual file. Use independently permitted entrance/visitor-center facts with distinct provenance and current-access evidence. Do not invent park coordinates or substitute park centers. Species observations are outside the places pilot. |
+
+The [GeoNames export page](https://www.geonames.org/export/) was independently
+read in this recheck. It states CC-BY attribution, permits commercial use and
+offers country extracts as well as a worldwide file. That establishes the
+upstream's stated terms, not the terms/provenance of the unavailable Kaggle
+mirror or the suitability of individual arrival points. Fetching upstream policy
+text did not download a replacement source archive or fulfill the Kaggle requirement.
+
+Use the [500-place pilot plan](catalog-pilot-plan.md) to track review and coverage.
+Unknown rights or access evidence remain exclusion reasons even when a category
+target cannot be met.
 
 ## Candidate 1: Biodiversity in National Parks
 
