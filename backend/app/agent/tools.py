@@ -113,7 +113,7 @@ class ToolDispatcher(Protocol):
         """Execute one tool call within ``ctx`` and return its result.
 
         ``dispatch`` is async because the real tools wrap inherently I/O-bound
-        capabilities (Mapbox / TripAdvisor / planner / car data), several of
+        capabilities (Mapbox / places catalog / planner / car data), several of
         which are already ``async``. The agent loop (``run_turn``) awaits it.
         """
         ...

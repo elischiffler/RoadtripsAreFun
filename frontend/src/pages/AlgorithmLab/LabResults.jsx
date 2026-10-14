@@ -1,3 +1,4 @@
+import PlaceSource from '../../components/PlaceSource';
 import RunError from './RunError';
 import PropTypes from 'prop-types';
 import { useId, useState } from 'react';
@@ -388,7 +389,7 @@ export default function LabResults({ result, previous }) {
             <p className="lab-note">
               {result.mode === 'replay'
                 ? 'This teaching fixture uses synthetic places and ratings. No provider verification was performed during replay.'
-                : 'Provider checks establish identity and coordinates. Interest ratings are AI estimates.'}{' '}
+                : 'Source records establish identity and coordinates, not current availability. Interest ratings are AI estimates.'}{' '}
               Inspect each candidate’s provenance below.
             </p>
           </details>
@@ -443,6 +444,7 @@ export default function LabResults({ result, previous }) {
                 </table>
               </div>
               <p className="lab-note">Provider ID: {candidate.provider_id}</p>
+              <PlaceSource place={candidate.profile ?? candidate} />
               <pre>{JSON.stringify(candidate.provenance, null, 2)}</pre>
             </details>
           ))}

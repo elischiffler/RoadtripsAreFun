@@ -3,6 +3,10 @@
 !backend/**
 !frontend/
 !frontend/**
+!scripts/
+!scripts/catalog_import.py
+!scripts/catalog_combine.py
+!scripts/extract_overture_places.py
 **/node_modules
 **/dist
 **/.env*

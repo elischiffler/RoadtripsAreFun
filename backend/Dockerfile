@@ -6,6 +6,8 @@ RUN python -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir -r requ
 
 FROM dependencies AS test
 COPY backend/ ./
+COPY scripts/ /scripts/
+COPY frontend/public/licenses/ /frontend/public/licenses/
 ENV PATH="/opt/venv/bin:$PATH" PYTHONDONTWRITEBYTECODE=1
 CMD ["pytest", "--cov=app", "--cov-report=term-missing", "--cov-fail-under=63"]
 

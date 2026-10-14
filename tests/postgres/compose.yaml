@@ -26,7 +26,6 @@ services:
     <<: *postgres
     volumes:
       - source-data:/var/lib/postgresql
-      - ./schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
 
   restore:
     <<: *postgres

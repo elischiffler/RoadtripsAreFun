@@ -110,6 +110,10 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
             "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
             "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
             "name": stop["name"],
+            "source": stop.get("source"),
+            "source_release": stop.get("source_release"),
+            "source_attribution": stop.get("source_attribution"),
+            "source_updated_at": stop.get("source_updated_at"),
             "url": stop.get("url"),
             "price": stop.get("price"),
             "traveler_count": stop.get("traveler_count"),
@@ -140,6 +144,10 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
                         if suggestion.get("visit_time")
                         else "Unscheduled",
                         "name": suggestion["name"],
+                        "source": suggestion.get("source"),
+                        "source_release": suggestion.get("source_release"),
+                        "source_attribution": suggestion.get("source_attribution"),
+                        "source_updated_at": suggestion.get("source_updated_at"),
                         "url": suggestion.get("url"),
                         "address": suggestion.get("address"),
                         "kind": "evening",
@@ -207,6 +215,10 @@ async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]
         for stop in itinerary:
             point = {
                 "name": stop["name"],
+                "source": stop.get("source"),
+                "source_release": stop.get("source_release"),
+                "source_attribution": stop.get("source_attribution"),
+                "source_updated_at": stop.get("source_updated_at"),
                 "time": stop["time"],
                 "address": stop.get("address"),
                 "url": stop.get("url"),

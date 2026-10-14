@@ -14,6 +14,10 @@ class Itinerary_Day(BaseModel):
     date: str
 
     class Itinerary_Stop(BaseModel):
+        source: str | None = None
+        source_release: str | None = None
+        source_attribution: str | None = None
+        source_updated_at: str | None = None
         name: str
         time: str
         address: str | None = None

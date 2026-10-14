@@ -77,7 +77,12 @@ deployed routing backend, which must independently enforce the same contract.
 `routing/sources/persona_candidates.py` separates model proposals/attribute ratings
 from provider-verified names, coordinates and hotel prices. Backend utility is a
 weighted sum of canonical attribute ratings; AI coordinates/prices/final scores
-are not trusted. Terra verifies attractions; `sources/google_hotels.py` verifies
+are not trusted. The October 14 catalog branch sources attraction and optional
+evening identity/coordinates from licensed Overture records in PostgreSQL, with
+release, attribution and upstream evidence dates. This migration is not yet
+production acceptance: pilot loading and rollout remain pending. See
+[rollout and blockers](../docs/neon-places-catalog.md). Unknown hours are not
+invented; empty coverage has no Terra fallback. `sources/google_hotels.py` verifies
 dated totals, identity, addresses and a 30-mile radius. Limits/deadlines and
 failure behavior are owned by source constants and `docs/hotel-prices.md`.
 

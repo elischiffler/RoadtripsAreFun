@@ -67,7 +67,7 @@ export default function RunHistory({ revision }) {
                   <th>Status</th>
                   <th>Selection objective</th>
                   <th>Time</th>
-                  <th>API attempts</th>
+                  <th>Provider attempts</th>
                   <th>Details</th>
                 </tr>
               </thead>
@@ -105,7 +105,7 @@ export default function RunHistory({ revision }) {
                       </td>
                       <td>
                         {metrics
-                          ? Object.values(metrics.external_calls).reduce(
+                          ? Object.values(metrics.external_calls || {}).reduce(
                               (sum, value) => sum + value,
                               0
                             )
@@ -138,6 +138,13 @@ export default function RunHistory({ revision }) {
                               . Mean score: {group.objective?.mean?.toFixed(2) ?? 'unavailable'};
                               standard deviation:{' '}
                               {group.objective?.stddev?.toFixed(2) ?? 'unavailable'}.
+                            </p>
+                          )}
+                          {metrics?.external_calls?.tripadvisor != null && (
+                            <p>
+                              Tripadvisor Terra API attempts (saved measurement):{' '}
+                              {metrics.external_calls.tripadvisor}. This historical count does not
+                              describe current catalog lookups.
                             </p>
                           )}
                           <RunError error={run.error} attempts={run.attempts} />

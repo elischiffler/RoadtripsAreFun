@@ -274,6 +274,9 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
                 "utility",
                 "section_id",
                 "source_query_ids",
+                "source_release",
+                "source_attribution",
+                "source_updated_at",
                 "route_progress_seconds",
                 "detour_seconds",
             )
@@ -438,6 +441,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
         "external_calls": {
             key: telemetry["calls"].get(key, 0)
             for key in (
+                "catalog",
                 "tripadvisor",
                 "mapbox",
                 "language_model",

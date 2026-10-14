@@ -12,7 +12,6 @@ import math
 import re
 from datetime import date, datetime
 from typing import Any, Literal, Protocol
-from urllib.parse import urlparse
 
 from geopy.distance import geodesic
 from pydantic import BaseModel, ConfigDict, field_validator
@@ -22,6 +21,7 @@ from app.agent.progress import emit, stage
 from app.agent.provider_diagnostics import retry_async
 from app.agent.providers import LLMProvider, build_default_chain
 from app.agent.schemas import LLMMessage
+from app.catalog import repository
 from app.routing import config
 from app.routing.discovery import (
     DiscoveryPlan,
@@ -36,7 +36,6 @@ from app.routing.occupancy import MAX_ROOMS, HotelRoom
 from app.routing.profiles import AttributeRatings, crossmatch
 from app.routing.run_metrics import increment, timed
 from app.routing.runtime import (
-    http_get,
     in_run,
     joined,
     limited,
@@ -44,8 +43,6 @@ from app.routing.runtime import (
     singleflight,
     threaded,
 )
-from app.routing.sources.attractions import _auth_headers
-from app.routing.terra_pacing import terra_requests
 
 MAX_ATTRACTIONS = 60
 MAX_HOTELS = 10
@@ -76,7 +73,7 @@ class ProposedPlace(BaseModel):
 
 
 class VerifiedPlace(BaseModel):
-    """Identity and coordinates returned by a place provider."""
+    """Validated source identity and coordinates, without a live availability claim."""
 
     provider_id: str
     name: str
@@ -85,6 +82,10 @@ class VerifiedPlace(BaseModel):
     url: str | None = None
     categories: list[str] = []
     provider_rank: int = 0
+    source: str | None = None
+    source_release: str | None = None
+    source_attribution: str | None = None
+    source_updated_at: str | None = None
 
     @field_validator("provider_id", "name")
     @classmethod
@@ -135,7 +136,7 @@ class VerifiedHotel(VerifiedPlace):
 
 class PlaceProvider(Protocol):
     async def attractions_near(self, point: list[float]) -> list[VerifiedPlace]:
-        """Return provider-verified attraction records near the supplied [lat, lon] point."""
+        """Return catalog source records near the supplied [lat, lon] point."""
         ...
 
     async def hotels_near(
@@ -192,7 +193,7 @@ def _parse_proposals(text: str, limit: int) -> list[ProposedPlace]:
 async def _propose(
     ai: LLMProvider, kind: str, point: list[float], limit: int, names: list[str] | None = None
 ) -> list[ProposedPlace]:
-    """Request estimated place ratings, optionally restricted to provider-verified names.
+    """Request estimated place ratings, optionally restricted to source-record names.
 
     Returns a bounded list of valid proposals. AI provider failures raise
     CandidateProviderError; identity and offer verification happen separately.
@@ -211,9 +212,8 @@ async def _propose(
         "Do not include prices, coordinates, or a final utility score."
     )
     if names is not None:
-        prompt += (
-            " Rate only these provider-verified names, preserving each exactly: "
-            + json.dumps(names)
+        prompt += " Rate only these source-record names, preserving each exactly: " + json.dumps(
+            names
         )
 
     async def generate():
@@ -260,12 +260,16 @@ def _candidate(
                 "url",
                 "categories",
                 "provider_rank",
+                "source",
+                "source_release",
+                "source_attribution",
+                "source_updated_at",
             }
         ),
         attribute_ratings=proposal.attribute_ratings,
         provenance={
             "identity_source": place.provider_id.split(":", 1)[0],
-            "ratings_source": "AI estimates; provider verifies identity, not ratings",
+            "ratings_source": "AI estimates; source records supply identity, not live verification",
             "verified_at": None,
         },
     )
@@ -293,8 +297,6 @@ async def attraction_candidates(
         return DiscoveryResult([], {"plan": plan.snapshot(), "stop_reason": "zero_requested"})
     ai = ai or run_resource("rating_provider", build_default_chain)
     places = places or LivePlaceProvider()
-    if isinstance(places, LivePlaceProvider):
-        places.require_attractions()
     measure = RouteMeasure(raw_route)
     raw, rated, attempted, queried = {}, {}, set(), []
     observations, rounds = [], []
@@ -601,13 +603,7 @@ async def _room_candidates(
 
 
 class LivePlaceProvider:
-    """Terra identities and configurable dated hotel prices."""
-
-    @staticmethod
-    def require_attractions() -> None:
-        """Require Terra attraction credentials or raise CandidateProviderError."""
-        if not config.TRIPADVISOR_API:
-            raise CandidateProviderError("TripAdvisor Terra is not configured")
+    """Versioned catalog identities and independent dated hotel prices."""
 
     @staticmethod
     def require_hotels() -> None:
@@ -616,62 +612,33 @@ class LivePlaceProvider:
             raise CandidateProviderError("Google Hotels location verification is not configured")
 
     async def attractions_near(self, point: list[float]) -> list[VerifiedPlace]:
-        """Fetch Terra attraction listings within five miles of a [lat, lon] point.
-
-        Returns validated identities and coordinates in provider rank order;
-        non-attraction listings and unusable records are skipped.
-        """
-        self.require_attractions()
+        """Read bounded source facts; these are not live venue verification."""
+        increment("catalog")
         try:
-            increment("tripadvisor")
-            response = await terra_requests.call(
-                lambda: http_get(
-                    f"{config.TRIPADVISOR_BASE_URL}/locations/nearby",
-                    params={
-                        "lat": point[0],
-                        "lon": point[1],
-                        "radius": 5,
-                        "unit": "MI",
-                        "category": "ATTRACTION",
-                        "sort": "rating,desc",
-                    },
-                    headers=_auth_headers(),
-                )
+            records = await threaded(
+                "catalog",
+                repository.nearby,
+                point,
+                ["daytime"],
+                radius_miles=_ATTRACTION_RADIUS_MI,
+                limit=MAX_ATTRACTIONS,
             )
-            response.raise_for_status()
-            from app.models.routing_models.trip_advisor_models import Terra_Page_Nearby_Location
-
-            payload = response.json()
-            if not isinstance(payload, dict) or not isinstance(payload.get("data"), list):
-                raise ValueError("Terra nearby response has no locations list")
-            page = Terra_Page_Nearby_Location.model_validate(payload)
-        except Exception as exc:
-            raise CandidateProviderError("TripAdvisor Terra attraction lookup failed") from exc
-        records = []
-        for rank, entry in enumerate(page.data):
-            location = entry.location
-            if location is None or location.id is None or location.coordinates is None:
-                continue
-            # Some live nearby responses include other categories despite the
-            # ATTRACTION filter. Require the provider's attraction listing type.
-            listing = urlparse(location.web_url() or "")
-            if not listing.path.startswith("/Attraction_Review-"):
-                continue
+        except Exception:
+            # Database exceptions can contain connection details. Do not retain them
+            # in the public diagnostic exception chain.
+            raise CandidateProviderError("Places catalog lookup unavailable") from None
+        output = []
+        for record in records[:MAX_ATTRACTIONS]:
             try:
-                records.append(
-                    VerifiedPlace(
-                        provider_id=f"terra:{location.id}",
-                        name=location.primary_name(),
-                        coordinates=[location.coordinates.latitude, location.coordinates.longitude],
-                        address=location.formatted_address(),
-                        url=location.web_url(),
-                        provider_rank=rank,
-                        categories=_provider_categories(location),
-                    )
-                )
+                place = VerifiedPlace.model_validate(record)
+                if (
+                    "daytime" in place.categories
+                    and _distance_miles(point, place.coordinates) <= _ATTRACTION_RADIUS_MI
+                ):
+                    output.append(place)
             except (TypeError, ValueError):
                 continue
-        return records
+        return output
 
     async def hotels_near(
         self,
@@ -772,15 +739,3 @@ async def hotel_candidates(
             }
         )
     return results
-
-
-def _provider_categories(location):
-    """Extract category names from provider strings or named category objects."""
-    values = getattr(location, "categories", None) or []
-    if not isinstance(values, list):
-        return []
-    return [
-        value if isinstance(value, str) else value["name"]
-        for value in values
-        if isinstance(value, str) or isinstance(value, dict) and isinstance(value.get("name"), str)
-    ]

@@ -161,12 +161,23 @@ def ready():
             # through the same pooled Neon URL used by normal requests.
             cur.execute("SET statement_timeout = 5000")
             cur.execute(
-                "SELECT to_regclass('public.chats'), to_regclass('public.route_segments'), to_regclass('public.steps'), to_regclass('public.chat_memory'), to_regclass('public.algorithm_lab_runs')"
+                "SELECT to_regclass('public.chats'), to_regclass('public.route_segments'), to_regclass('public.steps'), to_regclass('public.chat_memory'), to_regclass('public.algorithm_lab_runs'), to_regclass('public.places_catalog_imports'), to_regclass('public.places_catalog'), to_regclass('public.places_catalog_active')"
             )
             if not all(cur.fetchone()):
                 return JSONResponse(
                     status_code=503,
                     content={"status": "not_ready", "dependency": "database_schema"},
+                )
+            cur.execute(
+                "SELECT EXISTS (SELECT 1 FROM places_catalog_active a "
+                "JOIN places_catalog_imports i ON i.generation=a.generation "
+                "WHERE i.row_count > 0 AND EXISTS (SELECT 1 FROM places_catalog p "
+                "WHERE p.generation=a.generation))"
+            )
+            if not cur.fetchone()[0]:
+                return JSONResponse(
+                    status_code=503,
+                    content={"status": "not_ready", "dependency": "places_catalog"},
                 )
         return {"status": "ready"}
     except Exception:
