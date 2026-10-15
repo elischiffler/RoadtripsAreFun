@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 from psycopg2.extras import Json, execute_values
 
-from app.catalog import boulder, mixed, nps, nps_public, roadside
+from app.catalog import arrival_review, boulder, mixed, nps, nps_public, roadside
 from app.catalog.normalize import normalize
 
 UPSTREAM_LICENSES = {
@@ -46,6 +46,11 @@ def validate_manifest(manifest):
             raise ValueError(f"manifest missing {field}")
     if len(json.dumps(manifest).encode()) > 32_768:
         raise ValueError("manifest exceeds 32 KiB")
+    if (
+        "arrival_review" in manifest
+        and manifest["schema_version"] != "roadtrips-overture-places-v1"
+    ):
+        raise ValueError("current arrival reviews require original Overture source inputs")
     if manifest["schema_version"] == boulder.SCHEMA:
         if set(manifest["licenses"]) != {"CC0-1.0"}:
             raise ValueError("Boulder requires retained CC0 license evidence")
@@ -184,11 +189,18 @@ def prepare(path, manifest, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
             rows[row["source_id"]] = row
     if digest.hexdigest() != manifest["sha256"]:
         raise ValueError("input checksum does not match manifest")
+    reviewed = {}
+    if "arrival_review" in manifest:
+        reviewed = arrival_review.apply(
+            list(rows.values()), manifest["arrival_review"], max_bytes=max_bytes - size
+        )
+        size += reviewed.pop("bytes")
     return list(rows.values()), {
         "scanned": scanned,
         "accepted": len(rows),
         "bytes": size,
         "rejects": dict(rejects),
+        **reviewed,
     }
 
 

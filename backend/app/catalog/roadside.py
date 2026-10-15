@@ -67,7 +67,7 @@ def text(raw):
     document = html.fromstring(raw)
     for element in document.xpath("//script|//style"):
         element.drop_tree()
-    return " ".join(document.text_content().split())
+    return " ".join(" ".join(document.itertext()).split())
 
 
 def rights(raw):

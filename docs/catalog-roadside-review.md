@@ -1,5 +1,10 @@
 # Roadside source follow-up — October 15, 2026
 
+The [subsequent current-arrival review](catalog-arrival-review.md) validates a
+72-arrival generation, adding two independently reviewed Overture venues to the
+70-arrival proof below. All earlier generations and the 400-record evaluation
+remain preserved. Dedicated roadside intake still contains one destination.
+
 Dedicated Kaggle roadside intake now has **one documented destination: Corn
 Palace**. It is validated in a separate 70-arrival local generation, including
 the previous 69 Boulder/NPS arrivals. The 400-record local evaluation catalog

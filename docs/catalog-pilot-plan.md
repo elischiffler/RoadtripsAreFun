@@ -1,10 +1,10 @@
 # Authentic 500-place pilot
 
 This is the requested intake/acceptance plan for issue #36 and PR #40.
-The [latest arrival review](catalog-roadside-review.md) validates a separate
-70-arrival local bundle: one roadside, 12 nature, 12 beaches, eight museums and
-37 national parks across 24 states. It is 430 short of the roughly 500 target,
-with no eligible entertainment/landmark batch and no DC record. The original
+The [latest arrival review](catalog-arrival-review.md) validates a separate
+72-arrival local bundle: one roadside, one entertainment, 12 nature, 12 beaches,
+nine museums and 37 national parks across 24 states. It is 428 short of the roughly
+500 target, with no dedicated landmark batch and no DC record. The original
 400-record evaluation below is preserved for further review.
 The [October 15 mixed-source pilot](catalog-mixed-pilot.md) now records 400
 unique authentic **local evaluation** records across 30 states and DC. Of those,

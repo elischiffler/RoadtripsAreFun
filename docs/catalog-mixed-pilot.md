@@ -1,10 +1,11 @@
 # Authentic mixed-source catalog pilot — October 15, 2026
 
-The [subsequent arrival review](catalog-roadside-review.md) validates a separate
-70-arrival generation, adding one Kaggle roadside destination to the 69 documented
-Boulder/NPS arrivals. It withholds a temporarily closed museum candidate. The
-400-record evaluation below is preserved unchanged; the separate bundle does
-not promote the 331 pending Overture candidates or fulfill the roughly 500 goal.
+The [subsequent arrival review](catalog-arrival-review.md) validates a separate
+72-arrival generation: the 69 documented Boulder/NPS arrivals, one Kaggle roadside
+destination and two independently reviewed Overture venues. It withholds a
+temporarily closed museum candidate. The 400-record evaluation below is preserved
+unchanged; 329 Overture candidates remain outside the usable bundle. The roughly
+500 goal and category/corridor coverage remain open.
 
 The current **local evaluation catalog contains 400 unique records**, across 30
 states and DC. No production catalog schema, import, activation or deployment

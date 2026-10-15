@@ -1,8 +1,10 @@
 # Kaggle source assessment — 2026-10-14
 
 The [roadside follow-up](catalog-roadside-review.md) locates the actual LOC
-archive-rights statement and validates one Corn Palace arrival in a separate
-70-arrival local bundle. No photographs or unresolved arrivals are admitted.
+archive-rights statement and validates one Corn Palace arrival. The subsequent
+[current-arrival review](catalog-arrival-review.md) produces a separate 72-arrival
+local bundle, including the first reviewed entertainment venue. No photographs
+or unresolved arrivals are admitted.
 
 Current expansion: the [October 15 mixed-source pilot](catalog-mixed-pilot.md)
 records 400 authentic local evaluation records, 69 documented Boulder/NPS

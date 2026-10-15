@@ -32,7 +32,15 @@ from app.catalog.normalize import normalize  # noqa: E402
 MAX_INPUTS = 100
 
 
-def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES, selected_ids=None):
+def combine(
+    inputs,
+    output,
+    *,
+    max_rows=MAX_ROWS,
+    max_bytes=MAX_BYTES,
+    selected_ids=None,
+    arrival_review=None,
+):
     """Validate bounded immutable snapshots, deduplicate, then publish a new pair."""
     inputs = list(inputs)
     if not 1 <= len(inputs) <= MAX_INPUTS:
@@ -69,6 +77,8 @@ def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES, selected_
                     raise ValueError("input manifest exceeds 32 KiB")
                 manifest = json.loads(manifest_bytes)
                 validate_manifest(manifest)
+                if "arrival_review" in manifest and arrival_review is None:
+                    raise ValueError("reviewed input requires an explicit complete arrival review")
                 if manifest["schema_version"] in {
                     "kaggle-boulder-trailheads/1",
                     "kaggle-nps-arrivals/1",
@@ -186,6 +196,8 @@ def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES, selected_
                 "categories": dict(categories),
             },
         }
+        if arrival_review is not None:
+            manifest["arrival_review"] = arrival_review
         # Revalidate exact output, including licensing, checksum, row and byte ceilings.
         prepare(combined, manifest, max_rows=max_rows, max_bytes=max_bytes)
         manifest_temp = temp / "manifest.json"
@@ -216,8 +228,18 @@ def main():
         type=Path,
         help="explicit bounded JSON list of native Overture IDs",
     )
+    parser.add_argument(
+        "--arrival-review", type=Path, help="retained explicit publisher-arrival review JSON"
+    )
     args = parser.parse_args()
     selected = None
+    review = None
+    if args.arrival_review:
+        with args.arrival_review.open("rb") as stream:
+            raw = stream.read(32_769)
+        if len(raw) > 32_768:
+            parser.error("arrival review exceeds 32 KiB")
+        review = json.loads(raw)
     if args.selected_ids:
         with args.selected_ids.open("rb") as stream:
             raw = stream.read(1024 * 1024 + 1)
@@ -237,6 +259,7 @@ def main():
         max_rows=args.max_rows,
         max_bytes=args.max_bytes,
         selected_ids=selected,
+        arrival_review=review,
     )
     print(json.dumps(result["combination"], sort_keys=True))
 

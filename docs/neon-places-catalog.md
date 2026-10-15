@@ -1,8 +1,8 @@
 # Neon places catalog: staged rollout
 
-Latest [arrival review](catalog-roadside-review.md) validates a separate 70-arrival
-local generation with one Kaggle/LOC roadside destination, preserved original
-coordinates and exact-content recovery. The 400-record evaluation below remains
+Latest [arrival review](catalog-arrival-review.md) validates a separate 72-arrival
+local generation with one Kaggle/LOC roadside destination, two current publisher
+reviews on original Overture venues, preserved original coordinates and exact-content recovery. The 400-record evaluation below remains
 unchanged. Neither dataset is a completed production cutover or a balanced
 roughly 500-place pilot.
 

@@ -1,10 +1,11 @@
 # Catalog validation — October 14, 2026
 
-Latest [arrival-review evidence](catalog-roadside-review.md): a separate 70-arrival
+Latest [arrival-review evidence](catalog-arrival-review.md): a separate 72-arrival
 bundle passes authentic staging, rollback, exact-content restore and all three
-discovery adapters with HTTP blocked. It adds one Kaggle roadside destination;
-the original 400-record evaluation and production remain unchanged. The roughly
-500 target, eligible entertainment/landmark batches and production gates remain open.
+discovery adapters with HTTP blocked. It includes one Kaggle roadside destination
+and the first reviewed entertainment venue. The original 400-record evaluation
+and production remain unchanged. The roughly 500 target, broad category/corridor
+coverage and production gates remain open.
 
 Current expansion: the [October 15 mixed-source pilot](catalog-mixed-pilot.md)
 records 400 authentic local evaluation records, 69 documented Boulder/NPS
