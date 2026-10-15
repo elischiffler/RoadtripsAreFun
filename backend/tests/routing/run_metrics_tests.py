@@ -72,6 +72,22 @@ def test_quality_needs_matching_candidates_and_proven_optimum():
     assert aggregate_runs([{"metrics": baseline}])[0]["quality_percent"] is None
 
 
+def test_eligibility_policy_changes_separate_comparisons_without_changing_ratings():
+    old = envelope()
+    new = copy.deepcopy(old)
+    old["explanation"]["solver"].update(utility_threshold=0.60)
+    new["explanation"]["solver"].update(
+        utility_threshold=0,
+        utility_threshold_inclusive=False,
+        eligibility_policy="positive_utility",
+    )
+    first, second = metric(old), metric(new)
+    assert first["candidate_hash"] != second["candidate_hash"]
+    assert first["comparison_key"] != second["comparison_key"]
+    assert first["cohort_key"] != second["cohort_key"]
+    assert first["candidate_snapshot"] == second["candidate_snapshot"]
+
+
 def test_repeated_inputs_capture_variation_and_failures_without_false_determinism():
     baseline = metric()
     changed = copy.deepcopy(baseline)

@@ -49,7 +49,10 @@ general provider failures fail the required stage.
 
 ## The selection model
 
-Eligible candidates have utility at least `0.60` and usable measured road routes.
+Eligible candidates have positive utility and usable measured road routes.
+Neutral or specialized places remain available when they are the best matches in
+the catalog. Ratings keep their original values; the existing ten-point quality
+bound compares the selected average with the best achievable average.
 Let `K = min(requested_count, eligible_count)`. Select exactly K candidates. There
 is no nearest-query-slot constraint. With zero requested stops discovery is
 skipped; no eligible candidates produce the honest empty-selection status.

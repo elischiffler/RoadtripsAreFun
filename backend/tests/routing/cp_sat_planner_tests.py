@@ -110,7 +110,9 @@ async def test_zero_stops_has_no_candidate_call_or_hotel(route, start_date, fake
 
 
 @pytest.mark.asyncio
-async def test_sparse_and_weak_candidates_are_not_forced(route, start_date, fake_services):
+async def test_available_positive_candidates_fill_sparse_requested_count(
+    route, start_date, fake_services
+):
     short_route(route, 3600)
     services, calls = configure(fake_services)
     point = services.find_position(route.geometry.coordinates, route.legs[0].steps, 3600 / 7)
@@ -125,7 +127,7 @@ async def test_sparse_and_weak_candidates_are_not_forced(route, start_date, fake
         ),
         services,
     )
-    assert [stop["name"] for stop in result.stopping_points] == ["good"]
+    assert sorted(stop["name"] for stop in result.stopping_points) == ["good", "weak"]
     assert len(calls["attractions"][0][1]) == 9
     assert calls["attractions"][0][1][0] != calls["attractions"][0][1][1]
 

@@ -198,6 +198,31 @@ it('shows actual candidate counts and explains the distinction between AI rating
   );
 });
 
+it.each([
+  [{ threshold: 0, thresholdInclusive: false }, '> 0'],
+  [{ threshold: 0.6 }, '≥ 0.6'],
+])('shows the actual threshold comparison in live selection details', (policy, comparison) => {
+  render(
+    <StudioProgress
+      events={[
+        {
+          type: 'progress',
+          state: 'completed',
+          stage: 'route.model',
+          eligible: 3,
+          candidates: 8,
+          sections: 2,
+          requestedStops: 2,
+          ...policy,
+        },
+      ]}
+    />
+  );
+  expect(screen.getByRole('status')).toHaveTextContent(`match ${comparison}`);
+  expect(screen.getByRole('status')).toHaveTextContent('3 of 8 candidates');
+  expect(screen.getByRole('status')).toHaveTextContent('2 route sections. Attraction cap: 2');
+});
+
 it('does not advance phases from heartbeats or infer hotel work that has not begun', () => {
   render(
     <StudioProgress
