@@ -1,7 +1,7 @@
 # Route evaluation
 
 The evaluator runs locally with frozen evidence. It makes no provider calls and
-writes no database rows. The public Lab/Studio APIs remain live-only, with their
+writes no database rows. Archive/container runs without Git record a source-byte snapshot hash and explicit unavailable Git/dirty metadata; a supplied `ROADTRIPS_REVISION` is retained. The public Lab/Studio APIs remain live-only, with their
 existing owner/visitor authentication and replay rejection.
 
 Implemented against catalog PR 40 at `5ab14e01e0ababd3525093ff67fac7ac29d2bd6f`.

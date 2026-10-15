@@ -487,3 +487,14 @@ def test_tool_schemas_advertise_the_shared_count_limit():
             schema = schema["details"]["properties"]
         assert schema["num_stops"]["maximum"] == MAX_STOPS
         assert schema["num_stops"]["minimum"] == 1
+
+
+def test_archive_identity_does_not_require_git_or_claim_a_clean_checkout(monkeypatch):
+    import app.routing.evaluation.runner as runner
+
+    monkeypatch.setattr(runner.shutil, "which", lambda name: None)
+    monkeypatch.delenv("ROADTRIPS_REVISION", raising=False)
+    result = runner.identity()
+    assert result["revision"] == "unversioned-source"
+    assert result["dirty"] is None and result["git_metadata_available"] is False
+    assert len(result["source_snapshot_hash"]) == 64

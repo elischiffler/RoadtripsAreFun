@@ -8,7 +8,7 @@ were not modified.
 ## Local checks
 
 - Python 3.12.14; pinned backend requirements and Ruff 0.16.7. Ruff format and
-  lint pass. Backend coverage: **898 passed, 4 skipped, 86.19%**, above the
+  lint pass. Backend coverage: **899 passed, 4 skipped, coverage above 86%**, above the
   unchanged 63% threshold.
 - Node 24.12.0; committed npm lockfile via `npm ci`. Frontend format, lint,
   coverage and Vite production build pass: **315 tests / 39 files**. Coverage
@@ -35,6 +35,12 @@ The public API's old zero-stop test was replaced with explicit 422-before-provid
 validation. Algorithm/auth integration fakes now use valid positive trip inputs;
 internal zero-stop planner/scheduler checks remain. Explicit JSX/JS source imports
 resolve the catalog UI's case ambiguity on the Mac without changing attribution.
+
+The first container CI exposed that the slim test image deliberately has no Git.
+The evaluator now records a source snapshot hash and unavailable Git metadata
+for archives/containers, preserving an explicitly supplied revision without
+claiming a clean checkout. A regression test covers that environment; all 37
+evaluation contract tests passed in the Linux test image with `--network none`.
 
 ## Exact-head CI
 

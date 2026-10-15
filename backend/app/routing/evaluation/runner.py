@@ -4,6 +4,7 @@ import asyncio
 import json
 import os
 import platform
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -56,23 +57,44 @@ def json_text(value):
 
 
 def identity():
-    root = Path(__file__).resolve().parents[4]
+    source = Path(__file__).resolve().parents[2]
+    root = next((parent for parent in source.parents if (parent / ".git").exists()), None)
+    source_hash = fingerprint(
+        {
+            str(path.relative_to(source)): fingerprint(path.read_bytes().hex())
+            for path in sorted(source.rglob("*.py"))
+        }
+    )
+    revision = os.getenv("ROADTRIPS_REVISION", "unversioned-source")
+    dirty, patch_hash, git_available = None, None, False
+    if root is not None and shutil.which("git"):
 
-    def git(*args):
-        return subprocess.check_output(["git", "-C", str(root), *args], text=True).strip()
+        def git(*args):
+            return subprocess.check_output(
+                ["git", "-C", str(root), *args], text=True, stderr=subprocess.PIPE
+            ).strip()
 
-    patch = git("diff", "HEAD")
-    status = git("status", "--porcelain")
-    # Untracked implementation bytes are included; no dotenv or credentials are read.
-    untracked = {}
-    for name in git("ls-files", "--others", "--exclude-standard").splitlines():
-        path = root / name
-        if path.is_file():
-            untracked[name] = fingerprint(path.read_bytes().hex())
+        try:
+            patch = git("diff", "HEAD")
+            status = git("status", "--porcelain")
+            untracked = {}
+            # Only non-ignored repository files: no dotenv or credentials are read.
+            for name in git("ls-files", "--others", "--exclude-standard").splitlines():
+                path = root / name
+                if path.is_file():
+                    untracked[name] = fingerprint(path.read_bytes().hex())
+            revision = git("rev-parse", "HEAD")
+            dirty = bool(status)
+            patch_hash = fingerprint({"diff": patch, "untracked": untracked}) if status else None
+            git_available = True
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            pass
     return {
-        "revision": git("rev-parse", "HEAD"),
-        "dirty": bool(status),
-        "patch_hash": fingerprint({"diff": patch, "untracked": untracked}) if status else None,
+        "revision": revision,
+        "dirty": dirty,
+        "patch_hash": patch_hash,
+        "source_snapshot_hash": source_hash,
+        "git_metadata_available": git_available,
         "python": platform.python_version(),
         "ortools": version("ortools"),
         "tzdata": version("tzdata"),
