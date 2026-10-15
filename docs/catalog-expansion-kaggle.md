@@ -210,6 +210,24 @@ activation/rollback transactions for authorized execution. They serialize catalo
 mutation, reject unexpected generations/content, retain storage guards and
 preserve all prior rows. Cutover/rollback changes only the active pointer.
 
+The private version 1 source/review ZIP is **45,663,274 bytes**, SHA-256
+`a580bf9449b5f37c8216e88035d05471d6b936579fd87c7a038bd460668d8176`.
+Its code snapshot is `a2e7048ca623bba7e262d357e977f675275a0f6a`; subsequent
+commits update documentation/evidence only. A fresh authorized Library download
+matches those exact bytes. Fresh ZIP extraction verifies **823 inventoried files**
+and replays all **557** rows with network/database connections forbidden. The
+relocated recipe uses **91,650,476 bytes**, below the unchanged 100 MiB guard.
+See the [portable replay receipt](evidence/catalog-expansion-kaggle-portable-replay.json).
+
+The exact implementation also passes the network-disabled backend container
+(**1,250 tests / 86.66% coverage**, six opt-in PG cases skipped), both running
+container smoke tests and actual served license/OSM-evidence byte checks. The
+full disposable CRUD/ownership, recreate, outage/readiness and backup/exact-restore
+lifecycle passes, including populated-target refusal. Source and restore volumes
+remain preserved. A local disk-space initialization failure was resolved by
+reclaiming rebuildable cache before the successful full rerun. Standard Docker
+builds and exact-head checks remain in remote CI.
+
 Independent parent review is required before merge or activation. Then verify
 current recovery freshness and exact restored backup evidence under existing
 policy, exact-main CI, serialized deployment, unchanged expected generation,

@@ -284,7 +284,7 @@
   "frontend": {
     "tests_passed": 319,
     "line_coverage_percent": 90.23,
-    "format_lint_build": "pass; final attribution/evidence rebuild is separately checked"
+    "format_lint_build": "PASS; final static-license/evidence build and actual served-byte checks pass"
   },
   "preflight_corrections": {
     "market_candidates_held": 55,
@@ -292,5 +292,14 @@
     "prior_unpublished_619_candidate": "superseded; never activated"
   },
   "production_changes": false,
-  "limitations": "Nearby discovery along real geometry; no detour, solver, itinerary, live-hours or user-route success is implied. Browser saved-trip verification remains pending."
+  "limitations": "Nearby discovery along real geometry; no detour, solver, itinerary, live-hours or user-route success is implied. Browser saved-trip verification remains pending.",
+  "implementation_commit": "a2e7048ca623bba7e262d357e977f675275a0f6a",
+  "network_disabled_backend_container": {
+    "passed": 1250,
+    "skipped_opt_in_postgres_cases": 6,
+    "coverage_percent": 86.66
+  },
+  "exact_implementation_postgres_crud_recreate_outage_ready_dump_restore_populated_target_refusal": true,
+  "api_web_container_smoke_tests_passed": 2,
+  "source_portable_replay": "catalog-expansion-kaggle-portable-replay.json"
 }

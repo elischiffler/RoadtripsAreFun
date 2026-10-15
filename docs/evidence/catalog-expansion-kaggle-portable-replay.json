@@ -1,0 +1,27 @@
+{
+  "filename": "roadtrips-reviewed-557-source-and-review-v1.zip",
+  "bytes": 45663274,
+  "sha256": "a580bf9449b5f37c8216e88035d05471d6b936579fd87c7a038bd460668d8176",
+  "inventory_files": 823,
+  "outer_files": 824,
+  "code_commit": "a2e7048ca623bba7e262d357e977f675275a0f6a",
+  "windows_safe_names": true,
+  "actual_windows_execution": false,
+  "no_pycache_or_pyc_archived": true,
+  "package_version": 1,
+  "fresh_authorized_library_download_matches": true,
+  "fresh_zip_extraction_and_offline_replay": {
+    "accepted": 557,
+    "additions": 57,
+    "preserved_rows_and_provenance": 500,
+    "normalized_rows_sha256": "a96cb3e5a12020778d744c023d12f8c111c64162c31e4a9e4006b9dcee901c60",
+    "bytes": 91650476,
+    "inventory_files_verified": 823,
+    "network_and_database_connections_forbidden": true,
+    "market_count": 46,
+    "park_count": 11
+  },
+  "checked_at": "2026-10-15T18:47:10.218163+00:00",
+  "production_mutations": false,
+  "limitations": "Private source/operator audit evidence; actual Windows execution, parent review, exact-main release and activation remain separate gates."
+}
