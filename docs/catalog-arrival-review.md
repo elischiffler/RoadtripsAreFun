@@ -1,5 +1,9 @@
 # Current publisher arrival review — October 15, 2026
 
+The [82-place release candidate](catalog-release-82.md) supersedes current
+eligibility counts below: six NPS dated-closure exceptions were addressed and
+12 verified heritage arrivals added. Earlier 72-place generations remain preserved.
+
 The [rollout-candidate receipt](evidence/catalog-rollout-candidate-20261015.json)
 records a subsequent 72-place generation with the same original rows/coordinates
 and deduplicated attribution statements. Its generation is

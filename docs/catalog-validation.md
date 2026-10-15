@@ -1,5 +1,9 @@
 # Catalog validation — October 14, 2026
 
+Latest release evidence: [82-place candidate](catalog-release-82.md), 957 backend
+tests at 88.03% coverage, 314 frontend tests and authentic exact-content recovery.
+Earlier 72-place and 400-record results below remain historical snapshots.
+
 Latest [arrival-review evidence](catalog-arrival-review.md): a separate 72-arrival
 bundle passes authentic staging, rollback, exact-content restore and all three
 discovery adapters with HTTP blocked. It includes one Kaggle roadside destination

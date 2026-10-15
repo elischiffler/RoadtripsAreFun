@@ -1,5 +1,10 @@
 # Neon places catalog: staged rollout
 
+Current bounded candidate: [82 places across 36 states](catalog-release-82.md),
+with all seven requested categories, corrected NPS dated-closure selections and
+12 verified heritage arrivals. The prior 72-place bundles and 400-record evaluation
+remain preserved. The approximate 500 target is still 418 short.
+
 Latest [arrival review](catalog-arrival-review.md) validates a separate 72-arrival
 local generation with one Kaggle/LOC roadside destination, two current publisher
 reviews on original Overture venues, preserved original coordinates and exact-content recovery. The 400-record evaluation below remains

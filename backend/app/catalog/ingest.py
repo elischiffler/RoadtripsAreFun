@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 from psycopg2.extras import Json, execute_values
 
-from app.catalog import arrival_review, boulder, mixed, nps, nps_public, roadside
+from app.catalog import arrival_review, boulder, mixed, nps, nps_heritage, nps_public, roadside
 from app.catalog.normalize import normalize
 
 UPSTREAM_LICENSES = {
@@ -70,7 +70,7 @@ def validate_manifest(manifest):
             if identifier == "Apache-2.0":
                 validate_license_file(evidence.get("notice"))
         return
-    if manifest["schema_version"] == nps_public.SCHEMA:
+    if manifest["schema_version"] in {nps_public.SCHEMA, nps_heritage.SCHEMA}:
         if set(manifest["licenses"]) != {"LicenseRef-US-Government-Work"}:
             raise ValueError("public NPS inputs require retained government-work evidence")
         validate_license_file(manifest["licenses"]["LicenseRef-US-Government-Work"])
@@ -156,6 +156,8 @@ def prepare(path, manifest, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
         return mixed.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     if manifest["schema_version"] == nps_public.SCHEMA:
         return nps_public.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == nps_heritage.SCHEMA:
+        return nps_heritage.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     if manifest["schema_version"] == roadside.SCHEMA:
         return roadside.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     digest = hashlib.sha256()

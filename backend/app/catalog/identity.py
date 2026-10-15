@@ -6,6 +6,7 @@ def identity(source_id):
         ("boulder:", "boulder-osmp"),
         ("nps:", "nps"),
         ("nps-public:", "nps-public"),
+        ("nps-heritage:", "nps-heritage"),
         ("kaggle-loc:", "kaggle-loc-roadside"),
     ):
         if source_id.startswith(prefix):

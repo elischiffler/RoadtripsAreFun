@@ -22,6 +22,7 @@ SOURCE_SCHEMAS = {
     "kaggle-boulder-trailheads/1": "boulder-osmp",
     "kaggle-nps-arrivals/1": "nps",
     "nps-public-arrivals/1": "nps-public",
+    "nps-heritage-arrivals/1": "nps-heritage",
     "kaggle-loc-roadside-arrivals/1": "kaggle-loc-roadside",
 }
 

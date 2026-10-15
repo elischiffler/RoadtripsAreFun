@@ -18,6 +18,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from app.catalog.normalize import US_REGIONS
+from app.catalog.nps_access import dated_closure
 
 SCHEMA = "kaggle-nps-arrivals/1"
 ARCHIVE_SHA256 = "19537d3229511b8471801b2a0525958b05bcd2231ed033418c63834ef114f8ec"
@@ -53,7 +54,9 @@ def read_snapshot(evidence, code):
     return data, checked.isoformat(), len(content)
 
 
-def normalize_arrival(park, source, selection, evidence, checked):
+def normalize_arrival(park, source, selection, evidence, checked, *, source_kind="kaggle-nps"):
+    if source_kind not in {"kaggle-nps", "nps-heritage"}:
+        raise ValueError("unsupported NPS identity source")
     code = park["Park Code"].lower()
     if code in NON_DRIVING_PARKS:
         return None, "park_requires_non_driving_access"
@@ -79,6 +82,7 @@ def normalize_arrival(park, source, selection, evidence, checked):
     descriptions = " ".join(
         str(v)
         for v in [
+            name,
             vc.get("description", ""),
             vc["directions"],
             *[s.get("description", "") + " " + s.get("label", "") for s in schedules.values()],
@@ -106,6 +110,8 @@ def normalize_arrival(park, source, selection, evidence, checked):
     if state not in US_REGIONS:
         return None, "arrival_state_unresolved"
     try:
+        if any(isinstance(vc["location"][k], bool) for k in ("latitude", "longitude")):
+            return None, "coordinates"
         lat, lon = float(vc["location"]["latitude"]), float(vc["location"]["longitude"])
         if (
             not math.isfinite(lat)
@@ -132,8 +138,13 @@ def normalize_arrival(park, source, selection, evidence, checked):
             or url.query
         ):
             return None, "official_visitor_page_missing"
-    category = selection.get("primary_category", "national_parks")
-    if category not in {"national_parks", "museums"}:
+    category = selection.get(
+        "primary_category", "national_parks" if source_kind == "kaggle-nps" else "landmarks"
+    )
+    allowed = (
+        {"national_parks", "museums"} if source_kind == "kaggle-nps" else {"landmarks", "museums"}
+    )
+    if category not in allowed:
         raise ValueError("unsupported NPS reporting category")
     if category == "museums" and not (
         re.search(r"\bmuseum\b", name, re.I)
@@ -142,11 +153,12 @@ def normalize_arrival(park, source, selection, evidence, checked):
         )
     ):
         return None, "museum_classification_unverified"
-    labels = ["daytime", "national_park", "visitor_center"]
+    labels = ["daytime", "visitor_center"]
+    labels += ["national_park"] if source_kind == "kaggle-nps" else ["culture", "historic_site"]
     if category == "museums":
         labels += ["culture", "museum"]
     return {
-        "source_id": "nps:" + code,
+        "source_id": ("nps:" if source_kind == "kaggle-nps" else "nps-heritage:") + code,
         "name": (source["name"] + " — " + name)[:300],
         "latitude": lat,
         "longitude": lon,
@@ -160,16 +172,22 @@ def normalize_arrival(park, source, selection, evidence, checked):
         or None,
         "url": url._replace(scheme="https").geturl(),
         "source_updated_at": None,
-        "provenance": [
-            {
-                "dataset": "Kaggle NPS park-biodiversity",
-                "record_id": park["Park Code"],
-                "release": "3",
-                "archive_sha256": ARCHIVE_SHA256,
-                "source_url": SOURCE_URL,
-                "license": "CC0-1.0",
-                "source_point_role": "park reference only; never used as arrival",
-            },
+        "provenance": (
+            [
+                {
+                    "dataset": "Kaggle NPS park-biodiversity",
+                    "record_id": park["Park Code"],
+                    "release": "3",
+                    "archive_sha256": ARCHIVE_SHA256,
+                    "source_url": SOURCE_URL,
+                    "license": "CC0-1.0",
+                    "source_point_role": "park reference only; never used as arrival",
+                },
+            ]
+            if source_kind == "kaggle-nps"
+            else []
+        )
+        + [
             {
                 "dataset": "National Park Service structured visitor facility",
                 "record_id": str(vc["visitorCenterID"]),
@@ -207,6 +225,9 @@ def prepare(path, manifest, *, max_rows, max_bytes):
     ):
         raise ValueError("NPS archive checksum/size mismatch")
     evidence, selections = manifest.get("official_inputs"), manifest.get("selections")
+    strict_dates = manifest.get("filters", {}).get("exclude_active_dated_closures", False)
+    if not isinstance(strict_dates, bool):
+        raise ValueError("NPS dated-closure policy must be explicit boolean")
     if (
         not isinstance(evidence, dict)
         or not isinstance(selections, dict)
@@ -245,10 +266,23 @@ def prepare(path, manifest, *, max_rows, max_bytes):
         evidence_bytes += size
         if evidence_bytes + path.stat().st_size > max_bytes:
             raise ValueError("NPS aggregate source/evidence byte ceiling exceeded")
+        facility = next(
+            (
+                v
+                for v in data.get("visitorCenters", [])
+                if v.get("visitorCenterID") == selections[code].get("visitor_center_id")
+            ),
+            {},
+        )
+        if strict_dates and dated_closure(facility, checked):
+            rejects["active_or_uncertain_dated_closure"] += 1
+            continue
         row, reason = normalize_arrival(park, data, selections[code], evidence[code], checked)
         if reason:
             rejects[reason] += 1
             continue
+        if strict_dates:
+            row["provenance"][-1]["dated_closure_reviewed_at"] = checked
         rows.append(row)
         regions[row["region"]] += 1
         categories[selections[code].get("primary_category", "national_parks")] += 1

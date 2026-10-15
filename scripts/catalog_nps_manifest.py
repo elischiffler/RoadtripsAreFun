@@ -50,6 +50,7 @@ def build(archive, index, selections, output):
             "one_arrival_per_park": True,
             "no_park_centroids": True,
             "species_omitted": True,
+            "exclude_active_dated_closures": True,
         },
         "attribution": nps.ATTRIBUTION,
         "licenses": licenses,

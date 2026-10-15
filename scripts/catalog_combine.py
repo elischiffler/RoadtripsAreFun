@@ -84,6 +84,7 @@ def combine(
                     "kaggle-boulder-trailheads/1",
                     "kaggle-nps-arrivals/1",
                     "nps-public-arrivals/1",
+                    "nps-heritage-arrivals/1",
                     "kaggle-loc-roadside-arrivals/1",
                     "roadtrips-mixed-catalog/1",
                 }:
