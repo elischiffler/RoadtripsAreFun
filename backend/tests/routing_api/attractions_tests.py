@@ -92,7 +92,10 @@ async def test_all_catalog_discovery_adapters_make_zero_http_calls(monkeypatch, 
 
     from app.routing.sources import evenings, persona_candidates
 
+    http_attempts = []
+
     def unexpected(*args, **kwargs):
+        http_attempts.append(True)
         raise AssertionError("Catalog discovery must not perform HTTP requests")
 
     monkeypatch.setattr(httpx.AsyncClient, "request", unexpected)
@@ -134,9 +137,11 @@ async def test_all_catalog_discovery_adapters_make_zero_http_calls(monkeypatch, 
             stop = await attractions.find_stop("attractions", "40", "-74", 5)
             assert stop["provider_id"] == record["provider_id"]
             assert stop["source_attribution"] == record["source_attribution"]
+            assert http_attempts == []
             return
         assert day_places == evening_places == []
     with pytest.raises(HTTPException) as raised:
         await attractions.find_stop("attractions", "40", "-74", 5)
     assert raised.value.status_code == (503 if catalog_state == "unavailable" else 404)
     assert "private connection" not in raised.value.detail
+    assert http_attempts == []
