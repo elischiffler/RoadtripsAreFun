@@ -1,5 +1,15 @@
 # Current publisher arrival review — October 15, 2026
 
+The [rollout-candidate receipt](evidence/catalog-rollout-candidate-20261015.json)
+records a subsequent 72-place generation with the same original rows/coordinates
+and deduplicated attribution statements. Its generation is
+`2c09cc2993640b966c6f73231c031aafbf765695ef748f2017067a1c88bf4e3f`;
+the prior 72-place generation below remains preserved and independently restored.
+CodeRabbit's completed review found this attribution issue; producer and response
+formatting now preserve first-seen credit/license statements without repetition.
+Full backend validation passes 940 tests at 87.58% coverage. The exact-head
+follow-up review and release gates are tracked separately on PR #40.
+
 The separate reviewed local catalog now contains **72 unique arrivals across
 24 states**: one roadside, one entertainment, 12 nature, 12 beaches, nine museums
 and 37 national parks. It remains **428 short** of the roughly 500 target, with

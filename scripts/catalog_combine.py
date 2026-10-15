@@ -21,6 +21,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
+from app.catalog.attribution import combine as combine_attribution  # noqa: E402
 from app.catalog.ingest import (  # noqa: E402 — standalone repository script
     MAX_BYTES,
     MAX_ROWS,
@@ -182,7 +183,7 @@ def combine(
                 if selected_ids is not None
                 else None,
             },
-            "attribution": "; ".join(sorted(attributions)),
+            "attribution": combine_attribution(sorted(attributions)),
             "licenses": licenses,
             "inputs": evidence,
             "source_urls": sorted(sources),

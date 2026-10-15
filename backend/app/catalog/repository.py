@@ -4,6 +4,7 @@ import math
 
 from psycopg2.extras import RealDictCursor
 
+from app.catalog.attribution import combine
 from app.catalog.identity import identity
 from app.core.config import settings
 from app.crud import chat_crud
@@ -19,7 +20,7 @@ def source_attribution(row):
         for p in row["provenance"]
         if isinstance(p.get("source_attribution"), str)
     }
-    return "; ".join(dict.fromkeys([primary, *sorted(additional)]))
+    return combine([primary, *sorted(additional)])
 
 
 def nearby(point, categories, radius_miles=5, limit=60):

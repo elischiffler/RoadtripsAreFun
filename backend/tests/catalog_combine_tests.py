@@ -43,6 +43,13 @@ def test_combine_retains_regions_and_deduplicates_normalized_identity(tmp_path):
     assert len(prepare(output, manifest)[0]) == 2
 
 
+def test_combined_attribution_deduplicates_shared_source_names(tmp_path):
+    a = regional(tmp_path, "a", [feature()], attribution="Provider A; Provider B")
+    b = regional(tmp_path, "b", [feature(id="another")], attribution="Provider B; Provider C")
+    manifest = combiner.combine([a, b], tmp_path / "credits.jsonl")
+    assert manifest["attribution"] == "Provider A; Provider B; Provider C"
+
+
 @pytest.mark.parametrize("case", ["conflict", "release", "schema", "checksum", "rows", "bytes"])
 def test_invalid_combination_never_publishes_partial_output(tmp_path, case):
     first = regional(tmp_path, "first", [feature()])
