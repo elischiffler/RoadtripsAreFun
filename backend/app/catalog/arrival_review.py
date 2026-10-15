@@ -10,7 +10,7 @@ import math
 from collections import Counter
 from urllib.parse import urlparse
 
-from app.catalog import roadside, venue_profiles
+from app.catalog import expansion_venue_profiles, roadside, venue_profiles
 
 SCHEMA = "roadtrips-arrival-review/1"
 PROFILES = {
@@ -64,6 +64,7 @@ PROFILES = {
     },
 }
 PROFILES.update(venue_profiles.PROFILES)
+PROFILES.update(expansion_venue_profiles.PROFILES)
 
 
 def apply(rows, evidence, *, max_bytes):
@@ -122,6 +123,19 @@ def apply(rows, evidence, *, max_bytes):
             or not 0 <= distance <= profile["distance_m"]
         ):
             raise ValueError("arrival point lacks the reviewed driving destination")
+        if profile.get("require_raw_driving"):
+            raw_response = roadside.retained(entry["raw_driving"])
+            size += len(raw_response)
+            response = json.loads(raw_response)
+            waypoints = response.get("waypoints", [])
+            if (
+                response.get("code") != "Ok"
+                or len(waypoints) != 2
+                or waypoints[-1].get("name") != check["road_name"]
+                or waypoints[-1].get("distance") != distance
+                or check.get("response_sha256") != entry["raw_driving"]["sha256"]
+            ):
+                raise ValueError("raw venue driving receipt differs from the inspected destination")
         if size > max_bytes:
             raise ValueError("arrival evidence exceeds the aggregate byte ceiling")
         row["provenance"].append(
@@ -144,5 +158,13 @@ def apply(rows, evidence, *, max_bytes):
                 "opening_hours_imported": False,
             }
         )
+        if profile.get("additional_categories"):
+            extra = profile["additional_categories"]
+            if set(extra) - {"food", "culture", "nightlife"}:
+                raise ValueError("unsupported inspected publisher category")
+            row["categories"] = sorted(set(row["categories"]) | set(extra))
+            row["provenance"][-1]["additional_publisher_categories"] = extra
+        if profile.get("require_raw_driving"):
+            row["provenance"][-1]["raw_driving_response_sha256"] = entry["raw_driving"]["sha256"]
         categories[profile["primary_category"]] += 1
     return {"bytes": size, "arrival_reviewed": len(rows), "primary_categories": dict(categories)}

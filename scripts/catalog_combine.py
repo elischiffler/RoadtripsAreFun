@@ -87,6 +87,7 @@ def combine(
                     "nps-heritage-arrivals/1",
                     "kaggle-loc-roadside-arrivals/1",
                     "roadtrips-mixed-catalog/1",
+                    "usfs-public-facilities/1",
                 }:
                     raise ValueError(
                         "regional combiner supports Overture only; Kaggle requires a reviewed cross-source generation"
