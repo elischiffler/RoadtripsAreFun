@@ -29068,7 +29068,7 @@
     "public_record_id": "79043",
     "source_name": "Swan Observatory",
     "admitted": false,
-    "reason": "release_cap_or_shared_arrival_hold"
+    "reason": "otherwise_qualified_but_excluded_by_exact_500_release_selection"
   },
   {
     "site_cn": "5592.004841",
@@ -38098,7 +38098,7 @@
     "public_record_id": "42509",
     "source_name": "South Jetty Watchable Wildlife Site",
     "admitted": false,
-    "reason": "release_cap_or_shared_arrival_hold"
+    "reason": "unresolved_shared_arrival_with_usfs:42495_248.2m"
   },
   {
     "site_cn": "5459.003441",

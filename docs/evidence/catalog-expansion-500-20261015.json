@@ -151,8 +151,9 @@
     "review_hold: published parking is half a mile from the native trailhead point": 1,
     "review_hold: published season ends in September": 1,
     "alternate_arrival_for_selected_public_destination": 2,
-    "release_cap_or_shared_arrival_hold": 2,
-    "review_hold: winter ski arrival has no reviewed ordinary fall use": 1
+    "otherwise_qualified_but_excluded_by_exact_500_release_selection": 1,
+    "review_hold: winter ski arrival has no reviewed ordinary fall use": 1,
+    "unresolved_shared_arrival_with_usfs:42495_248.2m": 1
   },
   "usfs_semantic_review_holds": {
     "5061.000601": "published season ends in September",
@@ -541,12 +542,13 @@
     "limitations": "Actual five-mile catalog queries along retained real driving geometry. Counts are neither detour feasibility nor itinerary/solver success. Missing corridors and uneven categories remain possible. The user's failing route was unavailable."
   },
   "validation": {
-    "backend": "1120 passed; 5 opt-in PostgreSQL cases skipped in full run, then all 5 passed on separately created catalog_test at 127.0.0.1:55439. Coverage 86.65%; floor unchanged at 63%.",
+    "backend": "PASS for exact implementation commit: isolated network-disabled container, 1120 passed, 5 skipped, 86.60% coverage (unchanged floor 63%). The 5 opt-in PostgreSQL cases separately passed on a newly created loopback catalog_test. Host full suite previously passed 1120 at 86.65%; 35 new catalog cases pass.",
     "new_catalog_cases": "35 passed",
-    "frontend": "319 passed; 90.23% line/statement coverage; format/lint/build passed after npm ci installed locked AWS SDK 3.1146.0. Initial preloaded 3.625.0 run failed 28 session-related tests. Existing large-bundle build warning retained.",
-    "containers": "Offline dependency builds and full disposable CRUD/recovery checks in progress at this checkpoint.",
-    "portable_source_zip": "Packaging and independent extraction replay in progress at this checkpoint.",
-    "windows": "Actual Windows execution remains pending, including the inherited PR44 replay; no Windows runtime success claimed."
+    "frontend": "PASS: format, lint, 319 tests, 90.23% line/statement coverage and build after npm ci. Initial preloaded SDK 3.625.0 run failed 28 session-related tests; lockfile requires 3.1146.0. Initial npm cache and Docker buildx paths were read-only; task-scoped writable caches resolved those environment prerequisites. Existing large-bundle warning retained.",
+    "containers": "PASS: exact-code offline dependency image builds, 2/2 container smoke tests, full disposable PostgreSQL CRUD/recreate/readiness/backup/restore and populated-target refusal, and full network-disabled backend suite (1120 passed, 5 skipped, 86.60%). First full container run had one unchanged timing-assertion failure (0.779s vs required <0.688s), 1119 passed, 5 skipped; isolated timing check and serial full rerun passed. Assertions and thresholds were not changed.",
+    "portable_source_zip": "PASS: fresh ZIP extraction to a path containing spaces; 931 inventoried files verified; 214 + 29 + 257 re-admitted offline with socket/urllib/psycopg2 connections forbidden. Exactly 500 normalized rows/provenance match.",
+    "windows": "Actual Windows execution remains pending, including the inherited PR44 replay; no Windows runtime success claimed.",
+    "ci": "Pending exact pushed-head GitHub Actions after PR creation; not claimed passed by this receipt."
   },
   "no_production_database_calls": true,
   "limitations": [
@@ -556,5 +558,124 @@
     "Alaska additions form local road clusters; lower-48 road continuity is not asserted.",
     "Current evidence dates expire after 30 days under existing admission guards; refresh sources and review honestly, not by editing dates.",
     "Production rollout, recovery evidence, independent review, Windows execution and activation belong to the separate rollout task."
-  ]
+  ],
+  "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6",
+  "portable_source_bundle": {
+    "name": "roadtrips-reviewed-500-portable-source-v1.zip",
+    "bytes": 28487243,
+    "sha256": "c43abc122b15316d4cc79ad44d7c642d3119492b078e1413b5a73621f0f25718",
+    "files": 932,
+    "windows_invalid_filenames": [],
+    "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6"
+  },
+  "portable_replay": {
+    "accepted": 500,
+    "duplicates": 0,
+    "preserved_rows_and_provenance": 243,
+    "new_usfs": 251,
+    "new_venues": 6,
+    "evidence_bytes": 64008625,
+    "max_rows": 500,
+    "max_bytes": 67108864,
+    "normalized_rows_sha256": "a52fbe12bdba5f7e20669614367331d6d05e496f964d4546291d502c33fefffb",
+    "usfs_source_inventory_sha256": "cc24c5f3474c5f27f742a148fb9164a52d59425ac51b0eb81b7e3fd4e240bf6b",
+    "usfs_evidence_bytes": 22008150,
+    "regions": {
+      "CO": 63,
+      "ME": 3,
+      "UT": 20,
+      "SD": 4,
+      "TX": 10,
+      "FL": 4,
+      "NM": 13,
+      "SC": 6,
+      "OR": 31,
+      "OH": 10,
+      "AK": 14,
+      "CA": 43,
+      "MT": 18,
+      "NV": 2,
+      "AZ": 31,
+      "TN": 6,
+      "WY": 15,
+      "HI": 6,
+      "KY": 13,
+      "WA": 67,
+      "VA": 6,
+      "ND": 2,
+      "MN": 3,
+      "IN": 5,
+      "AR": 4,
+      "GA": 9,
+      "IA": 2,
+      "ID": 5,
+      "IL": 2,
+      "LA": 1,
+      "MA": 7,
+      "MO": 12,
+      "NE": 4,
+      "NJ": 1,
+      "OK": 1,
+      "RI": 2,
+      "KS": 3,
+      "MI": 12,
+      "NC": 6,
+      "AL": 3,
+      "MD": 6,
+      "PA": 5,
+      "DC": 1,
+      "NY": 4,
+      "WI": 7,
+      "MS": 1,
+      "WV": 1,
+      "NH": 6
+    },
+    "source_counts": {
+      "boulder-osmp": 24,
+      "nps": 43,
+      "nps-public": 41,
+      "kaggle-loc-roadside": 1,
+      "overture": 25,
+      "nps-heritage": 115,
+      "usfs": 251
+    },
+    "generation_fingerprint_depends_on_relocated_paths": true,
+    "production_activation_performed": false,
+    "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6",
+    "all_bundle_files_verified": 931,
+    "all_500_normalized_rows_match": true,
+    "network_and_database_connections_forbidden": true
+  },
+  "catalog_dump_restore": {
+    "disposable_loopback_only": true,
+    "source_and_restore": [
+      {
+        "database": "catalog_500_validation",
+        "all_retained_rows": 743,
+        "normalized_database_content_md5": "e4a7ffbc7ca0bc1c4cb3621ba6ba196a",
+        "active": [
+          [
+            "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507",
+            500
+          ]
+        ]
+      },
+      {
+        "database": "catalog_500_restore",
+        "all_retained_rows": 743,
+        "normalized_database_content_md5": "e4a7ffbc7ca0bc1c4cb3621ba6ba196a",
+        "active": [
+          [
+            "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507",
+            500
+          ]
+        ]
+      }
+    ],
+    "dump_bytes": 217958,
+    "dump_sha256": "9de83da593bcda96e06f47861ddfde20b1420365e9b6040713e8a76009d2ecd2",
+    "production_backup_or_restore_claimed": false
+  },
+  "private_publisher_evidence_rights": "Raw operator HTML is retained privately for audit, with no grant to republish its prose, embedded reviews or logos. Overture/agency notices apply to emitted source facts, not every byte of private website evidence.",
+  "otherwise_qualified_not_selected_count": 1
 }

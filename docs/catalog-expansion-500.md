@@ -166,22 +166,60 @@ SHA-256 is `a52fbe12bdba5f7e20669614367331d6d05e496f964d4546291d502c33fefffb`.
 The importer hard ceilings remain **50,000 rows / 100 MiB**; database ceilings and
 schema are unchanged. Mixed input count remains below its 30-child limit.
 
-The portable source bundle, its original 214/29 ZIPs, offline rebuild runner,
-source receipts and final validation are supplied privately to the task owner.
-The packaging receipt will be added here after a fresh extraction replay. The
-source inventory SHA is
+Portable source bundle **version 1**, `roadtrips-reviewed-500-portable-source-v1.zip`,
+**28,487,243 bytes**, SHA-256
+`c43abc122b15316d4cc79ad44d7c642d3119492b078e1413b5a73621f0f25718`,
+is saved privately in Library for the task owner. It includes the unchanged
+214/29 ZIPs, the exact code snapshot at
+`302f39910e660fb2e34cea16d2ecc9ab0d4880d6`, all original new-source/rights
+receipts, an inventory, and `rebuild.py`. A fresh extraction to paths containing
+spaces verifies **931 inventoried files** and reproduces all **500** rows with
+network and database connections forbidden. The outer ZIP has 932 files, including
+the inventory itself. Windows filename preflight finds zero invalid/reserved
+names. Actual Windows execution remains pending.
+
+[One otherwise qualified source candidate](data/catalog-expansion-500-20261015/otherwise-qualified-not-selected.json)
+is excluded by the exact 500-row release selection. The separate source ledger
+records all other exclusions and unresolved shared arrivals.
+
+The [portable replay and isolated restore receipt](evidence/catalog-expansion-500-portable-replay.json)
+records those measured checks. Install Python 3.12 and the two pinned replay
+dependencies, psycopg2-binary 2.9.9 and lxml 5.3.0, before offline use; interpreter
+and dependency installers are not bundled. Raw operator HTML remains private
+audit evidence; source-data notices do not grant rights to republish its prose,
+embedded reviews or logos. Normalized row facts and their source attribution are
+the public review deliverable.
+
+The source inventory SHA is
 `cc24c5f3474c5f27f742a148fb9164a52d59425ac51b0eb81b7e3fd4e240bf6b`.
 Source evidence has the existing **30-day** freshness guard. After that window,
 strict re-admission requires genuine acquisition and review; editing dates is not
 a valid refresh. Saved expected rows remain historical evidence.
 
-Local backend validation passes **1,120 tests, 86.65% coverage**; five skipped
+Final network-disabled container validation passes **1,120 tests, 86.60% coverage**; five skipped
 opt-in PostgreSQL cases subsequently pass against a separate newly created
 `catalog_test` database. The 35 new catalog cases pass. Ruff and diff checks pass.
 Frontend format, lint, **319 tests / 90.23% line coverage**, and build pass after
 `npm ci` replaces the preloaded obsolete SDK with the lockfile version. The
-existing large-bundle build warning remains. Container/offline ZIP and exact-head
-CI receipts are added when their in-progress checks complete.
+existing large-bundle build warning remains. The fresh offline ZIP replay, container smoke (2/2), and complete disposable
+PostgreSQL CRUD/recreate/readiness/backup/restore pass. Container dependencies were
+installed offline using the repository's `cloud_build.py` and ordinary verified
+workspace downloads; runtime security settings were retained. Direct nested
+Docker egress was unavailable. Its initial buildx/cache path error is recorded
+in the validation report.
+
+A first container full-suite run under concurrent validation load passed 1,119
+cases and failed the existing parallel-speed timing assertion (0.779 seconds,
+required below 0.688 seconds); five PostgreSQL cases were skipped there. The
+isolated timing recheck and serial full-suite rerun pass (**1,120 passed**, five
+skipped, **86.60% coverage**). Exact pushed-head CI is checked separately. No
+assertion or threshold changed.
+
+The separately isolated public catalog dump/restore preserves **743** retained
+rows (243 + 500), the **500** active pointer, and database-content MD5
+`e4a7ffbc7ca0bc1c4cb3621ba6ba196a`. The custom dump is 217,958 bytes, SHA-256
+`9de83da593bcda96e06f47861ddfde20b1420365e9b6040713e8a76009d2ecd2`.
+This is local public-data recovery evidence, not production backup acceptance.
 
 Production backup/restore acceptance, review, merge, deployment and activation
 remain with the separate rollout owner. Activating only one increment would

@@ -1,0 +1,118 @@
+{
+  "source_zip": {
+    "name": "roadtrips-reviewed-500-portable-source-v1.zip",
+    "bytes": 28487243,
+    "sha256": "c43abc122b15316d4cc79ad44d7c642d3119492b078e1413b5a73621f0f25718",
+    "files": 932,
+    "windows_invalid_filenames": [],
+    "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6"
+  },
+  "replay": {
+    "accepted": 500,
+    "duplicates": 0,
+    "preserved_rows_and_provenance": 243,
+    "new_usfs": 251,
+    "new_venues": 6,
+    "evidence_bytes": 64008625,
+    "max_rows": 500,
+    "max_bytes": 67108864,
+    "normalized_rows_sha256": "a52fbe12bdba5f7e20669614367331d6d05e496f964d4546291d502c33fefffb",
+    "usfs_source_inventory_sha256": "cc24c5f3474c5f27f742a148fb9164a52d59425ac51b0eb81b7e3fd4e240bf6b",
+    "usfs_evidence_bytes": 22008150,
+    "regions": {
+      "CO": 63,
+      "ME": 3,
+      "UT": 20,
+      "SD": 4,
+      "TX": 10,
+      "FL": 4,
+      "NM": 13,
+      "SC": 6,
+      "OR": 31,
+      "OH": 10,
+      "AK": 14,
+      "CA": 43,
+      "MT": 18,
+      "NV": 2,
+      "AZ": 31,
+      "TN": 6,
+      "WY": 15,
+      "HI": 6,
+      "KY": 13,
+      "WA": 67,
+      "VA": 6,
+      "ND": 2,
+      "MN": 3,
+      "IN": 5,
+      "AR": 4,
+      "GA": 9,
+      "IA": 2,
+      "ID": 5,
+      "IL": 2,
+      "LA": 1,
+      "MA": 7,
+      "MO": 12,
+      "NE": 4,
+      "NJ": 1,
+      "OK": 1,
+      "RI": 2,
+      "KS": 3,
+      "MI": 12,
+      "NC": 6,
+      "AL": 3,
+      "MD": 6,
+      "PA": 5,
+      "DC": 1,
+      "NY": 4,
+      "WI": 7,
+      "MS": 1,
+      "WV": 1,
+      "NH": 6
+    },
+    "source_counts": {
+      "boulder-osmp": 24,
+      "nps": 43,
+      "nps-public": 41,
+      "kaggle-loc-roadside": 1,
+      "overture": 25,
+      "nps-heritage": 115,
+      "usfs": 251
+    },
+    "generation_fingerprint_depends_on_relocated_paths": true,
+    "production_activation_performed": false,
+    "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6",
+    "all_bundle_files_verified": 931,
+    "all_500_normalized_rows_match": true,
+    "network_and_database_connections_forbidden": true
+  },
+  "catalog_dump_restore": {
+    "disposable_loopback_only": true,
+    "source_and_restore": [
+      {
+        "database": "catalog_500_validation",
+        "all_retained_rows": 743,
+        "normalized_database_content_md5": "e4a7ffbc7ca0bc1c4cb3621ba6ba196a",
+        "active": [
+          [
+            "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507",
+            500
+          ]
+        ]
+      },
+      {
+        "database": "catalog_500_restore",
+        "all_retained_rows": 743,
+        "normalized_database_content_md5": "e4a7ffbc7ca0bc1c4cb3621ba6ba196a",
+        "active": [
+          [
+            "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507",
+            500
+          ]
+        ]
+      }
+    ],
+    "dump_bytes": 217958,
+    "dump_sha256": "9de83da593bcda96e06f47861ddfde20b1420365e9b6040713e8a76009d2ecd2",
+    "production_backup_or_restore_claimed": false
+  }
+}
