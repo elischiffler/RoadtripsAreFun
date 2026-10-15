@@ -61,7 +61,7 @@ invented. Weekly service evidence is not imported as scheduler opening hours.
 
 Limitations remain attached per place: Connections is Sunday-only; the Armenian
 museum's administrative hours are not public gallery hours; Seattle Pinball is
-seven-and-older; Brumby Hall requires the published Hilton approach and a walk;
+seven-and-older with adult accompaniment for children; Brumby Hall requires the published Hilton approach and a walk;
 restaurant service days differ; Badger games affect Monroe Street parking.
 SEA LIFE is a specific tenant/Entrance 1 approach, with tickets and a walk from
 the public lot, not a mall-center coordinate. The checked unnamed links are
@@ -87,8 +87,8 @@ reproduces the exact starter 82 IDs and coordinates and its unchanged generation
 This resolves the source-artifact blocker recorded at the earlier checkpoints.
 
 The new source-only archive is
-`roadtrips-venues-17-evidence-20261015.tar.gz`, **948,272 bytes**, SHA-256
-`98a5502599689c86abb81f774f471fc2c43b54d279a1c121cfd7bb0b3df2c7ad`.
+`roadtrips-venues-17-evidence-20261015.tar.gz`, **948,341 bytes**, SHA-256
+`d23749d034ab9b0414b27a2b1981eebbe37db426781e0e3a6dcf96132490f03f`.
 Its 52 files include original bounded source JSONL/sidecars, selected retained
 operator pages, raw driving responses, evidence summaries, review and an offline
 `rebuild.py`. It is retained in the private Library; private handles are provided

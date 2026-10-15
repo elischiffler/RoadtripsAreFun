@@ -282,13 +282,14 @@ PROFILES = {
                 "Paid parking is available on the street",
                 "Thursday through Monday",
                 "7 years",
+                "must be accompanied by an adult",
             ]
         },
         "roads": {"Maynard Avenue South"},
         "distance_m": 15,
         "primary_category": "museums",
         "arrival_type": "licensed venue frontage at published address",
-        "limitations": "Thursday–Monday public hours; age restrictions apply (seven and older). Paid street/nearby lot parking requires a walk. Check current visitor hours, holidays and parking restrictions before travel; future access and parking availability are unknown.",
+        "limitations": "Thursday–Monday public hours; age seven and older, and children must remain accompanied by an adult. Paid street/nearby lot parking requires a walk. Check current visitor hours, holidays and parking restrictions before travel; future access and parking availability are unknown.",
     },
     "848aaf62-f0db-4f4c-917f-19c5a1c3fe23": {
         "profile": "historic-richmond-town/1",
