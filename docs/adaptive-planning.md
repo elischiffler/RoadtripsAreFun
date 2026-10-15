@@ -49,11 +49,10 @@ There is no cross-run discovery cache. Completed results merge in frozen order.
 | Geocoding | 2 | 4 |
 | Solver | 2 | 2 (one solver thread each) |
 
-Live Terra attraction/evening HTTP requests have an additional shared pacer:
-one in flight and a default 1.1-second minimum start interval per API process,
-with a global cooldown and slower pacing on HTTP 429. The nearby limits above
-bound query tasks, including those waiting for pacing. See
-[Terra pacing and retries](studio-retries.md) for tuning and process boundaries.
+Attraction and optional evening queries read the active PostgreSQL catalog.
+The nearby limits above bound discovery tasks; the removed external discovery
+pacer adds no delay or fallback. See [provider retries](studio-retries.md) for
+the separate routing, geocoding, hotel and model dependencies.
 
 Independent endpoint geocoding finishes before the baseline request. Discovery
 rounds finish before rating, ratings before refinement, and final shortlist road

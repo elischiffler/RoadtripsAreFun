@@ -1,15 +1,16 @@
 # Explain the adaptive CP-SAT pipeline
 
-## Catalog migration status (October 14, 2026)
+## Catalog discovery (October 15, 2026)
 
-The task branch replaces daytime and optional evening Tripadvisor lookups with a
-bounded, licensed Overture catalog in PostgreSQL. Neon remains the production
-target. The production migration, pilot loading and live acceptance are pending;
-these source changes do not establish deployed behavior or nationwide coverage.
-See [catalog rollout and blockers](neon-places-catalog.md) before running imports
-or coordinating a release. Missing catalog coverage does not trigger a Terra
-fallback. Hotels, Mapbox road checks and model-estimated interest ratings remain
-separate dependencies.
+Daytime and optional evening discovery read the active, licensed mixed-source
+catalog in Neon PostgreSQL. PR #40 deployed the first bounded release; this does
+not establish nationwide coverage or complete live journey acceptance.
+Missing coverage returns no places. Hotels, Mapbox road checks, geocoding and
+model-estimated interest ratings remain separate dependencies. See
+[rollout and rollback](neon-places-catalog.md) and the
+[Tripadvisor integration removal audit](tripadvisor-removal.md).
+Historical provider descriptions and measurements below retain their original
+meaning; they are not instructions for the current discovery implementation.
 
 Current contract: October 5, 2026, `codex/production-release`. Studio (`/studio`)
 and ordinary chat use the same live planner. Historical surplus objectives remain

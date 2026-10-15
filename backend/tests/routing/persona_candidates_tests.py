@@ -66,16 +66,21 @@ async def test_attractions_verify_identity_coordinates_ratings_and_utility():
     places = FakePlaces(
         attractions=[
             source.VerifiedPlace(
-                provider_id="terra:7", name="Real Museum", coordinates=[40, -74], address="7 Main"
+                provider_id="overture:7",
+                name="Real Museum",
+                coordinates=[40, -74],
+                address="7 Main",
             ),
-            source.VerifiedPlace(provider_id="terra:8", name="Bad Ratings", coordinates=[40, -74]),
+            source.VerifiedPlace(
+                provider_id="overture:8", name="Bad Ratings", coordinates=[40, -74]
+            ),
         ]
     )
     result = await discover(
         object(), [[40, -74]], default_weights(), ai=FakeAI(proposals), places=places
     )
     assert len(result) == 1
-    assert result[0]["provider_id"] == "terra:7"
+    assert result[0]["provider_id"] == "overture:7"
     assert result[0]["coordinates"] == [40, -74]
     assert result[0]["utility"] == pytest.approx(0.7)
     assert result[0]["address"] == "7 Main"
@@ -87,7 +92,7 @@ async def test_attractions_reject_distant_malformed_and_cap_output():
         async def attractions_near(self, point):
             self.calls += 1
             return [
-                {"provider_id": f"terra:{self.calls}", "name": "Park", "coordinates": point},
+                {"provider_id": f"overture:{self.calls}", "name": "Park", "coordinates": point},
                 {"provider_id": "bad", "name": "Park", "coordinates": [999, 0]},
             ]
 
@@ -99,7 +104,7 @@ async def test_attractions_reject_distant_malformed_and_cap_output():
 
     distant = FakePlaces(
         attractions=[
-            source.VerifiedPlace(provider_id="terra:9", name="Park", coordinates=[41, -74])
+            source.VerifiedPlace(provider_id="overture:9", name="Park", coordinates=[41, -74])
         ]
     )
     assert not await discover(None, [[40, -74]], default_weights(), ai=ai, places=distant)
@@ -206,7 +211,7 @@ async def test_unavailable_providers_fail_clearly():
             places=FakePlaces(
                 attractions=[
                     source.VerifiedPlace(
-                        provider_id="terra:verified", name="Real Museum", coordinates=[40, -74]
+                        provider_id="overture:verified", name="Real Museum", coordinates=[40, -74]
                     )
                 ]
             ),
@@ -214,9 +219,9 @@ async def test_unavailable_providers_fail_clearly():
 
     class BrokenPlaces(FakePlaces):
         async def attractions_near(self, _point):
-            raise source.CandidateProviderError("Terra unavailable")
+            raise source.CandidateProviderError("Catalog unavailable")
 
-    with pytest.raises(source.CandidateProviderError, match="Terra unavailable"):
+    with pytest.raises(source.CandidateProviderError, match="Catalog unavailable"):
         await discover(
             None,
             [[40, -74]],
@@ -286,7 +291,9 @@ async def test_collection_progress_only_reports_verified_unique_matches():
     )
     places = FakePlaces(
         attractions=[
-            source.VerifiedPlace(provider_id="terra:7", name="Real Museum", coordinates=[40, -74]),
+            source.VerifiedPlace(
+                provider_id="overture:7", name="Real Museum", coordinates=[40, -74]
+            ),
         ]
     )
     with reporting(events.append):
@@ -317,9 +324,11 @@ async def test_attraction_ratings_are_grounded_in_nearby_provider_names():
             return super().complete(messages, tools)
 
     records = [
-        source.VerifiedPlace(provider_id="terra:near", name="Real Museum", coordinates=[40, -74]),
         source.VerifiedPlace(
-            provider_id="terra:far", name="Distant attraction", coordinates=[50, -74]
+            provider_id="overture:near", name="Real Museum", coordinates=[40, -74]
+        ),
+        source.VerifiedPlace(
+            provider_id="overture:far", name="Distant attraction", coordinates=[50, -74]
         ),
     ]
     candidates = await discover(
@@ -329,7 +338,7 @@ async def test_attraction_ratings_are_grounded_in_nearby_provider_names():
         ai=GroundedAI([{"name": "Real Museum", "attribute_ratings": _ratings()}]),
         places=FakePlaces(attractions=records),
     )
-    assert [candidate["provider_id"] for candidate in candidates] == ["terra:near"]
+    assert [candidate["provider_id"] for candidate in candidates] == ["overture:near"]
 
 
 @pytest.mark.asyncio

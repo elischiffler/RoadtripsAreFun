@@ -77,7 +77,7 @@ class Places:
         key = f"{point[1]:.8f}"
         return [
             {
-                "provider_id": f"terra:{key}:{i}",
+                "provider_id": f"overture:{key}:{i}",
                 "name": f"Place {key}:{i}",
                 "coordinates": point,
                 "categories": ["museum" if i % 2 else "park"],

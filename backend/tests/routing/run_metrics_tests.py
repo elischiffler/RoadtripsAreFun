@@ -47,6 +47,15 @@ def test_stable_output_and_comparison_ignore_provider_timestamps():
     assert summary["feasibility_rate"] is None
 
 
+def test_new_catalog_runs_count_database_lookups_without_retired_provider_measurements():
+    with measuring() as telemetry:
+        increment("catalog")
+        increment("catalog")
+        result = compile_metrics(envelope(), telemetry, 10)
+    assert result["external_calls"]["catalog"] == 2
+    assert "tripadvisor" not in result["external_calls"]
+
+
 def test_quality_needs_matching_candidates_and_proven_optimum():
     baseline = metric()
     baseline["metric_version"] = "selection-surplus-v2"
