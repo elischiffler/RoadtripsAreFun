@@ -132,7 +132,17 @@ def connect():
         and "service" not in options,
         "refusing a non-loopback or differently named proof database",
     )
-    conn = psycopg2.connect(value, connect_timeout=5, sslmode="disable")
+    # Explicitly override libpq's ambient PGHOSTADDR with the validated endpoint.
+    # The URL's host alone does not constrain that independent environment field.
+    client_address = options.get("hostaddr") or (
+        "127.0.0.1" if options["host"] == "localhost" else options["host"]
+    )
+    conn = psycopg2.connect(
+        value,
+        hostaddr=client_address,
+        connect_timeout=5,
+        sslmode="disable",
+    )
     try:
         with conn.cursor() as cur:
             cur.execute(

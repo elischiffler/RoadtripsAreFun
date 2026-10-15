@@ -100,7 +100,7 @@ proposals; neither is included here or treated as a completed admission.
 Actual application discovery was exercised in disposable PostgreSQL 18 against
 retained real OSRM route geometries. Every query uses the five-mile/60-result
 bounds and full calendar eligibility. Across **1,083 queries per generation**, the
-initial p95 was approximately **2 ms** on loopback. SF–LA eligible hits increase
+final p95 was **2.48 ms** on loopback. SF–LA eligible hits increase
 **8 → 10**, SF–Boise **1 → 4**, SF–Chicago **2 → 5**, Seattle–Portland **0 → 3**,
 and LA–Phoenix **8 → 9**. LA–San Diego remains **9 → 9** and Ely–Reno remains
 **0 → 0**. These are structural catalog eligibility counts, not evidence of opening on a
