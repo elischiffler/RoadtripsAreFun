@@ -24,6 +24,7 @@ SOURCE_SCHEMAS = {
     "nps-public-arrivals/1": "nps-public",
     "nps-heritage-arrivals/1": "nps-heritage",
     "kaggle-loc-roadside-arrivals/1": "kaggle-loc-roadside",
+    "usfs-public-facilities/1": "usfs",
 }
 
 

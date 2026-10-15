@@ -9,7 +9,16 @@ from urllib.parse import urlparse
 
 from psycopg2.extras import Json, execute_values
 
-from app.catalog import arrival_review, boulder, mixed, nps, nps_heritage, nps_public, roadside
+from app.catalog import (
+    arrival_review,
+    boulder,
+    mixed,
+    nps,
+    nps_heritage,
+    nps_public,
+    roadside,
+    usfs,
+)
 from app.catalog.normalize import normalize
 
 UPSTREAM_LICENSES = {
@@ -51,6 +60,11 @@ def validate_manifest(manifest):
         and manifest["schema_version"] != "roadtrips-overture-places-v1"
     ):
         raise ValueError("current arrival reviews require original Overture source inputs")
+    if manifest["schema_version"] == usfs.SCHEMA:
+        if set(manifest["licenses"]) != {"LicenseRef-US-Agency-Factual-Data"}:
+            raise ValueError("USFS requires retained government factual-data rights evidence")
+        validate_license_file(manifest["licenses"]["LicenseRef-US-Agency-Factual-Data"])
+        return
     if manifest["schema_version"] == boulder.SCHEMA:
         if set(manifest["licenses"]) != {"CC0-1.0"}:
             raise ValueError("Boulder requires retained CC0 license evidence")
@@ -148,6 +162,8 @@ def prepare(path, manifest, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
     validate_manifest(manifest)
     if not 1 <= max_rows <= MAX_ROWS or not 1 <= max_bytes <= MAX_BYTES:
         raise ValueError("import limits exceed hard ceiling")
+    if manifest["schema_version"] == usfs.SCHEMA:
+        return usfs.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     if manifest["schema_version"] == boulder.SCHEMA:
         return boulder.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     if manifest["schema_version"] == nps.SCHEMA:

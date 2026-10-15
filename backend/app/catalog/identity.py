@@ -8,6 +8,7 @@ def identity(source_id):
         ("nps-public:", "nps-public"),
         ("nps-heritage:", "nps-heritage"),
         ("kaggle-loc:", "kaggle-loc-roadside"),
+        ("usfs:", "usfs"),
     ):
         if source_id.startswith(prefix):
             return source_id, source

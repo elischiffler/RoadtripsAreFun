@@ -1,0 +1,135 @@
+[
+  {
+    "site_cn": "5324.005071",
+    "public_record_id": "47969",
+    "source_name": "Bogachiel Rain Forest Trailhead",
+    "admitted": false,
+    "reason": "published_vehicle_access_warning"
+  },
+  {
+    "site_cn": "5125.004991",
+    "public_record_id": "38758",
+    "source_name": "Steins Pillar Trailhead",
+    "admitted": false,
+    "reason": "published_vehicle_access_warning"
+  },
+  {
+    "site_cn": "3880149010602",
+    "public_record_id": "71020",
+    "source_name": "Bear Pasture Trailhead",
+    "admitted": false,
+    "reason": "published_vehicle_access_warning"
+  },
+  {
+    "site_cn": "5318.001561",
+    "public_record_id": "23070",
+    "source_name": "Stillwater Trailhead",
+    "admitted": false,
+    "reason": "review_hold: conflicting September/October season ends and snow warning"
+  },
+  {
+    "site_cn": "5431.001621",
+    "public_record_id": "12915",
+    "source_name": "Burning Bear South Trailhead",
+    "admitted": false,
+    "reason": "published_vehicle_access_warning"
+  },
+  {
+    "site_cn": "11865010344",
+    "public_record_id": "61648",
+    "source_name": "Smith Creek Th",
+    "admitted": false,
+    "reason": "review_hold: private-road approach asks visitors to call for access information"
+  },
+  {
+    "site_cn": "6471.003621",
+    "public_record_id": "47538",
+    "source_name": "Dripping Springs Trailhead",
+    "admitted": false,
+    "reason": "review_hold: published parking is half a mile from the native trailhead point"
+  },
+  {
+    "site_cn": "213066010602",
+    "public_record_id": "83038",
+    "source_name": "Round Valley Sno Park",
+    "admitted": false,
+    "reason": "published_vehicle_access_warning"
+  },
+  {
+    "site_cn": "7598.004731",
+    "public_record_id": "32092",
+    "source_name": "Trailhead: Monte Cristo-Lower",
+    "admitted": false,
+    "reason": "published_vehicle_access_warning"
+  },
+  {
+    "site_cn": "5061.000601",
+    "public_record_id": "5759",
+    "source_name": "Echo Lake Picnic Area",
+    "admitted": false,
+    "reason": "review_hold: published season ends in September"
+  },
+  {
+    "site_cn": "5419.005071",
+    "public_record_id": "48043",
+    "source_name": "Jefferson Ridge Trailhead",
+    "admitted": false,
+    "reason": "published_vehicle_access_warning"
+  },
+  {
+    "site_cn": "5295.002231",
+    "public_record_id": "84460",
+    "source_name": "Columbine Visitor Center & Nature Trail",
+    "admitted": false,
+    "reason": "alternate_arrival_for_selected_public_destination"
+  },
+  {
+    "site_cn": "5053.008031",
+    "public_record_id": "79043",
+    "source_name": "Swan Observatory",
+    "admitted": false,
+    "reason": "release_cap_or_shared_arrival_hold"
+  },
+  {
+    "site_cn": "3880738010602",
+    "public_record_id": "67924",
+    "source_name": "Flume Creek Trailhead",
+    "admitted": false,
+    "reason": "published_vehicle_access_warning"
+  },
+  {
+    "site_cn": "5025.005631",
+    "public_record_id": "4404",
+    "source_name": "Sahalie And Koosah Falls",
+    "admitted": false,
+    "reason": "alternate_arrival_for_selected_public_destination"
+  },
+  {
+    "site_cn": "3254239010602",
+    "public_record_id": "80939",
+    "source_name": "Potlid North Trailhead",
+    "admitted": false,
+    "reason": "published_vehicle_access_warning"
+  },
+  {
+    "site_cn": "6738209010602",
+    "public_record_id": "81689",
+    "source_name": "Crabtree X-Country Trailhead",
+    "admitted": false,
+    "reason": "review_hold: winter ski arrival has no reviewed ordinary fall use"
+  },
+  {
+    "site_cn": "6062010414",
+    "public_record_id": "42509",
+    "source_name": "South Jetty Watchable Wildlife Site",
+    "admitted": false,
+    "reason": "release_cap_or_shared_arrival_hold"
+  },
+  {
+    "site_cn": "5390.001621",
+    "public_record_id": "12916",
+    "source_name": "Burning Bear Trailhead",
+    "admitted": false,
+    "reason": "published_vehicle_access_warning"
+  }
+]
