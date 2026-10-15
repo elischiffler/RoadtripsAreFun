@@ -174,6 +174,35 @@ def _at(day: date, clock: str, zone: ZoneInfo) -> datetime:
     return _localize(datetime.combine(day, datetime.strptime(clock, "%H:%M").time()), zone)
 
 
+def day_intervals(calendar: Calendar, day: date, zone: ZoneInfo):
+    """Materialize only published clocks for one date, without inventing midnight.
+
+    Some IANA zones change offset at midnight. An unrelated missing midnight
+    must not erase a valid daytime source window on the preceding date.
+    """
+    if not isinstance(zone, ZoneInfo) or not _allowed_day(calendar, day):
+        return []
+    overrides = {item.date: item.windows for item in calendar.date_overrides}
+    windows = overrides.get(
+        day, [item for item in calendar.weekly_windows if day.weekday() in item.weekdays]
+    )
+    result = []
+    for window in windows:
+        try:
+            opens = _at(day, window.opens, zone)
+            closes = _at(day + timedelta(days=window.end_day_offset), window.closes, zone)
+            following = day + timedelta(days=1)
+            if window.end_day_offset and (
+                not _allowed_day(calendar, following) or following in overrides
+            ):
+                closes = _at(following, "00:00", zone)
+            if seconds_until(opens, closes) > 0:
+                result.append((opens, closes))
+        except ValueError:
+            continue
+    return result
+
+
 def open_intervals(calendar: Calendar, earliest: datetime, deadline: datetime, zone: ZoneInfo):
     """Enumerate bounded dated windows in the provider-resolved IANA zone.
 
@@ -189,27 +218,8 @@ def open_intervals(calendar: Calendar, earliest: datetime, deadline: datetime, z
         return []
     result = []
     day = first
-    overrides = {item.date: item.windows for item in calendar.date_overrides}
     while day <= last:
-        if _allowed_day(calendar, day):
-            windows = overrides.get(
-                day, [item for item in calendar.weekly_windows if day.weekday() in item.weekdays]
-            )
-            for window in windows:
-                try:
-                    opens = _at(day, window.opens, zone)
-                    closes = _at(day + timedelta(days=window.end_day_offset), window.closes, zone)
-                    following = day + timedelta(days=1)
-                    if window.end_day_offset and (
-                        not _allowed_day(calendar, following) or following in overrides
-                    ):
-                        # A next-day override replaces that day's clocks, even
-                        # the portion of yesterday's overnight weekly session.
-                        closes = _at(following, "00:00", zone)
-                    if seconds_until(opens, closes) > 0:
-                        result.append((opens, closes))
-                except ValueError:
-                    continue
+        result.extend(day_intervals(calendar, day, zone))
         day += timedelta(days=1)
     return result
 

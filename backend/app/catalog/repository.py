@@ -1,6 +1,7 @@
 """Bounded indexed catalog discovery through the application's existing pool."""
 
 import math
+from dataclasses import dataclass
 
 from psycopg2.extras import RealDictCursor
 
@@ -26,12 +27,36 @@ def source_attribution(row):
     return combine([primary, *sorted(additional)])
 
 
+@dataclass(frozen=True)
+class CatalogCursor:
+    generation: str
+    distance: float
+    source_id: str
+    scanned: int
+    total: int
+
+
+@dataclass(frozen=True)
+class CatalogPage:
+    records: list[dict]
+    next_cursor: CatalogCursor | None
+
+
 def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calendar=False):
+    return nearby_page(
+        point, categories, radius_miles, limit, require_visit_calendar=require_visit_calendar
+    ).records
+
+
+def nearby_page(
+    point, categories, radius_miles=5, limit=60, *, require_visit_calendar=False, cursor=None
+):
     """Read bounded source facts, optionally prefiltering automatic visit candidates.
 
-    Calendar structure/unknown flags are filtered before the SQL result limit so
-    unusable timed records cannot consume every slot. Full Python calendar
-    validation and chosen-time constraints remain authoritative afterward.
+    Pages are at most sixty rows, ordered by distance and stable source ID.
+    A cursor pins the immutable generation, so activation between pages cannot
+    mix source snapshots. The provider rejects trip-infeasible calendars before
+    accumulating its sixty usable results; exhausted pages consume no quota.
     """
     if len(point) != 2 or any(
         isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v)
@@ -51,6 +76,8 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
         raise ValueError("limit must be 1..60")
     if not isinstance(require_visit_calendar, bool):
         raise ValueError("require_visit_calendar must be a boolean")
+    if cursor is not None and not isinstance(cursor, CatalogCursor):
+        raise ValueError("invalid catalog cursor")
     if (
         not categories
         or len(categories) > 4
@@ -76,14 +103,14 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
                 """
                 WITH candidates AS (
                     SELECT p.*, e.entry AS calendar_enrichment,
-                    i.release, i.manifest->>'attribution' AS attribution,
+                    i.release, i.row_count AS generation_row_count,
+                    i.manifest->>'attribution' AS attribution,
                     i.manifest->'source_catalogs' AS source_catalogs,
                     2*3958.7613*asin(sqrt(least(1.0,
                       power(sin(radians(latitude-%s)/2),2)
                       +cos(radians(%s))*cos(radians(latitude))
                       *power(sin(radians(longitude-%s)/2),2)))) AS distance
                     FROM places_catalog p
-                    JOIN places_catalog_active a ON a.generation=p.generation
                     JOIN places_catalog_imports i ON i.generation=p.generation
                     LEFT JOIN places_catalog_calendars e
                       ON e.generation=p.generation AND e.source_id=p.source_id
@@ -91,7 +118,8 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
                       SELECT CASE WHEN e.entry IS NULL THEN p.provenance
                         ELSE jsonb_build_array(e.entry) END AS calendar_provenance
                     ) facts
-                    WHERE p.latitude BETWEEN %s AND %s
+                    WHERE p.generation=COALESCE(%s, (SELECT generation FROM places_catalog_active))
+                      AND p.latitude BETWEEN %s AND %s
                       AND ((%s >= -180 AND %s <= 180 AND p.longitude BETWEEN %s AND %s)
                         OR (%s < -180 AND (p.longitude >= %s+360 OR p.longitude <= %s))
                         OR (%s > 180 AND (p.longitude >= %s OR p.longitude <= %s-360)))
@@ -107,12 +135,14 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
                         )
                       ))
                 ) SELECT * FROM candidates WHERE distance<=%s
+                  AND (%s::text IS NULL OR (distance,source_id)>(%s,%s))
                   ORDER BY distance, source_id LIMIT %s
                 """,
                 (
                     lat,
                     lat,
                     lon,
+                    cursor.generation if cursor else None,
                     lat - lat_delta,
                     lat + lat_delta,
                     low,
@@ -128,11 +158,25 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
                     categories,
                     require_visit_calendar,
                     radius_miles,
+                    cursor.source_id if cursor else None,
+                    cursor.distance if cursor else None,
+                    cursor.source_id if cursor else None,
                     limit,
                 ),
             )
             rows = cur.fetchall()
-        return [
+        scanned = (cursor.scanned if cursor else 0) + len(rows)
+        total = cursor.total if cursor else (rows[0]["generation_row_count"] if rows else 0)
+        if scanned > total:
+            raise RuntimeError("catalog pagination exceeded its immutable generation")
+        next_cursor = (
+            CatalogCursor(
+                rows[-1]["generation"], rows[-1]["distance"], rows[-1]["source_id"], scanned, total
+            )
+            if len(rows) == limit and scanned < total
+            else None
+        )
+        records = [
             {
                 "provider_id": identity(r["source_id"])[0],
                 "name": r["name"],
@@ -140,7 +184,7 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
                 "address": r["address"],
                 "url": r["url"],
                 "categories": r["categories"],
-                "provider_rank": rank,
+                "provider_rank": (cursor.scanned if cursor else 0) + rank,
                 "source": identity(r["source_id"])[1],
                 "source_release": (r.get("calendar_enrichment") or {}).get("source_release")
                 or (r.get("source_catalogs") or {})
@@ -163,6 +207,7 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
             }
             for rank, r in enumerate(rows)
         ]
+        return CatalogPage(records, next_cursor)
     finally:
         conn.rollback()
         chat_crud._put_conn(conn)

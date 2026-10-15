@@ -1,14 +1,127 @@
 """Opt-in real PostgreSQL tests; only a disposable test database is allowed."""
 
+import asyncio
 import os
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import psycopg2
 import pytest
 from psycopg2.extras import Json, execute_values
 
 from app.catalog import ingest, repository
+from app.routing.sources.persona_candidates import LivePlaceProvider
+from app.routing.trip_calendar import TripCalendar
 from tests.catalog_ingest_tests import bundle, feature
+
+
+@pytest.mark.parametrize(
+    "departure,ready_day",
+    [("2026-10-21", "2026-10-21"), ("2030-07-17", "2030-07-17"), ("2030-05-22", "2030-05-25")],
+)
+def test_expired_calendars_do_not_consume_paginated_usable_slots(
+    connection, monkeypatch, departure, ready_day
+):
+    """Real SQL: sixty-one genuine expired contracts precede two usable rows."""
+    expired = {
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "weekly_windows": [{"weekdays": [2], "opens": "16:00", "closes": "19:00"}],
+        "seasons": [{"kind": "dated", "start": "2026-05-20", "end": "2026-10-14"}],
+        "source_receipts": [{"source_url": "https://weavervillefarmersmarket.org/"}],
+    }
+    ready = {
+        **expired,
+        "weekly_windows": [],
+        "seasons": [],
+        "date_overrides": [{"date": ready_day, "windows": [{"opens": "10:00", "closes": "17:00"}]}],
+    }
+    rows = [
+        (
+            "fixture",
+            f"usda-market:{n:05d}",
+            f"Expired fixture {n}",
+            37.8,
+            -122.4,
+            "CA",
+            ["daytime", "food_destination"],
+            Json([{"source_visit_calendar": expired}]),
+        )
+        for n in range(61)
+    ]
+    rows.extend(
+        [
+            (
+                "fixture",
+                "usda-market:99999-ready",
+                "Future or later-day fixture",
+                37.8,
+                -122.4,
+                "CA",
+                ["daytime", "food_destination"],
+                Json([{"source_visit_calendar": ready}]),
+            ),
+            (
+                "fixture",
+                "zz-outdoor",
+                "Outdoor fixture",
+                37.8,
+                -122.4,
+                "CA",
+                ["daytime", "nature"],
+                Json([]),
+            ),
+        ]
+    )
+    with connection, connection.cursor() as cur:
+        cur.execute(
+            "INSERT INTO places_catalog_imports(generation,release,manifest,row_count) VALUES (%s,%s,%s,%s)",
+            ("fixture", "fixture", Json({"attribution": "Controlled test records"}), len(rows)),
+        )
+        execute_values(
+            cur,
+            "INSERT INTO places_catalog(generation,source_id,name,latitude,longitude,region,categories,provenance) VALUES %s",
+            rows,
+        )
+        cur.execute("INSERT INTO places_catalog_active VALUES(true,'fixture')")
+    assert len(repository.nearby([37.8, -122.4], ["daytime"], require_visit_calendar=True)) == 60
+    pages = []
+    original_page = repository.nearby_page
+
+    def capture(*args, **kwargs):
+        page = original_page(*args, **kwargs)
+        pages.append(page)
+        if len(pages) == 1:
+            # A real pointer mutation between page reads must not mix releases.
+            with connection, connection.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO places_catalog_imports(generation,release,manifest,row_count) VALUES ('other','other','{}',0)"
+                )
+                cur.execute("UPDATE places_catalog_active SET generation='other'")
+        return page
+
+    async def timezone(_point):
+        return "America/Los_Angeles"
+
+    monkeypatch.setattr(repository, "nearby_page", capture)
+    trip = TripCalendar(
+        datetime.fromisoformat(departure).replace(hour=9, tzinfo=ZoneInfo("America/Los_Angeles")),
+        timezone,
+    )
+    found = asyncio.run(LivePlaceProvider().attractions_near([37.8, -122.4], trip_calendar=trip))
+    assert [row.provider_id for row in found] == ["usda-market:99999-ready", "overture:zz-outdoor"]
+    assert len(found.calendar_excluded) == 61
+    assert [len(page.records) for page in pages] == [60, 3]
+    assert pages[0].next_cursor.generation == "fixture"
+    assert all(
+        row["source_provenance"][-1]["generation"] == "fixture"
+        for page in pages
+        for row in page.records
+    )
+    assert found[0].source_provenance[0]["source_visit_calendar"] == ready
+    with connection.cursor() as cur:
+        cur.execute("SELECT provenance FROM places_catalog WHERE source_id='usda-market:00000'")
+        assert cur.fetchone()[0] == [{"source_visit_calendar": expired}]
 
 
 def test_automatic_calendar_filter_precedes_the_bounded_sql_limit(connection):

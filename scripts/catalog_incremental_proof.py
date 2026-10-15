@@ -37,6 +37,7 @@ sys.path[:0] = [str(ROOT), str(ROOT / "backend")]
 from app.catalog import calendar_enrichment as enrich
 from app.catalog import repository
 from app.catalog.identity import identity
+from app.routing.trip_calendar import possible_visit
 from app.routing.visit_calendar import (
     VisitCalendarConflict,
     calendar_eligible,
@@ -662,6 +663,24 @@ def run(args):
             not temporal["failures"],
             "stored calendar serialization failed temporal controls",
         )
+        expired = next(row for row in actual_rows if "Weaverville" in row["name"])
+        record = candidate(expired, actual_entries)
+        native_hash = enrich.digest(record)
+        zone = ZoneInfo("America/Los_Angeles")
+        trip_checks = {
+            day: possible_visit(
+                record, datetime.fromisoformat(day).replace(hour=9, tzinfo=zone), zone
+            )
+            for day in ("2026-10-14", "2026-10-21", "2030-07-17")
+        }
+        require(
+            trip_checks
+            == {"2026-10-14": True, "2026-10-21": False, "2030-07-17": False},
+            "expired source season escaped the trip gate",
+        )
+        require(
+            enrich.digest(record) == native_hash, "trip filtering mutated source facts"
+        )
         repository.settings.DATABASE_URL = "isolated-loopback-proof-only"
         repository.chat_crud._get_conn = lambda: conn
         repository.chat_crud._put_conn = lambda _connection: None
@@ -714,6 +733,14 @@ def run(args):
             "counts": counts(actual_rows, actual_entries),
             "new_rows_counts": counts(prepared["additions"], actual_entries),
             "temporal_contract": temporal,
+            "requested_trip_calendar": {
+                "provider_id": record["provider_id"],
+                "source_record_sha256": native_hash,
+                "source_facts_unchanged": True,
+                "results": trip_checks,
+                "zone_role": "Explicit regression control for this California source; not a live provider-zone verification",
+                "sixty_one_expired_before_two_usable_real_sql_regression": "backend/tests/catalog_postgres_tests.py::test_expired_calendars_do_not_consume_paginated_usable_slots",
+            },
             "discovery": discovery,
             "measurement_scope": "Actual application repository SELECTs include local transport and deserialization; complete returned provenance and calendar receipts match source-validated stored facts. Structural eligibility is not opening at an actual arrival time, a provider timezone, a joint itinerary, or Neon/production performance.",
         }

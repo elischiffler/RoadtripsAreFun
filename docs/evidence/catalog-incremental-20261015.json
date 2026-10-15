@@ -215,15 +215,17 @@
     "No new licensed beach or evening category records admitted in this candidate"
   ],
   "local_required_checks": {
-    "backend_passed": 1588,
-    "backend_skipped": 53,
-    "backend_coverage_percent": 83.68,
+    "backend_passed": 1602,
+    "backend_skipped": 56,
+    "backend_coverage_percent": 83.5,
     "backend_coverage_gate_percent": 63,
-    "companion_actual_postgres_tests_passed": 76,
+    "companion_actual_postgres_tests_passed": 54,
     "frontend_tests_passed": 319,
     "frontend_statement_coverage_percent": 90.23,
     "frontend_format_lint_build": "passed",
-    "backend_ruff_format_lint": "passed"
+    "backend_ruff_format_lint": "passed",
+    "requested_trip_calendar_regressions": "14 planner/calendar boundary cases plus3 actual PostgreSQL pagination cases passed",
+    "local_container_rebuild": "Blocked: Docker build dependency download cannot reach package index; exact-head CI required"
   },
   "generated_sql_rehearsal": {
     "postgres_major": 18,
@@ -615,5 +617,17 @@
       "sha256": "533ca0b9c3df335e1d87fa602e4205959e2a9010b07ba9511d511217131f6996",
       "bytes": 29844
     }
+  },
+  "requested_trip_runtime_fix": {
+    "source_rows_and_calendars_changed": false,
+    "requested_departure_and_candidate_iana_before_discovery_budgets": true,
+    "full_dwell_seconds": 7200,
+    "pagination_page_rows": 60,
+    "generation_pinned_between_pages": true,
+    "expired_records_do_not_consume_usable_result_slots": true,
+    "future_seasons_and_later_trip_days_preserved": true,
+    "existing_maximum_overnights": 60,
+    "final_hard_validation_retained": true,
+    "independent_parent_release_clearance": false
   }
 }

@@ -36,6 +36,7 @@ DEFAULT_WEIGHTS: dict[str, float] = {
 
 # Each attraction stop costs a fixed ~2h detour today (matches the scheduler).
 _DETOUR_HOURS_PER_STOP = 2.0
+MAX_TRIP_OVERNIGHTS = 60
 
 # A stopping point is an ad-hoc dict — this loose shape is the de-facto contract
 # the itinerary endpoint, CRUD storage, and frontend all depend on. Documented

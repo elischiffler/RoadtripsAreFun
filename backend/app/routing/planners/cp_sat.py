@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import math
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException
 
 from app.agent.progress import emit, stage
 from app.models.routing_models.routing_models import MapBox
+from app.models.scheduling_policy import local_time
 from app.routing.base import PlanningError, PlanOptions, PlanResult, RoutePlanner
 from app.routing.cp_sat_scheduler import schedule_cp_sat_route
 from app.routing.cp_sat_selection import select_attractions
@@ -18,6 +20,7 @@ from app.routing.registry import register_planner
 from app.routing.runtime import in_run, joined, threaded
 from app.routing.services import RoutingServices
 from app.routing.sources.mapbox import UnusableRoadRoute
+from app.routing.trip_calendar import TripCalendar
 from app.routing.visit_calendar import VisitCalendarConflict
 
 MapBox_route = MapBox.MapBox_Route
@@ -42,6 +45,11 @@ class CPSatPlanner(RoutePlanner):
             raise PlanningError("num_stops must be nonnegative", 400)
 
         discovery_plan = make_discovery_plan(initial_route, options.num_stops)
+        departure = options.start
+        if services.timezone_at is not None:
+            lon, lat = initial_route.geometry.coordinates[0]
+            departure = local_time(departure, ZoneInfo(await services.timezone_at([lat, lon])))
+        discovery_plan.trip_calendar = TripCalendar(departure, services.timezone_at)
         query_points = [query.coordinates for query in discovery_plan.queries]
         record_explanation(weights=options.weights or {})
         emit(
@@ -65,7 +73,11 @@ class CPSatPlanner(RoutePlanner):
                     discovery = DiscoveryResult(
                         [], {"plan": discovery_plan.snapshot(), "stop_reason": "zero_requested"}
                     )
-                candidates = discovery.candidates
+                candidates = [
+                    item
+                    for item in discovery.candidates
+                    if await discovery_plan.trip_calendar.eligible(item)
+                ]
                 record_explanation(discovery=discovery.explanation)
             with stage("route.detours", candidates=len(candidates)):
                 if options._verified_cp_sat_candidates is None:

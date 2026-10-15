@@ -65,7 +65,9 @@ last-entry limits are intersected rather than silently overwritten. For example,
 Phoenix's inline dated event list participates alongside visible hours; its
 November 13 member preview cannot become a public visit. GLBT's October 17 gala
 closure remains effective. Closed-only calendars cannot occupy automatic discovery
-slots before usable records.
+slots before usable records. Expired seasons, sessions shorter than a full visit,
+and fixed starts that cannot fit their source window are also rejected before
+raw-pool, rating, discovery-completion and shortlist budgets.
 
 Venue, market and most recovered/USFS evidence has a conservative dated review
 scope of **October 15–November 13**. This is an interpretation policy, not a
@@ -79,6 +81,16 @@ The companion is generation-scoped and immutable. Repository discovery joins it
 before its bounded result limit and projects its effective calendar while keeping
 superseded source facts separately attributed. Later additive calendar credits
 cannot replace a place's original primary attribution.
+
+Automatic planning supplies a request-local departure instant and resolves each
+timed candidate's own IANA zone. It checks whether any permissible trip day has a
+complete two-hour source window. PlanOptions has no trip end date, so this
+necessary check uses the scheduler's existing sixty-overnight bound; it does not
+promise that an itinerary can reach the place on that day. Future seasons and
+later trip days remain eligible. Actual scheduling and final road timing retain
+their stricter full-dwell checks. Database reads use distance/source-ID keyset
+pages of at most sixty rows, pinned to one immutable generation. Rejected rows
+consume no usable result slots, even when activation occurs between page reads.
 
 ## Capacity, coverage and measured discovery
 
@@ -100,7 +112,7 @@ proposals; neither is included here or treated as a completed admission.
 Actual application discovery was exercised in disposable PostgreSQL 18 against
 retained real OSRM route geometries. Every query uses the five-mile/60-result
 bounds and full calendar eligibility. Across **1,083 queries per generation**, the
-final p95 was **2.48 ms** on loopback. SF–LA eligible hits increase
+final p95 was **2.64 ms** on loopback. SF–LA eligible hits increase
 **8 → 10**, SF–Boise **1 → 4**, SF–Chicago **2 → 5**, Seattle–Portland **0 → 3**,
 and LA–Phoenix **8 → 9**. LA–San Diego remains **9 → 9** and Ely–Reno remains
 **0 → 0**. These are structural catalog eligibility counts, not evidence of opening on a
