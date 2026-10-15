@@ -86,6 +86,15 @@ CREATE TABLE IF NOT EXISTS places_catalog (
 );
 CREATE INDEX IF NOT EXISTS places_catalog_bbox ON places_catalog (generation, latitude, longitude);
 CREATE INDEX IF NOT EXISTS places_catalog_categories ON places_catalog USING gin (categories);
+CREATE TABLE IF NOT EXISTS places_catalog_calendars (
+    generation text NOT NULL,
+    source_id text NOT NULL,
+    entry jsonb NOT NULL CHECK (jsonb_typeof(entry) = 'object'),
+    PRIMARY KEY (generation, source_id),
+    FOREIGN KEY (generation, source_id) REFERENCES places_catalog(generation, source_id),
+    CHECK (entry->>'source_id' IS NOT NULL AND entry->>'source_id' = source_id),
+    CHECK (entry->'source_visit_calendar'->>'schema_version' IS NOT NULL AND entry->'source_visit_calendar'->>'schema_version' = 'roadtrips-source-visit-calendar/1')
+);
 CREATE TABLE IF NOT EXISTS places_catalog_active (
     singleton boolean PRIMARY KEY DEFAULT true CHECK (singleton),
     generation text NOT NULL REFERENCES places_catalog_imports(generation)

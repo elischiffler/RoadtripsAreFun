@@ -13,7 +13,7 @@ from geopy.distance import geodesic
 from app.agent.progress import emit
 from app.models.routing_models.routing_models import MapBox
 from app.models.scheduling_policy import advance, local_time, seconds_until
-from app.routing.base import PlanningError, PlanOptions
+from app.routing.base import MAX_TRIP_OVERNIGHTS, PlanningError, PlanOptions
 from app.routing.discovery import SelectedAttraction
 from app.routing.geometry import RouteMeasure
 from app.routing.occupancy import require_occupancy
@@ -26,7 +26,7 @@ _VISIT_SECONDS = 2 * 3600
 _MAX_HOTEL_ATTEMPTS = 6
 _RETRY_DRIVE_SECONDS = 1800
 _MAX_HOTELS = 30
-_MAX_OVERNIGHTS = 60
+_MAX_OVERNIGHTS = MAX_TRIP_OVERNIGHTS
 
 
 def _usable_hotel(hotel: Any) -> bool:

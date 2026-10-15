@@ -241,7 +241,7 @@ def prepare(path, manifest, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
 
 def catalog_size(cur):
     cur.execute(
-        "SELECT COALESCE(sum(pg_total_relation_size(c.oid)),0) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind='r' AND c.relname IN ('places_catalog','places_catalog_imports','places_catalog_active')"
+        "SELECT COALESCE(sum(pg_total_relation_size(c.oid)),0) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind='r' AND c.relname IN ('places_catalog','places_catalog_imports','places_catalog_active','places_catalog_calendars')"
     )
     return int(cur.fetchone()[0])
 

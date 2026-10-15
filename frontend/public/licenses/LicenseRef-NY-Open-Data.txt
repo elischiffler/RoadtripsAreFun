@@ -1,0 +1,25 @@
+New York State OPEN-NY factual data notice
+
+Publisher: New York State and the contributing state agency.
+Terms: https://data.ny.gov/dataset/OPEN-NY-Terms-Of-Use/77gx-ii52
+Retained terms PDF SHA-256:
+9437c849705d58df008f01fc23f404444becce6b86676adc3974f9160a4cb650
+Terms last modified March 8, 2013; retrieved October 15, 2026.
+
+The OPEN-NY terms permit lawful public and private reuse of published content
+under a non-exclusive, revocable license. They do not require attribution,
+share-alike, republication of terms, or pre-approval. Use of the content
+constitutes acceptance of those terms. The complete retained terms control;
+this notice is a factual attribution summary, not a replacement license.
+
+RoadtripsAreFun credits New York State Department of Agriculture and Markets
+for current farmers-market address, location, schedule and season facts, and
+New York State Office of Parks, Recreation and Historic Preservation for state
+historic-site identity and visitor facts. Only the sources identified in each
+record apply. Native Kaggle coordinates and source identities remain intact;
+current independent factual corroboration does not replace those coordinates.
+
+Photographs, logos, creative descriptions, personal contact details and
+third-party works are omitted. No state or agency endorsement is implied.
+Published schedules are not ticket inventory or a guarantee of future access.
+The source data is supplied without warranty, subject to the retained terms.

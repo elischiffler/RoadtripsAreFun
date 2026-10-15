@@ -1,0 +1,650 @@
+{
+  "status": "576-place candidate; independent parent review and release gates pending; no production mutation by this PR",
+  "rows": 576,
+  "preserved_raw_rows_and_provenance": 557,
+  "additions": 19,
+  "source_report": {
+    "rows": 576,
+    "additions": 19,
+    "source_scanned_rows": 45764,
+    "calendar_updates": 80,
+    "bytes": 79470070,
+    "evidence_files": 278,
+    "generation": "750608ca0b01669830ea32c8604396b55bd08bfdf3ef4abab861f94b933fcdd3",
+    "parent_generation": "18b1f79791f036bf5a0fce17a01e2429f21f827d10b8978728ac9d1f20a6aaa3",
+    "preserved_rows": 557,
+    "normalized_rows_sha256": "003ddd7c72307f6844af11ff1df970bfb791f67dda57b143ca317c7f0c501a71",
+    "network_or_database_calls": false
+  },
+  "regions": {
+    "AK": 15,
+    "AL": 3,
+    "AR": 4,
+    "AZ": 31,
+    "CA": 91,
+    "CO": 63,
+    "DC": 1,
+    "FL": 9,
+    "GA": 9,
+    "HI": 6,
+    "IA": 2,
+    "ID": 5,
+    "IL": 2,
+    "IN": 5,
+    "KS": 3,
+    "KY": 13,
+    "LA": 1,
+    "MA": 7,
+    "MD": 6,
+    "ME": 3,
+    "MI": 12,
+    "MN": 3,
+    "MO": 13,
+    "MS": 1,
+    "MT": 18,
+    "NC": 6,
+    "ND": 2,
+    "NE": 4,
+    "NH": 6,
+    "NJ": 1,
+    "NM": 13,
+    "NV": 2,
+    "NY": 22,
+    "OH": 10,
+    "OK": 1,
+    "OR": 32,
+    "PA": 5,
+    "RI": 2,
+    "SC": 6,
+    "SD": 4,
+    "TN": 7,
+    "TX": 11,
+    "UT": 20,
+    "VA": 6,
+    "VT": 1,
+    "WA": 66,
+    "WI": 7,
+    "WV": 1,
+    "WY": 15
+  },
+  "categories_overlapping": {
+    "alcoholic_beverage_venue": 1,
+    "american_restaurant": 1,
+    "amusement_attraction": 1,
+    "amusement_park": 10,
+    "animal_attraction": 2,
+    "aquarium": 2,
+    "art_gallery": 1,
+    "art_museum": 2,
+    "arts_and_entertainment": 17,
+    "asian_art_museum": 1,
+    "aviation_museum": 1,
+    "bar": 1,
+    "bar_and_grill_restaurant": 1,
+    "beach": 12,
+    "beer_bar": 1,
+    "botanical_garden": 1,
+    "bowling_alley": 1,
+    "built_feature": 1,
+    "culture": 169,
+    "day_use_area": 4,
+    "daytime": 570,
+    "european_restaurant": 1,
+    "farmers_market": 63,
+    "food": 5,
+    "food_and_drink": 6,
+    "food_destination": 63,
+    "garden": 1,
+    "geographic_entities": 1,
+    "historic_site": 115,
+    "history_museum": 8,
+    "interpretive_site": 16,
+    "italian_restaurant": 1,
+    "landmark": 16,
+    "mediterranean_restaurant": 1,
+    "museum": 33,
+    "national_park": 45,
+    "nature": 288,
+    "nightlife": 5,
+    "north_american_restaurant": 1,
+    "picnic_site": 57,
+    "public_destination": 63,
+    "public_parking_arrival": 242,
+    "restaurant": 5,
+    "roadside_attraction": 2,
+    "sport_or_fitness_facility": 1,
+    "sports_and_recreation": 1,
+    "trailhead": 179,
+    "viewpoint": 14,
+    "visitor_center": 190,
+    "wildlife_viewing": 2
+  },
+  "calendar_sources": {
+    "nps": {
+      "requested_rows": 122,
+      "emitted_rows": 35,
+      "held_rows": 87,
+      "positive_dated_days": 2300,
+      "positive_dated_windows": 2354,
+      "withheld_ambiguous_dates": 4,
+      "kind": "Calendar supplements for existing rows; no new places or admissions",
+      "emitted_by_region": {
+        "AR": 1,
+        "AZ": 2,
+        "CA": 3,
+        "FL": 1,
+        "GA": 4,
+        "HI": 1,
+        "IL": 1,
+        "LA": 1,
+        "MD": 3,
+        "MI": 1,
+        "MO": 2,
+        "NC": 2,
+        "NE": 1,
+        "NM": 4,
+        "OH": 1,
+        "OK": 1,
+        "RI": 1,
+        "SC": 1,
+        "TX": 2,
+        "VA": 1,
+        "WA": 1
+      },
+      "holds_by_research_tier": {
+        "A_regular_weekly_and_holiday_transform_candidate": 3,
+        "B_scoped_season_prose_or_exception_rule_candidate": 60,
+        "C_active_clock_or_selector_source_hold": 24
+      },
+      "held_reviewed_profiles": [
+        "nps-heritage:pete"
+      ],
+      "explicit_source_holds": [
+        "nps-heritage:cabr",
+        "nps-heritage:puho"
+      ],
+      "emitted_calendar_support_bodies": 38,
+      "all122_original_bodies_sha_verified": true,
+      "original_acquisition_timestamps_preserved": true,
+      "network_requests_during_implementation": 0,
+      "all_automatic_visit_windows_dated_only": true
+    },
+    "venues": {
+      "reviewed": 22,
+      "positive": 11,
+      "held": 11
+    },
+    "new11": {
+      "positive_recoveries": 9,
+      "expired_source_season_corrections": 1,
+      "remaining_holds": 1
+    },
+    "usfs": {
+      "supplements": 5,
+      "holds": 14
+    },
+    "typed_new_places": 19
+  },
+  "new_market_rejects": {
+    "outside_new_york_roster": 8276,
+    "no_unique_exact_normalized_market_name_and_city": 336,
+    "outside_all_source_season_intersection": 5,
+    "no_exact_complete_numbered_street_match": 181,
+    "native_point_more_than_100m_from_independent_agency_point": 8,
+    "canonical_identity_or_native_coordinates_changed": 1,
+    "missing_current_canonical_membership": 32,
+    "official_visitor_location_conflicts_with_native_street": 3,
+    "native_canonical_official_zip_conflict": 1,
+    "unresolved_all_source_calendar:official_visitor_facts[2].hours:unsupported_or_ambiguous_calendar_text;missing_positive_official_weekly_clock": 1,
+    "unresolved_all_source_calendar:kaggle_feed[0].season:multiple_season_ranges;canonical_feed[1].season:multiple_season_ranges": 1,
+    "invalid_native_coordinates": 1
+  },
+  "new_cultural_held": 69,
+  "limits_unchanged": {
+    "source_rows": 50000,
+    "input_bytes": 104857600,
+    "manifest_bytes": 32768,
+    "catalog_bytes": 268435456,
+    "database_bytes": 536870912
+  },
+  "remaining_limits": [
+    "Exact user failing route is unknown",
+    "Live saved-trip browser verification pending",
+    "Actual Windows execution unperformed",
+    "CT and DE remain empty",
+    "No new licensed beach or evening category records admitted in this candidate"
+  ],
+  "local_required_checks": {
+    "backend_passed": 1602,
+    "backend_skipped": 56,
+    "backend_coverage_percent": 83.5,
+    "backend_coverage_gate_percent": 63,
+    "companion_actual_postgres_tests_passed": 54,
+    "frontend_tests_passed": 319,
+    "frontend_statement_coverage_percent": 90.23,
+    "frontend_format_lint_build": "passed",
+    "backend_ruff_format_lint": "passed",
+    "requested_trip_calendar_regressions": "14 planner/calendar boundary cases plus3 actual PostgreSQL pagination cases passed",
+    "local_container_rebuild": "Blocked: Docker build dependency download cannot reach package index; exact-head CI required"
+  },
+  "generated_sql_rehearsal": {
+    "postgres_major": 18,
+    "fresh_disposable_database": true,
+    "stage_preserves_active_pointer": true,
+    "stage_activation_rollback_idempotent": true,
+    "parent_and_candidate_fingerprints_match_importer": true,
+    "production_changes": false
+  },
+  "actual_postgresql_discovery": {
+    "postgres_version_num": 180006,
+    "production_changes": false,
+    "all557_raw_rows_and_provenance_preserved": true,
+    "rows": 576,
+    "storage": {
+      "row_count": 576,
+      "whole_generation_row_bytes": 1586374,
+      "new_row_count": 19,
+      "genuinely_new_row_bytes": 54014,
+      "companion_row_count": 80,
+      "companion_generation_row_bytes": 406184,
+      "companion_generation_json_text_bytes": 1655414,
+      "database_bytes": 16570047,
+      "catalog_table_bytes": 6955008,
+      "catalog_index_bytes": 811008,
+      "companion_table_bytes": 540672,
+      "companion_index_bytes": 32768,
+      "companion_total_bytes": 573440,
+      "catalog_bytes": 8486912,
+      "measurement": "pg_column_size sums are measured composite datum bytes; physical table/index totals include all retained generations and TOAST, not a per-generation physical allocation estimate."
+    },
+    "all_native_point_probes_passed": true,
+    "native_point_counts": {
+      "parent": 383,
+      "candidate": 463
+    },
+    "corridor_timings": {
+      "parent": {
+        "query_count": 1083,
+        "p50_ms": 1.2691270003415411,
+        "p95_ms": 1.9947310011048103,
+        "max_ms": 17.4199850007426
+      },
+      "candidate": {
+        "query_count": 1083,
+        "p50_ms": 1.1262970001553185,
+        "p95_ms": 2.644774000145844,
+        "max_ms": 129.7165899995889
+      }
+    },
+    "corridor_counts": {
+      "short-day": {
+        "parent": 9,
+        "candidate": 9
+      },
+      "medium-two-day": {
+        "parent": 1,
+        "candidate": 4
+      },
+      "long-multi-day": {
+        "parent": 2,
+        "candidate": 5
+      },
+      "dense-corridor": {
+        "parent": 8,
+        "candidate": 10
+      },
+      "sparse-corridor": {
+        "parent": 0,
+        "candidate": 0
+      },
+      "pacific-northwest": {
+        "parent": 0,
+        "candidate": 3
+      },
+      "southwest": {
+        "parent": 8,
+        "candidate": 9
+      },
+      "olympic-peninsula": {
+        "parent": 7,
+        "candidate": 7
+      },
+      "colorado-scenic": {
+        "parent": 4,
+        "candidate": 4
+      },
+      "juneau-local": {
+        "parent": 4,
+        "candidate": 4
+      }
+    },
+    "measurement_scope": "Actual application repository SELECTs include local transport and deserialization; complete returned provenance and calendar receipts match source-validated stored facts. Structural eligibility is not opening at an actual arrival time, a provider timezone, a joint itinerary, or Neon/production performance.",
+    "eligibility_scope": "Structural source-calendar qualification only; no trip-date opening or joint itinerary is implied. The expired Weaverville contract has zero current review-period visit windows."
+  },
+  "bulk_temporal_contract": {
+    "test_zone": "UTC",
+    "zone_role": "Artificial clock-arithmetic test zone only; not a venue timezone or actual arrival-time claim. Source/local-zone DST tests remain separate.",
+    "date_scope": {
+      "start": "2026-10-15",
+      "end": "2026-11-13"
+    },
+    "dwell_seconds": 7200,
+    "counts": {
+      "source_window_occurrences": 1617,
+      "full_7200_second_acceptance_checks": 3234,
+      "latest_start_plus_one_minute_rejections": 1617,
+      "no_published_window_date_rejections": 725,
+      "records_with_full_dwell_occurrences": 79,
+      "explicit_closed_date_rejections": 126,
+      "held_short_or_out_of_scope_records": 1
+    },
+    "failures": []
+  },
+  "source_code_sha256s": {
+    "backend/app/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "backend/app/agent/__init__.py": {
+      "sha256": "cc0b5bbee02b16d47df92b5226ac4b82d0938443d6c39311f86a162be1d7d532",
+      "bytes": 382
+    },
+    "backend/app/agent/persona.py": {
+      "sha256": "7c7156530dab832603288213924038794fd5618f94a442a18a393a8edd36c181",
+      "bytes": 3855
+    },
+    "backend/app/agent/progress.py": {
+      "sha256": "8354dc2dfde47a45e3b25ac59edc11bd4cefdcc6ba221c74e107e79b0a5a6758",
+      "bytes": 2231
+    },
+    "backend/app/agent/provider_diagnostics.py": {
+      "sha256": "9b3deeb84bd6afe84c9bd92525aa42de01b920064b9a6bc3db453d9986abdfa1",
+      "bytes": 6883
+    },
+    "backend/app/agent/providers.py": {
+      "sha256": "424b4c3799cb5469a1d851b18c2497b5404a8a13b052ba8e101c05cd2afc1b45",
+      "bytes": 22684
+    },
+    "backend/app/agent/schemas.py": {
+      "sha256": "97d084a17376e50f6a12b513b1e8ac5641c5025705bd5e67addc0c85a30b2d18",
+      "bytes": 7059
+    },
+    "backend/app/agent/trip_dates.py": {
+      "sha256": "40ecfa80c6c03b25a51131bb47d124a0e2ed90fbb6b7c30511a13959bc66d012",
+      "bytes": 7568
+    },
+    "backend/app/catalog/__init__.py": {
+      "sha256": "77b1218fbae0331f6e762a7926fbaf501819ee99e97c1689473a65a8658f1b70",
+      "bytes": 74
+    },
+    "backend/app/catalog/arrival_review.py": {
+      "sha256": "1124b5ae757fb6f01f282589359abd257f7473dfcb8f610e82f73d82dde15da3",
+      "bytes": 8308
+    },
+    "backend/app/catalog/attribution.py": {
+      "sha256": "949f84aea4a074486ef00c392e06d92428b9c79f5c1ea09e87efa7b561852ad0",
+      "bytes": 255
+    },
+    "backend/app/catalog/boulder.py": {
+      "sha256": "607c608c08661a0112c0f8c1f7484c9cdc005e90295bce597dd8936ba025896c",
+      "bytes": 10553
+    },
+    "backend/app/catalog/calendar_enrichment.py": {
+      "sha256": "1681fae0a2a84ca8c70fe8126b52da1ed8d37edc4f68e59aeba09c767659fada",
+      "bytes": 33169
+    },
+    "backend/app/catalog/expansion_venue_profiles.py": {
+      "sha256": "4e340b6a305d6cf0bf2c1d28fe2c369b9075bf2e6a0b6ac5df7cff9adb11d7f7",
+      "bytes": 8005
+    },
+    "backend/app/catalog/identity.py": {
+      "sha256": "3d8b95e85c151d715c4b8311b5429e3c703b6a3ea0aa02692f3ce9925b40d676",
+      "bytes": 684
+    },
+    "backend/app/catalog/ingest.py": {
+      "sha256": "963fcd8db7cf50d53507f4ac66d0934891f6b34fbfffc67c4b0ebc053d46593d",
+      "bytes": 14756
+    },
+    "backend/app/catalog/kaggle_cultural.py": {
+      "sha256": "c8e1b558db0ffd727df96b76dd78cfeb9caa479c96d8fa58381aa8d29f122caf",
+      "bytes": 34489
+    },
+    "backend/app/catalog/kaggle_markets.py": {
+      "sha256": "29aeb57eb057ce6934f60241f0c05d7c96080243abac1fc5231829fe03c79e41",
+      "bytes": 36544
+    },
+    "backend/app/catalog/kaggle_ny_markets.py": {
+      "sha256": "43faa6508e989e6e4827e85765a823091e0d2dde266156792b7de89a5c5d1259",
+      "bytes": 24649
+    },
+    "backend/app/catalog/kaggle_parks.py": {
+      "sha256": "7e235075db792154abff99006192a6e80e6dfabeec8bb304282abb3da3ed818f",
+      "bytes": 25022
+    },
+    "backend/app/catalog/market_visit_calendar.py": {
+      "sha256": "955d9e9488b1e28434ac4b741767a4fd9d2b755783c8a90c342df20f0703fa45",
+      "bytes": 14752
+    },
+    "backend/app/catalog/mixed.py": {
+      "sha256": "52309cdbb536bc580a4a8611f3fae0ff9319c9b698bca18ef5cbe11ca7768543",
+      "bytes": 8643
+    },
+    "backend/app/catalog/normalize.py": {
+      "sha256": "9bdae668413607ab64f601ccd9252209b7d2a7acb3a065a3d1a80373d937d877",
+      "bytes": 7208
+    },
+    "backend/app/catalog/nps.py": {
+      "sha256": "7214187fb9e27f3180f01e010800db81c6e78554ac6facd4f90f7adc649b5b99",
+      "bytes": 12647
+    },
+    "backend/app/catalog/nps_access.py": {
+      "sha256": "a906f02440e309ebe80dcf307f72b0f5245850acc0ce4ef5e8fd1dfc072716f7",
+      "bytes": 2306
+    },
+    "backend/app/catalog/nps_heritage.py": {
+      "sha256": "2b48d78153c87863d12a522b79a0e9ea6dc597629538bdc9adfa04d84f50791f",
+      "bytes": 8368
+    },
+    "backend/app/catalog/nps_nature.py": {
+      "sha256": "811dd8d82eba92d310a0bade881804869932da6c0208ead481bb377da915563f",
+      "bytes": 13908
+    },
+    "backend/app/catalog/nps_public.py": {
+      "sha256": "953b45614fb0afd8c29dec374da3a4508a5d6fdb74d12d001f61a1a3c440de23",
+      "bytes": 6361
+    },
+    "backend/app/catalog/nps_visit_calendar.py": {
+      "sha256": "99abc4dbf801125cc0eafd0a9c4ea667414597016db9348c215b59b9e97c1c0f",
+      "bytes": 32978
+    },
+    "backend/app/catalog/park_visit_calendar.py": {
+      "sha256": "e3091c280e42550c57057f749afd07326e58a1c3d9158d01f04697c6a45b7c54",
+      "bytes": 16862
+    },
+    "backend/app/catalog/recovered_visit_calendar.py": {
+      "sha256": "7d78cc8e07781b96ee3396381abfd53fef527923fe7df4d4c42624e19315e44f",
+      "bytes": 51563
+    },
+    "backend/app/catalog/repository.py": {
+      "sha256": "1328d20181c6f4232044e7c8fd0e423485dfd4f4d8c2501b2a707f9ac8bb6616",
+      "bytes": 9230
+    },
+    "backend/app/catalog/roadside.py": {
+      "sha256": "47e12891d18f5cce6eca482b1317971bd15db10b9d7612afcaa30b0e6528343c",
+      "bytes": 12478
+    },
+    "backend/app/catalog/usfs.py": {
+      "sha256": "76f7e985183e0cafb35a47c2c9fc31705bbdcc14df870f7de97ca9a48b241ac2",
+      "bytes": 21969
+    },
+    "backend/app/catalog/usfs_visit_calendar.py": {
+      "sha256": "386b4f8338326511bff96ba6c07aa7a2040dbbcf9d32ab8485b9dd0aefe94388",
+      "bytes": 38259
+    },
+    "backend/app/catalog/venue_profiles.py": {
+      "sha256": "cea0c2d3e7f7d84774cdc21479bfee8b741a436a94120de5ca1985be83dac630",
+      "bytes": 17491
+    },
+    "backend/app/catalog/venue_visit_calendar.py": {
+      "sha256": "4f308d02f37edd8537e4f1e8a8b417db55b58b51c82f1c2da931d69db43e0c84",
+      "bytes": 17370
+    },
+    "backend/app/core/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "backend/app/core/config.py": {
+      "sha256": "2d9dbbe44f6abf0aff6b16fb627602490eb8a7f3b8f47d62b528411c1677a800",
+      "bytes": 4518
+    },
+    "backend/app/crud/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "backend/app/crud/chat_crud.py": {
+      "sha256": "87adfca8d082a93e31e976a042823532104e668f38ac2413ebc0690043154472",
+      "bytes": 11415
+    },
+    "backend/app/models/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "backend/app/models/routing_models/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "backend/app/models/routing_models/routing_models.py": {
+      "sha256": "4395ebe5f52d5281da471f35d98c254ba810c9f8f0ce891589d3c29e8e3a19a5",
+      "bytes": 4423
+    },
+    "backend/app/models/scheduling_policy.py": {
+      "sha256": "4aa19463e4322cb9da95f678c7a46026d59d714ca2d213d49a0101f97d96d0de",
+      "bytes": 4002
+    },
+    "backend/app/routing/__init__.py": {
+      "sha256": "47e04bc8141f2b531f716079278ba60940aa7da443f0b216d202593037a1227e",
+      "bytes": 1233
+    },
+    "backend/app/routing/base.py": {
+      "sha256": "c8afc1778c810daace650aa4a9e84ec4fdf1cd80b4793c2a5bf296baecbbb711",
+      "bytes": 10440
+    },
+    "backend/app/routing/config.py": {
+      "sha256": "eedae155799d3137070e5a9d2eed6c1d930d1c6954d4c39ad9b2b7a2760471cc",
+      "bytes": 1360
+    },
+    "backend/app/routing/discovery.py": {
+      "sha256": "4569be926d689981123d8c0e98997345a808fceea9c39231693dd120f51d6aae",
+      "bytes": 5055
+    },
+    "backend/app/routing/explanation.py": {
+      "sha256": "a1334c26b1704bc6002cc0abc0bdba66c09fb13ae6f5cc5a8dcf359ffe1a4bc3",
+      "bytes": 825
+    },
+    "backend/app/routing/geometry.py": {
+      "sha256": "511f90f4429a74a5786fbe27267087b87a720c3ba4041eefaa6f044c3084bfdc",
+      "bytes": 9673
+    },
+    "backend/app/routing/occupancy.py": {
+      "sha256": "6cdd624f29fc66a50918f9915775e3495062dec35d7838d823e1f53209aecd52",
+      "bytes": 2131
+    },
+    "backend/app/routing/profiles.py": {
+      "sha256": "b0ad34f4a43856306aa4eed7831789b2f51f3437dc1198b8761790b3b55eaebc",
+      "bytes": 2878
+    },
+    "backend/app/routing/registry.py": {
+      "sha256": "be2691c0614c1ae8ce60422545b438e656e167c17c5436174444c49dd20e822b",
+      "bytes": 2422
+    },
+    "backend/app/routing/run_metrics.py": {
+      "sha256": "2ecbd9e10a203206f2e0e0d6bdcc755760b70d15a702885e456b1377de98e5dd",
+      "bytes": 21960
+    },
+    "backend/app/routing/runtime.py": {
+      "sha256": "ecb51f315c4ea95e64975288f64c110cb87fc3d00f72f7fd8446102dd7ba8571",
+      "bytes": 5796
+    },
+    "backend/app/routing/services.py": {
+      "sha256": "5f7b435f85f590233d3e1ccfc109df6829c82e2bda8cee445003063447422d75",
+      "bytes": 5269
+    },
+    "backend/app/routing/sources/__init__.py": {
+      "sha256": "281fe9f4f2234c47573188de9324a8c9af957c8cbd9772669dee6ba5e90e3f6a",
+      "bytes": 583
+    },
+    "backend/app/routing/sources/evenings.py": {
+      "sha256": "89b0c944c87b56d59dd4ae0e6d883088a85278446e56d1fc62d1df8788f75919",
+      "bytes": 9791
+    },
+    "backend/app/routing/sources/persona_candidates.py": {
+      "sha256": "79a00c4255c15e750954d9cc810347f48c87060bd6bf06070189498391be589f",
+      "bytes": 36611
+    },
+    "backend/app/routing/trip_calendar.py": {
+      "sha256": "6123670f13b36362b48ee7b362090bc0208d474236e1e88a2e460140dacd4a41",
+      "bytes": 3968
+    },
+    "backend/app/routing/visit_calendar.py": {
+      "sha256": "e6fc484e015c1aeaf9093607cf54e86f72a1975aa890a28285001f0b56cb48f4",
+      "bytes": 11995
+    },
+    "backend/app/schemas/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "backend/app/schemas/chat_schemas.py": {
+      "sha256": "4e0782d63b5bd5a532bbe836b37fa33f7993cc52b29e63eb580f353409503943",
+      "bytes": 1437
+    },
+    "backend/app/utils/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "backend/app/utils/crud_helpers.py": {
+      "sha256": "b424eede57a0ed1fbcd1d6e77d80df2e1ef64366c48911af8d007498e5e8699c",
+      "bytes": 282
+    },
+    "backend/app/utils/geolocation_helpers.py": {
+      "sha256": "cdcc645862cef04564ad4f5c46522e0b4974daea310dabf7387ea22bd3c9e02f",
+      "bytes": 801
+    },
+    "backend/app/utils/location_resolution.py": {
+      "sha256": "a647671b0bad320245cc95f763457399027dec1743c4f3281a453e556d0acfbc",
+      "bytes": 3045
+    },
+    "scripts/catalog_500_discovery.py": {
+      "sha256": "bcb675a62319eb45623004aee8cfde53583550e033f4e29393703a27f4dd7e11",
+      "bytes": 9308
+    },
+    "scripts/catalog_incremental_proof.py": {
+      "sha256": "25c4a7edfb38748c26476edc4be3073874a57df906e6a53c9a77dcca74ceac7a",
+      "bytes": 31218
+    }
+  },
+  "requested_trip_runtime_fix": {
+    "source_rows_and_calendars_changed": false,
+    "requested_departure_and_candidate_iana_before_discovery_budgets": true,
+    "full_dwell_seconds": 7200,
+    "pagination_page_rows": 60,
+    "generation_pinned_between_pages": true,
+    "expired_records_do_not_consume_usable_result_slots": true,
+    "future_seasons_and_later_trip_days_preserved": true,
+    "existing_maximum_overnights": 60,
+    "final_hard_validation_retained": true,
+    "independent_parent_release_clearance": false,
+    "stored_expired_contract_proof": {
+      "provider_id": "usda-market:308993",
+      "source_record_sha256": "4a19f9c5c53916093bcf7a03ba7e0f391e1e3874c455e8b66bdbc8e91cf02c2d",
+      "source_facts_unchanged": true,
+      "results": {
+        "2026-10-14": true,
+        "2026-10-21": false,
+        "2030-07-17": false
+      },
+      "zone_role": "Explicit regression control for this California source; not a live provider-zone verification",
+      "sixty_one_expired_before_two_usable_real_sql_regression": "backend/tests/catalog_postgres_tests.py::test_expired_calendars_do_not_consume_paginated_usable_slots"
+    },
+    "private_proof_sha256": "1d6889144a09bcef3607195ff2ac3f095ba73e6498d9ad669b16cf6cc8ba12fc"
+  }
+}

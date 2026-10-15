@@ -43,6 +43,7 @@ from app.routing.runtime import (
     singleflight,
     threaded,
 )
+from app.routing.trip_calendar import TripCalendar
 from app.routing.visit_calendar import calendar_eligible
 
 MAX_ATTRACTIONS = 60
@@ -358,7 +359,9 @@ async def attraction_candidates(
         "rounds": rounds,
         "rating_attempts": [],
         "eligibility_policy": "positive_utility",
-        "calendar_eligibility_policy": "usable_source_calendar_for_timed_visits_before_discovery_quotas",
+        "calendar_eligibility_policy": "requested_trip_full_dwell_before_discovery_quotas"
+        if plan.trip_calendar
+        else "structurally_usable_source_calendar",
         "calendar_excluded_provider_ids": [],
     }
     record_explanation(discovery=explanation)
@@ -383,15 +386,24 @@ async def attraction_candidates(
                     lambda: limited(
                         "nearby",
                         lambda: (
-                            places.attractions_near(point, require_visit_calendar=True)
+                            places.attractions_near(
+                                point, require_visit_calendar=True, trip_calendar=plan.trip_calendar
+                            )
                             if isinstance(places, LivePlaceProvider)
                             else places.attractions_near(point)
                         ),
                     )
                 )
 
-        records = await singleflight(("nearby", tuple(point)), lookup)
-        output, calendar_excluded = [], []
+        records = await singleflight(
+            (
+                "nearby",
+                tuple(point),
+                plan.trip_calendar.departure.isoformat() if plan.trip_calendar else None,
+            ),
+            lookup,
+        )
+        output, calendar_excluded = [], list(getattr(records, "calendar_excluded", ()))
         for rank, record in enumerate(records):
             try:
                 place = VerifiedPlace.model_validate(record)
@@ -399,7 +411,7 @@ async def attraction_candidates(
                 continue
             if _distance_miles(point, place.coordinates) > _ATTRACTION_RADIUS_MI:
                 continue
-            if not calendar_eligible(place.model_dump()):
+            if not await calendar_ok(place.model_dump()):
                 calendar_excluded.append(place.provider_id)
                 continue
             projection = measure.project(place.coordinates, query.progress_seconds)
@@ -421,6 +433,13 @@ async def attraction_candidates(
             candidates=len(output),
         )
         return output, calendar_excluded
+
+    async def calendar_ok(record):
+        return (
+            await plan.trip_calendar.eligible(record)
+            if plan.trip_calendar
+            else calendar_eligible(record)
+        )
 
     async def rate(batch):
         """Rate a batch of verified places and return candidates with match scores."""
@@ -575,7 +594,7 @@ async def attraction_candidates(
         eligible = [
             item
             for item in rated.values()
-            if eligible_utility(item["utility"]) and calendar_eligible(item)
+            if eligible_utility(item["utility"]) and await calendar_ok(item)
         ]
         counts = [
             sum(item["section_id"] == i for item in eligible) for i in range(plan.section_count)
@@ -622,7 +641,7 @@ async def attraction_candidates(
     eligible = [
         item
         for item in rated.values()
-        if eligible_utility(item["utility"]) and calendar_eligible(item)
+        if eligible_utility(item["utility"]) and await calendar_ok(item)
     ]
     for key, item in rated.items():
         if key in raw:
@@ -735,6 +754,14 @@ async def _room_candidates(
     return results
 
 
+class CalendarFilteredPlaces(list):
+    """Query-local exclusions, without mutable state shared by parallel queries."""
+
+    def __init__(self, records, excluded):
+        super().__init__(records)
+        self.calendar_excluded = tuple(excluded)
+
+
 class LivePlaceProvider:
     """Versioned catalog identities and independent dated hotel prices."""
 
@@ -745,9 +772,15 @@ class LivePlaceProvider:
             raise CandidateProviderError("Google Hotels location verification is not configured")
 
     async def attractions_near(
-        self, point: list[float], *, require_visit_calendar: bool = False
+        self,
+        point: list[float],
+        *,
+        require_visit_calendar: bool = False,
+        trip_calendar: TripCalendar | None = None,
     ) -> list[VerifiedPlace]:
         """Read bounded source facts; these are not live venue verification."""
+        if trip_calendar is not None:
+            return await self._trip_attractions(point, trip_calendar)
         increment("catalog")
         try:
             calendar_filter = {"require_visit_calendar": True} if require_visit_calendar else {}
@@ -777,6 +810,44 @@ class LivePlaceProvider:
             except (TypeError, ValueError):
                 continue
         return output
+
+    async def _trip_attractions(self, point, trip_calendar):
+        """Bounded pages; only valid full-dwell candidates consume result slots."""
+        output, excluded, cursor = [], [], None
+        while True:
+            increment("catalog")
+            try:
+                page = await threaded(
+                    "catalog",
+                    repository.nearby_page,
+                    point,
+                    ["daytime"],
+                    radius_miles=_ATTRACTION_RADIUS_MI,
+                    limit=MAX_ATTRACTIONS,
+                    require_visit_calendar=True,
+                    cursor=cursor,
+                )
+            except Exception:
+                raise CandidateProviderError("Places catalog lookup unavailable") from None
+            for record in page.records:
+                try:
+                    place = VerifiedPlace.model_validate(record)
+                except (TypeError, ValueError):
+                    continue
+                if (
+                    "daytime" not in place.categories
+                    or _distance_miles(point, place.coordinates) > _ATTRACTION_RADIUS_MI
+                ):
+                    continue
+                if not await trip_calendar.eligible(place.model_dump()):
+                    excluded.append(place.provider_id)
+                    continue
+                output.append(place)
+                if len(output) == MAX_ATTRACTIONS:
+                    return CalendarFilteredPlaces(output, excluded)
+            cursor = page.next_cursor
+            if cursor is None:
+                return CalendarFilteredPlaces(output, excluded)
 
     async def hotels_near(
         self,
