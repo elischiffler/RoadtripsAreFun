@@ -200,6 +200,14 @@ The corrected private portable bundle is **version 2**, replacing the blocked
 version 1 proposal. Its exact archive hash, size, immutable code snapshot and
 fresh offline replay are recorded in the
 [portable replay receipt](evidence/catalog-expansion-500-portable-replay.json).
+Archive: `roadtrips-reviewed-500-portable-source-v2.zip`, **28,896,935 bytes**,
+SHA-256 `3ffb37aef88197d481113ca2ec1c3a9d3689b731e7f0b63e73f1d88de8f7a20a`.
+Code snapshot: `c888eb2106196e920048671a509c882385bc4990`; subsequent commits
+change documentation/evidence only. A fresh Library download matches those bytes.
+Fresh ZIP extraction verifies **939 inventoried files** (940 outer files) and
+rebuilds all **500** normalized rows with network/database connections forbidden.
+The relocated recipe uses **64,008,133 bytes**, below the unchanged 64 MiB bound.
+
 The original 214/29 ZIPs and all original 333 driving receipts remain unchanged;
 one genuinely acquired Eastern Sierra driving response is appended. Original
 USFS source/driving inventories are retained alongside the corrected inventories.
@@ -220,13 +228,17 @@ Source evidence has the existing **30-day** freshness guard. After that window,
 strict re-admission requires genuine acquisition and review; editing dates is not
 a valid refresh. Saved expected rows remain historical evidence.
 
-Current fix validation passes **1,137 backend tests, 87.42% coverage** (five
+Current fix validation passes **1,137 backend tests, 87.42% host / 87.41%
+network-disabled container coverage** (five
 opt-in PostgreSQL cases skipped), Ruff format/lint, and **348 focused catalog
 cases**. All five opt-in cases subsequently pass against a newly created isolated
 `catalog_test`. Frontend format/lint, **319 tests / 90.23% line coverage**, and
 build pass; the existing large-bundle warning remains. Exact-head remote CI and
 the final bundle replay are tracked in the machine-readable receipts. Historical
 pre-fix validation is retained separately and does not validate these new rows.
+The full disposable CRUD/ownership, recreate, outage/readiness recovery and
+backup/restore lifecycle also passes with offline-built pinned images; both
+source and restore volumes are preserved. Standard build gates run in remote CI.
 
 Fresh PostgreSQL 18.6 discovery measurements on the corrected 500 preserve the
 counts above, including both zero-hit benchmark corridors. The corrected public

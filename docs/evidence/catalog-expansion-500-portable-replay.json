@@ -1,11 +1,16 @@
 {
   "source_zip": {
-    "name": "roadtrips-reviewed-500-portable-source-v1.zip",
-    "bytes": 28487243,
-    "sha256": "c43abc122b15316d4cc79ad44d7c642d3119492b078e1413b5a73621f0f25718",
-    "files": 932,
+    "name": "roadtrips-reviewed-500-portable-source-v2.zip",
+    "bytes": 28896935,
+    "sha256": "3ffb37aef88197d481113ca2ec1c3a9d3689b731e7f0b63e73f1d88de8f7a20a",
+    "files": 940,
+    "inventoried_files": 939,
     "windows_invalid_filenames": [],
-    "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6"
+    "code_commit": "c888eb2106196e920048671a509c882385bc4990",
+    "prior_source_zip_sha256": {
+      "roadtrips-reviewed-214-portable-source.zip": "32294767109e30c2e2aede00bc505c4561c3a8d2a81d1d8e76b90a344255ae27",
+      "roadtrips-nature-29-source-20261015.zip": "da9f66bc7345a9bf6e1e9f2844c60818b6e25eeec03dd02d7e9fbf71d6a98a2c"
+    }
   },
   "replay": {
     "accepted": 500,
@@ -13,12 +18,12 @@
     "preserved_rows_and_provenance": 243,
     "new_usfs": 251,
     "new_venues": 6,
-    "evidence_bytes": 64008625,
+    "evidence_bytes": 64008133,
     "max_rows": 500,
     "max_bytes": 67108864,
-    "normalized_rows_sha256": "a52fbe12bdba5f7e20669614367331d6d05e496f964d4546291d502c33fefffb",
-    "usfs_source_inventory_sha256": "cc24c5f3474c5f27f742a148fb9164a52d59425ac51b0eb81b7e3fd4e240bf6b",
-    "usfs_evidence_bytes": 22008150,
+    "normalized_rows_sha256": "804b0854158423d44917e7ed27e2ea9b00ce21ec4048f8520ec7cc158678a896",
+    "usfs_source_inventory_sha256": "c86b01c905c80c2e878acac0fd4cffe38e9ad781960a4de4181737c0af4ae914",
+    "usfs_evidence_bytes": 22008876,
     "regions": {
       "CO": 63,
       "ME": 3,
@@ -30,7 +35,7 @@
       "SC": 6,
       "OR": 31,
       "OH": 10,
-      "AK": 14,
+      "AK": 15,
       "CA": 43,
       "MT": 18,
       "NV": 2,
@@ -39,7 +44,7 @@
       "WY": 15,
       "HI": 6,
       "KY": 13,
-      "WA": 67,
+      "WA": 66,
       "VA": 6,
       "ND": 2,
       "MN": 3,
@@ -80,21 +85,22 @@
     },
     "generation_fingerprint_depends_on_relocated_paths": true,
     "production_activation_performed": false,
-    "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6",
-    "all_bundle_files_verified": 931,
+    "code_commit": "c888eb2106196e920048671a509c882385bc4990",
+    "all_bundle_files_verified": 939,
     "all_500_normalized_rows_match": true,
     "network_and_database_connections_forbidden": true
   },
   "catalog_dump_restore": {
+    "checked_at": "2026-10-15T16:59:51.659055+00:00",
     "disposable_loopback_only": true,
     "source_and_restore": [
       {
         "database": "catalog_500_validation",
         "all_retained_rows": 743,
-        "normalized_database_content_md5": "e4a7ffbc7ca0bc1c4cb3621ba6ba196a",
+        "normalized_database_content_md5": "7eb0b30a138d00c20c0a61162a1be352",
         "active": [
           [
-            "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507",
+            "fb17755850a264e4aed525b8d5a1ee669c07efc7cd66af9e930d53f1591cd6f9",
             500
           ]
         ]
@@ -102,17 +108,31 @@
       {
         "database": "catalog_500_restore",
         "all_retained_rows": 743,
-        "normalized_database_content_md5": "e4a7ffbc7ca0bc1c4cb3621ba6ba196a",
+        "normalized_database_content_md5": "7eb0b30a138d00c20c0a61162a1be352",
         "active": [
           [
-            "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507",
+            "fb17755850a264e4aed525b8d5a1ee669c07efc7cd66af9e930d53f1591cd6f9",
             500
           ]
         ]
       }
     ],
-    "dump_bytes": 217958,
-    "dump_sha256": "9de83da593bcda96e06f47861ddfde20b1420365e9b6040713e8a76009d2ecd2",
+    "dump_bytes": 263516,
+    "dump_sha256": "66c06f8eb3472c26abb83aa45f28d376dc57912e517bc87511f5075a64b2fff4",
     "production_backup_or_restore_claimed": false
-  }
+  },
+  "library_download_exact_bytes_verified": true,
+  "library_version_number": 1,
+  "prior_source_bundle_version_preserved": true,
+  "access_fact_audit": {
+    "selected_usfs_rows": 251,
+    "separately_attributed_feeds_per_row": 2,
+    "construction_native_fields_per_row": 12,
+    "public_native_fields_per_row": 7,
+    "all_native_field_values_urls_hashes_and_dates_match": true,
+    "original_driving_receipts_byte_identical": 333,
+    "first_243_serialized_rows_byte_identical": true,
+    "no_scheduler_intervals_or_prices_invented": true
+  },
+  "actual_windows_execution": "pending; filename preflight only"
 }
