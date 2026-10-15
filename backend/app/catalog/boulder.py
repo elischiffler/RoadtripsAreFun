@@ -157,6 +157,7 @@ def prepare(path, manifest, *, max_rows, max_bytes):
     if not isinstance(evidence, dict) or not 1 <= len(evidence) <= 36:
         raise ValueError("supply at most 36 independently reviewed trailhead pages")
     rows, rejects, seen, used = [], Counter(), set(), set()
+    size = path.stat().st_size
     with zipfile.ZipFile(path) as archive:
         entries = [m for m in archive.infolist() if m.filename == MEMBER]
         if len(entries) != 1 or not 0 < entries[0].file_size < 128 * 1024:
@@ -184,6 +185,9 @@ def prepare(path, manifest, *, max_rows, max_bytes):
             if native == "279":
                 rejects["same_flagstaff_summit_destination"] += 1
                 continue
+            size += Path(evidence[native].get("path", "")).stat().st_size
+            if size > max_bytes:
+                raise ValueError("Boulder aggregate archive/evidence byte ceiling exceeded")
             point, reason = arrival(record, evidence[native])
             if reason:
                 rejects[reason] += 1
@@ -234,7 +238,7 @@ def prepare(path, manifest, *, max_rows, max_bytes):
     return rows, {
         "scanned": scanned,
         "accepted": len(rows),
-        "bytes": path.stat().st_size,
+        "bytes": size,
         "rejects": dict(rejects),
         "regions": {"CO": len(rows)},
         "primary_categories": {"nature": len(rows)},

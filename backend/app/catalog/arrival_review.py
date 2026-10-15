@@ -10,7 +10,7 @@ import math
 from collections import Counter
 from urllib.parse import urlparse
 
-from app.catalog import roadside
+from app.catalog import roadside, venue_profiles
 
 SCHEMA = "roadtrips-arrival-review/1"
 PROFILES = {
@@ -63,6 +63,7 @@ PROFILES = {
         "limitations": "Entrance parking is very limited and visitor-only; street parking is metered. The aquarium reports remaining open during renovations and publishes dated closures and special hours. Check these before travel; future access and parking availability are unknown.",
     },
 }
+PROFILES.update(venue_profiles.PROFILES)
 
 
 def apply(rows, evidence, *, max_bytes):
@@ -84,6 +85,10 @@ def apply(rows, evidence, *, max_bytes):
             or row["region"] != profile["region"]
             or not roadside.compact(row["address"]).startswith(roadside.compact(profile["address"]))
             or (urlparse(row["url"]).hostname or "").removeprefix("www.") != profile["host"]
+            or (
+                "coordinates" in profile
+                and [row["latitude"], row["longitude"]] != profile["coordinates"]
+            )
         ):
             raise ValueError("arrival review does not match the inspected source venue")
         pages = entry.get("pages", {})

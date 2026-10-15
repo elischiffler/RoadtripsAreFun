@@ -20,6 +20,9 @@ SCHEMA = "nps-heritage-arrivals/1"
 SOURCE_URL = "https://www.nps.gov/subjects/digital/structured-data.htm"
 INDEX_URL = "https://carto.nps.gov/user/parktiles/api/v2/sql"
 INDEX_SHA256 = "dcd341fb86cd4b6a8604ed0807f773d05e028ced4948e8f71285a6c0ab951b93"
+# Independently retained October 15 expansion inventory. Keep the initial
+# release fingerprint valid: a new acquisition must never rewrite its evidence.
+EXPANSION_INDEX_SHA256 = "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2"
 ATTRIBUTION = "National Park Service factual heritage-unit and visitor-arrival data. No claim to original U.S. Government works. No NPS endorsement."
 DESIGNATIONS = {
     "National Historical Park",
@@ -55,7 +58,10 @@ def prepare(path, manifest, *, max_rows, max_bytes):
         raise ValueError("NPS heritage bundle checksum mismatch")
     bundle = json.loads(raw)
     index = bundle.get("inventory", {})
-    if index.get("url") != INDEX_URL or index.get("sha256") != INDEX_SHA256:
+    if index.get("url") != INDEX_URL or index.get("sha256") not in {
+        INDEX_SHA256,
+        EXPANSION_INDEX_SHA256,
+    }:
         raise ValueError("NPS heritage inventory differs from the inspected public index")
     inventory_raw = roadside.retained(index, url=INDEX_URL, ceiling=1024 * 1024)
     inventory = json.loads(inventory_raw).get("rows", [])
@@ -168,7 +174,7 @@ def prepare(path, manifest, *, max_rows, max_bytes):
                 "record_id": code,
                 "designation": unit["designation"],
                 "source_url": INDEX_URL,
-                "snapshot_sha256": INDEX_SHA256,
+                "snapshot_sha256": index["sha256"],
                 "license": "LicenseRef-US-Government-Work",
                 "cartographic_geometry_used": False,
                 "cartographic_label_state_used_for_facility": False,

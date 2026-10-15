@@ -1,0 +1,1017 @@
+[
+  {
+    "source_id": "03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+    "name": "Wing Luke Museum",
+    "latitude": 47.59825849,
+    "longitude": -122.32289613,
+    "region": "WA",
+    "categories": [
+      "arts_and_entertainment",
+      "culture",
+      "daytime",
+      "history_museum",
+      "museum"
+    ]
+  },
+  {
+    "source_id": "57193dd5-6aa9-4857-98bc-60e2097c3af0",
+    "name": "Waikiki Aquarium",
+    "latitude": 21.26582513,
+    "longitude": -157.82149954,
+    "region": "HI",
+    "categories": [
+      "animal_attraction",
+      "aquarium",
+      "arts_and_entertainment",
+      "daytime"
+    ]
+  },
+  {
+    "source_id": "boulder:101",
+    "name": "Doudy Draw",
+    "latitude": 39.938209425294,
+    "longitude": -105.25649364714,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "boulder:103",
+    "name": "Greenbelt Plateau",
+    "latitude": 39.928826627983,
+    "longitude": -105.23310947793,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "boulder:106",
+    "name": "Marshall Mesa",
+    "latitude": 39.953125962865,
+    "longitude": -105.23129026928,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "boulder:116",
+    "name": "Flatirons Vista",
+    "latitude": 39.924146,
+    "longitude": -105.235225,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "boulder:201",
+    "name": "South Mesa",
+    "latitude": 39.938753095701,
+    "longitude": -105.25802634244,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "boulder:210",
+    "name": "South Boulder Creek West",
+    "latitude": 39.960487577744,
+    "longitude": -105.23681866544,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "boulder:272",
+    "name": "Realization Point",
+    "latitude": 39.997223311727,
+    "longitude": -105.30900101863,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "boulder:277",
+    "name": "Flagstaff Summit East",
+    "latitude": 40.00413697789,
+    "longitude": -105.30342254664,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "boulder:282",
+    "name": "Crown Rock",
+    "latitude": 40.001771490346,
+    "longitude": -105.29698840819,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "boulder:283",
+    "name": "Panorama Point",
+    "latitude": 40.006076083761,
+    "longitude": -105.2925615332,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "boulder:284",
+    "name": "Halfway House",
+    "latitude": 40.006528644887,
+    "longitude": -105.2946087495,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "boulder:297",
+    "name": "Chapman Drive",
+    "latitude": 40.008939176179,
+    "longitude": -105.3253745752,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "nature",
+      "trailhead"
+    ]
+  },
+  {
+    "source_id": "kaggle-loc:279",
+    "name": "The World's Only Corn Palace",
+    "latitude": 43.71485882,
+    "longitude": -98.02536536,
+    "region": "SD",
+    "categories": [
+      "culture",
+      "daytime",
+      "roadside_attraction"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:adam",
+    "name": "Adams National Historical Park — Adams National Historical Park Visitor Center",
+    "latitude": 42.25218300056556,
+    "longitude": -71.00359799954816,
+    "region": "MA",
+    "categories": [
+      "culture",
+      "daytime",
+      "historic_site",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:agfo",
+    "name": "Agate Fossil Beds National Monument — Agate Fossil Beds National Monument Visitor Center",
+    "latitude": 42.4252104811,
+    "longitude": -103.734175665,
+    "region": "NE",
+    "categories": [
+      "culture",
+      "daytime",
+      "historic_site",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:ande",
+    "name": "Andersonville National Historic Site — National Prisoner of War Museum",
+    "latitude": 32.1974984,
+    "longitude": -84.1271101999,
+    "region": "GA",
+    "categories": [
+      "culture",
+      "culture",
+      "daytime",
+      "historic_site",
+      "museum",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:arpo",
+    "name": "Arkansas Post National Memorial — Arkansas Post Visitor Center",
+    "latitude": 34.0165748386,
+    "longitude": -91.345107954,
+    "region": "AR",
+    "categories": [
+      "culture",
+      "daytime",
+      "historic_site",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:cari",
+    "name": "Cane River Creole National Historical Park — Oakland Plantation Store",
+    "latitude": 31.665043,
+    "longitude": -93.001969,
+    "region": "LA",
+    "categories": [
+      "culture",
+      "daytime",
+      "historic_site",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:crmo",
+    "name": "Craters Of The Moon National Monument & Preserve — Robert Limbert Visitor Center",
+    "latitude": 43.4620552216,
+    "longitude": -113.561750105,
+    "region": "ID",
+    "categories": [
+      "culture",
+      "daytime",
+      "historic_site",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:edis",
+    "name": "Thomas Edison National Historical Park — Laboratory Complex Visitor Center",
+    "latitude": 40.78398500000733,
+    "longitude": -74.2338966996005,
+    "region": "NJ",
+    "categories": [
+      "culture",
+      "daytime",
+      "historic_site",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:efmo",
+    "name": "Effigy Mounds National Monument — Visitor Center",
+    "latitude": 43.088812767000036,
+    "longitude": -91.18553137399994,
+    "region": "IA",
+    "categories": [
+      "culture",
+      "daytime",
+      "historic_site",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:gwca",
+    "name": "George Washington Carver National Monument — George Washington Carver National Monument",
+    "latitude": 36.9861450234,
+    "longitude": -94.3546447352,
+    "region": "MO",
+    "categories": [
+      "culture",
+      "daytime",
+      "historic_site",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:liho",
+    "name": "Lincoln Home National Historic Site — Lincoln Home Visitor Center",
+    "latitude": 39.797466,
+    "longitude": -89.646174,
+    "region": "IL",
+    "categories": [
+      "culture",
+      "daytime",
+      "historic_site",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:rowi",
+    "name": "Roger Williams National Memorial — Visitor Center",
+    "latitude": 41.831326839746765,
+    "longitude": -71.41072170607106,
+    "region": "RI",
+    "categories": [
+      "culture",
+      "daytime",
+      "historic_site",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-heritage:waba",
+    "name": "Washita Battlefield National Historic Site — Visitor Center",
+    "latitude": 35.6167207032,
+    "longitude": -99.6863789122,
+    "region": "OK",
+    "categories": [
+      "culture",
+      "daytime",
+      "historic_site",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps-public:cana:a32532b6cb2b6e35",
+    "name": "Playalinda Beach — Playalinda Beach Parking Lot 8",
+    "latitude": 28.4069,
+    "longitude": -80.38928,
+    "region": "FL",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps-public:indu:2dfecc7b25d547a5",
+    "name": "Dunbar Beach — Dunbar Beach",
+    "latitude": 41.683551,
+    "longitude": -87.002856,
+    "region": "IN",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps-public:indu:50916d1367bb065a",
+    "name": "Central Avenue Beach — Central Avenue Beach",
+    "latitude": 41.701488,
+    "longitude": -86.948473,
+    "region": "IN",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps-public:indu:80235752d1b27966",
+    "name": "Kemil Beach — Kemil Beach",
+    "latitude": 41.677357,
+    "longitude": -87.00895,
+    "region": "IN",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps-public:indu:d14b1e88a5304c98",
+    "name": "West Beach — West Beach",
+    "latitude": 41.622934,
+    "longitude": -87.207747,
+    "region": "IN",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps-public:indu:d574c3eb27135351",
+    "name": "Porter Beach — Porter Beach",
+    "latitude": 41.660272,
+    "longitude": -87.069387,
+    "region": "IN",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps-public:pore:0eeb54ec08d630ce",
+    "name": "Drakes Beach — Drakes Beach Parking Lot",
+    "latitude": 38.02788821243588,
+    "longitude": -122.96215836354332,
+    "region": "CA",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps-public:pore:174c10c3e64ab567",
+    "name": "McClures Beach — McClures Beach Trailhead Parking Lot",
+    "latitude": 38.188492638,
+    "longitude": -122.957921344,
+    "region": "CA",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps-public:pore:408831c6781742c9",
+    "name": "Point Reyes Beach — Point Reyes Beach South Parking Lot",
+    "latitude": 38.047880524,
+    "longitude": -122.988010332,
+    "region": "CA",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps-public:pore:5154f7bfa5cd2a99",
+    "name": "Marshall Beach — Marshall Beach Trailhead Parking Lot",
+    "latitude": 38.15410288067186,
+    "longitude": -122.91965713554555,
+    "region": "CA",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps-public:pore:7ef744fcfd89d7ed",
+    "name": "Kehoe Beach — Kehoe Beach Trailhead Roadside Parking",
+    "latitude": 38.152508133789176,
+    "longitude": -122.9390287399292,
+    "region": "CA",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps-public:pore:a8052e255233a8b5",
+    "name": "Limantour Beach — Limantour Beach Main Parking Lot",
+    "latitude": 38.0289306305,
+    "longitude": -122.882715914,
+    "region": "CA",
+    "categories": [
+      "beach",
+      "daytime",
+      "public_parking_arrival"
+    ]
+  },
+  {
+    "source_id": "nps:acad",
+    "name": "Acadia National Park — Hulls Cove Visitor Center",
+    "latitude": 44.4085418988,
+    "longitude": -68.2461366995,
+    "region": "ME",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:arch",
+    "name": "Arches National Park — Arches Visitor Center",
+    "latitude": 38.61656773313003,
+    "longitude": -109.62004230217951,
+    "region": "UT",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:badl",
+    "name": "Badlands National Park — Ben Reifel Visitor Center",
+    "latitude": 43.74908,
+    "longitude": -101.94166100000001,
+    "region": "SD",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:bibe",
+    "name": "Big Bend National Park — Panther Junction Visitor Center",
+    "latitude": 29.3278272156,
+    "longitude": -103.20588915,
+    "region": "TX",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:bisc",
+    "name": "Biscayne National Park — Dante Fascell Visitor Center",
+    "latitude": 25.464444,
+    "longitude": -80.334822,
+    "region": "FL",
+    "categories": [
+      "culture",
+      "daytime",
+      "museum",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:blca",
+    "name": "Black Canyon Of The Gunnison National Park — South Rim Visitor Center",
+    "latitude": 38.5549914522,
+    "longitude": -107.686583834,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:brca",
+    "name": "Bryce Canyon National Park — Bryce Canyon Visitor Center",
+    "latitude": 37.6403873677938,
+    "longitude": -112.169642330719,
+    "region": "UT",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:cany",
+    "name": "Canyonlands National Park — Island in the Sky Visitor Center",
+    "latitude": 38.459905868,
+    "longitude": -109.82099489699999,
+    "region": "UT",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:care",
+    "name": "Capitol Reef National Park — Capitol Reef National Park Visitor Center",
+    "latitude": 38.2914727474,
+    "longitude": -111.262039763,
+    "region": "UT",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:cave",
+    "name": "Carlsbad Caverns National Park — Visitor Center",
+    "latitude": 32.1754814177,
+    "longitude": -104.444223173,
+    "region": "NM",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:cong",
+    "name": "Congaree National Park — Harry Hampton Visitor Center",
+    "latitude": 33.8296192003,
+    "longitude": -80.8233726996,
+    "region": "SC",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:crla",
+    "name": "Crater Lake National Park — Steel Information Center",
+    "latitude": 42.896876352803986,
+    "longitude": -122.13431590204084,
+    "region": "OR",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:cuva",
+    "name": "Cuyahoga Valley National Park — Boston Mill Visitor Center",
+    "latitude": 41.26258795,
+    "longitude": -81.56030814000002,
+    "region": "OH",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:dena",
+    "name": "Denali National Park & Preserve — Murie Science and Learning Center",
+    "latitude": 63.7335528488,
+    "longitude": -148.917718027,
+    "region": "AK",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:deva",
+    "name": "Death Valley National Park — Furnace Creek Visitor Center",
+    "latitude": 36.4617962761,
+    "longitude": -116.866672707,
+    "region": "CA",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:ever",
+    "name": "Everglades National Park — Guy Bradley Visitor Center (at Flamingo)",
+    "latitude": 25.140881158121363,
+    "longitude": -80.92410195274584,
+    "region": "FL",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:glac",
+    "name": "Glacier National Park — Apgar Visitor Center",
+    "latitude": 48.523107,
+    "longitude": -113.988484,
+    "region": "MT",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:grba",
+    "name": "Great Basin National Park — Lehman Caves Visitor Center",
+    "latitude": 39.0056911269,
+    "longitude": -114.219904098,
+    "region": "NV",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:grca",
+    "name": "Grand Canyon National Park — Grand Canyon Visitor Center (South Rim)",
+    "latitude": 36.05921,
+    "longitude": -112.10928295932486,
+    "region": "AZ",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:grsa",
+    "name": "Great Sand Dunes National Park & Preserve — Great Sand Dunes Visitor Center",
+    "latitude": 37.733207337419934,
+    "longitude": -105.51212883205153,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:grsm",
+    "name": "Great Smoky Mountains National Park — Sugarlands Visitor Center",
+    "latitude": 35.685629346,
+    "longitude": -83.536602473,
+    "region": "TN",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:grte",
+    "name": "Grand Teton National Park — Craig Thomas Discovery & Visitor Center",
+    "latitude": 43.65338065019318,
+    "longitude": -110.71860628331888,
+    "region": "WY",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:gumo",
+    "name": "Guadalupe Mountains National Park — Pine Springs Visitor Center",
+    "latitude": 31.8936224,
+    "longitude": -104.8220597,
+    "region": "TX",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:hale",
+    "name": "Haleakalā National Park — Headquarters Visitor Center",
+    "latitude": 20.7594764691,
+    "longitude": -156.246784345,
+    "region": "HI",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:havo",
+    "name": "Hawaiʻi Volcanoes National Park — Welcome Center",
+    "latitude": 19.432711091286315,
+    "longitude": -155.27392816569613,
+    "region": "HI",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:jotr",
+    "name": "Joshua Tree National Park — Joshua Tree Visitor Center",
+    "latitude": 34.13387197423593,
+    "longitude": -116.31545986179077,
+    "region": "CA",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:lavo",
+    "name": "Lassen Volcanic National Park — Loomis Museum",
+    "latitude": 40.5361249158,
+    "longitude": -121.563149108,
+    "region": "CA",
+    "categories": [
+      "culture",
+      "daytime",
+      "museum",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:maca",
+    "name": "Mammoth Cave National Park — Mammoth Cave Visitor Center",
+    "latitude": 37.18702160097143,
+    "longitude": -86.10107059957153,
+    "region": "KY",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:meve",
+    "name": "Mesa Verde National Park — Mesa Verde Museum",
+    "latitude": 37.18453,
+    "longitude": -108.488294,
+    "region": "CO",
+    "categories": [
+      "culture",
+      "daytime",
+      "museum",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:mora",
+    "name": "Mount Rainier National Park — Longmire Museum",
+    "latitude": 46.7497616262962,
+    "longitude": -121.812359610396,
+    "region": "WA",
+    "categories": [
+      "culture",
+      "daytime",
+      "museum",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:olym",
+    "name": "Olympic National Park — Olympic National Park Visitor Center",
+    "latitude": 48.09941135594742,
+    "longitude": -123.42575660012108,
+    "region": "WA",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:pefo",
+    "name": "Petrified Forest National Park — Rainbow Forest Museum",
+    "latitude": 34.8151527674,
+    "longitude": -109.865823355,
+    "region": "AZ",
+    "categories": [
+      "culture",
+      "daytime",
+      "museum",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:pinn",
+    "name": "Pinnacles National Park — West Pinnacles Visitor Contact Station",
+    "latitude": 36.47751258579901,
+    "longitude": -121.22588243204052,
+    "region": "CA",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:redw",
+    "name": "Redwood National and State Parks — Thomas H. Kuchel Visitor Center",
+    "latitude": 41.2868094650739,
+    "longitude": -124.09093463367094,
+    "region": "CA",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:romo",
+    "name": "Rocky Mountain National Park — Fall River Visitor Center",
+    "latitude": 40.40180853344195,
+    "longitude": -105.58649259838529,
+    "region": "CO",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:sagu",
+    "name": "Saguaro National Park — Rincon Mountain Visitor Center (East)",
+    "latitude": 32.179659,
+    "longitude": -110.736031,
+    "region": "AZ",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:seki",
+    "name": "Sequoia & Kings Canyon National Parks — Giant Forest Museum",
+    "latitude": 36.56468778866104,
+    "longitude": -118.7726831068016,
+    "region": "CA",
+    "categories": [
+      "culture",
+      "daytime",
+      "museum",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:shen",
+    "name": "Shenandoah National Park — Dickey Ridge Visitor Center",
+    "latitude": 38.87172417347,
+    "longitude": -78.20465862785,
+    "region": "VA",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:thro",
+    "name": "Theodore Roosevelt National Park — South Unit Visitor Center",
+    "latitude": 46.9164980360001,
+    "longitude": -103.526209062,
+    "region": "ND",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:voya",
+    "name": "Voyageurs National Park — Rainy Lake Visitor Center",
+    "latitude": 48.58470942839927,
+    "longitude": -93.16114640169695,
+    "region": "MN",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:wica",
+    "name": "Wind Cave National Park — Wind Cave Visitor Center",
+    "latitude": 43.55656453579452,
+    "longitude": -103.47830608593824,
+    "region": "SD",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:yose",
+    "name": "Yosemite National Park — Wawona Visitor Center at Hill's Studio",
+    "latitude": 37.5371543215042,
+    "longitude": -119.655392118492,
+    "region": "CA",
+    "categories": [
+      "daytime",
+      "national_park",
+      "visitor_center"
+    ]
+  },
+  {
+    "source_id": "nps:zion",
+    "name": "Zion National Park — Human History Museum",
+    "latitude": 37.209446,
+    "longitude": -112.980442,
+    "region": "UT",
+    "categories": [
+      "culture",
+      "daytime",
+      "museum",
+      "national_park",
+      "visitor_center"
+    ]
+  }
+]
