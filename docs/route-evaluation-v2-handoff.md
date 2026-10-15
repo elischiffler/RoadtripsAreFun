@@ -25,7 +25,9 @@ optional address/URL/categories/provider rank). For mixed generations, copy the
 existing `source_catalogs` map (`source` → `{release, attribution}`) unchanged.
 Global generation/release and rights approval bind the whole snapshot; records
 retain their leaf source's release and attribution. Unknown or mismatched leaf
-sources are rejected rather than flattened. This does not require production
+sources are rejected rather than flattened. Per-record duplicate-source credits
+in `source_provenance[].source_attribution` are retained in the same combined
+attribution order used by the current catalog adapter. This does not require production
 activation. A reviewed versioned local export supports offline work only.
 
 Provide separate `access_reviews.json` and `rights.json` using their committed

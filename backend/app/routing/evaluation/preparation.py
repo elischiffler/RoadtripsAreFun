@@ -90,7 +90,11 @@ def export_reviewed(catalog, reviews, rights, output, clock, departure, *, unit_
             exclusions.append({"provider_id": key, "reason": reason})
             continue
         leaf_release, leaf_attribution = source_metadata(
-            place.source, release, source["attribution"], source.get("source_catalogs", {})
+            place.source,
+            release,
+            source["attribution"],
+            source.get("source_catalogs", {}),
+            place.source_provenance,
         )
         if (
             place.source_release != leaf_release

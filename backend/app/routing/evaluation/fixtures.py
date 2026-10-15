@@ -251,7 +251,11 @@ class Fixture:
                         f"attraction access review failed: {key}: {reason if review else 'missing_review'}"
                     )
                 release, attribution = source_metadata(
-                    item.get("source"), m.catalog_release, m.attribution, m.source_catalogs
+                    item.get("source"),
+                    m.catalog_release,
+                    m.attribution,
+                    m.source_catalogs,
+                    item.get("source_provenance", []),
                 )
                 if (
                     item.get("source_generation") != m.catalog_generation

@@ -531,3 +531,21 @@ def test_shortlist_checks_review_horizon_before_discovery(tmp_path):
     with pytest.raises(EvidenceError, match="horizon"):
         freeze_shortlists(root, [scenario], tmp_path / "not-created")
     assert not (tmp_path / "not-created").exists()
+
+
+def test_retained_duplicate_source_attribution_is_not_dropped(tmp_path):
+    root = tmp_path / "credits-contract"
+    data, manifest, ledger, rights = reviewed_bundle(root)
+    item = data["attractions"][0]
+    item["source_provenance"].append({"source_attribution": "Unit additional source credit"})
+    item["source_attribution"] = manifest["attribution"] + "; Unit additional source credit"
+    save_reviewed(root, data, manifest, ledger, rights)
+    assert (
+        Fixture(root)
+        .data["attractions"][0]["source_attribution"]
+        .endswith("Unit additional source credit")
+    )
+    item["source_attribution"] = manifest["attribution"]
+    save_reviewed(root, data, manifest, ledger, rights)
+    with pytest.raises(EvidenceError, match="attribution mismatch"):
+        Fixture(root)

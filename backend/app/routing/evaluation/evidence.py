@@ -125,14 +125,19 @@ class SourceCatalog(StrictEvidence):
     attribution: str = Field(min_length=1)
 
 
-def source_metadata(source, release, attribution, source_catalogs):
-    """Honor the existing catalog's leaf metadata; never flatten mixed releases."""
-    if not source_catalogs:
-        return release, attribution
-    if source not in source_catalogs:
-        raise ValueError("source is absent from declared source_catalogs")
-    leaf = SourceCatalog.model_validate(source_catalogs[source])
-    return leaf.release, leaf.attribution
+def source_metadata(source, release, attribution, source_catalogs, provenance=()):
+    """Honor catalog leaf metadata and retained duplicate-source credits."""
+    if source_catalogs:
+        if source not in source_catalogs:
+            raise ValueError("source is absent from declared source_catalogs")
+        leaf = SourceCatalog.model_validate(source_catalogs[source])
+        release, attribution = leaf.release, leaf.attribution
+    additional = {
+        part["source_attribution"]
+        for part in provenance
+        if isinstance(part.get("source_attribution"), str)
+    }
+    return release, "; ".join(dict.fromkeys([attribution, *sorted(additional)]))
 
 
 class CatalogExport(StrictEvidence):

@@ -11,7 +11,7 @@ The remaining v2 changes were preserved in commit `b233454` after the Mac
 reconnected. The outage-era Linux test image passed 919 tests with four skips;
 the Mac run's only failure was a worker deadline during the transport outage.
 The timeout was kept as a harness failure, never solver infeasibility. Fresh
-verification after reconnecting supersedes that interrupted run: **921 backend
+verification after reconnecting supersedes that interrupted run: **922 backend
 tests passed, 4 skipped, 86.11% coverage**; **320 frontend tests passed** with
 format/lint/build checks. Exact-head CI and final Linux/container evidence are
 recorded in the delivery.
