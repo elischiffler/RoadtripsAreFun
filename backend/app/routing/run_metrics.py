@@ -443,7 +443,6 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
             key: telemetry["calls"].get(key, 0)
             for key in (
                 "catalog",
-                "tripadvisor",
                 "mapbox",
                 "language_model",
                 "gateway_auth",

@@ -1,15 +1,16 @@
 # Route-Finding Algorithm
 
-## Catalog migration status (October 14, 2026)
+## Catalog discovery (October 15, 2026)
 
-The task branch replaces daytime and optional evening Tripadvisor lookups with a
-bounded, licensed Overture catalog in PostgreSQL. Neon remains the production
-target. The production migration, pilot loading and live acceptance are pending;
-these source changes do not establish deployed behavior or nationwide coverage.
-See [catalog rollout and blockers](neon-places-catalog.md) before running imports
-or coordinating a release. Missing catalog coverage does not trigger a Terra
-fallback. Hotels, Mapbox road checks and model-estimated interest ratings remain
-separate dependencies.
+Daytime and optional evening discovery read the active, licensed mixed-source
+catalog in Neon PostgreSQL. PR #40 deployed the first bounded release; this does
+not establish nationwide coverage or complete live journey acceptance.
+Missing coverage returns no places. Hotels, Mapbox road checks, geocoding and
+model-estimated interest ratings remain separate dependencies. See
+[rollout and rollback](neon-places-catalog.md) and the
+[Tripadvisor integration removal audit](tripadvisor-removal.md).
+Historical provider descriptions and measurements below retain their original
+meaning; they are not instructions for the current discovery implementation.
 
 How MyRoadtrip turns a start and end point into a multi-day road trip with
 attractions and overnight hotels.
@@ -294,17 +295,18 @@ the step's coordinate list and geodesic distances. Returns `[lat, lon]`.
 
 ---
 
-## Attraction discovery: `_find_stop` / `_get_details`
+## Attraction discovery: catalog adapters
 
-Attractions come from the TripAdvisor Content API. `_find_stop` runs a nearby
-search, then calls `_get_details` on each candidate to read its ranking, keeping
-the best one.
+CP-SAT uses `LivePlaceProvider.attractions_near` for bounded daytime catalog
+records, with source identities, coordinates, releases and attribution. Model
+ratings remain separate estimates; catalog records do not establish popularity
+or live operating status.
 
-Selection is by TripAdvisor popularity ranking (rank 1 = most popular). The loop
-short-circuits if it finds a rank-1 result. Locations whose details fail to parse
-are assigned rank 999 and effectively de-prioritized. A 404 (no usable results)
-bubbles up to `_add_stops`, which doubles the search radius and retries an hour
-later.
+The legacy `find_stop` contract also reads the catalog, limits its radius to five
+miles and returns the first deterministic result with compatibility `rank: 1`.
+It returns 404 for empty coverage and 503 for an unavailable database. There is
+no external details lookup or discovery fallback. Historical scheduler behavior
+described above does not restore the removed provider integration.
 
 ---
 

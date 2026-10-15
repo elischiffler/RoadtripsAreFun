@@ -83,7 +83,8 @@ def test_no_tripadvisor_network_implementation():
 
 
 @pytest.mark.asyncio
-async def test_all_catalog_discovery_adapters_make_zero_http_calls(monkeypatch):
+@pytest.mark.parametrize("catalog_state", ["populated", "empty", "unavailable"])
+async def test_all_catalog_discovery_adapters_make_zero_http_calls(monkeypatch, catalog_state):
     from datetime import UTC, datetime
 
     import httpx
@@ -97,10 +98,45 @@ async def test_all_catalog_discovery_adapters_make_zero_http_calls(monkeypatch):
     monkeypatch.setattr(httpx.AsyncClient, "request", unexpected)
     monkeypatch.setattr(httpx.AsyncClient, "send", unexpected)
     monkeypatch.setattr(httpx.Client, "request", unexpected)
+    monkeypatch.setattr(httpx.Client, "send", unexpected)
     monkeypatch.setattr(requests.Session, "request", unexpected)
-    monkeypatch.setattr(attractions.repository, "nearby", lambda *args, **kwargs: [])
-    assert await persona_candidates.LivePlaceProvider().attractions_near([40, -74]) == []
-    assert await evenings.LiveEveningProvider().nearby([40, -74], ["food"], datetime.now(UTC)) == []
+    record = {
+        "provider_id": "nps:museum",
+        "name": "Museum",
+        "coordinates": [40, -74],
+        "categories": ["daytime", "culture"],
+        "source_attribution": "National Park Service",
+        "source_release": "reviewed-release",
+    }
+
+    def nearby(*args, **kwargs):
+        if catalog_state == "unavailable":
+            raise RuntimeError("private connection details")
+        return [record] if catalog_state == "populated" else []
+
+    monkeypatch.setattr(attractions.repository, "nearby", nearby)
+    daytime = persona_candidates.LivePlaceProvider()
+    evening = evenings.LiveEveningProvider()
+    arrival = datetime.now(UTC)
+    if catalog_state == "unavailable":
+        with pytest.raises(persona_candidates.CandidateProviderError, match="catalog lookup"):
+            await daytime.attractions_near([40, -74])
+        with pytest.raises(RuntimeError, match="catalog lookup"):
+            await evening.nearby([40, -74], ["culture"], arrival)
+    else:
+        day_places = await daytime.attractions_near([40, -74])
+        evening_places = await evening.nearby([40, -74], ["culture"], arrival)
+        if catalog_state == "populated":
+            for places in (day_places, evening_places):
+                assert places[0].provider_id == record["provider_id"]
+                assert places[0].source_attribution == record["source_attribution"]
+                assert places[0].source_release == record["source_release"]
+            stop = await attractions.find_stop("attractions", "40", "-74", 5)
+            assert stop["provider_id"] == record["provider_id"]
+            assert stop["source_attribution"] == record["source_attribution"]
+            return
+        assert day_places == evening_places == []
     with pytest.raises(HTTPException) as raised:
         await attractions.find_stop("attractions", "40", "-74", 5)
-    assert raised.value.status_code == 404
+    assert raised.value.status_code == (503 if catalog_state == "unavailable" else 404)
+    assert "private connection" not in raised.value.detail

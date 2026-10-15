@@ -59,6 +59,28 @@ it('reports history outages without inventing empty history', async () => {
   expect(screen.queryByRole('table')).not.toBeInTheDocument();
 });
 
+it('shows catalog measurements without labeling a new run as a historical provider run', async () => {
+  getLabRuns.mockResolvedValue({
+    runs: [
+      {
+        id: 'catalog-run',
+        preset_id: 'catalog-day',
+        mode: 'live',
+        started_at: '2026-10-15T12:00:00Z',
+        status: 'completed',
+        metrics: { latency_ms: { total: 10 }, external_calls: { catalog: 2, mapbox: 1 } },
+      },
+    ],
+    groups: [],
+    next_offset: null,
+  });
+  render(<RunHistory revision={0} />);
+  await screen.findByText('catalog-day');
+  fireEvent.click(screen.getByText('Inspect'));
+  expect(screen.getByText(/"catalog": 2/, { selector: 'pre' })).toBeInTheDocument();
+  expect(screen.queryByText(/Tripadvisor Terra API attempts/)).not.toBeInTheDocument();
+});
+
 it('opens a saved trip without generating another provider run', async () => {
   HTMLDialogElement.prototype.showModal = function () {
     this.setAttribute('open', '');
