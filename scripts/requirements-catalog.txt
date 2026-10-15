@@ -1,0 +1,4 @@
+# Extraction only; never needed in the API runtime image.
+overturemaps==0.18.0
+pyarrow==26.0.0
+shapely==2.2.0

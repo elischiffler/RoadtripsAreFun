@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Places catalog sources — RoadtripsAreFun</title>
+  </head>
+  <body>
+    <main>
+      <h1>Places catalog sources</h1>
+      <p>
+        Catalog places identify their contributing source. Supported inputs include Overture Maps
+        Foundation, reviewed City of Boulder trailheads mirrored on Kaggle, and National Park
+        Service park identities and visitor arrival data. Each result
+        identifies its source release and, when available, the upstream evidence date. Dataset
+        identity is not a live confirmation of access, opening hours or availability. Attribute
+        ratings are model estimates, not source reviews.
+      </p>
+      <p>
+        RoadtripsAreFun filters United States records, maps road-trip categories, normalizes
+        coordinates and address fields, and omits unused properties. Source identifiers and
+        attribution are retained. Coverage is limited to the areas and categories in the active
+        import; it is not exhaustive.
+      </p>
+      <ul>
+        <li>
+          Meta, Microsoft, PinMeTo, Krick, RenderSEO, DAC and BrightQuery:
+          <a href="/licenses/CDLA-Permissive-2.0.txt">CDLA Permissive 2.0</a>.
+        </li>
+        <li>
+          Foursquare: Copyright 2024 Foursquare Labs, Inc. All rights reserved. Transformed to the
+          Overture schema, changed March 18, 2026.
+          <a href="/licenses/Apache-2.0.txt">Apache License 2.0</a> and
+          <a href="/licenses/Foursquare-NOTICE.txt">full Foursquare notice</a>.
+        </li>
+        <li>
+          AllThePlaces:
+          <a href="/licenses/CC0-1.0.txt">CC0 1.0</a>.
+        </li>
+        <li>
+          City of Boulder Open Space and Mountain Parks:
+          <a href="/licenses/CC0-1.0.txt">CC0 1.0</a>,
+          <a href="https://bouldercolorado.gov/services/open-data">city terms</a>. Trailhead archive
+          version 1 is mirrored by
+          <a
+            href="https://www.kaggle.com/datasets/paultimothymooney/trailstrailheadsandrockformationsinboulder"
+            >paultimothymooney on Kaggle</a
+          >. Current arrival points and dated status evidence come from the city's trailhead pages.
+          No City endorsement is implied.
+        </li>
+        <li>
+          Roadside metadata compiled by Heads or Tails in Kaggle's
+          <a href="https://www.kaggle.com/datasets/headsortails/us-roadside-attractions-photographs/versions/4"
+            >US roadside attractions photographs version 4</a
+          >: <a href="/licenses/CC0-1.0.txt">CC0 1.0</a> for the metadata compilation.
+          Library of Congress, Prints &amp; Photographs Division, John Margolies archive:
+          <a href="/licenses/LicenseRef-LOC-Margolies-Notice.txt">archive-specific rights notice</a>.
+          Current arrival facts are independently reviewed against official visitor information
+          and licensed Overture coordinates. Photographs and website prose are omitted.
+        </li>
+        <li>
+          National Park Service park identities mirrored in Kaggle's
+          <a href="https://www.kaggle.com/datasets/nationalparkservice/park-biodiversity"
+            >park-biodiversity version 3</a
+          >: <a href="/licenses/CC0-1.0.txt">CC0 1.0</a>.
+          Current visitor facilities and beach parking arrivals use factual fields from the
+          <a href="https://www.nps.gov/subjects/digital/structured-data.htm"
+            >NPS published structured data</a
+          >. See the
+          <a href="/licenses/LicenseRef-US-Government-Work.txt">government-work rights notice</a>.
+          No NPS endorsement is implied. Park-center coordinates, photographs, species records
+          and third-party creative works are omitted.
+          Reviewed heritage-unit arrivals also use the NPS public unit inventory for identity
+          and designation, with current visitor-facility state, coordinates, parking and access
+          evidence kept separately. Cartographic park-label geometry is not an arrival source.
+        </li>
+      </ul>
+      <p>
+        Only sources present in a record's retained provenance apply to that record. Overture
+        processing provenance accompanies the upstream source; it does not replace the upstream
+        license. Overture-signals operating-status processing uses CDLA Permissive 2.0 and requires
+        an independently identified admitted upstream source. No Tripadvisor content is used to
+        seed the catalog. OpenStreetMap and other
+        supplements are not included in this catalog version.
+      </p>
+      <p>
+        See Overture's
+        <a href="https://docs.overturemaps.org/attribution/">source attribution</a>
+        and <a href="https://docs.overturemaps.org/guides/places/">Places guide</a>.
+      </p>
+    </main>
+  </body>
+</html>

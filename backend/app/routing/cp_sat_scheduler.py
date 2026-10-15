@@ -156,6 +156,11 @@ async def schedule_cp_sat_route(
                         {
                             "provider_id": attraction["provider_id"],
                             "name": attraction["name"],
+                            "source": attraction.get("source"),
+                            "source_release": attraction.get("source_release"),
+                            "source_attribution": attraction.get("source_attribution"),
+                            "source_updated_at": attraction.get("source_updated_at"),
+                            "source_provenance": attraction.get("source_provenance", []),
                             "type": "stop",
                             "coordinates": list(attraction["coordinates"]),
                             "address": attraction.get("address"),

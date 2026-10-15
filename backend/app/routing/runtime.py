@@ -13,6 +13,7 @@ from app.agent.progress import current_stage, emit
 from app.routing.run_metrics import increment, provider_activity
 
 LIMITS = {
+    "catalog": (2, 4),
     "nearby": (4, 8),
     "mapbox": (4, 8),
     "ai": (2, 4),

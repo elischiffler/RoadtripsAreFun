@@ -1,0 +1,129 @@
+{
+  "checked_at": "2026-10-15T02:55:18.434288+00:00",
+  "local_only": true,
+  "generation": "cfdb55a51fe8abfe015fcbb12b8d23c7a09fa71945d95758bd00756ec502ada0",
+  "manifest_sha256": "24dd309f74e156efcc4f8a4a48dc2a431fc39df497c70f8e0dfe1a215a7307a8",
+  "accepted": 82,
+  "states": 36,
+  "source_counts": {
+    "boulder-osmp": 12,
+    "nps": 43,
+    "nps-public": 12,
+    "kaggle-loc-roadside": 1,
+    "overture": 2,
+    "nps-heritage": 12
+  },
+  "regions": {
+    "CO": 16,
+    "ME": 1,
+    "UT": 5,
+    "SD": 3,
+    "TX": 2,
+    "FL": 3,
+    "NM": 1,
+    "SC": 1,
+    "OR": 1,
+    "OH": 1,
+    "AK": 1,
+    "CA": 13,
+    "MT": 1,
+    "NV": 1,
+    "AZ": 3,
+    "TN": 1,
+    "WY": 1,
+    "HI": 3,
+    "KY": 1,
+    "WA": 3,
+    "VA": 1,
+    "ND": 1,
+    "MN": 1,
+    "IN": 5,
+    "AR": 1,
+    "GA": 1,
+    "IA": 1,
+    "ID": 1,
+    "IL": 1,
+    "LA": 1,
+    "MA": 1,
+    "MO": 1,
+    "NE": 1,
+    "NJ": 1,
+    "OK": 1,
+    "RI": 1
+  },
+  "primary_categories": {
+    "roadside": 1,
+    "entertainment": 1,
+    "nature": 12,
+    "beaches": 12,
+    "landmarks": 11,
+    "museums": 9,
+    "national_parks": 36
+  },
+  "source_bytes": 17373539,
+  "archive_bytes": 37998,
+  "archive_sha256": "52b816ba913d094fc5ebffd5f39bff7dfac309aed38501b1bcb087debd3be522",
+  "source_restore_all_tables_and_pointer_equal": true,
+  "source_table_state": {
+    "places_catalog": {
+      "rows": 154,
+      "content_md5": "149f980df2ca645043f9d84e3eb4fb70"
+    },
+    "places_catalog_imports": {
+      "rows": 2,
+      "content_md5": "ade06c51a4c08b9abb18852af601c6bf"
+    },
+    "places_catalog_active": {
+      "rows": 1,
+      "content_md5": "7aa11aa709cc24875a1da3e87eb7c33b"
+    },
+    "active_generation": "cfdb55a51fe8abfe015fcbb12b8d23c7a09fa71945d95758bd00756ec502ada0"
+  },
+  "restored_table_state": {
+    "places_catalog": {
+      "rows": 154,
+      "content_md5": "149f980df2ca645043f9d84e3eb4fb70"
+    },
+    "places_catalog_imports": {
+      "rows": 2,
+      "content_md5": "ade06c51a4c08b9abb18852af601c6bf"
+    },
+    "places_catalog_active": {
+      "rows": 1,
+      "content_md5": "7aa11aa709cc24875a1da3e87eb7c33b"
+    },
+    "active_generation": "cfdb55a51fe8abfe015fcbb12b8d23c7a09fa71945d95758bd00756ec502ada0"
+  },
+  "original_72_preserved": true,
+  "original_400_preserved": true,
+  "idempotent_stage": true,
+  "activation_rollback_passed": true,
+  "real_adapter_evaluation": {
+    "legacy_provider_id": "nps-heritage:arpo",
+    "persona_provider_ids": [
+      "nps-heritage:arpo"
+    ],
+    "evening_provider_ids": [
+      "overture:03f811cd-0401-40ad-b75c-1ae7328cf6b7"
+    ],
+    "http_calls": 0,
+    "tripadvisor_calls": 0
+  },
+  "closed_facilities_replaced": {
+    "badl": 3666,
+    "dena": 107,
+    "redw": 2602,
+    "voya": 65
+  },
+  "no_passing_current_facility_held": [
+    "kefj",
+    "yell"
+  ],
+  "new_heritage_arrivals": 12,
+  "heritage_driving_rejects": {
+    "nps-heritage:anti": "NoSegment"
+  },
+  "minimum_release": true,
+  "remaining_to_500": 418,
+  "production_changed": false
+}

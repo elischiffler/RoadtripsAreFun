@@ -1,3 +1,4 @@
+import PlaceSource from './PlaceSource';
 import { Box, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import '../pages/ItineraryPage/ItineraryPage.css';
@@ -32,6 +33,7 @@ export default function ItineraryDays({ itinerary }) {
                     activity.name
                   )}
                 </Typography>
+                <PlaceSource place={activity} />
                 {activity.time !== 'Unscheduled' && (
                   <Typography variant="body2" className="activity-time">
                     {`${activity.optional ? 'Suggested visit' : activity.kind === 'arrival' || activity.address ? 'Arrival time' : 'Departure time'}: ${activity.time}`}

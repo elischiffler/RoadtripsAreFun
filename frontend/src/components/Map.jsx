@@ -1,3 +1,5 @@
+import PlaceSource from './PlaceSource';
+import { placeSourceLines } from './placeSource';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import PropTypes from 'prop-types';
@@ -152,11 +154,17 @@ const Map = ({ UserChatData }) => {
         const heading = document.createElement('strong');
         heading.textContent = stop.name;
         content.append(heading);
-        for (const text of [stopType(stop.type), stop.address]) {
+        for (const text of [stopType(stop.type), stop.address, ...placeSourceLines(stop)]) {
           if (!text) continue;
           const line = document.createElement('p');
           line.textContent = text;
           content.append(line);
+        }
+        if (placeSourceLines(stop).length) {
+          const attribution = document.createElement('a');
+          attribution.href = '/catalog-attribution.html';
+          attribution.textContent = 'Data licenses and attribution';
+          content.append(attribution);
         }
         popup.setDOMContent(content).setLngLat([stop.longitude, stop.latitude]).addTo(map);
         const element = popup.getElement();
@@ -293,6 +301,7 @@ const Map = ({ UserChatData }) => {
             <strong>{selectedStop.name}</strong>
             <p>{stopType(selectedStop.type)}</p>
             {selectedStop.address && <p>{selectedStop.address}</p>}
+            <PlaceSource place={selectedStop} />
           </div>
         )}
       </>

@@ -26,9 +26,7 @@ def test_local_preview_rejects_missing_or_hosted_destinations(name, value):
         validate_local_environment(env)
 
 
-@pytest.mark.parametrize(
-    "name", ["ROUTING_REMOTE_URL", "MAPBOX_API", "TRIPADVISOR_API", "OPENCAGE_KEY"]
-)
+@pytest.mark.parametrize("name", ["ROUTING_REMOTE_URL", "MAPBOX_API", "OPENCAGE_KEY"])
 def test_local_preview_rejects_live_provider_configuration(name):
     env = local_env()
     env[name] = "not-a-real-secret"
@@ -91,18 +89,23 @@ def test_readiness_tracks_database_failure_and_recovery(monkeypatch):
     assert client.get("/ready").status_code == 503
     connect.side_effect = None
     connect.return_value = conn
-    conn.cursor.return_value.__enter__.return_value.fetchone.return_value = (
-        "chats",
-        "route_segments",
-        "steps",
-        "chat_memory",
-    )
+    cursor = conn.cursor.return_value.__enter__.return_value
+    cursor.fetchone.side_effect = [("table",) * 8, (True,)]
     assert client.get("/ready").status_code == 200
     conn.close.assert_called_once()
-    conn.cursor.return_value.__enter__.return_value.fetchone.return_value = (
-        "chats",
-        None,
-        None,
-        None,
-    )
-    assert client.get("/ready").status_code == 503
+    cursor.fetchone.side_effect = [("table",) * 5 + (None,) * 3]
+    response = client.get("/ready")
+    assert response.status_code == 503
+    assert response.json()["dependency"] == "database_schema"
+
+
+def test_readiness_requires_nonempty_active_catalog(monkeypatch):
+    conn = MagicMock()
+    monkeypatch.setattr(main.psycopg2, "connect", MagicMock(return_value=conn))
+    cursor = conn.cursor.return_value.__enter__.return_value
+    cursor.fetchone.side_effect = [("table",) * 8, (False,)]
+    response = TestClient(app).get("/ready")
+    assert response.status_code == 503
+    assert response.json()["dependency"] == "places_catalog"
+    assert "SELECT EXISTS" in cursor.execute.call_args.args[0]
+    conn.close.assert_called_once()

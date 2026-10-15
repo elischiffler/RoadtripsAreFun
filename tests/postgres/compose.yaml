@@ -26,7 +26,6 @@ services:
     <<: *postgres
     volumes:
       - source-data:/var/lib/postgresql
-      - ./schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
 
   restore:
     <<: *postgres
@@ -67,6 +66,8 @@ services:
       context: ../..
       dockerfile: backend/Dockerfile
       target: test
+      args:
+        VCS_REF: ${ROADTRIPS_REVISION:-local-crud-test}
     image: roadtrips-crud-test-runner:local
     environment:
       PYTHONPATH: /app

@@ -5,6 +5,11 @@ Local Docker preview: [runbook](docs/container-runbook.md) and
 checks are separate from the production AWS API, which uses external Neon.
 The local preview does not establish production Auth or provider acceptance.
 
+Catalog migration in progress: the task branch replaces Tripadvisor daytime and
+evening discovery with licensed Overture places stored in PostgreSQL, targeting
+Neon. Production loading and live acceptance remain pending; do not interpret
+local tests as deployed coverage. See [rollout, scope and blockers](docs/neon-places-catalog.md).
+
 A road trip planning application. This monorepo contains two services:
 
 The [product vision](docs/product-vision.md) prioritizes explainable matching
@@ -15,10 +20,10 @@ explains the current code, implemented demo features and limits of selection
 compared with future joint optimization. See the
 [public release and MacBook rehearsal runbook](docs/senior-demo-runbook.md).
 
-| Service | Stack | Deployed at |
-|---|---|---|
-| [`backend/`](./backend) | Python 3.12 / FastAPI / Neon Postgres | [api.roadtrips.elischiffler.dev](https://api.roadtrips.elischiffler.dev/health) (AWS EC2) |
-| [`frontend/`](./frontend) | React 18 / Vite / MUI | [roadtrips.elischiffler.dev](https://roadtrips.elischiffler.dev) (Vercel) |
+| Service                   | Stack                                 | Deployed at                                                                               |
+| ------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [`backend/`](./backend)   | Python 3.12 / FastAPI / Neon Postgres | [api.roadtrips.elischiffler.dev](https://api.roadtrips.elischiffler.dev/health) (AWS EC2) |
+| [`frontend/`](./frontend) | React 18 / Vite / MUI                 | [roadtrips.elischiffler.dev](https://roadtrips.elischiffler.dev) (Vercel)                 |
 
 The production frontend uses `https://api.roadtrips.elischiffler.dev/` as its
 `VITE_BACKEND_SERVER`. The browser build embeds this value at build time. The
@@ -33,25 +38,27 @@ The frontend uses an earthy design system (cream, sand, bark, amber) with Playfa
 
 ### Key pages
 
-| Route | Description |
-|---|---|
-| `/` | Landing page — app name, CTA, three interactive feature chips |
-| `/chat` | Main chat interface for planning a trip |
-| `/map` | Interactive Mapbox route view |
-| `/itinerary` | Day-by-day trip itinerary |
+| Route        | Description                                                                           |
+| ------------ | ------------------------------------------------------------------------------------- |
+| `/`          | Landing page — app name, CTA, three interactive feature chips                         |
+| `/chat`      | Main chat interface for planning a trip                                               |
+| `/map`       | Interactive Mapbox route view                                                         |
+| `/itinerary` | Day-by-day trip itinerary                                                             |
 | `/algorithm` | Owner-only Algorithm Lab, presets and on-demand solver explanations; no global header |
-| `/login` | Auth — AWS Cognito sign in |
-| `/signup` | Auth — new account |
+| `/login`     | Auth — AWS Cognito sign in                                                            |
+| `/signup`    | Auth — new account                                                                    |
 
 ### Global header
 
 A fixed `GlobalHeader` component renders on every page (hidden on `/login` and `/signup`). It contains:
+
 - **Left** — custom SVG logo: a car driving over mountains. Hover plays a driving animation (scrolling road + spinning wheels). Clicking navigates home.
 - **Right** — amber login button when logged out; amber avatar circle when logged in. Clicking the avatar opens a dropdown with a sign-out option.
 
 ### Feature chips (landing page)
 
 Three interactive pills on the landing page each have a unique hover animation:
+
 - **Route generation** — pill transforms into a spinning wagon wheel with the label text on the rim
 - **Hotel finder** — pill becomes a hotel building with windows that randomly flicker on/off
 - **Itinerary builder** — pill becomes an analog clock with hands that sweep forward and back continuously
@@ -86,6 +93,7 @@ Technical docs live in [`docs/`](./docs):
 ## Local Setup
 
 ### Prerequisites
+
 - Python 3.12 on POSIX/WSL, or Docker for the pinned backend
 - Node.js 24
 - PostgreSQL for native persistence; use the disposable local test stack for fixtures
@@ -246,3 +254,11 @@ Before releasing the Algorithm Lab run-history feature, explicitly apply
 [`backend/sql/algorithm_lab_runs.sql`](backend/sql/algorithm_lab_runs.sql) to the
 approved database. It is additive and required by `/ready`; requests never create
 tables. See [measurement and migration contract](docs/algorithm-run-history.md).
+
+### Places catalog rollout
+
+The catalog revision replaces Tripadvisor place discovery with a bounded,
+licensed US catalog on Neon. Apply its schema and activate validated coverage
+before deploying: [rollout and rollback](docs/neon-places-catalog.md),
+[source review including Kaggle](docs/catalog-source-review.md), and
+[validation evidence and outstanding gates](docs/catalog-validation.md).

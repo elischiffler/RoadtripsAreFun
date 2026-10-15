@@ -3,6 +3,16 @@
 !backend/**
 !frontend/
 !frontend/**
+!scripts/
+!scripts/catalog_import.py
+!scripts/catalog_combine.py
+!scripts/extract_overture_places.py
+!scripts/inspect_geonames.py
+!scripts/profile_kaggle_archive.py
+!scripts/catalog_boulder_manifest.py
+!scripts/catalog_nps_manifest.py
+!scripts/catalog_roadside_manifest.py
+!scripts/catalog_mix.py
 **/node_modules
 **/dist
 **/.env*

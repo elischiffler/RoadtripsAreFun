@@ -152,11 +152,12 @@ function LabWorkspace({ historyOpen }) {
             onSelect={choosePreset}
           />
           <p className="lab-note">
-            Fresh places and a checked road route. Every run calls live providers and can take
-            several minutes.{' '}
+            Catalog places and a checked road route. Road routing and hotel offers use live
+            providers and can take several minutes.{' '}
             <HelpTip label="live providers">
-              Each run verifies cities, discovers places, selects attractions, and builds the road
-              route and itinerary. Trips needing overnight stays also fetch current hotel offers.
+              Each run verifies cities, searches the catalog, selects attractions, and builds the
+              road route and itinerary. Trips needing overnight stays also fetch current hotel
+              offers.
             </HelpTip>
           </p>
         </div>

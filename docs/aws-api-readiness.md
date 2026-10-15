@@ -1,5 +1,16 @@
 # Roadtrips API production template
 
+## Catalog migration status (October 14, 2026)
+
+The task branch replaces daytime and optional evening Tripadvisor lookups with a
+bounded, licensed Overture catalog in PostgreSQL. Neon remains the production
+target. The production migration, pilot loading and live acceptance are pending;
+these source changes do not establish deployed behavior or nationwide coverage.
+See [catalog rollout and blockers](neon-places-catalog.md) before running imports
+or coordinating a release. Missing catalog coverage does not trigger a Terra
+fallback. Hotels, Mapbox road checks and model-estimated interest ratings remain
+separate dependencies.
+
 > Current deployment (2026-09-28): the Production Vercel frontend embeds
 > `VITE_BACKEND_SERVER=https://api.roadtrips.elischiffler.dev/`. Caddy proxies
 > that hostname to the AWS API container, which uses external Neon. The prior
@@ -114,14 +125,14 @@ same-host PostgreSQL topology in the project directory using the host's
 protected secret delivery process. Both files are Git-ignored and must never
 be copied from a developer machine. The relevant environment names are:
 
-| Name | Purpose |
-| --- | --- |
-| `DATABASE_URL` | Neon endpoint for interim AWS, or private `postgres:5432` app-user connection for same-host cutover; credential is secret. |
-| `DATABASE_SSLMODE`, `PGSSLROOTCERT` | Neon Compose forces `verify-full` and system CA bundle. Same-host PostgreSQL may use `disable` only on its dedicated private network. |
-| `COGNITO_USER_POOL_ID`, `COGNITO_APP_CLIENT_ID` | Trusted access-token issuer and client. |
-| `MAPBOX_API`, `TRIPADVISOR_API`, `OPENCAGE_KEY` | Routing and geocoding provider credentials. |
-| `CAR_DATA_API`, `GOOGLE_PLACES_API` | Provider credentials where the corresponding routes are enabled. |
-| `MENTRO_GATEWAY_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `MENTRO_SERVICE_EMAIL`, `MENTRO_SERVICE_PASSWORD` | Optional agent gateway and dedicated service account; leave service credentials unset when the agent is disabled. |
+| Name                                                                                                         | Purpose                                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                                                                               | Neon endpoint for interim AWS, or private `postgres:5432` app-user connection for same-host cutover; credential is secret.                                                       |
+| `DATABASE_SSLMODE`, `PGSSLROOTCERT`                                                                          | Neon Compose forces `verify-full` and system CA bundle. Same-host PostgreSQL may use `disable` only on its dedicated private network.                                            |
+| `COGNITO_USER_POOL_ID`, `COGNITO_APP_CLIENT_ID`                                                              | Trusted access-token issuer and client.                                                                                                                                          |
+| `MAPBOX_API`, `OPENCAGE_KEY`                                                                                 | Routing and geocoding provider credentials. The catalog branch no longer requires Tripadvisor credentials; apply and validate its additive catalog schema/import before release. |
+| `CAR_DATA_API`, `GOOGLE_PLACES_API`                                                                          | Provider credentials where the corresponding routes are enabled.                                                                                                                 |
+| `MENTRO_GATEWAY_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `MENTRO_SERVICE_EMAIL`, `MENTRO_SERVICE_PASSWORD` | Optional agent gateway and dedicated service account; leave service credentials unset when the agent is disabled.                                                                |
 
 Both templates fix `LOCAL_PREVIEW=false`, `ROUTING_REMOTE_URL=''`, and the
 production browser origins including `https://roadtrips.elischiffler.dev`.

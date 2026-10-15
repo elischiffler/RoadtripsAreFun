@@ -19,7 +19,7 @@ const phases = [
   [
     'candidates',
     'Collect and score nearby places',
-    'Live place records supply verified names and coordinates. AI estimates each place’s interest ratings; the backend calculates match = sum(weight × rating). Ratings are estimates, not provider facts.',
+    'Catalog records supply names and coordinates; their release dates do not confirm current opening status. AI estimates each place’s interest ratings; the backend calculates match = sum(weight × rating). Ratings are estimates, not provider facts.',
   ],
   [
     'selection',

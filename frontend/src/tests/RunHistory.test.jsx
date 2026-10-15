@@ -23,7 +23,7 @@ it('shows persisted measurements and uses the server history cursor', async () =
           cohort_key: 'cohort',
           objective_score: 1200,
           latency_ms: { total: 7.5 },
-          external_calls: { mapbox: 0 },
+          external_calls: { mapbox: 0, tripadvisor: 7 },
           feasibility: null,
         },
       },
@@ -45,6 +45,9 @@ it('shows persisted measurements and uses the server history cursor', async () =
   fireEvent.click(screen.getByText('Inspect'));
   expect(screen.getByText(/Nightly-target feasibility: Unassessed/)).toBeInTheDocument();
   expect(screen.getByText(/3 comparable run/)).toBeInTheDocument();
+  expect(
+    screen.getByText(/Tripadvisor Terra API attempts \(saved measurement\): 7/)
+  ).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Older runs' }));
   await screen.findByText(/Showing 0 runs from 51/);
   expect(getLabRuns.mock.calls[1][1]).toBe(50);
