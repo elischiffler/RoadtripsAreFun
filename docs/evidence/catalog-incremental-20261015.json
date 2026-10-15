@@ -248,13 +248,13 @@
       "companion_row_count": 80,
       "companion_generation_row_bytes": 406184,
       "companion_generation_json_text_bytes": 1655414,
-      "database_bytes": 16537279,
+      "database_bytes": 16570047,
       "catalog_table_bytes": 6955008,
       "catalog_index_bytes": 811008,
       "companion_table_bytes": 540672,
       "companion_index_bytes": 32768,
       "companion_total_bytes": 573440,
-      "catalog_bytes": 8454144,
+      "catalog_bytes": 8486912,
       "measurement": "pg_column_size sums are measured composite datum bytes; physical table/index totals include all retained generations and TOAST, not a per-generation physical allocation estimate."
     },
     "all_native_point_probes_passed": true,
@@ -265,15 +265,15 @@
     "corridor_timings": {
       "parent": {
         "query_count": 1083,
-        "p50_ms": 1.220746000399231,
-        "p95_ms": 2.071113000056357,
-        "max_ms": 14.182224000251153
+        "p50_ms": 1.2691270003415411,
+        "p95_ms": 1.9947310011048103,
+        "max_ms": 17.4199850007426
       },
       "candidate": {
         "query_count": 1083,
-        "p50_ms": 1.2103600001864834,
-        "p95_ms": 2.4760670003161067,
-        "max_ms": 23.065026000040234
+        "p50_ms": 1.1262970001553185,
+        "p95_ms": 2.644774000145844,
+        "max_ms": 129.7165899995889
       }
     },
     "corridor_counts": {
@@ -466,8 +466,8 @@
       "bytes": 51563
     },
     "backend/app/catalog/repository.py": {
-      "sha256": "a55fef14e8e9786d515f7e1120ce6f1e191d0a2fd49506d4fbc757bb0730d9d3",
-      "bytes": 7507
+      "sha256": "1328d20181c6f4232044e7c8fd0e423485dfd4f4d8c2501b2a707f9ac8bb6616",
+      "bytes": 9230
     },
     "backend/app/catalog/roadside.py": {
       "sha256": "47e12891d18f5cce6eca482b1317971bd15db10b9d7612afcaa30b0e6528343c",
@@ -526,16 +526,16 @@
       "bytes": 1233
     },
     "backend/app/routing/base.py": {
-      "sha256": "604cb616455676b3ab9b50dc907070919675b93d49ce76779dfd6d3e40c4ffc4",
-      "bytes": 10415
+      "sha256": "c8afc1778c810daace650aa4a9e84ec4fdf1cd80b4793c2a5bf296baecbbb711",
+      "bytes": 10440
     },
     "backend/app/routing/config.py": {
       "sha256": "eedae155799d3137070e5a9d2eed6c1d930d1c6954d4c39ad9b2b7a2760471cc",
       "bytes": 1360
     },
     "backend/app/routing/discovery.py": {
-      "sha256": "c443b16a0daf7e4d76f4c01a04b4a1e53b0844f9ca0d48c3759af4e1f1e55dc5",
-      "bytes": 4505
+      "sha256": "4569be926d689981123d8c0e98997345a808fceea9c39231693dd120f51d6aae",
+      "bytes": 5055
     },
     "backend/app/routing/explanation.py": {
       "sha256": "a1334c26b1704bc6002cc0abc0bdba66c09fb13ae6f5cc5a8dcf359ffe1a4bc3",
@@ -578,12 +578,16 @@
       "bytes": 9791
     },
     "backend/app/routing/sources/persona_candidates.py": {
-      "sha256": "0e1b4de7d8fa08442f55f1b512283a62d0ddb147c7327ea4eb72fb1cab8c74d5",
-      "bytes": 33931
+      "sha256": "79a00c4255c15e750954d9cc810347f48c87060bd6bf06070189498391be589f",
+      "bytes": 36611
+    },
+    "backend/app/routing/trip_calendar.py": {
+      "sha256": "6123670f13b36362b48ee7b362090bc0208d474236e1e88a2e460140dacd4a41",
+      "bytes": 3968
     },
     "backend/app/routing/visit_calendar.py": {
-      "sha256": "e19fc03a364d22aa2ca1850a8c218f1d7a3bbd82778640df507d0ec4a4f1e350",
-      "bytes": 11828
+      "sha256": "e6fc484e015c1aeaf9093607cf54e86f72a1975aa890a28285001f0b56cb48f4",
+      "bytes": 11995
     },
     "backend/app/schemas/__init__.py": {
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -614,8 +618,8 @@
       "bytes": 9308
     },
     "scripts/catalog_incremental_proof.py": {
-      "sha256": "533ca0b9c3df335e1d87fa602e4205959e2a9010b07ba9511d511217131f6996",
-      "bytes": 29844
+      "sha256": "25c4a7edfb38748c26476edc4be3073874a57df906e6a53c9a77dcca74ceac7a",
+      "bytes": 31218
     }
   },
   "requested_trip_runtime_fix": {
@@ -628,6 +632,19 @@
     "future_seasons_and_later_trip_days_preserved": true,
     "existing_maximum_overnights": 60,
     "final_hard_validation_retained": true,
-    "independent_parent_release_clearance": false
+    "independent_parent_release_clearance": false,
+    "stored_expired_contract_proof": {
+      "provider_id": "usda-market:308993",
+      "source_record_sha256": "4a19f9c5c53916093bcf7a03ba7e0f391e1e3874c455e8b66bdbc8e91cf02c2d",
+      "source_facts_unchanged": true,
+      "results": {
+        "2026-10-14": true,
+        "2026-10-21": false,
+        "2030-07-17": false
+      },
+      "zone_role": "Explicit regression control for this California source; not a live provider-zone verification",
+      "sixty_one_expired_before_two_usable_real_sql_regression": "backend/tests/catalog_postgres_tests.py::test_expired_calendars_do_not_consume_paginated_usable_slots"
+    },
+    "private_proof_sha256": "1d6889144a09bcef3607195ff2ac3f095ba73e6498d9ad669b16cf6cc8ba12fc"
   }
 }
