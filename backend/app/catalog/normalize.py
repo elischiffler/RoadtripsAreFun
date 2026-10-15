@@ -36,6 +36,11 @@ NIGHTLIFE = {
     "comedy_club",
 }
 DAYTIME = {
+    "movie_theater",
+    "arcade",
+    "bowling_alley",
+    "escape_room",
+    "miniature_golf",
     "park",
     "national_park",
     "state_park",
@@ -174,7 +179,16 @@ def normalize(feature):
         provenance.append(
             {
                 key: str(source[key])[:300]
-                for key in ("dataset", "record_id", "update_time", "property")
+                for key in (
+                    "dataset",
+                    "record_id",
+                    "update_time",
+                    "property",
+                    "license",
+                    "provider",
+                    "resource",
+                    "version",
+                )
                 if source.get(key) is not None
             }
         )

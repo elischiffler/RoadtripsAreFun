@@ -1,0 +1,19 @@
+National Park Service factual structured data
+
+No claim to original U.S. Government works.
+Source: National Park Service, U.S. Department of the Interior.
+No National Park Service endorsement is implied.
+
+Only agency-published facility identity, location, physical address and access
+facts are used. Photographs, logos, marks and third-party creative material are
+excluded. These notes do not grant rights in third-party works.
+
+Official ownership policy:
+https://www.nps.gov/aboutus/disclaimer.htm
+
+Official structured-data publication and reuse explanation:
+https://www.nps.gov/subjects/digital/structured-data.htm
+
+Agency-created works within official duties are generally public domain under
+17 U.S.C. 105. Material not created by the agency can carry separate rights.
+Coordinates and facilities can change; data does not guarantee future access.

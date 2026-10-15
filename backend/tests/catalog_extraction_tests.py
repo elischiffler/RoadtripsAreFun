@@ -74,6 +74,14 @@ def test_decoded_byte_cap_does_not_write_oversize_record(tmp_path):
     assert manifest["extraction"]["accepted"] == 1
 
 
+def test_shapely_point_tuples_are_validated_as_the_written_geojson(tmp_path):
+    item = feature()
+    item["geometry"]["coordinates"] = (-122.4, 37.8)
+    path = tmp_path / "geometry.jsonl"
+    extractor.extract([item], path, bbox=(-123, 37, -122, 38), region="synthetic")
+    assert json.loads(path.read_text())["geometry"]["coordinates"] == [-122.4, 37.8]
+
+
 def test_no_empty_publication_and_no_overwrite(tmp_path):
     path = tmp_path / "empty.jsonl"
     with pytest.raises(ValueError, match="no eligible"):
@@ -84,6 +92,40 @@ def test_no_empty_publication_and_no_overwrite(tmp_path):
     with pytest.raises(ValueError, match="already exists"):
         extractor.extract([feature()], path, bbox=(-123, 37, -122, 38), region="synthetic")
     assert path.read_text() == "preserve"
+
+
+def test_quality_and_category_selection_does_not_promote_unknown_status(tmp_path):
+    path = tmp_path / "reviewed.jsonl"
+    examples = [
+        feature(id="status-unknown", confidence=0.99),
+        feature(id="low-confidence", operating_status="open", confidence=0.8),
+        feature(id="bool-confidence", operating_status="open", confidence=True),
+        feature(
+            id="other-category",
+            operating_status="open",
+            confidence=0.99,
+            basic_category="restaurant",
+            taxonomy={"primary": "restaurant", "hierarchy": []},
+        ),
+        feature(id="accepted", operating_status="open", confidence=0.99),
+    ]
+    examples[0]["properties"].pop("operating_status", None)
+    manifest = extractor.extract(
+        examples,
+        path,
+        bbox=(-123, 37, -122, 38),
+        region="synthetic",
+        category_filter=["museum"],
+        require_open=True,
+        min_confidence=0.9,
+    )
+    assert [r["source_id"] for r in prepare(path, manifest)[0]] == ["accepted"]
+    assert manifest["extraction"]["rejects"] == {
+        "open_status_required": 1,
+        "source_confidence": 2,
+        "category_selection": 1,
+    }
+    assert manifest["filters"]["minimum_existence_confidence"] == 0.9
 
 
 @pytest.mark.parametrize("bbox", ["nan,1,2,3", "1,2,1,3", "-180,-90,180,90", "1,2,3"])
@@ -123,3 +165,50 @@ def test_neon_cli_refuses_wrong_target_and_server_version(monkeypatch):
     with pytest.raises(ValueError, match="PostgreSQL 18"):
         loader.connect_target("neon")
     conn.close.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "key,url",
+    [
+        (
+            "aws-s3",
+            "s3://overturemaps-us-west-2/release/2026-09-23.1/theme=places/type=place/part.parquet",
+        ),
+        (
+            "aws",
+            "https://overturemaps-us-west-2.s3.us-west-2.amazonaws.com/release/2026-09-23.1/theme=places/type=place/part.parquet",
+        ),
+    ],
+)
+def test_inspected_stac_layouts_resolve_to_the_same_pinned_s3_path(key, url):
+    assert extractor.official_s3_path({key: {"href": url}}, "2026-09-23.1") == (
+        "overturemaps-us-west-2/release/2026-09-23.1/theme=places/type=place/part.parquet"
+    )
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://unreviewed.example/release/2026-09-23.1/theme=places/type=place/part.parquet",
+        "s3://overturemaps-us-west-2/release/2026-10-01.0/theme=places/type=place/part.parquet",
+        "s3://overturemaps-us-west-2/release/2026-09-23.1/theme=buildings/type=building/part.parquet",
+        "s3://overturemaps-us-west-2/release/2026-09-23.1/theme=places/type=place/../part.parquet",
+        "s3://overturemaps-us-west-2/release/2026-09-23.1/theme=places/type=place/part.parquet?override=1",
+    ],
+)
+def test_actual_stac_compatibility_does_not_relax_source_guards(url):
+    with pytest.raises(ValueError):
+        extractor.official_s3_path({"aws": {"href": url}}, "2026-09-23.1")
+
+
+def test_arrow_preserves_existing_proxy_and_tls_trust(monkeypatch):
+    monkeypatch.setattr(extractor, "getproxies", lambda: {"https": "http://fixture-proxy:8080"})
+    monkeypatch.setattr(extractor, "proxy_bypass", lambda host: False)
+    monkeypatch.setenv("SSL_CERT_FILE", "/fixture/approved-ca.pem")
+    options = extractor.s3_transport_options()
+    assert options["proxy_options"] == "http://fixture-proxy:8080"
+    assert options["tls_ca_file_path"] == "/fixture/approved-ca.pem"
+    assert options["anonymous"] is True
+    assert "tls_verify" not in options
+    monkeypatch.setattr(extractor, "proxy_bypass", lambda host: True)
+    assert "proxy_options" not in extractor.s3_transport_options()

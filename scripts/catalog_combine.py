@@ -32,13 +32,19 @@ from app.catalog.normalize import normalize  # noqa: E402
 MAX_INPUTS = 100
 
 
-def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
+def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES, selected_ids=None):
     """Validate bounded immutable snapshots, deduplicate, then publish a new pair."""
     inputs = list(inputs)
     if not 1 <= len(inputs) <= MAX_INPUTS:
         raise ValueError("require 1..100 regional inputs")
     if not 1 <= max_rows <= MAX_ROWS or not 1 <= max_bytes <= MAX_BYTES:
         raise ValueError("combined limits exceed hard ceilings")
+    if selected_ids is not None and (
+        not isinstance(selected_ids, set)
+        or not 1 <= len(selected_ids) <= max_rows
+        or any(not isinstance(v, str) or not v for v in selected_ids)
+    ):
+        raise ValueError("explicit selection must be a bounded set of source IDs")
     output = Path(output)
     manifest_path = output.with_suffix(output.suffix + ".manifest.json")
     if output.exists() or manifest_path.exists():
@@ -63,7 +69,12 @@ def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
                     raise ValueError("input manifest exceeds 32 KiB")
                 manifest = json.loads(manifest_bytes)
                 validate_manifest(manifest)
-                if manifest["schema_version"] == "kaggle-boulder-trailheads/1":
+                if manifest["schema_version"] in {
+                    "kaggle-boulder-trailheads/1",
+                    "kaggle-nps-arrivals/1",
+                    "nps-public-arrivals/1",
+                    "roadtrips-mixed-catalog/1",
+                }:
                     raise ValueError(
                         "regional combiner supports Overture only; Kaggle requires a reviewed cross-source generation"
                     )
@@ -105,7 +116,14 @@ def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
                         "source_url": manifest["source_url"],
                         "attribution": manifest["attribution"],
                         "retrieved_at": manifest["retrieved_at"],
-                        "extraction": manifest.get("extraction"),
+                        # The retained original manifest contains the full STAC
+                        # asset receipts. Repeating them for every region can
+                        # exceed the hard 32 KiB manifest ceiling. Pin that
+                        # complete evidence instead of truncating or dropping it.
+                        "manifest_artifact": source_manifest.name,
+                        "extraction_sha256": hashlib.sha256(
+                            json.dumps(manifest.get("extraction"), sort_keys=True).encode()
+                        ).hexdigest(),
                     }
                 )
                 for line in raw.splitlines():
@@ -114,6 +132,8 @@ def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
                     if rejection:
                         raise ValueError("validated input changed unexpectedly")
                     ident = row["source_id"]
+                    if selected_ids is not None and ident not in selected_ids:
+                        continue
                     if ident in rows:
                         if rows[ident] != row:
                             raise ValueError("conflicting duplicate source ID across regions")
@@ -133,6 +153,8 @@ def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
                     regions[row["region"]] += 1
                     categories.update(row["categories"])
                 snapshot.unlink()
+        if selected_ids is not None and set(rows) != selected_ids:
+            raise ValueError("selection includes source IDs absent from reviewed inputs")
         manifest = {
             "release": release,
             "schema_version": schema,
@@ -142,6 +164,12 @@ def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
             "filters": {
                 "generation_semantics": "complete replacement; only the supplied regional inputs are retained",
                 "regional_input_count": len(evidence),
+                "selected_id_count": len(selected_ids) if selected_ids is not None else None,
+                "selected_ids_sha256": hashlib.sha256(
+                    json.dumps(sorted(selected_ids)).encode()
+                ).hexdigest()
+                if selected_ids is not None
+                else None,
             },
             "attribution": "; ".join(sorted(attributions)),
             "licenses": licenses,
@@ -182,8 +210,33 @@ def main():
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--max-rows", type=int, default=MAX_ROWS)
     parser.add_argument("--max-bytes", type=int, default=MAX_BYTES)
+    parser.add_argument(
+        "--selected-ids",
+        type=Path,
+        help="explicit bounded JSON list of native Overture IDs",
+    )
     args = parser.parse_args()
-    result = combine(args.inputs, args.output, max_rows=args.max_rows, max_bytes=args.max_bytes)
+    selected = None
+    if args.selected_ids:
+        with args.selected_ids.open("rb") as stream:
+            raw = stream.read(1024 * 1024 + 1)
+        if len(raw) > 1024 * 1024:
+            parser.error("selection exceeds 1 MiB")
+        values = json.loads(raw)
+        if (
+            not isinstance(values, list)
+            or any(not isinstance(v, str) for v in values)
+            or len(set(values)) != len(values)
+        ):
+            parser.error("selection must be a unique list of IDs")
+        selected = set(values)
+    result = combine(
+        args.inputs,
+        args.output,
+        max_rows=args.max_rows,
+        max_bytes=args.max_bytes,
+        selected_ids=selected,
+    )
     print(json.dumps(result["combination"], sort_keys=True))
 
 

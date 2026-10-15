@@ -1,5 +1,10 @@
 # Catalog validation — October 14, 2026
 
+Current expansion: the [October 15 mixed-source pilot](catalog-mixed-pilot.md)
+records 400 authentic local evaluation records, 69 documented Boulder/NPS
+arrivals, and incomplete current-access review for 331 Overture candidates.
+Production remains unchanged. The dated sections below retain earlier evidence.
+
 Implementation evidence for issue #36; production rollout remains blocked.
 The dated sections below describe earlier synthetic-only checks. The
 [October 14–15 authentic intake](catalog-kaggle-intake.md) supersedes the old

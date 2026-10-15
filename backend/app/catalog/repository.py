@@ -4,8 +4,22 @@ import math
 
 from psycopg2.extras import RealDictCursor
 
+from app.catalog.identity import identity
 from app.core.config import settings
 from app.crud import chat_crud
+
+
+def source_attribution(row):
+    source = identity(row["source_id"])[1]
+    primary = (
+        (row.get("source_catalogs") or {}).get(source, {}).get("attribution", row["attribution"])
+    )
+    additional = {
+        p["source_attribution"]
+        for p in row["provenance"]
+        if isinstance(p.get("source_attribution"), str)
+    }
+    return "; ".join(dict.fromkeys([primary, *sorted(additional)]))
 
 
 def nearby(point, categories, radius_miles=5, limit=60):
@@ -50,6 +64,7 @@ def nearby(point, categories, radius_miles=5, limit=60):
                 """
                 WITH candidates AS (
                     SELECT p.*, i.release, i.manifest->>'attribution' AS attribution,
+                    i.manifest->'source_catalogs' AS source_catalogs,
                     2*3958.7613*asin(sqrt(least(1.0,
                       power(sin(radians(latitude-%s)/2),2)
                       +cos(radians(%s))*cos(radians(latitude))
@@ -89,20 +104,31 @@ def nearby(point, categories, radius_miles=5, limit=60):
             rows = cur.fetchall()
         return [
             {
-                "provider_id": r["source_id"]
-                if r["source_id"].startswith("boulder:")
-                else "overture:" + r["source_id"],
+                "provider_id": identity(r["source_id"])[0],
                 "name": r["name"],
                 "coordinates": [r["latitude"], r["longitude"]],
                 "address": r["address"],
                 "url": r["url"],
                 "categories": r["categories"],
                 "provider_rank": rank,
-                "source": "boulder-osmp" if r["source_id"].startswith("boulder:") else "overture",
-                "source_release": r["release"],
-                "source_attribution": r["attribution"],
+                "source": identity(r["source_id"])[1],
+                "source_release": (r.get("source_catalogs") or {})
+                .get(identity(r["source_id"])[1], {})
+                .get("release", r["release"]),
+                "source_attribution": source_attribution(r),
                 "source_updated_at": r["source_updated_at"],
-                "source_provenance": r["provenance"],
+                "source_provenance": r["provenance"]
+                + (
+                    [
+                        {
+                            "dataset": "Roadtrips active catalog",
+                            "generation": r["generation"],
+                            "release": r["release"],
+                        }
+                    ]
+                    if r.get("generation")
+                    else []
+                ),
             }
             for rank, r in enumerate(rows)
         ]

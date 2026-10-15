@@ -189,3 +189,25 @@ def test_reject_unofficial_source_url(tmp_path):
     manifest["source_url"] = "https://unlicensed.example/data"
     with pytest.raises(ValueError, match="official pinned"):
         prepare(path, manifest)
+
+
+def test_inspected_overture_status_processing_preserves_license_and_version(tmp_path):
+    signals = {
+        "dataset": "Overture-signals",
+        "property": "/properties/operating_status",
+        "license": "CDLA-Permissive-2.0",
+        "update_time": "2026-09-14T00:00:00Z",
+        "version": "2026-09-14",
+        "resource": "operating_status_signal",
+    }
+    path, manifest = bundle(tmp_path, [feature(sources=[{"dataset": "meta"}, signals])])
+    rows, _ = prepare(path, manifest)
+    assert rows[0]["provenance"][1]["version"] == "2026-09-14"
+    assert rows[0]["provenance"][1]["license"] == "CDLA-Permissive-2.0"
+    for bad in [
+        [signals],
+        [{"dataset": "meta"}, {**signals, "property": "/properties/names"}],
+        [{"dataset": "meta"}, {**signals, "license": "unknown"}],
+    ]:
+        path, manifest = bundle(tmp_path, [feature(sources=bad)])
+        assert prepare(path, manifest)[1]["rejects"] == {"unapproved_provenance": 1}

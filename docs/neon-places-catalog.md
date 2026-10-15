@@ -1,9 +1,11 @@
 # Neon places catalog: staged rollout
 
-Status on October 15, 2026: five authentic Kaggle inputs downloaded/profiled;
-12 Boulder nature destinations validated through isolated staging, activation,
-rollback and restore. **No production DDL applied, no Neon catalog loaded**.
-See [authentic intake, actual counts and exact remaining gates](catalog-kaggle-intake.md).
+Status on October 15, 2026: 400 authentic records validated through isolated
+staging, activation, rollback and exact-content restore. This includes 69
+Boulder/NPS facility arrivals; the 331 Overture test candidates still need
+completed independent current-access/arrival review. **No production DDL or Neon
+catalog import has occurred**. See [actual mixed-source counts and gaps](catalog-mixed-pilot.md)
+and [original Kaggle archive inspection](catalog-kaggle-intake.md).
 Do not deploy this revision until the schema, activated catalog and real coverage
 have passed the gates below. `/ready` requires a nonempty active generation.
 This work keeps the database on Neon; EC2 migration is paused.

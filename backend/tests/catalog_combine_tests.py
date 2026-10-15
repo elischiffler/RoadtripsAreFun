@@ -96,3 +96,17 @@ def test_manifest_publication_failure_removes_only_new_output(tmp_path, monkeypa
     with pytest.raises(OSError, match="publication failed"):
         combiner.combine([first], output)
     assert not output.exists()
+
+
+def test_explicit_selection_is_exact_and_retains_original_source_features(tmp_path):
+    first = regional(tmp_path, "first", [feature(), feature(id="exclude")])
+    output = tmp_path / "selected.jsonl"
+    manifest = combiner.combine([first], output, selected_ids={"stable-1"})
+    assert prepare(output, manifest)[1]["accepted"] == 1
+    assert json.loads(output.read_text()) == feature()
+    assert manifest["filters"]["selected_id_count"] == 1
+    assert manifest["inputs"][0]["manifest_sha256"]
+    missing = tmp_path / "missing.jsonl"
+    with pytest.raises(ValueError, match="absent"):
+        combiner.combine([first], missing, selected_ids={"absent"})
+    assert not missing.exists()

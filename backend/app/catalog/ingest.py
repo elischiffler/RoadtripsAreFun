@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 from psycopg2.extras import Json, execute_values
 
-from app.catalog import boulder
+from app.catalog import boulder, mixed, nps, nps_public
 from app.catalog.normalize import normalize
 
 UPSTREAM_LICENSES = {
@@ -50,6 +50,25 @@ def validate_manifest(manifest):
         if set(manifest["licenses"]) != {"CC0-1.0"}:
             raise ValueError("Boulder requires retained CC0 license evidence")
         validate_license_file(manifest["licenses"]["CC0-1.0"])
+        return
+    if manifest["schema_version"] == nps.SCHEMA:
+        if set(manifest["licenses"]) != {"CC0-1.0", "LicenseRef-US-Government-Work"}:
+            raise ValueError("NPS requires archive and government-work rights evidence")
+        for evidence in manifest["licenses"].values():
+            validate_license_file(evidence)
+        return
+    if manifest["schema_version"] == mixed.SCHEMA:
+        if not isinstance(manifest["licenses"], dict):
+            raise ValueError("mixed licenses must map to retained evidence")
+        for identifier, evidence in manifest["licenses"].items():
+            validate_license_file(evidence)
+            if identifier == "Apache-2.0":
+                validate_license_file(evidence.get("notice"))
+        return
+    if manifest["schema_version"] == nps_public.SCHEMA:
+        if set(manifest["licenses"]) != {"LicenseRef-US-Government-Work"}:
+            raise ValueError("public NPS inputs require retained government-work evidence")
+        validate_license_file(manifest["licenses"]["LicenseRef-US-Government-Work"])
         return
     release = manifest["release"]
     if not isinstance(release, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}\.\d+", release):
@@ -94,9 +113,16 @@ def provenance_licenses(row):
     """Return required SPDX identifiers, or None for unreviewed upstreams."""
     upstream = {s["dataset"].casefold() for s in row["provenance"]}
     known = upstream & UPSTREAM_LICENSES.keys()
-    if not known or upstream - UPSTREAM_LICENSES.keys() - {"overture"}:
+    if not known or upstream - UPSTREAM_LICENSES.keys() - {"overture", "overture-signals"}:
         return None
-    return {UPSTREAM_LICENSES[s] for s in known}
+    signals = [s for s in row["provenance"] if s["dataset"].casefold() == "overture-signals"]
+    if any(
+        s.get("property") != "/properties/operating_status"
+        or s.get("license") != "CDLA-Permissive-2.0"
+        for s in signals
+    ):
+        return None
+    return {UPSTREAM_LICENSES[s] for s in known} | ({"CDLA-Permissive-2.0"} if signals else set())
 
 
 def prepare(path, manifest, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
@@ -105,6 +131,12 @@ def prepare(path, manifest, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
         raise ValueError("import limits exceed hard ceiling")
     if manifest["schema_version"] == boulder.SCHEMA:
         return boulder.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == nps.SCHEMA:
+        return nps.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == mixed.SCHEMA:
+        return mixed.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == nps_public.SCHEMA:
+        return nps_public.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     digest = hashlib.sha256()
     rows = {}
     rejects = Counter()

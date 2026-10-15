@@ -1,0 +1,490 @@
+{
+  "checked_date": "2026-10-15",
+  "environment": "isolated PostgreSQL 18.6 only",
+  "production_catalog_writes": 0,
+  "production_catalog_tables_present": false,
+  "production_read_checked_at": "2026-10-15T00:52Z",
+  "generation": "644b404dd237d07fba916a6bc636decf66d31056c7898668921acf6be1e33aa3",
+  "release": "pilot-2026-10-15.1",
+  "input_bundle_sha256": "eb17465dae9e024ea3e66b6d9faf2dccae81a04d7f248b53bc114f985064829d",
+  "input_manifest_sha256": "de3a32b49bbe0241dad8e48e6faf2f52fe5e161217b85a7fb8a2ffab8c68d381",
+  "source_counts": {
+    "overture": 331,
+    "boulder-osmp": 12,
+    "nps": 45,
+    "nps-public": 12
+  },
+  "primary_categories": {
+    "museums": 231,
+    "landmarks": 31,
+    "nature": 33,
+    "entertainment": 56,
+    "national_parks": 37,
+    "beaches": 12
+  },
+  "regions": {
+    "CO": 48,
+    "CA": 98,
+    "MA": 34,
+    "WA": 28,
+    "VA": 21,
+    "DC": 4,
+    "MD": 1,
+    "TX": 28,
+    "IL": 27,
+    "NY": 20,
+    "NJ": 4,
+    "AZ": 34,
+    "GA": 2,
+    "FL": 5,
+    "TN": 4,
+    "HI": 11,
+    "AK": 7,
+    "ME": 1,
+    "UT": 5,
+    "SD": 2,
+    "NM": 1,
+    "SC": 1,
+    "OR": 1,
+    "OH": 1,
+    "MT": 1,
+    "NV": 1,
+    "WY": 2,
+    "KY": 1,
+    "ND": 1,
+    "MN": 1,
+    "IN": 5
+  },
+  "missing_regions": [
+    "AL",
+    "AR",
+    "CT",
+    "DE",
+    "IA",
+    "ID",
+    "KS",
+    "LA",
+    "MI",
+    "MO",
+    "MS",
+    "NC",
+    "NE",
+    "NH",
+    "OK",
+    "PA",
+    "RI",
+    "VT",
+    "WI",
+    "WV"
+  ],
+  "source_reports": [
+    {
+      "source": "overture",
+      "artifact_sha256": "74c38588c5a674501ca457add4b4c3141ffdeb4440aca8cd132832f3937260dc",
+      "report": {
+        "scanned": 331,
+        "accepted": 331,
+        "bytes": 470220,
+        "rejects": {}
+      }
+    },
+    {
+      "source": "boulder-osmp",
+      "artifact_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+      "report": {
+        "scanned": 36,
+        "accepted": 12,
+        "bytes": 4705510,
+        "rejects": {
+          "operator_evidence_missing": 23,
+          "same_flagstaff_summit_destination": 1
+        },
+        "regions": {
+          "CO": 12
+        },
+        "primary_categories": {
+          "nature": 12
+        }
+      }
+    },
+    {
+      "source": "nps",
+      "artifact_sha256": "19537d3229511b8471801b2a0525958b05bcd2231ed033418c63834ef114f8ec",
+      "report": {
+        "scanned": 56,
+        "accepted": 45,
+        "bytes": 8366045,
+        "rejects": {
+          "no_reviewed_arrival_selected": 11
+        },
+        "regions": {
+          "ME": 1,
+          "UT": 5,
+          "SD": 2,
+          "TX": 2,
+          "FL": 2,
+          "CO": 4,
+          "NM": 1,
+          "SC": 1,
+          "OR": 1,
+          "OH": 1,
+          "AK": 2,
+          "CA": 7,
+          "MT": 1,
+          "NV": 1,
+          "AZ": 3,
+          "TN": 1,
+          "WY": 2,
+          "HI": 2,
+          "KY": 1,
+          "WA": 2,
+          "VA": 1,
+          "ND": 1,
+          "MN": 1
+        },
+        "primary_categories": {
+          "national_parks": 37,
+          "museums": 8
+        }
+      }
+    },
+    {
+      "source": "nps-public",
+      "artifact_sha256": "b79e39d27eb48c1b4f9ffb745e6acbdfada9b1e42b7f9cf1f068ec02c8c444fb",
+      "report": {
+        "scanned": 60,
+        "accepted": 12,
+        "bytes": 577689,
+        "rejects": {
+          "car_parking_not_established": 1,
+          "not_named_beach_arrival": 32
+        },
+        "duplicate_arrivals": 15,
+        "regions": {
+          "FL": 1,
+          "CA": 6,
+          "IN": 5
+        },
+        "primary_categories": {
+          "beaches": 12
+        }
+      }
+    }
+  ],
+  "database_validation": {
+    "scanned": 483,
+    "accepted": 400,
+    "bytes": 14119464,
+    "duplicates": 0,
+    "rejects": {},
+    "regions": {
+      "CO": 48,
+      "CA": 98,
+      "MA": 34,
+      "WA": 28,
+      "VA": 21,
+      "DC": 4,
+      "MD": 1,
+      "TX": 28,
+      "IL": 27,
+      "NY": 20,
+      "NJ": 4,
+      "AZ": 34,
+      "GA": 2,
+      "FL": 5,
+      "TN": 4,
+      "HI": 11,
+      "AK": 7,
+      "ME": 1,
+      "UT": 5,
+      "SD": 2,
+      "NM": 1,
+      "SC": 1,
+      "OR": 1,
+      "OH": 1,
+      "MT": 1,
+      "NV": 1,
+      "WY": 2,
+      "KY": 1,
+      "ND": 1,
+      "MN": 1,
+      "IN": 5
+    },
+    "categories": {
+      "arts_and_entertainment": 278,
+      "childrens_museum": 7,
+      "culture": 262,
+      "daytime": 400,
+      "museum": 231,
+      "cultural_and_historic": 31,
+      "memorial_site": 31,
+      "monument": 31,
+      "botanical_garden": 21,
+      "built_feature": 21,
+      "garden": 21,
+      "geographic_entities": 21,
+      "history_museum": 97,
+      "amusement_attraction": 28,
+      "amusement_park": 28,
+      "art_museum": 42,
+      "animal_attraction": 9,
+      "aquarium": 6,
+      "sports_museum": 4,
+      "aviation_museum": 8,
+      "contemporary_art_museum": 6,
+      "science_museum": 5,
+      "photography_museum": 1,
+      "asian_art_museum": 2,
+      "textile_museum": 1,
+      "community_museum": 4,
+      "zoo": 3,
+      "modern_art_museum": 1,
+      "movie_theater": 11,
+      "escape_room": 5,
+      "gaming_venue": 7,
+      "arcade": 2,
+      "bowling_alley": 1,
+      "sport_or_fitness_facility": 1,
+      "sports_and_recreation": 1,
+      "drive_in_theater": 1,
+      "nature": 12,
+      "trailhead": 12,
+      "national_park": 45,
+      "visitor_center": 45,
+      "beach": 12,
+      "public_parking_arrival": 12
+    },
+    "source_counts": {
+      "overture": 331,
+      "boulder-osmp": 12,
+      "nps": 45,
+      "nps-public": 12
+    },
+    "source_reports": [
+      {
+        "source": "overture",
+        "artifact_sha256": "74c38588c5a674501ca457add4b4c3141ffdeb4440aca8cd132832f3937260dc",
+        "report": {
+          "scanned": 331,
+          "accepted": 331,
+          "bytes": 470220,
+          "rejects": {}
+        }
+      },
+      {
+        "source": "boulder-osmp",
+        "artifact_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+        "report": {
+          "scanned": 36,
+          "accepted": 12,
+          "bytes": 4705510,
+          "rejects": {
+            "operator_evidence_missing": 23,
+            "same_flagstaff_summit_destination": 1
+          },
+          "regions": {
+            "CO": 12
+          },
+          "primary_categories": {
+            "nature": 12
+          }
+        }
+      },
+      {
+        "source": "nps",
+        "artifact_sha256": "19537d3229511b8471801b2a0525958b05bcd2231ed033418c63834ef114f8ec",
+        "report": {
+          "scanned": 56,
+          "accepted": 45,
+          "bytes": 8366045,
+          "rejects": {
+            "no_reviewed_arrival_selected": 11
+          },
+          "regions": {
+            "ME": 1,
+            "UT": 5,
+            "SD": 2,
+            "TX": 2,
+            "FL": 2,
+            "CO": 4,
+            "NM": 1,
+            "SC": 1,
+            "OR": 1,
+            "OH": 1,
+            "AK": 2,
+            "CA": 7,
+            "MT": 1,
+            "NV": 1,
+            "AZ": 3,
+            "TN": 1,
+            "WY": 2,
+            "HI": 2,
+            "KY": 1,
+            "WA": 2,
+            "VA": 1,
+            "ND": 1,
+            "MN": 1
+          },
+          "primary_categories": {
+            "national_parks": 37,
+            "museums": 8
+          }
+        }
+      },
+      {
+        "source": "nps-public",
+        "artifact_sha256": "b79e39d27eb48c1b4f9ffb745e6acbdfada9b1e42b7f9cf1f068ec02c8c444fb",
+        "report": {
+          "scanned": 60,
+          "accepted": 12,
+          "bytes": 577689,
+          "rejects": {
+            "car_parking_not_established": 1,
+            "not_named_beach_arrival": 32
+          },
+          "duplicate_arrivals": 15,
+          "regions": {
+            "FL": 1,
+            "CA": 6,
+            "IN": 5
+          },
+          "primary_categories": {
+            "beaches": 12
+          }
+        }
+      }
+    ],
+    "generation": "644b404dd237d07fba916a6bc636decf66d31056c7898668921acf6be1e33aa3",
+    "catalog_bytes": 876544,
+    "database_bytes": 8869567,
+    "existing": false,
+    "checked_at": "2026-10-15T00:51:33.892460+00:00",
+    "total_retained_rows_all_generations": 412,
+    "all_rows_content_md5": "09db7a45480ee5f4f418d2698366c6d8",
+    "active_generation": "644b404dd237d07fba916a6bc636decf66d31056c7898668921acf6be1e33aa3",
+    "previous_generation": "ee77cc84674be415631449e92e0e19510a4089cefd3e11646e08da6364166cbe",
+    "rollback_passed": true,
+    "restored_to_final_after_rollback": true,
+    "stage_idempotence_passed": true,
+    "samples": [
+      {
+        "source": "overture",
+        "provider_id": "overture:b5d30a8d-e4b7-423d-9511-2f907cb881f3",
+        "source_release": "2026-09-23.1",
+        "name": "Kids Dig",
+        "provenance_entries": 4
+      },
+      {
+        "source": "boulder-osmp",
+        "provider_id": "boulder:284",
+        "source_release": "kaggle-boulder-v1",
+        "name": "Halfway House",
+        "provenance_entries": 3
+      },
+      {
+        "source": "nps",
+        "provider_id": "nps:arch",
+        "source_release": "kaggle-nps-v3+nps-2026-10-15",
+        "name": "Arches National Park \u2014 Arches Visitor Center",
+        "provenance_entries": 3
+      },
+      {
+        "source": "nps-public",
+        "provider_id": "nps-public:cana:a32532b6cb2b6e35",
+        "source_release": "nps-public-2026-10-15",
+        "name": "Playalinda Beach \u2014 Playalinda Beach Parking Lot 8",
+        "provenance_entries": 2
+      }
+    ],
+    "real_adapter_evaluation": {
+      "legacy_provider_id": "nps:arch",
+      "persona_provider_ids": ["nps:arch"],
+      "evening_provider_ids": [
+        "overture:b5d30a8d-e4b7-423d-9511-2f907cb881f3",
+        "overture:73d68717-f0a4-4792-b6f9-3e45ef5cce82"
+      ],
+      "http_calls": 0,
+      "tripadvisor_calls": 0
+    },
+    "manifest_sha256": "de3a32b49bbe0241dad8e48e6faf2f52fe5e161217b85a7fb8a2ffab8c68d381"
+  },
+  "restore_validation": {
+    "checked_at": "2026-10-15T00:52:23.375026+00:00",
+    "empty_target_guard": true,
+    "restored": true,
+    "exact_table_content_equal": true,
+    "dump_bytes": 67419,
+    "dump_sha256": "11564a87269eca7da32f3e290695f5bd3e3ad15ae462d41bdec08a3ce8712d9e",
+    "comparisons": [
+      {
+        "tables": {
+          "places_catalog": {
+            "rows": 412,
+            "content_md5": "09db7a45480ee5f4f418d2698366c6d8"
+          },
+          "places_catalog_imports": {
+            "rows": 2,
+            "content_md5": "849b70825f1f8696770fa1142022c5f9"
+          },
+          "places_catalog_active": {
+            "rows": 1,
+            "content_md5": "a8c17f87bdbd2b06625f11a28ec1431e"
+          }
+        },
+        "active_generation": "644b404dd237d07fba916a6bc636decf66d31056c7898668921acf6be1e33aa3",
+        "role": "source"
+      },
+      {
+        "tables": {
+          "places_catalog": {
+            "rows": 412,
+            "content_md5": "09db7a45480ee5f4f418d2698366c6d8"
+          },
+          "places_catalog_imports": {
+            "rows": 2,
+            "content_md5": "849b70825f1f8696770fa1142022c5f9"
+          },
+          "places_catalog_active": {
+            "rows": 1,
+            "content_md5": "a8c17f87bdbd2b06625f11a28ec1431e"
+          }
+        },
+        "active_generation": "644b404dd237d07fba916a6bc636decf66d31056c7898668921acf6be1e33aa3",
+        "role": "empty-target restore"
+      }
+    ]
+  },
+  "overture_review": {
+    "source_admitted_pool": 795,
+    "identity_selected": 342,
+    "driving_network_screened": 342,
+    "within_100_m": 335,
+    "operator_review_withheld": 4,
+    "retained_test_candidates": 331,
+    "current_access_review_complete": false,
+    "operator_site_responses": {
+      "200": 36,
+      "403": 7,
+      "404": 1,
+      "ReadTimeout": 1,
+      "ProxyError": 1,
+      "503": 289
+    },
+    "retained_operator_html": 31,
+    "limitations": "Road network proximity is not an entrance, parking, legal/public access, or opening-hours guarantee. Source open/confidence are not independent current operator verification."
+  },
+  "strict_documented_arrival_records": 69,
+  "niche_roadside_kaggle_accepted": 0,
+  "shortfall_against_approx_500": 100,
+  "raw_data_committed": false,
+  "production_rollout_complete": false,
+  "workspace_recovered": true,
+  "recovered_checks": {
+    "backend_tests": 898,
+    "backend_coverage_percent": 87.49,
+    "frontend_tests": 314,
+    "frontend_coverage_percent": 90.23,
+    "ruff_format_lint_passed": true,
+    "frontend_format_lint_build_passed": true
+  }
+}

@@ -10,7 +10,8 @@
       <h1>Places catalog sources</h1>
       <p>
         Catalog places identify their contributing source. Supported inputs include Overture Maps
-        Foundation and reviewed City of Boulder trailheads mirrored on Kaggle. Each result
+        Foundation, reviewed City of Boulder trailheads mirrored on Kaggle, and National Park
+        Service park identities and visitor arrival data. Each result
         identifies its source release and, when available, the upstream evidence date. Dataset
         identity is not a live confirmation of access, opening hours or availability. Attribute
         ratings are model estimates, not source reviews.
@@ -47,11 +48,26 @@
           >. Current arrival points and dated status evidence come from the city's trailhead pages.
           No City endorsement is implied.
         </li>
+        <li>
+          National Park Service park identities mirrored in Kaggle's
+          <a href="https://www.kaggle.com/datasets/nationalparkservice/park-biodiversity"
+            >park-biodiversity version 3</a
+          >: <a href="/licenses/CC0-1.0.txt">CC0 1.0</a>.
+          Current visitor facilities and beach parking arrivals use factual fields from the
+          <a href="https://www.nps.gov/subjects/digital/structured-data.htm"
+            >NPS published structured data</a
+          >. See the
+          <a href="/licenses/LicenseRef-US-Government-Work.txt">government-work rights notice</a>.
+          No NPS endorsement is implied. Park-center coordinates, photographs, species records
+          and third-party creative works are omitted.
+        </li>
       </ul>
       <p>
         Only sources present in a record's retained provenance apply to that record. Overture
         processing provenance accompanies the upstream source; it does not replace the upstream
-        license. No Tripadvisor content is used to seed the catalog. OpenStreetMap and other
+        license. Overture-signals operating-status processing uses CDLA Permissive 2.0 and requires
+        an independently identified admitted upstream source. No Tripadvisor content is used to
+        seed the catalog. OpenStreetMap and other
         supplements are not included in this catalog version.
       </p>
       <p>

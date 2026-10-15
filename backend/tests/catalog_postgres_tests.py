@@ -103,3 +103,38 @@ def test_post_insert_storage_failure_is_atomic(connection, tmp_path, monkeypatch
             "SELECT (SELECT count(*) FROM places_catalog_imports), (SELECT count(*) FROM places_catalog)"
         )
         assert cur.fetchone() == (0, 0)
+
+
+def test_mixed_active_generation_returns_child_release_attribution_and_identity(
+    connection, tmp_path, monkeypatch
+):
+    import json
+
+    from tests.boulder_catalog_tests import bundle as boulder_bundle
+    from tests.catalog_extraction_tests import load_script
+
+    ov, bo = tmp_path / "ov", tmp_path / "bo"
+    ov.mkdir()
+    bo.mkdir()
+    a, ma = bundle(ov, [feature()])
+    ma["schema_version"] = "roadtrips-overture-places-v1"
+    a.with_suffix(a.suffix + ".manifest.json").write_text(json.dumps(ma))
+    b, mb = boulder_bundle(bo, monkeypatch)
+    b.with_suffix(b.suffix + ".manifest.json").write_text(json.dumps(mb))
+    output = tmp_path / "mixed.json"
+    load_script("catalog_mix").build([a, b], output)
+    manifest = json.loads(output.with_suffix(".json.manifest.json").read_text())
+    report = ingest.stage(connection, output, manifest)
+    ingest.activate(connection, report["generation"])
+    ov_result = repository.nearby([37.8, -122.4], ["daytime"])[0]
+    bo_result = repository.nearby([39.997223, -105.309001], ["daytime"])[0]
+    assert ov_result["provider_id"] == "overture:stable-1"
+    assert bo_result["provider_id"] == "boulder:272"
+    for result, child in [(ov_result, ma), (bo_result, mb)]:
+        assert result["source_release"] == child["release"]
+        assert result["source_attribution"] == child["attribution"]
+        assert result["source_provenance"][-1] == {
+            "dataset": "Roadtrips active catalog",
+            "generation": report["generation"],
+            "release": manifest["release"],
+        }
