@@ -43,6 +43,7 @@ from app.routing.runtime import (
     singleflight,
     threaded,
 )
+from app.routing.visit_calendar import calendar_eligible
 
 MAX_ATTRACTIONS = 60
 MAX_HOTELS = 10
@@ -357,6 +358,8 @@ async def attraction_candidates(
         "rounds": rounds,
         "rating_attempts": [],
         "eligibility_policy": "positive_utility",
+        "calendar_eligibility_policy": "usable_source_calendar_for_timed_visits_before_discovery_quotas",
+        "calendar_excluded_provider_ids": [],
     }
     record_explanation(discovery=explanation)
     ready = list(plan.queries)
@@ -377,17 +380,27 @@ async def attraction_candidates(
             """Fetch nearby provider records with query diagnostics, concurrency limits, and retries."""
             with stage("attractions.provider", query=query.id, section=query.section_id):
                 return await retry_async(
-                    lambda: limited("nearby", lambda: places.attractions_near(point))
+                    lambda: limited(
+                        "nearby",
+                        lambda: (
+                            places.attractions_near(point, require_visit_calendar=True)
+                            if isinstance(places, LivePlaceProvider)
+                            else places.attractions_near(point)
+                        ),
+                    )
                 )
 
         records = await singleflight(("nearby", tuple(point)), lookup)
-        output = []
+        output, calendar_excluded = [], []
         for rank, record in enumerate(records):
             try:
                 place = VerifiedPlace.model_validate(record)
             except ValueError:
                 continue
             if _distance_miles(point, place.coordinates) > _ATTRACTION_RADIUS_MI:
+                continue
+            if not calendar_eligible(place.model_dump()):
+                calendar_excluded.append(place.provider_id)
                 continue
             projection = measure.project(place.coordinates, query.progress_seconds)
             output.append(
@@ -407,7 +420,7 @@ async def attraction_candidates(
             adaptive=True,
             candidates=len(output),
         )
-        return output
+        return output, calendar_excluded
 
     async def rate(batch):
         """Rate a batch of verified places and return candidates with match scores."""
@@ -482,9 +495,19 @@ async def attraction_candidates(
             break
         query_results = await joined([query(item) for item in frozen_queries])
         # Completion order never determines identity, category quotas or rating order.
-        for query_item, records in zip(frozen_queries, query_results):
+        for query_item, (records, calendar_excluded) in zip(frozen_queries, query_results):
             queried.append(query_item)
-            observations.append({**query_item.__dict__, "verified_count": len(records)})
+            observations.append(
+                {
+                    **query_item.__dict__,
+                    "verified_count": len(records) + len(calendar_excluded),
+                    "calendar_eligible_count": len(records),
+                    "calendar_excluded_count": len(calendar_excluded),
+                }
+            )
+            explanation["calendar_excluded_provider_ids"] = sorted(
+                set(explanation["calendar_excluded_provider_ids"]) | set(calendar_excluded)
+            )
             for item in records:
                 key = item["place"].provider_id
                 if key in raw:
@@ -549,7 +572,11 @@ async def attraction_candidates(
             )
             with stage("attractions.ratings", candidates=len(frozen)):
                 raise CandidateRatingError(CandidateRatingError.public_message)
-        eligible = [item for item in rated.values() if eligible_utility(item["utility"])]
+        eligible = [
+            item
+            for item in rated.values()
+            if eligible_utility(item["utility"]) and calendar_eligible(item)
+        ]
         counts = [
             sum(item["section_id"] == i for item in eligible) for i in range(plan.section_count)
         ]
@@ -592,7 +619,11 @@ async def attraction_candidates(
             if len(queried) + len(ready) >= plan.maximum_searches:
                 break
     explanation.setdefault("stop_reason", "no_distinct_search_points")
-    eligible = [item for item in rated.values() if eligible_utility(item["utility"])]
+    eligible = [
+        item
+        for item in rated.values()
+        if eligible_utility(item["utility"]) and calendar_eligible(item)
+    ]
     for key, item in rated.items():
         if key in raw:
             item["source_query_ids"] = raw[key]["source_query_ids"]
@@ -713,10 +744,13 @@ class LivePlaceProvider:
         if not config.OPENCAGE_KEY:
             raise CandidateProviderError("Google Hotels location verification is not configured")
 
-    async def attractions_near(self, point: list[float]) -> list[VerifiedPlace]:
+    async def attractions_near(
+        self, point: list[float], *, require_visit_calendar: bool = False
+    ) -> list[VerifiedPlace]:
         """Read bounded source facts; these are not live venue verification."""
         increment("catalog")
         try:
+            calendar_filter = {"require_visit_calendar": True} if require_visit_calendar else {}
             records = await threaded(
                 "catalog",
                 repository.nearby,
@@ -724,6 +758,7 @@ class LivePlaceProvider:
                 ["daytime"],
                 radius_miles=_ATTRACTION_RADIUS_MI,
                 limit=MAX_ATTRACTIONS,
+                **calendar_filter,
             )
         except Exception:
             # Database exceptions can contain connection details. Do not retain them
@@ -736,6 +771,7 @@ class LivePlaceProvider:
                 if (
                     "daytime" in place.categories
                     and _distance_miles(point, place.coordinates) <= _ATTRACTION_RADIUS_MI
+                    and (not require_visit_calendar or calendar_eligible(place.model_dump()))
                 ):
                     output.append(place)
             except (TypeError, ValueError):

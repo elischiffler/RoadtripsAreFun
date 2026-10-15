@@ -12,6 +12,8 @@ from psycopg2.extras import Json, execute_values
 from app.catalog import (
     arrival_review,
     boulder,
+    kaggle_markets,
+    kaggle_parks,
     mixed,
     nps,
     nps_heritage,
@@ -60,6 +62,17 @@ def validate_manifest(manifest):
         and manifest["schema_version"] != "roadtrips-overture-places-v1"
     ):
         raise ValueError("current arrival reviews require original Overture source inputs")
+    if manifest["schema_version"] in {kaggle_markets.SCHEMA, kaggle_parks.SCHEMA}:
+        required = (
+            {"CC-BY-4.0", "LicenseRef-US-Census-Geocoder"}
+            if manifest["schema_version"] == kaggle_markets.SCHEMA
+            else {"CC-BY-4.0", "CC0-1.0", "ODbL-1.0"}
+        )
+        if set(manifest["licenses"]) != required:
+            raise ValueError("reviewed Kaggle source requires its exact upstream rights evidence")
+        for evidence in manifest["licenses"].values():
+            validate_license_file(evidence)
+        return
     if manifest["schema_version"] == usfs.SCHEMA:
         if set(manifest["licenses"]) != {"LicenseRef-US-Agency-Factual-Data"}:
             raise ValueError("USFS requires retained government factual-data rights evidence")
@@ -162,6 +175,10 @@ def prepare(path, manifest, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
     validate_manifest(manifest)
     if not 1 <= max_rows <= MAX_ROWS or not 1 <= max_bytes <= MAX_BYTES:
         raise ValueError("import limits exceed hard ceiling")
+    if manifest["schema_version"] == kaggle_markets.SCHEMA:
+        return kaggle_markets.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == kaggle_parks.SCHEMA:
+        return kaggle_parks.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     if manifest["schema_version"] == usfs.SCHEMA:
         return usfs.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     if manifest["schema_version"] == boulder.SCHEMA:

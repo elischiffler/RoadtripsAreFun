@@ -5,9 +5,73 @@ from pathlib import Path
 
 import psycopg2
 import pytest
+from psycopg2.extras import Json, execute_values
 
 from app.catalog import ingest, repository
 from tests.catalog_ingest_tests import bundle, feature
+
+
+def test_automatic_calendar_filter_precedes_the_bounded_sql_limit(connection):
+    """More than sixty unknown timed records cannot hide usable nearby places."""
+    calendar = {
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "weekly_windows": [{"weekdays": [5], "opens": "09:00", "closes": "14:00"}],
+        "source_receipts": [{"source_url": "https://operator.example/fixture-hours"}],
+    }
+    rows = [
+        (
+            "fixture",
+            f"usda-market:{index:05d}",
+            f"Unknown timed fixture {index}",
+            37.8,
+            -122.4,
+            "CA",
+            ["daytime", "food_destination"],
+            Json([]),
+        )
+        for index in range(61)
+    ]
+    rows.extend(
+        [
+            (
+                "fixture",
+                "usda-market:99999-ready",
+                "Verified-calendar fixture",
+                37.8,
+                -122.4,
+                "CA",
+                ["daytime", "food_destination"],
+                Json([{"source_visit_calendar": calendar}]),
+            ),
+            (
+                "fixture",
+                "zz-outdoor",
+                "Outdoor fixture",
+                37.8,
+                -122.4,
+                "CA",
+                ["daytime", "nature"],
+                Json([]),
+            ),
+        ]
+    )
+    with connection, connection.cursor() as cur:
+        cur.execute(
+            "INSERT INTO places_catalog_imports(generation,release,manifest,row_count) VALUES (%s,%s,%s,%s)",
+            ("fixture", "fixture", Json({"attribution": "Controlled test records"}), len(rows)),
+        )
+        execute_values(
+            cur,
+            "INSERT INTO places_catalog(generation,source_id,name,latitude,longitude,region,categories,provenance) VALUES %s",
+            rows,
+        )
+        cur.execute("INSERT INTO places_catalog_active VALUES(true,'fixture')")
+    assert len(repository.nearby([37.8, -122.4], ["daytime"])) == 60
+    found = repository.nearby([37.8, -122.4], ["daytime"], require_visit_calendar=True)
+    assert [row["provider_id"] for row in found] == [
+        "usda-market:99999-ready",
+        "overture:zz-outdoor",
+    ]
 
 
 @pytest.fixture

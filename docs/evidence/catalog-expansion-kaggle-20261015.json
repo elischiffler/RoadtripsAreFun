@@ -1,0 +1,321 @@
+{
+  "scanned": 29751,
+  "accepted": 557,
+  "bytes": 91647833,
+  "duplicates": 0,
+  "rejects": {},
+  "regions": {
+    "CO": 63,
+    "ME": 3,
+    "UT": 20,
+    "SD": 4,
+    "TX": 11,
+    "FL": 9,
+    "NM": 13,
+    "SC": 6,
+    "OR": 32,
+    "OH": 10,
+    "AK": 15,
+    "CA": 90,
+    "MT": 18,
+    "NV": 2,
+    "AZ": 31,
+    "TN": 7,
+    "WY": 15,
+    "HI": 6,
+    "KY": 13,
+    "WA": 66,
+    "VA": 6,
+    "ND": 2,
+    "MN": 3,
+    "IN": 5,
+    "AR": 4,
+    "GA": 9,
+    "IA": 2,
+    "ID": 5,
+    "IL": 2,
+    "LA": 1,
+    "MA": 7,
+    "MO": 13,
+    "NE": 4,
+    "NJ": 1,
+    "OK": 1,
+    "RI": 2,
+    "KS": 3,
+    "MI": 12,
+    "NC": 6,
+    "AL": 3,
+    "MD": 6,
+    "PA": 5,
+    "DC": 1,
+    "NY": 4,
+    "WI": 7,
+    "MS": 1,
+    "WV": 1,
+    "NH": 6,
+    "VT": 1
+  },
+  "categories": {
+    "daytime": 551,
+    "nature": 288,
+    "trailhead": 179,
+    "national_park": 45,
+    "visitor_center": 190,
+    "culture": 167,
+    "museum": 31,
+    "beach": 12,
+    "public_parking_arrival": 242,
+    "roadside_attraction": 2,
+    "arts_and_entertainment": 17,
+    "history_museum": 7,
+    "animal_attraction": 2,
+    "aquarium": 2,
+    "historic_site": 115,
+    "art_museum": 2,
+    "asian_art_museum": 1,
+    "aviation_museum": 1,
+    "bar_and_grill_restaurant": 1,
+    "food": 5,
+    "food_and_drink": 6,
+    "restaurant": 5,
+    "european_restaurant": 1,
+    "italian_restaurant": 1,
+    "mediterranean_restaurant": 1,
+    "american_restaurant": 1,
+    "north_american_restaurant": 1,
+    "alcoholic_beverage_venue": 1,
+    "bar": 1,
+    "beer_bar": 1,
+    "nightlife": 5,
+    "picnic_site": 57,
+    "interpretive_site": 16,
+    "landmark": 16,
+    "viewpoint": 14,
+    "day_use_area": 4,
+    "wildlife_viewing": 2,
+    "botanical_garden": 1,
+    "built_feature": 1,
+    "garden": 1,
+    "geographic_entities": 1,
+    "amusement_attraction": 1,
+    "amusement_park": 10,
+    "bowling_alley": 1,
+    "sport_or_fitness_facility": 1,
+    "sports_and_recreation": 1,
+    "farmers_market": 46,
+    "food_destination": 46,
+    "public_destination": 46
+  },
+  "source_counts": {
+    "boulder-osmp": 24,
+    "nps": 43,
+    "nps-public": 41,
+    "kaggle-loc-roadside": 1,
+    "overture": 25,
+    "nps-heritage": 115,
+    "usfs": 251,
+    "kaggle-usda-markets": 46,
+    "kaggle-rideinpark": 11
+  },
+  "preserved_rows_and_provenance": 500,
+  "additions": 57,
+  "normalized_rows_sha256": "f09f0a85a5dbf0cf586c637ffeb99b1472a2098e75127fdc8ee7fb1b4ccf0ce2",
+  "baseline_normalized_rows_sha256": "804b0854158423d44917e7ed27e2ea9b00ce21ec4048f8520ec7cc158678a896",
+  "max_rows": 20000,
+  "max_bytes": 104857600,
+  "database_or_network_calls": false,
+  "new_pairs_within_250_metres": 1,
+  "checked_at": "2026-10-15T19:28:59.314544+00:00",
+  "status": "source-calendar correction; independent re-review pending; no production mutation",
+  "postgres_version_num": 180006,
+  "discovery": {
+    "short-day": {
+      "500_daytime": 0,
+      "557_daytime": 9,
+      "500_evening": 0,
+      "557_evening": 0
+    },
+    "medium-two-day": {
+      "500_daytime": 2,
+      "557_daytime": 4,
+      "500_evening": 2,
+      "557_evening": 2
+    },
+    "long-multi-day": {
+      "500_daytime": 4,
+      "557_daytime": 6,
+      "500_evening": 3,
+      "557_evening": 3
+    },
+    "dense-corridor": {
+      "500_daytime": 1,
+      "557_daytime": 10,
+      "500_evening": 1,
+      "557_evening": 1
+    },
+    "sparse-corridor": {
+      "500_daytime": 0,
+      "557_daytime": 0,
+      "500_evening": 0,
+      "557_evening": 0
+    },
+    "pacific-northwest": {
+      "500_daytime": 4,
+      "557_daytime": 5,
+      "500_evening": 4,
+      "557_evening": 5
+    },
+    "southwest": {
+      "500_daytime": 2,
+      "557_daytime": 9,
+      "500_evening": 1,
+      "557_evening": 1
+    },
+    "olympic-peninsula": {
+      "500_daytime": 7,
+      "557_daytime": 7,
+      "500_evening": 0,
+      "557_evening": 0
+    },
+    "colorado-scenic": {
+      "500_daytime": 8,
+      "557_daytime": 8,
+      "500_evening": 4,
+      "557_evening": 4
+    },
+    "juneau-local": {
+      "500_daytime": 4,
+      "557_daytime": 4,
+      "500_evening": 0,
+      "557_evening": 0
+    }
+  },
+  "query_timings": {
+    "baseline_500": {
+      "query_count": 2166,
+      "execute_ms": {
+        "median": 0.5618760001198098,
+        "p95": 0.7848260001992458,
+        "max": 4.037812000206031
+      }
+    },
+    "expanded": {
+      "query_count": 2166,
+      "execute_ms": {
+        "median": 0.5523619997802598,
+        "p95": 0.7867730000725714,
+        "max": 3.6387410000315867
+      }
+    }
+  },
+  "typed_source_probes": [
+    {
+      "provider_id": "usda-market:300109",
+      "source": "kaggle-usda-markets",
+      "region": "CA",
+      "source_release": "kaggle-usda-markets-v4+review-2026-10-15",
+      "provenance_retained": true
+    },
+    {
+      "provider_id": "usda-market:301158",
+      "source": "kaggle-usda-markets",
+      "region": "VT",
+      "source_release": "kaggle-usda-markets-v4+review-2026-10-15",
+      "provenance_retained": true
+    },
+    {
+      "provider_id": "wikidata-park:Q44041",
+      "source": "kaggle-rideinpark",
+      "region": "CA",
+      "source_release": "kaggle-rideinpark-v1+review-2026-10-15",
+      "provenance_retained": true
+    },
+    {
+      "provider_id": "wikidata-park:Q5160318",
+      "source": "kaggle-rideinpark",
+      "region": "CA",
+      "source_release": "kaggle-rideinpark-v1+review-2026-10-15",
+      "provenance_retained": true
+    },
+    {
+      "provider_id": "wikidata-park:Q26267473",
+      "source": "kaggle-rideinpark",
+      "region": "MO",
+      "source_release": "kaggle-rideinpark-v1+review-2026-10-15",
+      "provenance_retained": true
+    },
+    {
+      "provider_id": "wikidata-park:Q24192030",
+      "source": "kaggle-rideinpark",
+      "region": "FL",
+      "source_release": "kaggle-rideinpark-v1+review-2026-10-15",
+      "provenance_retained": true
+    }
+  ],
+  "priority_market_state_probes": {
+    "CA": "usda-market:300109",
+    "CT": null,
+    "DE": null,
+    "VT": "usda-market:301158"
+  },
+  "markets_excluded_from_evening_restaurant_results": true,
+  "actual_postgres_stage_rollback_reactivation": true,
+  "public_catalog_exact_dump_restore": true,
+  "guarded_cutover_negative_controls": {
+    "unexpected_active": "P0001",
+    "storage_ceiling": "P0001",
+    "immutable_new_content": "P0001",
+    "activation_fingerprint": "P0001"
+  },
+  "local_two_generation_footprint": {
+    "catalog_bytes": 3866624,
+    "index_bytes": 466944,
+    "mean_expanded_row_bytes": 2751
+  },
+  "backend": {
+    "tests_passed": 1374,
+    "coverage_percent": 87.75,
+    "real_postgres_opt_in_cases": 7,
+    "market_suite": 122,
+    "park_suite": 64,
+    "proximity_suite": 7,
+    "release_sql_suite": 5,
+    "calendar_routing_suite": 30
+  },
+  "frontend": {
+    "tests_passed": 319,
+    "line_coverage_percent": 90.23,
+    "format_lint_build": "PASS; final static-license/evidence build and actual served-byte checks pass"
+  },
+  "preflight_corrections": {
+    "market_candidates_held": 55,
+    "park_candidates_held": 7,
+    "prior_unpublished_619_candidate": "superseded; never activated"
+  },
+  "production_changes": false,
+  "limitations": "Raw nearby counts do not imply schedule-feasible stops or live itinerary success. Source-grounded controlled CP-SAT timing has a separate calendar receipt. Exact user failing route unknown; browser saved-trip verification pending.",
+  "implementation_commit": "f3fe4b1cd6c5e8c2313922e7ec57a43c4487404c",
+  "network_disabled_backend_container": {
+    "passed": 1367,
+    "skipped_postgres_cases": 6,
+    "coverage_percent": 87.15,
+    "skipped_opt_in_postgres_cases": 7
+  },
+  "exact_implementation_postgres_crud_recreate_outage_ready_dump_restore_populated_target_refusal": true,
+  "api_web_container_smoke_tests_passed": 2,
+  "source_portable_replay": "catalog-expansion-kaggle-portable-replay.json",
+  "new_source_calendars": {
+    "supported": 46,
+    "unknown": 11,
+    "markets_supported": 41,
+    "markets_unknown": 5,
+    "parks_supported": 5,
+    "parks_unknown": 6,
+    "full_dwell_seconds": 7200,
+    "fixed_starts_require_containing_window": true,
+    "unknown_timed_baseline_records_withheld_from_automatic_selection": 163,
+    "ordinary_outdoor_baseline_records_with_unknown_hours": 337
+  },
+  "calendar_receipt": "catalog-source-calendars-20261015.json",
+  "discovery_calendar_eligibility_correction": "catalog-discovery-eligibility-20261015.json"
+}

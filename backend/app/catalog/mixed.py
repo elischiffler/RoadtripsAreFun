@@ -25,6 +25,8 @@ SOURCE_SCHEMAS = {
     "nps-heritage-arrivals/1": "nps-heritage",
     "kaggle-loc-roadside-arrivals/1": "kaggle-loc-roadside",
     "usfs-public-facilities/1": "usfs",
+    "kaggle-usda-markets-reviewed-arrivals/1": "kaggle-usda-markets",
+    "kaggle-rideinpark-reviewed-arrivals/1": "kaggle-rideinpark",
 }
 
 

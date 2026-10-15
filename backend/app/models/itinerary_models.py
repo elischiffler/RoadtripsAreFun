@@ -20,6 +20,7 @@ class Itinerary_Day(BaseModel):
         source_attribution: str | None = None
         source_updated_at: str | None = None
         source_provenance: list[dict] = []
+        availability: dict | None = None
         name: str
         time: str
         address: str | None = None

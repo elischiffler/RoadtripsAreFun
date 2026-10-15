@@ -10,6 +10,7 @@ from app.routing.base import PlanningError
 from app.routing.discovery import SelectedAttraction
 from app.routing.explanation import record_explanation
 from app.routing.profiles import UTILITY_FLOOR, eligible_utility
+from app.routing.visit_calendar import calendar_eligible
 
 MAX_CANDIDATES = 60
 UTILITY_SCALE = 1_000_000
@@ -71,6 +72,9 @@ def _prepare(candidates, baseline_seconds):
             explanation["reason"] = "duplicate_provider_id"
             continue
         seen.add(provider_id)
+        if not calendar_eligible(candidate):
+            explanation["reason"] = "unknown_source_visit_calendar"
+            continue
         if not eligible_utility(utility):
             explanation["reason"] = "nonpositive_utility"
             continue
