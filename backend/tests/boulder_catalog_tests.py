@@ -7,6 +7,7 @@ import io
 import json
 import zipfile
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 import pytest
 
@@ -244,3 +245,11 @@ def test_overture_combiner_refuses_boulder_without_relabeling(tmp_path, monkeypa
     with pytest.raises(ValueError, match="Overture only"):
         module.combine([path], tmp_path / "combined.jsonl")
     assert not (tmp_path / "combined.jsonl").exists()
+
+
+def test_archive_and_publisher_snapshots_share_the_existing_byte_budget(tmp_path, monkeypatch):
+    path, manifest = bundle(tmp_path, monkeypatch)
+    total = path.stat().st_size + Path(manifest["operator_evidence"]["272"]["path"]).stat().st_size
+    assert prepare(path, manifest, max_bytes=total)[1]["bytes"] == total
+    with pytest.raises(ValueError, match="aggregate archive/evidence byte ceiling"):
+        prepare(path, manifest, max_bytes=total - 1)

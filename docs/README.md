@@ -28,3 +28,5 @@ feature `53fd0bf` plus this refactor; public acceptance remains pending. See the
 > on GitHub. No build step is needed to view them.
 
 Independent catalog expansion: [103 reviewed additional arrivals and import handoff](catalog-expansion-103.md) (October 15, 2026; no activation or deployment).
+
+Next catalog increment: [12 reviewed nature arrivals, exclusions and source handoff](catalog-expansion-nature-12.md) (115 proposed additions; hypothetical total 197).
