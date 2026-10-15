@@ -140,8 +140,10 @@ Ruff format/lint, attribution-page Prettier and `git diff --check` pass. The
 public attribution page credits OSRM/OpenStreetMap driving evidence. No full
 frontend/application suite,
 production staging, database activation/restore or deployment acceptance is
-claimed for this data addition. The existing catalog SQL schema, importer
-ceilings, source namespaces and application contracts are unchanged.
+claimed for this data addition. The test-image context explicitly includes the helper and public review facts;
+its filesystem layout passes the ten expansion tests. Runtime image contents
+are unchanged. The existing catalog SQL schema, importer ceilings, source
+namespaces and application contracts are unchanged.
 
 ## Artifact and import handoff
 

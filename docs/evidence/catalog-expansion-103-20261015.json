@@ -548,5 +548,10 @@
     "accepted": 103,
     "normalized_output_equal": true
   },
-  "attribution_page_prettier": "passed"
+  "attribution_page_prettier": "passed",
+  "test_image_layout_simulation": {
+    "expansion_tests_passed": 10,
+    "docker_daemon_or_container_run": false,
+    "runtime_image_changed": false
+  }
 }
