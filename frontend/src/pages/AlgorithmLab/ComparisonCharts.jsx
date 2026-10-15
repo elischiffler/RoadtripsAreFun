@@ -120,8 +120,7 @@ Columns.propTypes = {
   unit: PropTypes.string.isRequired,
 };
 
-function Group({ rows }) {
-  const metrics = rows[0].metrics;
+function MethodCharts({ rows }) {
   const valid = rows.filter(
     (row) =>
       row.status === 'completed' &&
@@ -141,6 +140,52 @@ function Group({ rows }) {
   );
   const overTarget = values((trip) => trip.hotel_costs?.over_target_fraction).map(
     (value) => value * 100
+  );
+  return (
+    <>
+      <BoxPlot
+        title="Delivered attraction utility"
+        unit="%"
+        values={values((trip) => trip.utility?.delivered?.mean).map((value) => value * 100)}
+      />
+      <BoxPlot
+        title="Longest actual driving stretch"
+        unit="minutes"
+        values={values((trip) => trip.driving_gaps?.maximum_stretch_seconds).map(
+          (value) => value / 60
+        )}
+      />
+      <Columns title="Raw solver statuses, all recorded outcomes" unit="runs" values={statuses} />
+      <Columns
+        title="Mean quoted nightly room-target excess"
+        unit="USD"
+        values={{
+          [`assessed n=${hotelExcess.length}`]: hotelExcess.length ? average(hotelExcess) : null,
+        }}
+      />
+      <Columns
+        title="Nightly room-target utilization and excess fraction"
+        unit="%"
+        values={{
+          [`utilization n=${hotelUtilization.length}`]: hotelUtilization.length
+            ? average(hotelUtilization)
+            : null,
+          [`over target n=${overTarget.length}`]: overTarget.length ? average(overTarget) : null,
+        }}
+      />
+    </>
+  );
+}
+MethodCharts.propTypes = { rows: PropTypes.array.isRequired };
+
+function Group({ rows }) {
+  const metrics = rows[0].metrics;
+  const valid = rows.filter(
+    (row) =>
+      row.status === 'completed' &&
+      row.metrics.trip_evaluation?.completed &&
+      row.metrics.trip_evaluation?.stop_fulfillment?.ratio === 1 &&
+      row.metrics.trip_evaluation?.schedule_compliance?.violation_count === 0
   );
   const sourceReleases = [
     ...new Set(
@@ -173,36 +218,14 @@ function Group({ rows }) {
         repeats describe solver variation. This chart does not establish access review or current
         availability.
       </p>
-      <BoxPlot
-        title="Delivered attraction utility"
-        unit="%"
-        values={values((trip) => trip.utility?.delivered?.mean).map((value) => value * 100)}
-      />
-      <BoxPlot
-        title="Longest actual driving stretch"
-        unit="minutes"
-        values={values((trip) => trip.driving_gaps?.maximum_stretch_seconds).map(
-          (value) => value / 60
-        )}
-      />
-      <Columns title="Raw solver statuses, all recorded outcomes" unit="runs" values={statuses} />
-      <Columns
-        title="Mean quoted nightly room-target excess"
-        unit="USD"
-        values={{
-          [`assessed n=${hotelExcess.length}`]: hotelExcess.length ? average(hotelExcess) : null,
-        }}
-      />
-      <Columns
-        title="Nightly room-target utilization and excess fraction"
-        unit="%"
-        values={{
-          [`utilization n=${hotelUtilization.length}`]: hotelUtilization.length
-            ? average(hotelUtilization)
-            : null,
-          [`over target n=${overTarget.length}`]: overTarget.length ? average(overTarget) : null,
-        }}
-      />
+      {[...new Set(rows.map((row) => row.metrics.algorithm ?? 'cp_sat'))].map((method) => (
+        <section key={method} aria-label={`${method} comparison series`}>
+          <h4>{method}</h4>
+          <MethodCharts
+            rows={rows.filter((row) => (row.metrics.algorithm ?? 'cp_sat') === method)}
+          />
+        </section>
+      ))}
     </details>
   );
 }
@@ -221,7 +244,7 @@ export default function ComparisonCharts({ rows }) {
       {!groups.length && <p>No comparable measured live records on this page.</p>}
       {(expanded ? groups : groups.slice(0, 4)).map((group) => (
         <Group
-          key={`${group[0].metrics.cohort_key}-${group[0].metrics.candidate_hash}-${group[0].metrics.revision}`}
+          key={`${group[0].metrics.cohort_key}-${group[0].metrics.candidate_hash}-${group[0].metrics.revision}-${group[0].metrics.metric_version}`}
           rows={group}
         />
       ))}

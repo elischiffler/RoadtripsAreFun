@@ -1,4 +1,27 @@
 {
+  "$defs": {
+    "SourceCatalog": {
+      "additionalProperties": false,
+      "properties": {
+        "release": {
+          "minLength": 1,
+          "title": "Release",
+          "type": "string"
+        },
+        "attribution": {
+          "minLength": 1,
+          "title": "Attribution",
+          "type": "string"
+        }
+      },
+      "required": [
+        "release",
+        "attribution"
+      ],
+      "title": "SourceCatalog",
+      "type": "object"
+    }
+  },
   "additionalProperties": false,
   "properties": {
     "schema_version": {
@@ -139,6 +162,14 @@
       ],
       "default": null,
       "title": "Hotel Rating Capture"
+    },
+    "source_catalogs": {
+      "additionalProperties": {
+        "$ref": "#/$defs/SourceCatalog"
+      },
+      "default": {},
+      "title": "Source Catalogs",
+      "type": "object"
     }
   },
   "required": [

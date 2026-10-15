@@ -5,7 +5,28 @@ catalog PR40 `5ab14e01e0ababd3525093ff67fac7ac29d2bd6f`, re-fetched and verified
 before PR creation. The original MyRoadtrip/catalog checkout and catalog branch
 were not modified.
 
-## Local checks
+## Completion update
+
+The remaining v2 changes were preserved in commit `b233454` after the Mac
+reconnected. The outage-era Linux test image passed 919 tests with four skips;
+the Mac run's only failure was a worker deadline during the transport outage.
+The timeout was kept as a harness failure, never solver infeasibility. Fresh
+verification after reconnecting supersedes that interrupted run: **921 backend
+tests passed, 4 skipped, 86.11% coverage**; **320 frontend tests passed** with
+format/lint/build checks. Exact-head CI and final Linux/container evidence are
+recorded in the delivery.
+
+Reviewed access/provenance, per-persona hotels, preparation tools, paired reports,
+workload/extended-day diagnostics, resource/dwell measurements and method-separated
+Lab charts are implemented. The schemas and exact exchange are documented in
+[the v2 handoff](route-evaluation-v2-handoff.md).
+
+The updated catalog base `b0ddee3b8321a8e135bbe2079bbfde46ac96812d` was fetched
+after saving local work. A non-checkout `git merge-tree` succeeded without
+conflicts. No catalog branch or original checkout was modified; no rebase/merge
+was performed. The evaluation exchange honors the existing mixed source metadata.
+
+## Original milestone local checks (992bf56)
 
 - Python 3.12.14; pinned backend requirements and Ruff 0.16.7. Ruff format and
   lint pass. Backend coverage: **899 passed, 4 skipped, coverage above 86%**, above the
@@ -59,8 +80,7 @@ figures. Solver unit graphs remain explicitly synthetic contract tests.
 
 Real 100-place suites require sufficient usable imported corridor coverage and
 immutable generation/rights/arrival evidence plus captured ratings, direct/solo/
-final roads, dated room-night offers and timezone lookups. The last catalog
-checkpoint's 12 local Boulder places do not satisfy these gates. No new capture,
+final roads, dated room-night offers and timezone lookups. The current reported 400-place mixed local checkpoint has 331 pending access reviews and does not establish 100 usable places per required corridor. No new capture,
 paid live run, Neon activation, migration, credential change, merge or deployment
 was performed. Five-day coast-to-coast and its 15-stop cells remain scenario
 hypotheses until those measured pipeline results exist.

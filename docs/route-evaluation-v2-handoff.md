@@ -1,6 +1,9 @@
 # Evaluation v2: catalog-owner exchange and readiness
 
-PR41 owns evaluation code. Catalog modules, SQL, ingestion, active pointers and
+PR41 owns evaluation code. Integration was inspected against catalog PR40 at
+`b0ddee3b8321a8e135bbe2079bbfde46ac96812d`: `git merge-tree` combined it cleanly
+without changing either branch or the checkout. This branch remains based on
+`5ab14e0`; no silent rebase or catalog merge was performed. Catalog modules, SQL, ingestion, active pointers and
 production activation remain unchanged. The exchange below is additive and local;
 no new database-side adapter is assumed. Attempts to message the parent cloud
 thread from this Mac returned “thread not found”; this file records the exact
@@ -18,7 +21,11 @@ The owner provides a local `catalog-export.json` matching
 `evidence_type: catalog_owner_export`, exact `catalog_generation`,
 `catalog_release`, `attribution`, and `records` using existing provider facts
 (`provider_id`, original name, [lat, lon], source release/attribution/provenance,
-optional address/URL/categories/provider rank). This does not require production
+optional address/URL/categories/provider rank). For mixed generations, copy the
+existing `source_catalogs` map (`source` → `{release, attribution}`) unchanged.
+Global generation/release and rights approval bind the whole snapshot; records
+retain their leaf source's release and attribution. Unknown or mismatched leaf
+sources are rejected rather than flattened. This does not require production
 activation. A reviewed versioned local export supports offline work only.
 
 Provide separate `access_reviews.json` and `rights.json` using their committed

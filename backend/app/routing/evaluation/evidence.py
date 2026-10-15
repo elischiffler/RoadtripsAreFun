@@ -120,6 +120,21 @@ class RightsEvidence(StrictEvidence):
         return value
 
 
+class SourceCatalog(StrictEvidence):
+    release: str = Field(min_length=1)
+    attribution: str = Field(min_length=1)
+
+
+def source_metadata(source, release, attribution, source_catalogs):
+    """Honor the existing catalog's leaf metadata; never flatten mixed releases."""
+    if not source_catalogs:
+        return release, attribution
+    if source not in source_catalogs:
+        raise ValueError("source is absent from declared source_catalogs")
+    leaf = SourceCatalog.model_validate(source_catalogs[source])
+    return leaf.release, leaf.attribution
+
+
 class CatalogExport(StrictEvidence):
     schema_version: Literal[1]
     evidence_type: Literal["catalog_owner_export", "synthetic_unit_only"]
@@ -127,3 +142,4 @@ class CatalogExport(StrictEvidence):
     catalog_release: str = Field(min_length=1)
     attribution: str = Field(min_length=1)
     records: list[dict]
+    source_catalogs: dict[str, SourceCatalog] = {}

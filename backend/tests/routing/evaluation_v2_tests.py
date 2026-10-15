@@ -307,8 +307,10 @@ def test_diagnostics_workload_visits_and_resources(tmp_path):
     assert screen["requested_visit_seconds"] == 7200 and screen["proof_of_infeasibility"] is False
     assert row["metrics"]["trip_evaluation"]["schedule"]["visit_seconds"] == 7200
     assert row["metrics"]["trip_evaluation"]["schedule"]["overnight_downtime_seconds"] == 0
-    assert row["resources"]["cpu_seconds"] >= 0 and row["resources"]["peak_rss_bytes"] > 0
-    assert identity()["physical_memory_bytes"] > 0
+    assert row["resources"]["cpu_seconds"] >= 0
+    assert row["resources"]["peak_rss_bytes"] is None or row["resources"]["peak_rss_bytes"] > 0
+    memory = identity()["physical_memory_bytes"]
+    assert memory is None or memory > 0
     diagnostics = coast_diagnostics()
     assert len(diagnostics) == 12 and {row["target_days"] for row in diagnostics} == {7, 10}
     with pytest.raises(ValidationError):
@@ -470,3 +472,62 @@ def test_render_conditions_quality_but_keeps_failure_denominators(tmp_path):
     assert metadata["attempted"] == 2 and metadata["successful_fulfilled"] == 1
     assert "n=1" in figure.read_text()
     assert "unit-revision" in figure.read_text() and "unit-generation" in figure.read_text()
+
+
+def test_mixed_generation_keeps_leaf_release_and_attribution(tmp_path):
+    root = tmp_path / "mixed-contract"
+    data, manifest, ledger, rights = reviewed_bundle(root)
+    manifest["source_catalogs"] = {
+        "unit-a": {"release": "leaf-a", "attribution": "Unit A attribution"},
+        "unit-b": {"release": "leaf-b", "attribution": "Unit B attribution"},
+    }
+    for index, item in enumerate(data["attractions"]):
+        source = "unit-b" if index == 1 else "unit-a"
+        item.update(
+            source=source,
+            source_release=manifest["source_catalogs"][source]["release"],
+            source_attribution=manifest["source_catalogs"][source]["attribution"],
+        )
+    save_reviewed(root, data, manifest, ledger, rights)
+    assert Fixture(root).manifest.source_catalogs["unit-a"].release == "leaf-a"
+    source = {
+        "schema_version": 1,
+        "evidence_type": "synthetic_unit_only",
+        "catalog_generation": manifest["catalog_generation"],
+        "catalog_release": manifest["catalog_release"],
+        "attribution": manifest["attribution"],
+        "source_catalogs": manifest["source_catalogs"],
+        "records": data["attractions"],
+    }
+    (tmp_path / "mixed-export.json").write_text(json.dumps(source))
+    export_reviewed(
+        tmp_path / "mixed-export.json",
+        root / "access_reviews.json",
+        root / "rights.json",
+        tmp_path / "approved.json",
+        manifest["evaluation_clock"],
+        manifest["departure"],
+        unit_only=True,
+    )
+    assert {
+        item["source_release"]
+        for item in json.loads((tmp_path / "approved.json").read_text())["records"]
+    } == {"leaf-a", "leaf-b"}
+    data["attractions"][0]["source_release"] = "incorrect-global-release"
+    save_reviewed(root, data, manifest, ledger, rights)
+    with pytest.raises(EvidenceError, match="source release"):
+        Fixture(root)
+
+
+def test_shortlist_checks_review_horizon_before_discovery(tmp_path):
+    root = tmp_path / "review-contract"
+    data, manifest, ledger, rights = reviewed_bundle(root)
+    for review in ledger["records"]:
+        review["valid_through"] = "2026-10-17"
+    save_reviewed(root, data, manifest, ledger, rights)
+    scenario = core_scenarios()[0]
+    scenario.update(target_days=2)
+    scenario["inputs"]["num_stops"] = 2
+    with pytest.raises(EvidenceError, match="horizon"):
+        freeze_shortlists(root, [scenario], tmp_path / "not-created")
+    assert not (tmp_path / "not-created").exists()

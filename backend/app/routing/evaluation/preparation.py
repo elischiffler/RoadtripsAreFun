@@ -8,11 +8,16 @@ import math
 import os
 import tempfile
 from collections import Counter, defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from app.routing.discovery import balanced_pool, make_discovery_plan
-from app.routing.evaluation.evidence import CatalogExport, ReviewLedger, RightsEvidence
+from app.routing.evaluation.evidence import (
+    CatalogExport,
+    ReviewLedger,
+    RightsEvidence,
+    source_metadata,
+)
 from app.routing.evaluation.fixtures import EvidenceError, Fixture, strict_json, validate_route
 from app.routing.evaluation.network import no_network
 from app.routing.evaluation.offline import FrozenProviders
@@ -84,9 +89,12 @@ def export_reviewed(catalog, reviews, rights, output, clock, departure, *, unit_
         if reason:
             exclusions.append({"provider_id": key, "reason": reason})
             continue
+        leaf_release, leaf_attribution = source_metadata(
+            place.source, release, source["attribution"], source.get("source_catalogs", {})
+        )
         if (
-            place.source_release != release
-            or place.source_attribution != source["attribution"]
+            place.source_release != leaf_release
+            or place.source_attribution != leaf_attribution
             or not place.source_provenance
         ):
             raise EvidenceError("approved source record lacks matching provenance")
@@ -97,6 +105,7 @@ def export_reviewed(catalog, reviews, rights, output, clock, departure, *, unit_
         "catalog_generation": generation,
         "catalog_release": release,
         "attribution": source["attribution"],
+        "source_catalogs": source.get("source_catalogs", {}),
         "evaluation_clock": clock.isoformat(),
         "departure": departure.isoformat(),
         "source_sha256": source_hash,
@@ -179,6 +188,7 @@ def sample_corridor(export, baseline, output, *, count=100, seed=1729, unit_only
         "evidence_type": source["evidence_type"],
         "catalog_generation": source["catalog_generation"],
         "catalog_release": source["catalog_release"],
+        "source_catalogs": source.get("source_catalogs", {}),
         "source_export_sha256": source_hash,
         "baseline_sha256": route_hash,
         "baseline_model_hash": fingerprint(raw_route),
@@ -246,6 +256,10 @@ def assemble(capture_directory, sample, output, *, unit_only=False):
     data = files["data.json"]
     if fingerprint(data["baseline_route"]) != selection["baseline_model_hash"]:
         raise EvidenceError("sample baseline mismatch")
+    if fingerprint(manifest.get("source_catalogs", {})) != fingerprint(
+        selection.get("source_catalogs", {})
+    ):
+        raise EvidenceError("sample and capture source_catalogs mismatch")
     by_id = {item["provider_id"]: item for item in data["attractions"]}
     wanted = set(selection["selected_ids"])
     for selected in selection["selected_records"]:
@@ -292,8 +306,12 @@ def freeze_shortlists(directory, scenarios, output, *, unit_only=False):
                 fixture.manifest.endpoints
                 != [scenario.inputs.start_id, scenario.inputs.destination_id]
                 or fixture.manifest.departure != scenario.departure().isoformat()
+                or fixture.manifest.evaluation_clock != scenario.evaluation_clock.isoformat()
             ):
                 raise EvidenceError("shortlist scenario does not match captured endpoints/date")
+            fixture.require_access_until(
+                scenario.departure().date() + timedelta(days=scenario.target_days - 1)
+            )
             plan = make_discovery_plan(fixture.baseline, scenario.inputs.num_stops)
             discovered = await provider.candidates(
                 fixture.baseline, plan, scenario.inputs.persona_weights

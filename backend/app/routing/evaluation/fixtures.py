@@ -19,6 +19,8 @@ from app.routing.evaluation.evidence import (
     ReviewLedger,
     RightsEvidence,
     RoutingCapture,
+    SourceCatalog,
+    source_metadata,
 )
 from app.routing.profiles import AttributeRatings
 from app.routing.run_metrics import fingerprint
@@ -56,6 +58,7 @@ class Manifest(BaseModel):
     limitations: list[str] = []
     access_review_file: str | None = None
     hotel_rating_capture: dict | None = None
+    source_catalogs: dict[str, SourceCatalog] = {}
 
 
 class RealManifest(Manifest):
@@ -247,11 +250,15 @@ class Fixture:
                     raise EvidenceError(
                         f"attraction access review failed: {key}: {reason if review else 'missing_review'}"
                     )
+                release, attribution = source_metadata(
+                    item.get("source"), m.catalog_release, m.attribution, m.source_catalogs
+                )
                 if (
                     item.get("source_generation") != m.catalog_generation
-                    or item.get("source_attribution") != m.attribution
+                    or item.get("source_attribution") != attribution
+                    or item.get("source_release") != release
                 ):
-                    raise EvidenceError("attraction generation/attribution mismatch")
+                    raise EvidenceError("attraction generation/source release/attribution mismatch")
                 if item.get("rating_capture_id") != rating.capture_id:
                     raise EvidenceError("attraction rating capture mismatch")
                 for reference in item.get("evidence_references", []):
@@ -269,9 +276,7 @@ class Fixture:
                 or detour < 0
             ):
                 raise EvidenceError("invalid baseline progress or measured solo detour")
-            if m.evidence_type != "synthetic_unit_only" and (
-                item.get("source_release") != m.catalog_release or not item.get("source_provenance")
-            ):
+            if real and not item.get("source_provenance"):
                 raise EvidenceError("attraction lacks generation-aligned provenance")
             if not item.get("solo_route_key") or item["solo_route_key"] not in data.get(
                 "routes", {}

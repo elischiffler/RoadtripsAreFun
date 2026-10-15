@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import ComparisonCharts from '../pages/AlgorithmLab/ComparisonCharts';
 import { comparisonGroups } from '../pages/AlgorithmLab/comparisonGroups';
@@ -70,4 +70,21 @@ describe('page comparison charts', () => {
     );
     expect(screen.getAllByText(/1.5 × IQR whiskers/)).toHaveLength(2);
   });
+});
+
+it('keeps different methods in separate comparison series', () => {
+  const second = row('second', 'completed', 0.9);
+  second.metrics.algorithm = 'utility_first';
+  render(<ComparisonCharts rows={[row('first'), second]} />);
+  expect(
+    within(screen.getByRole('region', { name: 'cp_sat comparison series' })).getByRole('img', {
+      name: 'Delivered attraction utility, 1 assessed outputs',
+    })
+  ).toBeInTheDocument();
+  expect(
+    within(screen.getByRole('region', { name: 'utility_first comparison series' })).getByRole(
+      'img',
+      { name: 'Delivered attraction utility, 1 assessed outputs' }
+    )
+  ).toBeInTheDocument();
 });

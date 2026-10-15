@@ -76,6 +76,27 @@
       ],
       "title": "RoutingCapture",
       "type": "object"
+    },
+    "SourceCatalog": {
+      "additionalProperties": false,
+      "properties": {
+        "release": {
+          "minLength": 1,
+          "title": "Release",
+          "type": "string"
+        },
+        "attribution": {
+          "minLength": 1,
+          "title": "Attribution",
+          "type": "string"
+        }
+      },
+      "required": [
+        "release",
+        "attribution"
+      ],
+      "title": "SourceCatalog",
+      "type": "object"
     }
   },
   "additionalProperties": false,
@@ -190,6 +211,14 @@
         }
       ],
       "default": null
+    },
+    "source_catalogs": {
+      "additionalProperties": {
+        "$ref": "#/$defs/SourceCatalog"
+      },
+      "default": {},
+      "title": "Source Catalogs",
+      "type": "object"
     }
   },
   "required": [
