@@ -47,24 +47,26 @@ its ephemeral bind mount; those writes are discarded by BuildKit.
 python scripts/cloud_build.py backend-test \
   --cache /workspace/cloud-build-cache/wheels \
   --docker-config /workspace/roadtrips-docker \
-  --tag roadtrips-crud-test-runner:local --revision local-crud-test
+  --tag roadtrips-crud-test-runner:local --revision "$(git rev-parse HEAD)"
 python scripts/cloud_build.py backend-runtime \
   --cache /workspace/cloud-build-cache/wheels \
   --docker-config /workspace/roadtrips-docker \
-  --tag roadtrips-crud-api:local --revision local-crud-test
+  --tag roadtrips-crud-api:local --revision "$(git rev-parse HEAD)"
 DOCKER_CONFIG=/workspace/roadtrips-docker DB_TEST_SKIP_BUILD=true \
   node tests/postgres/run.mjs
 ```
 
-The explicit skip-build flag requires both prebuilt images and an API revision
-label matching the runner's expected revision. A dirty checkout expects
-`local-crud-test`; a clean checkout expects its full Git SHA. Rebuild both images
+The explicit skip-build flag requires a clean checkout and both prebuilt images'
+revision labels matching its full Git SHA. Commit the intended source before
+using the commands above; a dirty checkout must use the ordinary build path.
+Rebuild both images
 after any relevant source/schema changes. Matching labels identify the build but
 are not proof of identical source content. Default runner behavior still builds
 the committed Dockerfile. Disposable PostgreSQL schema initialization now streams
 DDL through `psql` stdin after startup instead of mounting a checkout file; it
 refuses a populated source volume before initialization. This avoids checkout
-file permission dependence without changing host permissions. Report the offline container/CRUD result separately
+file permission dependence without changing host permissions.
+Report the offline container/CRUD result separately
 from the blocked original Docker build-network gate.
 
 For the schema-blocked preview smoke test, build both preview images with the

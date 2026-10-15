@@ -1,5 +1,9 @@
 # Kaggle source assessment — 2026-10-14
 
+The [roadside follow-up](catalog-roadside-review.md) now locates the actual
+LOC archive-rights statement in its published data table. This resolves the
+generic-redirect uncertainty without admitting photos or unresolved arrivals.
+
 Current expansion: the [October 15 mixed-source pilot](catalog-mixed-pilot.md)
 records 400 authentic local evaluation records, 69 documented Boulder/NPS
 arrivals, and incomplete current-access review for 331 Overture candidates.

@@ -77,7 +77,9 @@ and Indiana (five). A parking feed's `liveStatusIsActive` flag is retained as a
 feed flag, **not** interpreted as open/closed status. Road/seasonal restrictions,
 reservations, fees and future access remain unknown.
 
-Dedicated roadside intake remains zero. Its historical LOC-derived metadata has
+Dedicated roadside intake remains zero. The [roadside follow-up](catalog-roadside-review.md)
+locates the actual LOC archive-rights statement; current visitor/arrival evidence
+still blocks an intake. Its historical LOC-derived metadata has
 no coordinates and does not establish a surviving visitor destination. IMLS
 still lacks contributor flags needed to distinguish commercial contributions
 and geocoding; no blanket government-work clearance is claimed. Rollercoaster
@@ -145,10 +147,16 @@ zero Tripadvisor calls. Samples include `nps:arch` and native Overture IDs in
 the aggregate receipt. This is authentic **local** adapter evaluation, not a
 production website journey. Mapbox routing/geocoding remain separate services.
 
-Backend validation: 898 passed, 87.49% application coverage including five real
+Backend validation: 902 passed, 87.49% application coverage including five real
 PostgreSQL cases; unchanged 63% floor. Frontend: 314 passed, 90.23% line/statement
-coverage; format/lint/build passed. Exact pushed-head CI and review are checked
-separately; the earlier green CodeRabbit status meant a draft review was skipped.
+coverage; format/lint/build passed. All four workflows passed for the first expansion commit `eb382d2`. Its first
+substantive CodeRabbit review produced seven comments. Follow-up fixes validate
+coordinates before catalog access, extend HTTP transport guards, make script
+inclusion explicit, preserve context-copy modes with streaming I/O, update mixed
+rollout guidance, and reject dirty or mismatched prebuilt-image runs. Docker test
+images now carry the revision label used by that check. Exact follow-up-head CI
+and re-review are checked separately; the earlier draft status was a skipped
+review, not approval.
 
 ## Remaining production gates
 

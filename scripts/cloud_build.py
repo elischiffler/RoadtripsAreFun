@@ -8,6 +8,8 @@ committed runtime Dockerfiles, security settings and application code are retain
 
 import argparse
 import os
+import shutil
+import stat
 import subprocess
 import tempfile
 from pathlib import Path
@@ -25,12 +27,13 @@ def normalized_context(destination):
         .decode()
         .split("\0")
     )
-    executable = set()
+    indexed_modes = {}
     for entry in (
         subprocess.check_output(["git", "ls-files", "-s", "-z"], cwd=ROOT).decode().split("\0")
     ):
-        if entry.startswith("100755 "):
-            executable.add(entry.split("\t", 1)[1])
+        if entry:
+            metadata, name = entry.split("\t", 1)
+            indexed_modes[name] = metadata.split(" ", 1)[0]
     for name in set(entries) - {""}:
         relative = Path(name)
         if relative.is_absolute() or ".." in relative.parts:
@@ -47,8 +50,13 @@ def normalized_context(destination):
             continue  # tracked files deleted in the worktree
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(source.read_bytes())
-        target.chmod(0o755 if name in executable else 0o644)
+        shutil.copyfile(source, target)
+        executable = (
+            indexed_modes[name] == "100755"
+            if name in indexed_modes
+            else bool(source.stat().st_mode & (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH))
+        )
+        target.chmod(0o755 if executable else 0o644)
     for directory in destination.rglob("*"):
         if directory.is_dir():
             directory.chmod(0o755)

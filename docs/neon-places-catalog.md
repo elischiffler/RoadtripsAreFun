@@ -51,9 +51,14 @@ destinations, not a national bulk import; see [pilot scope and acceptance](catal
 The Overture extractor/normalizer remain separate from the new reviewed
 `kaggle-boulder-trailheads/1` adapter. That adapter pins the measured original ZIP,
 parses retained city evidence for current arrivals, and uses `boulder:` identities
-with explicit provenance. Other Kaggle sources still need rights/arrival review
-and their own adapters. The regional combiner remains Overture-only and refuses
-Boulder; a complete cross-source generation is pending. Do not relabel sources,
+with explicit provenance. Explicit NPS visitor-facility and beach-parking schemas
+are also implemented; other sources still need rights/arrival review and adapters.
+The regional combiner remains Overture-only. `scripts/catalog_mix.py` assembles
+complete Overture, Boulder, NPS and NPS-public generations from retained original
+artifacts and their `.manifest.json` sidecars. It pins and revalidates child
+manifests, source namespaces, releases, license/notice evidence and reviewed
+deduplication mappings; unresolved colocated identities fail closed. See the
+[actual mixed-pilot proof](catalog-mixed-pilot.md). Do not relabel sources,
 apply a blanket Kaggle license allowlist or weaken natural-area arrival guards.
 
 ## Bounded extraction and isolated validation

@@ -27,7 +27,11 @@ async def find_stop(category: str, lat: str, lon: str, radius: int) -> dict[str,
     try:
         distance = float(radius)
         point = [float(lat), float(lon)]
-        if not math.isfinite(distance) or distance <= 0:
+        if (
+            not all(math.isfinite(v) for v in (distance, *point))
+            or distance <= 0
+            or not (-90 <= point[0] <= 90 and -180 <= point[1] <= 180)
+        ):
             raise ValueError
     except (ValueError, TypeError):
         raise HTTPException(400, "Invalid catalog search") from None

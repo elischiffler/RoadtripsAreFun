@@ -480,11 +480,47 @@
   "production_rollout_complete": false,
   "workspace_recovered": true,
   "recovered_checks": {
-    "backend_tests": 898,
+    "backend_tests": 902,
     "backend_coverage_percent": 87.49,
     "frontend_tests": 314,
     "frontend_coverage_percent": 90.23,
     "ruff_format_lint_passed": true,
     "frontend_format_lint_build_passed": true
+  },
+  "post_review_actual_adapter_check": {
+    "checked_at": "2026-10-15T01:16:14.117360+00:00",
+    "generation": "644b404dd237d07fba916a6bc636decf66d31056c7898668921acf6be1e33aa3",
+    "actual_imported_records": true,
+    "transport_guards": [
+      "requests.Session.request",
+      "httpx.Client.request",
+      "httpx.AsyncClient.request",
+      "httpx.AsyncClient.send"
+    ],
+    "results": {
+      "legacy_provider_id": "nps:arch",
+      "persona_provider_ids": ["nps:arch"],
+      "evening_provider_ids": [
+        "overture:015ebaae-0ba7-4d32-a9ca-d665fb99ea6c",
+        "overture:2fbe6e0b-bd27-471a-961e-e779b77b6df9",
+        "overture:31829ad4-21b1-4b79-a9f4-5a5ce88f92c7",
+        "overture:f312c8fa-5cc9-46a2-a81e-75872e538dfe",
+        "overture:c8882dc0-ff05-4152-80ba-a2a62b6a3ddf",
+        "overture:48bc1b00-43a1-4402-bd3a-491190405d19",
+        "overture:abacffbf-dcf0-4cd8-97ac-558ddc541602",
+        "overture:4839d27e-d755-418c-9a26-a6c30f0dcd43",
+        "overture:66a09cf3-d079-4d0a-b70d-4b67846affdc",
+        "overture:538ea3a8-888c-45f4-b8e5-6eb18eeff1c6",
+        "overture:e6c13708-c277-4cb1-bb34-181f21718ccb"
+      ]
+    },
+    "http_calls": 0
+  },
+  "review_followup": {
+    "first_review_commit": "eb382d2db9466a5ed1cb57d1a7ab9a66bac045f0",
+    "actionable_comments": 7,
+    "status": "follow-up implemented; exact-head CI and re-review checked separately",
+    "dirty_checkout_skip_build_refused": true,
+    "context_copy_mode_streaming_env_symlink_checks_passed": true
   }
 }
