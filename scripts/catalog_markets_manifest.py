@@ -171,17 +171,20 @@ def build(sources, output):
         bundle_path, manifest, max_rows=50_000, max_bytes=100 * 1024 * 1024
     )
     (output / "reviewed-markets.json.manifest.json").write_text(
-        json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n"
     )
     (output / "reviewed-markets.preview.jsonl").write_text(
         "".join(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n" for row in rows),
         encoding="utf-8",
+        newline="\n",
     )
     (output / "market-admission-ledger.json").write_text(
-        json.dumps(ledger, indent=2) + "\n", encoding="utf-8"
+        json.dumps(ledger, indent=2) + "\n", encoding="utf-8", newline="\n"
     )
     # Completion is last; an interrupted directory is never a release artifact.
-    (output / "completion.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    (output / "completion.json").write_text(
+        json.dumps(report, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
     return report
 
 
