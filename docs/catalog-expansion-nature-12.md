@@ -1,7 +1,7 @@
 # Second expansion increment: 12 reviewed nature arrivals
 
 The second increment adds **12 nature destinations** to the preserved 103-place
-heritage increment. PR #42 now proposes **115 additions**, for a hypothetical
+heritage increment. At this checkpoint PR #42 proposed **115 additions**, for a hypothetical
 **197-place** union with the 82 live starter records. The remaining shortfall is
 **303**. The 103-place review, normalized preview and original evidence archive
 remain unchanged; [its original receipt](evidence/catalog-expansion-103-20261015.json)
@@ -162,8 +162,8 @@ These attempts have **zero additional import approvals**:
   but its multi-state jurisdiction/current-access evidence still needs explicit
   per-lot review; the zero-capacity Opal lot remains excluded.
 
-The parent's original-source handoff is the highest-priority next asset:
-`catalog-release82-plus-329-source-handoff-v2.tar.gz`, containing 143 verified
-files and `parent-handoff.md`. The reported owner's workspace path is not assumed
-shared. A supported private downloadable handle/file ID is still needed here to
-recover its 82-place recipe and begin the 329-candidate entertainment/museum review.
+The original-source handoff has subsequently been recovered through the private
+Library and all 143 inventoried files verified. Its exact 82-place recipe now
+reproduces successfully. The [third increment and complete handoff](catalog-expansion-venues-17.md)
+record the current 214-place offline union and resolved artifact blocker; the
+counts and original evidence above retain this second increment's scope.

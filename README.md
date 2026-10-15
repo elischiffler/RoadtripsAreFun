@@ -257,6 +257,10 @@ tables. See [measurement and migration contract](docs/algorithm-run-history.md).
 
 ### Places catalog rollout
 
+The independent [catalog expansion PR](docs/catalog-expansion-venues-17.md)
+provides 132 reviewed additions and a reproducible 214-place offline union,
+including the first food/nightlife entries. It does not activate or deploy them.
+
 The catalog revision replaces Tripadvisor place discovery with a bounded,
 licensed US catalog on Neon. Apply its schema and activate validated coverage
 before deploying: [rollout and rollback](docs/neon-places-catalog.md),
