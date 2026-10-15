@@ -273,9 +273,9 @@
     "mean_expanded_row_bytes": 2751
   },
   "backend": {
-    "tests_passed": 1370,
+    "tests_passed": 1374,
     "coverage_percent": 87.75,
-    "real_postgres_opt_in_cases": 6,
+    "real_postgres_opt_in_cases": 7,
     "market_suite": 122,
     "park_suite": 64,
     "proximity_suite": 7,
@@ -294,11 +294,12 @@
   },
   "production_changes": false,
   "limitations": "Raw nearby counts do not imply schedule-feasible stops or live itinerary success. Source-grounded controlled CP-SAT timing has a separate calendar receipt. Exact user failing route unknown; browser saved-trip verification pending.",
-  "implementation_commit": "c6edfc4ba79b180a7b7aba79b53c45604eeaa428",
+  "implementation_commit": "f3fe4b1cd6c5e8c2313922e7ec57a43c4487404c",
   "network_disabled_backend_container": {
-    "passed": 1364,
+    "passed": 1367,
     "skipped_postgres_cases": 6,
-    "coverage_percent": 87.15
+    "coverage_percent": 87.15,
+    "skipped_opt_in_postgres_cases": 7
   },
   "exact_implementation_postgres_crud_recreate_outage_ready_dump_restore_populated_target_refusal": true,
   "api_web_container_smoke_tests_passed": 2,
@@ -315,5 +316,6 @@
     "unknown_timed_baseline_records_withheld_from_automatic_selection": 163,
     "ordinary_outdoor_baseline_records_with_unknown_hours": 337
   },
-  "calendar_receipt": "catalog-source-calendars-20261015.json"
+  "calendar_receipt": "catalog-source-calendars-20261015.json",
+  "discovery_calendar_eligibility_correction": "catalog-discovery-eligibility-20261015.json"
 }

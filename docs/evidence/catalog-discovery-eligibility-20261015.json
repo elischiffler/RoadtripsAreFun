@@ -1,0 +1,324 @@
+{
+  "implementation_commit": "f3fe4b1cd6c5e8c2313922e7ec57a43c4487404c",
+  "checked_at": "2026-10-15T20:11:41.610242+00:00",
+  "fix": "Unusable source calendars are excluded before discovery quotas, rating/shortlist budgets and the automatic live SQL LIMIT60; strict application validation and final hard chosen-time revalidation remain authoritative. Raw source lookup remains available separately.",
+  "source_admitted_rows_unchanged": 557,
+  "original_rows_and_provenance_preserved": 500,
+  "normalized_rows_sha256": "f09f0a85a5dbf0cf586c637ffeb99b1472a2098e75127fdc8ee7fb1b4ccf0ce2",
+  "global_eligibility": {
+    "preserved_500": {
+      "all_catalog_rows": 500,
+      "daytime_rows": 494,
+      "before_calendar_gate_positive_fixture_eligible": 494,
+      "after_calendar_gate_positive_fixture_eligible": 337,
+      "withheld_daytime": 157,
+      "after_with_verified_source_calendar": 0,
+      "after_ordinary_outdoor_unknown_hours": 337
+    },
+    "expanded_557": {
+      "all_catalog_rows": 557,
+      "daytime_rows": 551,
+      "before_calendar_gate_positive_fixture_eligible": 551,
+      "after_calendar_gate_positive_fixture_eligible": 383,
+      "withheld_daytime": 168,
+      "after_with_verified_source_calendar": 46,
+      "after_ordinary_outdoor_unknown_hours": 337
+    }
+  },
+  "regressions": [
+    "18 unknown-calendar records cannot crowd an eligible outdoor stop out of the bounded shortlist",
+    "An unknown-only first search does not complete discovery before adaptive refinement",
+    "A usable source calendar remains eligible alongside ordinary outdoor records",
+    "Real PostgreSQL:61 unknown timed records ahead of2 usable places do not consume the SQL LIMIT60"
+  ],
+  "corridors": {
+    "short-day": {
+      "500_before_policy": 0,
+      "500_after_policy": 0,
+      "557_before_policy": 9,
+      "557_after_policy": 9,
+      "557_ordinary_outdoor_unknown_hours": 0,
+      "557_timed_with_usable_calendar": 9,
+      "controlled_timing_probes": [
+        {
+          "local_arrival": "2026-10-15T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 3,
+          "timed_individually_feasible_with_wait": 4,
+          "timed_no_full_dwell_window": 5
+        },
+        {
+          "local_arrival": "2026-10-17T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 1,
+          "timed_individually_feasible_with_wait": 2,
+          "timed_no_full_dwell_window": 7
+        }
+      ]
+    },
+    "medium-two-day": {
+      "500_before_policy": 2,
+      "500_after_policy": 0,
+      "557_before_policy": 4,
+      "557_after_policy": 1,
+      "557_ordinary_outdoor_unknown_hours": 0,
+      "557_timed_with_usable_calendar": 1,
+      "controlled_timing_probes": [
+        {
+          "local_arrival": "2026-10-15T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 1
+        },
+        {
+          "local_arrival": "2026-10-17T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 1,
+          "timed_individually_feasible_with_wait": 1,
+          "timed_no_full_dwell_window": 0
+        }
+      ]
+    },
+    "long-multi-day": {
+      "500_before_policy": 4,
+      "500_after_policy": 1,
+      "557_before_policy": 6,
+      "557_after_policy": 2,
+      "557_ordinary_outdoor_unknown_hours": 1,
+      "557_timed_with_usable_calendar": 1,
+      "controlled_timing_probes": [
+        {
+          "local_arrival": "2026-10-15T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 1
+        },
+        {
+          "local_arrival": "2026-10-17T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 1,
+          "timed_individually_feasible_with_wait": 1,
+          "timed_no_full_dwell_window": 0
+        }
+      ]
+    },
+    "dense-corridor": {
+      "500_before_policy": 1,
+      "500_after_policy": 0,
+      "557_before_policy": 10,
+      "557_after_policy": 8,
+      "557_ordinary_outdoor_unknown_hours": 0,
+      "557_timed_with_usable_calendar": 8,
+      "controlled_timing_probes": [
+        {
+          "local_arrival": "2026-10-15T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 2,
+          "timed_individually_feasible_with_wait": 2,
+          "timed_no_full_dwell_window": 6
+        },
+        {
+          "local_arrival": "2026-10-17T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 3,
+          "timed_individually_feasible_with_wait": 3,
+          "timed_no_full_dwell_window": 5
+        }
+      ]
+    },
+    "sparse-corridor": {
+      "500_before_policy": 0,
+      "500_after_policy": 0,
+      "557_before_policy": 0,
+      "557_after_policy": 0,
+      "557_ordinary_outdoor_unknown_hours": 0,
+      "557_timed_with_usable_calendar": 0,
+      "controlled_timing_probes": [
+        {
+          "local_arrival": "2026-10-15T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 0
+        },
+        {
+          "local_arrival": "2026-10-17T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 0
+        }
+      ]
+    },
+    "pacific-northwest": {
+      "500_before_policy": 4,
+      "500_after_policy": 0,
+      "557_before_policy": 5,
+      "557_after_policy": 0,
+      "557_ordinary_outdoor_unknown_hours": 0,
+      "557_timed_with_usable_calendar": 0,
+      "controlled_timing_probes": [
+        {
+          "local_arrival": "2026-10-15T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 0
+        },
+        {
+          "local_arrival": "2026-10-17T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 0
+        }
+      ]
+    },
+    "southwest": {
+      "500_before_policy": 2,
+      "500_after_policy": 1,
+      "557_before_policy": 9,
+      "557_after_policy": 8,
+      "557_ordinary_outdoor_unknown_hours": 1,
+      "557_timed_with_usable_calendar": 7,
+      "controlled_timing_probes": [
+        {
+          "local_arrival": "2026-10-15T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 3,
+          "timed_individually_feasible_with_wait": 3,
+          "timed_no_full_dwell_window": 4
+        },
+        {
+          "local_arrival": "2026-10-17T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 1,
+          "timed_individually_feasible_with_wait": 1,
+          "timed_no_full_dwell_window": 6
+        }
+      ]
+    },
+    "olympic-peninsula": {
+      "500_before_policy": 7,
+      "500_after_policy": 7,
+      "557_before_policy": 7,
+      "557_after_policy": 7,
+      "557_ordinary_outdoor_unknown_hours": 7,
+      "557_timed_with_usable_calendar": 0,
+      "controlled_timing_probes": [
+        {
+          "local_arrival": "2026-10-15T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 0
+        },
+        {
+          "local_arrival": "2026-10-17T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 0
+        }
+      ]
+    },
+    "colorado-scenic": {
+      "500_before_policy": 8,
+      "500_after_policy": 4,
+      "557_before_policy": 8,
+      "557_after_policy": 4,
+      "557_ordinary_outdoor_unknown_hours": 4,
+      "557_timed_with_usable_calendar": 0,
+      "controlled_timing_probes": [
+        {
+          "local_arrival": "2026-10-15T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 0
+        },
+        {
+          "local_arrival": "2026-10-17T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 0
+        }
+      ]
+    },
+    "juneau-local": {
+      "500_before_policy": 4,
+      "500_after_policy": 4,
+      "557_before_policy": 4,
+      "557_after_policy": 4,
+      "557_ordinary_outdoor_unknown_hours": 4,
+      "557_timed_with_usable_calendar": 0,
+      "controlled_timing_probes": [
+        {
+          "local_arrival": "2026-10-15T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 0
+        },
+        {
+          "local_arrival": "2026-10-17T10:00",
+          "deadline": "20:00",
+          "controlled_timezone": "America/Los_Angeles",
+          "timed_full_dwell_at_exact_arrival": 0,
+          "timed_individually_feasible_with_wait": 0,
+          "timed_no_full_dwell_window": 0
+        }
+      ]
+    }
+  },
+  "actual_filtered_query_timings": {
+    "baseline_500": {
+      "query_count": 1083,
+      "median_ms": 0.657433000014862,
+      "p95_ms": 0.8594410001023789,
+      "max_ms": 4.7221149998222245
+    },
+    "expanded": {
+      "query_count": 1083,
+      "median_ms": 0.6466750000981847,
+      "p95_ms": 0.9350159998575691,
+      "max_ms": 5.758125000284053
+    }
+  },
+  "backend_host": {
+    "passed": 1374,
+    "coverage_percent": 87.75,
+    "real_postgres_opt_in_cases": 7
+  },
+  "backend_network_disabled_container": {
+    "passed": 1367,
+    "skipped_postgres_cases": 7,
+    "coverage_percent": 87.15
+  },
+  "container_smoke_tests_passed": 2,
+  "full_disposable_crud_and_recovery_lifecycle_passed": true,
+  "production_changes": false,
+  "limitations": "Eligibility uses real catalog records and actual bounded PostgreSQL corridor queries with uniform positive utility and zero detour fixtures. It isolates calendar-gate impact, not personalized full-trip selection, road detours, hotel scheduling or live service success. Timed subprobes are actual CP-SAT temporal solves for individually controlled 10:00\u201320:00 CA contexts, not jointly feasible itineraries. Outdoor unknown hours do not become verified-open."
+}

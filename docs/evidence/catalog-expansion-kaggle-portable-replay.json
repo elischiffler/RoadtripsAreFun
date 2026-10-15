@@ -1,11 +1,11 @@
 {
-  "filename": "roadtrips-reviewed-557-source-and-review-v2.zip",
-  "bytes": 46809195,
-  "sha256": "3974cfbf809051fd1351391b2e2c129ed9fe12d5c9f9d465e545fcf04d6842d1",
-  "inventory_files": 869,
-  "outer_files": 870,
-  "code_commit": "c6edfc4ba79b180a7b7aba79b53c45604eeaa428",
-  "package_version": 2,
+  "filename": "roadtrips-reviewed-557-source-and-review-v3.zip",
+  "bytes": 46878068,
+  "sha256": "f89dbd292df2ee3169ab0a8cc50a80c86043769c91271f42fbc7cdc78d99d36a",
+  "inventory_files": 878,
+  "outer_files": 879,
+  "code_commit": "f3fe4b1cd6c5e8c2313922e7ec57a43c4487404c",
+  "package_version": 3,
   "windows_safe_names": true,
   "actual_windows_execution": false,
   "no_pycache_or_pyc_archived": true,
@@ -16,13 +16,14 @@
     "additions": 57,
     "preserved_rows_and_provenance": 500,
     "normalized_rows_sha256": "f09f0a85a5dbf0cf586c637ffeb99b1472a2098e75127fdc8ee7fb1b4ccf0ce2",
-    "bytes": 91646759,
-    "inventory_files_verified": 869,
+    "bytes": 91646936,
+    "inventory_files_verified": 878,
     "network_and_database_connections_forbidden": true,
     "market_count": 46,
     "park_count": 11
   },
-  "checked_at": "2026-10-15T19:31:46.651746+00:00",
+  "checked_at": "2026-10-15T20:11:41.611661+00:00",
   "supersedes_calendar_blocked_package_version": 1,
-  "limitations": "Private source/operator audit evidence; actual Windows execution, parent independent re-review, exact-main release and activation remain separate gates."
+  "limitations": "Private source/operator audit evidence; actual Windows execution, parent independent re-review, exact-main release and activation remain separate gates.",
+  "supersedes_discovery_starved_package_version": 2
 }

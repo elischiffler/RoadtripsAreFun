@@ -225,7 +225,7 @@ calendars survive, and markets are excluded from evening restaurant results.
 Among added raw hits, nine LA–San Diego records and eight SF–LA records have
 usable calendars; their chosen visit dates/times still require a feasible solve.
 
-Backend validation passes **1,370 tests / 87.75% coverage**, including six opt-in
+Backend validation passes **1,374 tests / 87.75% coverage**, including seven opt-in
 real PostgreSQL cases. Calendar-focused routing regressions pass **30** cases;
 market/park source-calendar and adapter suites pass **122 / 64** cases.
 Proximity and release-SQL suites retain seven and five meaningful cases.
@@ -243,6 +243,56 @@ Nearby hits do not promise detours, itineraries, compatible hours or solver
 success. The user's exact failing route is unknown. Browser saved-trip
 verification remains pending; neither is claimed fixed.
 
+## Automatic discovery eligibility correction
+
+Independent review found that unknown timed calendars could consume every
+shortlist slot before the later selection filter. The corrected implementation
+filters them before raw/category pools, AI-rating budgets, discovery completion
+and the shortlist. Automatic live SQL also applies a structural prefilter before
+its unchanged 60-row limit, followed by strict application calendar validation.
+The full-dwell CP-SAT and final actual-road checks remain active. Regression
+fixtures cover 18 unknown timed records hiding an eligible outdoor stop,
+refinement after an unknown-only first search, and 61 unknown SQL rows ahead of
+two usable places. No source-admitted row or stable identity changes.
+
+The [eligibility receipt](evidence/catalog-discovery-eligibility-20261015.json)
+separates raw geographic hits from calendar-policy eligibility. The preserved
+500 has **494 daytime records**, of which **337** pass this policy; the 557
+candidate has **551 daytime records**, of which **383** pass: 46 timed records
+with usable calendars and 337 ordinary outdoor records with unknown hours.
+Six of the 163 withheld baseline records were evening-only already, so the
+baseline daytime loss is 157. All 30 baseline museums are currently withheld.
+
+| Corridor | 500 before policy | 557 before policy | 557 after calendar policy |
+| --- | ---: | ---: | ---: |
+| LA–San Diego | 0 | 9 | 9 |
+| SF–LA | 1 | 10 | 8 |
+| SF–Boise | 2 | 4 | 1 |
+| SF–Chicago | 4 | 6 | 2 |
+| Seattle–Portland | 4 | 5 | 0 |
+| LA–Phoenix | 2 | 9 | 8 |
+| Colorado scenic | 8 | 8 | 4 |
+
+These counts isolate the calendar policy with controlled positive utility and
+zero detour inputs. They are not full-trip selection promises. For example,
+individual full two-hour timed visits after a controlled 10:00 local arrival,
+with waiting allowed only until 20:00, are feasible for four LA–San Diego records
+on Thursday October15 and two on Saturday October17. SF–LA has two and three,
+respectively. The source-window models run in an explicit test IANA context;
+actual provider timezones, road timing and joint trip scheduling remain required.
+Outdoor unknown hours do not become verified-open. Actual SELECT-only filtered
+PostgreSQL queries reproduce the policy-eligible IDs; local p95 is 0.86ms for500
+and 0.94ms for557 across 1,083 queries each, without pointer changes.
+
+Hours enrichment is being prepared separately, prioritizing Seattle–Portland,
+SF–Boise and Colorado. Authentic NPS tables for all122 withheld NPS facilities,
+current official venue pages and USFS factual feeds are retained privately.
+A fresh Weaverville operator source ends its 2026 season October14, conflicting
+with the retained CDFA October21 listing. It already remains excluded from
+automatic selection; it cannot count as a recovered current-season calendar.
+No prospective enrichment or the roughly2,500-place expansion target is admitted
+by this PR or its source bundle.
+
 ## Rebuild and activation
 
 Replay the immutable 500 source bundle, rebuild the two new source children with
@@ -258,20 +308,20 @@ activation/rollback transactions for authorized execution. They serialize catalo
 mutation, reject unexpected generations/content, retain storage guards and
 preserve all prior rows. Cutover/rollback changes only the active pointer.
 
-The private version 2 source/review bundle supersedes the calendar-blocked
-version 1. Its immutable implementation snapshot is
-`c6edfc4ba79b180a7b7aba79b53c45604eeaa428`; later commits update documentation
+The private version 3 source/review bundle supersedes the calendar-blocked
+version 1 and the discovery-starved version 2. Its immutable implementation snapshot is
+`f3fe4b1cd6c5e8c2313922e7ec57a43c4487404c`; later commits update documentation
 and evidence only. The [portable replay receipt](evidence/catalog-expansion-kaggle-portable-replay.json)
-records the **46,809,195-byte** ZIP, SHA-256
-`3974cfbf809051fd1351391b2e2c129ed9fe12d5c9f9d465e545fcf04d6842d1`,
-fresh authorized Library download and **869-file** Windows-safe inventory. Fresh
+records the **46,878,068-byte** ZIP, SHA-256
+`f89dbd292df2ee3169ab0a8cc50a80c86043769c91271f42fbc7cdc78d99d36a`,
+fresh authorized Library download and **878-file** Windows-safe inventory. Fresh
 extraction replays all 557 rows with network/database connections forbidden; the
-relocated recipe uses **91,646,759 bytes**, within the unchanged guard.
+relocated recipe uses **91,646,936 bytes**, within the unchanged guard.
 Actual Windows execution is pending.
 
 The exact implementation passes all four remote CI workflows, including standard
 Docker builds and disposable PostgreSQL recovery. Its network-disabled backend
-container passes **1,364 tests / 87.15% coverage** with six opt-in PG cases skipped.
+container passes **1,367 tests / 87.15% coverage** with seven opt-in PG cases skipped.
 Local running-container and full CRUD/recovery gates have separate private receipts.
 Initial local image-copy disk exhaustion was resolved by reclaiming unused build
 cache and superseded task images; all database volumes and source artifacts remain
