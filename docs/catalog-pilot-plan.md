@@ -1,12 +1,11 @@
 # Authentic 500-place pilot
 
 This is the requested intake/acceptance plan for issue #36 and draft PR #40.
-It contains no place records and approves no source. As of the fresh October 14
-saved-environment recheck, the authenticated small Kaggle download was blocked by
-proxy CONNECT 403; **zero authentic records have been acquired, accepted, staged
-or activated**. All category/state coverage is currently missing. See
-[access/validation evidence](catalog-validation.md) and the
-[six-source review queue](catalog-source-review.md).
+It contains no place records. The [October 14–15 intake](catalog-kaggle-intake.md)
+now records five downloaded/profiled authentic inputs and 12 Boulder nature
+destinations admitted, staged, activated and restored **only in isolated local
+PostgreSQL**. Neon counts remain zero. Other category coverage and all states/DC
+except Colorado remain missing. See [source review](catalog-source-review.md).
 
 ## Selection targets
 
@@ -20,12 +19,12 @@ count; retain other supported labels for discovery.
 | --- | ---: | ---: |
 | Niche/roadside stops | 80 | 0 |
 | Entertainment destinations | 80 | 0 |
-| Nature/scenic/trailhead destinations | 90 | 0 |
+| Nature/scenic/trailhead destinations | 90 | 12 local only |
 | Beaches with public arrivals | 60 | 0 |
 | Landmarks/public art/historic stops | 70 | 0 |
 | Museums | 70 | 0 |
 | National parks with verified public arrivals | 50 | 0 |
-| **Total unique destinations** | **500** | **0** |
+| **Total unique destinations** | **500** | **12 local only** |
 
 Spread accepted destinations across Northeast, Southeast, Midwest, Mountain and
 Pacific states, with Alaska and Hawaii explicitly represented or reported as
@@ -65,17 +64,19 @@ counts. Keep a cross-source mapping when a destination has more than one source.
 
 ## Implementation and validation still required
 
-The existing pipeline is Overture-only:
+The original Overture pipeline remains intact:
 
 - `backend/app/catalog/ingest.py` validates an official pinned Overture URL/release
-  and an explicit Overture upstream allowlist.
+  and an explicit Overture upstream allowlist; the explicit Boulder schema now
+  dispatches separately to the inspected ZIP and retained operator evidence.
 - `backend/app/catalog/normalize.py` expects Overture fields and rejects generic
   natural-area centers. Kaggle evidence must not be disguised as Overture fields.
 - `scripts/catalog_combine.py` combines only matching Overture releases/schemas;
   it is not a cross-source merge command.
 - `backend/app/catalog/repository.py` currently emits `overture:` identities and
-  source labels; the public attribution page describes only approved Overture
-  upstreams.
+  source labels for Overture, and `boulder:` identities / `boulder-osmp` for the
+  reviewed City source. Public attribution now describes both. No generic Kaggle
+  or complete multi-source generation adapter is claimed.
 
 After an authentic archive and its rights are reviewed, implement an explicit
 adapter for its actual schema. Preserve source-specific stable identities,

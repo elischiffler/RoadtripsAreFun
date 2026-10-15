@@ -63,6 +63,10 @@ def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
                     raise ValueError("input manifest exceeds 32 KiB")
                 manifest = json.loads(manifest_bytes)
                 validate_manifest(manifest)
+                if manifest["schema_version"] == "kaggle-boulder-trailheads/1":
+                    raise ValueError(
+                        "regional combiner supports Overture only; Kaggle requires a reviewed cross-source generation"
+                    )
                 if release is None:
                     release, schema = manifest["release"], manifest["schema_version"]
                 if (release, schema) != (

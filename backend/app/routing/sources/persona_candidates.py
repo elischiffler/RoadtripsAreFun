@@ -86,6 +86,7 @@ class VerifiedPlace(BaseModel):
     source_release: str | None = None
     source_attribution: str | None = None
     source_updated_at: str | None = None
+    source_provenance: list[dict[str, Any]] = []
 
     @field_validator("provider_id", "name")
     @classmethod
@@ -264,6 +265,7 @@ def _candidate(
                 "source_release",
                 "source_attribution",
                 "source_updated_at",
+                "source_provenance",
             }
         ),
         attribute_ratings=proposal.attribute_ratings,

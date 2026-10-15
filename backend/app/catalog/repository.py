@@ -89,17 +89,20 @@ def nearby(point, categories, radius_miles=5, limit=60):
             rows = cur.fetchall()
         return [
             {
-                "provider_id": "overture:" + r["source_id"],
+                "provider_id": r["source_id"]
+                if r["source_id"].startswith("boulder:")
+                else "overture:" + r["source_id"],
                 "name": r["name"],
                 "coordinates": [r["latitude"], r["longitude"]],
                 "address": r["address"],
                 "url": r["url"],
                 "categories": r["categories"],
                 "provider_rank": rank,
-                "source": "overture",
+                "source": "boulder-osmp" if r["source_id"].startswith("boulder:") else "overture",
                 "source_release": r["release"],
                 "source_attribution": r["attribution"],
                 "source_updated_at": r["source_updated_at"],
+                "source_provenance": r["provenance"],
             }
             for rank, r in enumerate(rows)
         ]

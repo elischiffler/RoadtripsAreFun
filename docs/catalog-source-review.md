@@ -1,6 +1,11 @@
 # Kaggle source assessment — 2026-10-14
 
-No Kaggle archive was downloaded or imported. No new credentials, accounts or terms-acceptance actions were taken. No candidate is yet cleared for production import.
+Five Kaggle inputs have now been acquired and profiled; the reviewed Boulder v1
+adapter admits 12 unique nature destinations in isolated PostgreSQL. No Neon
+catalog was loaded. See the [actual schemas, hashes, rights and source counts](catalog-kaggle-intake.md).
+No new credentials, accounts or terms-acceptance actions were taken. The dated
+assessment below records the earlier blocked environment and unresolved candidates;
+its unavailable-archive assumptions are superseded by the authentic intake.
 
 ## Access evidence
 

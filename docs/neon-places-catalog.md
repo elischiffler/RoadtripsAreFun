@@ -1,7 +1,9 @@
 # Neon places catalog: staged rollout
 
-Status on October 14, 2026: implementation validated with synthetic local data;
-**no real source downloaded, no production DDL applied, no Neon catalog loaded**.
+Status on October 15, 2026: five authentic Kaggle inputs downloaded/profiled;
+12 Boulder nature destinations validated through isolated staging, activation,
+rollback and restore. **No production DDL applied, no Neon catalog loaded**.
+See [authentic intake, actual counts and exact remaining gates](catalog-kaggle-intake.md).
 Do not deploy this revision until the schema, activated catalog and real coverage
 have passed the gates below. `/ready` requires a nonempty active generation.
 This work keeps the database on Neon; EC2 migration is paused.
@@ -44,12 +46,13 @@ explicit additional requirement; see [source review](catalog-source-review.md).
 The requested next step is a balanced initial batch of roughly 500 unique
 destinations, not a national bulk import; see [pilot scope and acceptance](catalog-pilot-plan.md).
 
-The current extractor, manifest validator, normalizer and discovery identity are
-Overture-specific. They do **not** yet ingest arbitrary Kaggle CSVs. An authentic
-Kaggle archive must first be inspected and cleared, then receive an explicit
-reviewed adapter and provenance/identity handling. Do not relabel Kaggle records
-as Overture, add a blanket Kaggle license allowlist, or bypass the existing
-natural-area access-point guard to make a batch pass.
+The Overture extractor/normalizer remain separate from the new reviewed
+`kaggle-boulder-trailheads/1` adapter. That adapter pins the measured original ZIP,
+parses retained city evidence for current arrivals, and uses `boulder:` identities
+with explicit provenance. Other Kaggle sources still need rights/arrival review
+and their own adapters. The regional combiner remains Overture-only and refuses
+Boulder; a complete cross-source generation is pending. Do not relabel sources,
+apply a blanket Kaggle license allowlist or weaken natural-area arrival guards.
 
 ## Bounded extraction and isolated validation
 

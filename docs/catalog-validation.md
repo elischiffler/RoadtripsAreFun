@@ -1,8 +1,11 @@
 # Catalog validation — October 14, 2026
 
 Implementation evidence for issue #36; production rollout remains blocked.
-All database tests and benchmarks used synthetic disposable local data.
-No real Overture or Kaggle archive was imported; Neon remains unchanged.
+The dated sections below describe earlier synthetic-only checks. The
+[October 14–15 authentic intake](catalog-kaggle-intake.md) supersedes the old
+network blocker: five Kaggle inputs now downloaded/profiled, 12 Boulder
+destinations admitted/staged/activated/restored in isolated PostgreSQL only.
+Neon catalog tables remain absent and production remains unchanged.
 
 ## Fresh saved-environment recheck
 

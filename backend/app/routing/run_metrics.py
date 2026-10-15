@@ -277,6 +277,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
                 "source_release",
                 "source_attribution",
                 "source_updated_at",
+                "source_provenance",
                 "route_progress_seconds",
                 "detour_seconds",
             )

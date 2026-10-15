@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 from psycopg2.extras import Json, execute_values
 
+from app.catalog import boulder
 from app.catalog.normalize import normalize
 
 UPSTREAM_LICENSES = {
@@ -29,6 +30,8 @@ MAX_DATABASE_BYTES = 512 * 1024 * 1024
 
 
 def validate_manifest(manifest):
+    if not isinstance(manifest, dict):
+        raise ValueError("manifest must be an object")
     for field in (
         "release",
         "schema_version",
@@ -43,6 +46,11 @@ def validate_manifest(manifest):
             raise ValueError(f"manifest missing {field}")
     if len(json.dumps(manifest).encode()) > 32_768:
         raise ValueError("manifest exceeds 32 KiB")
+    if manifest["schema_version"] == boulder.SCHEMA:
+        if set(manifest["licenses"]) != {"CC0-1.0"}:
+            raise ValueError("Boulder requires retained CC0 license evidence")
+        validate_license_file(manifest["licenses"]["CC0-1.0"])
+        return
     release = manifest["release"]
     if not isinstance(release, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}\.\d+", release):
         raise ValueError("invalid pinned release")
@@ -95,6 +103,8 @@ def prepare(path, manifest, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
     validate_manifest(manifest)
     if not 1 <= max_rows <= MAX_ROWS or not 1 <= max_bytes <= MAX_BYTES:
         raise ValueError("import limits exceed hard ceiling")
+    if manifest["schema_version"] == boulder.SCHEMA:
+        return boulder.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     digest = hashlib.sha256()
     rows = {}
     rejects = Counter()
