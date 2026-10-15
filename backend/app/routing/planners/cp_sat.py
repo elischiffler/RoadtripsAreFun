@@ -18,6 +18,7 @@ from app.routing.registry import register_planner
 from app.routing.runtime import in_run, joined, threaded
 from app.routing.services import RoutingServices
 from app.routing.sources.mapbox import UnusableRoadRoute
+from app.routing.visit_calendar import VisitCalendarConflict
 
 MapBox_route = MapBox.MapBox_Route
 
@@ -52,7 +53,11 @@ class CPSatPlanner(RoutePlanner):
         )
         try:
             with stage("route.gathering"):
-                if options.num_stops:
+                if options._verified_cp_sat_candidates is not None:
+                    discovery = DiscoveryResult(
+                        options._verified_cp_sat_candidates, {"reused_road_checked_pool": True}
+                    )
+                elif options.num_stops:
                     discovery = await services.cp_sat_candidates(
                         initial_route, discovery_plan, options.weights or {}
                     )
@@ -63,47 +68,63 @@ class CPSatPlanner(RoutePlanner):
                 candidates = discovery.candidates
                 record_explanation(discovery=discovery.explanation)
             with stage("route.detours", candidates=len(candidates)):
-                candidates = await self._verify_detours(initial_route, candidates, services)
+                if options._verified_cp_sat_candidates is None:
+                    candidates = await self._verify_detours(initial_route, candidates, services)
+                    options._verified_cp_sat_candidates = candidates
+                candidates = [
+                    item
+                    for item in candidates
+                    if item["provider_id"] not in options.excluded_provider_ids
+                ]
             record_stage(
                 "candidates",
                 "complete",
                 f"Collected {len(candidates)} verified candidates; ratings are AI estimates.",
             )
-            with stage("route.solver", candidates=len(candidates)):
-                if options.num_stops:
-                    selected = await threaded(
-                        "solver",
-                        self._select,
-                        candidates,
-                        query_points,
-                        options.num_stops,
-                        initial_route.duration,
+            for _ in range(len(candidates) + 1):
+                try:
+                    with stage("route.solver", candidates=len(candidates)):
+                        if options.num_stops:
+                            selected = await threaded(
+                                "solver",
+                                self._select,
+                                candidates,
+                                query_points,
+                                options.num_stops,
+                                initial_route.duration,
+                            )
+                        else:
+                            selected = []
+                            record_explanation(
+                                candidates=[],
+                                query_points=[],
+                                solver={
+                                    "status": "NOT_RUN",
+                                    "skip_reason": "zero_requested",
+                                    "objective_direction": "minimize",
+                                    "requested_stops": 0,
+                                    "eligible_count": 0,
+                                    "selected_count": 0,
+                                    "candidate_count": 0,
+                                },
+                            )
+                    record_stage(
+                        "selection",
+                        "complete",
+                        f"Selected {len(selected)} attractions; see actual solver status.",
                     )
-                else:
-                    selected = []
-                    record_explanation(
-                        candidates=[],
-                        query_points=[],
-                        solver={
-                            "status": "NOT_RUN",
-                            "skip_reason": "zero_requested",
-                            "objective_direction": "minimize",
-                            "requested_stops": 0,
-                            "eligible_count": 0,
-                            "selected_count": 0,
-                            "candidate_count": 0,
-                        },
-                    )
-            record_stage(
-                "selection",
-                "complete",
-                f"Selected {len(selected)} attractions; see actual solver status.",
-            )
-            emit("route.selected", selected=len(selected))
-            with stage("route.schedule"):
-                stops, cost = await schedule_cp_sat_route(
-                    initial_route, selected, options, services
-                )
+                    emit("route.selected", selected=len(selected))
+                    with stage("route.schedule"):
+                        stops, cost = await schedule_cp_sat_route(
+                            initial_route, selected, options, services
+                        )
+                    break
+                except VisitCalendarConflict as exc:
+                    candidates = [
+                        item for item in candidates if item["provider_id"] != exc.provider_id
+                    ]
+                    options.excluded_provider_ids |= {exc.provider_id}
+                    record_stage("availability", "excluded", exc.detail)
             record_stage(
                 "scheduling",
                 "complete",

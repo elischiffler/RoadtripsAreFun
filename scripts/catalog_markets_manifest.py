@@ -95,7 +95,7 @@ def admission_ledger(root, index):
         "selected": len(index["selection"]),
         "hold_reasons": dict(reasons),
         "ledger": ledger,
-        "category_policy": "Daytime food destinations; omitted restaurant/evening food query group because source market calendars remain raw facts, not scheduler opening intervals.",
+        "category_policy": "Daytime food destinations; omitted restaurant/evening food query group. Source-grounded calendars constrain automatic daytime visits; unknown calendars are withheld.",
     }
 
 

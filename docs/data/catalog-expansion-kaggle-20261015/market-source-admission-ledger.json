@@ -62072,7 +62072,7 @@
       "reason": "not_in_current_canonical_membership"
     }
   ],
-  "category_policy": "Daytime food destinations; omitted restaurant/evening food query group because source market calendars remain raw facts, not scheduler opening intervals.",
+  "category_policy": "Daytime food destinations; omitted restaurant/evening food query group. Source-grounded calendars constrain automatic daytime visits; unknown calendars are withheld.",
   "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
   "license": "CC-BY-4.0",
   "attribution": "Harvestly Markets, derived from USDA AMS; filtering and admission decisions by Roadtrips. Census address corroboration separately credited under LicenseRef-US-Census-Geocoder. No endorsement."

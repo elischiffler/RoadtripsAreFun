@@ -15,6 +15,7 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import urlparse
+from zoneinfo import ZoneInfo
 
 import psycopg2
 
@@ -23,6 +24,11 @@ sys.path[:0] = [str(ROOT), str(ROOT / "backend")]
 from app.catalog import ingest, repository  # noqa: E402
 from app.routing.sources.evenings import LiveEveningProvider  # noqa: E402
 from app.routing.sources.persona_candidates import LivePlaceProvider  # noqa: E402
+from app.routing.visit_calendar import (  # noqa: E402
+    VisitCalendarConflict,
+    calendar_eligible,
+    solve_visit,
+)
 
 from scripts.catalog_500_discovery import queries  # noqa: E402
 from scripts.catalog_expansion_release import read  # noqa: E402
@@ -60,7 +66,9 @@ class MeasuredConnection:
         self.connection, self.observations = connection, observations
 
     def cursor(self, *arguments, **keywords):
-        return MeasuredCursor(self.connection.cursor(*arguments, **keywords), self.observations)
+        return MeasuredCursor(
+            self.connection.cursor(*arguments, **keywords), self.observations
+        )
 
     def rollback(self):
         return self.connection.rollback()
@@ -104,7 +112,9 @@ def measure(database_url, baseline, catalog, corridors, output, max_rows, max_by
     repository.chat_crud._get_conn = lambda: measured
     repository.chat_crud._put_conn = lambda _: None
     with connection, connection.cursor() as cursor:
-        cursor.execute("SELECT current_database(), current_setting('server_version_num')::int")
+        cursor.execute(
+            "SELECT current_database(), current_setting('server_version_num')::int"
+        )
         database, version = cursor.fetchone()
         if database != "catalog_expansion_validation" or version // 10000 != 18:
             raise ValueError("guarded database identity/version differs")
@@ -112,7 +122,9 @@ def measure(database_url, baseline, catalog, corridors, output, max_rows, max_by
     results, generations, fingerprints = {}, {}, {}
     for label, path in (("baseline_500", baseline), ("expanded", catalog)):
         manifest = read(path.with_suffix(path.suffix + ".manifest.json"))
-        staged = ingest.stage(connection, path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+        staged = ingest.stage(
+            connection, path, manifest, max_rows=max_rows, max_bytes=max_bytes
+        )
         generation = staged["generation"]
         ingest.activate(connection, generation)
         before = len(observations)
@@ -144,13 +156,15 @@ def measure(database_url, baseline, catalog, corridors, output, max_rows, max_by
         max_bytes=max_bytes,
     )
     typed = []
+    calendar_probes = []
     probes, market_state_probes = [], {}
     for state in ("CA", "CT", "DE", "VT"):
         row = next(
             (
                 row
                 for row in all_rows
-                if row["source_id"].startswith("usda-market:") and row["region"] == state
+                if row["source_id"].startswith("usda-market:")
+                and row["region"] == state
             ),
             None,
         )
@@ -163,16 +177,21 @@ def measure(database_url, baseline, catalog, corridors, output, max_rows, max_by
         next(
             row
             for row in all_rows
-            if row["source_id"].startswith("wikidata-park:") and category in row["categories"]
+            if row["source_id"].startswith("wikidata-park:")
+            and category in row["categories"]
         )
         for category in ("amusement_park", "roadside_attraction", "museum", "nightlife")
     )
     for row in probes:
         point = [row["latitude"], row["longitude"]]
         found = asyncio.run(LivePlaceProvider().attractions_near(point))
-        match = next((place for place in found if place.provider_id == row["source_id"]), None)
+        match = next(
+            (place for place in found if place.provider_id == row["source_id"]), None
+        )
         if match is None or match.source_provenance[:-1] != row["provenance"]:
-            raise ValueError("new source identity/provenance failed typed daytime discovery")
+            raise ValueError(
+                "new source identity/provenance failed typed daytime discovery"
+            )
         typed.append(
             {
                 "provider_id": match.provider_id,
@@ -182,13 +201,49 @@ def measure(database_url, baseline, catalog, corridors, output, max_rows, max_by
                 "provenance_retained": True,
             }
         )
+        if match.provider_id == "usda-market:301158":
+            for arrival, expected in (
+                ("2026-10-15T10:00", False),
+                ("2026-10-17T16:00", False),
+                ("2026-10-17T13:00", False),
+                ("2026-10-17T10:00", True),
+                ("2026-10-17T08:00", True),
+            ):
+                start = datetime.fromisoformat(arrival).replace(
+                    tzinfo=ZoneInfo("America/New_York")
+                )
+                try:
+                    visit, proof = solve_visit(
+                        match.model_dump(), start, start.replace(hour=20)
+                    )
+                    accepted = True
+                    details = {"visit_start": visit.isoformat(), "availability": proof}
+                except VisitCalendarConflict as exc:
+                    accepted = False
+                    details = {"reason": exc.reason}
+                if accepted != expected:
+                    raise ValueError(
+                        "Actual PostgreSQL Burlington calendar probe failed"
+                    )
+                calendar_probes.append(
+                    {
+                        "provider_id": match.provider_id,
+                        "arrival": start.isoformat(),
+                        "accepted": accepted,
+                        **details,
+                    }
+                )
         evening = asyncio.run(
-            LiveEveningProvider().nearby(point, ["food", "nightlife"], datetime.now(UTC))
+            LiveEveningProvider().nearby(
+                point, ["food", "nightlife"], datetime.now(UTC)
+            )
         )
         if row["source_id"].startswith("usda-market:") and any(
             place.provider_id == row["source_id"] for place in evening
         ):
-            raise ValueError("daytime market incorrectly appeared as an evening restaurant")
+            raise ValueError(
+                "daytime market incorrectly appeared as an evening restaurant"
+            )
         if "nightlife" in row["categories"] and not any(
             place.provider_id == row["source_id"] and place.opening_intervals is None
             for place in evening
@@ -207,7 +262,10 @@ def measure(database_url, baseline, catalog, corridors, output, max_rows, max_by
     rollback = ingest.activate(connection, generations["baseline_500"])
     if rollback["previous_generation"] != expanded:
         raise ValueError("rollback did not replace the expanded pointer")
-    if fingerprint(connection, generations["baseline_500"]) != fingerprints["baseline_500"]:
+    if (
+        fingerprint(connection, generations["baseline_500"])
+        != fingerprints["baseline_500"]
+    ):
         raise ValueError("preserved generation changed")
     ingest.activate(connection, expanded)
     with connection.cursor() as cursor:
@@ -230,6 +288,30 @@ def measure(database_url, baseline, catalog, corridors, output, max_rows, max_by
         "typed_source_probes": typed,
         "priority_market_state_probes": market_state_probes,
         "markets_excluded_from_evening_restaurant_results": True,
+        "source_calendar_probes": calendar_probes,
+        "calendar_probe_context": "Controlled local-date/time contexts in America/New_York, actual PostgreSQL typed discovery and CP-SAT temporal solve; no live road or ticket availability claim.",
+        "new_calendar_eligibility": {
+            "supported": sum(
+                calendar_eligible(
+                    {
+                        "provider_id": row["source_id"],
+                        "source_provenance": row["provenance"],
+                    }
+                )
+                for row in all_rows
+                if row["source_id"].startswith(("usda-market:", "wikidata-park:"))
+            ),
+            "unknown": sum(
+                not calendar_eligible(
+                    {
+                        "provider_id": row["source_id"],
+                        "source_provenance": row["provenance"],
+                    }
+                )
+                for row in all_rows
+                if row["source_id"].startswith(("usda-market:", "wikidata-park:"))
+            ),
+        },
         "database_bytes": database_bytes,
         "catalog_bytes": catalog_bytes,
         "index_bytes": index_bytes,

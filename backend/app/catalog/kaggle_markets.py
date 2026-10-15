@@ -22,7 +22,7 @@ from urllib.parse import urlsplit
 
 from lxml import html
 
-from app.catalog import roadside
+from app.catalog import market_visit_calendar, roadside
 
 SCHEMA = "kaggle-usda-markets-reviewed-arrivals/1"
 SOURCE_URL = (
@@ -822,6 +822,7 @@ def prepare(path, manifest, *, max_rows, max_bytes):
                     "results": geo_facts,
                 },
                 "published_access_facts": fact_groups,
+                "source_visit_calendar": market_visit_calendar.build(fact_groups),
                 "parking": None,
                 "opening_hours_imported": False,
                 "driving_evidence_sha256": check["sha256"],
@@ -843,4 +844,25 @@ def prepare(path, manifest, *, max_rows, max_bytes):
         "regions": dict(regions),
         "categories": {"food_destination": len(rows), "daytime": len(rows)},
         "unselected_source_records": len(native) - len(rows),
+        "visit_calendars": {
+            "supported": sum(
+                not row["provenance"][0]["source_visit_calendar"]["unknown_reasons"] for row in rows
+            ),
+            "unknown": sum(
+                bool(row["provenance"][0]["source_visit_calendar"]["unknown_reasons"])
+                for row in rows
+            ),
+            "records": [
+                {
+                    "source_id": row["source_id"],
+                    "unknown_reasons": row["provenance"][0]["source_visit_calendar"][
+                        "unknown_reasons"
+                    ],
+                    "weekly_windows": len(
+                        row["provenance"][0]["source_visit_calendar"]["weekly_windows"]
+                    ),
+                }
+                for row in rows
+            ],
+        },
     }

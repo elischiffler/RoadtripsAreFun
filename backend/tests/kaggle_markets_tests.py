@@ -286,6 +286,16 @@ def test_preparation_keeps_separate_attribution_and_unknowns_without_private_fie
     assert facts[1]["fields"]["source_updated_at_raw"] == "Jul 20th, 2020"
     assert facts[2]["fields"]["hours"] == "9am - 1pm"
     assert [fact["snapshot_sha256"] for fact in facts] == ["a" * 64, "b" * 64, "c" * 64]
+    calendar = provenance["source_visit_calendar"]
+    assert calendar["weekly_windows"] == [
+        {"weekdays": [6], "opens": "09:00", "closes": "13:00", "end_day_offset": 0}
+    ]
+    assert calendar["unknown_reasons"] == []
+    assert [receipt["snapshot_sha256"] for receipt in calendar["source_receipts"]] == [
+        "a" * 64,
+        "b" * 64,
+        "c" * 64,
+    ]
     assert provenance["parking"] is None and provenance["opening_hours_imported"] is False
     assert row["source_updated_at"] is None
     assert "private manager phone" not in json.dumps(row)

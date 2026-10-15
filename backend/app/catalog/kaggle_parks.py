@@ -19,6 +19,8 @@ from urllib.parse import urlsplit
 
 from lxml import html
 
+from app.catalog import park_visit_calendar
+
 SCHEMA = "kaggle-rideinpark-reviewed-arrivals/1"
 SOURCE_URL = "https://www.kaggle.com/datasets/rideinpark/theme-parks-of-the-world/versions/1"
 ARCHIVE_SHA256 = "5d611038b0e8ec2c1ed9a75d3e28822e8080eb6f8d6de7c9a0504501c9960059"
@@ -473,6 +475,7 @@ def prepare(path, manifest, *, max_rows, max_bytes):
                 "parking": profile["parking"],
                 "opening_hours_imported": False,
                 "opening_intervals": None,
+                "source_visit_calendar": park_visit_calendar.build(profile, pages),
                 "prices_imported": False,
                 "future_availability": "unknown",
                 "review_sha256": REVIEW_SHA256,
@@ -530,6 +533,30 @@ def prepare(path, manifest, *, max_rows, max_bytes):
         "bytes": reader.bytes,
         "primary_categories": dict(Counter(p["primary_category"] for p in profiles)),
         "regions": dict(Counter(p["region"] for p in profiles)),
+        "visit_calendars": {
+            "supported": sum(
+                not row["provenance"][2]["source_visit_calendar"]["unknown_reasons"] for row in rows
+            ),
+            "unknown": sum(
+                bool(row["provenance"][2]["source_visit_calendar"]["unknown_reasons"])
+                for row in rows
+            ),
+            "records": [
+                {
+                    "source_id": row["source_id"],
+                    "unknown_reasons": row["provenance"][2]["source_visit_calendar"][
+                        "unknown_reasons"
+                    ],
+                    "weekly_windows": len(
+                        row["provenance"][2]["source_visit_calendar"]["weekly_windows"]
+                    ),
+                    "date_overrides": len(
+                        row["provenance"][2]["source_visit_calendar"]["date_overrides"]
+                    ),
+                }
+                for row in rows
+            ],
+        },
         "rejects": dict(
             Counter(
                 d["disposition"]
