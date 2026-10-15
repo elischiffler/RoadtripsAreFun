@@ -3,15 +3,23 @@
 import hashlib
 import json
 import math
-import re
 from datetime import date, datetime
 from pathlib import Path
+from typing import Literal
 from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.routing_models.routing_models import MapBox
+from app.models.trip_limits import MAPBOX_MAX_COORDINATES
 from app.routing.cp_sat_selection import valid_coordinates
+from app.routing.evaluation.evidence import (
+    EvidenceReference,
+    RatingCapture,
+    ReviewLedger,
+    RightsEvidence,
+    RoutingCapture,
+)
 from app.routing.profiles import AttributeRatings
 from app.routing.run_metrics import fingerprint
 
@@ -28,7 +36,7 @@ class EvidenceError(ValueError):
 
 class Manifest(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    schema_version: int = Field(strict=True, ge=1, le=1)
+    schema_version: int = Field(strict=True, ge=1, le=2)
     fixture_id: str
     evidence_type: str
     coverage: str
@@ -46,10 +54,38 @@ class Manifest(BaseModel):
     sampling_seed: int = 1729
     tzdata_version: str
     limitations: list[str] = []
+    access_review_file: str | None = None
+    hotel_rating_capture: dict | None = None
+
+
+class RealManifest(Manifest):
+    schema_version: Literal[2]
+    evidence_type: Literal[
+        "catalog_selection_with_captured_measurements", "catalog_recorded_pipeline"
+    ]
+    catalog_generation: str = Field(min_length=1)
+    catalog_release: str = Field(min_length=1)
+    attribution: str = Field(min_length=1)
+    rights_evidence: str = Field(min_length=1)
+    access_review_file: str = Field(min_length=1)
+    rating_capture: RatingCapture
+    routing_capture: RoutingCapture
+    hotel_rating_capture: RatingCapture | None = None
 
 
 def finite(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def strict_json(content):
+    def reject(value):
+        raise EvidenceError(f"non-finite JSON number: {value}")
+
+    def number(value):
+        parsed = float(value)
+        return parsed if math.isfinite(parsed) else reject(value)
+
+    return json.loads(content, parse_constant=reject, parse_float=number)
 
 
 def route_key(coordinates):
@@ -58,6 +94,19 @@ def route_key(coordinates):
 
 
 def validate_route(raw, coordinates=None):
+    for point in (raw.get("geometry") or {}).get("coordinates", []):
+        if not isinstance(point, list) or not valid_coordinates(point[::-1]):
+            raise EvidenceError("invalid raw route coordinates")
+    for segment in [
+        raw,
+        *raw.get("legs", []),
+        *(step for leg in raw.get("legs", []) for step in leg.get("steps", [])),
+    ]:
+        if any(
+            not finite(segment.get(field)) or segment[field] < 0
+            for field in ("duration", "distance")
+        ):
+            raise EvidenceError("invalid raw route duration/distance")
     route = MapBox.MapBox_Route.model_validate(raw)
     if not route.geometry or len(route.geometry.coordinates) < 2:
         raise EvidenceError("route geometry missing")
@@ -65,6 +114,8 @@ def validate_route(raw, coordinates=None):
         if not valid_coordinates(point[::-1]):
             raise EvidenceError("invalid route geometry coordinates")
     if coordinates is not None:
+        if len(coordinates) > MAPBOX_MAX_COORDINATES:
+            raise EvidenceError("captured route exceeds single-request transport capacity")
         if len(route.legs) != len(coordinates) - 1:
             raise EvidenceError("final route leg count does not match request")
         if (
@@ -85,8 +136,13 @@ class Fixture:
     def __init__(self, directory, *, allow_synthetic=False):
         root = Path(directory).resolve()
         manifest_bytes = (root / "manifest.json").read_bytes()
-        self.manifest = Manifest.model_validate_json(manifest_bytes)
+        manifest_raw = strict_json(manifest_bytes)
+        self.manifest = Manifest.model_validate(manifest_raw)
         m = self.manifest
+        if m.evidence_type != "synthetic_unit_only":
+            validated = RealManifest.model_validate(manifest_raw)
+            self.manifest = Manifest.model_validate(validated.model_dump(mode="json"))
+            m = self.manifest
         if m.evidence_type not in EVIDENCE_TYPES or m.coverage not in {
             "selection_only",
             "recorded_pipeline",
@@ -113,6 +169,10 @@ class Fixture:
             and m.evidence_type == "catalog_selection_with_captured_measurements"
         ):
             raise EvidenceError("selection evidence cannot claim full pipeline coverage")
+        if m.evidence_type != "synthetic_unit_only" and (
+            (m.evidence_type == "catalog_recorded_pipeline") != (m.coverage == "recorded_pipeline")
+        ):
+            raise EvidenceError("real evidence type and coverage must agree")
         loaded = {}
         for name, digest in m.files.items():
             path = (root / name).resolve()
@@ -121,25 +181,83 @@ class Fixture:
             content = path.read_bytes()
             if hashlib.sha256(content).hexdigest() != digest:
                 raise EvidenceError(f"SHA-256 mismatch: {name}")
-            loaded[name] = json.loads(content)
+            loaded[name] = strict_json(content)
         if "data.json" not in loaded:
             raise EvidenceError("manifest must hash data.json")
         self.data = loaded["data.json"]
+        self.loaded_files = loaded
         self.hash = fingerprint(
             {"manifest_sha256": hashlib.sha256(manifest_bytes).hexdigest(), "files": m.files}
         )
         data = self.data
         self.baseline = validate_route(data["baseline_route"])
-        ids, names = set(), set()
+        real = m.evidence_type != "synthetic_unit_only"
+        reviews = {}
+        if real:
+            if m.schema_version != 2:
+                raise EvidenceError("real fixtures require reviewed v2 evidence")
+            rating = RatingCapture.model_validate(m.rating_capture)
+            routing = RoutingCapture.model_validate(m.routing_capture)
+            if (
+                rating.captured_at > clock
+                or routing.captured_at > clock
+                or routing.departure_context != departure
+            ):
+                raise EvidenceError(
+                    "capture date/context disagrees with evaluation clock/departure"
+                )
+            if m.access_review_file not in loaded or m.rights_evidence not in loaded:
+                raise EvidenceError("hashed review ledger and rights evidence required")
+            ledger = ReviewLedger.model_validate(loaded[m.access_review_file])
+            reviews = ledger.approved(m.catalog_generation, m.catalog_release, clock, departure)
+            rights = RightsEvidence.model_validate(loaded[m.rights_evidence])
+            if (rights.catalog_generation, rights.catalog_release, rights.attribution) != (
+                m.catalog_generation,
+                m.catalog_release,
+                m.attribution,
+            ):
+                raise EvidenceError("rights evidence generation/release/attribution mismatch")
+            if not rights.reviewed_at.tzinfo or rights.reviewed_at > clock:
+                raise EvidenceError("rights review must predate evaluation clock")
+            baseline_key = route_key(
+                [
+                    data["baseline_route"]["geometry"]["coordinates"][0][::-1],
+                    data["baseline_route"]["geometry"]["coordinates"][-1][::-1],
+                ]
+            )
+            baseline_record = data.get("routes", {}).get(baseline_key)
+            if not baseline_record or fingerprint(baseline_record["response"]) != fingerprint(
+                data["baseline_route"]
+            ):
+                raise EvidenceError("baseline requires its exact recorded request/response")
+        self.reviews = reviews
+        ids = set()
         for item in data["attractions"]:
             key = item["provider_id"]
             if not isinstance(key, str) or not key or key in ids:
                 raise EvidenceError("duplicate or empty attraction ID")
             ids.add(key)
-            name = " ".join(re.findall(r"\w+", item["name"].casefold()))
-            if not name or name in names:
-                raise EvidenceError("ambiguous captured attraction name")
-            names.add(name)
+            if not isinstance(item["name"], str) or not item["name"].strip():
+                raise EvidenceError("empty original attraction name")
+            if real:
+                review = reviews.get(key)
+                if review is None or (
+                    reason := review.rejection(item["coordinates"], clock, departure)
+                ):
+                    raise EvidenceError(
+                        f"attraction access review failed: {key}: {reason if review else 'missing_review'}"
+                    )
+                if (
+                    item.get("source_generation") != m.catalog_generation
+                    or item.get("source_attribution") != m.attribution
+                ):
+                    raise EvidenceError("attraction generation/attribution mismatch")
+                if item.get("rating_capture_id") != rating.capture_id:
+                    raise EvidenceError("attraction rating capture mismatch")
+                for reference in item.get("evidence_references", []):
+                    EvidenceReference.model_validate(reference)
+                if not item.get("evidence_references"):
+                    raise EvidenceError("attraction evidence references missing")
             if not valid_coordinates(item["coordinates"]):
                 raise EvidenceError("malformed attraction coordinates")
             AttributeRatings.model_validate(item["attribute_ratings"])
@@ -180,6 +298,8 @@ class Fixture:
             raise EvidenceError("baseline endpoint/node mismatch")
         for key, record in data.get("routes", {}).items():
             coordinates = record["request_coordinates"]
+            if real and record.get("capture_id") != routing.capture_id:
+                raise EvidenceError("recorded road capture identity mismatch")
             if key != route_key(coordinates) or any(not valid_coordinates(c) for c in coordinates):
                 raise EvidenceError("recorded route request signature mismatch")
             validate_route(record["response"], coordinates)
@@ -222,7 +342,17 @@ class Fixture:
             (t is None) != (d is None) for tr, dr in zip(times, distances) for t, d in zip(tr, dr)
         ):
             raise EvidenceError("unreachable time/distance cells disagree")
+        hotel_capture = (
+            RatingCapture.model_validate(m.hotel_rating_capture)
+            if real and data.get("hotel_offers")
+            else None
+        )
+        if hotel_capture and hotel_capture.captured_at > clock:
+            raise EvidenceError("hotel ratings captured after evaluation clock")
         for hotel in data.get("hotel_offers", []):
+            AttributeRatings.model_validate(hotel.get("attribute_ratings", {}))
+            if real and hotel.get("rating_capture_id") != hotel_capture.capture_id:
+                raise EvidenceError("hotel rating capture mismatch")
             date.fromisoformat(hotel["check_in_date"])
             if hotel.get("price_scope") not in {
                 "one_room_one_night_including_taxes_fees",
@@ -257,3 +387,9 @@ class Fixture:
                 sum(o["price"] for o in offers), hotel["price"], abs_tol=0.01
             ):
                 raise EvidenceError("room quotes disagree with hotel total")
+
+    def require_access_until(self, through_date):
+        for item in self.data["attractions"]:
+            review = self.reviews.get(item["provider_id"])
+            if review is not None and review.valid_through < through_date:
+                raise EvidenceError("access review expires before the evaluated trip horizon")

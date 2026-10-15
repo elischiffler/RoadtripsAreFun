@@ -1,0 +1,145 @@
+{
+  "$defs": {
+    "AccessReview": {
+      "additionalProperties": false,
+      "properties": {
+        "provider_id": {
+          "minLength": 1,
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Coordinates",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "eligible",
+            "ineligible",
+            "pending"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "arrival_eligible": {
+          "title": "Arrival Eligible",
+          "type": "boolean"
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed At"
+        },
+        "valid_through": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Valid Through"
+        },
+        "reviewer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewer"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceReference"
+          },
+          "title": "Evidence",
+          "type": "array"
+        }
+      },
+      "required": [
+        "provider_id",
+        "coordinates",
+        "status",
+        "arrival_eligible",
+        "reviewed_at",
+        "valid_through",
+        "reviewer",
+        "evidence"
+      ],
+      "title": "AccessReview",
+      "type": "object"
+    },
+    "EvidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "minLength": 1,
+          "title": "Uri",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "uri",
+        "sha256"
+      ],
+      "title": "EvidenceReference",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "enum": [
+        1
+      ],
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "catalog_generation": {
+      "minLength": 1,
+      "title": "Catalog Generation",
+      "type": "string"
+    },
+    "catalog_release": {
+      "minLength": 1,
+      "title": "Catalog Release",
+      "type": "string"
+    },
+    "records": {
+      "items": {
+        "$ref": "#/$defs/AccessReview"
+      },
+      "title": "Records",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "catalog_generation",
+    "catalog_release",
+    "records"
+  ],
+  "title": "ReviewLedger",
+  "type": "object"
+}

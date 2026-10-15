@@ -1,0 +1,164 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "maximum": 2,
+      "minimum": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "fixture_id": {
+      "title": "Fixture Id",
+      "type": "string"
+    },
+    "evidence_type": {
+      "title": "Evidence Type",
+      "type": "string"
+    },
+    "coverage": {
+      "title": "Coverage",
+      "type": "string"
+    },
+    "files": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Files",
+      "type": "object"
+    },
+    "attraction_count": {
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Attraction Count",
+      "type": "integer"
+    },
+    "catalog_generation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Catalog Generation"
+    },
+    "catalog_release": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Catalog Release"
+    },
+    "attribution": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Attribution"
+    },
+    "rights_evidence": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Rights Evidence"
+    },
+    "rating_capture": {
+      "title": "Rating Capture",
+      "type": "object"
+    },
+    "routing_capture": {
+      "title": "Routing Capture",
+      "type": "object"
+    },
+    "departure": {
+      "title": "Departure",
+      "type": "string"
+    },
+    "evaluation_clock": {
+      "title": "Evaluation Clock",
+      "type": "string"
+    },
+    "endpoints": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Endpoints",
+      "type": "array"
+    },
+    "sampling_seed": {
+      "default": 1729,
+      "title": "Sampling Seed",
+      "type": "integer"
+    },
+    "tzdata_version": {
+      "title": "Tzdata Version",
+      "type": "string"
+    },
+    "limitations": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "access_review_file": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Access Review File"
+    },
+    "hotel_rating_capture": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Hotel Rating Capture"
+    }
+  },
+  "required": [
+    "schema_version",
+    "fixture_id",
+    "evidence_type",
+    "coverage",
+    "files",
+    "attraction_count",
+    "catalog_generation",
+    "catalog_release",
+    "attribution",
+    "rights_evidence",
+    "rating_capture",
+    "routing_capture",
+    "departure",
+    "evaluation_clock",
+    "endpoints",
+    "tzdata_version"
+  ],
+  "title": "Manifest",
+  "type": "object"
+}

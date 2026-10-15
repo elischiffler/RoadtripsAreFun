@@ -2,6 +2,7 @@
 
 import copy
 import json
+from datetime import datetime
 from types import SimpleNamespace
 
 from geopy.distance import geodesic
@@ -16,6 +17,8 @@ from app.routing.evaluation.methods import comparator
 from app.routing.geometry import find_position
 from app.routing.planners.cp_sat import CPSatPlanner
 from app.routing.pricing import get_price_range
+from app.routing.profiles import crossmatch
+from app.routing.run_metrics import fingerprint
 from app.routing.services import RoutingServices
 from app.routing.sources.mapbox import require_route_capacity
 from app.routing.sources.persona_candidates import attraction_candidates
@@ -27,6 +30,10 @@ class FrozenProviders:
         self.fixture = fixture
         self.data = fixture.data
         self.calls = {}
+        self.by_id = {item["provider_id"]: item for item in self.data["attractions"]}
+        self.aliases = {
+            f"__capture_id__{fingerprint(key)}": item for key, item in self.by_id.items()
+        }
 
     def count(self, name):
         self.calls[name] = self.calls.get(name, 0) + 1
@@ -36,7 +43,7 @@ class FrozenProviders:
         # A simulation against the immutable source subset. Same five-mile/60 guard.
         return sorted(
             (
-                copy.deepcopy(item)
+                {**copy.deepcopy(item), "name": f"__capture_id__{fingerprint(item['provider_id'])}"}
                 for item in self.data["attractions"]
                 if geodesic(point, item["coordinates"]).miles <= 5
             ),
@@ -50,7 +57,7 @@ class FrozenProviders:
         if marker not in prompt:
             raise EvidenceError("offline ratings require exact captured source names")
         names = json.loads(prompt.split(marker, 1)[1])
-        by_name = {item["name"]: item for item in self.data["attractions"]}
+        by_name = self.aliases
         if any(name not in by_name for name in names):
             raise EvidenceError("captured rating miss")
         return SimpleNamespace(
@@ -65,13 +72,26 @@ class FrozenProviders:
         )
 
     async def candidates(self, route, plan, weights):
-        return await attraction_candidates(route, plan, weights, ai=self, places=self)
+        result = await attraction_candidates(route, plan, weights, ai=self, places=self)
+        for item in result.explanation.get("rated_candidates", []):
+            original = self.by_id[item["provider_id"]]
+            item["name"] = original["name"]
+            for key in ("source_generation", "rating_capture_id", "evidence_references"):
+                if key in original:
+                    item[key] = original[key]
+        for item in result.candidates:
+            original = self.by_id[item["provider_id"]]
+            item["name"] = original["name"]
+            for key in ("source_generation", "rating_capture_id", "evidence_references"):
+                if key in original:
+                    item[key] = original[key]
+        return result
 
     async def hotels(self, position, check_in, price_range, weights, rooms):
         self.count("captured_hotel_queries")
         allocation = [room.model_dump() for room in rooms]
         return [
-            copy.deepcopy(item)
+            {**copy.deepcopy(item), **crossmatch(weights, item["attribute_ratings"]).model_dump()}
             for item in self.data.get("hotel_offers", [])
             if item["check_in_date"] == check_in.isoformat()
             and item["hotel_rooms"] == allocation
@@ -204,6 +224,12 @@ async def pipeline(fixture, scenario, config, method, envelope, progress):
         apply_timing(route.stops, options.start, options.scheduling_policy, origin["timezone"])
     finally:
         envelope["route"] = route.model_dump(mode="json")
+    if fixture.reviews:
+        for stop in route.stops:
+            if stop["type"] == "stop":
+                review = fixture.reviews[stop["provider_id"]]
+                if review.valid_through < datetime.fromisoformat(stop["arrival_time"]).date():
+                    raise EvidenceError("access review expires before observed attraction arrival")
     progress("itinerary")
     itinerary = await build_itinerary(Itinerary_Payload(route=route, start_time=options.start))
     envelope["itinerary"] = [day.model_dump(mode="json") for day in itinerary]

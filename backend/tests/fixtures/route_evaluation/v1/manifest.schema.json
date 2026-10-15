@@ -1,9 +1,90 @@
 {
+  "$defs": {
+    "RatingCapture": {
+      "additionalProperties": false,
+      "properties": {
+        "capture_id": {
+          "minLength": 1,
+          "title": "Capture Id",
+          "type": "string"
+        },
+        "model": {
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "prompt_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Prompt Hash",
+          "type": "string"
+        },
+        "configuration": {
+          "title": "Configuration",
+          "type": "object"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "capture_id",
+        "model",
+        "prompt_hash",
+        "configuration",
+        "captured_at"
+      ],
+      "title": "RatingCapture",
+      "type": "object"
+    },
+    "RoutingCapture": {
+      "additionalProperties": false,
+      "properties": {
+        "capture_id": {
+          "minLength": 1,
+          "title": "Capture Id",
+          "type": "string"
+        },
+        "provider": {
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "profile": {
+          "minLength": 1,
+          "title": "Profile",
+          "type": "string"
+        },
+        "departure_context": {
+          "format": "date-time",
+          "title": "Departure Context",
+          "type": "string"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "capture_id",
+        "provider",
+        "profile",
+        "departure_context",
+        "captured_at"
+      ],
+      "title": "RoutingCapture",
+      "type": "object"
+    }
+  },
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "maximum": 1,
-      "minimum": 1,
+      "const": 2,
+      "enum": [
+        2
+      ],
       "title": "Schema Version",
       "type": "integer"
     },
@@ -12,6 +93,10 @@
       "type": "string"
     },
     "evidence_type": {
+      "enum": [
+        "catalog_selection_with_captured_measurements",
+        "catalog_recorded_pipeline"
+      ],
       "title": "Evidence Type",
       "type": "string"
     },
@@ -33,56 +118,30 @@
       "type": "integer"
     },
     "catalog_generation": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Catalog Generation"
+      "minLength": 1,
+      "title": "Catalog Generation",
+      "type": "string"
     },
     "catalog_release": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Catalog Release"
+      "minLength": 1,
+      "title": "Catalog Release",
+      "type": "string"
     },
     "attribution": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Attribution"
+      "minLength": 1,
+      "title": "Attribution",
+      "type": "string"
     },
     "rights_evidence": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "title": "Rights Evidence"
+      "minLength": 1,
+      "title": "Rights Evidence",
+      "type": "string"
     },
     "rating_capture": {
-      "title": "Rating Capture",
-      "type": "object"
+      "$ref": "#/$defs/RatingCapture"
     },
     "routing_capture": {
-      "title": "Routing Capture",
-      "type": "object"
+      "$ref": "#/$defs/RoutingCapture"
     },
     "departure": {
       "title": "Departure",
@@ -115,6 +174,22 @@
       },
       "title": "Limitations",
       "type": "array"
+    },
+    "access_review_file": {
+      "minLength": 1,
+      "title": "Access Review File",
+      "type": "string"
+    },
+    "hotel_rating_capture": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RatingCapture"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [
@@ -133,8 +208,9 @@
     "departure",
     "evaluation_clock",
     "endpoints",
-    "tzdata_version"
+    "tzdata_version",
+    "access_review_file"
   ],
-  "title": "Manifest",
+  "title": "RealManifest",
   "type": "object"
 }

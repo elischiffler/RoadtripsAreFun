@@ -10,9 +10,15 @@ import sys
 import tempfile
 import uuid
 from dataclasses import asdict, replace
+from datetime import timedelta
 from importlib.metadata import version
 from pathlib import Path
-from time import perf_counter
+from time import perf_counter, process_time
+
+try:
+    import resource
+except ImportError:  # Windows: preserve measured CPU and explicit unavailable RSS.
+    resource = None
 
 from pydantic import ValidationError
 
@@ -25,6 +31,7 @@ from app.routing.evaluation.methods import comparator
 from app.routing.evaluation.network import no_network
 from app.routing.evaluation.offline import pipeline
 from app.routing.evaluation.scenarios import PERSONAS, Scenario
+from app.routing.evaluation.workload import screen_workload
 from app.routing.explanation import capture_explanation, record_explanation
 from app.routing.profiles import crossmatch
 from app.routing.run_metrics import METRIC_VERSION, compile_metrics, fingerprint, measuring, timed
@@ -54,6 +61,34 @@ def atomic(path, value):
 
 def json_text(value):
     return json.dumps(value, indent=2, allow_nan=False) + "\n"
+
+
+def physical_memory():
+    try:
+        return os.sysconf("SC_PHYS_PAGES") * os.sysconf("SC_PAGE_SIZE")
+    except (AttributeError, ValueError, OSError):
+        try:
+            return int(
+                subprocess.check_output(
+                    ["sysctl", "-n", "hw.memsize"], stderr=subprocess.PIPE, text=True
+                )
+            )
+        except (FileNotFoundError, subprocess.CalledProcessError, ValueError):
+            return None
+
+
+def process_resources():
+    if resource is None:
+        return {
+            "cpu_seconds": process_time(),
+            "peak_rss_bytes": None,
+            "rss_reason": "platform_not_supported",
+        }
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    return {
+        "cpu_seconds": usage.ru_utime + usage.ru_stime,
+        "peak_rss_bytes": int(usage.ru_maxrss * (1 if sys.platform == "darwin" else 1024)),
+    }
 
 
 def identity():
@@ -101,6 +136,7 @@ def identity():
         "os": platform.platform(),
         "cpu": platform.processor(),
         "logical_cpus": os.cpu_count(),
+        "physical_memory_bytes": physical_memory(),
         "harness_version": HARNESS_VERSION,
         "metric_version": METRIC_VERSION,
         "max_attractions": MAX_STOPS,
@@ -139,6 +175,7 @@ def base_row(spec):
 def execute(spec):
     row = base_row(spec)
     started = perf_counter()
+    initial_resources = process_resources()
     envelope = {
         "mode": "offline_pipeline" if spec["track"] == "offline-pipeline" else "replay",
         "input_snapshot": {},
@@ -168,6 +205,9 @@ def execute(spec):
             fixture = Fixture(
                 Path(spec["fixtures"]) / scenario.fixture, allow_synthetic=spec["unit_only"]
             )
+            fixture.require_access_until(
+                scenario.departure().date() + timedelta(days=scenario.target_days - 1)
+            )
             manifest = fixture.manifest
             envelope["evidence_type"] = manifest.evidence_type
             row.update(
@@ -194,6 +234,7 @@ def execute(spec):
                 "start_date": scenario.departure().isoformat(),
                 "effective_weights": scenario.inputs.persona_weights,
             }
+            row["workload_screening"] = screen_workload(fixture, scenario)
             envelope["scenario_target"] = {
                 "days": scenario.target_days,
                 "stops_per_day": scenario.stops_per_day,
@@ -296,6 +337,8 @@ def execute(spec):
                 "baseline": envelope.get("direct_route"),
                 "fixture": row.get("fixture_hash"),
                 "revision": spec["identity"],
+                "method": spec["method"],
+                "weights": envelope["input_snapshot"].get("effective_weights"),
                 "metric": METRIC_VERSION,
             }
         )
@@ -309,6 +352,26 @@ def execute(spec):
             else selected_count == required
             if row["status"] == "completed"
             else None
+        )
+        controls = dict(spec["config"])
+        controls.pop(spec.get("parameter"), None)
+        trip_controls = dict(spec["scenario"]["inputs"])
+        if spec.get("parameter") == "budget":
+            trip_controls.pop("budget", None)
+        if spec.get("parameter") == "persona_interpolation":
+            trip_controls.pop("persona_weights", None)
+        row["paired_key"] = fingerprint(
+            {
+                "scenario": spec["scenario"]["id"],
+                "trip_controls": trip_controls,
+                "configuration_controls": controls,
+                "fixture": row.get("fixture_hash"),
+                "track": spec["track"],
+                "method": spec["method"],
+                "repeat": spec.get("repeat_index", 1),
+                "parameter": spec.get("parameter"),
+                "identity": spec["identity"],
+            }
         )
         row["assessments"] = {
             "input_support": "unsupported" if row["status"] == "unsupported" else "pass",
@@ -338,6 +401,8 @@ def execute(spec):
             if pipeline_track and row["status"] == "failed"
             else "unassessed",
         }
+    row["resources"] = process_resources()
+    row["resources"]["cpu_seconds"] -= initial_resources["cpu_seconds"]
     return row
 
 
@@ -358,6 +423,46 @@ def configurations(base, parameter, raw):
         else:
             config = replace(base, **{parameter: value})
         yield config, scenario, value
+
+
+def run_worker(spec, deadline):
+    parent_start = perf_counter()
+    with tempfile.TemporaryDirectory(prefix="route-evaluation-") as temp:
+        request, response = Path(temp) / "request.json", Path(temp) / "result.json"
+        request.write_text(json_text(spec))
+        try:
+            run = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "app.routing.evaluation",
+                    "_worker",
+                    str(request),
+                    str(response),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=deadline,
+            )
+            if run.returncode or not response.exists():
+                row = base_row(spec) | {
+                    "status": "failed",
+                    "stage": "worker_start",
+                    "error": run.stderr[-3000:] or "worker produced no terminal row",
+                }
+            else:
+                row = json.loads(response.read_text())
+        except subprocess.TimeoutExpired:
+            row = base_row(spec) | {
+                "status": "failed",
+                "stage": "harness_deadline",
+                "error": "isolated worker terminated at whole-run deadline",
+                "stop_reason": "harness_deadline",
+                "solver_status": "NOT_RUN" if spec["method"] == "cp_sat" else "NOT_APPLICABLE",
+                "solver_status_reason": "unobserved_at_termination",
+            }
+    row["worker_elapsed_ms"] = (perf_counter() - parent_start) * 1000
+    return row
 
 
 def campaign(args, scenarios):
@@ -405,48 +510,22 @@ def campaign(args, scenarios):
                 "deadline_seconds_per_run": args.deadline,
                 "unit_only": args.unit_only,
                 "specifications": specs,
-                "timing": "serial isolated workers; no warm-up; setup overhead recorded separately",
+                "warmup_trials": getattr(args, "warmup", 0),
+                "timing": "serial isolated workers; warm-up trials use separate processes and are excluded; setup overhead recorded separately",
             }
         ),
     )
+    warmups = []
+    for index in range(getattr(args, "warmup", 0)):
+        trial = {**specs[0], "run_id": str(uuid.uuid4()), "warmup_index": index + 1}
+        warmups.append(run_worker(trial, args.deadline))
+    atomic(
+        output / "warmups.jsonl",
+        "".join(json.dumps(row, allow_nan=False) + "\n" for row in warmups),
+    )
     results = []
     for spec in specs:
-        parent_start = perf_counter()
-        with tempfile.TemporaryDirectory(prefix="route-evaluation-") as temp:
-            request, response = Path(temp) / "request.json", Path(temp) / "result.json"
-            request.write_text(json_text(spec))
-            try:
-                run = subprocess.run(
-                    [
-                        sys.executable,
-                        "-m",
-                        "app.routing.evaluation",
-                        "_worker",
-                        str(request),
-                        str(response),
-                    ],
-                    capture_output=True,
-                    text=True,
-                    timeout=args.deadline,
-                )
-                if run.returncode or not response.exists():
-                    row = base_row(spec) | {
-                        "status": "failed",
-                        "stage": "worker_start",
-                        "error": run.stderr[-3000:] or "worker produced no terminal row",
-                    }
-                else:
-                    row = json.loads(response.read_text())
-            except subprocess.TimeoutExpired:
-                row = base_row(spec) | {
-                    "status": "failed",
-                    "stage": "harness_deadline",
-                    "error": "isolated worker terminated at whole-run deadline",
-                    "stop_reason": "harness_deadline",
-                    "solver_status": "NOT_RUN" if spec["method"] == "cp_sat" else "NOT_APPLICABLE",
-                    "solver_status_reason": "unobserved_at_termination",
-                }
-        row["worker_elapsed_ms"] = (perf_counter() - parent_start) * 1000
+        row = run_worker(spec, args.deadline)
         for kind in ("route", "itinerary"):
             artifact = row.pop(kind, None)
             if artifact is not None:

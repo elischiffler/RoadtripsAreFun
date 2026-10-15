@@ -3,11 +3,13 @@
 import csv
 import io
 import json
+import textwrap
 from collections import Counter, defaultdict
 from html import escape
 from pathlib import Path
 from statistics import mean, quantiles
 
+from app.routing.evaluation.comparisons import bound_comparisons, paired_results, successful
 from app.routing.evaluation.runner import atomic, json_text
 
 PLOTS = {
@@ -21,6 +23,8 @@ PLOTS = {
     ),
     "added_driving_seconds": ("Added driving (seconds)", "driving", "extra_duration_seconds"),
     "added_distance_meters": ("Added driving (meters)", "driving", "extra_distance_meters"),
+    "visit_seconds": ("Attraction visits (seconds)", "schedule", "visit_seconds"),
+    "overnight_seconds": ("Overnight downtime (seconds)", "schedule", "overnight_downtime_seconds"),
     "quoted_hotel_usd": ("Quoted hotel cost (USD)", "hotel_costs", "quoted_total_usd"),
 }
 COLORS = ["#225ea8", "#41ab5d", "#e6550d", "#756bb1", "#636363", "#d94874", "#b8860b", "#111111"]
@@ -64,7 +68,10 @@ def canvas(title, caption, low, high, width=980):
         f'<rect width="{width}" height="460" fill="white"/>',
         '<g font-family="Arial,sans-serif" font-size="12" fill="#222">',
         f'<text x="35" y="25" font-size="17">{escape(title)}</text>',
-        f'<text x="35" y="45">{escape(caption)}</text>',
+        *(
+            f'<text x="35" y="{45 + i * 15}">{escape(line)}</text>'
+            for i, line in enumerate(textwrap.wrap(caption, width=max(80, int((width - 70) / 6.5))))
+        ),
     ]
     for i in range(6):
         value = low + (high - low) * i / 5
@@ -79,7 +86,7 @@ def box_plot(title, groups, caption):
     all_values = [v for values in groups.values() for v in values]
     if not all_values:
         return None
-    canvas_width = max(980, len(groups) * 240)
+    canvas_width = max(980, len(groups) * 280)
     svg, y = canvas(title, caption, min(all_values), max(all_values), canvas_width)
     width = (canvas_width - 110) / max(1, len(groups))
     for i, (label, values) in enumerate(groups.items()):
@@ -112,7 +119,7 @@ def columns(title, groups, caption):
     values = [v for group in groups.values() for v in group.values() if v is not None]
     if not values:
         return None
-    canvas_width = max(980, len(groups) * 240)
+    canvas_width = max(980, len(groups) * 280)
     svg, y = canvas(title, caption, 0, max(values) or 1, canvas_width)
     group_width = (canvas_width - 110) / max(1, len(groups))
     bar_width = min(30, group_width / (len(labels) + 1))
@@ -137,6 +144,54 @@ def columns(title, groups, caption):
             f'<rect x="{x}" y="{yy - 10}" width="10" height="10" fill="{COLORS[i % len(COLORS)]}"/>',
             f'<text x="{x + 15}" y="{yy}">{escape(label)}</text>',
         ]
+    return "\n".join([*svg, "</g></svg>"])
+
+
+def with_provenance(svg, metadata):
+    details = escape(json.dumps(metadata, sort_keys=True))
+    visible = f"Revision {metadata['revision']} | metrics {metadata['metric_version']}"
+    sources = (
+        "Catalog "
+        + ", ".join(metadata.get("catalog_generations", []))
+        + " | "
+        + metadata.get("evidence_layer", "")
+    )
+    return svg.replace(
+        "</svg>",
+        f'<metadata>{details}</metadata><g font-family="Arial,sans-serif" font-size="10"><text x="35" y="438">{escape(visible)}</text><text x="35" y="452">{escape(sources)}</text></g></svg>',
+    )
+
+
+def response_plot(title, groups, caption):
+    values = [
+        v for points in groups.values() for observations in points.values() for v in observations
+    ]
+    xs = sorted({x for points in groups.values() for x in points})
+    if not values or not xs:
+        return None
+    svg, y = canvas(title, caption, min(values), max(values))
+
+    def x(value):
+        return 80 + (value - xs[0]) / (xs[-1] - xs[0]) * 870 if xs[-1] != xs[0] else 515
+
+    for index, (label, points) in enumerate(sorted(groups.items())):
+        path = " ".join(
+            f"{'M' if i == 0 else 'L'} {x(value)} {y(mean(points[value]))}"
+            for i, value in enumerate(sorted(points))
+        )
+        svg.append(f'<path d="{path}" fill="none" stroke="{COLORS[index % len(COLORS)]}"/>')
+        for value, observations in sorted(points.items()):
+            svg.append(
+                f'<circle cx="{x(value)}" cy="{y(mean(observations))}" r="3" fill="{COLORS[index % len(COLORS)]}"/>'
+            )
+            svg.append(
+                f'<text x="{x(value)}" y="{y(mean(observations)) - 8}">{mean(observations):.3g} (n={len(observations)})</text>'
+            )
+        svg.append(
+            f'<text x="{35 + index * 200}" y="380" fill="{COLORS[index % len(COLORS)]}">{escape(label)}</text>'
+        )
+    for value in xs:
+        svg.append(f'<text x="{x(value)}" y="345" text-anchor="middle">{value:g}</text>')
     return "\n".join([*svg, "</g></svg>"])
 
 
@@ -205,7 +260,14 @@ def render(directory):
                     "model_key",
                     "parameter",
                     "parameter_value",
+                    "paired_key",
                 )
+            }
+            | {
+                "eligible_for_primary_distribution": successful(row),
+                "cpu_seconds": (row.get("resources") or {}).get("cpu_seconds"),
+                "peak_rss_bytes": (row.get("resources") or {}).get("peak_rss_bytes"),
+                "worker_elapsed_ms": row.get("worker_elapsed_ms"),
             }
             | fields(row)
         )
@@ -273,19 +335,30 @@ def render(directory):
                 )
             ),
         ]
+        provenance = {
+            "revision": manifest["identity"]["revision"],
+            "metric_version": manifest["identity"]["metric_version"],
+            "evidence_layer": facet[-1],
+            "track": facet[-2],
+            "catalog_generations": sorted({str(row.get("catalog_generation")) for row in items}),
+            "source_fixture_hashes": sorted({str(row.get("fixture_hash")) for row in items}),
+            "attempted": len(items),
+            "successful_fulfilled": sum(successful(row) for row in items),
+        }
+        caption += f"; successful fulfilled n={provenance['successful_fulfilled']} / {len(items)} attempted"
         for key, (title, _, _) in PLOTS.items():
             groups = {
                 method: [
                     fields(row)[key]
                     for row in items
-                    if label(row) == method and fields(row)[key] is not None
+                    if label(row) == method and fields(row)[key] is not None and successful(row)
                 ]
                 for method in methods
             }
             svg = box_plot(title, groups, caption)
             if svg:
                 path = f"figures/f{index}-{key}.svg"
-                atomic(root / path, svg)
+                atomic(root / path, with_provenance(svg, provenance))
                 chart_count += 1
                 lines.append(f"![{title}]({path})")
         statuses = {
@@ -315,7 +388,9 @@ def render(directory):
                     values := [
                         fields(row)["hotel_excess_usd"]
                         for row in items
-                        if label(row) == method and fields(row)["hotel_excess_usd"] is not None
+                        if label(row) == method
+                        and fields(row)["hotel_excess_usd"] is not None
+                        and successful(row)
                     ]
                 )
                 else None
@@ -329,7 +404,9 @@ def render(directory):
                     values := [
                         fields(row)[field]
                         for row in items
-                        if label(row) == method and fields(row)[field] is not None
+                        if label(row) == method
+                        and fields(row)[field] is not None
+                        and successful(row)
                     ]
                 )
                 else None
@@ -350,7 +427,7 @@ def render(directory):
             svg = columns(title, groups, caption)
             if svg:
                 path = f"figures/f{index}-{name}.svg"
-                atomic(root / path, svg)
+                atomic(root / path, with_provenance(svg, provenance))
                 chart_count += 1
                 lines.append(f"![{title}]({path})")
     if not chart_count:
@@ -358,6 +435,49 @@ def render(directory):
             "",
             "No primary measured figures are available. Real-catalog captures and eligible coverage remain required; synthetic unit checks do not substitute for them.",
         ]
+    paired = paired_results(rows, fields)
+    bounds = bound_comparisons(rows)
+    atomic(root / "paired-comparisons.json", json_text(paired))
+    atomic(root / "bound-comparisons.json", json_text(bounds))
+    lines += [
+        "",
+        "## Paired parameter and bound comparisons",
+        "",
+        f"{len(paired)} successful same-source parameter pairs; {len(bounds)} same-model incumbent/bound observations.",
+        "See paired-comparisons.json for physical metric deltas and selected-ID changes. Raw objectives are never ranked across changed models.",
+    ]
+    for index, (facet, items) in enumerate(facets.items()):
+        parameters = sorted({row.get("parameter") for row in items if row.get("parameter")})
+        for parameter in parameters:
+            eligible = [
+                row for row in items if successful(row) and row.get("parameter") == parameter
+            ]
+            provenance = {
+                "revision": manifest["identity"]["revision"],
+                "metric_version": manifest["identity"]["metric_version"],
+                "evidence_layer": facet[-1],
+                "catalog_generations": sorted(
+                    {str(row.get("catalog_generation")) for row in items}
+                ),
+                "source_fixture_hashes": sorted({str(row.get("fixture_hash")) for row in items}),
+                "parameter": parameter,
+            }
+            for key, (title, _, _) in PLOTS.items():
+                groups = {}
+                for row in eligible:
+                    value = fields(row)[key]
+                    if value is not None:
+                        groups.setdefault(row["method"], {}).setdefault(
+                            row["parameter_value"], []
+                        ).append(value)
+                svg = response_plot(
+                    title, groups, f"{parameter}; successful fulfilled outputs only"
+                )
+                if svg:
+                    path = f"figures/f{index}-{parameter}-{key}-response.svg"
+                    atomic(root / path, with_provenance(svg, provenance))
+                    chart_count += 1
+                    lines.append(f"![{parameter}: {title}]({path})")
     atomic(root / "plot-data.json", json_text(csv_rows))
     atomic(root / "report.md", "\n".join(lines) + "\n")
     return {

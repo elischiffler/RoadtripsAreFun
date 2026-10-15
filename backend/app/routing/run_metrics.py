@@ -240,6 +240,13 @@ def trip_evaluation(envelope):
         driving["assessment_reason"] = "baseline_incomplete"
     elif assessed and any(baseline.get(name) == 0 for name in ("distance", "duration")):
         driving["assessment_reason"] = "zero_baseline_percentage_unassessed"
+    deltas = [
+        driving.get(f"extra_{name}_{unit}")
+        for name, unit in (("distance", "meters"), ("duration", "seconds"))
+    ]
+    driving["baseline_consistency_review_required"] = (
+        any(value < 0 for value in deltas) if all(value is not None for value in deltas) else None
+    )
     requested = inputs.get("num_stops")
     delivered = sum(stop.get("type") == "stop" for stop in stops) if assessed else None
     selected = sum(
@@ -315,7 +322,22 @@ def trip_evaluation(envelope):
     arrival = _instant(final.get("arrival_time")) if assessed else None
     start = _instant(inputs.get("start_date"))
     itinerary = envelope.get("itinerary")
+    dwell = {"stop": [], "hotel": []}
+    for item in stops if assessed else []:
+        if item.get("type") not in dwell:
+            continue
+        arrived, left = _instant(item.get("arrival_time")), _instant(item.get("departure_time"))
+        dwell[item["type"]].append(
+            (left - arrived).total_seconds() if arrived and left and left >= arrived else None
+        )
+
+    def dwell_total(kind):
+        values = dwell[kind]
+        return sum(values) if assessed and all(value is not None for value in values) else None
+
     schedule = {
+        "visit_seconds": dwell_total("stop"),
+        "overnight_downtime_seconds": dwell_total("hotel"),
         "itinerary_days": len(itinerary) if live and itinerary is not None else None,
         "overnights": len(hotels) if assessed else None,
         "final_arrival": final.get("arrival_time") if arrival else None,
@@ -434,6 +456,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
                 "section_id",
                 "source_query_ids",
                 "source_release",
+                "source_generation",
                 "source_attribution",
                 "source_updated_at",
                 "source_provenance",

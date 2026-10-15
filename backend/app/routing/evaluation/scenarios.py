@@ -48,6 +48,7 @@ class Scenario(BaseModel):
     fixture: str = Field(pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_-]{0,80}$")
     evaluation_clock: datetime
     inputs: LabInputs
+    diagnostic_reason: str | None = None
 
     @model_validator(mode="after")
     def controlled(self):
@@ -103,4 +104,22 @@ def core_scenarios():
                         },
                     }
                 )
+    return rows
+
+
+def coast_diagnostics():
+    rows = []
+    for original in core_scenarios():
+        if original["trip_type"] != "coast-5d":
+            continue
+        for days in (7, 10):
+            row = deepcopy(original)
+            row["id"] = original["id"].replace("coast-5d", f"coast-{days}d")
+            row["trip_type"] = f"coast-{days}d"
+            row["target_days"] = days
+            row["inputs"]["num_stops"] = days * row["stops_per_day"]
+            row["diagnostic_reason"] = (
+                "Extended target using the same coast-5d source capture; unsupported count/transport outcomes remain visible."
+            )
+            rows.append(row)
     return rows

@@ -86,7 +86,7 @@ quality bound exceeds attainable utility, including the zero-tolerance artifact.
 ## Frozen fixture contract
 
 Each corridor directory contains `manifest.json` and hashed `data.json`. Tight
-budget reuses the medium directory. `Manifest.model_json_schema()` describes
+budget reuses the medium directory. `RealManifest.model_json_schema()` describes real v2
 manifest fields; `Fixture` is the authoritative byte/evidence validator.
 
 The manifest records schema/fixture versions, evidence type and coverage,
@@ -169,18 +169,24 @@ columns show raw solver counts, assessed pass rates, hotel excess, utilization
 and over-target fraction. Missing measurements have empty states. Solver repeats
 on a fixture measure search variation, not traveler-satisfaction samples.
 
-## Remaining data gates
+## Evaluation v2 completion and current gates
 
-No real 100-place corridor capture was supplied for this implementation. The last
-catalog checkpoint reported 12 Boulder places locally and no Neon activation;
-that is insufficient evidence for these corridor suites. The catalog owner must
-supply a versioned usable generation, attribution/rights evidence, arrival
-eligibility and sufficient unique corridor coverage, followed by existing
-captured ratings, exact road responses, hotel/occupancy dates and timezone
-lookups. Do not pad with synthetic places or alter catalog query/ingestion guards.
+The remaining independent plan work is implemented. See
+[the exact catalog-owner handoff](route-evaluation-v2-handoff.md) for the strict
+v2 capture/access/rights schemas and no-call preparation commands. Real fixtures
+must use v2; v1 remains usable only for explicitly synthetic unit contracts.
 
-The harness can record the expected 30 blocked cells now. Real calculated
-comparisons and primary figures remain pending. Paid capture/live acceptance
-requires its own approved provider/count/spending scope after catalog readiness.
-No main merge, deployment, production database, credentials or source import is
-part of this change.
+The evaluator now enforces completed access reviews and validity horizons,
+strict capture identity/context, per-persona hotel scores, stable-ID mapping for
+repeated original names, successful-output conditioning, figure provenance,
+paired parameter-response/bound exports, workload screening and 7/10-day coast
+diagnostics. It records visits, overnight downtime, CPU/peak RSS, physical RAM
+where supported and separate warmups. Lab history includes actual page-scoped
+comparison charts without adding replay access or paid calls.
+
+The current checkpoint reports 400 local catalog imports with 331 access reviews
+pending. No expansion data or completed real 100-place capture was supplied to
+this checkout. Imported count does not establish eligible corridor coverage.
+Real captures/campaigns/primary figures and separately approved live acceptance
+remain data/authorization gates. No main merge, production activation,
+credential/database change or paid provider capture is included.

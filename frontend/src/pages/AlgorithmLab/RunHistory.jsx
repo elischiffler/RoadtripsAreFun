@@ -1,4 +1,5 @@
 import RunError from './RunError';
+import ComparisonCharts from './ComparisonCharts';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { getLabRuns, labError } from '../../services/algorithmLab';
@@ -59,6 +60,7 @@ export default function RunHistory({ revision }) {
               ({data.page_summary.completion_assessed} finished runs assessed).
             </p>
           )}
+          <ComparisonCharts rows={data.runs} />
           <div className="lab-table-scroll">
             <table>
               <thead>

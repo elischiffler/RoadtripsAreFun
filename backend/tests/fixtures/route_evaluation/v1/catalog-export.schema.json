@@ -1,0 +1,53 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "enum": [
+        1
+      ],
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "evidence_type": {
+      "enum": [
+        "catalog_owner_export",
+        "synthetic_unit_only"
+      ],
+      "title": "Evidence Type",
+      "type": "string"
+    },
+    "catalog_generation": {
+      "minLength": 1,
+      "title": "Catalog Generation",
+      "type": "string"
+    },
+    "catalog_release": {
+      "minLength": 1,
+      "title": "Catalog Release",
+      "type": "string"
+    },
+    "attribution": {
+      "minLength": 1,
+      "title": "Attribution",
+      "type": "string"
+    },
+    "records": {
+      "items": {
+        "type": "object"
+      },
+      "title": "Records",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "evidence_type",
+    "catalog_generation",
+    "catalog_release",
+    "attribution",
+    "records"
+  ],
+  "title": "CatalogExport",
+  "type": "object"
+}
