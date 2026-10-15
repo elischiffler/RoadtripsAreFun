@@ -1,4 +1,4 @@
-# Licensed Kaggle expansion: 557-place review candidate
+# Licensed Kaggle expansion: 557-place source-calendar review candidate
 
 This proposal adds **57 distinct destinations** to the preserved 500: **46
 farmers markets, nine entertainment venues, one museum and one roadside stop**.
@@ -106,10 +106,54 @@ acquisition and review are required to refresh evidence; editing dates is invali
 
 Markets are daytime **food destinations**, not restaurant `food` query-group
 entries. They cannot enter evening restaurant results. Three new entertainment
-venues support evening discovery. Published hours/restrictions remain source
-facts; scheduler intervals, prices, parking availability, future operation and
-market-day vehicle entry remain explicit unknowns. Actual Windows execution is
+venues support optional evening discovery; unverified suggestions remain unscheduled.
+Published source calendars now constrain automatic timed visits. Prices, ticket
+inventory, reservations, parking availability, future operation and market-day
+vehicle entry remain explicit unknowns. Actual Windows execution is
 unperformed; filenames and producers use portable paths, UTF-8 and LF.
+
+## Hard source-calendar constraints
+
+The review correction adds a separate CP-SAT temporal model with hard opening
+windows and full **7,200-second** policy dwell. It permits waiting for a published
+opening within the travel day's cutoff. A conflict removes that candidate and
+reselects from the same bounded, road-checked pool. Actual final Mapbox legs run
+the same hard calendar check; a later arrival triggers bounded reselection and
+rerouting. There is no hours penalty that can permit a closed visit, nor a blanket
+market exclusion. This remains staged selection/scheduling, not joint global
+optimization of hotels, travel days and every alternative attraction order.
+
+Weekdays, intersected native/canonical/operator seasons, exact dated overrides,
+annual closures, overnight windows and local IANA/DST clocks participate. Verified
+fixed starts constrain allowed starts **inside** a containing published window;
+a start alone cannot establish the visit's end. Each solved window retains its
+source receipts. The two-hour duration is existing planner policy, not a source
+claim or a booking. Saved and date-overridden itineraries revalidate, retain the
+window proof and display any wait. Timed stops require an explicit arrival IANA
+zone; inheriting the origin zone is insufficient.
+
+**41 markets and five parks have usable calendars; five markets and six parks
+remain explicit unknowns.** The five park calendars cover Belmont, Dezerland,
+Dinosaur World Florida, Old Town and Gatorland. South Berkeley, Cambria, Fortuna,
+Lancaster and Weaverville have unresolved clock forms/qualifiers. NASCAR's dated
+calendar images, Oaks' exact season/holiday rules, Precious Moments' component
+admission cutoff, and clocks for Confusion Hill, Fun Spot and Kemah remain unknown.
+All 57 rows remain in the raw catalog, but these 11 records cannot become automatic
+timed stops. Existing food/culture/nightlife candidates also require usable
+source calendars: **163** original records currently lack one and are withheld
+from new automatic selection. The other **337** ordinary outdoor legacy records
+retain explicitly unknown opening hours and are never labeled verified-open.
+All original 500 normalized records and saved trips remain preserved.
+
+Authentic Burlington source facts require Saturday **09:00–14:00**, intersected
+with native June–October and operator 2026 dates. Thursday October 15 at 10:00,
+Saturday October 17 at 16:00, and a Saturday 13:00 two-hour visit are rejected.
+Saturday 10:00 is accepted; an 08:00 arrival waits until 09:00. These results pass
+both focused routing tests and typed discovery from actual PostgreSQL. Broader
+regressions cover full dwell, unknowns, closure/season precedence, midnight,
+multiday hotel restart, changed local dates/timezones, DST, omitted saved policy,
+fixed event starts and final actual-leg reselection. See the
+[calendar proof receipt](evidence/catalog-source-calendars-20261015.json).
 
 ## Coverage and unresolved sources
 
@@ -154,8 +198,9 @@ data or production operational metadata are included in this PR.
 
 ## Actual PostgreSQL discovery and release checks
 
-These are actual five-mile repository queries along the same retained real
-driving geometries used for the 500-place comparison:
+These are actual five-mile **raw catalog** repository queries along the same
+retained real driving geometries used for the 500-place comparison. They are
+not counts of schedule-feasible stops; calendar gates apply afterward:
 
 | Corridor | 500 daytime hits | 557 daytime hits |
 | --- | ---: | ---: |
@@ -171,17 +216,20 @@ driving geometries used for the 500-place comparison:
 | Juneau local roads | 4 | 4 |
 
 PostgreSQL 18.6 ran **2,166 bounded discovery queries per generation**. Local
-expanded execution p95 was **0.74 ms**, compared with **0.90 ms** for 500; timings
+expanded execution p95 was **0.79 ms**, compared with **0.78 ms** for 500; timings
 include ordinary run variance and do not measure Neon/network latency. Full
 query plans and row/index footprint are retained privately. Six typed probes
 cover both source namespaces, CA/VT, museum/roadside/entertainment and evening
-discovery. CT/DE probes explicitly remain absent. Provenance survives, scheduler
-hours remain unknown, and markets are excluded from evening restaurant results.
+discovery. CT/DE probes explicitly remain absent. Provenance and normalized
+calendars survive, and markets are excluded from evening restaurant results.
+Among added raw hits, nine LA–San Diego records and eight SF–LA records have
+usable calendars; their chosen visit dates/times still require a feasible solve.
 
-Backend validation passes **1,256 tests / 87.29% coverage**, including six opt-in
-real PostgreSQL cases. Market, park, proximity and release-SQL suites pass
-59, 43, seven and five meaningful cases. Frontend format/lint, **319 tests /
-90.23% line coverage**, and build pass; the existing large-bundle warning remains.
+Backend validation passes **1,370 tests / 87.75% coverage**, including six opt-in
+real PostgreSQL cases. Calendar-focused routing regressions pass **30** cases;
+market/park source-calendar and adapter suites pass **122 / 64** cases.
+Proximity and release-SQL suites retain seven and five meaningful cases.
+Frontend format/lint, **319 tests / 90.23% line coverage**, and build pass; the existing large-bundle warning remains.
 Exact-head remote checks and final portable replay have separate receipts.
 
 Actual guarded staging, idempotence, activation, rollback and reactivation pass
@@ -202,7 +250,7 @@ Replay the immutable 500 source bundle, rebuild the two new source children with
 `catalog_expansion_release.py` with the preserved 500 recipe. Producers refuse
 existing outputs. `completion.json` appears only after source and preservation
 checks. The canonical 557-row serialization SHA-256 is
-`a96cb3e5a12020778d744c023d12f8c111c64162c31e4a9e4006b9dcee901c60`.
+`f09f0a85a5dbf0cf586c637ffeb99b1472a2098e75127fdc8ee7fb1b4ccf0ce2`.
 
 `catalog_expansion_discovery.py` accepts only a named disposable loopback PG18
 database. `catalog_release_sql.py` compiles inert guarded staging and separate
@@ -210,23 +258,24 @@ activation/rollback transactions for authorized execution. They serialize catalo
 mutation, reject unexpected generations/content, retain storage guards and
 preserve all prior rows. Cutover/rollback changes only the active pointer.
 
-The private version 1 source/review ZIP is **45,663,274 bytes**, SHA-256
-`a580bf9449b5f37c8216e88035d05471d6b936579fd87c7a038bd460668d8176`.
-Its code snapshot is `a2e7048ca623bba7e262d357e977f675275a0f6a`; subsequent
-commits update documentation/evidence only. A fresh authorized Library download
-matches those exact bytes. Fresh ZIP extraction verifies **823 inventoried files**
-and replays all **557** rows with network/database connections forbidden. The
-relocated recipe uses **91,650,476 bytes**, below the unchanged 100 MiB guard.
-See the [portable replay receipt](evidence/catalog-expansion-kaggle-portable-replay.json).
+The private version 2 source/review bundle supersedes the calendar-blocked
+version 1. Its immutable implementation snapshot is
+`c6edfc4ba79b180a7b7aba79b53c45604eeaa428`; later commits update documentation
+and evidence only. The [portable replay receipt](evidence/catalog-expansion-kaggle-portable-replay.json)
+records the **46,809,195-byte** ZIP, SHA-256
+`3974cfbf809051fd1351391b2e2c129ed9fe12d5c9f9d465e545fcf04d6842d1`,
+fresh authorized Library download and **869-file** Windows-safe inventory. Fresh
+extraction replays all 557 rows with network/database connections forbidden; the
+relocated recipe uses **91,646,759 bytes**, within the unchanged guard.
+Actual Windows execution is pending.
 
-The exact implementation also passes the network-disabled backend container
-(**1,250 tests / 86.66% coverage**, six opt-in PG cases skipped), both running
-container smoke tests and actual served license/OSM-evidence byte checks. The
-full disposable CRUD/ownership, recreate, outage/readiness and backup/exact-restore
-lifecycle passes, including populated-target refusal. Source and restore volumes
-remain preserved. A local disk-space initialization failure was resolved by
-reclaiming rebuildable cache before the successful full rerun. Standard Docker
-builds and exact-head checks remain in remote CI.
+The exact implementation passes all four remote CI workflows, including standard
+Docker builds and disposable PostgreSQL recovery. Its network-disabled backend
+container passes **1,364 tests / 87.15% coverage** with six opt-in PG cases skipped.
+Local running-container and full CRUD/recovery gates have separate private receipts.
+Initial local image-copy disk exhaustion was resolved by reclaiming unused build
+cache and superseded task images; all database volumes and source artifacts remain
+preserved. No production write was used to pass a local gate.
 
 Independent parent review is required before merge or activation. Then verify
 current recovery freshness and exact restored backup evidence under existing

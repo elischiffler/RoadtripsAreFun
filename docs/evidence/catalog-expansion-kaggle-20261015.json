@@ -119,14 +119,14 @@
   },
   "preserved_rows_and_provenance": 500,
   "additions": 57,
-  "normalized_rows_sha256": "a96cb3e5a12020778d744c023d12f8c111c64162c31e4a9e4006b9dcee901c60",
+  "normalized_rows_sha256": "f09f0a85a5dbf0cf586c637ffeb99b1472a2098e75127fdc8ee7fb1b4ccf0ce2",
   "baseline_normalized_rows_sha256": "804b0854158423d44917e7ed27e2ea9b00ce21ec4048f8520ec7cc158678a896",
   "max_rows": 20000,
   "max_bytes": 104857600,
   "database_or_network_calls": false,
   "new_pairs_within_250_metres": 1,
-  "checked_at": "2026-10-15T18:37:14.506022+00:00",
-  "status": "independent review candidate; no production mutation",
+  "checked_at": "2026-10-15T19:28:59.314544+00:00",
+  "status": "source-calendar correction; independent re-review pending; no production mutation",
   "postgres_version_num": 180006,
   "discovery": {
     "short-day": {
@@ -194,17 +194,17 @@
     "baseline_500": {
       "query_count": 2166,
       "execute_ms": {
-        "median": 0.6327444998532883,
-        "p95": 0.9024930000123277,
-        "max": 2.7611490004346706
+        "median": 0.5618760001198098,
+        "p95": 0.7848260001992458,
+        "max": 4.037812000206031
       }
     },
     "expanded": {
       "query_count": 2166,
       "execute_ms": {
-        "median": 0.5511550000392162,
-        "p95": 0.7415459999720042,
-        "max": 2.6153359999625536
+        "median": 0.5523619997802598,
+        "p95": 0.7867730000725714,
+        "max": 3.6387410000315867
       }
     }
   },
@@ -268,18 +268,19 @@
     "activation_fingerprint": "P0001"
   },
   "local_two_generation_footprint": {
-    "catalog_bytes": 3776512,
+    "catalog_bytes": 3866624,
     "index_bytes": 466944,
-    "mean_expanded_row_bytes": 2685
+    "mean_expanded_row_bytes": 2751
   },
   "backend": {
-    "tests_passed": 1256,
-    "coverage_percent": 87.29,
+    "tests_passed": 1370,
+    "coverage_percent": 87.75,
     "real_postgres_opt_in_cases": 6,
-    "market_suite": 59,
-    "park_suite": 43,
+    "market_suite": 122,
+    "park_suite": 64,
     "proximity_suite": 7,
-    "release_sql_suite": 5
+    "release_sql_suite": 5,
+    "calendar_routing_suite": 30
   },
   "frontend": {
     "tests_passed": 319,
@@ -292,14 +293,27 @@
     "prior_unpublished_619_candidate": "superseded; never activated"
   },
   "production_changes": false,
-  "limitations": "Nearby discovery along real geometry; no detour, solver, itinerary, live-hours or user-route success is implied. Browser saved-trip verification remains pending.",
-  "implementation_commit": "a2e7048ca623bba7e262d357e977f675275a0f6a",
+  "limitations": "Raw nearby counts do not imply schedule-feasible stops or live itinerary success. Source-grounded controlled CP-SAT timing has a separate calendar receipt. Exact user failing route unknown; browser saved-trip verification pending.",
+  "implementation_commit": "c6edfc4ba79b180a7b7aba79b53c45604eeaa428",
   "network_disabled_backend_container": {
-    "passed": 1250,
-    "skipped_opt_in_postgres_cases": 6,
-    "coverage_percent": 86.66
+    "passed": 1364,
+    "skipped_postgres_cases": 6,
+    "coverage_percent": 87.15
   },
   "exact_implementation_postgres_crud_recreate_outage_ready_dump_restore_populated_target_refusal": true,
   "api_web_container_smoke_tests_passed": 2,
-  "source_portable_replay": "catalog-expansion-kaggle-portable-replay.json"
+  "source_portable_replay": "catalog-expansion-kaggle-portable-replay.json",
+  "new_source_calendars": {
+    "supported": 46,
+    "unknown": 11,
+    "markets_supported": 41,
+    "markets_unknown": 5,
+    "parks_supported": 5,
+    "parks_unknown": 6,
+    "full_dwell_seconds": 7200,
+    "fixed_starts_require_containing_window": true,
+    "unknown_timed_baseline_records_withheld_from_automatic_selection": 163,
+    "ordinary_outdoor_baseline_records_with_unknown_hours": 337
+  },
+  "calendar_receipt": "catalog-source-calendars-20261015.json"
 }

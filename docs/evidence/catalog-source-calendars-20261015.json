@@ -1,0 +1,173 @@
+{
+  "implementation_commit": "c6edfc4ba79b180a7b7aba79b53c45604eeaa428",
+  "source_calendar_schema": "roadtrips-source-visit-calendar/1",
+  "normalized_rows_sha256": "f09f0a85a5dbf0cf586c637ffeb99b1472a2098e75127fdc8ee7fb1b4ccf0ce2",
+  "preserved_original_rows_and_provenance": 500,
+  "new_calendar_eligibility": {
+    "supported": 46,
+    "unknown": 11
+  },
+  "supported_markets": 41,
+  "unknown_markets": 5,
+  "supported_parks": 5,
+  "unknown_parks": 6,
+  "full_dwell_seconds": 7200,
+  "dwell_source": "existing planner policy; not operator duration",
+  "constraint": "Hard CP-SAT source opening window containment; bounded waiting/reselection; final actual-leg and saved-itinerary revalidation",
+  "fixed_starts": "Hard allowed start instants inside published containing windows; fixed start alone is insufficient",
+  "booking_and_ticket_availability": "unknown",
+  "postgres_source_calendar_probes": [
+    {
+      "provider_id": "usda-market:301158",
+      "arrival": "2026-10-15T10:00:00-04:00",
+      "accepted": false,
+      "reason": "no published window contains the full visit"
+    },
+    {
+      "provider_id": "usda-market:301158",
+      "arrival": "2026-10-17T16:00:00-04:00",
+      "accepted": false,
+      "reason": "no published window contains the full visit"
+    },
+    {
+      "provider_id": "usda-market:301158",
+      "arrival": "2026-10-17T13:00:00-04:00",
+      "accepted": false,
+      "reason": "no published window contains the full visit"
+    },
+    {
+      "provider_id": "usda-market:301158",
+      "arrival": "2026-10-17T10:00:00-04:00",
+      "accepted": true,
+      "visit_start": "2026-10-17T10:00:00-04:00",
+      "availability": {
+        "status": "within_published_window",
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "timezone": "America/New_York",
+        "opens": "2026-10-17T09:00:00-04:00",
+        "closes": "2026-10-17T14:00:00-04:00",
+        "visit_start": "2026-10-17T10:00:00-04:00",
+        "visit_end": "2026-10-17T12:00:00-04:00",
+        "wait_seconds": 0.0,
+        "dwell_seconds": 7200,
+        "dwell_source": "planner_policy",
+        "ticket_availability": "unknown",
+        "source_receipts": [
+          {
+            "feed": "kaggle_feed",
+            "fields": {
+              "season": "June to October"
+            },
+            "record_id": "301158",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1"
+          },
+          {
+            "feed": "canonical_feed",
+            "fields": {
+              "season": "June to October"
+            },
+            "record_id": "301158",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514"
+          },
+          {
+            "feed": "official_visitor_facts",
+            "fields": {
+              "end": "2026-10-31",
+              "days": "Every Saturday",
+              "hours": "9:00 am - 2:00pm",
+              "start": "2026-05-09",
+              "months": null,
+              "end_date": null,
+              "end_time": null,
+              "start_date": null,
+              "start_time": null,
+              "weather_qualification": "Rain or shine."
+            },
+            "pdf_page": null,
+            "row_index": null,
+            "checked_at": "2026-10-15T17:54:12.556679+00:00",
+            "source_url": "https://burlingtonfarmersmarket.org/",
+            "table_index": null,
+            "snapshot_sha256": "3d9d2950077b65d6e7f3374a1f6a2ec34c62d7c8c695aed6e490a23eae949bae"
+          }
+        ]
+      }
+    },
+    {
+      "provider_id": "usda-market:301158",
+      "arrival": "2026-10-17T08:00:00-04:00",
+      "accepted": true,
+      "visit_start": "2026-10-17T09:00:00-04:00",
+      "availability": {
+        "status": "within_published_window",
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "timezone": "America/New_York",
+        "opens": "2026-10-17T09:00:00-04:00",
+        "closes": "2026-10-17T14:00:00-04:00",
+        "visit_start": "2026-10-17T09:00:00-04:00",
+        "visit_end": "2026-10-17T11:00:00-04:00",
+        "wait_seconds": 3600.0,
+        "dwell_seconds": 7200,
+        "dwell_source": "planner_policy",
+        "ticket_availability": "unknown",
+        "source_receipts": [
+          {
+            "feed": "kaggle_feed",
+            "fields": {
+              "season": "June to October"
+            },
+            "record_id": "301158",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1"
+          },
+          {
+            "feed": "canonical_feed",
+            "fields": {
+              "season": "June to October"
+            },
+            "record_id": "301158",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514"
+          },
+          {
+            "feed": "official_visitor_facts",
+            "fields": {
+              "end": "2026-10-31",
+              "days": "Every Saturday",
+              "hours": "9:00 am - 2:00pm",
+              "start": "2026-05-09",
+              "months": null,
+              "end_date": null,
+              "end_time": null,
+              "start_date": null,
+              "start_time": null,
+              "weather_qualification": "Rain or shine."
+            },
+            "pdf_page": null,
+            "row_index": null,
+            "checked_at": "2026-10-15T17:54:12.556679+00:00",
+            "source_url": "https://burlingtonfarmersmarket.org/",
+            "table_index": null,
+            "snapshot_sha256": "3d9d2950077b65d6e7f3374a1f6a2ec34c62d7c8c695aed6e490a23eae949bae"
+          }
+        ]
+      }
+    }
+  ],
+  "probe_context": "Controlled local-date/time contexts in America/New_York, actual PostgreSQL typed discovery and CP-SAT temporal solve; no live road or ticket availability claim.",
+  "focused_routing_tests_passed": 30,
+  "backend_tests_passed": 1370,
+  "backend_coverage_percent": 87.75,
+  "source_suites": {
+    "markets": 122,
+    "parks": 64
+  },
+  "production_changes": false,
+  "limitations": "Controlled source-grounded timing and disposable real PostgreSQL proofs; no live itinerary success, exact user failing route, browser saved-trip or ticket inventory claim. Eleven raw new catalog records and 163 baseline food/culture/nightlife records lack usable calendars and are withheld automatically; 337 ordinary outdoor baseline records retain unknown hours."
+}
