@@ -87,6 +87,14 @@ NOTES = {
 }
 
 
+def portable_receipt_path(source_id):
+    """Keep public IDs intact while giving their files portable leaf names."""
+    match = re.fullmatch(r"nps-public:([a-z]{4}):visitor-center", source_id)
+    if not match:
+        raise ValueError("unknown nature driving identity")
+    return f"driving/{match[1]}.json"
+
+
 def prepare(path, manifest, *, max_rows, max_bytes):
     if (
         manifest.get("source_url") != SOURCE_URL
@@ -130,6 +138,22 @@ def prepare(path, manifest, *, max_rows, max_bytes):
     if not isinstance(driving, list) or len(driving) > 500:
         raise ValueError("nature driving evidence ceiling")
     size = len(raw) + len(inventory_raw) + len(driving_raw)
+    driving_provenance = bundle["driving"]
+    if "driving_original" in bundle:
+        # Retain acquisition bytes/SHA in row provenance. The active index is
+        # allowed to change only receipt filenames, never routing facts.
+        original_raw = roadside.retained(bundle["driving_original"])
+        original = json.loads(original_raw)
+        if not isinstance(original, list) or len(original) > 500:
+            raise ValueError("original nature driving evidence ceiling")
+        expected = [
+            {**check, "response_path": portable_receipt_path(check["source_id"])}
+            for check in original
+        ]
+        if driving != expected:
+            raise ValueError("portable driving index changes acquisition facts")
+        size += len(original_raw)
+        driving_provenance = bundle["driving_original"]
     rows, rejects, regions, categories, native_ids = [], Counter(), Counter(), Counter(), set()
     for code, selection in selections.items():
         unit = units.get(code, {})
@@ -239,7 +263,7 @@ def prepare(path, manifest, *, max_rows, max_bytes):
                 "profile": PROFILE,
                 "primary_category": category,
                 "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
-                "driving_evidence_sha256": bundle["driving"]["sha256"],
+                "driving_evidence_sha256": driving_provenance["sha256"],
                 "driving_response_sha256": check["response_sha256"],
                 "driving_snap_distance_m": distance,
                 "driving_road": check.get("road_name", ""),

@@ -118,6 +118,11 @@ def build(artifacts, review_path, baseline_directory, output):
                 "path": str(artifacts / "driving-reviewed.json"),
             },
         }
+        if "driving_original" in review:
+            bundle["driving_original"] = {
+                **review["driving_original"],
+                "path": str(artifacts / "driving-original.json"),
+            }
         raw = (json.dumps(bundle, indent=2) + "\n").encode()
         license_path = (
             ROOT / "frontend/public/licenses/LicenseRef-US-Government-Work.txt"

@@ -109,9 +109,10 @@ native facility reuse, name/state/distance duplicates, raw source evidence and
 every expected normalized row/provenance before publishing any final output.
 Existing outputs are refused; any later child failure publishes none.
 
-Private source archive: `roadtrips-nature-29-source-20261015.zip`, **992,613 bytes**,
-SHA-256 `671660a33f2c5584c7886c7b4947328f76de4811f524ed8baa10b93fd81de1dd`.
-Its 123 files include all 75 original snapshots, 31 raw driving responses,
+Private source archive **version 1**: `roadtrips-nature-29-source-20261015.zip`,
+**995,397 bytes**, SHA-256
+`da9f66bc7345a9bf6e1e9f2844c60818b6e25eeec03dd02d7e9fbf71d6a98a2c`.
+Its 124 files include all 75 original snapshots, 31 raw driving responses,
 unaltered acquisition metadata, the reviewed portable driving summary, original
 inventory, policy evidence, baseline review facts, exclusions and `rebuild.py`.
 The ZIP is retained in the private Library; exact private handles go to the
@@ -124,24 +125,46 @@ python -X utf8 <source-folder>/rebuild.py \
   --repo <follow-on-checkout> --output <new-directory>
 ```
 
+Use the PR #44 portability-fix checkout with this version. Independent Windows
+review found that version 0's colon-bearing receipt filenames were renamed
+during extraction while their active references retained colons. Version 1 uses
+`driving/<unit-code>.json` filenames and consistent active references in
+`driving-reviewed.json`. Public source IDs retain their original colons.
+
+The original acquisition index remains byte-identical in `driving-original.json`.
+The importer verifies that the active index changes only `response_path` to the
+deterministic portable name; coordinates, dates, response hashes and other facts
+must match exactly. Row provenance continues to cite the original index SHA,
+`449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7`,
+and each unchanged raw response SHA. All 243 normalized rows, including their
+provenance, remain byte-for-byte identical to version 0. Historical acquisition
+logs describe original paths; active receipt lookup uses the portable index.
+
 For complete re-admission, first reproduce the frozen portable 214 package and
 add `--baseline-bundle <portable214-result>/reviewed-214.json`. This flattens its
 14 original children plus the two new ones; nested mixed bundles are refused.
 The resulting complete recipe re-admits **243**, zero duplicates, under explicit
-500-row / **40 MiB** bounds. Measured aggregate evidence is **36,735,196 bytes**
-at the original paths and **36,742,752** after the tested archive relocation.
+500-row / **40 MiB** bounds. Version 0 measured **36,735,196 bytes** at its original
+paths and **36,742,752** after relocation. Version 1 measures **36,790,192 bytes**
+in the tested Windows-style extraction/replay, including the retained original
+index as well as the active index.
 Serialized recipe sizes and generation fingerprints legitimately depend on
 paths; all 243 row contents/provenance remain identical. All 75 archived snapshot
 hashes were independently rechecked after extraction.
 
 Actual Linux replay with spaces in the paths passes while network and database
-connections raise on use. Windows instructions use `-X utf8` and ordinary ZIP
-extraction, but actual Windows execution is not claimed. Evidence older than
+connections raise on use. Windows filename preflight detects 31 renamed paths
+in version 0 and none in version 1. Extraction using the Windows filename
+transformation preserves every version-1 path; all active references resolve
+to exact archive members, and all 31 raw response hashes remain unchanged.
+Windows instructions use `-X utf8` and ordinary ZIP extraction, but actual Windows
+execution and independent review clearance remain pending. Evidence older than
 30 days requires genuine new acquisition/review, not edited dates or hashes.
 
-Focused validation passes **246 catalog tests**, including the new profile's
+Focused validation passes **254 catalog tests**, including the new profile's
 parking/state/closure/point failures, changed raw receipts, exact byte budget,
 strict classifications, source/review tampering, atomic publication and prior
-adapter behavior. Ruff format/check and diff checks pass. Full application
+adapter behavior, Windows-safe filenames, path-only index derivation and original
+provenance preservation. Ruff format/check and diff checks pass. Full application
 workflows run automatically in the separate PR; they are not repeated locally.
 The complete recipe is a reviewable file deliverable, not activation authority.

@@ -12,8 +12,8 @@
     "retrieved_at": "2026-10-15T03:15:52.594842+00:00"
   },
   "driving": {
-    "path": "/workspace/catalog-nps-nature-20261015/driving-reviewed.json",
-    "sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+    "path": "/workspace/catalog-nps-nature-20261015/portable-v1/driving-reviewed.json",
+    "sha256": "43254719879f5213d1618751493cd6fa4f7d512365c858aa849e565f81057ce6",
     "retrieved_at": "2026-10-15T05:16:17.243641+00:00"
   },
   "batches": [
@@ -1827,5 +1827,10 @@
         }
       ]
     }
-  ]
+  ],
+  "driving_original": {
+    "path": "/workspace/catalog-nps-nature-20261015/portable-v1/driving-original.json",
+    "sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+    "retrieved_at": "2026-10-15T05:16:17.243641+00:00"
+  }
 }

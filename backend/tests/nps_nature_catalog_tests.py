@@ -377,3 +377,83 @@ def test_public_nature_29_matches_inspected_facilities_and_excludes_all_prior_un
             item["operation_evidence"]["url"]
             == f"https://www.nps.gov/{code}/structured_data_{code}.json"
         )
+
+
+def portable_bundle(tmp_path, monkeypatch, *, historical_colons=False):
+    path, manifest, b = bundle(tmp_path, monkeypatch)
+    old_checks = json.loads(Path(b["driving"]["path"]).read_text())
+    raw = tmp_path / "driving/exam.json"
+    if not historical_colons:
+        legacy = tmp_path / "legacy"
+        legacy.mkdir()
+        (legacy / "exam.json").write_bytes(raw.read_bytes())
+        old_checks[0]["response_path"] = "legacy/exam.json"
+        b["driving"]["sha256"] = write(Path(b["driving"]["path"]), old_checks)
+        manifest["sha256"] = write(path, b)
+        prior_rows, _ = prepare(path, manifest)
+    else:
+        # Historical metadata may contain colons; no colon-named file is ever
+        # created, so this regression fixture also runs on Windows itself.
+        old_checks[0]["response_path"] = "driving/nps-public:exam:visitor-center.json"
+        prior_rows = None
+    original = tmp_path / "driving-original.json"
+    old_sha = write(original, old_checks)
+    b["driving_original"] = {**b["driving"], "path": str(original), "sha256": old_sha}
+    active = [
+        {**c, "response_path": nps_nature.portable_receipt_path(c["source_id"])} for c in old_checks
+    ]
+    b["driving"]["sha256"] = write(Path(b["driving"]["path"]), active)
+    manifest["sha256"] = write(path, b)
+    return path, manifest, b, prior_rows
+
+
+def test_portable_filenames_preserve_original_rows_and_provenance(tmp_path, monkeypatch):
+    path, manifest, b, prior = portable_bundle(tmp_path, monkeypatch)
+    assert b["driving"]["sha256"] != b["driving_original"]["sha256"]
+    rows, report = prepare(path, manifest)
+    assert rows == prior and report["accepted"] == 1
+    assert rows[0]["provenance"][-1]["driving_evidence_sha256"] == b["driving_original"]["sha256"]
+    assert prepare(path, manifest, max_bytes=report["bytes"])[1]["accepted"] == 1
+    with pytest.raises(ValueError, match="byte ceiling"):
+        prepare(path, manifest, max_bytes=report["bytes"] - 1)
+
+
+def test_historical_colon_reference_uses_the_portable_active_index(tmp_path, monkeypatch):
+    path, manifest, b, _ = portable_bundle(tmp_path, monkeypatch, historical_colons=True)
+    rows, report = prepare(path, manifest)
+    assert report["accepted"] == 1
+    assert rows[0]["provenance"][-1]["driving_evidence_sha256"] == b["driving_original"]["sha256"]
+    assert not (tmp_path / "driving/nps-public:exam:visitor-center.json").exists()
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("response_path", "driving/nps-public:exam:visitor-center.json"),
+        ("response_path", "driving/other.json"),
+        ("source_coordinates", [0, 0]),
+        ("checked_at", "2020-01-01T00:00:00+00:00"),
+        ("response_sha256", "changed"),
+    ],
+)
+def test_portable_index_cannot_change_receipt_identity_or_routing_facts(
+    tmp_path, monkeypatch, field, value
+):
+    path, manifest, b, _ = portable_bundle(tmp_path, monkeypatch, historical_colons=True)
+    active = json.loads(Path(b["driving"]["path"]).read_text())
+    active[0][field] = value
+    b["driving"]["sha256"] = write(Path(b["driving"]["path"]), active)
+    manifest["sha256"] = write(path, b)
+    with pytest.raises(ValueError, match="changes acquisition facts"):
+        prepare(path, manifest)
+
+
+def test_public_portable_receipt_names_are_valid_windows_paths():
+    from pathlib import PureWindowsPath
+
+    for code in nps_nature.REVIEWED_FACILITIES:
+        name = nps_nature.portable_receipt_path(f"nps-public:{code}:visitor-center")
+        windows = PureWindowsPath(name)
+        assert not windows.drive and not windows.is_absolute()
+        assert not windows.is_reserved()
+        assert all(not any(c in part for c in '<>:"/\\|?*') for part in windows.parts)

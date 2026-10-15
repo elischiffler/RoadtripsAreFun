@@ -47,15 +47,27 @@
     "new_rows_with_rechecked_raw_receipts": 29,
     "maximum_driving_destination_distance_m": 71.54750845,
     "source_children": 2,
-    "aggregate_evidence_bytes": 2869766,
+    "aggregate_evidence_bytes": 2917998,
     "archive": {
       "name": "roadtrips-nature-29-source-20261015.zip",
-      "bytes": 992613,
-      "sha256": "671660a33f2c5584c7886c7b4947328f76de4811f524ed8baa10b93fd81de1dd",
-      "files": 123
+      "bytes": 995397,
+      "sha256": "da9f66bc7345a9bf6e1e9f2844c60818b6e25eeec03dd02d7e9fbf71d6a98a2c",
+      "files": 124,
+      "version": 1,
+      "windows_filename_preflight": true
     },
     "original_source_coordinates_preserved": true,
-    "source_modified_dates": "unknown; acquisition dates retained separately"
+    "source_modified_dates": "unknown; acquisition dates retained separately",
+    "archive_history": [
+      {
+        "name": "roadtrips-nature-29-source-20261015.zip",
+        "bytes": 992613,
+        "sha256": "671660a33f2c5584c7886c7b4947328f76de4811f524ed8baa10b93fd81de1dd",
+        "files": 123,
+        "version": 0,
+        "windows_portable": false
+      }
+    ]
   },
   "complete_union": {
     "accepted": 243,
@@ -142,7 +154,7 @@
       "nps-heritage": 115
     },
     "duplicates": 0,
-    "aggregate_evidence_bytes": 36735196,
+    "aggregate_evidence_bytes": 36790192,
     "max_rows": 500,
     "max_bytes": 41943040,
     "prior214_rows_and_provenance_identical": true
@@ -158,10 +170,11 @@
     "relocated_complete_evidence_bytes": 36742752
   },
   "validation": {
-    "focused_catalog_tests": 246,
+    "focused_catalog_tests": 254,
     "ruff_format_check": "pass",
     "ruff_check": "pass",
-    "full_application_suites": "automatic PR CI; not duplicated locally"
+    "full_application_suites": "automatic PR CI; not duplicated locally",
+    "independent_review": "pending; no clearance claimed"
   },
   "database_writes": false,
   "production_writes": false,
@@ -170,5 +183,31 @@
   "production_deployment": false,
   "paid_data": false,
   "new_credentials": false,
-  "security_changes": false
+  "security_changes": false,
+  "historical_source_replays": [
+    {
+      "version": 0,
+      "original_paths_bytes": 36735196,
+      "relocated_bytes": 36742752
+    }
+  ],
+  "portability_fix": {
+    "archive_version": 1,
+    "files": 124,
+    "original_v0_sha256": "671660a33f2c5584c7886c7b4947328f76de4811f524ed8baa10b93fd81de1dd",
+    "v0_paths_renamed_by_windows": 31,
+    "v1_paths_renamed_by_windows": 0,
+    "all31_raw_receipt_hashes_preserved": true,
+    "all_active_references_resolve_to_exact_zip_members": true,
+    "original_acquisition_index_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+    "actual_windows_execution": "not available; independent Windows review remains pending",
+    "archive_bytes": 995397,
+    "archive_sha256": "da9f66bc7345a9bf6e1e9f2844c60818b6e25eeec03dd02d7e9fbf71d6a98a2c",
+    "all75_snapshot_hashes_preserved": true,
+    "complete243_row_serialization_byte_identical": true,
+    "complete243_rows_sha256": "9a71a1c7980a52b025a94ce6a6f9b184ee2d9bf35e3baee55ef1a7c51f6ed602",
+    "prior214_rows_and_provenance_identical": true,
+    "v1_complete_evidence_bytes": 36790192,
+    "v1_new29_evidence_bytes": 2917998
+  }
 }
