@@ -1,0 +1,3266 @@
+{
+  "schema_version": "roadtrips-expansion-review/1",
+  "checked_at": "2026-10-15T03:22:46.593441+00:00",
+  "source_release": "nps-heritage-2026-10-15",
+  "baseline_generation": "cfdb55a51fe8abfe015fcbb12b8d23c7a09fa71945d95758bd00756ec502ada0",
+  "baseline_identity_sha256": "ac7924ab511a5302ef4609ee18dd5c1df1dd3fba013528f90d1b25dce4db9335",
+  "inventory": {
+    "url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+    "request_url": "https://carto.nps.gov/user/parktiles/api/v2/sql?q=SELECT+parkcode+AS+unit_code%2C+fullname%2C+designation%2C+states+FROM+parktiles.sd_parks+ORDER+BY+parkcode",
+    "path": "/workspace/catalog-expansion-20261015/inventory.json",
+    "sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+    "retrieved_at": "2026-10-15T03:15:52.594842+00:00"
+  },
+  "driving": {
+    "path": "/workspace/catalog-expansion-20261015/driving.json",
+    "sha256": "c0b50dbea508b0d3aefb7895f353106d4d405677eb8a290d53440d778bf1aec9",
+    "retrieved_at": "2026-10-15T03:22:46.593615+00:00"
+  },
+  "batches": [
+    {
+      "id": "heritage-01",
+      "scope": "Southwest highway loops",
+      "records": [
+        {
+          "source_id": "nps-heritage:azru",
+          "name": "Aztec Ruins National Monument \u2014 Aztec Ruins National Monument Visitor Center",
+          "latitude": 36.8345854962,
+          "longitude": -108.000256921,
+          "region": "NM",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "azru",
+          "selection": {
+            "visitor_center_id": 2377,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "azru",
+            "url": "https://www.nps.gov/azru/structured_data_azru.json",
+            "retrieved_at": "2026-10-15T03:15:52.954315+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/azru.json",
+            "sha256": "098a6c6343f3d9971220b599aad8e6bcba87c8bb5b94266cb1cc57bdcee5b841",
+            "bytes": 21771
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:cavo",
+          "name": "Capulin Volcano National Monument \u2014 Capulin Volcano Visitor Center",
+          "latitude": 36.77869847042733,
+          "longitude": -103.9800076906156,
+          "region": "NM",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "cavo",
+          "selection": {
+            "visitor_center_id": 5766,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "cavo",
+            "url": "https://www.nps.gov/cavo/structured_data_cavo.json",
+            "retrieved_at": "2026-10-15T03:15:53.791049+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/cavo.json",
+            "sha256": "5994ff880646228a2d3982067f03f878380d122bf6f2c09795c44ed0e2196e0a",
+            "bytes": 47850
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:chir",
+          "name": "Chiricahua National Monument \u2014 Chiricahua National Monument Visitor Center",
+          "latitude": 32.005433119638944,
+          "longitude": -109.35641828182577,
+          "region": "AZ",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "chir",
+          "selection": {
+            "visitor_center_id": 2445,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "chir",
+            "url": "https://www.nps.gov/chir/structured_data_chir.json",
+            "retrieved_at": "2026-10-15T03:15:54.019790+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/chir.json",
+            "sha256": "f7529df8f50c31d8aa86d86879ee312221fb57e9b02b7732b65dde5398c48699",
+            "bytes": 57256
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:colm",
+          "name": "Colorado National Monument \u2014 Saddlehorn Visitor Center",
+          "latitude": 39.1007588668,
+          "longitude": -108.7344360352,
+          "region": "CO",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "colm",
+          "selection": {
+            "visitor_center_id": 2437,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "colm",
+            "url": "https://www.nps.gov/colm/structured_data_colm.json",
+            "retrieved_at": "2026-10-15T03:15:54.241487+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/colm.json",
+            "sha256": "fb3a745fbc32110b4a1f7c21fdd76768f8c890544303e79e3ec8a45bd92a4cf4",
+            "bytes": 40445
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:coro",
+          "name": "Coronado National Memorial \u2014 Coronado National Memorial Visitor Center",
+          "latitude": 31.34625,
+          "longitude": -110.25373,
+          "region": "AZ",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "coro",
+          "selection": {
+            "visitor_center_id": 2442,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "coro",
+            "url": "https://www.nps.gov/coro/structured_data_coro.json",
+            "retrieved_at": "2026-10-15T03:15:54.318872+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/coro.json",
+            "sha256": "d090b5f7e45e94470ef9b40f45e511e0f2c1fe2887dac1d85ab37236065a671a",
+            "bytes": 18352
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:dino",
+          "name": "Dinosaur National Monument \u2014 Quarry Visitor Center - Utah",
+          "latitude": 40.4381752425,
+          "longitude": -109.30700298,
+          "region": "UT",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "dino",
+          "selection": {
+            "visitor_center_id": 25,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "dino",
+            "url": "https://www.nps.gov/dino/structured_data_dino.json",
+            "retrieved_at": "2026-10-15T03:15:54.498310+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/dino.json",
+            "sha256": "fb4ff3178e46139d49a26725326360873a0e31d6a90842f70c6daa3313512e72",
+            "bytes": 128433
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:elma",
+          "name": "El Malpais National Monument \u2014 El Malpais Visitor Center",
+          "latitude": 35.11864976250002,
+          "longitude": -107.8288490649312,
+          "region": "NM",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "elma",
+          "selection": {
+            "visitor_center_id": 1310,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "elma",
+            "url": "https://www.nps.gov/elma/structured_data_elma.json",
+            "retrieved_at": "2026-10-15T03:15:54.611289+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/elma.json",
+            "sha256": "b14021417cb950ad18ee2607f16e24bab4412567cd8fee2775c7d36e7a78721a",
+            "bytes": 18456
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:elmo",
+          "name": "El Morro National Monument \u2014 El Morro Visitor Center",
+          "latitude": 35.03839471454545,
+          "longitude": -108.34891673461374,
+          "region": "NM",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "elmo",
+          "selection": {
+            "visitor_center_id": 1312,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "elmo",
+            "url": "https://www.nps.gov/elmo/structured_data_elmo.json",
+            "retrieved_at": "2026-10-15T03:15:54.611703+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/elmo.json",
+            "sha256": "89f70067a8ae31c7f221f1d7f88afc70671e93f32e30cbda3b9a930f866f7534",
+            "bytes": 30575
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:flfo",
+          "name": "Florissant Fossil Beds National Monument \u2014 Florissant Fossil Beds Visitor Center",
+          "latitude": 38.9134931341,
+          "longitude": -105.285455055,
+          "region": "CO",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "flfo",
+          "selection": {
+            "visitor_center_id": 1199,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "flfo",
+            "url": "https://www.nps.gov/flfo/structured_data_flfo.json",
+            "retrieved_at": "2026-10-15T03:15:54.780120+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/flfo.json",
+            "sha256": "78155731aafae757ffdb25abb11932fb1d1869c815a70fe4bd9dbb7f06daa5bb",
+            "bytes": 42857
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:foun",
+          "name": "Fort Union National Monument \u2014 Fort Union National Monument Visitor Center",
+          "latitude": 35.905048666265714,
+          "longitude": -105.01152919527829,
+          "region": "NM",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "foun",
+          "selection": {
+            "visitor_center_id": 1222,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "foun",
+            "url": "https://www.nps.gov/foun/structured_data_foun.json",
+            "retrieved_at": "2026-10-15T03:15:55.295131+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/foun.json",
+            "sha256": "df8415ad978dd737c71d6dceffc4fa0814dd1ba0a01afedeb02df13e08f19cc9",
+            "bytes": 21471
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:gicl",
+          "name": "Gila Cliff Dwellings National Monument \u2014 Gila Visitor Center",
+          "latitude": 33.2238206084,
+          "longitude": -108.24170165,
+          "region": "NM",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "gicl",
+          "selection": {
+            "visitor_center_id": 2318,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "gicl",
+            "url": "https://www.nps.gov/gicl/structured_data_gicl.json",
+            "retrieved_at": "2026-10-15T03:15:55.763224+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/gicl.json",
+            "sha256": "317cadab18d73ee6246373f421c1b8b1598813b4e8e279e9a616c0ca3f39c3f4",
+            "bytes": 40932
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:moca",
+          "name": "Montezuma Castle National Monument \u2014 Montezuma Castle Visitor Center",
+          "latitude": 34.6117752905,
+          "longitude": -111.839796941,
+          "region": "AZ",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "moca",
+          "selection": {
+            "visitor_center_id": 154,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "moca",
+            "url": "https://www.nps.gov/moca/structured_data_moca.json",
+            "retrieved_at": "2026-10-15T03:15:57.481656+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/moca.json",
+            "sha256": "3224d6ed9a2d26687aa3fbc643ea14d1d7d2b6d32cecb598f87e9eb35a6e5c43",
+            "bytes": 28581
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:nabr",
+          "name": "Natural Bridges National Monument \u2014 Natural Bridges Visitor Center",
+          "latitude": 37.6093541764,
+          "longitude": -109.977023723,
+          "region": "UT",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "nabr",
+          "selection": {
+            "visitor_center_id": 2493,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "nabr",
+            "url": "https://www.nps.gov/nabr/structured_data_nabr.json",
+            "retrieved_at": "2026-10-15T03:15:57.617988+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/nabr.json",
+            "sha256": "4c2b635d302ab33c539d6154f255d59d3a98fb1efaef16ec073d162ebed1cf96",
+            "bytes": 31371
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:orpi",
+          "name": "Organ Pipe Cactus National Monument \u2014 Kris Eggle Visitor Center",
+          "latitude": 31.9548999477,
+          "longitude": -112.801219539,
+          "region": "AZ",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "orpi",
+          "selection": {
+            "visitor_center_id": 2312,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "orpi",
+            "url": "https://www.nps.gov/orpi/structured_data_orpi.json",
+            "retrieved_at": "2026-10-15T03:15:57.971504+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/orpi.json",
+            "sha256": "d149f45599fe48839e7262cc4c17761a5d7824c02f1e3e8c414368a7028d1e03",
+            "bytes": 56329
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:peco",
+          "name": "Pecos National Historical Park \u2014 E. E. Fogelson Visitor Center",
+          "latitude": 35.55040794557632,
+          "longitude": -105.68622101360268,
+          "region": "NM",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "peco",
+          "selection": {
+            "visitor_center_id": 1304,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "peco",
+            "url": "https://www.nps.gov/peco/structured_data_peco.json",
+            "retrieved_at": "2026-10-15T03:15:58.078550+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/peco.json",
+            "sha256": "87fe29bf6bc9cae73f4be24f460a011200d6f1ed34d222c9df90b1e271f7bc79",
+            "bytes": 21488
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:pisp",
+          "name": "Pipe Spring National Monument \u2014 Pipe Spring Visitor Center and Cultural Museum",
+          "latitude": 36.8625540285,
+          "longitude": -112.737358266,
+          "region": "AZ",
+          "categories": [
+            "culture",
+            "culture",
+            "daytime",
+            "historic_site",
+            "museum",
+            "visitor_center"
+          ],
+          "unit_code": "pisp",
+          "selection": {
+            "visitor_center_id": 2549,
+            "primary_category": "museums"
+          },
+          "operation_evidence": {
+            "code": "pisp",
+            "url": "https://www.nps.gov/pisp/structured_data_pisp.json",
+            "retrieved_at": "2026-10-15T03:15:58.197677+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/pisp.json",
+            "sha256": "0883f64232e24880aa3590a8f79a1ebc61790aa3d170627717052cc5650ae873",
+            "bytes": 21569
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:sapu",
+          "name": "Salinas Pueblo Missions National Monument \u2014 Ab\u00f3 Visitor Center",
+          "latitude": 34.45014103950183,
+          "longitude": -106.37448352194161,
+          "region": "NM",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "sapu",
+          "selection": {
+            "visitor_center_id": 2532,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "sapu",
+            "url": "https://www.nps.gov/sapu/structured_data_sapu.json",
+            "retrieved_at": "2026-10-15T03:15:58.740235+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/sapu.json",
+            "sha256": "39f1ec25426b1d1b43309fd7d2be54b0f6a1d164e5686429baa24406d61fcab3",
+            "bytes": 73448
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:sucr",
+          "name": "Sunset Crater Volcano National Monument \u2014 Sunset Crater Volcano Visitor Center",
+          "latitude": 35.3689807426,
+          "longitude": -111.543541135,
+          "region": "AZ",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "sucr",
+          "selection": {
+            "visitor_center_id": 1306,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "sucr",
+            "url": "https://www.nps.gov/sucr/structured_data_sucr.json",
+            "retrieved_at": "2026-10-15T03:15:59.039810+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/sucr.json",
+            "sha256": "1c6842df4503a8da043732309ca53d60f06348d291cf23e508d65a08bf98be4b",
+            "bytes": 44884
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:tont",
+          "name": "Tonto National Monument \u2014 Visitor Center",
+          "latitude": 33.64496622331095,
+          "longitude": -111.11299003038016,
+          "region": "AZ",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "tont",
+          "selection": {
+            "visitor_center_id": 2516,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "tont",
+            "url": "https://www.nps.gov/tont/structured_data_tont.json",
+            "retrieved_at": "2026-10-15T03:15:59.207337+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/tont.json",
+            "sha256": "894ade1b5d46ca4f01c6a19a907716f3429d4e52211724e627e9c0f1745f019e",
+            "bytes": 26425
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:tuma",
+          "name": "Tumac\u00e1cori National Historical Park \u2014 Tumac\u00e1cori Visitor Center and Museum",
+          "latitude": 31.5678351658,
+          "longitude": -111.05106242,
+          "region": "AZ",
+          "categories": [
+            "culture",
+            "culture",
+            "daytime",
+            "historic_site",
+            "museum",
+            "visitor_center"
+          ],
+          "unit_code": "tuma",
+          "selection": {
+            "visitor_center_id": 91,
+            "primary_category": "museums"
+          },
+          "operation_evidence": {
+            "code": "tuma",
+            "url": "https://www.nps.gov/tuma/structured_data_tuma.json",
+            "retrieved_at": "2026-10-15T03:15:59.331936+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/tuma.json",
+            "sha256": "22cf93a559acac42544f36d28b34a869785e6e67cc385645d1e883790a0d4d73",
+            "bytes": 19589
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:tuzi",
+          "name": "Tuzigoot National Monument \u2014 Tuzigoot Visitor Center",
+          "latitude": 34.7701859452,
+          "longitude": -112.026316416,
+          "region": "AZ",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "tuzi",
+          "selection": {
+            "visitor_center_id": 1309,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "tuzi",
+            "url": "https://www.nps.gov/tuzi/structured_data_tuzi.json",
+            "retrieved_at": "2026-10-15T03:15:59.395491+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/tuzi.json",
+            "sha256": "56b60b7c49b76f16c6f694e666537eadf9dbb4d75955115a9459893392cf4618",
+            "bytes": 22009
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:wupa",
+          "name": "Wupatki National Monument \u2014 Wupatki Visitor Center",
+          "latitude": 35.5200717464,
+          "longitude": -111.3713264465,
+          "region": "AZ",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "wupa",
+          "selection": {
+            "visitor_center_id": 1305,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "wupa",
+            "url": "https://www.nps.gov/wupa/structured_data_wupa.json",
+            "retrieved_at": "2026-10-15T03:15:59.865145+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/wupa.json",
+            "sha256": "3b518a10f372c8bcfc7685cac1185413813ea683ea3b878a98ab26c7b76740f9",
+            "bytes": 52264
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        }
+      ]
+    },
+    {
+      "id": "heritage-02",
+      "scope": "Pacific coast and Hawaii island roads",
+      "records": [
+        {
+          "source_id": "nps-heritage:cabr",
+          "name": "Cabrillo National Monument \u2014 Visitor Center and View Building",
+          "latitude": 32.6748319,
+          "longitude": -117.2394958,
+          "region": "CA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "cabr",
+          "selection": {
+            "visitor_center_id": 1234,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "cabr",
+            "url": "https://www.nps.gov/cabr/structured_data_cabr.json",
+            "retrieved_at": "2026-10-15T03:15:53.488206+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/cabr.json",
+            "sha256": "fd6a93c4e80d07cffa0987762b4cc84619dfe60c2e224fea63e5c4877bb0e7d0",
+            "bytes": 36409
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:fova",
+          "name": "Fort Vancouver National Historic Site \u2014 Fort Vancouver Visitor Center",
+          "latitude": 45.6262024521,
+          "longitude": -122.656637435,
+          "region": "WA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "fova",
+          "selection": {
+            "visitor_center_id": 1303,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "fova",
+            "url": "https://www.nps.gov/fova/structured_data_fova.json",
+            "retrieved_at": "2026-10-15T03:15:55.380099+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/fova.json",
+            "sha256": "ffd95794933cbf9b65366a1281f86863505253adf7d66693aa84e89a24cf374a",
+            "bytes": 27218
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:joda",
+          "name": "John Day Fossil Beds National Monument \u2014 Thomas Condon Visitor Center",
+          "latitude": 44.5528073661,
+          "longitude": -119.6463446618,
+          "region": "OR",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "joda",
+          "selection": {
+            "visitor_center_id": 2491,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "joda",
+            "url": "https://www.nps.gov/joda/structured_data_joda.json",
+            "retrieved_at": "2026-10-15T03:15:56.557133+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/joda.json",
+            "sha256": "3fa9619c5f465723263c35a2d24d43964bb1b41e5dcfb251947d99c2ad44948c",
+            "bytes": 24573
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:jomu",
+          "name": "John Muir National Historic Site \u2014 John Muir National Historic Site Visitor Center",
+          "latitude": 37.9921704989769,
+          "longitude": -122.13101258743364,
+          "region": "CA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "jomu",
+          "selection": {
+            "visitor_center_id": 94,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "jomu",
+            "url": "https://www.nps.gov/jomu/structured_data_jomu.json",
+            "retrieved_at": "2026-10-15T03:15:56.621653+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/jomu.json",
+            "sha256": "01f3d933f9a8c1ffba8b7ee279da6521c5fd8f6224bc91c6cfa55a401c85a580",
+            "bytes": 18395
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:kaho",
+          "name": "Kaloko-Honok\u014dhau National Historical Park \u2014 Hale Ho'okipa Visitor Center",
+          "latitude": 19.6787199896,
+          "longitude": -156.021742028,
+          "region": "HI",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "kaho",
+          "selection": {
+            "visitor_center_id": 2432,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "kaho",
+            "url": "https://www.nps.gov/kaho/structured_data_kaho.json",
+            "retrieved_at": "2026-10-15T03:15:56.622212+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/kaho.json",
+            "sha256": "e4a51331bc2d0890dd5b0a69952f3ebfea4d3525d664625117c1da8b1bcadb51",
+            "bytes": 13702
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:labe",
+          "name": "Lava Beds National Monument \u2014 Lava Beds Visitor Center",
+          "latitude": 41.71419836838832,
+          "longitude": -121.50986194610594,
+          "region": "CA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "labe",
+          "selection": {
+            "visitor_center_id": 2428,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "labe",
+            "url": "https://www.nps.gov/labe/structured_data_labe.json",
+            "retrieved_at": "2026-10-15T03:15:56.916537+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/labe.json",
+            "sha256": "07b7147e0dd848d9da091ef640ecabf78d99693faff2dce94be755c2ff9cde01",
+            "bytes": 36457
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:manz",
+          "name": "Manzanar National Historic Site \u2014 Manzanar Visitor Center",
+          "latitude": 36.7275135006,
+          "longitude": -118.148236746,
+          "region": "CA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "manz",
+          "selection": {
+            "visitor_center_id": 5754,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "manz",
+            "url": "https://www.nps.gov/manz/structured_data_manz.json",
+            "retrieved_at": "2026-10-15T03:15:57.167323+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/manz.json",
+            "sha256": "2b17930d6752f522a66a9035a83eae61547ea525b506f6a7648abfc7e727d5e8",
+            "bytes": 22841
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:puhe",
+          "name": "Pu\u02bbukohol\u0101 Heiau National Historic Site \u2014 Pu'ukohol\u0101 Heiau National Historic Site",
+          "latitude": 20.025568505713622,
+          "longitude": -155.82178265001664,
+          "region": "HI",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "puhe",
+          "selection": {
+            "visitor_center_id": 2594,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "puhe",
+            "url": "https://www.nps.gov/puhe/structured_data_puhe.json",
+            "retrieved_at": "2026-10-15T03:15:58.250534+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/puhe.json",
+            "sha256": "57be6f51b624731d58d544aaa066fe5f9a67bac4a5c59e50cc44fae6ac7baccb",
+            "bytes": 17968
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:puho",
+          "name": "Pu\u02bbuhonua O H\u014dnaunau National Historical Park \u2014 Pu\u02bbuhonua o H\u014dnaunau National Historical Park Visitor Center",
+          "latitude": 19.421490919767205,
+          "longitude": -155.91053366661072,
+          "region": "HI",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "puho",
+          "selection": {
+            "visitor_center_id": 2452,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "puho",
+            "url": "https://www.nps.gov/puho/structured_data_puho.json",
+            "retrieved_at": "2026-10-15T03:15:58.282051+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/puho.json",
+            "sha256": "f761fba826d255b6d9af81c8ece5281c5ea4337c0dc52e179a98a8b18f375ed7",
+            "bytes": 24913
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:rori",
+          "name": "Rosie the Riveter WWII Home Front National Historical Park \u2014 Rosie the Riveter Visitor Education Center",
+          "latitude": 37.9097205585,
+          "longitude": -122.357319832,
+          "region": "CA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "rori",
+          "selection": {
+            "visitor_center_id": 92,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "rori",
+            "url": "https://www.nps.gov/rori/structured_data_rori.json",
+            "retrieved_at": "2026-10-15T03:15:58.438220+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/rori.json",
+            "sha256": "809cdac8d847911e745e14eb5e2af6d5d0df73740cb34dc8a698114a78bed9a5",
+            "bytes": 19712
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        }
+      ]
+    },
+    {
+      "id": "heritage-03",
+      "scope": "Northern Plains and Missouri River connections",
+      "records": [
+        {
+          "source_id": "nps-heritage:deto",
+          "name": "Devils Tower National Monument \u2014 Devils Tower National Monument Visitor Center",
+          "latitude": 44.590497289000005,
+          "longitude": -104.72011681100003,
+          "region": "WY",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "deto",
+          "selection": {
+            "visitor_center_id": 2396,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "deto",
+            "url": "https://www.nps.gov/deto/structured_data_deto.json",
+            "retrieved_at": "2026-10-15T03:15:54.490070+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/deto.json",
+            "sha256": "96be16eb046c2abd5e4ff25cb51f3c02dd122a5f8afe47395a9fe153c008ab68",
+            "bytes": 47336
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:fobu",
+          "name": "Fossil Butte National Monument \u2014 Fossil Butte Visitor Center",
+          "latitude": 41.8365441313045,
+          "longitude": -110.77037356107894,
+          "region": "WY",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "fobu",
+          "selection": {
+            "visitor_center_id": 1191,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "fobu",
+            "url": "https://www.nps.gov/fobu/structured_data_fobu.json",
+            "retrieved_at": "2026-10-15T03:15:54.832203+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/fobu.json",
+            "sha256": "d2bffb813dab62e9ad2a5c0d8a6bc22daeb726e59178b16a32a5366fc1b1a103",
+            "bytes": 30537
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:fola",
+          "name": "Fort Laramie National Historic Site \u2014 Fort Laramie National Historic Site Visitor Center",
+          "latitude": 42.203687976672164,
+          "longitude": -104.55601867703916,
+          "region": "WY",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "fola",
+          "selection": {
+            "visitor_center_id": 2424,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "fola",
+            "url": "https://www.nps.gov/fola/structured_data_fola.json",
+            "retrieved_at": "2026-10-15T03:15:54.944142+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/fola.json",
+            "sha256": "3e464a0843f44be114ac992c550b9cb720571b418af201643f6b3278009e3c6b",
+            "bytes": 32511
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:fosc",
+          "name": "Fort Scott National Historic Site \u2014 Visitor Center",
+          "latitude": 37.843197,
+          "longitude": -94.705244,
+          "region": "KS",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "fosc",
+          "selection": {
+            "visitor_center_id": 2457,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "fosc",
+            "url": "https://www.nps.gov/fosc/structured_data_fosc.json",
+            "retrieved_at": "2026-10-15T03:15:55.159717+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/fosc.json",
+            "sha256": "9925e9fbdf4ad73da117547e8f8278ee74665ac050f3c505e0b0609a4d1f1ef7",
+            "bytes": 16354
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:grko",
+          "name": "Grant-Kohrs Ranch National Historic Site \u2014 Visitor Center at Grant-Kohrs Ranch",
+          "latitude": 46.4061345059,
+          "longitude": -112.736707174,
+          "region": "MT",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "grko",
+          "selection": {
+            "visitor_center_id": 2336,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "grko",
+            "url": "https://www.nps.gov/grko/structured_data_grko.json",
+            "retrieved_at": "2026-10-15T03:15:55.863501+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/grko.json",
+            "sha256": "f4580b6fc4c29531cf273e14fb3b197af4071b5fa9aee17e86d7b562030c614c",
+            "bytes": 20336
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:grpo",
+          "name": "Grand Portage National Monument \u2014 Heritage Center",
+          "latitude": 47.96068779984491,
+          "longitude": -89.68656720069367,
+          "region": "MN",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "grpo",
+          "selection": {
+            "visitor_center_id": 5810,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "grpo",
+            "url": "https://www.nps.gov/grpo/structured_data_grpo.json",
+            "retrieved_at": "2026-10-15T03:15:55.905775+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/grpo.json",
+            "sha256": "87b6349dc50d31e0d14532eec752871339f8e4f386b647971009c78bc947828d",
+            "bytes": 40888
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:heho",
+          "name": "Herbert Hoover National Historic Site \u2014 Visitor Center",
+          "latitude": 41.670864,
+          "longitude": -91.345702,
+          "region": "IA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "heho",
+          "selection": {
+            "visitor_center_id": 36,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "heho",
+            "url": "https://www.nps.gov/heho/structured_data_heho.json",
+            "retrieved_at": "2026-10-15T03:15:56.132573+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/heho.json",
+            "sha256": "9e56089ae413c44f5371f2429dd1ae6a2a769c3742d27e46de74c4bd525e315f",
+            "bytes": 25912
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:home",
+          "name": "Homestead National Historical Park \u2014 Heritage Center",
+          "latitude": 40.28573515168458,
+          "longitude": -96.82677324985298,
+          "region": "NE",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "home",
+          "selection": {
+            "visitor_center_id": 1225,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "home",
+            "url": "https://www.nps.gov/home/structured_data_home.json",
+            "retrieved_at": "2026-10-15T03:15:56.286337+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/home.json",
+            "sha256": "90e6c3f2a5c542204a4d0b12cf436ea4d36613a7edde87bb672dcb4414fcd6f3",
+            "bytes": 30760
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:jeca",
+          "name": "Jewel Cave National Monument \u2014 Jewel Cave National Monument - Visitor Center",
+          "latitude": 43.7298476222,
+          "longitude": -103.829500854,
+          "region": "SD",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "jeca",
+          "selection": {
+            "visitor_center_id": 5761,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "jeca",
+            "url": "https://www.nps.gov/jeca/structured_data_jeca.json",
+            "retrieved_at": "2026-10-15T03:15:56.499490+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/jeca.json",
+            "sha256": "9711023e89c18113b51a47b007ab74233fbc107392b8f1a3f7998ff1c92be002",
+            "bytes": 32322
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:knri",
+          "name": "Knife River Indian Villages National Historic Site \u2014 Knife River Indian Villages National Historic Site Visitor Center",
+          "latitude": 47.33150417300004,
+          "longitude": -101.38547069499998,
+          "region": "ND",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "knri",
+          "selection": {
+            "visitor_center_id": 2611,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "knri",
+            "url": "https://www.nps.gov/knri/structured_data_knri.json",
+            "retrieved_at": "2026-10-15T03:15:56.883646+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/knri.json",
+            "sha256": "e2b59d07c06476ced84912eeb2e8cac3034997495bbde9fe1fcc68777a286fa0",
+            "bytes": 18198
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:pipe",
+          "name": "Pipestone National Monument \u2014 Visitor Center",
+          "latitude": 44.013558,
+          "longitude": -96.325693,
+          "region": "MN",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "pipe",
+          "selection": {
+            "visitor_center_id": 5792,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "pipe",
+            "url": "https://www.nps.gov/pipe/structured_data_pipe.json",
+            "retrieved_at": "2026-10-15T03:15:58.168600+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/pipe.json",
+            "sha256": "c6d82c1d036e431ed5d718c118616ff023c4761170c217efd49fb2f552cc8040",
+            "bytes": 28786
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:scbl",
+          "name": "Scotts Bluff National Monument \u2014 Scotts Bluff National Monument Visitor Center",
+          "latitude": 41.8286895574,
+          "longitude": -103.707290552,
+          "region": "NE",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "scbl",
+          "selection": {
+            "visitor_center_id": 70,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "scbl",
+            "url": "https://www.nps.gov/scbl/structured_data_scbl.json",
+            "retrieved_at": "2026-10-15T03:15:58.793561+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/scbl.json",
+            "sha256": "d90c2cc29b21741d024a6bec10691a487e2edca2394abccf59cbfa8db3980a72",
+            "bytes": 32931
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:ulsg",
+          "name": "Ulysses S Grant National Historic Site \u2014 Ulysses S. Grant National Historic Site Visitor Center",
+          "latitude": 38.551002834,
+          "longitude": -90.3517518004,
+          "region": "MO",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "ulsg",
+          "selection": {
+            "visitor_center_id": 2429,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "ulsg",
+            "url": "https://www.nps.gov/ulsg/structured_data_ulsg.json",
+            "retrieved_at": "2026-10-15T03:15:59.396227+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/ulsg.json",
+            "sha256": "3a444930bc5c331c2b7da520da7f59b13f644c96d1b185d089951be7a210f529",
+            "bytes": 25163
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:wicr",
+          "name": "Wilson's Creek National Battlefield \u2014 Wilson's Creek Visitor Center & Museum",
+          "latitude": 37.11561758600004,
+          "longitude": -93.41972520499996,
+          "region": "MO",
+          "categories": [
+            "culture",
+            "culture",
+            "daytime",
+            "historic_site",
+            "museum",
+            "visitor_center"
+          ],
+          "unit_code": "wicr",
+          "selection": {
+            "visitor_center_id": 1276,
+            "primary_category": "museums"
+          },
+          "operation_evidence": {
+            "code": "wicr",
+            "url": "https://www.nps.gov/wicr/structured_data_wicr.json",
+            "retrieved_at": "2026-10-15T03:15:59.744465+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/wicr.json",
+            "sha256": "cbb2a09095cd8b6ab6b0f9bb9844e7bab909c2c810e6b1082cdae96d3f1f7942",
+            "bytes": 19836
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        }
+      ]
+    },
+    {
+      "id": "heritage-04",
+      "scope": "Great Lakes and Ohio-Tennessee connections",
+      "records": [
+        {
+          "source_id": "nps-heritage:abli",
+          "name": "Abraham Lincoln Birthplace National Historical Park \u2014 Visitor Center at Abraham Lincoln Birthplace",
+          "latitude": 37.53090244631183,
+          "longitude": -85.73592437396144,
+          "region": "KY",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "abli",
+          "selection": {
+            "visitor_center_id": 5710,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "abli",
+            "url": "https://www.nps.gov/abli/structured_data_abli.json",
+            "retrieved_at": "2026-10-15T03:15:52.599973+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/abli.json",
+            "sha256": "ff3fee807b18ec681f84624a1b85c3339a7d34ed572cd41c1ff9a19f2483be91",
+            "bytes": 40613
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:anjo",
+          "name": "Andrew Johnson National Historic Site \u2014 Andrew Johnson NHS Visitor Center",
+          "latitude": 36.1629146461,
+          "longitude": -82.8295418735,
+          "region": "TN",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "anjo",
+          "selection": {
+            "visitor_center_id": 66,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "anjo",
+            "url": "https://www.nps.gov/anjo/structured_data_anjo.json",
+            "retrieved_at": "2026-10-15T03:15:52.835639+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/anjo.json",
+            "sha256": "4081b658ad57b623d8c87bc6ddfa02fdb0bc4326abe9ae28dfc7dde03bbc06b3",
+            "bytes": 35161
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:cane",
+          "name": "Camp Nelson National Monument \u2014 Camp Nelson National Monument Visitor Center, Museum, and Barracks",
+          "latitude": 37.797005,
+          "longitude": -84.600577,
+          "region": "KY",
+          "categories": [
+            "culture",
+            "culture",
+            "daytime",
+            "historic_site",
+            "museum",
+            "visitor_center"
+          ],
+          "unit_code": "cane",
+          "selection": {
+            "visitor_center_id": 5733,
+            "primary_category": "museums"
+          },
+          "operation_evidence": {
+            "code": "cane",
+            "url": "https://www.nps.gov/cane/structured_data_cane.json",
+            "retrieved_at": "2026-10-15T03:15:53.654879+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/cane.json",
+            "sha256": "ed5907cfbe7f870b273a0880342d3173f77a8fc213b6095b80a5e0487d195c24",
+            "bytes": 30880
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:chyo",
+          "name": "Charles Young Buffalo Soldiers National Monument \u2014 Youngsholm",
+          "latitude": 39.7072819996766,
+          "longitude": -83.89026218097183,
+          "region": "OH",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "chyo",
+          "selection": {
+            "visitor_center_id": 1221,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "chyo",
+            "url": "https://www.nps.gov/chyo/structured_data_chyo.json",
+            "retrieved_at": "2026-10-15T03:15:54.152840+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/chyo.json",
+            "sha256": "0285bbbd6cbfabe80c16a98d3b86c50f08e55c438ffd5b06bb97622036578f0f",
+            "bytes": 27186
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:cuga",
+          "name": "Cumberland Gap National Historical Park \u2014 Cumberland Gap National Historical Park Visitor Center",
+          "latitude": 36.602737100452515,
+          "longitude": -83.69530389977439,
+          "region": "KY",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "cuga",
+          "selection": {
+            "visitor_center_id": 2560,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "cuga",
+            "url": "https://www.nps.gov/cuga/structured_data_cuga.json",
+            "retrieved_at": "2026-10-15T03:15:54.382668+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/cuga.json",
+            "sha256": "f92ea82e369e2793f7a248d723102b3a05f7dcbcca9f840e350c7965f18107a2",
+            "bytes": 33522
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:daav",
+          "name": "Dayton Aviation Heritage National Historical Park \u2014 Wright-Dunbar Interpretive Center",
+          "latitude": 39.7557853053,
+          "longitude": -84.2116754793,
+          "region": "OH",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "daav",
+          "selection": {
+            "visitor_center_id": 5719,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "daav",
+            "url": "https://www.nps.gov/daav/structured_data_daav.json",
+            "retrieved_at": "2026-10-15T03:15:54.417173+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/daav.json",
+            "sha256": "59b2804915c9f771a342fe9e73fab46e3a5d1dfeae5d0c98be5082b5e7435137",
+            "bytes": 49631
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:fila",
+          "name": "First Ladies National Historic Site \u2014 Visitor Center",
+          "latitude": 40.797588,
+          "longitude": -81.375218,
+          "region": "OH",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "fila",
+          "selection": {
+            "visitor_center_id": 5832,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "fila",
+            "url": "https://www.nps.gov/fila/structured_data_fila.json",
+            "retrieved_at": "2026-10-15T03:15:54.757072+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/fila.json",
+            "sha256": "9cc7d911f466725cdfd0d7adfd188cc51e4a61b8c790125078b5c948e6c81b1d",
+            "bytes": 23930
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:fodo",
+          "name": "Fort Donelson National Battlefield \u2014 Fort Donelson Visitor Center",
+          "latitude": 36.48240704749231,
+          "longitude": -87.86259097576647,
+          "region": "TN",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "fodo",
+          "selection": {
+            "visitor_center_id": 1207,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "fodo",
+            "url": "https://www.nps.gov/fodo/structured_data_fodo.json",
+            "retrieved_at": "2026-10-15T03:15:54.878848+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/fodo.json",
+            "sha256": "8696643248f7dc9b1e89d1c4f5fe2d49a34d2bb1abd464293702e252a99e2d87",
+            "bytes": 28126
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:hocu",
+          "name": "Hopewell Culture National Historical Park \u2014 Mound City Group Visitor Center",
+          "latitude": 39.3759933216,
+          "longitude": -83.0065438716,
+          "region": "OH",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "hocu",
+          "selection": {
+            "visitor_center_id": 1231,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "hocu",
+            "url": "https://www.nps.gov/hocu/structured_data_hocu.json",
+            "retrieved_at": "2026-10-15T03:15:56.160080+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/hocu.json",
+            "sha256": "da5f93832c65b608e603850ba0c7f58cce9723cc534eafcdf38299dd6ddc156d",
+            "bytes": 23908
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:kewe",
+          "name": "Keweenaw National Historical Park \u2014 Calumet Visitor Center",
+          "latitude": 47.244,
+          "longitude": -88.45249999999999,
+          "region": "MI",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "kewe",
+          "selection": {
+            "visitor_center_id": 1257,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "kewe",
+            "url": "https://www.nps.gov/kewe/structured_data_kewe.json",
+            "retrieved_at": "2026-10-15T03:15:56.778922+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/kewe.json",
+            "sha256": "4b7380848bf968df2b1d09ccf5f9e43a7a09d94421ce8205ec8836f08129df66",
+            "bytes": 48790
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:misp",
+          "name": "Mill Springs Battlefield National Monument \u2014 Mill Springs Battlefield Visitor Center and Museum",
+          "latitude": 37.06888,
+          "longitude": -84.736124,
+          "region": "KY",
+          "categories": [
+            "culture",
+            "culture",
+            "daytime",
+            "historic_site",
+            "museum",
+            "visitor_center"
+          ],
+          "unit_code": "misp",
+          "selection": {
+            "visitor_center_id": 5815,
+            "primary_category": "museums"
+          },
+          "operation_evidence": {
+            "code": "misp",
+            "url": "https://www.nps.gov/misp/structured_data_misp.json",
+            "retrieved_at": "2026-10-15T03:15:57.473498+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/misp.json",
+            "sha256": "594e77f3a576fbbd4c4d1c5d74d274d2828534fb55851374050d4d64a0977ce7",
+            "bytes": 19583
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:pull",
+          "name": "Pullman National Historical Park \u2014 Administration Clock Tower Building Visitor Center",
+          "latitude": 41.69376838696189,
+          "longitude": -87.6074468156807,
+          "region": "IL",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "pull",
+          "selection": {
+            "visitor_center_id": 5966,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "pull",
+            "url": "https://www.nps.gov/pull/structured_data_pull.json",
+            "retrieved_at": "2026-10-15T03:15:58.311670+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/pull.json",
+            "sha256": "e3a495c13493c254fb35105f9b8962e9422293722c434f9d80ad923a88e5783a",
+            "bytes": 22980
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:rira",
+          "name": "River Raisin National Battlefield Park \u2014 River Raisin National Battlefield Park Visitor / Education Center",
+          "latitude": 41.916037821160664,
+          "longitude": -83.38035591070599,
+          "region": "MI",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "rira",
+          "selection": {
+            "visitor_center_id": 1236,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "rira",
+            "url": "https://www.nps.gov/rira/structured_data_rira.json",
+            "retrieved_at": "2026-10-15T03:15:58.435777+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/rira.json",
+            "sha256": "47884544d27c865918661695d9e7f0bfa3cee2487ef618f63b3ab512d989ee18",
+            "bytes": 23809
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:shil",
+          "name": "Shiloh National Military Park \u2014 Shiloh Battlefield Visitor Center",
+          "latitude": 35.1513127479,
+          "longitude": -88.322339375,
+          "region": "TN",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "shil",
+          "selection": {
+            "visitor_center_id": 2598,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "shil",
+            "url": "https://www.nps.gov/shil/structured_data_shil.json",
+            "retrieved_at": "2026-10-15T03:15:58.795912+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/shil.json",
+            "sha256": "b05edad0c08dbb8bbffe4c654f52b4e00252d8228b57b7aad84af894d60c0cb7",
+            "bytes": 36990
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:wiho",
+          "name": "William Howard Taft National Historic Site \u2014 Taft Education Center",
+          "latitude": 39.119681,
+          "longitude": -84.50839,
+          "region": "OH",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "wiho",
+          "selection": {
+            "visitor_center_id": 5886,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "wiho",
+            "url": "https://www.nps.gov/wiho/structured_data_wiho.json",
+            "retrieved_at": "2026-10-15T03:15:59.749262+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/wiho.json",
+            "sha256": "94a48df1b34d1c2f0edec20c2906c0764dc6d8eda2376139f8c0cdfc9cdec1e0",
+            "bytes": 21134
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        }
+      ]
+    },
+    {
+      "id": "heritage-05",
+      "scope": "Gulf and Southeast highway connections",
+      "records": [
+        {
+          "source_id": "nps-heritage:alfl",
+          "name": "Alibates Flint Quarries National Monument \u2014 Alibates Visitor Center",
+          "latitude": 35.5793188151,
+          "longitude": -101.703339609,
+          "region": "TX",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "alfl",
+          "selection": {
+            "visitor_center_id": 1293,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "alfl",
+            "url": "https://www.nps.gov/alfl/structured_data_alfl.json",
+            "retrieved_at": "2026-10-15T03:15:52.601025+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/alfl.json",
+            "sha256": "1a75bff766066653218102c224a8ea002bdb827ede8ce366118cfdac9594f222",
+            "bytes": 17702
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:chch",
+          "name": "Chickamauga & Chattanooga National Military Park \u2014 Chickamauga Battlefield Visitor Center",
+          "latitude": 34.9403109997,
+          "longitude": -85.2599410001,
+          "region": "GA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "chch",
+          "selection": {
+            "visitor_center_id": 1224,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "chch",
+            "url": "https://www.nps.gov/chch/structured_data_chch.json",
+            "retrieved_at": "2026-10-15T03:15:53.915568+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/chch.json",
+            "sha256": "4bd51d2c7e3ece4a1b4cae4ef6e472d22e88958e9dbe4b3a5b5e68f75799d822",
+            "bytes": 34685
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:chsc",
+          "name": "Little Rock Central High School National Historic Site \u2014 Little Rock Central High School National Historic Site Visitor Center",
+          "latitude": 34.73801759287234,
+          "longitude": -92.29739157441182,
+          "region": "AR",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "chsc",
+          "selection": {
+            "visitor_center_id": 1245,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "chsc",
+            "url": "https://www.nps.gov/chsc/structured_data_chsc.json",
+            "retrieved_at": "2026-10-15T03:15:54.138114+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/chsc.json",
+            "sha256": "77c4e752dc614030237c43a8f54f2daebeec1a86f5df42e43f93645ca8d93091",
+            "bytes": 33447
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:cowp",
+          "name": "Cowpens National Battlefield \u2014 Cowpens National Battlefield",
+          "latitude": 35.1367011463,
+          "longitude": -81.8180292723,
+          "region": "SC",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "cowp",
+          "selection": {
+            "visitor_center_id": 40,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "cowp",
+            "url": "https://www.nps.gov/cowp/structured_data_cowp.json",
+            "retrieved_at": "2026-10-15T03:15:54.375596+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/cowp.json",
+            "sha256": "673e9dbd590fd1dc5a941804325f5fe184ae31f2638e002302392afcb9c7733f",
+            "bytes": 38201
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:fofr",
+          "name": "Fort Frederica National Monument \u2014 Fort Frederica Visitor Center",
+          "latitude": 31.2233940463,
+          "longitude": -81.389303974,
+          "region": "GA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "fofr",
+          "selection": {
+            "visitor_center_id": 1295,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "fofr",
+            "url": "https://www.nps.gov/fofr/structured_data_fofr.json",
+            "retrieved_at": "2026-10-15T03:15:54.942443+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/fofr.json",
+            "sha256": "23b9b9b64252d2f4269fd567c679e40b4675752fcb50913c0c0c361e5f9f366c",
+            "bytes": 28811
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:fora",
+          "name": "Fort Raleigh National Historic Site \u2014 Lindsay Warren Visitor Center",
+          "latitude": 35.936954,
+          "longitude": -75.708939,
+          "region": "NC",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "fora",
+          "selection": {
+            "visitor_center_id": 32,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "fora",
+            "url": "https://www.nps.gov/fora/structured_data_fora.json",
+            "retrieved_at": "2026-10-15T03:15:55.158632+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/fora.json",
+            "sha256": "14d4292c893ee667f22b6a933b183fd8f2b6884ed5425aef9cbc5d940b8edb68",
+            "bytes": 12656
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:fosu",
+          "name": "Fort Sumter and Fort Moultrie National Historical Park \u2014 Fort Moultrie Visitor Center",
+          "latitude": 32.76035244619513,
+          "longitude": -79.85758787298687,
+          "region": "SC",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "fosu",
+          "selection": {
+            "visitor_center_id": 62,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "fosu",
+            "url": "https://www.nps.gov/fosu/structured_data_fosu.json",
+            "retrieved_at": "2026-10-15T03:15:55.267158+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/fosu.json",
+            "sha256": "6f3a103cf62893528356619c64c4511d479845f4cadff615f28a72d120123ac4",
+            "bytes": 48071
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:guco",
+          "name": "Guilford Courthouse National Military Park \u2014 Visitor Center",
+          "latitude": 36.13138889,
+          "longitude": -79.84638889,
+          "region": "NC",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "guco",
+          "selection": {
+            "visitor_center_id": 2571,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "guco",
+            "url": "https://www.nps.gov/guco/structured_data_guco.json",
+            "retrieved_at": "2026-10-15T03:15:55.914740+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/guco.json",
+            "sha256": "1959c8f2b3fe459aabe475eae25a75716c63aeb9d6693c2f8b56d7273259d83c",
+            "bytes": 42757
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:jica",
+          "name": "Jimmy Carter National Historical Park \u2014 Plains High School Visitor Center and Museum",
+          "latitude": 32.03662,
+          "longitude": -84.392788,
+          "region": "GA",
+          "categories": [
+            "culture",
+            "culture",
+            "daytime",
+            "historic_site",
+            "museum",
+            "visitor_center"
+          ],
+          "unit_code": "jica",
+          "selection": {
+            "visitor_center_id": 5775,
+            "primary_category": "museums"
+          },
+          "operation_evidence": {
+            "code": "jica",
+            "url": "https://www.nps.gov/jica/structured_data_jica.json",
+            "retrieved_at": "2026-10-15T03:15:56.513974+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/jica.json",
+            "sha256": "d2d8d702774b5710e75b2bbac81d98720dc2e939432d5c57458b1a47535aa9f3",
+            "bytes": 48013
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:kemo",
+          "name": "Kennesaw Mountain National Battlefield Park \u2014 Kennesaw Mountain National Battlefield Park Visitor Center",
+          "latitude": 33.9830763468,
+          "longitude": -84.5780439742,
+          "region": "GA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "kemo",
+          "selection": {
+            "visitor_center_id": 5739,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "kemo",
+            "url": "https://www.nps.gov/kemo/structured_data_kemo.json",
+            "retrieved_at": "2026-10-15T03:15:56.742802+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/kemo.json",
+            "sha256": "ade152521fff84fbf2c99994e00bb5411b8e813081e610c713c00eb921994521",
+            "bytes": 30705
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:kimo",
+          "name": "Kings Mountain National Military Park \u2014 Kings Mountain National Military Park",
+          "latitude": 35.14132184627828,
+          "longitude": -81.37714567274486,
+          "region": "SC",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "kimo",
+          "selection": {
+            "visitor_center_id": 96,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "kimo",
+            "url": "https://www.nps.gov/kimo/structured_data_kimo.json",
+            "retrieved_at": "2026-10-15T03:15:56.809859+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/kimo.json",
+            "sha256": "e245a05a56585d04ac67919ad10e134f2762e4523e050d197df0af2e05d951e7",
+            "bytes": 33423
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:lyjo",
+          "name": "Lyndon B Johnson National Historical Park \u2014 Visitor Center and Park Headquarters",
+          "latitude": 30.2742525096,
+          "longitude": -98.4112238369,
+          "region": "TX",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "lyjo",
+          "selection": {
+            "visitor_center_id": 2326,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "lyjo",
+            "url": "https://www.nps.gov/lyjo/structured_data_lyjo.json",
+            "retrieved_at": "2026-10-15T03:15:57.080598+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/lyjo.json",
+            "sha256": "76f0e6bae9a764786030c024b349affbd1998498da43b6b6978bfa8ade28080e",
+            "bytes": 46358
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:malu",
+          "name": "Martin Luther King, Jr. National Historical Park \u2014 Martin Luther King, Jr. National Historical Park Visitor Center",
+          "latitude": 33.7563109473,
+          "longitude": -84.3733810743,
+          "region": "GA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "malu",
+          "selection": {
+            "visitor_center_id": 2579,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "malu",
+            "url": "https://www.nps.gov/malu/structured_data_malu.json",
+            "retrieved_at": "2026-10-15T03:15:57.098297+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/malu.json",
+            "sha256": "a8354ac629791e5cbdf97b1ff52ecdc4eb65d7c5425cd84cc3a09b6ff45a8eae",
+            "bytes": 17467
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:mocr",
+          "name": "Moores Creek National Battlefield \u2014 Visitor Center",
+          "latitude": 34.45789194596478,
+          "longitude": -78.1096625715557,
+          "region": "NC",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "mocr",
+          "selection": {
+            "visitor_center_id": 2441,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "mocr",
+            "url": "https://www.nps.gov/mocr/structured_data_mocr.json",
+            "retrieved_at": "2026-10-15T03:15:57.493903+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/mocr.json",
+            "sha256": "74ab181506dd2dc9b66911f2d04b8dd4a1dfa512a3a2f4a19555f894229d431b",
+            "bytes": 40306
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:nisi",
+          "name": "Ninety Six National Historic Site \u2014 Ninety Six National Historic Site",
+          "latitude": 34.1466337466,
+          "longitude": -82.0232488734,
+          "region": "SC",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "nisi",
+          "selection": {
+            "visitor_center_id": 57,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "nisi",
+            "url": "https://www.nps.gov/nisi/structured_data_nisi.json",
+            "retrieved_at": "2026-10-15T03:15:57.838766+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/nisi.json",
+            "sha256": "63d480b8494f71f9d8e8abd1da83cff38e8e0c1536c6b641a964da51fa6e0916",
+            "bytes": 36452
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:ocmu",
+          "name": "Ocmulgee Mounds National Historical Park \u2014 Ocmulgee Mounds Visitor Center",
+          "latitude": 32.8426167998,
+          "longitude": -83.6038177994,
+          "region": "GA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "ocmu",
+          "selection": {
+            "visitor_center_id": 56,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "ocmu",
+            "url": "https://www.nps.gov/ocmu/structured_data_ocmu.json",
+            "retrieved_at": "2026-10-15T03:15:57.932850+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/ocmu.json",
+            "sha256": "b77d54272186420a8c94ffda6ab48b7bc177b38d28177df96550aeb2ff4b6571",
+            "bytes": 18739
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:paal",
+          "name": "Palo Alto Battlefield National Historical Park \u2014 Palo Alto Visitor Center",
+          "latitude": 26.016775,
+          "longitude": -97.479093,
+          "region": "TX",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "paal",
+          "selection": {
+            "visitor_center_id": 35,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "paal",
+            "url": "https://www.nps.gov/paal/structured_data_paal.json",
+            "retrieved_at": "2026-10-15T03:15:57.980982+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/paal.json",
+            "sha256": "b6bf21014c78d1b0240eb5f231f4e1c45a7e19b4114f27cf07ad96612447243d",
+            "bytes": 36745
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:reer",
+          "name": "Reconstruction Era National Historical Park \u2014 Pinckney-Porter's Chapel Visitor Contact Station",
+          "latitude": 32.3883014224,
+          "longitude": -80.6854337454,
+          "region": "SC",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "reer",
+          "selection": {
+            "visitor_center_id": 5949,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "reer",
+            "url": "https://www.nps.gov/reer/structured_data_reer.json",
+            "retrieved_at": "2026-10-15T03:15:58.341012+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/reer.json",
+            "sha256": "65c3882dfb303016f99e88c88de05bbdc8861c511960dd617512657a338f146b",
+            "bytes": 96643
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:ruca",
+          "name": "Russell Cave National Monument \u2014 Gilbert Grosvenor Visitor Center",
+          "latitude": 34.9786490475,
+          "longitude": -85.8099173746,
+          "region": "AL",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "ruca",
+          "selection": {
+            "visitor_center_id": 4685,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "ruca",
+            "url": "https://www.nps.gov/ruca/structured_data_ruca.json",
+            "retrieved_at": "2026-10-15T03:15:58.461715+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/ruca.json",
+            "sha256": "62d6059270e2ba2042c8434e17b99fdc9253c85e8df14288fc0e10bed018e4e0",
+            "bytes": 20725
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:saan",
+          "name": "San Antonio Missions National Historical Park \u2014 Visitor Center at Mission San Jos\u00e9",
+          "latitude": 29.36014983,
+          "longitude": -98.48032539,
+          "region": "TX",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "saan",
+          "selection": {
+            "visitor_center_id": 2309,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "saan",
+            "url": "https://www.nps.gov/saan/structured_data_saan.json",
+            "retrieved_at": "2026-10-15T03:15:58.481837+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/saan.json",
+            "sha256": "9fa32bbdffaab7b93073a14694ab916e8e4f33c972c0e72d0afccc2aa0b2411a",
+            "bytes": 36280
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:waco",
+          "name": "Waco Mammoth National Monument \u2014 Welcome Center",
+          "latitude": 31.6067370778,
+          "longitude": -97.1759782992,
+          "region": "TX",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "waco",
+          "selection": {
+            "visitor_center_id": 2337,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "waco",
+            "url": "https://www.nps.gov/waco/structured_data_waco.json",
+            "retrieved_at": "2026-10-15T03:15:59.622463+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/waco.json",
+            "sha256": "f0baf9feddc41b2f6c69cf2266383c265a0cfa8234d4ddf7145e21e388d63c87",
+            "bytes": 20878
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:wicl",
+          "name": "President William Jefferson Clinton Birthplace Home National Historic Site \u2014 President William Jefferson Clinton Birthplace Home National Historic Site Visitor Center",
+          "latitude": 33.667711140800485,
+          "longitude": -93.59596252441406,
+          "region": "AR",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "wicl",
+          "selection": {
+            "visitor_center_id": 3679,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "wicl",
+            "url": "https://www.nps.gov/wicl/structured_data_wicl.json",
+            "retrieved_at": "2026-10-15T03:15:59.698591+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/wicl.json",
+            "sha256": "409916d44bdcd616193f247616eb85bd936a50700d4372f94ff03550ceb9b48f",
+            "bytes": 26063
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:wrbr",
+          "name": "Wright Brothers National Memorial \u2014 Wright Brothers Visitor Center and Museum",
+          "latitude": 36.020693,
+          "longitude": -75.667668,
+          "region": "NC",
+          "categories": [
+            "culture",
+            "culture",
+            "daytime",
+            "historic_site",
+            "museum",
+            "visitor_center"
+          ],
+          "unit_code": "wrbr",
+          "selection": {
+            "visitor_center_id": 2460,
+            "primary_category": "museums"
+          },
+          "operation_evidence": {
+            "code": "wrbr",
+            "url": "https://www.nps.gov/wrbr/structured_data_wrbr.json",
+            "retrieved_at": "2026-10-15T03:15:59.792590+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/wrbr.json",
+            "sha256": "e269096e0a659fd135c9267bbddc6410f32935fd75c4d6bfeb1def8344d0d12a",
+            "bytes": 22127
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        }
+      ]
+    },
+    {
+      "id": "heritage-06",
+      "scope": "Mid-Atlantic and Northeast corridors",
+      "records": [
+        {
+          "source_id": "nps-heritage:anti",
+          "name": "Antietam National Battlefield \u2014 Antietam National Battlefield Visitor Center",
+          "latitude": 39.474208050396456,
+          "longitude": -77.74452499941674,
+          "region": "MD",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "anti",
+          "selection": {
+            "visitor_center_id": 75,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "anti",
+            "url": "https://www.nps.gov/anti/structured_data_anti.json",
+            "retrieved_at": "2026-10-15T03:15:52.865096+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/anti.json",
+            "sha256": "e195af655a4b29bd6d1c228555c04b4db2e015e9fef4999163050cc572a86b4e",
+            "bytes": 32533
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:blrv",
+          "name": "Blackstone River Valley National Historical Park \u2014 Old Slater Mill Visitor Center",
+          "latitude": 41.877713,
+          "longitude": -71.38252999999997,
+          "region": "RI",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "blrv",
+          "selection": {
+            "visitor_center_id": 5944,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "blrv",
+            "url": "https://www.nps.gov/blrv/structured_data_blrv.json",
+            "retrieved_at": "2026-10-15T03:15:53.197067+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/blrv.json",
+            "sha256": "f6911fb0a286b92026f13cf819e1c4433ce9458cdbde3078427ee6f4ad53ef18",
+            "bytes": 25860
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:flni",
+          "name": "Flight 93 National Memorial \u2014 Flight 93 Visitor Center",
+          "latitude": 40.0573423746,
+          "longitude": -78.9058756827,
+          "region": "PA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "flni",
+          "selection": {
+            "visitor_center_id": 5767,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "flni",
+            "url": "https://www.nps.gov/flni/structured_data_flni.json",
+            "retrieved_at": "2026-10-15T03:15:54.813466+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/flni.json",
+            "sha256": "387e9e343fd3d9a73cfde168fcc4f5e6e01917c198cce3d78d4daa660a37189d",
+            "bytes": 17245
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:fomc",
+          "name": "Fort McHenry National Monument and Historic Shrine \u2014 Paul S. Sarbanes Visitor and Education Center",
+          "latitude": 39.2655,
+          "longitude": -76.5796,
+          "region": "MD",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "fomc",
+          "selection": {
+            "visitor_center_id": 5855,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "fomc",
+            "url": "https://www.nps.gov/fomc/structured_data_fomc.json",
+            "retrieved_at": "2026-10-15T03:15:55.034418+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/fomc.json",
+            "sha256": "ea8820642cf0e0092c6d33ce866bf0878544a49dd63cb7515629f832c198c55f",
+            "bytes": 39223
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:fone",
+          "name": "Fort Necessity National Battlefield \u2014 Fort Necessity/National Road Interpretive and Education Center",
+          "latitude": 39.814121,
+          "longitude": -79.586068,
+          "region": "PA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "fone",
+          "selection": {
+            "visitor_center_id": 2545,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "fone",
+            "url": "https://www.nps.gov/fone/structured_data_fone.json",
+            "retrieved_at": "2026-10-15T03:15:55.055942+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/fone.json",
+            "sha256": "dafb4980845034eedaab9c76b63fd3e9ebe08ee506c455d170431e1402fce38d",
+            "bytes": 30048
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:frdo",
+          "name": "Frederick Douglass National Historic Site \u2014 Frederick Douglass NHS Visitor Center",
+          "latitude": 38.86343464276205,
+          "longitude": -76.98519700295012,
+          "region": "DC",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "frdo",
+          "selection": {
+            "visitor_center_id": 5967,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "frdo",
+            "url": "https://www.nps.gov/frdo/structured_data_frdo.json",
+            "retrieved_at": "2026-10-15T03:15:55.383038+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/frdo.json",
+            "sha256": "64ccb860db70b8714d6b0ad9256ee91f6d9fab99e787b97855b7cf09ca55d778",
+            "bytes": 26054
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:frsp",
+          "name": "Fredericksburg & Spotsylvania National Military Park \u2014 Chancellorsville Battlefield Visitor Center",
+          "latitude": 38.3111533997,
+          "longitude": -77.6499274997,
+          "region": "VA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "frsp",
+          "selection": {
+            "visitor_center_id": 5747,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "frsp",
+            "url": "https://www.nps.gov/frsp/structured_data_frsp.json",
+            "retrieved_at": "2026-10-15T03:15:55.513150+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/frsp.json",
+            "sha256": "6a92dd43bfa9ea9a388abfee96d8e1223ed4b04df3924dd5af1dc6c550cb6882",
+            "bytes": 74637
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:gewa",
+          "name": "George Washington Birthplace National Monument \u2014 Visitor Center",
+          "latitude": 38.1829706,
+          "longitude": -76.9179594,
+          "region": "VA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "gewa",
+          "selection": {
+            "visitor_center_id": 5703,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "gewa",
+            "url": "https://www.nps.gov/gewa/structured_data_gewa.json",
+            "retrieved_at": "2026-10-15T03:15:55.752299+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/gewa.json",
+            "sha256": "6204a58e53a0532fe929345514a529e1497b3150cfb5c4732d4516165ccdc57f",
+            "bytes": 18286
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:hamp",
+          "name": "Hampton National Historic Site \u2014 Visitor Center",
+          "latitude": 39.416,
+          "longitude": -76.5904,
+          "region": "MD",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "hamp",
+          "selection": {
+            "visitor_center_id": 5856,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "hamp",
+            "url": "https://www.nps.gov/hamp/structured_data_hamp.json",
+            "retrieved_at": "2026-10-15T03:15:56.015780+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/hamp.json",
+            "sha256": "613745296e77d6dcc9d9efe819908f248f9928f09f0ea475a84a91d319746e7e",
+            "bytes": 37625
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:hofu",
+          "name": "Hopewell Furnace National Historic Site \u2014 Hopewell Furnace National Historic Site Visitor Center - 2 Mark Bird Lane, Elverson, PA 19520",
+          "latitude": 40.20671755720824,
+          "longitude": -75.77384143082361,
+          "region": "PA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "hofu",
+          "selection": {
+            "visitor_center_id": 5891,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "hofu",
+            "url": "https://www.nps.gov/hofu/structured_data_hofu.json",
+            "retrieved_at": "2026-10-15T03:15:56.244585+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/hofu.json",
+            "sha256": "c612479c65d7256b7dc86f3f80fa5c56b10a0b4ae21786e3f0124c7d6ed65363",
+            "bytes": 23480
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:jofl",
+          "name": "Johnstown Flood National Memorial \u2014 Johnstown Flood National Memorial Visitor Center",
+          "latitude": 40.3498079995,
+          "longitude": -78.7712280007,
+          "region": "PA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "jofl",
+          "selection": {
+            "visitor_center_id": 1228,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "jofl",
+            "url": "https://www.nps.gov/jofl/structured_data_jofl.json",
+            "retrieved_at": "2026-10-15T03:15:56.620214+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/jofl.json",
+            "sha256": "e6050ecd72484471373812ebbcf0309743ccc7d20aa915a83f2b39cbb25219f4",
+            "bytes": 21057
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:lowe",
+          "name": "Lowell National Historical Park \u2014 Lowell National Historical Park Visitor Center",
+          "latitude": 42.64454346502211,
+          "longitude": -71.31315777203497,
+          "region": "MA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "lowe",
+          "selection": {
+            "visitor_center_id": 5783,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "lowe",
+            "url": "https://www.nps.gov/lowe/structured_data_lowe.json",
+            "retrieved_at": "2026-10-15T03:15:57.042511+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/lowe.json",
+            "sha256": "b54d6aa7f2ea22d284a5f72b97a998cf3155b0fec5c6b9adbfa001f6b87ee091",
+            "bytes": 45883
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:mima",
+          "name": "Minute Man National Historical Park \u2014 Minute Man Visitor Center",
+          "latitude": 42.44876789954837,
+          "longitude": -71.26950940005008,
+          "region": "MA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "mima",
+          "selection": {
+            "visitor_center_id": 2490,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "mima",
+            "url": "https://www.nps.gov/mima/structured_data_mima.json",
+            "retrieved_at": "2026-10-15T03:15:57.390536+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/mima.json",
+            "sha256": "15e105e3f7297a54f014007273a603c0e0a0c70a71ec4d199873d756ce08772f",
+            "bytes": 105002
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:mono",
+          "name": "Monocacy National Battlefield \u2014 Visitor Center",
+          "latitude": 39.37722109791633,
+          "longitude": -77.3956055465402,
+          "region": "MD",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "mono",
+          "selection": {
+            "visitor_center_id": 2386,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "mono",
+            "url": "https://www.nps.gov/mono/structured_data_mono.json",
+            "retrieved_at": "2026-10-15T03:15:57.534310+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/mono.json",
+            "sha256": "7a35d117f148d224eda8df290b196443c0063f37e81dba0340223a616434ffd6",
+            "bytes": 22622
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:nebe",
+          "name": "New Bedford Whaling National Historical Park \u2014 Visitor Center & Park Garden",
+          "latitude": 41.6357047995,
+          "longitude": -70.9241640007,
+          "region": "MA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "nebe",
+          "selection": {
+            "visitor_center_id": 2443,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "nebe",
+            "url": "https://www.nps.gov/nebe/structured_data_nebe.json",
+            "retrieved_at": "2026-10-15T03:15:57.712597+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/nebe.json",
+            "sha256": "19bccac449efe49f6094ec91a2d5856e8c5ad2b214b3994f1517644e5c9de8ea",
+            "bytes": 44128
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:pete",
+          "name": "Petersburg National Battlefield \u2014 Eastern Front Visitor Center",
+          "latitude": 37.24376507688345,
+          "longitude": -77.3569040463363,
+          "region": "VA",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "pete",
+          "selection": {
+            "visitor_center_id": 5836,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "pete",
+            "url": "https://www.nps.gov/pete/structured_data_pete.json",
+            "retrieved_at": "2026-10-15T03:15:58.163037+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/pete.json",
+            "sha256": "800cb4981ea26ba9cdf5b11f577547c707f4f2d07cda250bd86c88dad3d9258e",
+            "bytes": 53023
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:sara",
+          "name": "Saratoga National Historical Park \u2014 Visitor Center",
+          "latitude": 43.0122119,
+          "longitude": -73.6489270987,
+          "region": "NY",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "sara",
+          "selection": {
+            "visitor_center_id": 2528,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "sara",
+            "url": "https://www.nps.gov/sara/structured_data_sara.json",
+            "retrieved_at": "2026-10-15T03:15:58.776951+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/sara.json",
+            "sha256": "3c383183188785ca5b9578e29f8e20875d70234937c6509ad6bfa6f0059107a3",
+            "bytes": 30358
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:spar",
+          "name": "Springfield Armory National Historic Site \u2014 Springfield Armory National Historic Site Visitor Center and Museum",
+          "latitude": 42.1089906011,
+          "longitude": -72.5809334998,
+          "region": "MA",
+          "categories": [
+            "culture",
+            "culture",
+            "daytime",
+            "historic_site",
+            "museum",
+            "visitor_center"
+          ],
+          "unit_code": "spar",
+          "selection": {
+            "visitor_center_id": 2609,
+            "primary_category": "museums"
+          },
+          "operation_evidence": {
+            "code": "spar",
+            "url": "https://www.nps.gov/spar/structured_data_spar.json",
+            "retrieved_at": "2026-10-15T03:15:58.905109+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/spar.json",
+            "sha256": "a1dfed5e4a06601250577d9311509e6059bec095a7c0ff21d1feff130cd8f2ab",
+            "bytes": 22000
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        },
+        {
+          "source_id": "nps-heritage:thst",
+          "name": "Thomas Stone National Historic Site \u2014 Thomas Stone Visitor Center",
+          "latitude": 38.53023752176617,
+          "longitude": -77.03608722890806,
+          "region": "MD",
+          "categories": [
+            "culture",
+            "daytime",
+            "historic_site",
+            "visitor_center"
+          ],
+          "unit_code": "thst",
+          "selection": {
+            "visitor_center_id": 5700,
+            "primary_category": "landmarks"
+          },
+          "operation_evidence": {
+            "code": "thst",
+            "url": "https://www.nps.gov/thst/structured_data_thst.json",
+            "retrieved_at": "2026-10-15T03:15:59.139120+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-expansion-20261015/snapshots/thst.json",
+            "sha256": "3a31ac6e401501fe0061141927198d251220fe334f087d426ba5dbcc25f9e3bc",
+            "bytes": 21165
+          },
+          "coordinate_role": "original NPS visitor facility point; unchanged",
+          "operation_basis": "published visitor facility, nonempty weekly schedule, no admitted current dated closure",
+          "arrival_basis": "explicit facility US state, listed Parking - Auto, published directions, successful OSRM destination within 75 metres",
+          "limitations": "Published schedules and road/parking restrictions apply. Walking from parking and fees may be required. No future access, available parking, current-day opening, rating or evening hours are guaranteed."
+        }
+      ]
+    }
+  ]
+}

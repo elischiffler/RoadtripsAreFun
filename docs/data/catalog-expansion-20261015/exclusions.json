@@ -1,0 +1,1392 @@
+{
+  "review_only": true,
+  "import_eligible": false,
+  "units": [
+    {
+      "code": "afbg",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5713,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "alpo",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1211,
+          "visitor_arrival_evidence_missing"
+        ]
+      ]
+    },
+    {
+      "code": "amch",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "band",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2448,
+          "closure_evidence"
+        ]
+      ]
+    },
+    {
+      "code": "beol",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6126,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "bepa",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5963,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "bicr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6008,
+          "closure_evidence"
+        ],
+        [
+          6134,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "biho",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          3675,
+          "malformed_schedule"
+        ]
+      ]
+    },
+    {
+      "code": "blsc",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "boaf",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6063,
+          "explicit_state_missing"
+        ]
+      ]
+    },
+    {
+      "code": "bost",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          3655,
+          "parking_missing"
+        ],
+        [
+          3656,
+          "parking_missing"
+        ],
+        [
+          5911,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "bowa",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          135,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "brvb",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5854,
+          "visitor_arrival_evidence_missing"
+        ]
+      ]
+    },
+    {
+      "code": "buis",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5858,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "cach",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2535,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "cacl",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5830,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "cagr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1284,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "cakr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          109,
+          "restricted_car_access"
+        ]
+      ]
+    },
+    {
+      "code": "camo",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "carl",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2601,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "casa",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "cawo",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "cebr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1299,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "cech",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          37,
+          "dated_closure"
+        ]
+      ]
+    },
+    {
+      "code": "chcu",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2364,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "chpi",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2550,
+          "dated_closure"
+        ]
+      ]
+    },
+    {
+      "code": "chri",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2576,
+          "schedule_unknown_or_closed"
+        ],
+        [
+          5822,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "cibs",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "clba",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "colo",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2465,
+          "parking_missing"
+        ],
+        [
+          5842,
+          "explicit_state_missing"
+        ]
+      ]
+    },
+    {
+      "code": "colt",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "depo",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1278,
+          "restricted_car_access"
+        ]
+      ]
+    },
+    {
+      "code": "deso",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2554,
+          "closure_evidence"
+        ]
+      ]
+    },
+    {
+      "code": "edal",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "eise",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2399,
+          "visitor_arrival_evidence_missing"
+        ]
+      ]
+    },
+    {
+      "code": "elro",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5731,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "euon",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          100,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "feha",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5698,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "foda",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1291,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "fols",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1197,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "fomr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5879,
+          "dated_closure"
+        ],
+        [
+          6114,
+          "dated_closure"
+        ]
+      ]
+    },
+    {
+      "code": "fopo",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2589,
+          "visitor_arrival_evidence_missing"
+        ]
+      ]
+    },
+    {
+      "code": "fopu",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5843,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "fost",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5696,
+          "explicit_state_missing"
+        ],
+        [
+          5975,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "foth",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "frhi",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2544,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "frla",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5972,
+          "schedule_unknown_or_closed"
+        ]
+      ]
+    },
+    {
+      "code": "frpe",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "frri",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6070,
+          "parking_missing"
+        ],
+        [
+          5831,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "frst",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6044,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "gegr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5726,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "gero",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          53,
+          "parking_missing"
+        ],
+        [
+          6138,
+          "explicit_state_missing"
+        ]
+      ]
+    },
+    {
+      "code": "gett",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5722,
+          "visitor_arrival_evidence_missing"
+        ],
+        [
+          5989,
+          "dated_closure"
+        ]
+      ]
+    },
+    {
+      "code": "glde",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "gois",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "gosp",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6127,
+          "explicit_state_missing"
+        ]
+      ]
+    },
+    {
+      "code": "hafe",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2384,
+          "visitor_arrival_evidence_missing"
+        ],
+        [
+          2385,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "hagr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2388,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "hart",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6050,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "hatu",
+      "reason": "inventory_name_mismatch"
+    },
+    {
+      "code": "hobe",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5725,
+          "explicit_state_missing"
+        ]
+      ]
+    },
+    {
+      "code": "hofr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5800,
+          "visitor_arrival_evidence_missing"
+        ]
+      ]
+    },
+    {
+      "code": "hono",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "hove",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2307,
+          "dated_closure"
+        ]
+      ]
+    },
+    {
+      "code": "hstr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          80,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "hutr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1243,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "inde",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1314,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "jaga",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5833,
+          "dated_closure"
+        ]
+      ]
+    },
+    {
+      "code": "jazz",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5773,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "jofi",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6059,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "kala",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "klgo",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          117,
+          "dated_closure"
+        ],
+        [
+          6093,
+          "dated_closure"
+        ],
+        [
+          5692,
+          "dated_closure"
+        ],
+        [
+          6111,
+          "dated_closure"
+        ],
+        [
+          6054,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "lewi",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5791,
+          "visitor_arrival_evidence_missing"
+        ]
+      ]
+    },
+    {
+      "code": "libi",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5979,
+          "closure_evidence"
+        ]
+      ]
+    },
+    {
+      "code": "libo",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          26,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "loea",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5957,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "long",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5790,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "mabi",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6004,
+          "parking_missing"
+        ],
+        [
+          6016,
+          "visitor_arrival_evidence_missing"
+        ]
+      ]
+    },
+    {
+      "code": "mamc",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "mana",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5693,
+          "dated_closure"
+        ],
+        [
+          5931,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "mawa",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5814,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "memy",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "miin",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2559,
+          "dated_closure"
+        ]
+      ]
+    },
+    {
+      "code": "mimi",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1213,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "morr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5925,
+          "explicit_state_missing"
+        ],
+        [
+          5926,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "moru",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1241,
+          "parking_missing"
+        ],
+        [
+          1240,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "muwo",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1244,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "natc",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2420,
+          "closure_evidence"
+        ],
+        [
+          5826,
+          "parking_missing"
+        ],
+        [
+          5827,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "nava",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2433,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "nepe",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5819,
+          "visitor_arrival_evidence_missing"
+        ]
+      ]
+    },
+    {
+      "code": "neph",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "nico",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5859,
+          "explicit_state_missing"
+        ],
+        [
+          6135,
+          "explicit_state_missing"
+        ],
+        [
+          6136,
+          "explicit_state_missing"
+        ]
+      ]
+    },
+    {
+      "code": "okci",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "pagr",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "peri",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1315,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "popo",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5873,
+          "explicit_state_missing"
+        ]
+      ]
+    },
+    {
+      "code": "rabr",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "rich",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2583,
+          "parking_missing"
+        ],
+        [
+          5887,
+          "parking_missing"
+        ],
+        [
+          6125,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "safr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1209,
+          "parking_missing"
+        ],
+        [
+          6061,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "saga",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5774,
+          "visitor_arrival_evidence_missing"
+        ]
+      ]
+    },
+    {
+      "code": "sahi",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2587,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "sair",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5784,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "saju",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5824,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "sama",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5749,
+          "parking_missing"
+        ],
+        [
+          5750,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "sand",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6025,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "sapa",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "spra",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "stea",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5923,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "stge",
+      "reason": "inventory_name_mismatch"
+    },
+    {
+      "code": "stli",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2527,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "ston",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6062,
+          "explicit_state_missing"
+        ]
+      ]
+    },
+    {
+      "code": "stri",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          68,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "thco",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5918,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "thko",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "thrb",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5933,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "thri",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "tica",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2378,
+          "dated_closure"
+        ]
+      ]
+    },
+    {
+      "code": "till",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          6133,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "tosy",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "tuai",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5866,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "tule",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2426,
+          "dated_closure"
+        ]
+      ]
+    },
+    {
+      "code": "tusk",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "vafo",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          24,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "vama",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          131,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "vick",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          97,
+          "parking_missing"
+        ],
+        [
+          3684,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "vicr",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5717,
+          "arrival_state_unresolved"
+        ]
+      ]
+    },
+    {
+      "code": "waca",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          1313,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "wapa",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          2514,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "wefa",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          39,
+          "parking_missing"
+        ]
+      ]
+    },
+    {
+      "code": "whmi",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5743,
+          "dated_closure"
+        ]
+      ]
+    },
+    {
+      "code": "wori",
+      "reason": "no_passing_facility",
+      "details": [
+        [
+          5781,
+          "explicit_state_missing"
+        ]
+      ]
+    },
+    {
+      "code": "yuho",
+      "reason": "no_passing_facility",
+      "details": []
+    },
+    {
+      "code": "brcr",
+      "reason": "remote Natchez Trace center is not Brices Cross Roads arrival"
+    },
+    {
+      "code": "cebe",
+      "reason": "contradictory weekday schedule needs operator clarification"
+    },
+    {
+      "code": "fobo",
+      "reason": "hiking arrival; accessible-only approach not ordinary general vehicle access"
+    },
+    {
+      "code": "foma",
+      "reason": "fort requires ferry; mainland visitor point held for separate role review"
+    },
+    {
+      "code": "hafo",
+      "reason": "Thousand Springs partner center remote from parent monument"
+    },
+    {
+      "code": "kaww",
+      "reason": "seasonal road-dependent late season access needs separate current conditions review"
+    },
+    {
+      "code": "klse",
+      "reason": "partner memorial outside Seattle unit; needs independent destination identity"
+    },
+    {
+      "code": "mapr",
+      "reason": "partner museum; nuclear facilities and visitor point require separate identity review"
+    },
+    {
+      "code": "mava",
+      "reason": "published seasonal closure language remains unresolved"
+    },
+    {
+      "code": "para",
+      "reason": "remote St George public lands information office"
+    },
+    {
+      "code": "petr",
+      "reason": "published visitor information center closure"
+    },
+    {
+      "code": "poch",
+      "reason": "reservation-only shuttle from another historic site"
+    },
+    {
+      "code": "sajh",
+      "reason": "island ferry-dependent corridor not part of this road-only batch"
+    },
+    {
+      "code": "sitk",
+      "reason": "disconnected island road system requires separate corridor review"
+    },
+    {
+      "code": "tuin",
+      "reason": "published museum restoration closure"
+    },
+    {
+      "code": "tupe",
+      "reason": "remote Natchez Trace center rather than battlefield"
+    },
+    {
+      "code": "apco",
+      "reason": "driving_destination_unverified",
+      "provider_code": "NoSegment",
+      "evidence_checked_at": "2026-10-15T03:18:08.134277+00:00",
+      "response_sha256": "9a47e2b07eb0b2021492a90e5c0c0a723906376eceb198f329d94386190f5152"
+    },
+    {
+      "code": "cham",
+      "reason": "driving_destination_unverified",
+      "provider_code": "NoSegment",
+      "evidence_checked_at": "2026-10-15T03:18:16.929286+00:00",
+      "response_sha256": "9a47e2b07eb0b2021492a90e5c0c0a723906376eceb198f329d94386190f5152"
+    },
+    {
+      "code": "choh",
+      "reason": "driving_destination_unverified",
+      "provider_code": "NoSegment",
+      "evidence_checked_at": "2026-10-15T03:18:20.598330+00:00",
+      "response_sha256": "9a47e2b07eb0b2021492a90e5c0c0a723906376eceb198f329d94386190f5152"
+    },
+    {
+      "code": "fosm",
+      "reason": "driving_destination_unverified",
+      "provider_code": "NoSegment",
+      "evidence_checked_at": "2026-10-15T03:18:48.403036+00:00",
+      "response_sha256": "9a47e2b07eb0b2021492a90e5c0c0a723906376eceb198f329d94386190f5152"
+    },
+    {
+      "code": "fous",
+      "reason": "driving_destination_unverified",
+      "provider_code": "NoSegment",
+      "evidence_checked_at": "2026-10-15T03:18:51.976700+00:00",
+      "response_sha256": "9a47e2b07eb0b2021492a90e5c0c0a723906376eceb198f329d94386190f5152"
+    },
+    {
+      "code": "valr",
+      "reason": "driving_destination_unverified",
+      "provider_code": "NoSegment",
+      "evidence_checked_at": "2026-10-15T03:20:12.513089+00:00",
+      "response_sha256": "9a47e2b07eb0b2021492a90e5c0c0a723906376eceb198f329d94386190f5152"
+    }
+  ]
+}

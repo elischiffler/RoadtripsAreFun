@@ -26,3 +26,5 @@ feature `53fd0bf` plus this refactor; public acceptance remains pending. See the
 
 > Diagrams are written in [Mermaid](https://mermaid.js.org/) and render natively
 > on GitHub. No build step is needed to view them.
+
+Independent catalog expansion: [103 reviewed additional arrivals and import handoff](catalog-expansion-103.md) (October 15, 2026; no activation or deployment).
