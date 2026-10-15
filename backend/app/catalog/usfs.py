@@ -10,7 +10,7 @@ import json
 import math
 import re
 from collections import Counter
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from urllib.parse import urlparse, urlsplit
 
@@ -25,9 +25,10 @@ ATTRIBUTION = (
     "driving evidence: OSRM, © OpenStreetMap contributors (ODbL)"
 )
 RELEASE = "usfs-2026-10-15"
+ACCESS_REVIEW_DATE = date(2026, 10, 15)
 # The reviewed immutable acquisition inventory, not a blanket arbitrary-row adapter.
-INDEX_SHA256 = "cc24c5f3474c5f27f742a148fb9164a52d59425ac51b0eb81b7e3fd4e240bf6b"
-SELECTION_SHA256 = "4213c90bbce960d418b6a6c2b09e1370aeb35c18816c8bf14e12286790a43854"
+INDEX_SHA256 = "c86b01c905c80c2e878acac0fd4cffe38e9ad781960a4de4181737c0af4ae914"
+SELECTION_SHA256 = "9a74905eccd2902230645f6bc1ffab12ec72fa4a8b66eae70790107513cf2c5c"
 FACILITY_URL = "https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_RecInfraRecreationSites_02/MapServer/0/query"
 PUBLIC_URL = "https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_RecreationOpportunities_01/MapServer/0/query"
 STATE_URL = "https://tigerweb.geo.census.gov/arcgis/rest/services/Generalized_ACS2025/State_County/MapServer/7/query"
@@ -80,6 +81,95 @@ REVIEW_HOLDS = {
     "11865010344": "private-road approach asks visitors to call for access information",
     "6471.003621": "published parking is half a mile from the native trailhead point",
 }
+# An exact, inspected daily gate-time statement, not a site/road closure. Any
+# changed statement still goes through the ordinary negative-evidence gate.
+REVIEWED_GATE_HOURS = {
+    "5339.003721": (
+        20698,
+        "Daily 08:30 a.m. - 04:30 p.m.",
+        "Open Daily&nbsp;8:30 a.m.&ndash; 4:30 p.m.<br /><em>"
+        "(entrance gate closed&nbsp;at 4:15 p.m.)</em>&nbsp; &nbsp;",
+    )
+}
+
+
+def recurring_day(value):
+    """Parse only complete, unqualified month/day facts; never infer hours."""
+    if not isinstance(value, str):
+        return None
+    value = re.sub(r"(?<=\d)(?:st|nd|rd|th)\b", "", value.strip(), flags=re.I)
+    value = value.replace(".", "")
+    if value.lower().startswith("sept "):
+        value = "Sep " + value[5:]
+    for form in ("%B %d", "%b %d", "%d %B", "%d %b", "%m/%d"):
+        try:
+            parsed = datetime.strptime("2000 " + value, "%Y " + form)
+            return parsed.month, parsed.day
+        except ValueError:
+            pass
+    return None
+
+
+def public_season_conflict(public, as_of):
+    start = recurring_day(public.get("open_season_start"))
+    end = recurring_day(public.get("open_season_end"))
+    if start is None or end is None:
+        # Descriptive, missing and reduced-service seasons remain source
+        # qualifications. They do not establish an all-year opening interval.
+        return False
+    today = as_of.month, as_of.day
+    within = start <= today <= end if start <= end else today >= start or today <= end
+    return not within
+
+
+def access_facts(facility, public, origin, corroboration):
+    """Keep both publishers' native facts and attribution, including nulls."""
+    result = {}
+    for label, source, receipt, ident, fields in (
+        (
+            "construction_feed",
+            facility,
+            origin,
+            facility["site_cn"],
+            (
+                "seasonal_operational_status",
+                "open_season",
+                "season_description",
+                "season_name",
+                "site_season_start_date",
+                "site_season_end_date",
+                "operational_hours",
+                "restrictions",
+                "important_info",
+                "site_contact_notes",
+                "permit_information",
+                "fee_charged",
+            ),
+        ),
+        (
+            "public_feed",
+            public,
+            corroboration,
+            public["recareaid"],
+            (
+                "openstatus",
+                "open_season_start",
+                "open_season_end",
+                "operational_hours",
+                "restrictions",
+                "reservation_info",
+                "accessibility",
+            ),
+        ),
+    ):
+        result[label] = {
+            "record_id": ident,
+            "source_url": receipt["url"],
+            "snapshot_sha256": receipt["sha256"],
+            "checked_at": receipt["retrieved_at"],
+            "fields": {key: source.get(key) for key in fields},
+        }
+    return result
 
 
 def retained(root, evidence, *, ceiling=20 * 1024 * 1024, endpoint=None):
@@ -154,7 +244,7 @@ def state_for(point, shapes):
     return next(iter(matches)) if len(matches) == 1 and matches <= US_REGIONS else None
 
 
-def qualification(facility, public, shapes):
+def qualification(facility, public, shapes, *, as_of=None):
     """Return a rejection reason or the unchanged, source-backed compact facts."""
     a, b = facility, public
     if a.get("site_cn") in REVIEW_HOLDS:
@@ -167,10 +257,22 @@ def qualification(facility, public, shapes):
         return None, "public_status_not_open_or_missing"
     if str(a.get("usda_portal_id")) != str(b.get("recareaid")):
         return None, "public_identity_mismatch"
+    if public_season_conflict(b, as_of or datetime.now(UTC).date()):
+        return None, "public_season_outside_dated_admission"
     text = " ".join(str(a.get(key) or "") for key in ACCESS_FIELDS)
     if not a.get("directions") or not re.search(r"\bparking\b|\bcars?\b", text, re.I):
         return None, "parking_or_directions_not_documented"
-    other = " ".join(str(b.get(key) or "") for key in PUBLIC_ACCESS_FIELDS)
+    gate_hours = REVIEWED_GATE_HOURS.get(a.get("site_cn"))
+    reviewed_daily_gate = gate_hours == (
+        b.get("recareaid"),
+        a.get("operational_hours"),
+        b.get("operational_hours"),
+    )
+    other = " ".join(
+        str(b.get(key) or "")
+        for key in PUBLIC_ACCESS_FIELDS
+        if not (reviewed_daily_gate and key == "operational_hours")
+    )
     if CONTRADICTION.search(text) or CONTRADICTION.search(other):
         return None, "contradictory_access_text"
     if VEHICLE_WARNING.search(text) or VEHICLE_WARNING.search(other):
@@ -354,6 +456,14 @@ def prepare(path, manifest, *, max_rows, max_bytes):
                 "published_season_qualification": a.get("season_description"),
                 "published_restrictions": a.get("restrictions"),
                 "published_fee_charged": a.get("fee_charged"),
+                "published_access_facts": access_facts(a, b, origin, corroboration),
+                "access_review_date": ACCESS_REVIEW_DATE.isoformat(),
+                "access_review_resolution": (
+                    "Inspected exact daily hours: entrance gate stops admitting at 4:15 p.m.; "
+                    "this does not assert an all-day closure. Verify current visitor hours."
+                    if site in REVIEWED_GATE_HOURS
+                    else None
+                ),
                 "primary_category": "landmarks"
                 if a["site_type"] == "INTERPRETIVE SITE"
                 else "nature",

@@ -21,6 +21,36 @@ separate acceptance work; this PR does not claim either is complete.
 - [Venue acquisitions and holds](data/catalog-expansion-500-20261015/venue-acquisition-and-holds.json)
 - [Machine-readable validation and discovery report](evidence/catalog-expansion-500-20261015.json)
 
+## Blocking admission findings corrected
+
+The October 15 review at `9d3f7c429642dd3fe93cdfba6b7e55e1e9a5eae1`
+found that public-feed season dates did not participate in admission and that
+public-only restrictions/hours were omitted. Both are corrected here.
+
+- **Withheld:** Stoney Creek (`usfs:6499`, May 20–September 12) and Kettle Crest
+  (`usfs:67862`, December 1–March 31). OPEN enums and road snaps cannot establish
+  seasonal access. Complete recurring month/day intervals are checked against
+  the current UTC admission date, inclusively across year boundaries.
+- **Replacements:** Swan Observatory (`usfs:79043`, AK) and Eastern Sierra Visitor
+  Center (`usfs:20698`, CA). Both have the retained open public record, native
+  facility point, directions and parking evidence. Driving destination distances
+  are 62.67 m and 69.25 m. Eastern Sierra's exact daily gate-time statement was
+  inspected: daily 08:30–16:30 opening and a 16:15 entrance cutoff are access
+  qualifications, not an all-day closure. The exception matches only those exact
+  two feed statements; a changed or additional closure still fails admission.
+- **Attribution:** every selected USFS row carries separate `construction_feed`
+  and `public_feed` access facts with its own URL, snapshot hash, acquisition
+  time and native record ID. All **32 public-only restrictions** survive.
+  Columbine (`usfs:84460`) retains the warning against vehicles/trailers over
+  22 feet and its summer/weekend/volunteer qualification. These remain source
+  facts; no scheduler opening intervals or prices are invented.
+
+The count stays **500**, with **257 additions**. The serialized first **243 rows
+and their provenance remain byte-identical**. Seventeen additional regression
+cases cover dates, wraparound/boundary days, the admission clock, literal source
+attribution, and narrow daily-gate interpretation. The 30-day source freshness
+guard, arrival distance limit, importer/database ceilings and schema are unchanged.
+
 ## Coverage and practical limits
 
 | Exclusive primary reporting category | Total |
@@ -42,8 +72,8 @@ Query groups can overlap: the new bowling venue also has a publisher-supported
 in the exclusive table. Unknown scheduler hours and prices are not filled in.
 
 Coverage is **47 states plus DC**. CT, DE and VT remain empty. The largest
-regional concentrations are WA 67, CO 63, CA 43, AZ 31, OR 31, UT 20 and MT 18.
-Alaska has 14 total and Hawaii six. The Alaska additions are local road-network
+regional concentrations are WA 66, CO 63, CA 43, AZ 31, OR 31, UT 20 and MT 18.
+Alaska has 15 total and Hawaii six. The Alaska additions are local road-network
 clusters; travel to those networks from the lower 48 can require a flight or
 ferry. No continuous lower-48 driving access is asserted.
 
@@ -159,69 +189,54 @@ python -X utf8 scripts/catalog_500_manifest.py \
 ```
 
 Use explicit **500 rows / 64 MiB** for the complete recipe. Measured evidence at
-the first complete replay is **64,003,549 bytes**, below 67,108,864. Recipe paths
+the first complete replay is **64,006,741 bytes**, below 67,108,864. Recipe paths
 can change aggregate bytes and generation fingerprints slightly after relocation;
 normalized rows/provenance remain identical. The canonical 500-row serialization
-SHA-256 is `a52fbe12bdba5f7e20669614367331d6d05e496f964d4546291d502c33fefffb`.
+SHA-256 is `804b0854158423d44917e7ed27e2ea9b00ce21ec4048f8520ec7cc158678a896`.
 The importer hard ceilings remain **50,000 rows / 100 MiB**; database ceilings and
 schema are unchanged. Mixed input count remains below its 30-child limit.
 
-Portable source bundle **version 1**, `roadtrips-reviewed-500-portable-source-v1.zip`,
-**28,487,243 bytes**, SHA-256
-`c43abc122b15316d4cc79ad44d7c642d3119492b078e1413b5a73621f0f25718`,
-is saved privately in Library for the task owner. It includes the unchanged
-214/29 ZIPs, the exact code snapshot at
-`302f39910e660fb2e34cea16d2ecc9ab0d4880d6`, all original new-source/rights
-receipts, an inventory, and `rebuild.py`. A fresh extraction to paths containing
-spaces verifies **931 inventoried files** and reproduces all **500** rows with
-network and database connections forbidden. The outer ZIP has 932 files, including
-the inventory itself. Windows filename preflight finds zero invalid/reserved
-names. Actual Windows execution remains pending.
+The corrected private portable bundle is **version 2**, replacing the blocked
+version 1 proposal. Its exact archive hash, size, immutable code snapshot and
+fresh offline replay are recorded in the
+[portable replay receipt](evidence/catalog-expansion-500-portable-replay.json).
+The original 214/29 ZIPs and all original 333 driving receipts remain unchanged;
+one genuinely acquired Eastern Sierra driving response is appended. Original
+USFS source/driving inventories are retained alongside the corrected inventories.
+No otherwise qualified record remains outside the exact 500-row selection.
 
-[One otherwise qualified source candidate](data/catalog-expansion-500-20261015/otherwise-qualified-not-selected.json)
-is excluded by the exact 500-row release selection. The separate source ledger
-records all other exclusions and unresolved shared arrivals.
-
-The [portable replay and isolated restore receipt](evidence/catalog-expansion-500-portable-replay.json)
-records those measured checks. Install Python 3.12 and the two pinned replay
-dependencies, psycopg2-binary 2.9.9 and lxml 5.3.0, before offline use; interpreter
-and dependency installers are not bundled. Raw operator HTML remains private
-audit evidence; source-data notices do not grant rights to republish its prose,
-embedded reviews or logos. Normalized row facts and their source attribution are
-the public review deliverable.
+Install Python 3.12 and the two pinned replay dependencies, psycopg2-binary 2.9.9
+and lxml 5.3.0, before offline use. Interpreter and installers are not bundled.
+Raw operator HTML remains private audit evidence; its prose, embedded reviews
+and logos are not licensed for public redistribution. The replay validates source
+freshness and current UTC seasonal admission; a later closure can appropriately
+withhold a row and stop the frozen release rebuild. Descriptive or reduced-service
+seasons stay attributed qualifications and never become scheduler intervals.
+Actual Windows execution remains pending.
 
 The source inventory SHA is
-`cc24c5f3474c5f27f742a148fb9164a52d59425ac51b0eb81b7e3fd4e240bf6b`.
+`c86b01c905c80c2e878acac0fd4cffe38e9ad781960a4de4181737c0af4ae914`.
 Source evidence has the existing **30-day** freshness guard. After that window,
 strict re-admission requires genuine acquisition and review; editing dates is not
 a valid refresh. Saved expected rows remain historical evidence.
 
-Final network-disabled container validation passes **1,120 tests, 86.60% coverage**; five skipped
-opt-in PostgreSQL cases subsequently pass against a separate newly created
-`catalog_test` database. The 35 new catalog cases pass. Ruff and diff checks pass.
-Frontend format, lint, **319 tests / 90.23% line coverage**, and build pass after
-`npm ci` replaces the preloaded obsolete SDK with the lockfile version. The
-existing large-bundle build warning remains. The fresh offline ZIP replay, container smoke (2/2), and complete disposable
-PostgreSQL CRUD/recreate/readiness/backup/restore pass. Container dependencies were
-installed offline using the repository's `cloud_build.py` and ordinary verified
-workspace downloads; runtime security settings were retained. Direct nested
-Docker egress was unavailable. Its initial buildx/cache path error is recorded
-in the validation report.
+Current fix validation passes **1,137 backend tests, 87.42% coverage** (five
+opt-in PostgreSQL cases skipped), Ruff format/lint, and **348 focused catalog
+cases**. All five opt-in cases subsequently pass against a newly created isolated
+`catalog_test`. Frontend format/lint, **319 tests / 90.23% line coverage**, and
+build pass; the existing large-bundle warning remains. Exact-head remote CI and
+the final bundle replay are tracked in the machine-readable receipts. Historical
+pre-fix validation is retained separately and does not validate these new rows.
 
-A first container full-suite run under concurrent validation load passed 1,119
-cases and failed the existing parallel-speed timing assertion (0.779 seconds,
-required below 0.688 seconds); five PostgreSQL cases were skipped there. The
-isolated timing recheck and serial full-suite rerun pass (**1,120 passed**, five
-skipped, **86.60% coverage**). Exact pushed-head CI is checked separately. No
-assertion or threshold changed.
+Fresh PostgreSQL 18.6 discovery measurements on the corrected 500 preserve the
+counts above, including both zero-hit benchmark corridors. The corrected public
+catalog dump and isolated restore each retain **743 rows** (243 + 500) and the
+**500** active pointer, with content MD5 `7eb0b30a138d00c20c0a61162a1be352`.
+The custom dump is **263,516 bytes**, SHA-256
+`66c06f8eb3472c26abb83aa45f28d376dc57912e517bc87511f5075a64b2fff4`.
+This is disposable public-data recovery evidence, not production backup acceptance.
 
-The separately isolated public catalog dump/restore preserves **743** retained
-rows (243 + 500), the **500** active pointer, and database-content MD5
-`e4a7ffbc7ca0bc1c4cb3621ba6ba196a`. The custom dump is 217,958 bytes, SHA-256
-`9de83da593bcda96e06f47861ddfde20b1420365e9b6040713e8a76009d2ecd2`.
-This is local public-data recovery evidence, not production backup acceptance.
-
-Production backup/restore acceptance, review, merge, deployment and activation
-remain with the separate rollout owner. Activating only one increment would
-replace retained coverage. This task performs no production database write,
-credential change, trip deletion, paid-service purchase, main push or merge.
+Production backup/restore acceptance, independent re-review, merge, deployment
+and activation remain with the separate rollout owner. This fix task performs
+no production database write, credential change, trip deletion, paid-service
+purchase, main push or merge. Coverage completion is not claimed.

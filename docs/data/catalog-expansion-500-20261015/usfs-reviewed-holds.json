@@ -84,13 +84,6 @@
     "reason": "alternate_arrival_for_selected_public_destination"
   },
   {
-    "site_cn": "5053.008031",
-    "public_record_id": "79043",
-    "source_name": "Swan Observatory",
-    "admitted": false,
-    "reason": "release_cap_or_shared_arrival_hold"
-  },
-  {
     "site_cn": "3880738010602",
     "public_record_id": "67924",
     "source_name": "Flume Creek Trailhead",
@@ -131,5 +124,33 @@
     "source_name": "Burning Bear Trailhead",
     "admitted": false,
     "reason": "published_vehicle_access_warning"
+  },
+  {
+    "site_cn": "2792021010602",
+    "public_record_id": "67862",
+    "source_name": "Kettle Crest Trailhead On Boulder - Deer",
+    "admitted": false,
+    "reason": "public_season_outside_dated_admission"
+  },
+  {
+    "site_cn": "6575.004291",
+    "public_record_id": "6499",
+    "source_name": "Stoney Creek Swimming Area",
+    "admitted": false,
+    "reason": "public_season_outside_dated_admission"
+  },
+  {
+    "site_cn": "2792021010602",
+    "public_record_id": "67862",
+    "source_name": "Kettle Crest Trailhead On Boulder - Deer",
+    "admitted": false,
+    "reason": "public_season_outside_dated_admission"
+  },
+  {
+    "site_cn": "6575.004291",
+    "public_record_id": "6499",
+    "source_name": "Stoney Creek Swimming Area",
+    "admitted": false,
+    "reason": "public_season_outside_dated_admission"
   }
 ]

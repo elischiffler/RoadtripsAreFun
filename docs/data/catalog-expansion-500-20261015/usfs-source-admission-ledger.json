@@ -10818,8 +10818,8 @@
     "site_cn": "2792021010602",
     "public_record_id": "67862",
     "source_name": "Kettle Crest Trailhead On Boulder - Deer",
-    "admitted": true,
-    "reason": null
+    "admitted": false,
+    "reason": "public_season_outside_dated_admission"
   },
   {
     "site_cn": "5411010263",
@@ -26757,8 +26757,8 @@
     "site_cn": "6575.004291",
     "public_record_id": "6499",
     "source_name": "Stoney Creek Swimming Area",
-    "admitted": true,
-    "reason": null
+    "admitted": false,
+    "reason": "public_season_outside_dated_admission"
   },
   {
     "site_cn": "6485.005421",
@@ -29067,8 +29067,8 @@
     "site_cn": "5053.008031",
     "public_record_id": "79043",
     "source_name": "Swan Observatory",
-    "admitted": false,
-    "reason": "otherwise_qualified_but_excluded_by_exact_500_release_selection"
+    "admitted": true,
+    "reason": "admitted"
   },
   {
     "site_cn": "5592.004841",
@@ -32007,8 +32007,8 @@
     "site_cn": "5339.003721",
     "public_record_id": "20698",
     "source_name": "Eastern Sierra Visitor Center",
-    "admitted": false,
-    "reason": "contradictory_access_text"
+    "admitted": true,
+    "reason": "admitted"
   },
   {
     "site_cn": "13435010602",

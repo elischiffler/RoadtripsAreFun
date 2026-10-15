@@ -3,7 +3,7 @@
 import copy
 import hashlib
 import json
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 
 import pytest
 
@@ -189,3 +189,142 @@ def test_non_successful_or_distant_raw_route_cannot_be_counted(tmp_path):
     )
     with pytest.raises(ValueError, match="too distant"):
         usfs.driving(tmp_path, entry, row)
+
+
+@pytest.mark.parametrize(
+    "start,end,day,rejected",
+    [
+        ("May 20", "Sept. 12", date(2026, 10, 15), True),
+        ("Dec 1", "March 31", date(2026, 10, 15), True),
+        ("Dec 1", "March 31", date(2026, 12, 1), False),
+        ("Dec 1", "March 31", date(2026, 1, 15), False),
+        ("Dec 1", "March 31", date(2026, 3, 31), False),
+        ("May 20", "Sept. 12", date(2026, 9, 12), False),
+        ("May 20", "Sept. 12", date(2026, 5, 19), True),
+        ("6/1", "10/15", date(2026, 10, 15), False),
+        ("April 15th", "30 November", date(2026, 10, 15), False),
+    ],
+)
+def test_open_enums_do_not_override_public_season_dates(start, end, day, rejected):
+    facility, public, shapes = sources()
+    public.update(open_season_start=start, open_season_end=end)
+    row, reason = usfs.qualification(facility, public, shapes, as_of=day)
+    if rejected:
+        assert (row, reason) == (None, "public_season_outside_dated_admission")
+    else:
+        assert reason is None
+        assert "opening_hours" not in row
+
+
+@pytest.mark.parametrize(
+    "value", [None, "Summer", "October", "09/15; reduced service rest of year", "Feb 30"]
+)
+def test_incomplete_or_qualified_seasons_are_not_invented_as_calendar_dates(value):
+    assert usfs.recurring_day(value) is None
+
+
+def test_default_admission_uses_the_current_date(monkeypatch):
+    class AdmissionTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return cls(2026, 10, 15, tzinfo=tz)
+
+    monkeypatch.setattr(usfs, "datetime", AdmissionTime)
+    facility, public, shapes = sources()
+    public.update(open_season_start="May 20", open_season_end="Sept. 12")
+    assert (
+        usfs.qualification(facility, public, shapes)[1] == "public_season_outside_dated_admission"
+    )
+
+
+def test_inspected_daily_gate_hours_do_not_bypass_changed_or_other_closures():
+    facility, public, shapes = sources()
+    facility.update(site_cn="5339.003721", usda_portal_id="20698")
+    public["recareaid"] = 20698
+    facility["operational_hours"] = "Daily 08:30 a.m. - 04:30 p.m."
+    public["operational_hours"] = (
+        "Open Daily&nbsp;8:30 a.m.&ndash; 4:30 p.m.<br /><em>"
+        "(entrance gate closed&nbsp;at 4:15 p.m.)</em>&nbsp; &nbsp;"
+    )
+    assert usfs.qualification(facility, public, shapes)[1] is None
+    public["restrictions"] = "The access road is closed."
+    assert usfs.qualification(facility, public, shapes)[1] == "contradictory_access_text"
+    public["restrictions"] = None
+    public["operational_hours"] += " Temporarily closed for repairs."
+    assert usfs.qualification(facility, public, shapes)[1] == "contradictory_access_text"
+
+
+def test_admitted_row_keeps_both_sources_access_qualifications(tmp_path, monkeypatch):
+    class AdmissionTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return cls(2026, 10, 15, tzinfo=tz)
+
+    monkeypatch.setattr(usfs, "datetime", AdmissionTime)
+    facility, public, shapes = sources()
+    facility.update(operational_hours="Seasonal hours; call the district.", restrictions=None)
+    public.update(
+        open_season_start="April 15",
+        open_season_end="November 14",
+        operational_hours="Open most weekends during summer; hours vary with volunteer availability.",
+        restrictions="Vehicles (including trailers) longer than 22 feet are not recommended.",
+        reservation_info="First-come, first-serve",
+        accessibility="Accessible path",
+    )
+
+    def retain(name, value, url):
+        raw = (json.dumps(value) + "\n").encode()
+        (tmp_path / name).write_bytes(raw)
+        return {
+            "path": name,
+            "sha256": hashlib.sha256(raw).hexdigest(),
+            "retrieved_at": datetime.now(UTC).isoformat(),
+            "status": 200,
+            "url": url,
+        }
+
+    origin = retain("facility.json", {"features": [{"attributes": facility}]}, usfs.FACILITY_URL)
+    corroboration = retain("public.json", {"features": [{"attributes": public}]}, usfs.PUBLIC_URL)
+    check = {**receipt(tmp_path), "site_cn": facility["site_cn"]}
+    index = {
+        "facilities": [origin],
+        "public": [corroboration],
+        "states": retain("states.json", {}, usfs.STATE_URL),
+        "driving": retain("driving-index.json", [check], "https://router.project-osrm.org"),
+        "rights": [],
+    }
+    inventory = retain("index.json", index, "https://www.fs.usda.gov")
+    selection = [facility["site_cn"]]
+    bundle = retain("bundle.json", {"index": inventory, "selection": selection}, usfs.SOURCE_URL)
+    monkeypatch.setattr(usfs, "INDEX_SHA256", inventory["sha256"])
+    monkeypatch.setattr(
+        usfs,
+        "SELECTION_SHA256",
+        hashlib.sha256(json.dumps(selection, separators=(",", ":")).encode()).hexdigest(),
+    )
+    monkeypatch.setattr(usfs, "state_shapes", lambda _: shapes)
+    manifest = {
+        "source_url": usfs.SOURCE_URL,
+        "release": usfs.RELEASE,
+        "attribution": usfs.ATTRIBUTION,
+        "sha256": bundle["sha256"],
+    }
+    rows, report = usfs.prepare(tmp_path / "bundle.json", manifest, max_rows=1, max_bytes=100_000)
+    assert report["accepted"] == 1
+    row = rows[0]
+    facts = row["provenance"][0]["published_access_facts"]
+    for label, source, evidence in (
+        ("construction_feed", facility, origin),
+        ("public_feed", public, corroboration),
+    ):
+        fact = facts[label]
+        assert fact["source_url"] == evidence["url"]
+        assert fact["snapshot_sha256"] == evidence["sha256"]
+        assert fact["checked_at"] == evidence["retrieved_at"]
+        assert all(value == source.get(key) for key, value in fact["fields"].items())
+    assert facts["construction_feed"]["fields"]["restrictions"] is None
+    assert facts["public_feed"]["fields"]["restrictions"] == public["restrictions"]
+    assert facts["public_feed"]["fields"]["operational_hours"] == public["operational_hours"]
+    assert facts["public_feed"]["fields"]["open_season_end"] == "November 14"
+    assert row["provenance"][0]["opening_hours_imported"] is False
+    assert not {"opening_hours", "opening_intervals", "price"}.intersection(row)

@@ -4,61 +4,61 @@
   "preserved_rows_and_provenance": 243,
   "new_usfs": 251,
   "new_venues": 6,
-  "evidence_bytes": 64003549,
+  "evidence_bytes": 64006741,
   "max_rows": 500,
   "max_bytes": 67108864,
-  "normalized_rows_sha256": "a52fbe12bdba5f7e20669614367331d6d05e496f964d4546291d502c33fefffb",
-  "usfs_source_inventory_sha256": "cc24c5f3474c5f27f742a148fb9164a52d59425ac51b0eb81b7e3fd4e240bf6b",
-  "usfs_evidence_bytes": 22008150,
+  "normalized_rows_sha256": "804b0854158423d44917e7ed27e2ea9b00ce21ec4048f8520ec7cc158678a896",
+  "usfs_source_inventory_sha256": "c86b01c905c80c2e878acac0fd4cffe38e9ad781960a4de4181737c0af4ae914",
+  "usfs_evidence_bytes": 22008876,
   "regions": {
-    "AK": 14,
-    "AL": 3,
-    "AR": 4,
-    "AZ": 31,
-    "CA": 43,
     "CO": 63,
-    "DC": 1,
+    "ME": 3,
+    "UT": 20,
+    "SD": 4,
+    "TX": 10,
     "FL": 4,
-    "GA": 9,
+    "NM": 13,
+    "SC": 6,
+    "OR": 31,
+    "OH": 10,
+    "AK": 15,
+    "CA": 43,
+    "MT": 18,
+    "NV": 2,
+    "AZ": 31,
+    "TN": 6,
+    "WY": 15,
     "HI": 6,
+    "KY": 13,
+    "WA": 66,
+    "VA": 6,
+    "ND": 2,
+    "MN": 3,
+    "IN": 5,
+    "AR": 4,
+    "GA": 9,
     "IA": 2,
     "ID": 5,
     "IL": 2,
-    "IN": 5,
-    "KS": 3,
-    "KY": 13,
     "LA": 1,
     "MA": 7,
-    "MD": 6,
-    "ME": 3,
-    "MI": 12,
-    "MN": 3,
     "MO": 12,
-    "MS": 1,
-    "MT": 18,
-    "NC": 6,
-    "ND": 2,
     "NE": 4,
-    "NH": 6,
     "NJ": 1,
-    "NM": 13,
-    "NV": 2,
-    "NY": 4,
-    "OH": 10,
     "OK": 1,
-    "OR": 31,
-    "PA": 5,
     "RI": 2,
-    "SC": 6,
-    "SD": 4,
-    "TN": 6,
-    "TX": 10,
-    "UT": 20,
-    "VA": 6,
-    "WA": 67,
+    "KS": 3,
+    "MI": 12,
+    "NC": 6,
+    "AL": 3,
+    "MD": 6,
+    "PA": 5,
+    "DC": 1,
+    "NY": 4,
     "WI": 7,
+    "MS": 1,
     "WV": 1,
-    "WY": 15
+    "NH": 6
   },
   "source_counts": {
     "boulder-osmp": 24,
@@ -71,7 +71,7 @@
   },
   "generation_fingerprint_depends_on_relocated_paths": true,
   "production_activation_performed": false,
-  "checked_at": "2026-10-15T16:20:12.009495+00:00",
+  "checked_at": "2026-10-15T16:59:17.564011+00:00",
   "current_main_inspected": "0c73b06",
   "dependency_pr": 44,
   "dependency_reviewed_head": "5f17b994f719b9e9d342bd0d17f1bde9e339ffa6",
@@ -98,7 +98,7 @@
   "new_regions": {
     "CA": 21,
     "CO": 32,
-    "WA": 61,
+    "WA": 60,
     "NH": 6,
     "ME": 2,
     "OH": 4,
@@ -106,7 +106,7 @@
     "OR": 29,
     "GA": 1,
     "AZ": 15,
-    "AK": 12,
+    "AK": 13,
     "UT": 13,
     "WY": 10,
     "ID": 4,
@@ -120,15 +120,14 @@
     "PA": 1
   },
   "new_usfs_native_types": {
-    "TRAILHEAD": 156,
+    "TRAILHEAD": 155,
     "PICNIC SITE": 57,
-    "DAY USE AREA": 4,
-    "OBSERVATION SITE": 14,
     "INTERPRETIVE SITE": 16,
+    "OBSERVATION SITE": 14,
+    "DAY USE AREA": 4,
     "INTERPRETIVE VISITOR CENTER (MAJOR)": 1,
-    "WILDLIFE VIEWING SITE": 1,
-    "SWIMMING SITE": 1,
-    "INTERPRETIVE VISITOR CENTER (MINOR)": 1
+    "INTERPRETIVE VISITOR CENTER (MINOR)": 2,
+    "WILDLIFE VIEWING SITE": 2
   },
   "usfs_scanned_facility_records": 5824,
   "usfs_public_corroboration_records": 891,
@@ -140,18 +139,18 @@
     "public_feed_status_closed": 94,
     "driving_rejected: USFS driving destination is too distant or invalid": 60,
     "parking_or_directions_not_documented": 33,
-    "contradictory_access_text": 20,
+    "contradictory_access_text": 19,
     "public_feed_status_unreachable": 10,
     "public_feed_status_temporarily closed": 4,
     "published_vehicle_access_warning": 10,
     "public_feed_status_not cleared": 5,
+    "public_season_outside_dated_admission": 2,
     "review_hold: conflicting September/October season ends and snow warning": 1,
     "state_not_established": 5,
     "review_hold: private-road approach asks visitors to call for access information": 1,
     "review_hold: published parking is half a mile from the native trailhead point": 1,
     "review_hold: published season ends in September": 1,
     "alternate_arrival_for_selected_public_destination": 2,
-    "otherwise_qualified_but_excluded_by_exact_500_release_selection": 1,
     "review_hold: winter ski arrival has no reviewed ordinary fall use": 1,
     "unresolved_shared_arrival_with_usfs:42495_248.2m": 1
   },
@@ -167,16 +166,618 @@
     "roadtrips-reviewed-214-portable-source.zip": "32294767109e30c2e2aede00bc505c4561c3a8d2a81d1d8e76b90a344255ae27",
     "roadtrips-nature-29-source-20261015.zip": "da9f66bc7345a9bf6e1e9f2844c60818b6e25eeec03dd02d7e9fbf71d6a98a2c"
   },
+  "no_production_database_calls": true,
+  "limitations": [
+    "Nature dominates the final mix. Entertainment, roadside, beach and nightlife counts remain small.",
+    "LA\u2013San Diego and Ely\u2013Reno benchmark geometries return zero five-mile daytime discovery hits.",
+    "The unknown failing route was unavailable. Corridor hits do not prove detours, schedules, budgets or solver success.",
+    "Alaska additions form local road clusters; lower-48 road continuity is not asserted.",
+    "Current evidence dates expire after 30 days under existing admission guards; refresh sources and review honestly, not by editing dates.",
+    "Production rollout, recovery evidence, independent review, Windows execution and activation belong to the separate rollout task."
+  ],
+  "private_publisher_evidence_rights": "Raw operator HTML is retained privately for audit, with no grant to republish its prose, embedded reviews or logos. Overture/agency notices apply to emitted source facts, not every byte of private website evidence.",
+  "otherwise_qualified_not_selected_count": 0,
+  "historical_pre_fix_validation": {
+    "head": "9d3f7c429642dd3fe93cdfba6b7e55e1e9a5eae1",
+    "validation": {
+      "backend": "PASS for exact implementation commit: isolated network-disabled container, 1120 passed, 5 skipped, 86.60% coverage (unchanged floor 63%). The 5 opt-in PostgreSQL cases separately passed on a newly created loopback catalog_test. Host full suite previously passed 1120 at 86.65%; 35 new catalog cases pass.",
+      "new_catalog_cases": "35 passed",
+      "frontend": "PASS: format, lint, 319 tests, 90.23% line/statement coverage and build after npm ci. Initial preloaded SDK 3.625.0 run failed 28 session-related tests; lockfile requires 3.1146.0. Initial npm cache and Docker buildx paths were read-only; task-scoped writable caches resolved those environment prerequisites. Existing large-bundle warning retained.",
+      "containers": "PASS: exact-code offline dependency image builds, 2/2 container smoke tests, full disposable PostgreSQL CRUD/recreate/readiness/backup/restore and populated-target refusal, and full network-disabled backend suite (1120 passed, 5 skipped, 86.60%). First full container run had one unchanged timing-assertion failure (0.779s vs required <0.688s), 1119 passed, 5 skipped; isolated timing check and serial full rerun passed. Assertions and thresholds were not changed.",
+      "portable_source_zip": "PASS: fresh ZIP extraction to a path containing spaces; 931 inventoried files verified; 214 + 29 + 257 re-admitted offline with socket/urllib/psycopg2 connections forbidden. Exactly 500 normalized rows/provenance match.",
+      "windows": "Actual Windows execution remains pending, including the inherited PR44 replay; no Windows runtime success claimed.",
+      "ci": "Pending exact pushed-head GitHub Actions after PR creation; not claimed passed by this receipt."
+    },
+    "portable_source_bundle": {
+      "name": "roadtrips-reviewed-500-portable-source-v1.zip",
+      "bytes": 28487243,
+      "sha256": "c43abc122b15316d4cc79ad44d7c642d3119492b078e1413b5a73621f0f25718",
+      "files": 932,
+      "windows_invalid_filenames": [],
+      "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6"
+    },
+    "portable_replay": {
+      "accepted": 500,
+      "duplicates": 0,
+      "preserved_rows_and_provenance": 243,
+      "new_usfs": 251,
+      "new_venues": 6,
+      "evidence_bytes": 64008625,
+      "max_rows": 500,
+      "max_bytes": 67108864,
+      "normalized_rows_sha256": "a52fbe12bdba5f7e20669614367331d6d05e496f964d4546291d502c33fefffb",
+      "usfs_source_inventory_sha256": "cc24c5f3474c5f27f742a148fb9164a52d59425ac51b0eb81b7e3fd4e240bf6b",
+      "usfs_evidence_bytes": 22008150,
+      "regions": {
+        "CO": 63,
+        "ME": 3,
+        "UT": 20,
+        "SD": 4,
+        "TX": 10,
+        "FL": 4,
+        "NM": 13,
+        "SC": 6,
+        "OR": 31,
+        "OH": 10,
+        "AK": 14,
+        "CA": 43,
+        "MT": 18,
+        "NV": 2,
+        "AZ": 31,
+        "TN": 6,
+        "WY": 15,
+        "HI": 6,
+        "KY": 13,
+        "WA": 67,
+        "VA": 6,
+        "ND": 2,
+        "MN": 3,
+        "IN": 5,
+        "AR": 4,
+        "GA": 9,
+        "IA": 2,
+        "ID": 5,
+        "IL": 2,
+        "LA": 1,
+        "MA": 7,
+        "MO": 12,
+        "NE": 4,
+        "NJ": 1,
+        "OK": 1,
+        "RI": 2,
+        "KS": 3,
+        "MI": 12,
+        "NC": 6,
+        "AL": 3,
+        "MD": 6,
+        "PA": 5,
+        "DC": 1,
+        "NY": 4,
+        "WI": 7,
+        "MS": 1,
+        "WV": 1,
+        "NH": 6
+      },
+      "source_counts": {
+        "boulder-osmp": 24,
+        "nps": 43,
+        "nps-public": 41,
+        "kaggle-loc-roadside": 1,
+        "overture": 25,
+        "nps-heritage": 115,
+        "usfs": 251
+      },
+      "generation_fingerprint_depends_on_relocated_paths": true,
+      "production_activation_performed": false,
+      "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6",
+      "all_bundle_files_verified": 931,
+      "all_500_normalized_rows_match": true,
+      "network_and_database_connections_forbidden": true
+    },
+    "catalog_dump_restore": {
+      "disposable_loopback_only": true,
+      "source_and_restore": [
+        {
+          "database": "catalog_500_validation",
+          "all_retained_rows": 743,
+          "normalized_database_content_md5": "e4a7ffbc7ca0bc1c4cb3621ba6ba196a",
+          "active": [
+            [
+              "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507",
+              500
+            ]
+          ]
+        },
+        {
+          "database": "catalog_500_restore",
+          "all_retained_rows": 743,
+          "normalized_database_content_md5": "e4a7ffbc7ca0bc1c4cb3621ba6ba196a",
+          "active": [
+            [
+              "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507",
+              500
+            ]
+          ]
+        }
+      ],
+      "dump_bytes": 217958,
+      "dump_sha256": "9de83da593bcda96e06f47861ddfde20b1420365e9b6040713e8a76009d2ecd2",
+      "production_backup_or_restore_claimed": false
+    },
+    "discovery": {
+      "checked_at": "2026-10-15T16:15:10.384590+00:00",
+      "database": "catalog_500_validation",
+      "postgres_version": "PostgreSQL 18.6 (Debian 18.6-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+      "target_is_disposable_loopback": true,
+      "active_count": 500,
+      "generation_count": 2,
+      "generation_fingerprints": {
+        "baseline_243": "99e29b2794284434f7b5d3e43b05e55f305f6cb1ba227ea1768be2b0217fa53d",
+        "prepared_500": "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507"
+      },
+      "discovery": {
+        "baseline_243": {
+          "short-day": {
+            "role": "existing benchmark",
+            "route_distance_miles": 120.10036387497016,
+            "route_response_sha256": "0c4df7cce295362fa0db0c4ec2858425f61577031cdacdaa606cee4d2a91a28a",
+            "sample_points": 31,
+            "samples_with_daytime_hits": 0,
+            "unique_daytime_hits": 0,
+            "daytime_provider_ids": [],
+            "unique_evening_category_hits": 0,
+            "evening_provider_ids": []
+          },
+          "medium-two-day": {
+            "role": "existing benchmark; also tight-budget geometry",
+            "route_distance_miles": 639.1701214904955,
+            "route_response_sha256": "8cdd147e8a50e69f934be2a85e12b387fb77551fe232393aff5ac95a855dada9",
+            "sample_points": 156,
+            "samples_with_daytime_hits": 2,
+            "unique_daytime_hits": 1,
+            "daytime_provider_ids": [
+              "nps-heritage:rori"
+            ],
+            "unique_evening_category_hits": 1,
+            "evening_provider_ids": [
+              "nps-heritage:rori"
+            ]
+          },
+          "long-multi-day": {
+            "role": "existing benchmark",
+            "route_distance_miles": 2135.290031217689,
+            "route_response_sha256": "90f841ec63138319d6afba9b9bbc430598cedebe1baed7d3ff05f898e858c839",
+            "sample_points": 510,
+            "samples_with_daytime_hits": 5,
+            "unique_daytime_hits": 2,
+            "daytime_provider_ids": [
+              "nps-heritage:heho",
+              "nps-heritage:rori"
+            ],
+            "unique_evening_category_hits": 2,
+            "evening_provider_ids": [
+              "nps-heritage:heho",
+              "nps-heritage:rori"
+            ]
+          },
+          "dense-corridor": {
+            "role": "existing benchmark",
+            "route_distance_miles": 380.8407027956732,
+            "route_response_sha256": "19e25dbacc318c5d81b536cb22ebff262adc4741df2dbb3db9b489bfb73d77d5",
+            "sample_points": 91,
+            "samples_with_daytime_hits": 0,
+            "unique_daytime_hits": 0,
+            "daytime_provider_ids": [],
+            "unique_evening_category_hits": 0,
+            "evening_provider_ids": []
+          },
+          "sparse-corridor": {
+            "role": "existing benchmark",
+            "route_distance_miles": 319.8282654298894,
+            "route_response_sha256": "ed3e2e33f19a70a449a5bca6cd08f8bb0ce206a5315597d4a117bed1ac096bf7",
+            "sample_points": 77,
+            "samples_with_daytime_hits": 0,
+            "unique_daytime_hits": 0,
+            "daytime_provider_ids": [],
+            "unique_evening_category_hits": 0,
+            "evening_provider_ids": []
+          },
+          "pacific-northwest": {
+            "role": "representative roadtrip",
+            "route_distance_miles": 173.38443490018292,
+            "route_response_sha256": "28b7f08bee6e3256decf6893f1a709d4ad0368e25cd31dd4eff250975b67db41",
+            "sample_points": 43,
+            "samples_with_daytime_hits": 6,
+            "unique_daytime_hits": 4,
+            "daytime_provider_ids": [
+              "nps-heritage:fova",
+              "overture:03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+              "overture:2abb1511-8b94-4503-8c49-46c17ddae309",
+              "overture:69bc4e96-e908-43cc-af03-8aa4c9d5880f"
+            ],
+            "unique_evening_category_hits": 4,
+            "evening_provider_ids": [
+              "nps-heritage:fova",
+              "overture:03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+              "overture:2abb1511-8b94-4503-8c49-46c17ddae309",
+              "overture:69bc4e96-e908-43cc-af03-8aa4c9d5880f"
+            ]
+          },
+          "southwest": {
+            "role": "representative roadtrip",
+            "route_distance_miles": 372.7436147896285,
+            "route_response_sha256": "dcd4d7653a534549eb1048d0cf182e2eff5267414ce6420ad55e5d0f53b2d8c3",
+            "sample_points": 91,
+            "samples_with_daytime_hits": 3,
+            "unique_daytime_hits": 1,
+            "daytime_provider_ids": [
+              "overture:815d0220-8400-4205-93f9-8e12cf265c0f"
+            ],
+            "unique_evening_category_hits": 1,
+            "evening_provider_ids": [
+              "overture:815d0220-8400-4205-93f9-8e12cf265c0f"
+            ]
+          },
+          "olympic-peninsula": {
+            "role": "representative regional roadtrip via named towns",
+            "route_distance_miles": 178.73089904955063,
+            "route_response_sha256": "777c146d9f05a1dfefc22dd2f5d04c65ff7bfd3588c85d32f0edb21d7ef7d65f",
+            "sample_points": 45,
+            "samples_with_daytime_hits": 3,
+            "unique_daytime_hits": 1,
+            "daytime_provider_ids": [
+              "nps:olym"
+            ],
+            "unique_evening_category_hits": 0,
+            "evening_provider_ids": []
+          },
+          "colorado-scenic": {
+            "role": "representative regional roadtrip via named towns",
+            "route_distance_miles": 132.81131939473474,
+            "route_response_sha256": "8219cdef6e245cf81d92c9abff0faa2cc58cb867d2f9df25c4d5c42e692a3e59",
+            "sample_points": 34,
+            "samples_with_daytime_hits": 1,
+            "unique_daytime_hits": 1,
+            "daytime_provider_ids": [
+              "nps-public:cure:visitor-center"
+            ],
+            "unique_evening_category_hits": 0,
+            "evening_provider_ids": []
+          },
+          "juneau-local": {
+            "role": "representative local Alaska roadtrip; arrival from lower 48 requires separate air/ferry planning; destination point is a source-backed catalog arrival",
+            "route_distance_miles": 15.887715740077944,
+            "route_response_sha256": "7f027620838ce0d9c7d60ea2edb66a5c180dbf4c8d4c7ec6577922c1c036ad08",
+            "sample_points": 5,
+            "samples_with_daytime_hits": 0,
+            "unique_daytime_hits": 0,
+            "daytime_provider_ids": [],
+            "unique_evening_category_hits": 0,
+            "evening_provider_ids": []
+          }
+        },
+        "prepared_500": {
+          "short-day": {
+            "role": "existing benchmark",
+            "route_distance_miles": 120.10036387497016,
+            "route_response_sha256": "0c4df7cce295362fa0db0c4ec2858425f61577031cdacdaa606cee4d2a91a28a",
+            "sample_points": 31,
+            "samples_with_daytime_hits": 0,
+            "unique_daytime_hits": 0,
+            "daytime_provider_ids": [],
+            "unique_evening_category_hits": 0,
+            "evening_provider_ids": []
+          },
+          "medium-two-day": {
+            "role": "existing benchmark; also tight-budget geometry",
+            "route_distance_miles": 639.1701214904955,
+            "route_response_sha256": "8cdd147e8a50e69f934be2a85e12b387fb77551fe232393aff5ac95a855dada9",
+            "sample_points": 156,
+            "samples_with_daytime_hits": 4,
+            "unique_daytime_hits": 2,
+            "daytime_provider_ids": [
+              "nps-heritage:rori",
+              "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc"
+            ],
+            "unique_evening_category_hits": 2,
+            "evening_provider_ids": [
+              "nps-heritage:rori",
+              "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc"
+            ]
+          },
+          "long-multi-day": {
+            "role": "existing benchmark",
+            "route_distance_miles": 2135.290031217689,
+            "route_response_sha256": "90f841ec63138319d6afba9b9bbc430598cedebe1baed7d3ff05f898e858c839",
+            "sample_points": 510,
+            "samples_with_daytime_hits": 10,
+            "unique_daytime_hits": 4,
+            "daytime_provider_ids": [
+              "nps-heritage:heho",
+              "nps-heritage:rori",
+              "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+              "usfs:22904"
+            ],
+            "unique_evening_category_hits": 3,
+            "evening_provider_ids": [
+              "nps-heritage:heho",
+              "nps-heritage:rori",
+              "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc"
+            ]
+          },
+          "dense-corridor": {
+            "role": "existing benchmark",
+            "route_distance_miles": 380.8407027956732,
+            "route_response_sha256": "19e25dbacc318c5d81b536cb22ebff262adc4741df2dbb3db9b489bfb73d77d5",
+            "sample_points": 91,
+            "samples_with_daytime_hits": 2,
+            "unique_daytime_hits": 1,
+            "daytime_provider_ids": [
+              "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc"
+            ],
+            "unique_evening_category_hits": 1,
+            "evening_provider_ids": [
+              "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc"
+            ]
+          },
+          "sparse-corridor": {
+            "role": "existing benchmark",
+            "route_distance_miles": 319.8282654298894,
+            "route_response_sha256": "ed3e2e33f19a70a449a5bca6cd08f8bb0ce206a5315597d4a117bed1ac096bf7",
+            "sample_points": 77,
+            "samples_with_daytime_hits": 0,
+            "unique_daytime_hits": 0,
+            "daytime_provider_ids": [],
+            "unique_evening_category_hits": 0,
+            "evening_provider_ids": []
+          },
+          "pacific-northwest": {
+            "role": "representative roadtrip",
+            "route_distance_miles": 173.38443490018292,
+            "route_response_sha256": "28b7f08bee6e3256decf6893f1a709d4ad0368e25cd31dd4eff250975b67db41",
+            "sample_points": 43,
+            "samples_with_daytime_hits": 6,
+            "unique_daytime_hits": 4,
+            "daytime_provider_ids": [
+              "nps-heritage:fova",
+              "overture:03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+              "overture:2abb1511-8b94-4503-8c49-46c17ddae309",
+              "overture:69bc4e96-e908-43cc-af03-8aa4c9d5880f"
+            ],
+            "unique_evening_category_hits": 4,
+            "evening_provider_ids": [
+              "nps-heritage:fova",
+              "overture:03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+              "overture:2abb1511-8b94-4503-8c49-46c17ddae309",
+              "overture:69bc4e96-e908-43cc-af03-8aa4c9d5880f"
+            ]
+          },
+          "southwest": {
+            "role": "representative roadtrip",
+            "route_distance_miles": 372.7436147896285,
+            "route_response_sha256": "dcd4d7653a534549eb1048d0cf182e2eff5267414ce6420ad55e5d0f53b2d8c3",
+            "sample_points": 91,
+            "samples_with_daytime_hits": 3,
+            "unique_daytime_hits": 2,
+            "daytime_provider_ids": [
+              "overture:815d0220-8400-4205-93f9-8e12cf265c0f",
+              "overture:e4919ff5-f961-431a-9f46-0ecdd6b20a5d"
+            ],
+            "unique_evening_category_hits": 1,
+            "evening_provider_ids": [
+              "overture:815d0220-8400-4205-93f9-8e12cf265c0f"
+            ]
+          },
+          "olympic-peninsula": {
+            "role": "representative regional roadtrip via named towns",
+            "route_distance_miles": 178.73089904955063,
+            "route_response_sha256": "777c146d9f05a1dfefc22dd2f5d04c65ff7bfd3588c85d32f0edb21d7ef7d65f",
+            "sample_points": 45,
+            "samples_with_daytime_hits": 13,
+            "unique_daytime_hits": 7,
+            "daytime_provider_ids": [
+              "nps:olym",
+              "usfs:47701",
+              "usfs:47889",
+              "usfs:47981",
+              "usfs:48031",
+              "usfs:48073",
+              "usfs:48085"
+            ],
+            "unique_evening_category_hits": 0,
+            "evening_provider_ids": []
+          },
+          "colorado-scenic": {
+            "role": "representative regional roadtrip via named towns",
+            "route_distance_miles": 132.81131939473474,
+            "route_response_sha256": "8219cdef6e245cf81d92c9abff0faa2cc58cb867d2f9df25c4d5c42e692a3e59",
+            "sample_points": 34,
+            "samples_with_daytime_hits": 10,
+            "unique_daytime_hits": 8,
+            "daytime_provider_ids": [
+              "nps-public:cure:visitor-center",
+              "usfs:28954",
+              "usfs:29044",
+              "usfs:29052",
+              "usfs:29082",
+              "usfs:29166",
+              "usfs:29200",
+              "usfs:29244"
+            ],
+            "unique_evening_category_hits": 4,
+            "evening_provider_ids": [
+              "usfs:28954",
+              "usfs:29044",
+              "usfs:29052",
+              "usfs:29244"
+            ]
+          },
+          "juneau-local": {
+            "role": "representative local Alaska roadtrip; arrival from lower 48 requires separate air/ferry planning; destination point is a source-backed catalog arrival",
+            "route_distance_miles": 15.887715740077944,
+            "route_response_sha256": "7f027620838ce0d9c7d60ea2edb66a5c180dbf4c8d4c7ec6577922c1c036ad08",
+            "sample_points": 5,
+            "samples_with_daytime_hits": 5,
+            "unique_daytime_hits": 4,
+            "daytime_provider_ids": [
+              "usfs:78707",
+              "usfs:78754",
+              "usfs:78788",
+              "usfs:78818"
+            ],
+            "unique_evening_category_hits": 0,
+            "evening_provider_ids": []
+          }
+        }
+      },
+      "typed_attraction_probes": [
+        {
+          "state": "CA",
+          "probe_point": [
+            40.73835,
+            -121.608132
+          ],
+          "target_id": "usfs:11422",
+          "returned_ids": [
+            "usfs:11422"
+          ]
+        },
+        {
+          "state": "WA",
+          "probe_point": [
+            46.040225,
+            -121.918011
+          ],
+          "target_id": "usfs:31594",
+          "returned_ids": [
+            "usfs:31594",
+            "usfs:32022",
+            "usfs:32154"
+          ]
+        },
+        {
+          "state": "AK",
+          "probe_point": [
+            56.89090951,
+            -133.80680582
+          ],
+          "target_id": "usfs:79039",
+          "returned_ids": [
+            "usfs:79039"
+          ]
+        }
+      ],
+      "typed_evening_probe": {
+        "provider_ids": [
+          "overture:440a13bb-c07b-4b4f-87aa-8dcbe7b691f1"
+        ],
+        "opening_hours_remain_unknown": true
+      },
+      "database_bytes": 10172095,
+      "public_tables_and_indexes_bytes": 2195456,
+      "production_calls_or_changes": false,
+      "limitations": "Actual five-mile catalog queries along retained real driving geometry. Counts are neither detour feasibility nor itinerary/solver success. Missing corridors and uneven categories remain possible. The user's failing route was unavailable."
+    }
+  },
+  "validation": {
+    "backend": "PASS: 1137 passed, 5 opt-in PostgreSQL cases skipped; Ruff format/lint and 87.42% coverage (63% floor unchanged).",
+    "frontend": "PASS: npm ci, format, lint, 319 tests (90.23% lines) and build; existing large-bundle warning retained.",
+    "windows": "Actual Windows execution remains pending.",
+    "ci": "Pending exact pushed-head GitHub Actions.",
+    "focused_catalog": "348 passed, 5 opt-in PostgreSQL cases skipped; all 5 subsequently passed against a newly created isolated catalog_test database."
+  },
+  "admission_fixes": {
+    "starting_head": "9d3f7c429642dd3fe93cdfba6b7e55e1e9a5eae1",
+    "admission_date": "2026-10-15",
+    "withheld": [
+      {
+        "source_id": "usfs:6499",
+        "season_start": "May 20",
+        "season_end": "Sept. 12"
+      },
+      {
+        "source_id": "usfs:67862",
+        "season_start": "Dec 1",
+        "season_end": "March 31"
+      }
+    ],
+    "replacements": [
+      {
+        "source_id": "usfs:79043",
+        "name": "Swan Observatory",
+        "native_point": [
+          56.61948449,
+          -132.84429021
+        ],
+        "driving_snap_distance_m": 62.67267342,
+        "access_review_resolution": null
+      },
+      {
+        "source_id": "usfs:20698",
+        "name": "Eastern Sierra Visitor Center",
+        "native_point": [
+          36.5781,
+          -118.0565
+        ],
+        "driving_snap_distance_m": 69.25495034,
+        "access_review_resolution": "Inspected exact daily hours: entrance gate stops admitting at 4:15 p.m.; this does not assert an all-day closure. Verify current visitor hours."
+      }
+    ],
+    "both_feeds_access_facts_retained": 251,
+    "public_only_restrictions_preserved": [
+      "usfs:13096",
+      "usfs:6228",
+      "usfs:35245",
+      "usfs:12318",
+      "usfs:80942",
+      "usfs:84280",
+      "usfs:18988",
+      "usfs:39466",
+      "usfs:25794",
+      "usfs:25792",
+      "usfs:20560",
+      "usfs:12432",
+      "usfs:18804",
+      "usfs:21748",
+      "usfs:36593",
+      "usfs:84254",
+      "usfs:12324",
+      "usfs:13095",
+      "usfs:13080",
+      "usfs:44573",
+      "usfs:83544",
+      "usfs:12436",
+      "usfs:12443",
+      "usfs:21722",
+      "usfs:14875",
+      "usfs:12474",
+      "usfs:80018",
+      "usfs:73689",
+      "usfs:42627",
+      "usfs:42403",
+      "usfs:10086",
+      "usfs:84460"
+    ],
+    "opening_intervals_invented": false,
+    "prior_243_serialized_prefix_byte_identical": true,
+    "original_usfs_inventory_sha256": "cc24c5f3474c5f27f742a148fb9164a52d59425ac51b0eb81b7e3fd4e240bf6b",
+    "original_333_driving_receipts_changed": false,
+    "new_driving_receipts": 1,
+    "season_policy": "Complete explicit recurring month/day bounds are checked inclusively on the current UTC admission date, including year-spanning seasons. Missing/descriptive/reduced-service seasons remain attributed qualifications, never inferred scheduler intervals. Existing 30-day source freshness guards still apply.",
+    "prior_dump_restore_applies_to_updated_catalog": false,
+    "coverage_completion_claimed": false,
+    "updated_catalog_dump_restore_repeated": true
+  },
   "discovery": {
-    "checked_at": "2026-10-15T16:15:10.384590+00:00",
+    "checked_at": "2026-10-15T16:59:29.924930+00:00",
     "database": "catalog_500_validation",
-    "postgres_version": "PostgreSQL 18.6 (Debian 18.6-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+    "postgres_version": "PostgreSQL 18.6 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
     "target_is_disposable_loopback": true,
     "active_count": 500,
     "generation_count": 2,
     "generation_fingerprints": {
-      "baseline_243": "99e29b2794284434f7b5d3e43b05e55f305f6cb1ba227ea1768be2b0217fa53d",
-      "prepared_500": "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507"
+      "baseline_243": "3d8fef4bccd82a74015a156e998a4f5aa1962ace489b62263d48c1e365ef376c",
+      "prepared_500": "fb17755850a264e4aed525b8d5a1ee669c07efc7cd66af9e930d53f1591cd6f9"
     },
     "discovery": {
       "baseline_243": {
@@ -536,126 +1137,22 @@
       ],
       "opening_hours_remain_unknown": true
     },
-    "database_bytes": 10172095,
-    "public_tables_and_indexes_bytes": 2195456,
+    "database_bytes": 10434239,
+    "public_tables_and_indexes_bytes": 2490368,
     "production_calls_or_changes": false,
     "limitations": "Actual five-mile catalog queries along retained real driving geometry. Counts are neither detour feasibility nor itinerary/solver success. Missing corridors and uneven categories remain possible. The user's failing route was unavailable."
   },
-  "validation": {
-    "backend": "PASS for exact implementation commit: isolated network-disabled container, 1120 passed, 5 skipped, 86.60% coverage (unchanged floor 63%). The 5 opt-in PostgreSQL cases separately passed on a newly created loopback catalog_test. Host full suite previously passed 1120 at 86.65%; 35 new catalog cases pass.",
-    "new_catalog_cases": "35 passed",
-    "frontend": "PASS: format, lint, 319 tests, 90.23% line/statement coverage and build after npm ci. Initial preloaded SDK 3.625.0 run failed 28 session-related tests; lockfile requires 3.1146.0. Initial npm cache and Docker buildx paths were read-only; task-scoped writable caches resolved those environment prerequisites. Existing large-bundle warning retained.",
-    "containers": "PASS: exact-code offline dependency image builds, 2/2 container smoke tests, full disposable PostgreSQL CRUD/recreate/readiness/backup/restore and populated-target refusal, and full network-disabled backend suite (1120 passed, 5 skipped, 86.60%). First full container run had one unchanged timing-assertion failure (0.779s vs required <0.688s), 1119 passed, 5 skipped; isolated timing check and serial full rerun passed. Assertions and thresholds were not changed.",
-    "portable_source_zip": "PASS: fresh ZIP extraction to a path containing spaces; 931 inventoried files verified; 214 + 29 + 257 re-admitted offline with socket/urllib/psycopg2 connections forbidden. Exactly 500 normalized rows/provenance match.",
-    "windows": "Actual Windows execution remains pending, including the inherited PR44 replay; no Windows runtime success claimed.",
-    "ci": "Pending exact pushed-head GitHub Actions after PR creation; not claimed passed by this receipt."
-  },
-  "no_production_database_calls": true,
-  "limitations": [
-    "Nature dominates the final mix. Entertainment, roadside, beach and nightlife counts remain small.",
-    "LA\u2013San Diego and Ely\u2013Reno benchmark geometries return zero five-mile daytime discovery hits.",
-    "The unknown failing route was unavailable. Corridor hits do not prove detours, schedules, budgets or solver success.",
-    "Alaska additions form local road clusters; lower-48 road continuity is not asserted.",
-    "Current evidence dates expire after 30 days under existing admission guards; refresh sources and review honestly, not by editing dates.",
-    "Production rollout, recovery evidence, independent review, Windows execution and activation belong to the separate rollout task."
-  ],
-  "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6",
-  "portable_source_bundle": {
-    "name": "roadtrips-reviewed-500-portable-source-v1.zip",
-    "bytes": 28487243,
-    "sha256": "c43abc122b15316d4cc79ad44d7c642d3119492b078e1413b5a73621f0f25718",
-    "files": 932,
-    "windows_invalid_filenames": [],
-    "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6"
-  },
-  "portable_replay": {
-    "accepted": 500,
-    "duplicates": 0,
-    "preserved_rows_and_provenance": 243,
-    "new_usfs": 251,
-    "new_venues": 6,
-    "evidence_bytes": 64008625,
-    "max_rows": 500,
-    "max_bytes": 67108864,
-    "normalized_rows_sha256": "a52fbe12bdba5f7e20669614367331d6d05e496f964d4546291d502c33fefffb",
-    "usfs_source_inventory_sha256": "cc24c5f3474c5f27f742a148fb9164a52d59425ac51b0eb81b7e3fd4e240bf6b",
-    "usfs_evidence_bytes": 22008150,
-    "regions": {
-      "CO": 63,
-      "ME": 3,
-      "UT": 20,
-      "SD": 4,
-      "TX": 10,
-      "FL": 4,
-      "NM": 13,
-      "SC": 6,
-      "OR": 31,
-      "OH": 10,
-      "AK": 14,
-      "CA": 43,
-      "MT": 18,
-      "NV": 2,
-      "AZ": 31,
-      "TN": 6,
-      "WY": 15,
-      "HI": 6,
-      "KY": 13,
-      "WA": 67,
-      "VA": 6,
-      "ND": 2,
-      "MN": 3,
-      "IN": 5,
-      "AR": 4,
-      "GA": 9,
-      "IA": 2,
-      "ID": 5,
-      "IL": 2,
-      "LA": 1,
-      "MA": 7,
-      "MO": 12,
-      "NE": 4,
-      "NJ": 1,
-      "OK": 1,
-      "RI": 2,
-      "KS": 3,
-      "MI": 12,
-      "NC": 6,
-      "AL": 3,
-      "MD": 6,
-      "PA": 5,
-      "DC": 1,
-      "NY": 4,
-      "WI": 7,
-      "MS": 1,
-      "WV": 1,
-      "NH": 6
-    },
-    "source_counts": {
-      "boulder-osmp": 24,
-      "nps": 43,
-      "nps-public": 41,
-      "kaggle-loc-roadside": 1,
-      "overture": 25,
-      "nps-heritage": 115,
-      "usfs": 251
-    },
-    "generation_fingerprint_depends_on_relocated_paths": true,
-    "production_activation_performed": false,
-    "code_commit": "302f39910e660fb2e34cea16d2ecc9ab0d4880d6",
-    "all_bundle_files_verified": 931,
-    "all_500_normalized_rows_match": true,
-    "network_and_database_connections_forbidden": true
-  },
   "catalog_dump_restore": {
+    "checked_at": "2026-10-15T16:59:51.659055+00:00",
     "disposable_loopback_only": true,
     "source_and_restore": [
       {
         "database": "catalog_500_validation",
         "all_retained_rows": 743,
-        "normalized_database_content_md5": "e4a7ffbc7ca0bc1c4cb3621ba6ba196a",
+        "normalized_database_content_md5": "7eb0b30a138d00c20c0a61162a1be352",
         "active": [
           [
-            "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507",
+            "fb17755850a264e4aed525b8d5a1ee669c07efc7cd66af9e930d53f1591cd6f9",
             500
           ]
         ]
@@ -663,19 +1160,17 @@
       {
         "database": "catalog_500_restore",
         "all_retained_rows": 743,
-        "normalized_database_content_md5": "e4a7ffbc7ca0bc1c4cb3621ba6ba196a",
+        "normalized_database_content_md5": "7eb0b30a138d00c20c0a61162a1be352",
         "active": [
           [
-            "fdb66fd77594d08500e47bfb9283a1391f9ad148fbc073fa8a77f4924f639507",
+            "fb17755850a264e4aed525b8d5a1ee669c07efc7cd66af9e930d53f1591cd6f9",
             500
           ]
         ]
       }
     ],
-    "dump_bytes": 217958,
-    "dump_sha256": "9de83da593bcda96e06f47861ddfde20b1420365e9b6040713e8a76009d2ecd2",
+    "dump_bytes": 263516,
+    "dump_sha256": "66c06f8eb3472c26abb83aa45f28d376dc57912e517bc87511f5075a64b2fff4",
     "production_backup_or_restore_claimed": false
-  },
-  "private_publisher_evidence_rights": "Raw operator HTML is retained privately for audit, with no grant to republish its prose, embedded reviews or logos. Overture/agency notices apply to emitted source facts, not every byte of private website evidence.",
-  "otherwise_qualified_not_selected_count": 1
+  }
 }
