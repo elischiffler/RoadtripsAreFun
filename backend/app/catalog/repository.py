@@ -23,7 +23,13 @@ def source_attribution(row):
     return combine([primary, *sorted(additional)])
 
 
-def nearby(point, categories, radius_miles=5, limit=60):
+def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calendar=False):
+    """Read bounded source facts, optionally prefiltering automatic visit candidates.
+
+    Calendar structure/unknown flags are filtered before the SQL result limit so
+    unusable timed records cannot consume every slot. Full Python calendar
+    validation and chosen-time constraints remain authoritative afterward.
+    """
     if len(point) != 2 or any(
         isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v)
         for v in point
@@ -40,6 +46,8 @@ def nearby(point, categories, radius_miles=5, limit=60):
         raise ValueError("radius must be within five miles")
     if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 60:
         raise ValueError("limit must be 1..60")
+    if not isinstance(require_visit_calendar, bool):
+        raise ValueError("require_visit_calendar must be a boolean")
     if (
         not categories
         or len(categories) > 4
@@ -78,6 +86,16 @@ def nearby(point, categories, radius_miles=5, limit=60):
                         OR (%s < -180 AND (p.longitude >= %s+360 OR p.longitude <= %s))
                         OR (%s > 180 AND (p.longitude >= %s OR p.longitude <= %s-360)))
                       AND p.categories && %s::text[]
+                      AND (NOT %s OR (
+                        (NOT p.categories && ARRAY['food','culture','nightlife']::text[]
+                          AND split_part(p.source_id, ':', 1) NOT IN ('usda-market','wikidata-park')
+                          AND NOT jsonb_path_exists(p.provenance, '$[*].source_visit_calendar'))
+                        OR (
+                          jsonb_array_length(jsonb_path_query_array(p.provenance, '$[*].source_visit_calendar'))=1
+                          AND jsonb_path_exists(p.provenance,
+                            '$[*].source_visit_calendar ? (@.schema_version == "roadtrips-source-visit-calendar/1" && (!exists(@.unknown_reasons) || @.unknown_reasons.size() == 0) && @.source_receipts.size() > 0 && (@.weekly_windows.size() > 0 || @.date_overrides.size() > 0))')
+                        )
+                      ))
                 ) SELECT * FROM candidates WHERE distance<=%s
                   ORDER BY distance, source_id LIMIT %s
                 """,
@@ -98,6 +116,7 @@ def nearby(point, categories, radius_miles=5, limit=60):
                     low,
                     high,
                     categories,
+                    require_visit_calendar,
                     radius_miles,
                     limit,
                 ),

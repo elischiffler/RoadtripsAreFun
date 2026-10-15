@@ -12,7 +12,7 @@ import pytest
 from app.agent.persona import ATTRIBUTE_KEYS, default_weights
 from app.agent.schemas import LLMResponse
 from app.routing.cp_sat_selection import select_attractions
-from app.routing.discovery import make_discovery_plan
+from app.routing.discovery import SearchQuery, make_discovery_plan
 from app.routing.explanation import capture_explanation
 from app.routing.sources import persona_candidates as source
 
@@ -196,3 +196,109 @@ async def test_absent_catalog_coverage_does_not_request_ai_place_facts(boulder):
     assert ai.calls == 0 and found.candidates == []
     assert found.explanation["outcome"] == "no_catalog_candidates"
     assert found.explanation["rating_attempts"] == []
+
+
+def crowded_calendar_pool(boulder):
+    """One authentic outdoor place behind a full shortlist of unknown timed fixtures."""
+    places, _, _ = boulder
+    outdoor = {**places[0], "provider_rank": 100}
+    lat, lon = outdoor["coordinates"]
+    route = SimpleNamespace(
+        duration=3600.0,
+        distance=1000.0,
+        legs=[],
+        geometry=SimpleNamespace(coordinates=[[lon - 0.01, lat], [lon + 0.01, lat]]),
+    )
+    plan = make_discovery_plan(route, 1)
+    plan.queries = [SearchQuery("initial", 0, 1800, [lat, lon])]
+    plan.initial_searches = plan.maximum_searches = 1
+    unknown = [
+        {
+            "provider_id": f"usda-market:unknown-{index:02d}",
+            "name": f"Unknown calendar fixture {index}",
+            "coordinates": [lat, lon],
+            "provider_rank": index + 1,
+            "categories": ["daytime", "food_destination"],
+        }
+        for index in range(plan.candidate_cap)
+    ]
+    return unknown, outdoor, route, plan
+
+
+@pytest.mark.asyncio
+async def test_unknown_calendars_cannot_starve_an_eligible_outdoor_shortlist(boulder):
+    unknown, outdoor, route, plan = crowded_calendar_pool(boulder)
+    assert len(unknown) == 18
+    ai = RatingAI(dict.fromkeys(ATTRIBUTE_KEYS, 0.8))
+    found = await source.attraction_candidates(
+        route, plan, default_weights(), ai=ai, places=Places([*unknown, outdoor])
+    )
+    assert [row["provider_id"] for row in found.candidates] == [outdoor["provider_id"]]
+    assert found.explanation["raw_pool_count"] == 1
+    assert found.explanation["distinct_rated"] == 1
+    assert found.explanation["eligible_count"] == 1
+    assert found.explanation["queries"][0]["calendar_excluded_count"] == 18
+    assert len(found.explanation["calendar_excluded_provider_ids"]) == 18
+    assert ai.calls == 1
+    selected = select_attractions(
+        [{**row, "detour_seconds": 0} for row in found.candidates], [], 1, route.duration
+    )
+    assert [row.candidate["provider_id"] for row in selected] == [outdoor["provider_id"]]
+
+
+@pytest.mark.asyncio
+async def test_unknown_calendars_do_not_end_discovery_before_refinement(boulder):
+    unknown, outdoor, route, plan = crowded_calendar_pool(boulder)
+    plan.maximum_searches = 4
+
+    class AdaptivePlaces:
+        calls = 0
+
+        async def attractions_near(self, point):
+            self.calls += 1
+            return unknown if self.calls == 1 else [outdoor]
+
+    provider = AdaptivePlaces()
+    found = await source.attraction_candidates(
+        route,
+        plan,
+        default_weights(),
+        ai=RatingAI(dict.fromkeys(ATTRIBUTE_KEYS, 0.8)),
+        places=provider,
+    )
+    assert provider.calls > 1
+    assert found.explanation["rounds"][0]["eligible_by_section"] == [0]
+    assert found.explanation["rounds"][0]["rating_pool"] == []
+    assert [row["provider_id"] for row in found.candidates] == [outdoor["provider_id"]]
+
+
+@pytest.mark.asyncio
+async def test_usable_calendar_is_retained_alongside_outdoor_candidates(boulder):
+    _, outdoor, route, plan = crowded_calendar_pool(boulder)
+    timed = {
+        "provider_id": "usda-market:verified-calendar-fixture",
+        "name": "Source-calendar fixture",
+        "coordinates": outdoor["coordinates"],
+        "categories": ["daytime", "food_destination"],
+        "source_provenance": [
+            {
+                "source_visit_calendar": {
+                    "schema_version": "roadtrips-source-visit-calendar/1",
+                    "weekly_windows": [{"weekdays": [5], "opens": "09:00", "closes": "14:00"}],
+                    "source_receipts": [{"source_url": "https://operator.example/fixture-hours"}],
+                }
+            }
+        ],
+    }
+    found = await source.attraction_candidates(
+        route,
+        plan,
+        default_weights(),
+        ai=RatingAI(dict.fromkeys(ATTRIBUTE_KEYS, 0.8)),
+        places=Places([timed, outdoor]),
+    )
+    assert {row["provider_id"] for row in found.candidates} == {
+        outdoor["provider_id"],
+        timed["provider_id"],
+    }
+    assert found.explanation["calendar_excluded_provider_ids"] == []
