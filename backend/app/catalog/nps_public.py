@@ -31,6 +31,10 @@ def beach_name(name):
 
 
 def prepare(path, manifest, *, max_rows, max_bytes):
+    if manifest.get("filters", {}).get("arrival_profile"):
+        from app.catalog import nps_nature
+
+        return nps_nature.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     if (
         manifest.get("source_url") != SOURCE_URL
         or manifest.get("attribution") != ATTRIBUTION
