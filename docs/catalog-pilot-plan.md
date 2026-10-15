@@ -1,6 +1,11 @@
 # Authentic 500-place pilot
 
-This is the requested intake/acceptance plan for issue #36 and draft PR #40.
+This is the requested intake/acceptance plan for issue #36 and PR #40.
+The [latest arrival review](catalog-roadside-review.md) validates a separate
+70-arrival local bundle: one roadside, 12 nature, 12 beaches, eight museums and
+37 national parks across 24 states. It is 430 short of the roughly 500 target,
+with no eligible entertainment/landmark batch and no DC record. The original
+400-record evaluation below is preserved for further review.
 The [October 15 mixed-source pilot](catalog-mixed-pilot.md) now records 400
 unique authentic **local evaluation** records across 30 states and DC. Of those,
 69 have documented Boulder/NPS arrival evidence; current public-access/arrival
@@ -17,7 +22,7 @@ count; retain other supported labels for discovery.
 
 | Primary reporting category                   | Working target |                  Local evaluation now |
 | -------------------------------------------- | -------------: | ------------------------------------: |
-| Niche/roadside stops                         |             80 |                                     0 |
+| Niche/roadside stops                         |             80 |      1 in separate reviewed bundle |
 | Entertainment destinations                   |             80 |                         56 candidates |
 | Nature/scenic/trailhead destinations         |             90 |           33 (12 documented arrivals) |
 | Beaches with public arrivals                 |             60 |                12 documented arrivals |
@@ -27,7 +32,7 @@ count; retain other supported labels for discovery.
 | **Total unique destinations**                |        **500** | **400 local; 69 documented arrivals** |
 
 The 100-record total shortfall does not describe category balance: museums are
-overrepresented while roadside intake is missing. Candidate counts are not
+overrepresented while roadside intake is limited to one documented venue. Candidate counts are not
 production eligibility claims. See the mixed-pilot receipt for every state gap.
 
 Spread accepted destinations across Northeast, Southeast, Midwest, Mountain and
@@ -70,7 +75,8 @@ counts. Keep a cross-source mapping when a destination has more than one source.
 
 The original Overture pipeline and atomic generation operations remain intact.
 Explicit source adapters now cover reviewed Boulder trailheads, Kaggle NPS park
-identities enriched with official facility arrivals, and official beach parking.
+identities enriched with official facility arrivals, official beach parking and
+the explicit Kaggle/LOC Corn Palace roadside profile.
 The bounded mixed-generation assembler re-admits original child artifacts and
 retains separate source identity, release, licensing and attribution. The
 Overture combiner remains source-specific. See [implementation and real local
@@ -98,6 +104,6 @@ Production recovery/data gates remain necessary within that authorized scope.
 An activated nonempty catalog and green unit tests do not establish live flow.
 Validate authenticated chat and Studio, daytime/evening discovery, Mapbox arrival
 and detour checks, selected-stop scheduling, maps, saved-history reload,
-attribution and explicit sparse-coverage behavior. Keep PR #40 draft until real
-data and those acceptance results can be reviewed. The Vercel preview alone is
+attribution and explicit sparse-coverage behavior. PR #40 is ready for code
+review; review status does not clear production acceptance gates. The Vercel preview alone is
 not that evidence.

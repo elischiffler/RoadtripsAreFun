@@ -1,5 +1,11 @@
 # Neon places catalog: staged rollout
 
+Latest [arrival review](catalog-roadside-review.md) validates a separate 70-arrival
+local generation with one Kaggle/LOC roadside destination, preserved original
+coordinates and exact-content recovery. The 400-record evaluation below remains
+unchanged. Neither dataset is a completed production cutover or a balanced
+roughly 500-place pilot.
+
 Status on October 15, 2026: 400 authentic records validated through isolated
 staging, activation, rollback and exact-content restore. This includes 69
 Boulder/NPS facility arrivals; the 331 Overture test candidates still need
@@ -52,9 +58,10 @@ The Overture extractor/normalizer remain separate from the new reviewed
 `kaggle-boulder-trailheads/1` adapter. That adapter pins the measured original ZIP,
 parses retained city evidence for current arrivals, and uses `boulder:` identities
 with explicit provenance. Explicit NPS visitor-facility and beach-parking schemas
-are also implemented; other sources still need rights/arrival review and adapters.
+are also implemented, as is the explicit `kaggle-loc-roadside-arrivals/1` Corn
+Palace profile; other sites/sources still need rights/arrival review and adapters.
 The regional combiner remains Overture-only. `scripts/catalog_mix.py` assembles
-complete Overture, Boulder, NPS and NPS-public generations from retained original
+complete Overture, Boulder, NPS, NPS-public and reviewed roadside generations from retained original
 artifacts and their `.manifest.json` sidecars. It pins and revalidates child
 manifests, source namespaces, releases, license/notice evidence and reviewed
 deduplication mappings; unresolved colocated identities fail closed. See the

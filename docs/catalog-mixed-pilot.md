@@ -1,5 +1,11 @@
 # Authentic mixed-source catalog pilot — October 15, 2026
 
+The [subsequent arrival review](catalog-roadside-review.md) validates a separate
+70-arrival generation, adding one Kaggle roadside destination to the 69 documented
+Boulder/NPS arrivals. It withholds a temporarily closed museum candidate. The
+400-record evaluation below is preserved unchanged; the separate bundle does
+not promote the 331 pending Overture candidates or fulfill the roughly 500 goal.
+
 The current **local evaluation catalog contains 400 unique records**, across 30
 states and DC. No production catalog schema, import, activation or deployment
 has occurred. The 69 Boulder/NPS records have documented facility or car-parking
@@ -77,9 +83,9 @@ and Indiana (five). A parking feed's `liveStatusIsActive` flag is retained as a
 feed flag, **not** interpreted as open/closed status. Road/seasonal restrictions,
 reservations, fees and future access remain unknown.
 
-Dedicated roadside intake remains zero. The [roadside follow-up](catalog-roadside-review.md)
-locates the actual LOC archive-rights statement; current visitor/arrival evidence
-still blocks an intake. Its historical LOC-derived metadata has
+The separate [roadside follow-up](catalog-roadside-review.md) now admits one
+documented Corn Palace arrival without changing this 400-record evaluation.
+Its historical LOC-derived metadata has
 no coordinates and does not establish a surviving visitor destination. IMLS
 still lacks contributor flags needed to distinguish commercial contributions
 and geocoding; no blanket government-work clearance is claimed. Rollercoaster

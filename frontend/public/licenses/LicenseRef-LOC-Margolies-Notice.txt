@@ -1,0 +1,20 @@
+Library of Congress, Prints & Photographs Division
+John Margolies Roadside America Photograph Archive
+
+Archive-specific rights statement: 723_marg.html
+https://www.loc.gov/rr/print/res/723_marg.html
+https://guides.loc.gov/p-and-p-rights-and-restrictions/rights#723_marg.html
+
+LOC's published statement explains that it purchased photograph intellectual-
+property rights with the archive and reports no known copyright restrictions
+on those photographs. It separately warns that depicted artwork, privacy and
+publicity rights can still apply. This notice is not a blanket CC0 declaration.
+
+This catalog uses factual metadata references and independent current visitor
+and licensed coordinate evidence. It imports no photographs, depicted artwork,
+marketing descriptions or reviews. Kaggle compiler Heads or Tails labels the
+metadata compilation CC0. Original source identities and attribution are retained.
+
+The current statement was verified in the public data table linked by LOC's
+rights-guide script, not inferred from the generic guide redirect alone:
+https://guides.loc.gov/ld.php?content_id=76336558

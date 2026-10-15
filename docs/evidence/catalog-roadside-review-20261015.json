@@ -1,6 +1,6 @@
 {
   "checked_date": "2026-10-15",
-  "accepted_roadside_destinations": 0,
+  "accepted_roadside_destinations": 1,
   "catalog_generation_unchanged": "644b404dd237d07fba916a6bc636decf66d31056c7898668921acf6be1e33aa3",
   "rights": {
     "source_url": "https://guides.loc.gov/ld.php?content_id=76336558",
@@ -16,21 +16,23 @@
   },
   "overture_inspection": {
     "release": "2026-09-23.1",
-    "review_only": true,
+    "review_only": false,
     "retrieved_at": "2026-10-15T01:11:02.582108+00:00",
     "scanned": 135,
     "decoded_bytes": 191225,
     "matched": 2,
     "elapsed_seconds": 4.5835470789998,
     "source_url": "s3://overturemaps-us-west-2/release/2026-09-23.1/theme=places/type=place/",
-    "sha256": "7ef1e5093de5a6c798aee0456dd8103e3c33186a54cd4df760edb809610e7ca2"
+    "sha256": "7ef1e5093de5a6c798aee0456dd8103e3c33186a54cd4df760edb809610e7ca2",
+    "admission_scope": "Only selected venue bb5dda13-ffd0-4791-8715-7b82aed55d42 via explicit corn-palace/1 profile; gift shop excluded."
   },
   "remaining_blockers": [
-    "Current visitor-access/arrival evidence incomplete",
-    "Historical CSV has no coordinates",
-    "Matched gift shop must not replace the attraction",
-    "Venue category is outside current admission taxonomy; no automatic recategorization",
-    "Current Corn Palace page acquisition differs between web tool and ordinary direct requests",
-    "City-office hours do not describe Blue Whale operation"
-  ]
+    "Other historical leads need current, legally admitted practical arrivals",
+    "No eligible entertainment batch; reviewed bundle totals 70 versus roughly 500 target",
+    "Catoosa publisher access returned 403; no bypass attempted",
+    "Zillah relocated venue needs current schedule/arrival evidence",
+    "Cabazon publisher restrictions and practical arrival require further review",
+    "Production host recovery proof/release gates outstanding"
+  ],
+  "arrival_review_evidence": "catalog-arrival-review-20261015.json"
 }

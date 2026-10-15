@@ -1,9 +1,11 @@
 # Roadside source follow-up — October 15, 2026
 
-Dedicated Kaggle roadside intake remains **zero accepted destinations**. The
-archive-rights investigation advanced; current visitor-access and practical
-arrival-point evidence still prevents an import. The 400-record local evaluation
-catalog and its immutable generation remain unchanged.
+Dedicated Kaggle roadside intake now has **one documented destination: Corn
+Palace**. It is validated in a separate 70-arrival local generation, including
+the previous 69 Boulder/NPS arrivals. The 400-record local evaluation catalog
+and its immutable generation remain unchanged. Neither dataset is in production.
+The [aggregate receipt](evidence/catalog-arrival-review-20261015.json) records
+original-response hashes, admission/exclusion decisions and database recovery.
 
 ## Actual LOC archive statement located
 
@@ -45,23 +47,76 @@ features / 191,225 decoded bytes and matched two names. One is the gift shop,
 which must not replace the attraction. The other is the venue at the published
 physical street address, with source identity
 `bb5dda13-ffd0-4791-8715-7b82aed55d42`, source open status and confidence about
-0.920. Its source category is `stadium_arena`, outside the current conservative
-admission taxonomy. The feature is retained as **review-only**, not relabeled or
-staged to inflate the roadside count. No coordinates were guessed.
+0.920. Its source category is `stadium_arena`, outside the conservative Overture
+admission taxonomy. That original feature/category remains intact. The separate
+`kaggle-loc-roadside-arrivals/1` adapter's explicit `corn-palace/1` profile verifies
+the historical identity, original coordinate provenance, current public visitor
+address and driving frontage before assigning a roadside category. The generic
+Overture taxonomy has not been broadened. No coordinates were guessed.
 
-The official [Corn Palace visitor page](https://cornpalace.com/31/Visiting) and
-[parking page](https://cornpalace.com/173/Parking) were readable through the web
-tool and describe public visiting, a physical address and auto/RV parking. A
-separate ordinary download returned 404 for those exact URLs, so current direct
-page acquisition remains inconsistent. The City of Catoosa homepage names Blue
-Whale but does not establish a place-specific operating schedule or driving
-arrival. City-office hours must not be assigned to the attraction. The old
-Zillah Teapot page returned 404. These observations do not clear a visitor
-arrival or justify inventing one from a city/park centroid.
+The canonical official [Corn Palace visitor page](https://www.cornpalace.com/31/Visiting)
+and [parking page](https://www.cornpalace.com/173/Parking) now both returned HTTP
+200 to ordinary downloads, with original snapshots retained. They document public
+visiting at 604 North Main Street and parking a short walk away. An ordinary
+Mapbox driving check placed the unchanged licensed point 16.262 metres from
+North Main Street. The point role is **venue frontage at the published visitor
+address**, not car-park coordinates or a guarantee of future availability.
+The gift shop at 603 North Main Street is excluded.
 
-Before an explicit roadside adapter/import, retain consistent current official
-visitor/arrival evidence, a legally admitted coordinate source and point role,
-native source mappings, one canonical destination per surviving venue and the
-appropriate separate notices. Validate actual driving arrival and deduplication
-in isolated PostgreSQL. The [mixed-pilot evidence](catalog-mixed-pilot.md) and
-production recovery/data gates remain in effect.
+The adapter pins the actual 11,710-row CSV and current source evidence with
+bounded reads. Twenty-six matching photo records collapse to `kaggle-loc:279`;
+25 are alternate references, and 11,684 other historical records remain outside
+this site review. It retains the native Overture ID, upstream licenses, LOC
+archive notice and CC0 metadata notice. Arbitrary normalized rows and unreviewed
+site profiles are refused. Current visitor/parking evidence must be no more than
+30 days old. Closure, wrong venue/address, uncertain rights or failed driving
+checks prevent staging. No opening schedule is invented.
+
+`scripts/catalog_roadside_manifest.py --bundle <retained-bundle.json>` validates
+the original evidence and writes a new sidecar without downloads/database calls
+or overwriting an existing sidecar. `scripts/catalog_mix.py` re-admits that child
+alongside the other original source artifacts. The regional combiner still
+accepts Overture inputs only.
+
+## Recovery and remaining leads
+
+The separate local generation contains **70 unique arrivals across 24 states**:
+one roadside, 12 nature, 12 beaches, eight museums and 37 national parks. No
+eligible entertainment or landmark batch has been added. Its immutable
+generation is `7c5bc43052ab34703ca890563a1c5a427dcc2ff426b135a9e38e13f4a92302df`,
+manifest SHA-256 `2de2c789b169f2fad016eeb8d9c73f372ccaafb2e136ec1f43ad0a5b6d51ad69`.
+The 69-arrival baseline and 70-arrival generation occupy 425,984 indexed catalog
+bytes in an isolated PostgreSQL 18.6 database. Idempotent staging, activation,
+rollback (Corn Palace disappears), and return to the final generation pass.
+
+The 32,021-byte custom dump has SHA-256
+`25435cdf04e01a3af30b0d0a3e11cf754f320b9ce68a815052336a1c9d6983df`.
+An empty separate database restored all three tables, exact row-content digests
+and active pointer. Actual legacy, persona and evening discovery adapters return
+`kaggle-loc:279` while HTTP request/send transports raise on use: zero HTTP and
+Tripadvisor discovery calls. The original 400-record evaluation database's table
+digests and active pointer were checked unchanged. These are local results.
+
+Full validation passed: 922 backend tests including five real PostgreSQL cases,
+87.54% application coverage above the unchanged 63% floor; 314 frontend tests,
+90.23% line coverage, format/lint/build. Twenty synthetic roadside cases cover
+uncertain evidence, wrong venues, native identity, rights, closure, driving
+checks, bounded input, mixed revalidation and regional-combiner refusal.
+
+The current [Zillah city page](https://www.cityofzillah.us/visitors/zillah_teapot.php)
+confirms the Teapot moved to 117 First Avenue in 2012; its historical highway
+address must not become today's arrival. Current place-specific schedule and
+practical coordinate review remain open. Catoosa's publisher returned 403, so
+that access attempt stopped. City-office hours do not describe Blue Whale access.
+The [Cabazon publisher](https://www.cabazondinosaurs.com/) gives visitor facts
+but states restrictions on commercial use of names/media; its rights and practical
+arrival require further review. Neither lead is imported.
+
+Sixteen current primary visitor/parking pages were retained for candidate review.
+The [Museum of Illusions Denver contact page](https://moidenver.com/contact-us/)
+reports a temporary closure, corroborated by its FAQ. That candidate is withheld
+from the usable bundle even though its older Overture status says open. Other
+reviews retain off-site parking, entrance ambiguity, party/activity restrictions
+and unknown future access explicitly. The 331 evaluation candidates are not
+promoted as a group. Category/corridor gaps and the roughly 500-place goal remain
+open; production recovery, review and release gates still apply.

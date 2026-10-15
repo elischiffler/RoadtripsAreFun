@@ -73,6 +73,7 @@ def combine(inputs, output, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES, selected_
                     "kaggle-boulder-trailheads/1",
                     "kaggle-nps-arrivals/1",
                     "nps-public-arrivals/1",
+                    "kaggle-loc-roadside-arrivals/1",
                     "roadtrips-mixed-catalog/1",
                 }:
                     raise ValueError(
