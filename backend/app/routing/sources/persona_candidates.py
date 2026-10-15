@@ -33,7 +33,7 @@ from app.routing.discovery import (
 from app.routing.explanation import record_explanation
 from app.routing.geometry import RouteMeasure
 from app.routing.occupancy import MAX_ROOMS, HotelRoom
-from app.routing.profiles import AttributeRatings, crossmatch
+from app.routing.profiles import AttributeRatings, crossmatch, eligible_utility
 from app.routing.run_metrics import increment, timed
 from app.routing.runtime import (
     in_run,
@@ -54,6 +54,15 @@ _HOTEL_RADIUS_MI = 30.0
 
 class CandidateProviderError(RuntimeError):
     """Required AI or place provider is unavailable or returned unusable data."""
+
+
+class CandidateRatingError(CandidateProviderError):
+    """Source places exist, but bounded AI attempts produced no usable ratings."""
+
+    provider = "ai_ratings"
+    provider_code = "INVALID_ATTRIBUTE_RATINGS"
+    public_message = "AI returned no complete ratings matching the catalog places."
+    retryable = False
 
 
 class ProposedPlace(BaseModel):
@@ -166,33 +175,64 @@ def _distance_miles(first: list[float], second: list[float]) -> float:
     return geodesic(first, second).miles
 
 
-def _parse_proposals(text: str, limit: int) -> list[ProposedPlace]:
+def _parse_proposals(
+    text: str, limit: int, *, diagnostics: dict | None = None
+) -> list[ProposedPlace]:
     """Parse AI JSON into at most limit validated name-and-rating proposals.
 
     Optional JSON fences are removed; malformed responses and invalid entries are skipped.
     """
+    diagnostics = diagnostics if diagnostics is not None else {}
+    diagnostics.update(status="valid", received=0, valid=0, invalid=0, incomplete_vectors=0)
+    if not isinstance(text, str):
+        diagnostics["status"] = "invalid_shape"
+        return []
     text = text.strip()
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.IGNORECASE)
     try:
         payload = json.loads(text)
     except (TypeError, ValueError):
+        diagnostics["status"] = "invalid_json"
         return []
     if isinstance(payload, dict):
         payload = payload.get("candidates")
     if not isinstance(payload, list):
+        diagnostics["status"] = "invalid_shape"
         return []
+    diagnostics["received"] = len(payload)
     proposals = []
     for item in payload[:limit]:
         try:
             proposals.append(ProposedPlace.model_validate(item))
         except (TypeError, ValueError):
+            diagnostics["invalid"] += 1
+            ratings = item.get("attribute_ratings") if isinstance(item, dict) else None
+            if not isinstance(ratings, dict) or set(ATTRIBUTE_KEYS) - ratings.keys():
+                diagnostics["incomplete_vectors"] += 1
             continue
+    diagnostics["valid"] = len(proposals)
+    diagnostics["status"] = (
+        "empty_response"
+        if not payload
+        else "invalid_entries"
+        if not proposals
+        else "partial"
+        if diagnostics["invalid"]
+        else "valid"
+    )
     return proposals
 
 
 async def _propose(
-    ai: LLMProvider, kind: str, point: list[float], limit: int, names: list[str] | None = None
+    ai: LLMProvider,
+    kind: str,
+    point: list[float],
+    limit: int,
+    names: list[str] | None = None,
+    *,
+    diagnostics: dict | None = None,
+    repair: bool = False,
 ) -> list[ProposedPlace]:
     """Request estimated place ratings, optionally restricted to source-record names.
 
@@ -212,6 +252,12 @@ async def _propose(
         f"Return only JSON in this exact shape: {example}. "
         "Do not include prices, coordinates, or a final utility score."
     )
+    if repair:
+        prompt += (
+            " The previous response contained no usable ratings for the supplied names. "
+            "Return the exact supplied names and all 14 numeric attribute_ratings in [0,1]. "
+            "Do not omit fields or add places. Return the requested JSON object only."
+        )
     if names is not None:
         prompt += " Rate only these source-record names, preserving each exactly: " + json.dumps(
             names
@@ -234,10 +280,12 @@ async def _propose(
             )
 
     try:
-        response = await singleflight(("ratings", kind, tuple(point), tuple(names or [])), generate)
+        response = await singleflight(
+            ("ratings", kind, tuple(point), tuple(names or []), repair), generate
+        )
     except Exception as exc:
         raise CandidateProviderError("AI candidate provider unavailable") from exc
-    return _parse_proposals(response.content, limit)
+    return _parse_proposals(response.content, limit, diagnostics=diagnostics)
 
 
 def _candidate(
@@ -303,7 +351,13 @@ async def attraction_candidates(
     raw, rated, attempted, queried = {}, {}, set(), []
     observations, rounds = [], []
     used_coordinates = set()
-    explanation = {"plan": plan.snapshot(), "queries": observations, "rounds": rounds}
+    explanation = {
+        "plan": plan.snapshot(),
+        "queries": observations,
+        "rounds": rounds,
+        "rating_attempts": [],
+        "eligibility_policy": "positive_utility",
+    }
     record_explanation(discovery=explanation)
     ready = list(plan.queries)
 
@@ -364,16 +418,44 @@ async def attraction_candidates(
             sections=sorted({item["section_id"] for item in batch}),
             queryIds=sorted({query for item in batch for query in item["source_query_ids"]}),
         ):
-            proposals = await _propose(
-                ai,
-                "attractions",
-                point,
-                MAX_PROPOSALS_PER_QUERY,
-                names=[item["place"].name for item in batch],
-            )
-        by_name = {}
-        for proposal in proposals:
-            by_name.setdefault(_name_key(proposal.name), proposal)
+            attempts = []
+            for attempt in range(2):
+                validation = {}
+                proposals = await _propose(
+                    ai,
+                    "attractions",
+                    point,
+                    MAX_PROPOSALS_PER_QUERY,
+                    names=[item["place"].name for item in batch],
+                    diagnostics=validation,
+                    repair=bool(attempt),
+                )
+                by_name = {}
+                for proposal in proposals:
+                    by_name.setdefault(_name_key(proposal.name), proposal)
+                expected = {_name_key(item["place"].name) for item in batch}
+                matched = expected & by_name.keys()
+                validation.update(
+                    attempt=attempt + 1,
+                    matched_sources=len(matched),
+                    unmatched_names=len(by_name.keys() - expected),
+                    missing_sources=len(expected - by_name.keys()),
+                    match_status="matched"
+                    if matched == expected
+                    else "partial"
+                    if matched
+                    else "name_mismatch"
+                    if by_name
+                    else "no_valid_ratings",
+                    source_query_ids=sorted(
+                        {q for item in batch for q in item["source_query_ids"]}
+                    ),
+                )
+                attempts.append(validation)
+                if matched:
+                    break
+            if not matched:
+                return [], attempts
         output = []
         for item in batch:
             place = item["place"]
@@ -386,7 +468,7 @@ async def attraction_candidates(
                     **item["projection"],
                 )
                 output.append(candidate)
-        return output
+        return output, attempts
 
     while ready:
         frozen_queries = []
@@ -445,7 +527,8 @@ async def attraction_candidates(
         }
         rounds.append(round_record)
         results = await joined([rate(batch) for batch in batches])
-        for batch_result in results:
+        for batch_result, rating_attempts in results:
+            explanation["rating_attempts"].extend(rating_attempts)
             for candidate in batch_result:
                 rated[candidate["provider_id"]] = candidate
                 emit(
@@ -454,7 +537,19 @@ async def attraction_candidates(
                     collected=len(rated),
                     section=candidate["section_id"],
                 )
-        eligible = [item for item in rated.values() if item["utility"] >= 0.60]
+        if frozen and not rated:
+            explanation.update(
+                stop_reason="rating_validation_failed",
+                outcome="invalid_ratings",
+                raw_pool_count=len(raw),
+                successful_ratings=0,
+                distinct_rated=len(attempted),
+                eligible_count=0,
+                shortlist_count=0,
+            )
+            with stage("attractions.ratings", candidates=len(frozen)):
+                raise CandidateRatingError(CandidateRatingError.public_message)
+        eligible = [item for item in rated.values() if eligible_utility(item["utility"])]
         counts = [
             sum(item["section_id"] == i for item in eligible) for i in range(plan.section_count)
         ]
@@ -497,7 +592,7 @@ async def attraction_candidates(
             if len(queried) + len(ready) >= plan.maximum_searches:
                 break
     explanation.setdefault("stop_reason", "no_distinct_search_points")
-    eligible = [item for item in rated.values() if item["utility"] >= 0.60]
+    eligible = [item for item in rated.values() if eligible_utility(item["utility"])]
     for key, item in rated.items():
         if key in raw:
             item["source_query_ids"] = raw[key]["source_query_ids"]
@@ -520,6 +615,11 @@ async def attraction_candidates(
             if not any(item["section_id"] == i for item in eligible)
         ],
         coverage_note="Five-mile nearby samples; intervals between samples are unsearched, not continuous coverage.",
+        outcome="no_catalog_candidates"
+        if not raw
+        else "no_positive_utility"
+        if not eligible
+        else "eligible_candidates",
     )
     gaps = []
     for section in range(plan.section_count):

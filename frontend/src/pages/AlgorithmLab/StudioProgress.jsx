@@ -24,7 +24,7 @@ const phases = [
   [
     'selection',
     'Choose attractions with CP-SAT',
-    'Candidates need a match of at least 0.60 and a verified road detour. CP-SAT selects the available requested count, keeps average match within 10 percentage points of the best achievable average, and minimizes route-gap deviation plus detour time.',
+    'Candidates need a positive preference match and a verified road detour. CP-SAT selects the available requested count, keeps average match within 10 percentage points of the best achievable average, and minimizes route-gap deviation plus detour time.',
   ],
   [
     'schedule',

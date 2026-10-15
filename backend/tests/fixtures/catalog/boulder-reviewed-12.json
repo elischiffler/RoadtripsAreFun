@@ -1,0 +1,549 @@
+{
+  "description": "Authentic public CC0 Boulder facts re-admitted from the retained original ZIP and official visitor-arrival evidence. AI vectors and route timing in tests are controlled fixtures, not live observations.",
+  "source_archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+  "source_manifest_sha256": "d83b6e0259faea531307edc46dc84a4af6f06a36e814a949e9e4594d25db246d",
+  "license": "CC0-1.0",
+  "attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+  "places": [
+    {
+      "provider_id": "boulder:284",
+      "name": "Halfway House",
+      "coordinates": [
+        40.006528644887,
+        -105.2946087495
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "1100 Flagstaff Rd",
+      "url": "https://bouldercolorado.gov/trailhead/halfway-house",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "284",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.00650087478915,
+            "longitude": -105.29455580411772
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/halfway-house",
+          "sha256": "223b6fa9dbccfe0b5bbffa4f094cef621e8e82dc7c0739028f4ba706c25a7126",
+          "checked_at": "2026-10-14T23:52:51.551670+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.006528644887,
+          "longitude": -105.2946087495,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    },
+    {
+      "provider_id": "boulder:272",
+      "name": "Realization Point",
+      "coordinates": [
+        39.997223311727,
+        -105.30900101863
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "3400 Flagstaff Rd",
+      "url": "https://bouldercolorado.gov/trailhead/realization-point",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "272",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 39.99733638602498,
+            "longitude": -105.3090727785278
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/realization-point",
+          "sha256": "8d97c02c28a95b232c6433cb08e757a17ccabec9318a617b199170e3f7516042",
+          "checked_at": "2026-10-14T23:52:51.611222+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 39.997223311727,
+          "longitude": -105.30900101863,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    },
+    {
+      "provider_id": "boulder:201",
+      "name": "South Mesa",
+      "coordinates": [
+        39.938753095701,
+        -105.25802634244
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "4111 Eldorado Springs Dr.",
+      "url": "https://bouldercolorado.gov/trailhead/south-mesa",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "201",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 39.93859467750501,
+            "longitude": -105.25805747421737
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/south-mesa",
+          "sha256": "2331f0ce0c31d734da11ebad2a3b6017153cfe7c4b7b6e46d0eece0fea6e0868",
+          "checked_at": "2026-10-14T23:52:53.865695+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 39.938753095701,
+          "longitude": -105.25802634244,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    },
+    {
+      "provider_id": "boulder:101",
+      "name": "Doudy Draw",
+      "coordinates": [
+        39.938209425294,
+        -105.25649364714
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "4100 Eldorado Springs Dr.",
+      "url": "https://bouldercolorado.gov/trailhead/doudy-draw",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "101",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 39.938244499784076,
+            "longitude": -105.25664947318249
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/doudy-draw",
+          "sha256": "33a22673b9f30f008f1e45afeaac504cba1ce882f17664876ebc59383774355b",
+          "checked_at": "2026-10-14T23:52:53.750880+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 39.938209425294,
+          "longitude": -105.25649364714,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    },
+    {
+      "provider_id": "boulder:210",
+      "name": "South Boulder Creek West",
+      "coordinates": [
+        39.960487577744,
+        -105.23681866544
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "1405 South Foothills Hwy.",
+      "url": "https://bouldercolorado.gov/trailhead/south-boulder-creek-west",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "210",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 39.96025252426568,
+            "longitude": -105.23680067608166
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/south-boulder-creek-west",
+          "sha256": "6419525dd2777f8056c5882c92d80ac44a0b8c2610d12cbda87a001588f79b25",
+          "checked_at": "2026-10-14T23:52:54.345322+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 39.960487577744,
+          "longitude": -105.23681866544,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    },
+    {
+      "provider_id": "boulder:283",
+      "name": "Panorama Point",
+      "coordinates": [
+        40.006076083761,
+        -105.2925615332
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "1000 Flagstaff Rd",
+      "url": "https://bouldercolorado.gov/trailhead/panorama-point",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "283",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.005964548099854,
+            "longitude": -105.29288474596706
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/panorama-point",
+          "sha256": "9f4b1cf1dc5b58b12a233f2a997fc69bb328c73ec973a482a8fe816e8642d597",
+          "checked_at": "2026-10-14T23:52:52.415556+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.006076083761,
+          "longitude": -105.2925615332,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    },
+    {
+      "provider_id": "boulder:103",
+      "name": "Greenbelt Plateau",
+      "coordinates": [
+        39.928826627983,
+        -105.23310947793
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "5101 Highway 128",
+      "url": "https://bouldercolorado.gov/trailhead/greenbelt-plateau",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "103",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 39.92863183103169,
+            "longitude": -105.23341023361674
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/greenbelt-plateau",
+          "sha256": "73db21a83ecb63111b201c5fa2d3a6e0363ab08f6b47fdda5840668c226d48a8",
+          "checked_at": "2026-10-14T23:52:52.185680+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 39.928826627983,
+          "longitude": -105.23310947793,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    },
+    {
+      "provider_id": "boulder:106",
+      "name": "Marshall Mesa",
+      "coordinates": [
+        39.953125962865,
+        -105.23129026928
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "5258 E. Eldorado Springs Dr",
+      "url": "https://bouldercolorado.gov/trailhead/marshall-mesa",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "106",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 39.953084879647975,
+            "longitude": -105.23140971159981
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/marshall-mesa",
+          "sha256": "e67834760b1525e4563e99ee34efc0967a1e3511557e07562b841e8c76afd63d",
+          "checked_at": "2026-10-14T23:52:51.568398+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 39.953125962865,
+          "longitude": -105.23129026928,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    },
+    {
+      "provider_id": "boulder:116",
+      "name": "Flatirons Vista",
+      "coordinates": [
+        39.924146,
+        -105.235225
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "3663 State Hwy. 93",
+      "url": "https://bouldercolorado.gov/trailhead/flatirons-vista",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "116",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 39.9239620262072,
+            "longitude": -105.23503462920262
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/flatirons-vista",
+          "sha256": "3a42d0e652c757275a944a478cf86cd329288e99f8e5bbd0496c0ddbfcb3aedf",
+          "checked_at": "2026-10-14T23:52:52.520755+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 39.924146,
+          "longitude": -105.235225,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    },
+    {
+      "provider_id": "boulder:277",
+      "name": "Flagstaff Summit East",
+      "coordinates": [
+        40.00413697789,
+        -105.30342254664
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "790 Flagstaff Summit Rd",
+      "url": "https://bouldercolorado.gov/trailhead/flagstaff-summit-east",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "277",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.00418773706755,
+            "longitude": -105.30348856589319
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/flagstaff-summit-east",
+          "sha256": "9d723ecd84e8171fcb357398041d0d773372b3e2c1f0eead14ad63a927d8b61d",
+          "checked_at": "2026-10-14T23:52:52.173986+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.00413697789,
+          "longitude": -105.30342254664,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    },
+    {
+      "provider_id": "boulder:297",
+      "name": "Chapman Drive",
+      "coordinates": [
+        40.008939176179,
+        -105.3253745752
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "38471 Boulder Canyon Drive",
+      "url": "https://bouldercolorado.gov/trailhead/chapman-drive",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "297",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.008849834484714,
+            "longitude": -105.32531383350076
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/chapman-drive",
+          "sha256": "a752dfba005f108067009e369a56c5d7bfb0d648c68956c9612ac206ffb0d1a3",
+          "checked_at": "2026-10-14T23:52:52.326161+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.008939176179,
+          "longitude": -105.3253745752,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    },
+    {
+      "provider_id": "boulder:282",
+      "name": "Crown Rock",
+      "coordinates": [
+        40.001771490346,
+        -105.29698840819
+      ],
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "2100 Flagstaff Rd",
+      "url": "https://bouldercolorado.gov/trailhead/crown-rock",
+      "source": "boulder-osmp",
+      "source_release": "kaggle-boulder-v1",
+      "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+      "source_updated_at": null,
+      "source_provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "282",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.001781454750514,
+            "longitude": -105.29706951438149
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/crown-rock",
+          "sha256": "aa22919ee4d61e79e06bd93d55476375e0ec8706b9afce9416a6d0026c300149",
+          "checked_at": "2026-10-14T23:52:52.096236+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.001771490346,
+          "longitude": -105.29698840819,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ]
+    }
+  ]
+}

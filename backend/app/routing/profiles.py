@@ -6,6 +6,18 @@ from pydantic import BaseModel, ConfigDict, create_model, field_validator
 
 from app.agent.persona import ATTRIBUTE_KEYS, normalize_weights
 
+UTILITY_FLOOR = 0.0
+
+
+def eligible_utility(value: object) -> bool:
+    """Keep finite positive matches; selection compares quality with available places."""
+    return (
+        not isinstance(value, bool)
+        and isinstance(value, (int, float))
+        and math.isfinite(value)
+        and UTILITY_FLOOR < value <= 1
+    )
+
 
 class _RatingFields(BaseModel):
     model_config = ConfigDict(extra="forbid")

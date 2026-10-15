@@ -9,8 +9,8 @@ from app.agent.progress import emit
 from app.routing.base import PlanningError
 from app.routing.discovery import SelectedAttraction
 from app.routing.explanation import record_explanation
+from app.routing.profiles import UTILITY_FLOOR, eligible_utility
 
-MIN_UTILITY = 0.60
 MAX_CANDIDATES = 60
 UTILITY_SCALE = 1_000_000
 MAX_AVERAGE_QUALITY_LOSS = 0.10
@@ -71,8 +71,8 @@ def _prepare(candidates, baseline_seconds):
             explanation["reason"] = "duplicate_provider_id"
             continue
         seen.add(provider_id)
-        if utility < MIN_UTILITY:
-            explanation["reason"] = "below_utility_threshold"
+        if not eligible_utility(utility):
+            explanation["reason"] = "nonpositive_utility"
             continue
         explanation["reason"] = "eligible_not_selected"
         eligible.append((candidate, explanation))
@@ -164,7 +164,9 @@ def select_attractions(candidates, query_points, num_stops, baseline_seconds):
         "requested_stops": num_stops,
         "eligible_count": 0,
         "selected_count": 0,
-        "utility_threshold": MIN_UTILITY,
+        "utility_threshold": UTILITY_FLOOR,
+        "utility_threshold_inclusive": False,
+        "eligibility_policy": "positive_utility",
         "utility_scale": UTILITY_SCALE,
         "objective": "minimize_all_gap_deviation_plus_solo_detour_seconds",
         "objective_direction": "minimize",
@@ -183,7 +185,8 @@ def select_attractions(candidates, query_points, num_stops, baseline_seconds):
         candidates=len(candidates),
         eligible=len(eligible),
         requestedStops=num_stops,
-        threshold=MIN_UTILITY,
+        threshold=UTILITY_FLOOR,
+        thresholdInclusive=False,
         sections=len({candidate.get("section_id") for candidate, _ in eligible}),
     )
     if not eligible:

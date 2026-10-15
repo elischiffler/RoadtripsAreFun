@@ -49,7 +49,11 @@ from app.routing.sources.evenings import enrich_evenings, evening_interests
 from app.routing.sources.hotels import find_hotel as _find_hotel  # noqa: F401
 from app.routing.sources.hotels import get_nearby_city as _get_nearby_city  # noqa: F401
 from app.routing.sources.mapbox import call_route as _call_route
-from app.routing.sources.persona_candidates import attraction_candidates, hotel_candidates
+from app.routing.sources.persona_candidates import (
+    CandidateRatingError,
+    attraction_candidates,
+    hotel_candidates,
+)
 from app.routing.travel_timing import apply_timing
 from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location  # noqa: F401  (patched in tests)
@@ -161,6 +165,8 @@ async def get_final_route(
             can_select_algorithm=owner_routing_claims(user_id, x_cognito_id_token) is not None,
         )
 
+    except CandidateRatingError as exception:
+        raise HTTPException(status_code=502, detail=exception.public_message) from None
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail)
     except HTTPException as exception:
