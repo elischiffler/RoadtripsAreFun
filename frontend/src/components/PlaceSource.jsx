@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { placeSourceLines } from './placeSource';
+import { placeSourceLines } from './placeSource.js';
 
 export default function PlaceSource({ place }) {
   const lines = placeSourceLines(place);

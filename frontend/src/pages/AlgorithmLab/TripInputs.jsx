@@ -74,7 +74,8 @@ export default function TripInputs({ inputs, catalog, onChange, disabled }) {
         {numberField('budget', 'Hotel target / room / night (USD)', 0)}
       </div>
       <p className="lab-note">
-        Origin-local departure time.{' '}
+        Choose {catalog.limits.min_stops}–{catalog.limits.max_stops} attraction stops. Origin-local
+        departure time.{' '}
         <HelpTip label="trip input validation">
           The server resolves these reviewed city choices and validates dates, occupancy and
           scheduling. Live departures must be upcoming.

@@ -167,7 +167,7 @@ export default function RunHistory({ revision }) {
                                 <p key={label}>
                                   {label.replaceAll('_', ' ')}:{' '}
                                   {stats
-                                    ? `${stats.mean.toFixed(2)} ± ${stats.stddev.toFixed(2)}; min ${stats.min.toFixed(2)}, max ${stats.max.toFixed(2)} (${stats.count} assessed)`
+                                    ? `${stats.mean.toFixed(2)} ± ${stats.stddev.toFixed(2)}; min ${stats.min.toFixed(2)}, max ${stats.max.toFixed(2)}, median ${stats.median?.toFixed(2) ?? 'unassessed'} (${stats.count} assessed)`
                                     : 'Unassessed'}
                                 </p>
                               ))}

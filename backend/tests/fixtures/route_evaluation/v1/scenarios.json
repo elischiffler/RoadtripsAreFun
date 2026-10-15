@@ -1,0 +1,1535 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "id": "short-1d-s1-nature",
+      "trip_type": "short-1d",
+      "persona": "nature",
+      "target_days": 1,
+      "stops_per_day": 1,
+      "fixture": "short-1d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "la",
+        "destination_id": "san-diego",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 1,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "short-1d-s1-entertainment",
+      "trip_type": "short-1d",
+      "persona": "entertainment",
+      "target_days": 1,
+      "stops_per_day": 1,
+      "fixture": "short-1d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "la",
+        "destination_id": "san-diego",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 1,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "short-1d-s2-nature",
+      "trip_type": "short-1d",
+      "persona": "nature",
+      "target_days": 1,
+      "stops_per_day": 2,
+      "fixture": "short-1d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "la",
+        "destination_id": "san-diego",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 2,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "short-1d-s2-entertainment",
+      "trip_type": "short-1d",
+      "persona": "entertainment",
+      "target_days": 1,
+      "stops_per_day": 2,
+      "fixture": "short-1d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "la",
+        "destination_id": "san-diego",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 2,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "short-1d-s3-nature",
+      "trip_type": "short-1d",
+      "persona": "nature",
+      "target_days": 1,
+      "stops_per_day": 3,
+      "fixture": "short-1d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "la",
+        "destination_id": "san-diego",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 3,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "short-1d-s3-entertainment",
+      "trip_type": "short-1d",
+      "persona": "entertainment",
+      "target_days": 1,
+      "stops_per_day": 3,
+      "fixture": "short-1d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "la",
+        "destination_id": "san-diego",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 3,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "medium-2d-s1-nature",
+      "trip_type": "medium-2d",
+      "persona": "nature",
+      "target_days": 2,
+      "stops_per_day": 1,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 2,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "medium-2d-s1-entertainment",
+      "trip_type": "medium-2d",
+      "persona": "entertainment",
+      "target_days": 2,
+      "stops_per_day": 1,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 2,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "medium-2d-s2-nature",
+      "trip_type": "medium-2d",
+      "persona": "nature",
+      "target_days": 2,
+      "stops_per_day": 2,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 4,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "medium-2d-s2-entertainment",
+      "trip_type": "medium-2d",
+      "persona": "entertainment",
+      "target_days": 2,
+      "stops_per_day": 2,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 4,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "medium-2d-s3-nature",
+      "trip_type": "medium-2d",
+      "persona": "nature",
+      "target_days": 2,
+      "stops_per_day": 3,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 6,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "medium-2d-s3-entertainment",
+      "trip_type": "medium-2d",
+      "persona": "entertainment",
+      "target_days": 2,
+      "stops_per_day": 3,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 6,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "long-3d-s1-nature",
+      "trip_type": "long-3d",
+      "persona": "nature",
+      "target_days": 3,
+      "stops_per_day": 1,
+      "fixture": "long-3d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "denver",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 3,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "long-3d-s1-entertainment",
+      "trip_type": "long-3d",
+      "persona": "entertainment",
+      "target_days": 3,
+      "stops_per_day": 1,
+      "fixture": "long-3d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "denver",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 3,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "long-3d-s2-nature",
+      "trip_type": "long-3d",
+      "persona": "nature",
+      "target_days": 3,
+      "stops_per_day": 2,
+      "fixture": "long-3d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "denver",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 6,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "long-3d-s2-entertainment",
+      "trip_type": "long-3d",
+      "persona": "entertainment",
+      "target_days": 3,
+      "stops_per_day": 2,
+      "fixture": "long-3d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "denver",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 6,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "long-3d-s3-nature",
+      "trip_type": "long-3d",
+      "persona": "nature",
+      "target_days": 3,
+      "stops_per_day": 3,
+      "fixture": "long-3d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "denver",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 9,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "long-3d-s3-entertainment",
+      "trip_type": "long-3d",
+      "persona": "entertainment",
+      "target_days": 3,
+      "stops_per_day": 3,
+      "fixture": "long-3d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "denver",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 9,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "coast-5d-s1-nature",
+      "trip_type": "coast-5d",
+      "persona": "nature",
+      "target_days": 5,
+      "stops_per_day": 1,
+      "fixture": "coast-5d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "nyc",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 5,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "coast-5d-s1-entertainment",
+      "trip_type": "coast-5d",
+      "persona": "entertainment",
+      "target_days": 5,
+      "stops_per_day": 1,
+      "fixture": "coast-5d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "nyc",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 5,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "coast-5d-s2-nature",
+      "trip_type": "coast-5d",
+      "persona": "nature",
+      "target_days": 5,
+      "stops_per_day": 2,
+      "fixture": "coast-5d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "nyc",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 10,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "coast-5d-s2-entertainment",
+      "trip_type": "coast-5d",
+      "persona": "entertainment",
+      "target_days": 5,
+      "stops_per_day": 2,
+      "fixture": "coast-5d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "nyc",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 10,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "coast-5d-s3-nature",
+      "trip_type": "coast-5d",
+      "persona": "nature",
+      "target_days": 5,
+      "stops_per_day": 3,
+      "fixture": "coast-5d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "nyc",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 15,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "coast-5d-s3-entertainment",
+      "trip_type": "coast-5d",
+      "persona": "entertainment",
+      "target_days": 5,
+      "stops_per_day": 3,
+      "fixture": "coast-5d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "nyc",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 15,
+        "budget": 180,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "tight-2d-s1-nature",
+      "trip_type": "tight-2d",
+      "persona": "nature",
+      "target_days": 2,
+      "stops_per_day": 1,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 2,
+        "budget": 60,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "tight-2d-s1-entertainment",
+      "trip_type": "tight-2d",
+      "persona": "entertainment",
+      "target_days": 2,
+      "stops_per_day": 1,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 2,
+        "budget": 60,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "tight-2d-s2-nature",
+      "trip_type": "tight-2d",
+      "persona": "nature",
+      "target_days": 2,
+      "stops_per_day": 2,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 4,
+        "budget": 60,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "tight-2d-s2-entertainment",
+      "trip_type": "tight-2d",
+      "persona": "entertainment",
+      "target_days": 2,
+      "stops_per_day": 2,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 4,
+        "budget": 60,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "tight-2d-s3-nature",
+      "trip_type": "tight-2d",
+      "persona": "nature",
+      "target_days": 2,
+      "stops_per_day": 3,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 6,
+        "budget": 60,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.25,
+          "nature": 0.35,
+          "hiking_outdoors": 0.25,
+          "food": 0.0,
+          "history": 0.0,
+          "culture_arts": 0.0,
+          "nightlife": 0.0,
+          "shopping": 0.0,
+          "beaches_water": 0.0,
+          "adventure": 0.1,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.0,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.05
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    },
+    {
+      "id": "tight-2d-s3-entertainment",
+      "trip_type": "tight-2d",
+      "persona": "entertainment",
+      "target_days": 2,
+      "stops_per_day": 3,
+      "fixture": "medium-2d",
+      "evaluation_clock": "2026-10-16T00:00:00+00:00",
+      "inputs": {
+        "start_id": "sf",
+        "destination_id": "boise",
+        "departure_date": "2026-10-17",
+        "departure_time": "08:00",
+        "num_stops": 6,
+        "budget": 60,
+        "traveler_count": 2,
+        "hotel_rooms": [
+          {
+            "adults": 2,
+            "child_ages": []
+          }
+        ],
+        "car_status": "skipped",
+        "car": null,
+        "persona_weights": {
+          "scenery": 0.0,
+          "nature": 0.0,
+          "hiking_outdoors": 0.0,
+          "food": 0.2,
+          "history": 0.0,
+          "culture_arts": 0.3,
+          "nightlife": 0.25,
+          "shopping": 0.15,
+          "beaches_water": 0.0,
+          "adventure": 0.0,
+          "relaxation": 0.0,
+          "unique_local_experiences": 0.1,
+          "family_friendliness": 0.0,
+          "crowd_avoidance": 0.0
+        },
+        "scheduling_policy": {
+          "preferred_hotel_arrival": "18:00",
+          "latest_hotel_arrival": "20:00",
+          "latest_destination_arrival": "21:00",
+          "morning_restart": "09:00",
+          "late_driving": false,
+          "late_cutoff": "24:00"
+        },
+        "evening_interests": []
+      }
+    }
+  ]
+}

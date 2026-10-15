@@ -45,3 +45,6 @@ Thumbs.db
 # ── Build artifacts ───────────────────────────────────────────────────────────
 *.zip
 .artifacts/
+
+# Offline evaluation campaigns
+results/route-evaluation/

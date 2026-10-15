@@ -44,7 +44,7 @@ def test_valid_full_trip():
     "bad",
     [
         {"num_stops": 0},
-        {"num_stops": 11},
+        {"num_stops": 31},
         {"start_coords": [200, 0]},
         {"destination_coords": [0]},
         {"budget": -5},

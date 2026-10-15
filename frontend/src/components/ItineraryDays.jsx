@@ -1,4 +1,4 @@
-import PlaceSource from './PlaceSource';
+import PlaceSource from './PlaceSource.jsx';
 import { Box, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import '../pages/ItineraryPage/ItineraryPage.css';

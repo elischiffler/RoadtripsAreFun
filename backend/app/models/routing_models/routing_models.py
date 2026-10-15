@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from app.agent.persona import validate_weight_update
 from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
+from app.models.trip_limits import MAX_STOPS, MIN_STOPS
 from app.routing.occupancy import HotelRooms, TravelerCount
 
 
@@ -113,7 +114,7 @@ class MapBox(BaseModel):
 
 class Route_Payload(BaseModel):
     initial_route: MapBox.MapBox_Route
-    num_stops: int
+    num_stops: int = Field(strict=True, ge=MIN_STOPS, le=MAX_STOPS)
     budget: float
     start: datetime | None = datetime(2024, 9, 21, 9, 0, 0)
     # Which routing algorithm to run. None -> the ROUTING_ALGORITHM env / default.

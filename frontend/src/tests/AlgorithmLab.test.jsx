@@ -108,7 +108,7 @@ const catalog = {
     },
     ...quickTrips,
   ],
-  limits: { min_stops: 1, max_stops: 10, max_rooms: 4, max_guests_per_room: 6, max_child_age: 17 },
+  limits: { min_stops: 1, max_stops: 20, max_rooms: 4, max_guests_per_room: 6, max_child_age: 17 },
 };
 const response = () => ({
   schema_version: 1,

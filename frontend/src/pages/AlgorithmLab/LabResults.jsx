@@ -1,4 +1,4 @@
-import PlaceSource from '../../components/PlaceSource';
+import PlaceSource from '../../components/PlaceSource.jsx';
 import RunError from './RunError';
 import PropTypes from 'prop-types';
 import { useId, useState } from 'react';
