@@ -3,6 +3,7 @@
 
 import argparse
 import hashlib
+import importlib
 import json
 import sys
 from datetime import UTC, datetime
@@ -10,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
-from app.catalog import kaggle_parks  # noqa: E402
+kaggle_parks = importlib.import_module("app.catalog.kaggle_parks")
 
 
 def fingerprint(path):
@@ -45,7 +46,7 @@ def build(sources, output):
     bundle["review"]["retrieved_at"] = review["reviewed_at"]
     raw = (json.dumps(bundle, indent=2) + "\n").encode()
     licenses = {}
-    for identifier in ("CC-BY-4.0", "CC0-1.0"):
+    for identifier in ("CC-BY-4.0", "CC0-1.0", "ODbL-1.0"):
         path = ROOT / "frontend/public/licenses" / (identifier + ".txt")
         licenses[identifier] = {"path": str(path), "sha256": fingerprint(path)}
     manifest = {
@@ -58,6 +59,7 @@ def build(sources, output):
             "country": "US",
             "explicit_independent_visitor_review": True,
             "native_coordinates_unchanged": True,
+            "practical_public_arrival_required": True,
         },
         "attribution": kaggle_parks.ATTRIBUTION,
         "licenses": licenses,
@@ -78,6 +80,68 @@ def build(sources, output):
     )
     (output / "report.json").write_text(
         json.dumps(report, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
+    selected = {}
+    destinations = []
+    originals = {
+        key: json.loads((sources / receipt["path"]).read_bytes())
+        for key, receipt in review["arrival_evidence"].items()
+    }
+    for row in rows:
+        proof = row["provenance"][4]
+        destinations.append({"source_id": row["source_id"], "elements": proof["elements"]})
+        for element in proof["elements"]:
+            identity = (element["type"], element["id"])
+            if identity not in selected:
+                selected[identity] = next(
+                    original
+                    for original in originals[element["source_snapshot"]]["elements"]
+                    if (original["type"], original["id"]) == identity
+                )
+    allowed_tags = {
+        "highway",
+        "service",
+        "access",
+        "motor_vehicle",
+        "motorcar",
+        "vehicle",
+        "layer",
+        "name",
+        "amenity",
+        "building",
+        "entrance",
+    }
+    public_elements = [
+        {
+            **{
+                key: value
+                for key, value in element.items()
+                if key in {"type", "id", "geometry", "lat", "lon"}
+            },
+            "tags": {
+                key: value for key, value in element.get("tags", {}).items() if key in allowed_tags
+            },
+        }
+        for element in selected.values()
+    ]
+    (output / "public-arrival-osm.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "roadtrips-selected-osm-arrivals/1",
+                "license": "ODbL-1.0",
+                "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+                "attribution": "OpenStreetMap contributors",
+                "review_sha256": kaggle_parks.REVIEW_SHA256,
+                "changes": "Selected practical-arrival facts and routing/access/name tags only; native OSM identities, selected tag values and geometry unchanged. Contact details, unrelated tags, operator HTML and images excluded.",
+                "source_snapshots": rows[0]["provenance"][4]["source_snapshots"],
+                "destinations": destinations,
+                "elements": public_elements,
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+        newline="\n",
     )
     (output / "completion.json").write_text(
         json.dumps(

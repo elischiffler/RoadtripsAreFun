@@ -1,20 +1,25 @@
 {
-  "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
-  "attribution": "Harvestly Markets, derived from USDA Local Food Portal data; CC BY 4.0; filtered and annotated by RoadtripsAreFun",
-  "license_url": "https://creativecommons.org/licenses/by/4.0/",
   "scanned": 8863,
-  "selected": 101,
+  "selected": 46,
   "hold_reasons": {
     "outside_reviewed_regional_rosters": 6558,
     "no_exact_name_city_road_weekday_match": 749,
     "not_in_current_canonical_membership": 916,
     "canonical_identity_or_location_changed": 501,
+    "census_no_unambiguous_literal_address_match": 7,
+    "official_native_zip_conflict": 17,
     "official_season_outside_current_date": 4,
+    "census_native_point_more_than_100m_away": 23,
     "official_season_out_interval": 11,
+    "census_matched_city_state_zip_disagreement": 4,
     "multiple_official_locations": 1,
+    "review_hold: independent Census address positions disagree with native East Palo Alto point": 1,
+    "review_hold: independent Census intersection is approximately 4.9 km from native California Avenue point": 1,
     "kaggle_season_review_complex_or_single_month": 3,
     "kaggle_season_review_qualified_year_round": 5,
+    "review_hold: unresolved shared arrival with 308615; distinct calendars do not prove distinct destinations": 1,
     "kaggle_season_review_complex_separator": 2,
+    "review_hold: unresolved shared arrival with 308803; distinct calendars do not prove distinct destinations": 1,
     "official_season_review_explicit_year": 1,
     "official_season_review_qualified_year_round": 1,
     "official_season_review_complex_or_single_month": 2,
@@ -1142,8 +1147,8 @@
       "listing_id": "300355",
       "name": "Lincoln Heights Certified Farmers Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_no_unambiguous_literal_address_match"
     },
     {
       "listing_id": "300358",
@@ -1226,8 +1231,8 @@
       "listing_id": "300381",
       "name": "Palos Verdes Farmers Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "300382",
@@ -2094,8 +2099,8 @@
       "listing_id": "301032",
       "name": "Helen Albert Certified Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "301059",
@@ -3074,8 +3079,8 @@
       "listing_id": "301225",
       "name": "North Berkeley Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "301226",
@@ -3389,8 +3394,8 @@
       "listing_id": "301275",
       "name": "Chico Certified Farmers Market - Chico Saturday",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_matched_city_state_zip_disagreement"
     },
     {
       "listing_id": "301276",
@@ -3403,8 +3408,8 @@
       "listing_id": "301277",
       "name": "Old L.A. Certified Farmers Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_no_unambiguous_literal_address_match"
     },
     {
       "listing_id": "301280",
@@ -3571,8 +3576,8 @@
       "listing_id": "301303",
       "name": "East Palo Alto Community Farmers Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "review_hold: independent Census address positions disagree with native East Palo Alto point"
     },
     {
       "listing_id": "301304",
@@ -3620,8 +3625,8 @@
       "listing_id": "301311",
       "name": "Santa Clara Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "301312",
@@ -3634,15 +3639,15 @@
       "listing_id": "301313",
       "name": "Willow Glen Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "301314",
       "name": "California Avenue Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "review_hold: independent Census intersection is approximately 4.9 km from native California Avenue point"
     },
     {
       "listing_id": "301315",
@@ -3683,8 +3688,8 @@
       "listing_id": "301320",
       "name": "Beverly Hills Farmers Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "301323",
@@ -3823,8 +3828,8 @@
       "listing_id": "301345",
       "name": "Echo Park Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "301346",
@@ -4936,8 +4941,8 @@
       "listing_id": "301530",
       "name": "Historic Lewes Farmers Market",
       "region": "DE",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "301534",
@@ -5832,8 +5837,8 @@
       "listing_id": "301321",
       "name": "Walnut Creek Certified Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "301322",
@@ -9234,8 +9239,8 @@
       "listing_id": "308796",
       "name": "Otay Ranch Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308797",
@@ -9283,8 +9288,8 @@
       "listing_id": "308803",
       "name": "Paso Robles Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "review_hold: unresolved shared arrival with 308615; distinct calendars do not prove distinct destinations"
     },
     {
       "listing_id": "308804",
@@ -9381,8 +9386,8 @@
       "listing_id": "308817",
       "name": "Rancho Santa Fe Certified Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_matched_city_state_zip_disagreement"
     },
     {
       "listing_id": "308818",
@@ -11691,8 +11696,8 @@
       "listing_id": "308837",
       "name": "Alameda Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_no_unambiguous_literal_address_match"
     },
     {
       "listing_id": "308544",
@@ -11705,15 +11710,15 @@
       "listing_id": "308545",
       "name": "Alemany Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308546",
       "name": "Alhambra Certified Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308547",
@@ -11761,8 +11766,8 @@
       "listing_id": "308552",
       "name": "Anaheim Kaiser Permanente Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308553",
@@ -11901,8 +11906,8 @@
       "listing_id": "308841",
       "name": "Belmont Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308570",
@@ -11985,15 +11990,15 @@
       "listing_id": "308842",
       "name": "Buena Park Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308581",
       "name": "Burbank Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308843",
@@ -12258,8 +12263,8 @@
       "listing_id": "308612",
       "name": "Costa Mesa Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308613",
@@ -12279,8 +12284,8 @@
       "listing_id": "308615",
       "name": "Country Farm and Craft Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "review_hold: unresolved shared arrival with 308803; distinct calendars do not prove distinct destinations"
     },
     {
       "listing_id": "308616",
@@ -12328,8 +12333,8 @@
       "listing_id": "308852",
       "name": "Danville Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308621",
@@ -12496,8 +12501,8 @@
       "listing_id": "308639",
       "name": "East Los Angeles Farmers Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308640",
@@ -12629,8 +12634,8 @@
       "listing_id": "308860",
       "name": "Fillmore Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308656",
@@ -12916,8 +12921,8 @@
       "listing_id": "308867",
       "name": "Heart of the City Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_matched_city_state_zip_disagreement"
     },
     {
       "listing_id": "308690",
@@ -12944,8 +12949,8 @@
       "listing_id": "308692",
       "name": "High Desert Farmers Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308693",
@@ -13182,8 +13187,8 @@
       "listing_id": "308723",
       "name": "Kaiser South San Francisco Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_matched_city_state_zip_disagreement"
     },
     {
       "listing_id": "308724",
@@ -13392,8 +13397,8 @@
       "listing_id": "308877",
       "name": "Los Gatos Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_no_unambiguous_literal_address_match"
     },
     {
       "listing_id": "308748",
@@ -13511,8 +13516,8 @@
       "listing_id": "308761",
       "name": "Midtown Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308762",
@@ -13525,8 +13530,8 @@
       "listing_id": "308763",
       "name": "Millbrae Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308764",
@@ -13546,8 +13551,8 @@
       "listing_id": "308766",
       "name": "Miracle Mile Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308767",
@@ -13588,8 +13593,8 @@
       "listing_id": "308772",
       "name": "Morgan Hill Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_no_unambiguous_literal_address_match"
     },
     {
       "listing_id": "308773",
@@ -13728,15 +13733,15 @@
       "listing_id": "308889",
       "name": "Pasadena Victory Park Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308890",
       "name": "Pinole Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308891",
@@ -13749,8 +13754,8 @@
       "listing_id": "308892",
       "name": "Pomona Valley Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308893",
@@ -13980,8 +13985,8 @@
       "listing_id": "308925",
       "name": "Saturday Redding Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308926",
@@ -13994,8 +13999,8 @@
       "listing_id": "308927",
       "name": "Seal Beach Village Certified Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308928",
@@ -14008,8 +14013,8 @@
       "listing_id": "308929",
       "name": "Sherman Oaks Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308930",
@@ -14022,8 +14027,8 @@
       "listing_id": "308931",
       "name": "Simi Valley Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308932",
@@ -14071,8 +14076,8 @@
       "listing_id": "308938",
       "name": "Sonora Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_no_unambiguous_literal_address_match"
     },
     {
       "listing_id": "308939",
@@ -14141,8 +14146,8 @@
       "listing_id": "308949",
       "name": "Sunrise Mall Farmers Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308950",
@@ -14274,8 +14279,8 @@
       "listing_id": "308968",
       "name": "Tuesday Marilyn Miller Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308969",
@@ -14302,15 +14307,15 @@
       "listing_id": "308972",
       "name": "Turtle Bay Certified Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308973",
       "name": "Tustin Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308974",
@@ -14414,8 +14419,8 @@
       "listing_id": "308988",
       "name": "Vallejo Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "official_native_zip_conflict"
     },
     {
       "listing_id": "308989",
@@ -14435,8 +14440,8 @@
       "listing_id": "308991",
       "name": "Visalia Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "308992",
@@ -14491,8 +14496,8 @@
       "listing_id": "308999",
       "name": "West Covina Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "309000",
@@ -14526,8 +14531,8 @@
       "listing_id": "309004",
       "name": "Westlake Village Farmers' Market",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "309005",
@@ -16003,8 +16008,8 @@
       "listing_id": "309228",
       "name": "Seymour Farmers' Market",
       "region": "CT",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_no_unambiguous_literal_address_match"
     },
     {
       "listing_id": "309229",
@@ -45354,8 +45359,8 @@
       "listing_id": "301493",
       "name": "Running Springs Farmers Market and Artisan Faire",
       "region": "CA",
-      "decision": "selected",
-      "reason": null
+      "decision": "hold",
+      "reason": "census_native_point_more_than_100m_away"
     },
     {
       "listing_id": "313944",
@@ -62067,5 +62072,8 @@
       "reason": "not_in_current_canonical_membership"
     }
   ],
-  "category_policy": "Daytime food destinations; omitted restaurant/evening food query group because source market calendars remain raw facts, not scheduler opening intervals."
+  "category_policy": "Daytime food destinations; omitted restaurant/evening food query group because source market calendars remain raw facts, not scheduler opening intervals.",
+  "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+  "license": "CC-BY-4.0",
+  "attribution": "Harvestly Markets, derived from USDA AMS; filtering and admission decisions by Roadtrips. Census address corroboration separately credited under LicenseRef-US-Census-Geocoder. No endorsement."
 }

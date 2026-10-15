@@ -1,10 +1,10 @@
 {
   "source_url": "https://www.kaggle.com/datasets/rideinpark/theme-parks-of-the-world/versions/1",
-  "attribution": "Ride in Park compilation, CC BY 4.0; selected Wikidata structured facts, CC0; filtered and annotated by RoadtripsAreFun",
-  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "license": "CC-BY-4.0",
+  "attribution": "Ride in Park; factual source rows filtered and independently reviewed by Roadtrips. Wikidata identity/coordinates CC0. OSM arrival evidence separately attributed under ODbL-1.0.",
   "scanned": 2105,
-  "accepted": 18,
-  "rejects": {
+  "selected": 11,
+  "hold_reasons": {
     "outside_US": 1540,
     "source_official_website_missing": 299,
     "operator closed today": 1,
@@ -13,6 +13,7 @@
     "current_operator_access_not_reviewed_or_missing_positive_proof": 130,
     "native point differs from current main visitor directions by about600m": 1,
     "source_explicit_closure_year": 20,
+    "held_public_arrival_or_open_component_unproven": 7,
     "missing_or_invalid_native_coordinates": 6,
     "dated Oct15 calendar says Waterpark and FunPark closed despite generic headerhours": 1,
     "closed for season untilMar20,2027": 1,
@@ -24,7 +25,7 @@
     "operator says will open in lateFall2026; no current explicit opening date": 1,
     "closed untilMay2027": 1
   },
-  "source_dispositions": [
+  "ledger": [
     {
       "qid": "Q367236",
       "name": "Adria-Ausstellung 1913",
@@ -9335,7 +9336,8 @@
       "qid": "Q804685",
       "name": "Balboa Fun Zone",
       "country": "US",
-      "disposition": "selected_current_visitor_evidence"
+      "disposition": "held_public_arrival_or_open_component_unproven",
+      "detail": "Native point 33.6028,-117.899 lies inside the distinct Balboa Pavilion building at 400 Main Street. Reviewed active Ferris Wheel/Fun Zone visitor address is 600 East Bay Avenue and the continuing component is not bound to the native point. Held rather than treating a nearby street as its arrival."
     },
     {
       "qid": "Q4873935",
@@ -9575,7 +9577,8 @@
       "qid": "Q2941462",
       "name": "Castle Park",
       "country": "US",
-      "disposition": "selected_current_visitor_evidence"
+      "disposition": "held_public_arrival_or_open_component_unproven",
+      "detail": "Native point 33.9028,-117.468 is near the Ride Park entrance/ride grounds. Positive current access is only proven for continuing Mini Golf/Arcade components. The exact native arrival binding to those components remains ambiguous despite nearby parking/service roads; held."
     },
     {
       "qid": "Q5050593",
@@ -9803,7 +9806,8 @@
       "qid": "Q1228570",
       "name": "Discovery Cove",
       "country": "US",
-      "disposition": "selected_current_visitor_evidence"
+      "disposition": "held_public_arrival_or_open_component_unproven",
+      "detail": "Native point 28.4054,-81.4617 is among private park footways/structures adjacent to Discovery Cove Drive tagged layer=-1. Public reception/car-arrival binding at this exact point remains ambiguous. Road snap alone insufficient; held with all original operator evidence."
     },
     {
       "qid": "Q1229098",
@@ -10697,7 +10701,8 @@
       "qid": "Q2276588",
       "name": "Legoland California",
       "country": "US",
-      "disposition": "selected_current_visitor_evidence"
+      "disposition": "held_public_arrival_or_open_component_unproven",
+      "detail": "Native point 33.1282,-117.3117 is in Miniland USA pedestrian area, not public car arrival. The official directions link points to 33.1262476,-117.3115765, about 217 m away. A nearby internal OSRM road is insufficient; native coordinates retained, not replaced."
     },
     {
       "qid": "Q646122",
@@ -11483,7 +11488,8 @@
       "qid": "Q3472599",
       "name": "Santa Cruz Beach Boardwalk",
       "country": "US",
-      "disposition": "selected_current_visitor_evidence"
+      "disposition": "held_public_arrival_or_open_component_unproven",
+      "detail": "Native point 36.96417,-122.01778 lies in the Sky Glider/midway/Boardwalk area, while the positively reviewed open arcade/bowling components are separate. Rides are closed on the admission day. A Beach Street snap does not establish arrival to the active component; held."
     },
     {
       "qid": "Q595439",
@@ -11507,7 +11513,8 @@
       "qid": "Q7419126",
       "name": "Santa's Village",
       "country": "US",
-      "disposition": "selected_current_visitor_evidence"
+      "disposition": "held_public_arrival_or_open_component_unproven",
+      "detail": "Native point 34.2341,-117.175 does not match current operator directions marker 34.2328287,-117.1696567, about 512 m away. Highway snap does not establish the correct public park entrance. Held without coordinate replacement."
     },
     {
       "qid": "Q15275165",
@@ -11801,7 +11808,8 @@
       "qid": "Q7548259",
       "name": "Snow King Mountain",
       "country": "US",
-      "disposition": "selected_current_visitor_evidence"
+      "disposition": "held_public_arrival_or_open_component_unproven",
+      "detail": "Native point 43.4692,-110.751 is near residential Snow King Drive, not the documented main guest base. The operator directions link resolves to 43.4737,-110.759, about 817 m away. Native point is held, not relocated."
     },
     {
       "qid": "Q650576",
@@ -12655,5 +12663,168 @@
       "country": "ZA",
       "disposition": "outside_US"
     }
-  ]
+  ],
+  "reviewed_holds": {
+    "Q44043": {
+      "reason": "operator closed today",
+      "native_coordinates": [
+        33.81519,
+        -117.99234
+      ],
+      "source_name": "Adventure City"
+    },
+    "Q1721935": {
+      "reason": "native point differs from current main visitor directions by about 600 m",
+      "native_coordinates": [
+        42.2322,
+        -85.56
+      ],
+      "source_name": "Air Zoo"
+    },
+    "Q23994724": {
+      "reason": "company-level duplicate of Kissimmee Q23994725",
+      "native_coordinates": [
+        28.3306,
+        -81.5148
+      ],
+      "source_name": "Fun Spot"
+    },
+    "Q3216454": {
+      "reason": "native driving destination 107.84 m exceeds 75 m",
+      "native_coordinates": [
+        41.64167,
+        -72.92333
+      ],
+      "source_name": "Lake Compounce"
+    },
+    "Q12066678": {
+      "reason": "native driving destination 101.41 m exceeds 75 m",
+      "native_coordinates": [
+        41.52811,
+        -73.15034
+      ],
+      "source_name": "Quassy Amusement Park"
+    },
+    "Q138713986": {
+      "reason": "operator says will open in late Fall 2026; no current explicit opening date",
+      "native_coordinates": [
+        43.00409,
+        -72.47178
+      ],
+      "source_name": "Santa's Land USA"
+    },
+    "Q110551898": {
+      "reason": "requires current explicit dated season/access proof; not admitted",
+      "native_coordinates": [
+        38.71458,
+        -75.07621
+      ],
+      "source_name": "Funland (Rehoboth Beach, Delaware)"
+    },
+    "Q5628830": {
+      "reason": "current official Winter Hours page says extended maintenance shutdown since Sept 2024",
+      "native_coordinates": [
+        61.1212,
+        -149.854
+      ],
+      "source_name": "H2Oasis Indoor Waterpark"
+    },
+    "Q5243615": {
+      "reason": "dated Oct 15 calendar says Waterpark and Fun Park closed despite generic headerhours",
+      "native_coordinates": [
+        29.2302,
+        -81.0116
+      ],
+      "source_name": "Daytona Lagoon"
+    },
+    "Q5375362": {
+      "reason": "closed for season until Mar 20,2027",
+      "native_coordinates": [
+        44.83308,
+        -123.00825
+      ],
+      "source_name": "Enchanted Forest"
+    },
+    "Q16944423": {
+      "reason": "closed until May 2027",
+      "native_coordinates": [
+        40.6121,
+        -122.36842
+      ],
+      "source_name": "WaterWorks Park"
+    },
+    "Q4686512": {
+      "reason": "homepage announces Jacksonville Beach permanentclosure; specific location identity unresolved",
+      "native_coordinates": [
+        30.287,
+        -81.4124
+      ],
+      "source_name": "Adventure Landing"
+    },
+    "Q2276588": {
+      "reason": "Native point 33.1282,-117.3117 is in Miniland USA pedestrian area, not public car arrival. The official directions link points to 33.1262476,-117.3115765, about 217 m away. A nearby internal OSRM road is insufficient; native coordinates retained, not replaced.",
+      "native_coordinates": [
+        33.1282,
+        -117.3117
+      ],
+      "source_name": "Legoland California"
+    },
+    "Q1228570": {
+      "reason": "Native point 28.4054,-81.4617 is among private park footways/structures adjacent to Discovery Cove Drive tagged layer=-1. Public reception/car-arrival binding at this exact point remains ambiguous. Road snap alone insufficient; held with all original operator evidence.",
+      "native_coordinates": [
+        28.4054,
+        -81.4617
+      ],
+      "source_name": "Discovery Cove"
+    },
+    "Q7548259": {
+      "reason": "Native point 43.4692,-110.751 is near residential Snow King Drive, not the documented main guest base. The operator directions link resolves to 43.4737,-110.759, about 817 m away. Native point is held, not relocated.",
+      "native_coordinates": [
+        43.4692,
+        -110.751
+      ],
+      "source_name": "Snow King Mountain"
+    },
+    "Q7419126": {
+      "reason": "Native point 34.2341,-117.175 does not match current operator directions marker 34.2328287,-117.1696567, about 512 m away. Highway snap does not establish the correct public park entrance. Held without coordinate replacement.",
+      "native_coordinates": [
+        34.2341,
+        -117.175
+      ],
+      "source_name": "Santa's Village"
+    },
+    "Q804685": {
+      "reason": "Native point 33.6028,-117.899 lies inside the distinct Balboa Pavilion building at 400 Main Street. Reviewed active Ferris Wheel/Fun Zone visitor address is 600 East Bay Avenue and the continuing component is not bound to the native point. Held rather than treating a nearby street as its arrival.",
+      "native_coordinates": [
+        33.6028,
+        -117.899
+      ],
+      "source_name": "Balboa Fun Zone"
+    },
+    "Q3472599": {
+      "reason": "Native point 36.96417,-122.01778 lies in the Sky Glider/midway/Boardwalk area, while the positively reviewed open arcade/bowling components are separate. Rides are closed on the admission day. A Beach Street snap does not establish arrival to the active component; held.",
+      "native_coordinates": [
+        36.96417,
+        -122.01778
+      ],
+      "source_name": "Santa Cruz Beach Boardwalk"
+    },
+    "Q2941462": {
+      "reason": "Native point 33.9028,-117.468 is near the Ride Park entrance/ride grounds. Positive current access is only proven for continuing Mini Golf/Arcade components. The exact native arrival binding to those components remains ambiguous despite nearby parking/service roads; held.",
+      "native_coordinates": [
+        33.9028,
+        -117.468
+      ],
+      "source_name": "Castle Park"
+    }
+  },
+  "adjacent_destination_review": {
+    "ids": [
+      "Q23994725",
+      "Q7085259"
+    ],
+    "native_distance_m": 190.46,
+    "decision": "retain as distinct published visitor destinations",
+    "evidence": "Fun Spot operator park map explicitly states Next door to Old Town and shows its own ride compound/guest parking. Published addresses differ:2850 Florida Plaza Blvd versus 5770 West Irlo Bronson Memorial Hwy. Old Town supplies its own shops/events/parking/map; these are adjacent public destinations, not duplicate names or shared source records."
+  }
 }

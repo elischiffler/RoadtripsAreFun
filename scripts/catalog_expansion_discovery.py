@@ -144,14 +144,21 @@ def measure(database_url, baseline, catalog, corridors, output, max_rows, max_by
         max_bytes=max_bytes,
     )
     typed = []
-    probes = [
-        next(
-            row
-            for row in all_rows
-            if row["source_id"].startswith("usda-market:") and row["region"] == state
+    probes, market_state_probes = [], {}
+    for state in ("CA", "CT", "DE", "VT"):
+        row = next(
+            (
+                row
+                for row in all_rows
+                if row["source_id"].startswith("usda-market:") and row["region"] == state
+            ),
+            None,
         )
-        for state in ("CA", "CT", "DE", "VT")
-    ]
+        market_state_probes[state] = row["source_id"] if row else None
+        if row:
+            probes.append(row)
+    if not probes:
+        raise ValueError("expanded catalog has no admitted market source to probe")
     probes.extend(
         next(
             row
@@ -221,6 +228,7 @@ def measure(database_url, baseline, catalog, corridors, output, max_rows, max_by
         "stage_idempotent": True,
         "rollback_to_500_and_reactivation": True,
         "typed_source_probes": typed,
+        "priority_market_state_probes": market_state_probes,
         "markets_excluded_from_evening_restaurant_results": True,
         "database_bytes": database_bytes,
         "catalog_bytes": catalog_bytes,

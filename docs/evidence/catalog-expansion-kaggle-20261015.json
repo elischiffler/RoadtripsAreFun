@@ -1,7 +1,7 @@
 {
   "scanned": 29751,
-  "accepted": 619,
-  "bytes": 89064337,
+  "accepted": 557,
+  "bytes": 91647833,
   "duplicates": 0,
   "rejects": {},
   "regions": {
@@ -10,18 +10,18 @@
     "UT": 20,
     "SD": 4,
     "TX": 11,
-    "FL": 10,
+    "FL": 9,
     "NM": 13,
     "SC": 6,
     "OR": 32,
     "OH": 10,
     "AK": 15,
-    "CA": 148,
+    "CA": 90,
     "MT": 18,
     "NV": 2,
     "AZ": 31,
     "TN": 7,
-    "WY": 16,
+    "WY": 15,
     "HI": 6,
     "KY": 13,
     "WA": 66,
@@ -53,12 +53,10 @@
     "MS": 1,
     "WV": 1,
     "NH": 6,
-    "VT": 1,
-    "DE": 1,
-    "CT": 1
+    "VT": 1
   },
   "categories": {
-    "daytime": 613,
+    "daytime": 551,
     "nature": 288,
     "trailhead": 179,
     "national_park": 45,
@@ -88,7 +86,7 @@
     "alcoholic_beverage_venue": 1,
     "bar": 1,
     "beer_bar": 1,
-    "nightlife": 6,
+    "nightlife": 5,
     "picnic_site": 57,
     "interpretive_site": 16,
     "landmark": 16,
@@ -100,13 +98,13 @@
     "garden": 1,
     "geographic_entities": 1,
     "amusement_attraction": 1,
-    "amusement_park": 17,
+    "amusement_park": 10,
     "bowling_alley": 1,
     "sport_or_fitness_facility": 1,
     "sports_and_recreation": 1,
-    "farmers_market": 101,
-    "food_destination": 101,
-    "public_destination": 101
+    "farmers_market": 46,
+    "food_destination": 46,
+    "public_destination": 46
   },
   "source_counts": {
     "boulder-osmp": 24,
@@ -116,96 +114,97 @@
     "overture": 25,
     "nps-heritage": 115,
     "usfs": 251,
-    "kaggle-usda-markets": 101,
-    "kaggle-rideinpark": 18
+    "kaggle-usda-markets": 46,
+    "kaggle-rideinpark": 11
   },
   "preserved_rows_and_provenance": 500,
-  "additions": 119,
-  "normalized_rows_sha256": "f1ad0f99106c1442f07526f614e6df7759e3cd5227d5f87b7e43f95975119e9f",
+  "additions": 57,
+  "normalized_rows_sha256": "a96cb3e5a12020778d744c023d12f8c111c64162c31e4a9e4006b9dcee901c60",
   "baseline_normalized_rows_sha256": "804b0854158423d44917e7ed27e2ea9b00ce21ec4048f8520ec7cc158678a896",
   "max_rows": 20000,
   "max_bytes": 104857600,
   "database_or_network_calls": false,
-  "checked_at": "2026-10-15T18:04:32.509339+00:00",
-  "status": "review candidate; no production mutation",
+  "new_pairs_within_250_metres": 1,
+  "checked_at": "2026-10-15T18:37:14.506022+00:00",
+  "status": "independent review candidate; no production mutation",
   "postgres_version_num": 180006,
   "discovery": {
     "short-day": {
       "500_daytime": 0,
-      "619_daytime": 17,
+      "557_daytime": 9,
       "500_evening": 0,
-      "619_evening": 0
+      "557_evening": 0
     },
     "medium-two-day": {
       "500_daytime": 2,
-      "619_daytime": 13,
+      "557_daytime": 4,
       "500_evening": 2,
-      "619_evening": 2
+      "557_evening": 2
     },
     "long-multi-day": {
       "500_daytime": 4,
-      "619_daytime": 15,
+      "557_daytime": 6,
       "500_evening": 3,
-      "619_evening": 3
+      "557_evening": 3
     },
     "dense-corridor": {
       "500_daytime": 1,
-      "619_daytime": 24,
+      "557_daytime": 10,
       "500_evening": 1,
-      "619_evening": 1
+      "557_evening": 1
     },
     "sparse-corridor": {
       "500_daytime": 0,
-      "619_daytime": 0,
+      "557_daytime": 0,
       "500_evening": 0,
-      "619_evening": 0
+      "557_evening": 0
     },
     "pacific-northwest": {
       "500_daytime": 4,
-      "619_daytime": 5,
+      "557_daytime": 5,
       "500_evening": 4,
-      "619_evening": 5
+      "557_evening": 5
     },
     "southwest": {
       "500_daytime": 2,
-      "619_daytime": 16,
+      "557_daytime": 9,
       "500_evening": 1,
-      "619_evening": 1
+      "557_evening": 1
     },
     "olympic-peninsula": {
       "500_daytime": 7,
-      "619_daytime": 7,
+      "557_daytime": 7,
       "500_evening": 0,
-      "619_evening": 0
+      "557_evening": 0
     },
     "colorado-scenic": {
       "500_daytime": 8,
-      "619_daytime": 8,
+      "557_daytime": 8,
       "500_evening": 4,
-      "619_evening": 4
+      "557_evening": 4
     },
     "juneau-local": {
       "500_daytime": 4,
-      "619_daytime": 4,
+      "557_daytime": 4,
       "500_evening": 0,
-      "619_evening": 0
+      "557_evening": 0
     }
   },
   "query_timings": {
     "baseline_500": {
       "query_count": 2166,
       "execute_ms": {
-        "median": 0.5411799999137656,
-        "p95": 0.6993639999564039,
-        "max": 3.8075669999670936
+        "median": 0.6327444998532883,
+        "p95": 0.9024930000123277,
+        "max": 2.7611490004346706
       }
     },
     "expanded": {
       "query_count": 2166,
       "execute_ms": {
-        "median": 0.5639289998953245,
-        "p95": 0.838590000057593,
-        "max": 16.25854500002788
+        "median": 0.5511550000392162,
+        "p95": 0.7415459999720042,
+        "max": 2.6153359999625536
       }
     }
   },
@@ -214,20 +213,6 @@
       "provider_id": "usda-market:300109",
       "source": "kaggle-usda-markets",
       "region": "CA",
-      "source_release": "kaggle-usda-markets-v4+review-2026-10-15",
-      "provenance_retained": true
-    },
-    {
-      "provider_id": "usda-market:309228",
-      "source": "kaggle-usda-markets",
-      "region": "CT",
-      "source_release": "kaggle-usda-markets-v4+review-2026-10-15",
-      "provenance_retained": true
-    },
-    {
-      "provider_id": "usda-market:301530",
-      "source": "kaggle-usda-markets",
-      "region": "DE",
       "source_release": "kaggle-usda-markets-v4+review-2026-10-15",
       "provenance_retained": true
     },
@@ -267,59 +252,45 @@
       "provenance_retained": true
     }
   ],
-  "markets_excluded_from_evening_restaurants": true,
-  "tests": {
-    "backend": 1215,
-    "backend_coverage_percent": 87.53,
-    "frontend": 319,
-    "frontend_line_coverage_percent": 90.23,
-    "market_regressions": 39,
-    "park_regressions": 29,
-    "release_sql_regressions": 5,
-    "network_disabled_container": {
-      "passed": 1209,
-      "opt_in_postgres_skipped": 6,
-      "coverage_percent": 86.88
-    }
+  "priority_market_state_probes": {
+    "CA": "usda-market:300109",
+    "CT": null,
+    "DE": null,
+    "VT": "usda-market:301158"
   },
-  "storage_and_capacity": "Actual Neon allowance/usage and full local query plans recorded in private release evidence; admission guards unchanged.",
-  "limitations": [
-    "Nearby geometry counts are not itinerary/detour/schedule promises.",
-    "Exact user failing route is unknown.",
-    "Browser saved-trip verification remains pending.",
-    "Current-day park profiles require genuine reacquisition/review after October 15.",
-    "Actual Windows execution has not been performed."
-  ],
-  "disposable_cutover_recovery": {
-    "public_catalog_only": true,
-    "source_admitted_rows": 619,
-    "all_500_fields_and_provenance_preserved": true,
-    "stage_idempotent": true,
-    "stage_keeps_prior_pointer": true,
-    "activation_and_rollback_idempotent": true,
-    "negative_guards": {
-      "unexpected_active": "P0001",
-      "storage_ceiling": "P0001",
-      "immutable_new_content": "P0001",
-      "activation_fingerprint": "P0001"
-    },
-    "exact_dump_restore_all_catalog_tables": true,
-    "restored_tables": {
-      "places_catalog": {
-        "rows": 1119,
-        "content_md5": "b0834469525fa61eaef294ff4a745fac"
-      },
-      "places_catalog_imports": {
-        "rows": 2,
-        "content_md5": "fc7c74585ee9c7b168a8d311c0370247"
-      },
-      "places_catalog_active": {
-        "rows": 1,
-        "content_md5": "d3920e0f77659ea852e5d45b9cbb9be4"
-      }
-    },
-    "dump_bytes": 428352,
-    "dump_sha256": "6f5c65a49f9f91e66d36023efe28e96b7f19bfd132581ccbaea2ce75396187e1",
-    "production_calls_or_changes": false
-  }
+  "markets_excluded_from_evening_restaurant_results": true,
+  "actual_postgres_stage_rollback_reactivation": true,
+  "public_catalog_exact_dump_restore": true,
+  "guarded_cutover_negative_controls": {
+    "unexpected_active": "P0001",
+    "storage_ceiling": "P0001",
+    "immutable_new_content": "P0001",
+    "activation_fingerprint": "P0001"
+  },
+  "local_two_generation_footprint": {
+    "catalog_bytes": 3776512,
+    "index_bytes": 466944,
+    "mean_expanded_row_bytes": 2685
+  },
+  "backend": {
+    "tests_passed": 1256,
+    "coverage_percent": 87.29,
+    "real_postgres_opt_in_cases": 6,
+    "market_suite": 59,
+    "park_suite": 43,
+    "proximity_suite": 7,
+    "release_sql_suite": 5
+  },
+  "frontend": {
+    "tests_passed": 319,
+    "line_coverage_percent": 90.23,
+    "format_lint_build": "pass; final attribution/evidence rebuild is separately checked"
+  },
+  "preflight_corrections": {
+    "market_candidates_held": 55,
+    "park_candidates_held": 7,
+    "prior_unpublished_619_candidate": "superseded; never activated"
+  },
+  "production_changes": false,
+  "limitations": "Nearby discovery along real geometry; no detour, solver, itinerary, live-hours or user-route success is implied. Browser saved-trip verification remains pending."
 }

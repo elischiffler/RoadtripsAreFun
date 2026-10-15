@@ -23,7 +23,7 @@ SCHEMA = "kaggle-rideinpark-reviewed-arrivals/1"
 SOURCE_URL = "https://www.kaggle.com/datasets/rideinpark/theme-parks-of-the-world/versions/1"
 ARCHIVE_SHA256 = "5d611038b0e8ec2c1ed9a75d3e28822e8080eb6f8d6de7c9a0504501c9960059"
 METADATA_SHA256 = "34da5c8dc5973ce24b7fbd60c072e36f399252750ba7b04991855492ce2f6bda"
-REVIEW_SHA256 = "22362fde6efd19e580575fc54ffd2d706971c9fa7456a63433b8df0f6ec90ac1"
+REVIEW_SHA256 = "d133085372caa784c31aa2b6c7b4e86a8c26bee456b3565c1a414db37390b326"
 CSV_SHA256 = "6277aac916db10587ad594eb534996cdc388bb24ed9bd96d44aeb1826594ffa8"
 CSV_ROWS = 2105
 COLUMNS = (
@@ -206,6 +206,134 @@ def driving(raw, evidence, lat, lon):
     return distance, destination.get("name", "")
 
 
+def geometry_distance(lat, lon, geometry):
+    """Local metre distance and polygon containment; geometry is evidence only."""
+    points = [
+        ((p["lon"] - lon) * 111_195 * math.cos(math.radians(lat)), (p["lat"] - lat) * 111_195)
+        for p in geometry
+    ]
+    best, inside = math.inf, False
+    for (ax, ay), (bx, by) in zip(points, points[1:]):
+        if (ay > 0) != (by > 0) and 0 < ax + (bx - ax) * (-ay) / (by - ay):
+            inside = not inside
+        denominator = (bx - ax) ** 2 + (by - ay) ** 2
+        fraction = (
+            max(0, min(1, (-ax * (bx - ax) - ay * (by - ay)) / denominator)) if denominator else 0
+        )
+        best = min(best, math.hypot(ax + fraction * (bx - ax), ay + fraction * (by - ay)))
+    return best, inside
+
+
+def public_arrival(profile, road_raw, roads, features, pages, lat, lon):
+    """A car snap on a service/private/interior road is not visitor access proof."""
+    proof = profile["arrival_review"]
+    road = roads.get(proof["road_way_id"])
+    if not road or road.get("type") != "way":
+        raise ValueError("park practical arrival road missing from reviewed source")
+    tags = road.get("tags", {})
+    forbidden = {"private", "no", "delivery", "agricultural", "forestry"}
+    if (
+        tags.get("highway")
+        not in {
+            "service",
+            "residential",
+            "unclassified",
+            "primary",
+            "secondary",
+            "tertiary",
+            "trunk",
+        }
+        or any(
+            tags.get(key) in forbidden for key in ("access", "motor_vehicle", "motorcar", "vehicle")
+        )
+        or float(tags.get("layer", 0)) < 0
+        or geometry_distance(lat, lon, road["geometry"])[0] > 75
+    ):
+        raise ValueError("park practical arrival road is private, internal-only or unsuitable")
+    snap = json.loads(road_raw)["waypoints"][-1]["location"]
+    if geometry_distance(snap[1], snap[0], road["geometry"])[0] > 3:
+        raise ValueError("park public arrival proof differs from actual snapped destination road")
+    method = proof["method"]
+    parking_id = proof.get("parking_way_id")
+    if parking_id is not None:
+        parking = features.get(parking_id, {})
+        ptags = parking.get("tags", {})
+        distance, contains = geometry_distance(lat, lon, parking.get("geometry", []))
+        if (
+            ptags.get("amenity") != "parking"
+            or ptags.get("access") in forbidden
+            or (not contains and distance > 75)
+        ):
+            raise ValueError("park practical arrival lacks reviewed guest parking")
+        if method == "public-parking" and not contains:
+            raise ValueError("park native point is outside the reviewed public guest parking")
+    elif method in {"public-parking", "visitor-parking-frontage"}:
+        raise ValueError("park practical arrival parking identity missing")
+    if method == "public-street-frontage":
+        if tags.get("highway") == "service" or not tags.get("name"):
+            raise ValueError("park street frontage cannot use an unnamed internal service road")
+    elif method == "visitor-building-frontage":
+        building = features.get(proof.get("building_way_id"), {})
+        if (
+            not building.get("tags", {}).get("building")
+            or not geometry_distance(lat, lon, building.get("geometry", []))[1]
+        ):
+            raise ValueError("park native point is not at the reviewed visitor building")
+        entrance_id = proof.get("entrance_node_id")
+        if entrance_id:
+            entrance = features.get(entrance_id, {})
+            if (
+                entrance.get("tags", {}).get("entrance") != "main"
+                or math.hypot(
+                    (lat - entrance["lat"]) * 111_195,
+                    (lon - entrance["lon"]) * 111_195 * math.cos(math.radians(lat)),
+                )
+                > 40
+            ):
+                raise ValueError("park visitor building lacks its reviewed public main entrance")
+        elif not proof["operator_map_evidence"]:
+            raise ValueError("park visitor building requires its reviewed operator entrance map")
+    elif method == "public-entry-frontage":
+        # Parse the operator-published place marker, without calling Google.
+        markers = []
+        for _, raw in pages:
+            for link in html.fromstring(raw).xpath("//a/@href"):
+                markers.extend(
+                    (float(a), float(b))
+                    for a, b in re.findall(r"!3d(-?[0-9.]+)!4d(-?[0-9.]+)", link)
+                )
+        if not proof["operator_map_evidence"] or not any(
+            math.hypot((lat - a) * 111_195, (lon - b) * 111_195 * math.cos(math.radians(lat))) <= 75
+            for a, b in markers
+        ):
+            raise ValueError("park public entry lacks operator coordinate and entrance-map binding")
+    elif method not in {"public-parking", "visitor-parking-frontage"}:
+        raise ValueError("unreviewed park practical arrival method")
+    return {
+        "method": method,
+        "road_way_id": road["id"],
+        "assessment": proof["assessment"],
+        "coordinate_replaced": False,
+        "evidence_attribution": "OpenStreetMap contributors / ODbL; separate current operator directions and maps",
+        "osm_elements": [
+            {
+                "source_snapshot": snapshot,
+                "type": kind,
+                "id": proof[field],
+                "role": role,
+                "source_url": f"https://www.openstreetmap.org/{kind}/{proof[field]}",
+            }
+            for field, snapshot, kind, role in (
+                ("road_way_id", "roads", "way", "arrival-road"),
+                ("parking_way_id", "features", "way", "visitor-parking"),
+                ("building_way_id", "features", "way", "visitor-building"),
+                ("entrance_node_id", "features", "node", "main-visitor-entrance"),
+            )
+            if proof.get(field) is not None
+        ],
+    }
+
+
 def prepare(path, manifest, *, max_rows, max_bytes):
     if (
         manifest.get("schema_version") != SCHEMA
@@ -214,7 +342,7 @@ def prepare(path, manifest, *, max_rows, max_bytes):
         or not re.fullmatch(
             r"kaggle-rideinpark-v1\+review-\d{4}-\d{2}-\d{2}", manifest.get("release", "")
         )
-        or set(manifest.get("licenses", {})) != {"CC-BY-4.0", "CC0-1.0"}
+        or set(manifest.get("licenses", {})) != {"CC-BY-4.0", "CC0-1.0", "ODbL-1.0"}
         or not 0 < max_rows <= 50_000
         or not 0 < max_bytes <= 100 * 1024 * 1024
     ):
@@ -251,6 +379,13 @@ def prepare(path, manifest, *, max_rows, max_bytes):
     profiles = review["records"]
     if not 1 <= len(profiles) <= max_rows or len({p["qid"] for p in profiles}) != len(profiles):
         raise ValueError("park reviewed selection is empty, duplicated or exceeds row bound")
+    arrival_sources = {
+        key: {
+            element["id"]: element
+            for element in json.loads(reader.read(evidence, root=root))["elements"]
+        }
+        for key, evidence in review["arrival_evidence"].items()
+    }
     rows = []
     for profile in profiles:
         qid = profile["qid"]
@@ -293,6 +428,17 @@ def prepare(path, manifest, *, max_rows, max_bytes):
         revision = wiki_identity(wiki_raw, qid, lat, lon)
         road_raw = reader.read(profile["driving"], root=root, ceiling=262_144)
         distance, road_name = driving(road_raw, profile["driving"], lat, lon)
+        for evidence in profile["arrival_review"]["operator_map_evidence"]:
+            reader.read(evidence, root=root)
+        practical = public_arrival(
+            profile,
+            road_raw,
+            arrival_sources["roads"],
+            arrival_sources["features"],
+            pages,
+            lat,
+            lon,
+        )
         provenance = [
             {
                 "dataset": "Ride in Park Kaggle Theme Parks of the World",
@@ -323,6 +469,7 @@ def prepare(path, manifest, *, max_rows, max_bytes):
                 "primary_category": profile["primary_category"],
                 "source_facts": access,
                 "arrival_type": profile["arrival_type"],
+                "practical_arrival": practical,
                 "parking": profile["parking"],
                 "opening_hours_imported": False,
                 "opening_intervals": None,
@@ -342,6 +489,24 @@ def prepare(path, manifest, *, max_rows, max_bytes):
                 "road_name": road_name,
                 "source_point_replaced": False,
                 "attribution": "OSRM; OpenStreetMap contributors / ODbL",
+            },
+            {
+                "dataset": "OpenStreetMap practical visitor arrival corroboration",
+                "source_url": "https://www.openstreetmap.org/copyright",
+                "license": "ODbL-1.0",
+                "license_url": "https://opendatacommons.org/licenses/odbl/1-0/",
+                "attribution": "OpenStreetMap contributors",
+                "elements": practical["osm_elements"],
+                "source_snapshots": {
+                    key: {
+                        "source_url": receipt["url"],
+                        "snapshot_sha256": receipt["sha256"],
+                        "checked_at": receipt["retrieved_at"],
+                    }
+                    for key, receipt in review["arrival_evidence"].items()
+                },
+                "changes": "Selected arrival-road, guest-parking, visitor-building and main-entrance facts; native OSM identity, tags and geometry unchanged",
+                "coordinate_replaced": False,
             },
         ]
         rows.append(
@@ -373,4 +538,7 @@ def prepare(path, manifest, *, max_rows, max_bytes):
             )
         ),
         "source_dispositions": dispositions,
+        "reviewed_holds": review.get("holds", {}),
+        "adjacent_destination_review": review.get("adjacent_destination_review"),
+        "public_arrival_methods": dict(Counter(p["arrival_review"]["method"] for p in profiles)),
     }

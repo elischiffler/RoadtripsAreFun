@@ -22,6 +22,7 @@ def source_rows():
         lng="-118.123",
         season="Year Round (Sunday)",
         updated="Mar 20th, 2023",
+        zip="90000",
     )
     official = {
         "name": "Example Farmers' Market",
@@ -235,6 +236,13 @@ def test_preparation_keeps_separate_attribution_and_unknowns_without_private_fie
         "sha256": "c" * 64,
     }
     index = {
+        "census": {
+            "response": {
+                "sha256": "d" * 64,
+                "request_sha256": "e" * 64,
+                "retrieved_at": datetime.now(UTC).isoformat(),
+            }
+        },
         "selection": ["123"],
         "driving": [check],
         "archive": source_receipt,
@@ -249,6 +257,7 @@ def test_preparation_keeps_separate_attribution_and_unknowns_without_private_fie
         markets, "load_sources", lambda *_: ({"123": native}, {"123": current}, officials, {}, 1)
     )
     monkeypatch.setattr(markets, "targeted_records", lambda _: {})
+    monkeypatch.setattr(markets, "load_census", lambda *_: (census_example(native), 0))
     bundle = {
         "selection": ["123"],
         "index": {
@@ -266,7 +275,7 @@ def test_preparation_keeps_separate_attribution_and_unknowns_without_private_fie
         "release": markets.RELEASE,
         "attribution": markets.ATTRIBUTION,
         "sha256": hashlib.sha256(raw).hexdigest(),
-        "licenses": {"CC-BY-4.0": {}},
+        "licenses": {"CC-BY-4.0": {}, "LicenseRef-US-Census-Geocoder": {}},
     }
     rows, report = markets.prepare(path, manifest, max_rows=1, max_bytes=100000)
     assert report["accepted"] == 1
@@ -289,3 +298,189 @@ def test_preparation_keeps_separate_attribution_and_unknowns_without_private_fie
         markets.prepare(path, manifest, max_rows=0, max_bytes=100000)
     with pytest.raises(ValueError, match="license"):
         markets.prepare(path, {**manifest, "licenses": {}}, max_rows=1, max_bytes=100000)
+
+
+def census_example(native=None, *, role="native_kaggle", distance_lat=0, status="Match"):
+    native = native or source_rows()[0]
+    query = {
+        "query_id": ("native-" if role == "native_kaggle" else "official-") + native["listing_id"],
+        "listing_id": native["listing_id"],
+        "address_role": role,
+        **{key: native[key] for key in ("street", "city", "state", "zip")},
+    }
+    result = {"query": query, "status": status}
+    if status == "Match":
+        result.update(
+            match_type="Exact",
+            matched_address="123 MAIN ST, EXAMPLE, CA, 90000",
+            matched_street="123 MAIN ST",
+            matched_city=native["city"].upper(),
+            matched_state=native["state"],
+            matched_zip=native["zip"][:5],
+            coordinates=[float(native["lat"]) + distance_lat, float(native["lng"])],
+            tiger_line_id="123456",
+            tiger_line_side="L",
+        )
+    return {query["query_id"]: result}
+
+
+def test_census_corroborates_without_changing_native_point_or_unknowns():
+    native, _, official = source_rows()
+    results = census_example(native, distance_lat=0.0001)
+    facts, reason = markets.census_qualification(native, official, results)
+    assert reason is None
+    assert 10 < facts[0]["native_point_distance_m"] < 12
+    assert facts[0]["coordinates"] != [float(native["lat"]), float(native["lng"])]
+    assert native["lat"] == "34.123" and native["lng"] == "-118.123"
+
+
+@pytest.mark.parametrize(
+    "field,value,reason",
+    [
+        ("matched_city", "OTHER", "census_matched_city_state_zip_disagreement"),
+        ("matched_state", "NV", "census_matched_city_state_zip_disagreement"),
+        ("matched_zip", "90001", "census_matched_city_state_zip_disagreement"),
+        ("matched_street", "456 OTHER ST", "census_no_unambiguous_literal_address_match"),
+        ("coordinates", [34.125, -118.123], "census_native_point_more_than_100m_away"),
+    ],
+)
+def test_census_disagreement_is_not_overridden_by_roster_or_road_snap(field, value, reason):
+    native, _, official = source_rows()
+    results = census_example(native)
+    next(iter(results.values()))[field] = value
+    assert markets.census_qualification(native, official, results) == (None, reason)
+
+
+@pytest.mark.parametrize("status", ["No_Match", "Tie"])
+def test_unknown_census_form_needs_an_independent_published_positive_form(status):
+    native, _, official = source_rows()
+    results = census_example(native, status=status)
+    assert markets.census_qualification(native, official, results)[0] is None
+    results.update(census_example(native, role="official_roster"))
+    facts, reason = markets.census_qualification(native, official, results)
+    assert reason is None
+    assert {fact["status"] for fact in facts} == {"Match", status}
+
+
+def test_all_successful_census_forms_participate_without_cherry_picking():
+    native, _, official = source_rows()
+    results = census_example(native)
+    results.update(census_example(native, role="official_roster", distance_lat=0.002))
+    assert (
+        markets.census_qualification(native, official, results)[1]
+        == "census_native_point_more_than_100m_away"
+    )
+
+
+def test_native_and_published_zip_conflict_remains_a_hold():
+    native, _, official = source_rows()
+    official[0]["location"] = "123 Main St, Example, CA 90001"
+    assert (
+        markets.census_qualification(native, official, census_example(native))[1]
+        == "official_native_zip_conflict"
+    )
+    native["zip"] = ""
+    assert (
+        markets.census_qualification(native, official, census_example(native))[1]
+        == "census_native_zip_unknown"
+    )
+
+
+@pytest.mark.parametrize("ident", ["301303", "301314", "308615", "308803"])
+def test_independently_identified_wrong_points_and_shared_arrivals_stay_held(ident):
+    native, _, official = source_rows()
+    native["listing_id"] = ident
+    assert markets.census_qualification(native, official, census_example(native))[1].startswith(
+        "review_hold:"
+    )
+
+
+def test_same_and_nearby_unreviewed_market_points_cannot_inflate_destinations():
+    row = {"source_id": "usda-market:1", "latitude": 34, "longitude": -118}
+    for offset in [0, 0.001]:
+        with pytest.raises(ValueError, match="collision"):
+            markets.reject_collisions(
+                [row, {**row, "source_id": "usda-market:2", "latitude": 34 + offset}]
+            )
+    markets.reject_collisions([row, {**row, "source_id": "usda-market:2", "latitude": 34.01}])
+
+
+def census_batch():
+    import csv
+    import io
+
+    result = next(iter(census_example().values()))
+    query = result["query"]
+    request = io.StringIO(newline="")
+    csv.writer(request, lineterminator="\r\n").writerow(
+        [query[key] for key in ("query_id", "street", "city", "state", "zip")]
+    )
+    response = io.StringIO(newline="")
+    csv.writer(response).writerow(
+        [
+            query["query_id"],
+            ", ".join(query[key] for key in ("street", "city", "state", "zip")),
+            "Match",
+            "Exact",
+            "123 MAIN ST, EXAMPLE, CA, 90000",
+            "-118.123,34.123",
+            "123456",
+            "L",
+        ]
+    )
+    document = {"benchmark": "8", "benchmark_name": "Public_AR_ACS2026", "queries": [query]}
+    return request.getvalue().encode(), response.getvalue().encode(), document
+
+
+def test_batch_geocoder_binds_actual_response_to_exact_request_and_benchmark():
+    request, response, document = census_batch()
+    actual = markets.parse_census(request, response, document)
+    assert actual["native-123"]["coordinates"] == [34.123, -118.123]
+    for changed in [
+        response.replace(b"native-123", b"native-999"),
+        response + response,
+        b"",
+        response.replace(b"-118.123,34.123", b"nan,34.123"),
+        response.replace(b"123 Main St", b"456 Other St"),
+    ]:
+        with pytest.raises(ValueError):
+            markets.parse_census(request, changed, document)
+    with pytest.raises(ValueError, match="benchmark"):
+        markets.parse_census(request, response, {**document, "benchmark": "4"})
+    with pytest.raises(ValueError, match="request CSV"):
+        markets.parse_census(request.replace(b"123 Main St", b"456 Other St"), response, document)
+
+
+@pytest.mark.parametrize(
+    "points",
+    [
+        [(0, 179.9995), (0, -179.9995)],
+        [(89.9995, 0), (89.9995, 180)],
+        [(-89.9995, -90), (-89.9995, 90)],
+    ],
+)
+def test_market_collision_grid_preserves_polar_and_antimeridian_neighbors(points):
+    rows = [
+        {"source_id": f"usda-market:{number}", "latitude": point[0], "longitude": point[1]}
+        for number, point in enumerate(points)
+    ]
+    with pytest.raises(ValueError, match="collision"):
+        markets.reject_collisions(rows)
+
+
+def test_market_collision_grid_avoids_unbounded_all_pairs(monkeypatch):
+    rows = [
+        {"source_id": f"usda-market:{number}", "latitude": -60 + number * 0.01, "longitude": 0}
+        for number in range(10000)
+    ]
+    calls = 0
+    original = markets.point_distance
+
+    def measured(a, b):
+        nonlocal calls
+        calls += 1
+        return original(a, b)
+
+    monkeypatch.setattr(markets, "point_distance", measured)
+    markets.reject_collisions(rows)
+    assert calls < 10000

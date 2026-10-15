@@ -64,9 +64,9 @@ def validate_manifest(manifest):
         raise ValueError("current arrival reviews require original Overture source inputs")
     if manifest["schema_version"] in {kaggle_markets.SCHEMA, kaggle_parks.SCHEMA}:
         required = (
-            {"CC-BY-4.0"}
+            {"CC-BY-4.0", "LicenseRef-US-Census-Geocoder"}
             if manifest["schema_version"] == kaggle_markets.SCHEMA
-            else {"CC-BY-4.0", "CC0-1.0"}
+            else {"CC-BY-4.0", "CC0-1.0", "ODbL-1.0"}
         )
         if set(manifest["licenses"]) != required:
             raise ValueError("reviewed Kaggle source requires its exact upstream rights evidence")

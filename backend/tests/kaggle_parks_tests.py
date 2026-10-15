@@ -102,11 +102,58 @@ def sample(tmp_path, monkeypatch):
         "parking": "unverified",
         "arrival_type": "native point; parking entrance unverified",
     }
+    profile["arrival_review"] = {
+        "method": "public-parking",
+        "road_way_id": 100,
+        "parking_way_id": 200,
+        "building_way_id": None,
+        "assessment": "Fixture point is in the documented guest lot.",
+        "operator_map_evidence": [],
+    }
+    roads = save_file(
+        "arrival-roads.json",
+        json.dumps(
+            {
+                "elements": [
+                    {
+                        "id": 100,
+                        "type": "way",
+                        "tags": {"highway": "service", "service": "parking_aisle"},
+                        "geometry": [{"lat": 33, "lon": -118.001}, {"lat": 33, "lon": -117.999}],
+                    }
+                ]
+            }
+        ).encode(),
+        "https://example.org/roads",
+    )
+    features = save_file(
+        "arrival-features.json",
+        json.dumps(
+            {
+                "elements": [
+                    {
+                        "id": 200,
+                        "type": "way",
+                        "tags": {"amenity": "parking", "access": "yes"},
+                        "geometry": [
+                            {"lat": 32.999, "lon": -118.001},
+                            {"lat": 32.999, "lon": -117.999},
+                            {"lat": 33.001, "lon": -117.999},
+                            {"lat": 33.001, "lon": -118.001},
+                            {"lat": 32.999, "lon": -118.001},
+                        ],
+                    }
+                ]
+            }
+        ).encode(),
+        "https://example.org/features",
+    )
     review = {
         "schema_version": "roadtrips-rideinpark-review/1",
         "source_url": parks.SOURCE_URL,
         "reviewed_at": clock,
         "records": [profile],
+        "arrival_evidence": {"roads": roads, "features": features},
         "source_dispositions": [
             {"qid": "Q123", "disposition": "selected_current_visitor_evidence"},
             {"qid": "Q456", "disposition": "current_access_unknown"},
@@ -126,8 +173,8 @@ def sample(tmp_path, monkeypatch):
         csv_raw = stream.getvalue().encode()
         output = io.BytesIO()
         with zipfile.ZipFile(output, "w") as archive:
-            archive.writestr("parcs-du-monde.csv", csv_raw)
-            archive.writestr("parcs-du-monde.json", b"[]")
+            archive.writestr(zipfile.ZipInfo("parcs-du-monde.csv"), csv_raw)
+            archive.writestr(zipfile.ZipInfo("parcs-du-monde.json"), b"[]")
         archive_raw, metadata_raw, review_raw = (
             output.getvalue(),
             json.dumps(metadata).encode(),
@@ -159,7 +206,7 @@ def sample(tmp_path, monkeypatch):
             "release": "kaggle-rideinpark-v1+review-2026-10-15",
             "retrieved_at": clock,
             "sha256": digest(raw),
-            "licenses": {"CC-BY-4.0": {}, "CC0-1.0": {}},
+            "licenses": {"CC-BY-4.0": {}, "CC0-1.0": {}, "ODbL-1.0": {}},
         }
         return path, manifest
 
@@ -310,3 +357,92 @@ def test_actual_aggregate_byte_limit_is_enforced(sample):
     path, manifest = sample[-1]()
     with pytest.raises(ValueError, match="aggregate evidence"):
         parks.prepare(path, manifest, max_rows=10, max_bytes=1)
+
+
+def mutate_arrival_source(sample, key, mutation):
+    directory, _, _, review, _, _ = sample
+    receipt = review["arrival_evidence"][key]
+    path = directory / receipt["path"]
+    data = json.loads(path.read_bytes())
+    mutation(data["elements"][0])
+    raw = json.dumps(data).encode()
+    path.write_bytes(raw)
+    receipt["sha256"] = digest(raw)
+
+
+@pytest.mark.parametrize(
+    "tags",
+    [
+        {"access": "private"},
+        {"motor_vehicle": "no"},
+        {"highway": "footway"},
+        {"highway": "raceway"},
+        {"layer": "-1"},
+    ],
+)
+def test_real_car_snap_does_not_admit_private_or_internal_road(sample, tags):
+    mutate_arrival_source(sample, "roads", lambda way: way["tags"].update(tags))
+    with pytest.raises(ValueError, match="private, internal-only or unsuitable"):
+        admit(sample)
+
+
+def test_guest_parking_is_a_required_independent_source(sample):
+    mutate_arrival_source(sample, "features", lambda way: way["tags"].update(access="private"))
+    with pytest.raises(ValueError, match="reviewed guest parking"):
+        admit(sample)
+
+
+def test_native_point_must_be_inside_selected_public_parking(sample):
+    def move(way):
+        for point in way["geometry"]:
+            point["lon"] += 0.0015
+
+    mutate_arrival_source(sample, "features", move)
+    with pytest.raises(ValueError, match="outside the reviewed public"):
+        admit(sample)
+
+
+def test_named_public_street_cannot_be_substituted_with_service_lane(sample):
+    sample[2]["arrival_review"]["method"] = "public-street-frontage"
+    with pytest.raises(ValueError, match="unnamed internal service"):
+        admit(sample)
+
+
+def test_arrival_geometry_must_match_actual_raw_destination_road(sample):
+    def move(way):
+        for point in way["geometry"]:
+            point["lat"] += 0.0001
+
+    mutate_arrival_source(sample, "roads", move)
+    with pytest.raises(ValueError, match="actual snapped destination road"):
+        admit(sample)
+
+
+def test_successful_point_retains_practical_arrival_method(sample):
+    rows, _ = admit(sample)
+    proof = rows[0]["provenance"][2]["practical_arrival"]
+    assert proof["method"] == "public-parking"
+    assert proof["coordinate_replaced"] is False
+
+
+@pytest.mark.parametrize("license_id", ["CC-BY-4.0", "CC0-1.0", "ODbL-1.0"])
+def test_each_source_license_is_required(sample, license_id):
+    path, manifest = sample[-1]()
+    manifest["licenses"].pop(license_id)
+    with pytest.raises(ValueError, match="source/rights/bounds"):
+        parks.prepare(path, manifest, max_rows=10, max_bytes=1_000_000)
+
+
+def test_selected_osm_identities_and_original_receipts_travel_with_provenance(sample):
+    rows, _ = admit(sample)
+    proof = rows[0]["provenance"][4]
+    assert proof["license"] == "ODbL-1.0"
+    assert proof["attribution"] == "OpenStreetMap contributors"
+    assert [(e["type"], e["id"]) for e in proof["elements"]] == [("way", 100), ("way", 200)]
+    assert proof["elements"][0]["source_url"] == "https://www.openstreetmap.org/way/100"
+    for key in ("roads", "features"):
+        original = sample[3]["arrival_evidence"][key]
+        receipt = proof["source_snapshots"][key]
+        assert receipt["source_url"] == original["url"]
+        assert receipt["snapshot_sha256"] == original["sha256"]
+        assert receipt["checked_at"] == original["retrieved_at"]

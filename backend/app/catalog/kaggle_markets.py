@@ -16,6 +16,7 @@ import unicodedata
 import zipfile
 from collections import Counter
 from datetime import UTC, date, datetime
+from itertools import product
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -32,9 +33,10 @@ ATTRIBUTION = (
     "Harvestly Markets (CC BY 4.0), derived from USDA AMS Local Food Portal; "
     "California and Connecticut Departments of Agriculture, Delaware Department "
     "of Agriculture, Burlington Farmers Market visitor facts; "
+    "U.S. Census Bureau Public_AR_ACS2026 address-range corroboration; "
     "driving evidence: OSRM, © OpenStreetMap contributors (ODbL). No endorsement."
 )
-INDEX_SHA256 = "bfff3cd96d0bb90516629495547829835dd71522a42936a89d7f6f9f1f5bdff6"
+INDEX_SHA256 = "e97d56b9daac8a560c26b5f904cfafd2a73b2e9bc91439ce42d645496aa5d06c"
 ARCHIVE_SHA256 = "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1"
 CSV_SHA256 = "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
 CANONICAL_SHA256 = "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514"
@@ -450,6 +452,239 @@ def driving(root, entry, row):
     return len(raw), distance
 
 
+CENSUS_URL = "https://geocoding.geo.census.gov/geocoder/locations/addressbatch"
+CENSUS_BENCHMARK = "8"
+CENSUS_BENCHMARK_NAME = "Public_AR_ACS2026"
+MAX_GEOCODE_DISTANCE_M = 100
+COLLISION_DISTANCE_M = 250
+REVIEW_HOLDS = {
+    "301303": "independent Census address positions disagree with native East Palo Alto point",
+    "301314": "independent Census intersection is approximately 4.9 km from native California Avenue point",
+    "308615": "unresolved shared arrival with 308803; distinct calendars do not prove distinct destinations",
+    "308803": "unresolved shared arrival with 308615; distinct calendars do not prove distinct destinations",
+}
+
+
+def point_distance(a, b):
+    lat_a, lat_b = math.radians(a[0]), math.radians(b[0])
+    dlon = math.radians(b[1] - a[1])
+    return (
+        6371000
+        * 2
+        * math.asin(
+            min(
+                1,
+                math.sqrt(
+                    math.sin((lat_b - lat_a) / 2) ** 2
+                    + math.cos(lat_a) * math.cos(lat_b) * math.sin(dlon / 2) ** 2
+                ),
+            )
+        )
+    )
+
+
+def parse_census(request_raw, response_raw, query_document):
+    """Bind every batch result to the exact submitted public venue address."""
+    if (query_document.get("benchmark"), query_document.get("benchmark_name")) != (
+        CENSUS_BENCHMARK,
+        CENSUS_BENCHMARK_NAME,
+    ):
+        raise ValueError("Census benchmark differs from the frozen address-range snapshot")
+    queries = query_document.get("queries", [])
+    if not 1 <= len(queries) <= 1000:
+        raise ValueError("Census query count exceeds the reviewed batch bound")
+    submitted = list(csv.reader(io.StringIO(request_raw.decode("utf-8"), newline="")))
+    expected = [
+        [query[key] for key in ("query_id", "street", "city", "state", "zip")] for query in queries
+    ]
+    if submitted != expected:
+        raise ValueError("Census request CSV differs from retained query fields")
+    by_query = {query["query_id"]: query for query in queries}
+    if len(by_query) != len(queries):
+        raise ValueError("duplicate Census submitted identity")
+    results = {}
+    for fields in csv.reader(io.StringIO(response_raw.decode("utf-8"), newline="")):
+        if len(fields) not in {3, 8} or fields[0] not in by_query or fields[0] in results:
+            raise ValueError("Census response identity/row schema is missing or ambiguous")
+        query = by_query[fields[0]]
+        if (
+            query["query_id"]
+            != ("native-" if query["address_role"] == "native_kaggle" else "official-")
+            + query["listing_id"]
+        ):
+            raise ValueError("Census query identity/role disagreement")
+        if query["address_role"] not in {"native_kaggle", "official_roster"}:
+            raise ValueError("unreviewed Census address role")
+        if fields[1] != ", ".join(query[key] for key in ("street", "city", "state", "zip")):
+            raise ValueError("Census returned input differs from submitted address")
+        result = {"query": query, "status": fields[2]}
+        if fields[2] == "Match":
+            if len(fields) != 8 or fields[3] not in {"Exact", "Non_Exact"}:
+                raise ValueError("Census match schema/precision is unresolved")
+            parts = [part.strip() for part in fields[4].split(",")]
+            if len(parts) != 4:
+                raise ValueError("Census matched address components are unresolved")
+            try:
+                lon, lat = map(float, fields[5].split(","))
+                if (
+                    not math.isfinite(lat)
+                    or not math.isfinite(lon)
+                    or not -90 <= lat <= 90
+                    or not -180 <= lon <= 180
+                ):
+                    raise ValueError
+            except (TypeError, ValueError):
+                raise ValueError("Census coordinate schema is invalid") from None
+            result.update(
+                {
+                    "match_type": fields[3],
+                    "matched_address": fields[4],
+                    "matched_street": parts[0],
+                    "matched_city": parts[1],
+                    "matched_state": parts[2],
+                    "matched_zip": parts[3],
+                    "coordinates": [lat, lon],
+                    "tiger_line_id": fields[6] or None,
+                    "tiger_line_side": fields[7] or None,
+                }
+            )
+        elif fields[2] not in {"No_Match", "Tie"} or len(fields) != 3:
+            raise ValueError("Census result is not a reviewed match status")
+        results[fields[0]] = result
+    if set(results) != set(by_query):
+        raise ValueError("Census batch response omitted submitted identities")
+    return results
+
+
+def load_census(root, index):
+    inventory = index["census"]
+    data = {
+        key: retained(root, inventory[key], ceiling=2 * 1024 * 1024)
+        for key in ("request", "response", "queries", "benchmarks")
+    }
+    response = inventory["response"]
+    if (
+        response.get("url"),
+        response.get("method"),
+        response.get("benchmark"),
+        response.get("benchmark_name"),
+    ) != (CENSUS_URL, "POST", CENSUS_BENCHMARK, CENSUS_BENCHMARK_NAME):
+        raise ValueError("Census receipt differs from the actual pinned batch request")
+    if response.get("request_sha256") != hashlib.sha256(data["request"]).hexdigest():
+        raise ValueError("Census response request checksum mismatch")
+    benchmarks = json.loads(data["benchmarks"])
+    if not any(
+        item.get("id") == CENSUS_BENCHMARK and item.get("benchmarkName") == CENSUS_BENCHMARK_NAME
+        for item in benchmarks.get("benchmarks", [])
+    ):
+        raise ValueError("Census benchmark is not present in retained official metadata")
+    return parse_census(data["request"], data["response"], json.loads(data["queries"])), sum(
+        map(len, data.values())
+    )
+
+
+def census_qualification(native, officials, results):
+    """Census is independent range interpolation, never a replacement point.
+
+    Every successful form participates. Unknown forms need another genuine
+    published form with full components and a point within the same bound.
+    """
+    ident = native["listing_id"]
+    if ident in REVIEW_HOLDS:
+        return None, "review_hold: " + REVIEW_HOLDS[ident]
+    native_zip = native.get("zip", "").strip()
+    if not re.fullmatch(r"\d{5}(?:-\d{4})?", native_zip):
+        return None, "census_native_zip_unknown"
+    native_zip = native_zip[:5]
+    for official in officials:
+        published_zip = re.search(r"\b(\d{5})(?:-\d{4})?\s*$", plain(official["location"]))
+        if published_zip and published_zip[1] != native_zip:
+            return None, "official_native_zip_conflict"
+    entries = [entry for entry in results.values() if entry["query"]["listing_id"] == ident]
+    if not entries:
+        return None, "census_evidence_not_acquired"
+    evidence, corroborated = [], False
+    for entry in entries:
+        query = entry["query"]
+        if (query["city"], query["state"]) != (native["city"], native["state"]):
+            return None, "census_query_city_state_disagreement"
+        if query["address_role"] == "native_kaggle":
+            if any(query[key] != native[key] for key in ("street", "city", "state", "zip")):
+                return None, "census_query_changed_native_address"
+        else:
+            published = [
+                official
+                for official in officials
+                if address_words(query["street"]) <= address_words(official["location"])
+                and query["street"].strip()
+            ]
+            if not published:
+                return None, "census_query_not_published_official_address"
+        fact = {
+            key: entry.get(key)
+            for key in (
+                "status",
+                "match_type",
+                "matched_address",
+                "coordinates",
+                "tiger_line_id",
+                "tiger_line_side",
+            )
+        }
+        fact["submitted_address"] = {key: query[key] for key in ("street", "city", "state", "zip")}
+        fact["address_role"] = query["address_role"]
+        fact["query_id"] = query["query_id"]
+        if entry["status"] == "Match":
+            if (
+                plain(entry["matched_city"]).casefold(),
+                entry["matched_state"],
+                entry["matched_zip"],
+            ) != (plain(native["city"]).casefold(), native["state"], native_zip):
+                return None, "census_matched_city_state_zip_disagreement"
+            distance = point_distance(
+                [float(native["lat"]), float(native["lng"])], entry["coordinates"]
+            )
+            fact["native_point_distance_m"] = distance
+            if distance > MAX_GEOCODE_DISTANCE_M:
+                return None, "census_native_point_more_than_100m_away"
+            literal = address_words(entry["matched_street"]) <= address_words(query["street"])
+            fact["literal_street_agreement"] = literal
+            corroborated = corroborated or literal
+        evidence.append(fact)
+    if not corroborated:
+        return None, "census_no_unambiguous_literal_address_match"
+    return evidence, None
+
+
+def reject_collisions(rows):
+    """Bounded unit-Cartesian grid, including poles and the antimeridian.
+
+    A pair closer than the arc bound also has chord distance below that bound,
+    hence its three coordinates occupy the same or adjacent grid cells.
+    """
+    cell_size = COLLISION_DISTANCE_M / 6_371_000
+    buckets = {}
+    for row in rows:
+        latitude, longitude = math.radians(row["latitude"]), math.radians(row["longitude"])
+        position = (
+            math.cos(latitude) * math.cos(longitude),
+            math.cos(latitude) * math.sin(longitude),
+            math.sin(latitude),
+        )
+        cell = tuple(math.floor(coordinate / cell_size) for coordinate in position)
+        for offset in product((-1, 0, 1), repeat=3):
+            neighbor = tuple(value + delta for value, delta in zip(cell, offset))
+            for other in buckets.get(neighbor, ()):
+                if (
+                    point_distance(
+                        [row["latitude"], row["longitude"]], [other["latitude"], other["longitude"]]
+                    )
+                    < COLLISION_DISTANCE_M
+                ):
+                    raise ValueError("unresolved market arrival collision within 250 metres")
+        buckets.setdefault(cell, []).append(row)
+
+
 def prepare(path, manifest, *, max_rows, max_bytes):
     if (manifest.get("source_url"), manifest.get("release"), manifest.get("attribution")) != (
         SOURCE_URL,
@@ -457,8 +692,8 @@ def prepare(path, manifest, *, max_rows, max_bytes):
         ATTRIBUTION,
     ):
         raise ValueError("market manifest differs from the reviewed source/release")
-    if set(manifest.get("licenses", {})) != {"CC-BY-4.0"}:
-        raise ValueError("markets require retained CC-BY-4.0 license evidence")
+    if set(manifest.get("licenses", {})) != {"CC-BY-4.0", "LicenseRef-US-Census-Geocoder"}:
+        raise ValueError("markets require retained CC-BY-4.0 and Census Geocoder license evidence")
     path = Path(path)
     if not 0 < path.stat().st_size <= 32_768:
         raise ValueError("market bundle byte ceiling exceeded")
@@ -480,6 +715,8 @@ def prepare(path, manifest, *, max_rows, max_bytes):
         raise ValueError("market selection differs from frozen bounded review")
     native, current, rosters, data, size = load_sources(root, index)
     targeted = targeted_records(data)
+    census, census_bytes = load_census(root, index)
+    size += census_bytes
     checks = {entry["listing_id"]: entry for entry in index["driving"]}
     if len(checks) != len(index["driving"]):
         raise ValueError("duplicate market driving identity")
@@ -492,6 +729,9 @@ def prepare(path, manifest, *, max_rows, max_bytes):
         row, reason = qualification(source, canonical, officials)
         if reason:
             raise ValueError("selected market no longer qualifies: " + reason)
+        geo_facts, geo_reason = census_qualification(source, row["official_rows"], census)
+        if geo_reason:
+            raise ValueError("selected market coordinate corroboration failed: " + geo_reason)
         check = checks[ident]
         nbytes, distance = driving(root, check, row)
         size += nbytes
@@ -568,6 +808,19 @@ def prepare(path, manifest, *, max_rows, max_bytes):
                 "point_role": "published recurring public market destination",
                 "arrival_type": "native market point with independently corroborated street/city and nearby driving destination; parking unknown",
                 "primary_category": "food",
+                "coordinate_corroboration": {
+                    "dataset": "U.S. Census Bureau Geocoder",
+                    "license": "LicenseRef-US-Census-Geocoder",
+                    "source_url": CENSUS_URL,
+                    "snapshot_sha256": index["census"]["response"]["sha256"],
+                    "request_sha256": index["census"]["response"]["request_sha256"],
+                    "checked_at": index["census"]["response"]["retrieved_at"],
+                    "benchmark": CENSUS_BENCHMARK_NAME,
+                    "max_native_point_distance_m": MAX_GEOCODE_DISTANCE_M,
+                    "native_coordinates_replaced": False,
+                    "point_role": "interpolated address-range corroboration; not an entrance or parking coordinate",
+                    "results": geo_facts,
+                },
                 "published_access_facts": fact_groups,
                 "parking": None,
                 "opening_hours_imported": False,
@@ -580,6 +833,7 @@ def prepare(path, manifest, *, max_rows, max_bytes):
         ]
         rows.append(row)
         regions[row["region"]] += 1
+    reject_collisions(rows)
     return rows, {
         "scanned": len(native),
         "accepted": len(rows),

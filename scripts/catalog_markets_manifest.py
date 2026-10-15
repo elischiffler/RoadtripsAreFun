@@ -54,6 +54,7 @@ def verify_pdf_tables(root, index):
 def admission_ledger(root, index):
     native, current, rosters, data, _ = markets.load_sources(root, index)
     targets = markets.targeted_records(data)
+    census, _ = markets.load_census(root, index)
     lookup = defaultdict(list)
     for roster in rosters:
         lookup[(roster["region"], markets.core(roster["name"]))].append(roster)
@@ -72,6 +73,7 @@ def admission_ledger(root, index):
             else:
                 try:
                     markets.driving(root, checks[ident], row)
+                    _, reason = markets.census_qualification(source, row["official_rows"], census)
                 except ValueError:
                     reason = "driving_destination_rejected"
         decision = "selected" if ident in index["selection"] else "hold"
@@ -121,7 +123,7 @@ def build(sources, output):
             "vt",
         )
     ]
-    receipts += index["rights"] + index["driving"]
+    receipts += index["rights"] + index["driving"] + list(index["census"].values())
     for receipt in receipts:
         markets.retained(sources, receipt)
     verify_pdf_tables(sources, index)
@@ -147,7 +149,6 @@ def build(sources, output):
     bundle_raw = (json.dumps(bundle, indent=2) + "\n").encode()
     bundle_path = output / "reviewed-markets.json"
     bundle_path.write_bytes(bundle_raw)
-    license_path = ROOT / "frontend/public/licenses/CC-BY-4.0.txt"
     manifest = {
         "schema_version": markets.SCHEMA,
         "source_url": markets.SOURCE_URL,
@@ -161,10 +162,13 @@ def build(sources, output):
             "preserve_native_coordinates": True,
         },
         "licenses": {
-            "CC-BY-4.0": {
-                "path": str(license_path),
-                "sha256": hashlib.sha256(license_path.read_bytes()).hexdigest(),
+            identifier: {
+                "path": str(ROOT / "frontend/public/licenses" / (identifier + ".txt")),
+                "sha256": hashlib.sha256(
+                    (ROOT / "frontend/public/licenses" / (identifier + ".txt")).read_bytes()
+                ).hexdigest(),
             }
+            for identifier in ("CC-BY-4.0", "LicenseRef-US-Census-Geocoder")
         },
     }
     rows, report = markets.prepare(

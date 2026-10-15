@@ -1,0 +1,5390 @@
+{
+  "benchmark": "8",
+  "benchmark_name": "Public_AR_ACS2026",
+  "geocoder_source_url": "https://geocoding.geo.census.gov/geocoder/locations/addressbatch",
+  "census_license_notice": "LicenseRef-US-Census-Geocoder",
+  "request_rows": 202,
+  "previous_candidate_count": 101,
+  "retained": 46,
+  "held": 55,
+  "maximum_native_point_distance_m": 100,
+  "no_coordinates_replaced": true,
+  "results": [
+    {
+      "listing_id": "301303",
+      "name": "East Palo Alto Community Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "review_hold: independent Census address positions disagree with native East Palo Alto point",
+      "query_id": "native-301303",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "2555 Pulgas Avenue",
+        "city": "East Palo Alto",
+        "state": "CA",
+        "zip": "94303"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "2555 PULGAS AVE, EAST PALO ALTO, CA, 94303",
+      "unchanged_native_coordinates": [
+        37.469415,
+        -122.13255
+      ],
+      "census_range_coordinates": [
+        37.474748715728,
+        -122.131971158635
+      ],
+      "native_point_distance_m": 595.2779600939128
+    },
+    {
+      "listing_id": "308735",
+      "name": "Lancaster Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308735",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "758 W. Lancaster Blvd.",
+        "city": "Lancaster",
+        "state": "CA",
+        "zip": "93534"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "758 W LANCASTER BLVD, LANCASTER, CA, 93534",
+      "unchanged_native_coordinates": [
+        34.69763919367278,
+        -118.14371795276627
+      ],
+      "census_range_coordinates": [
+        34.697589718558,
+        -118.143675218557
+      ],
+      "native_point_distance_m": 6.747464740955825
+    },
+    {
+      "listing_id": "308615",
+      "name": "Country Farm and Craft Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "review_hold: unresolved shared arrival with 308803; distinct calendars do not prove distinct destinations",
+      "query_id": "native-308615",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "11th St. & Spring St.",
+        "city": "Paso Robles",
+        "state": "CA",
+        "zip": "93446"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        35.6256099816531,
+        -120.69130998137003
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308857",
+      "name": "Downtown Palo Alto Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308857",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Gilman St. & Hamilton Ave.",
+        "city": "Palo Alto",
+        "state": "CA",
+        "zip": "94301"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "GILMAN ST & HAMILTON AVE, PALO ALTO, CA, 94301",
+      "unchanged_native_coordinates": [
+        37.44570999752996,
+        -122.15974004108446
+      ],
+      "census_range_coordinates": [
+        37.44569001647,
+        -122.159720029297
+      ],
+      "native_point_distance_m": 2.8385647952271444
+    },
+    {
+      "listing_id": "308706",
+      "name": "Kaiser Permanente Fontana Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308706",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Kaiser Permanente, In front of hospital building, 9961 Sierra Ave",
+        "city": "Fontana",
+        "state": "CA",
+        "zip": "92335"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "9961 SIERRA AVE, FONTANA, CA, 92335",
+      "unchanged_native_coordinates": [
+        34.07246993008823,
+        -117.43566033205101
+      ],
+      "census_range_coordinates": [
+        34.072594304109,
+        -117.435600307498
+      ],
+      "native_point_distance_m": 14.893888329451658
+    },
+    {
+      "listing_id": "308949",
+      "name": "Sunrise Mall Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308949",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Sunrise Mall, 6041 Sunrise Blvd.",
+        "city": "Citrus Heights",
+        "state": "CA",
+        "zip": "95610"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "6041 SUNRISE BLVD, CITRUS HEIGHTS, CA, 95610",
+      "unchanged_native_coordinates": [
+        38.67589638729627,
+        -121.27153608129936
+      ],
+      "census_range_coordinates": [
+        38.671702134824,
+        -121.271377742339
+      ],
+      "native_point_distance_m": 466.58211608142057
+    },
+    {
+      "listing_id": "308979",
+      "name": "Uptown Whittier Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308979",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "13018 Philadelphia St.",
+        "city": "Whittier",
+        "state": "CA",
+        "zip": "90601"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "13018 PHILADELPHIA ST, WHITTIER, CA, 90601",
+      "unchanged_native_coordinates": [
+        33.97909916170565,
+        -118.03709594503825
+      ],
+      "census_range_coordinates": [
+        33.979044001213,
+        -118.037175553199
+      ],
+      "native_point_distance_m": 9.565725799450039
+    },
+    {
+      "listing_id": "308852",
+      "name": "Danville Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308852",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Railroad Ave. and W. Prospect Ave.",
+        "city": "Danville",
+        "state": "CA",
+        "zip": "94526"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "RAILROAD AVE & W PROSPECT AVE, DANVILLE, CA, 94526",
+      "unchanged_native_coordinates": [
+        37.821070020003745,
+        -122.00061002839385
+      ],
+      "census_range_coordinates": [
+        37.821124008058,
+        -122.00057097079
+      ],
+      "native_point_distance_m": 6.9143235927646565
+    },
+    {
+      "listing_id": "308826",
+      "name": "Redwood Valley Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308826",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Lions Club Park, 8920 East Road",
+        "city": "Redwood Valley",
+        "state": "CA",
+        "zip": "95470"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "8920 EAST RD, REDWOOD VALLEY, CA, 95470",
+      "unchanged_native_coordinates": [
+        39.27052658767554,
+        -123.20550165228245
+      ],
+      "census_range_coordinates": [
+        39.270488616977,
+        -123.205562089426
+      ],
+      "native_point_distance_m": 6.700292358656439
+    },
+    {
+      "listing_id": "308973",
+      "name": "Tustin Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308973",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "El Camino Real at 3rd St.",
+        "city": "Tustin",
+        "state": "CA",
+        "zip": "92780"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "EL CAMINO REAL & W 3RD ST, TUSTIN, CA, 92780",
+      "unchanged_native_coordinates": [
+        33.74454000000003,
+        -117.82025499999997
+      ],
+      "census_range_coordinates": [
+        33.743130014905,
+        -117.823649994815
+      ],
+      "native_point_distance_m": 350.88300893047534
+    },
+    {
+      "listing_id": "308612",
+      "name": "Costa Mesa Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308612",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "88 Fair Dr.",
+        "city": "Costa Mesa",
+        "state": "CA",
+        "zip": "92626"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "88 FAIR DR, COSTA MESA, CA, 92626",
+      "unchanged_native_coordinates": [
+        33.6639015076986,
+        -117.90192078702896
+      ],
+      "census_range_coordinates": [
+        33.663938510238,
+        -117.903702812635
+      ],
+      "native_point_distance_m": 164.97406172251587
+    },
+    {
+      "listing_id": "308823",
+      "name": "Redwood City Kiwanis Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308823",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "500 block of Arguello St., Cross Streets: Broadway, Bradford & Brewster",
+        "city": "Redwood City",
+        "state": "CA",
+        "zip": "94063"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        37.487181589426385,
+        -122.23323346226499
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308703",
+      "name": "Irvington Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308703",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "4039 Bay Street & Trimboli Way",
+        "city": "Fremont",
+        "state": "CA",
+        "zip": "94538"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "BAY ST & TRIMBOLI WAY, FREMONT, CA, 94538",
+      "unchanged_native_coordinates": [
+        37.53292998649782,
+        -121.96086002605077
+      ],
+      "census_range_coordinates": [
+        37.532918994331,
+        -121.960803992271
+      ],
+      "native_point_distance_m": 5.089880134143422
+    },
+    {
+      "listing_id": "308712",
+      "name": "Kaiser Permanente Ontario Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308712",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Kaiser Permanente",
+        "city": "Ontario",
+        "state": "CA",
+        "zip": "91761"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        34.032956569483936,
+        -117.61101145016077
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308850",
+      "name": "Concord Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308850",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Willow Pass and Grant St.",
+        "city": "Concord",
+        "state": "CA",
+        "zip": "94520"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "WILLOW PASS RD & GRANT ST, CONCORD, CA, 94520",
+      "unchanged_native_coordinates": [
+        37.97712001855351,
+        -122.03292000202131
+      ],
+      "census_range_coordinates": [
+        37.977087997618,
+        -122.032893997064
+      ],
+      "native_point_distance_m": 4.227648343733588
+    },
+    {
+      "listing_id": "308972",
+      "name": "Turtle Bay Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308972",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "844 Sundial Bridge Dr",
+        "city": "Redding",
+        "state": "CA",
+        "zip": "96001"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "844 SUNDIAL BRIDGE DR, REDDING, CA, 96001",
+      "unchanged_native_coordinates": [
+        40.589548027470165,
+        -122.37789676773097
+      ],
+      "census_range_coordinates": [
+        40.589873564421,
+        -122.377596013084
+      ],
+      "native_point_distance_m": 44.21813844026454
+    },
+    {
+      "listing_id": "309004",
+      "name": "Westlake Village Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-309004",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "2797 Agoura Road, Cross street - Village Glen",
+        "city": "Westlake Village",
+        "state": "CA",
+        "zip": "91361"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "2797 AGOURA RD, WESTLAKE VILLAGE, CA, 91361",
+      "unchanged_native_coordinates": [
+        34.15087999969296,
+        -118.82419100907826
+      ],
+      "census_range_coordinates": [
+        34.150683691537,
+        -118.825403780633
+      ],
+      "native_point_distance_m": 113.7149679224583
+    },
+    {
+      "listing_id": "300568",
+      "name": "The Petaluma East Side Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-300568",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "320 N McDowell Blvd",
+        "city": "Petaluma",
+        "state": "CA",
+        "zip": "94954"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "320 N MCDOWELL BLVD, PETALUMA, CA, 94954",
+      "unchanged_native_coordinates": [
+        38.252337,
+        -122.63089
+      ],
+      "census_range_coordinates": [
+        38.251998955123,
+        -122.630748870318
+      ],
+      "native_point_distance_m": 39.55746564085336
+    },
+    {
+      "listing_id": "308968",
+      "name": "Tuesday Marilyn Miller Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308968",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1700 Churn Creek Rd.",
+        "city": "Redding",
+        "state": "CA",
+        "zip": "96001"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1700 CHURN CREEK RD, REDDING, CA, 96002",
+      "unchanged_native_coordinates": [
+        40.58142870916294,
+        -122.35420545862881
+      ],
+      "census_range_coordinates": [
+        40.581553225277,
+        -122.354274470169
+      ],
+      "native_point_distance_m": 15.022176949658695
+    },
+    {
+      "listing_id": "308841",
+      "name": "Belmont Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308841",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "El Camino Real and O'Neill St.",
+        "city": "Belmont",
+        "state": "CA",
+        "zip": "94002"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "EL CAMINO REAL & ONEILL AVE, BELMONT, CA, 94002",
+      "unchanged_native_coordinates": [
+        37.52122000000003,
+        -122.27558999999997
+      ],
+      "census_range_coordinates": [
+        37.518633991919,
+        -122.273810027524
+      ],
+      "native_point_distance_m": 327.6107648608998
+    },
+    {
+      "listing_id": "308957",
+      "name": "Templeton Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308957",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "6th & Crocker Sts.",
+        "city": "Templeton",
+        "state": "CA",
+        "zip": "93465"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "6TH ST & CROCKER ST, TEMPLETON, CA, 93465",
+      "unchanged_native_coordinates": [
+        35.54877999031393,
+        -120.70738999205986
+      ],
+      "census_range_coordinates": [
+        35.5487729903,
+        -120.707419014983
+      ],
+      "native_point_distance_m": 2.7386588916279737
+    },
+    {
+      "listing_id": "301530",
+      "name": "Historic Lewes Farmers Market",
+      "region": "DE",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-301530",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "820 Savannah Road",
+        "city": "Lewes",
+        "state": "DE",
+        "zip": "19958"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "820 SAVANNAH RD, LEWES, DE, 19958",
+      "unchanged_native_coordinates": [
+        38.77009639999999,
+        -75.14353369999999
+      ],
+      "census_range_coordinates": [
+        38.768263614184,
+        -75.145662244467
+      ],
+      "native_point_distance_m": 274.93011244029896
+    },
+    {
+      "listing_id": "308837",
+      "name": "Alameda Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "official-308837",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "710 Haight Ave. at Webster St.",
+        "city": "Alameda",
+        "state": "CA",
+        "zip": "94501"
+      },
+      "result_status": "Tie",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        37.774239991686414,
+        -122.2767499844901
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308842",
+      "name": "Buena Park Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308842",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "La Palma and Stanton",
+        "city": "Buena Park",
+        "state": "CA",
+        "zip": "90620"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "LA PALMA AVE & STANTON AVE, BUENA PARK, CA, 90620",
+      "unchanged_native_coordinates": [
+        33.846620015728575,
+        -117.99369997251486
+      ],
+      "census_range_coordinates": [
+        33.846599997328,
+        -117.993558008357
+      ],
+      "native_point_distance_m": 13.298139959492495
+    },
+    {
+      "listing_id": "308965",
+      "name": "Topanga Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308965",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1440 N. Topanga Canyon Blvd.",
+        "city": "Topanga",
+        "state": "CA",
+        "zip": "90290"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1440 TOPANGA CANYON BLVD, TOPANGA, CA, 90290",
+      "unchanged_native_coordinates": [
+        34.11232643235698,
+        -118.59106616681497
+      ],
+      "census_range_coordinates": [
+        34.112310184593,
+        -118.590998603291
+      ],
+      "native_point_distance_m": 6.477148751354142
+    },
+    {
+      "listing_id": "308723",
+      "name": "Kaiser South San Francisco Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_matched_city_state_zip_disagreement",
+      "query_id": "native-308723",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1200 El Camino Real",
+        "city": "South San Francisco",
+        "state": "CA",
+        "zip": "94080"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1200 EL CAMINO DEL MAR, SAN FRANCISCO, CA, 94121",
+      "unchanged_native_coordinates": [
+        37.65774047325854,
+        -122.437881967204
+      ],
+      "census_range_coordinates": [
+        37.785353872785,
+        -122.500951173608
+      ],
+      "native_point_distance_m": 15235.702553257857
+    },
+    {
+      "listing_id": "308844",
+      "name": "Castro Valley Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308844",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Redwood Rd. at Norbridge Ave.",
+        "city": "Castro Valley",
+        "state": "CA",
+        "zip": "94546"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "REDWOOD RD & NORBRIDGE AVE, CASTRO VALLEY, CA, 94546",
+      "unchanged_native_coordinates": [
+        37.6926100196748,
+        -122.07394003033356
+      ],
+      "census_range_coordinates": [
+        37.692675004144,
+        -122.073943975625
+      ],
+      "native_point_distance_m": 7.234276984747007
+    },
+    {
+      "listing_id": "308956",
+      "name": "Temple City Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308956",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "9701 Las Tunas Dr., City Hall parking lot/Library lot",
+        "city": "Temple City",
+        "state": "CA",
+        "zip": "91780"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "9701 LAS TUNAS DR, TEMPLE CITY, CA, 91780",
+      "unchanged_native_coordinates": [
+        34.107102049669685,
+        -118.05791786655217
+      ],
+      "census_range_coordinates": [
+        34.107143934964,
+        -118.057983148287
+      ],
+      "native_point_distance_m": 7.603707505053172
+    },
+    {
+      "listing_id": "308723",
+      "name": "Kaiser South San Francisco Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_matched_city_state_zip_disagreement",
+      "query_id": "official-308723",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1200 El Camino Real x Hickey Blvd. and Chestnut Ave.",
+        "city": "South San Francisco",
+        "state": "CA",
+        "zip": "94080"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        37.65774047325854,
+        -122.437881967204
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308844",
+      "name": "Castro Valley Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308844",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "21013",
+        "city": "Castro Valley",
+        "state": "CA",
+        "zip": "94546"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        37.6926100196748,
+        -122.07394003033356
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308965",
+      "name": "Topanga Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308965",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1440 N.",
+        "city": "Topanga",
+        "state": "CA",
+        "zip": "90290"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        34.11232643235698,
+        -118.59106616681497
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308841",
+      "name": "Belmont Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308841",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1201 El Camino Real",
+        "city": "Belmont",
+        "state": "CA",
+        "zip": "94402"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1201 S EL CAMINO REAL, SAN MATEO, CA, 94402",
+      "unchanged_native_coordinates": [
+        37.52122000000003,
+        -122.27558999999997
+      ],
+      "census_range_coordinates": [
+        37.556026287045,
+        -122.318176067417
+      ],
+      "native_point_distance_m": 5392.411256686958
+    },
+    {
+      "listing_id": "308842",
+      "name": "Buena Park Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308842",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "La Palma Ave. & Stanton Ave., near Sears Parking Lot",
+        "city": "Buena Park",
+        "state": "CA",
+        "zip": "90621"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "LA PALMA AVE & STANTON AVE, BUENA PARK, CA, 90620",
+      "unchanged_native_coordinates": [
+        33.846620015728575,
+        -117.99369997251486
+      ],
+      "census_range_coordinates": [
+        33.846599997328,
+        -117.993558008357
+      ],
+      "native_point_distance_m": 13.298139959492495
+    },
+    {
+      "listing_id": "308956",
+      "name": "Temple City Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308956",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "9701 Las Tunas Dr",
+        "city": "Temple City",
+        "state": "CA",
+        "zip": "91780"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "9701 LAS TUNAS DR, TEMPLE CITY, CA, 91780",
+      "unchanged_native_coordinates": [
+        34.107102049669685,
+        -118.05791786655217
+      ],
+      "census_range_coordinates": [
+        34.107143934964,
+        -118.057983148287
+      ],
+      "native_point_distance_m": 7.603707505053172
+    },
+    {
+      "listing_id": "308929",
+      "name": "Sherman Oaks Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308929",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "14006 Riverside Dr. at Woodman",
+        "city": "Sherman Oaks",
+        "state": "CA",
+        "zip": "91324"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "RIVERSIDE DR & WOODMAN AVE, SHERMAN OAKS, CA, 91423",
+      "unchanged_native_coordinates": [
+        34.1576047419923,
+        -118.43708936010046
+      ],
+      "census_range_coordinates": [
+        34.157610001969,
+        -118.43123298168
+      ],
+      "native_point_distance_m": 538.8655044130095
+    },
+    {
+      "listing_id": "308837",
+      "name": "Alameda Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "native-308837",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Haight Ave. & Webster St.",
+        "city": "Alameda",
+        "state": "CA",
+        "zip": "94501"
+      },
+      "result_status": "Tie",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        37.774239991686414,
+        -122.2767499844901
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308927",
+      "name": "Seal Beach Village Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308927",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "13904",
+        "city": "Seal Beach",
+        "state": "CA",
+        "zip": ""
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        33.75989137477726,
+        -118.07753288200766
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308957",
+      "name": "Templeton Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308957",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "6th St. and Crocker St.",
+        "city": "Templeton",
+        "state": "CA",
+        "zip": "93465"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "6TH ST & CROCKER ST, TEMPLETON, CA, 93465",
+      "unchanged_native_coordinates": [
+        35.54877999031393,
+        -120.70738999205986
+      ],
+      "census_range_coordinates": [
+        35.5487729903,
+        -120.707419014983
+      ],
+      "native_point_distance_m": 2.7386588916279737
+    },
+    {
+      "listing_id": "308803",
+      "name": "Paso Robles Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "review_hold: unresolved shared arrival with 308615; distinct calendars do not prove distinct destinations",
+      "query_id": "official-308803",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Spring & 11th Sts.",
+        "city": "Paso Robles",
+        "state": "CA",
+        "zip": "93447"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        35.6256099816531,
+        -120.69130998137003
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308925",
+      "name": "Saturday Redding Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308925",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "777 W. Cypress Ave.",
+        "city": "Redding",
+        "state": "CA",
+        "zip": "96003"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "777 CYPRESS AVE, REDDING, CA, 96001",
+      "unchanged_native_coordinates": [
+        40.57317602009195,
+        -122.38154104090367
+      ],
+      "census_range_coordinates": [
+        40.574788268096,
+        -122.382061099527
+      ],
+      "native_point_distance_m": 184.5763377790788
+    },
+    {
+      "listing_id": "308712",
+      "name": "Kaiser Permanente Ontario Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308712",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "2295 S. Vineyard Ave",
+        "city": "Ontario",
+        "state": "CA",
+        "zip": "91761"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "2295 S VINEYARD AVE, ONTARIO, CA, 91761",
+      "unchanged_native_coordinates": [
+        34.032956569483936,
+        -117.61101145016077
+      ],
+      "census_range_coordinates": [
+        34.032728075225,
+        -117.610948763999
+      ],
+      "native_point_distance_m": 26.055781519697994
+    },
+    {
+      "listing_id": "308931",
+      "name": "Simi Valley Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308931",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "2757 Tapo Canyon Rd",
+        "city": "Simi Valley",
+        "state": "CA",
+        "zip": "93063"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "2757 TAPO CANYON RD, SIMI VALLEY, CA, 93063",
+      "unchanged_native_coordinates": [
+        34.28510999739408,
+        -118.70902938545287
+      ],
+      "census_range_coordinates": [
+        34.285438304701,
+        -118.717813793249
+      ],
+      "native_point_distance_m": 807.8842700425175
+    },
+    {
+      "listing_id": "309228",
+      "name": "Seymour Farmers' Market",
+      "region": "CT",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "official-309228",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "20 Pine St",
+        "city": "Seymour",
+        "state": "CT",
+        "zip": ""
+      },
+      "result_status": "Tie",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        41.39111800649721,
+        -73.07537296464452
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "309004",
+      "name": "Westlake Village Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-309004",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "2797 Agoura Rd.",
+        "city": "Westlake Village",
+        "state": "CA",
+        "zip": "91361"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "2797 AGOURA RD, WESTLAKE VILLAGE, CA, 91361",
+      "unchanged_native_coordinates": [
+        34.15087999969296,
+        -118.82419100907826
+      ],
+      "census_range_coordinates": [
+        34.150683691537,
+        -118.825403780633
+      ],
+      "native_point_distance_m": 113.7149679224583
+    },
+    {
+      "listing_id": "308706",
+      "name": "Kaiser Permanente Fontana Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308706",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "9961 Sierra Ave.",
+        "city": "Fontana",
+        "state": "CA",
+        "zip": "92335"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "9961 SIERRA AVE, FONTANA, CA, 92335",
+      "unchanged_native_coordinates": [
+        34.07246993008823,
+        -117.43566033205101
+      ],
+      "census_range_coordinates": [
+        34.072594304109,
+        -117.435600307498
+      ],
+      "native_point_distance_m": 14.893888329451658
+    },
+    {
+      "listing_id": "308949",
+      "name": "Sunrise Mall Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308949",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "6041 SUNRISE BLVD",
+        "city": "Citrus Heights",
+        "state": "CA",
+        "zip": "95610"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "6041 SUNRISE BLVD, CITRUS HEIGHTS, CA, 95610",
+      "unchanged_native_coordinates": [
+        38.67589638729627,
+        -121.27153608129936
+      ],
+      "census_range_coordinates": [
+        38.671702134824,
+        -121.271377742339
+      ],
+      "native_point_distance_m": 466.58211608142057
+    },
+    {
+      "listing_id": "300652",
+      "name": "Tahoe City Farmers Market Thursday CFM",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-300652",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "400 N Lake Blvd x W Lake Blvd",
+        "city": "Tahoe City",
+        "state": "CA",
+        "zip": "96145"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "400 N LAKE BLVD, TAHOE CITY, CA, 96145",
+      "unchanged_native_coordinates": [
+        39.169938,
+        -120.14113
+      ],
+      "census_range_coordinates": [
+        39.170121114663,
+        -120.141902856179
+      ],
+      "native_point_distance_m": 69.66723196176999
+    },
+    {
+      "listing_id": "308823",
+      "name": "Redwood City Kiwanis Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308823",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "500 Arguello St.",
+        "city": "Redwood City",
+        "state": "CA",
+        "zip": "94063"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "500 ARGUELLO ST, REDWOOD CITY, CA, 94063",
+      "unchanged_native_coordinates": [
+        37.487181589426385,
+        -122.23323346226499
+      ],
+      "census_range_coordinates": [
+        37.487220561199,
+        -122.233197882102
+      ],
+      "native_point_distance_m": 5.351089830165451
+    },
+    {
+      "listing_id": "308703",
+      "name": "Irvington Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308703",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Bay St. at Trimboli Way",
+        "city": "Fremont",
+        "state": "CA",
+        "zip": "94538"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "BAY ST & TRIMBOLI WAY, FREMONT, CA, 94538",
+      "unchanged_native_coordinates": [
+        37.53292998649782,
+        -121.96086002605077
+      ],
+      "census_range_coordinates": [
+        37.532918994331,
+        -121.960803992271
+      ],
+      "native_point_distance_m": 5.089880134143422
+    },
+    {
+      "listing_id": "308817",
+      "name": "Rancho Santa Fe Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_matched_city_state_zip_disagreement",
+      "query_id": "official-308817",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Del Rayo Village Center, 16079 San Dieguito Rd.",
+        "city": "Rancho Santa Fe",
+        "state": "CA",
+        "zip": "92091"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "16079 SAN DIEGUITO RD, RANCHO SANTA FE, CA, 92067",
+      "unchanged_native_coordinates": [
+        32.99111484201668,
+        -117.19739623251171
+      ],
+      "census_range_coordinates": [
+        32.990946929606,
+        -117.19729851792
+      ],
+      "native_point_distance_m": 20.77643900026669
+    },
+    {
+      "listing_id": "308826",
+      "name": "Redwood Valley Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308826",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "8920 East Rd.",
+        "city": "Redwood Valley",
+        "state": "CA",
+        "zip": "95470"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "8920 EAST RD, REDWOOD VALLEY, CA, 95470",
+      "unchanged_native_coordinates": [
+        39.27052658767554,
+        -123.20550165228245
+      ],
+      "census_range_coordinates": [
+        39.270488616977,
+        -123.205562089426
+      ],
+      "native_point_distance_m": 6.700292358656439
+    },
+    {
+      "listing_id": "308938",
+      "name": "Sonora Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "official-308938",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Theall & 100 Stewart Street",
+        "city": "Sonora",
+        "state": "CA",
+        "zip": "95370"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "THEALL ST & S STEWART ST, SONORA, CA, 95370",
+      "unchanged_native_coordinates": [
+        37.983670014880445,
+        -120.38167996349823
+      ],
+      "census_range_coordinates": [
+        37.983654007389,
+        -120.38162001654
+      ],
+      "native_point_distance_m": 5.5472147068373365
+    },
+    {
+      "listing_id": "301193",
+      "name": "Westwood Village Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-301193",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1030 Broxton Ave., Broxton & Kinross",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90024"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1030 BROXTON AVE, LOS ANGELES, CA, 90024",
+      "unchanged_native_coordinates": [
+        34.061784,
+        -118.44653
+      ],
+      "census_range_coordinates": [
+        34.061978099529,
+        -118.44658535479
+      ],
+      "native_point_distance_m": 22.17706354786899
+    },
+    {
+      "listing_id": "301193",
+      "name": "Westwood Village Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-301193",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1030 Broxton St",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90024"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1030 BROXTON AVE, LOS ANGELES, CA, 90024",
+      "unchanged_native_coordinates": [
+        34.061784,
+        -118.44653
+      ],
+      "census_range_coordinates": [
+        34.061978099529,
+        -118.44658535479
+      ],
+      "native_point_distance_m": 22.17706354786899
+    },
+    {
+      "listing_id": "300109",
+      "name": "Solana Beach Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-300109",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "444 S. Cedros Ave.",
+        "city": "Solana Beach",
+        "state": "CA",
+        "zip": "92075"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "444 S CEDROS AVE, SOLANA BEACH, CA, 92075",
+      "unchanged_native_coordinates": [
+        32.987194,
+        -117.2692
+      ],
+      "census_range_coordinates": [
+        32.987524251402,
+        -117.26948978177
+      ],
+      "native_point_distance_m": 45.596319069270265
+    },
+    {
+      "listing_id": "308938",
+      "name": "Sonora Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "native-308938",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Stewart St. and Theall St.",
+        "city": "Sonora",
+        "state": "CA",
+        "zip": "95370"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "S STEWART ST & THEALL ST, SONORA, CA, 95370",
+      "unchanged_native_coordinates": [
+        37.983670014880445,
+        -120.38167996349823
+      ],
+      "census_range_coordinates": [
+        37.983654007389,
+        -120.38162001654
+      ],
+      "native_point_distance_m": 5.5472147068373365
+    },
+    {
+      "listing_id": "308817",
+      "name": "Rancho Santa Fe Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_matched_city_state_zip_disagreement",
+      "query_id": "native-308817",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "16079 San Dieguito Rd.",
+        "city": "Rancho Santa Fe",
+        "state": "CA",
+        "zip": "92091"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "16079 SAN DIEGUITO RD, RANCHO SANTA FE, CA, 92067",
+      "unchanged_native_coordinates": [
+        32.99111484201668,
+        -117.19739623251171
+      ],
+      "census_range_coordinates": [
+        32.990946929606,
+        -117.19729851792
+      ],
+      "native_point_distance_m": 20.77643900026669
+    },
+    {
+      "listing_id": "301313",
+      "name": "Willow Glen Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-301313",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Willow Glen Elementary playground, 1425 Lincoln Ave. @ Minnesota Ave.",
+        "city": "San Jose",
+        "state": "CA",
+        "zip": "95125"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "LINCOLN AVE & MINNESOTA AVE, SAN JOSE, CA, 95125",
+      "unchanged_native_coordinates": [
+        37.296867,
+        -121.8193
+      ],
+      "census_range_coordinates": [
+        37.303615996663,
+        -121.897312033095
+      ],
+      "native_point_distance_m": 6941.034239248577
+    },
+    {
+      "listing_id": "301311",
+      "name": "Santa Clara Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-301311",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Jackson Street between Homestead / Benton",
+        "city": "Santa Clara",
+        "state": "CA",
+        "zip": "95050"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "JACKSON ST & HOMESTEAD RD, SANTA CLARA, CA, 95050",
+      "unchanged_native_coordinates": [
+        37.364613,
+        -121.96793
+      ],
+      "census_range_coordinates": [
+        37.347940003257,
+        -121.9463699589
+      ],
+      "native_point_distance_m": 2658.666152118232
+    },
+    {
+      "listing_id": "308867",
+      "name": "Heart of the City Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_matched_city_state_zip_disagreement",
+      "query_id": "official-308867",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1 United Nations Plaza (Market Street between 7th and 8th Streets)",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94102"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "MARKET ST & 7TH ST, SAN FRANCISCO, CA, 94103",
+      "unchanged_native_coordinates": [
+        37.78047998332441,
+        -122.41250999384211
+      ],
+      "census_range_coordinates": [
+        37.780381999034,
+        -122.412393011099
+      ],
+      "native_point_distance_m": 14.980224461796134
+    },
+    {
+      "listing_id": "308988",
+      "name": "Vallejo Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308988",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "400 Georgia St., Corner of Georgia & Marin",
+        "city": "Vallejo",
+        "state": "CA",
+        "zip": "94589"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "400 GEORGIA ST, VALLEJO, CA, 94590",
+      "unchanged_native_coordinates": [
+        38.10110999182851,
+        -122.2565899986106
+      ],
+      "census_range_coordinates": [
+        38.10117535233,
+        -122.256567983446
+      ],
+      "native_point_distance_m": 7.518721227436699
+    },
+    {
+      "listing_id": "300652",
+      "name": "Tahoe City Farmers Market Thursday CFM",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-300652",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "400 N Lake Blvd",
+        "city": "Tahoe City",
+        "state": "CA",
+        "zip": "96145"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "400 N LAKE BLVD, TAHOE CITY, CA, 96145",
+      "unchanged_native_coordinates": [
+        39.169938,
+        -120.14113
+      ],
+      "census_range_coordinates": [
+        39.170121114663,
+        -120.141902856179
+      ],
+      "native_point_distance_m": 69.66723196176999
+    },
+    {
+      "listing_id": "301314",
+      "name": "California Avenue Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "review_hold: independent Census intersection is approximately 4.9 km from native California Avenue point",
+      "query_id": "official-301314",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "California Ave between El Camino Ave. & Birch St.",
+        "city": "Palo Alto",
+        "state": "CA",
+        "zip": "94306"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        37.46778,
+        -122.13255
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308868",
+      "name": "Hermosa Beach Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308868",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1035 Valley Dr., Valley Dr. & 11th St.",
+        "city": "Hermosa Beach",
+        "state": "CA",
+        "zip": "90254"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "VALLEY DR & 11TH ST, HERMOSA BEACH, CA, 90254",
+      "unchanged_native_coordinates": [
+        33.862599988404014,
+        -118.39494997560743
+      ],
+      "census_range_coordinates": [
+        33.862604004758,
+        -118.394896958584
+      ],
+      "native_point_distance_m": 4.915583040879443
+    },
+    {
+      "listing_id": "308931",
+      "name": "Simi Valley Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308931",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "2757 Tapo Canyon Rd.",
+        "city": "Simi Valley",
+        "state": "CA",
+        "zip": "93063"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "2757 TAPO CANYON RD, SIMI VALLEY, CA, 93063",
+      "unchanged_native_coordinates": [
+        34.28510999739408,
+        -118.70902938545287
+      ],
+      "census_range_coordinates": [
+        34.285438304701,
+        -118.717813793249
+      ],
+      "native_point_distance_m": 807.8842700425175
+    },
+    {
+      "listing_id": "309228",
+      "name": "Seymour Farmers' Market",
+      "region": "CT",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "native-309228",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "20 Pine St.",
+        "city": "Seymour",
+        "state": "CT",
+        "zip": "06497"
+      },
+      "result_status": "Tie",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        41.39111800649721,
+        -73.07537296464452
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308755",
+      "name": "Marina Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308755",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "215 Reservation Rd. x Del Monte Blvd.",
+        "city": "Marina",
+        "state": "CA",
+        "zip": "93933"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "215 RESERVATION RD, MARINA, CA, 93933",
+      "unchanged_native_coordinates": [
+        36.68741611452366,
+        -121.79913758922417
+      ],
+      "census_range_coordinates": [
+        36.687409564521,
+        -121.799002963834
+      ],
+      "native_point_distance_m": 12.026348534332122
+    },
+    {
+      "listing_id": "308877",
+      "name": "Los Gatos Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "official-308877",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Downtown",
+        "city": "Los Gatos",
+        "state": "CA",
+        "zip": "95030"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        37.22253000700033,
+        -121.98391000832613
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "301320",
+      "name": "Beverly Hills Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-301320",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "9300 Civic Center Dr.",
+        "city": "Beverly Hills",
+        "state": "CA",
+        "zip": "90210"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "9300 CIVIC CENTER DR, BEVERLY HILLS, CA, 90210",
+      "unchanged_native_coordinates": [
+        34.073685,
+        -118.39874
+      ],
+      "census_range_coordinates": [
+        34.076345383347,
+        -118.396094887515
+      ],
+      "native_point_distance_m": 383.226530743238
+    },
+    {
+      "listing_id": "308993",
+      "name": "Weaverville Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308993",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Highland Art Center, 691 Main St.",
+        "city": "Weaverville",
+        "state": "CA",
+        "zip": "96093"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "691 MAIN ST, WEAVERVILLE, CA, 96093",
+      "unchanged_native_coordinates": [
+        40.730418279702896,
+        -122.93963362422937
+      ],
+      "census_range_coordinates": [
+        40.730436311816,
+        -122.939571275778
+      ],
+      "native_point_distance_m": 5.623239713229669
+    },
+    {
+      "listing_id": "308991",
+      "name": "Visalia Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308991",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "3501 S. Mooney Blvd., Caldwell Ave. & Shady",
+        "city": "Visalia",
+        "state": "CA",
+        "zip": "93277"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "W CALDWELL AVE & S SHADY ST, VISALIA, CA, 93277",
+      "unchanged_native_coordinates": [
+        36.306005383836045,
+        -119.3136980596752
+      ],
+      "census_range_coordinates": [
+        36.298449995718,
+        -119.316502011739
+      ],
+      "native_point_distance_m": 876.8918408994705
+    },
+    {
+      "listing_id": "308927",
+      "name": "Seal Beach Village Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308927",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "13904 Seal Beach Blvd.",
+        "city": "Seal Beach",
+        "state": "CA",
+        "zip": "90740"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "13904 SEAL BEACH BLVD, SEAL BEACH, CA, 90740",
+      "unchanged_native_coordinates": [
+        33.75989137477726,
+        -118.07753288200766
+      ],
+      "census_range_coordinates": [
+        33.761180797163,
+        -118.077845353956
+      ],
+      "native_point_distance_m": 146.25811627214753
+    },
+    {
+      "listing_id": "308929",
+      "name": "Sherman Oaks Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308929",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "14006 Riverside Dr.",
+        "city": "Sherman Oaks",
+        "state": "CA",
+        "zip": "91423"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "14006 RIVERSIDE DR, SHERMAN OAKS, CA, 91423",
+      "unchanged_native_coordinates": [
+        34.1576047419923,
+        -118.43708936010046
+      ],
+      "census_range_coordinates": [
+        34.157550694967,
+        -118.437092933589
+      ],
+      "native_point_distance_m": 6.018743274521978
+    },
+    {
+      "listing_id": "300355",
+      "name": "Lincoln Heights Certified Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "official-300355",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "N. Broadway & Sichel",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90031"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "N BROADWAY & SICHEL ST, LOS ANGELES, CA, 90031",
+      "unchanged_native_coordinates": [
+        34.07348,
+        -118.21309
+      ],
+      "census_range_coordinates": [
+        34.073677015064,
+        -118.213073962217
+      ],
+      "native_point_distance_m": 21.956820244057717
+    },
+    {
+      "listing_id": "308803",
+      "name": "Paso Robles Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "review_hold: unresolved shared arrival with 308615; distinct calendars do not prove distinct destinations",
+      "query_id": "native-308803",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "11th St. and Spring St.",
+        "city": "Paso Robles",
+        "state": "CA",
+        "zip": "93446"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        35.6256099816531,
+        -120.69130998137003
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308925",
+      "name": "Saturday Redding Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308925",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "777 Cypress Ave.",
+        "city": "Redding",
+        "state": "CA",
+        "zip": "96001"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "777 CYPRESS AVE, REDDING, CA, 96001",
+      "unchanged_native_coordinates": [
+        40.57317602009195,
+        -122.38154104090367
+      ],
+      "census_range_coordinates": [
+        40.574788268096,
+        -122.382061099527
+      ],
+      "native_point_distance_m": 184.5763377790788
+    },
+    {
+      "listing_id": "301297",
+      "name": "Cambria Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-301297",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1000 Main Street",
+        "city": "Cambria",
+        "state": "CA",
+        "zip": "93428"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "1000 MAIN ST, CAMBRIA, CA, 93428",
+      "unchanged_native_coordinates": [
+        35.564323,
+        -121.09662
+      ],
+      "census_range_coordinates": [
+        35.565005322351,
+        -121.096883293269
+      ],
+      "native_point_distance_m": 79.52079314873458
+    },
+    {
+      "listing_id": "301321",
+      "name": "Walnut Creek Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-301321",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1799 Locust St. / Cole St.",
+        "city": "Walnut Creek",
+        "state": "CA",
+        "zip": "94596"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1799 LOCUST ST, WALNUT CREEK, CA, 94596",
+      "unchanged_native_coordinates": [
+        37.902666,
+        -122.04047
+      ],
+      "census_range_coordinates": [
+        37.903531043523,
+        -122.06404873745
+      ],
+      "native_point_distance_m": 2070.9969047830123
+    },
+    {
+      "listing_id": "301327",
+      "name": "Pajaro Valley CFM",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-301327",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Union Street between East Beach St. & Peck St.",
+        "city": "Watsonville",
+        "state": "CA",
+        "zip": "95076"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "UNION ST & E BEACH ST, WATSONVILLE, CA, 95076",
+      "unchanged_native_coordinates": [
+        36.910275,
+        -121.75536
+      ],
+      "census_range_coordinates": [
+        36.910870003314,
+        -121.756047021776
+      ],
+      "native_point_distance_m": 90.04637060297419
+    },
+    {
+      "listing_id": "308639",
+      "name": "East Los Angeles Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308639",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "4801 East 3rd Street & S. Mednik Ave.",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90022"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "E 3RD ST & S MEDNIK AVE, LOS ANGELES, CA, 90022",
+      "unchanged_native_coordinates": [
+        34.03337435914793,
+        -118.16072530655507
+      ],
+      "census_range_coordinates": [
+        34.033340993551,
+        -118.162258015496
+      ],
+      "native_point_distance_m": 141.28563574639992
+    },
+    {
+      "listing_id": "308999",
+      "name": "West Covina Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308999",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "195 S. Glendora Ave., Glendora Ave. & E. Dalewood",
+        "city": "West Covina",
+        "state": "CA",
+        "zip": "91790"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "S GLENDORA AVE & E DALEWOOD ST, WEST COVINA, CA, 91790",
+      "unchanged_native_coordinates": [
+        34.07016858919737,
+        -117.9221236731223
+      ],
+      "census_range_coordinates": [
+        34.071202996258,
+        -117.920900983555
+      ],
+      "native_point_distance_m": 160.9749534831965
+    },
+    {
+      "listing_id": "308766",
+      "name": "Miracle Mile Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308766",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "5700 Wilshire Blvd., Courtyard Place",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90036"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "5700 WILSHIRE BLVD, LOS ANGELES, CA, 90036",
+      "unchanged_native_coordinates": [
+        34.062362840030744,
+        -118.35403025173426
+      ],
+      "census_range_coordinates": [
+        34.062284062091,
+        -118.352663747329
+      ],
+      "native_point_distance_m": 126.18281822470942
+    },
+    {
+      "listing_id": "308762",
+      "name": "Mill Valley Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308762",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "CVS Parking Lot, 759 E. Blithedale Ave., Near Ashford Ave.",
+        "city": "Mill Valley",
+        "state": "CA",
+        "zip": "94941"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "759 E BLITHEDALE AVE, MILL VALLEY, CA, 94941",
+      "unchanged_native_coordinates": [
+        37.90285256663705,
+        -122.52415550254804
+      ],
+      "census_range_coordinates": [
+        37.903042864061,
+        -122.524110958036
+      ],
+      "native_point_distance_m": 21.518010708451524
+    },
+    {
+      "listing_id": "308763",
+      "name": "Millbrae Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308763",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "City parking lot, 200 block of Broadway, between LaCruz & Victoria",
+        "city": "Millbrae",
+        "state": "CA",
+        "zip": "94030"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "BROADWAY & LA CRUZ AVE, MILLBRAE, CA, 94030",
+      "unchanged_native_coordinates": [
+        37.599992527785574,
+        -122.39065190726255
+      ],
+      "census_range_coordinates": [
+        37.600799988293,
+        -122.39166400158
+      ],
+      "native_point_distance_m": 126.53689901425987
+    },
+    {
+      "listing_id": "308884",
+      "name": "Oceanside Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308884",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "500 Pier View Way & Coast Hwy",
+        "city": "Oceanside",
+        "state": "CA",
+        "zip": "92054"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "PIER VIEW WAY & N COAST HWY, OCEANSIDE, CA, 92054",
+      "unchanged_native_coordinates": [
+        33.196710000371894,
+        -117.38021003891723
+      ],
+      "census_range_coordinates": [
+        33.196751001334,
+        -117.380242992089
+      ],
+      "native_point_distance_m": 5.494270900169045
+    },
+    {
+      "listing_id": "308760",
+      "name": "Melrose Place Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308760",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "8400 Melrose Ave. x La Cienega St.",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90069"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "8400 MELROSE AVE, LOS ANGELES, CA, 90069",
+      "unchanged_native_coordinates": [
+        34.08363308804134,
+        -118.37323946879327
+      ],
+      "census_range_coordinates": [
+        34.083556334394,
+        -118.373149572604
+      ],
+      "native_point_distance_m": 11.890323145681641
+    },
+    {
+      "listing_id": "308761",
+      "name": "Midtown Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308761",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "20th St. between J & L Sts. & 19th & 21st Sts.",
+        "city": "Sacramento",
+        "state": "CA",
+        "zip": ""
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "L ST & 21ST ST, SACRAMENTO, CA, 95811",
+      "unchanged_native_coordinates": [
+        38.5756000171302,
+        -121.48037999937328
+      ],
+      "census_range_coordinates": [
+        38.574134012801,
+        -121.479512967117
+      ],
+      "native_point_distance_m": 179.59397795023474
+    },
+    {
+      "listing_id": "301530",
+      "name": "Historic Lewes Farmers Market",
+      "region": "DE",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-301530",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "820 Savannah Road",
+        "city": "Lewes",
+        "state": "DE",
+        "zip": "19958"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "820 SAVANNAH RD, LEWES, DE, 19958",
+      "unchanged_native_coordinates": [
+        38.77009639999999,
+        -75.14353369999999
+      ],
+      "census_range_coordinates": [
+        38.768263614184,
+        -75.145662244467
+      ],
+      "native_point_distance_m": 274.93011244029896
+    },
+    {
+      "listing_id": "300568",
+      "name": "The Petaluma East Side Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-300568",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Lucchesi Park, 320 N McDowell Blvd. x E Madison",
+        "city": "Petaluma",
+        "state": "CA",
+        "zip": "94954"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "320 N MCDOWELL BLVD, PETALUMA, CA, 94954",
+      "unchanged_native_coordinates": [
+        38.252337,
+        -122.63089
+      ],
+      "census_range_coordinates": [
+        38.251998955123,
+        -122.630748870318
+      ],
+      "native_point_distance_m": 39.55746564085336
+    },
+    {
+      "listing_id": "308968",
+      "name": "Tuesday Marilyn Miller Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308968",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1700 Churn Creek Rd. @ the Shasta Center",
+        "city": "Redding",
+        "state": "CA",
+        "zip": "96003"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1700 CHURN CREEK RD, REDDING, CA, 96002",
+      "unchanged_native_coordinates": [
+        40.58142870916294,
+        -122.35420545862881
+      ],
+      "census_range_coordinates": [
+        40.581553225277,
+        -122.354274470169
+      ],
+      "native_point_distance_m": 15.022176949658695
+    },
+    {
+      "listing_id": "308612",
+      "name": "Costa Mesa Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308612",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "88 Fair Drive, Near Pacific Amphitheatre",
+        "city": "Costa Mesa",
+        "state": "CA",
+        "zip": "92627"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "88 FAIR DR, COSTA MESA, CA, 92626",
+      "unchanged_native_coordinates": [
+        33.6639015076986,
+        -117.90192078702896
+      ],
+      "census_range_coordinates": [
+        33.663938510238,
+        -117.903702812635
+      ],
+      "native_point_distance_m": 164.97406172251587
+    },
+    {
+      "listing_id": "308852",
+      "name": "Danville Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308852",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "205 Railroad Ave., Railroad & Prospect Aves.",
+        "city": "Danville",
+        "state": "CA",
+        "zip": "94560"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "RAILROAD AVE & W PROSPECT AVE, DANVILLE, CA, 94526",
+      "unchanged_native_coordinates": [
+        37.821070020003745,
+        -122.00061002839385
+      ],
+      "census_range_coordinates": [
+        37.821124008058,
+        -122.00057097079
+      ],
+      "native_point_distance_m": 6.9143235927646565
+    },
+    {
+      "listing_id": "308973",
+      "name": "Tustin Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308973",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "3rd & El Camino Real",
+        "city": "Tustin",
+        "state": "CA",
+        "zip": ""
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "W 3RD ST & EL CAMINO REAL, TUSTIN, CA, 92780",
+      "unchanged_native_coordinates": [
+        33.74454000000003,
+        -117.82025499999997
+      ],
+      "census_range_coordinates": [
+        33.743130014905,
+        -117.823649994815
+      ],
+      "native_point_distance_m": 350.88300893047534
+    },
+    {
+      "listing_id": "308850",
+      "name": "Concord Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308850",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "2175 Willow Pass Rd., Willow Pass Rd. and Grant St.",
+        "city": "Concord",
+        "state": "CA",
+        "zip": "94520"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "WILLOW PASS RD & GRANT ST, CONCORD, CA, 94520",
+      "unchanged_native_coordinates": [
+        37.97712001855351,
+        -122.03292000202131
+      ],
+      "census_range_coordinates": [
+        37.977087997618,
+        -122.032893997064
+      ],
+      "native_point_distance_m": 4.227648343733588
+    },
+    {
+      "listing_id": "308972",
+      "name": "Turtle Bay Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308972",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "844 Sundial Bridge Dr.",
+        "city": "Redding",
+        "state": "CA",
+        "zip": "96003"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "844 SUNDIAL BRIDGE DR, REDDING, CA, 96001",
+      "unchanged_native_coordinates": [
+        40.589548027470165,
+        -122.37789676773097
+      ],
+      "census_range_coordinates": [
+        40.589873564421,
+        -122.377596013084
+      ],
+      "native_point_distance_m": 44.21813844026454
+    },
+    {
+      "listing_id": "301032",
+      "name": "Helen Albert Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-301032",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1200 N. Vista St.",
+        "city": "West Hollywood",
+        "state": "CA",
+        "zip": "90046"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "1200 N VISTA ST, WEST HOLLYWOOD, CA, 90046",
+      "unchanged_native_coordinates": [
+        34.094113,
+        -118.35143
+      ],
+      "census_range_coordinates": [
+        34.091746637421,
+        -118.351735902482
+      ],
+      "native_point_distance_m": 264.63099190462987
+    },
+    {
+      "listing_id": "301275",
+      "name": "Chico Certified Farmers Market - Chico Saturday",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_matched_city_state_zip_disagreement",
+      "query_id": "native-301275",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "2nd and Wall Streets",
+        "city": "Chico",
+        "state": "CA",
+        "zip": "95927"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "E 2ND ST & WALL ST, CHICO, CA, 95928",
+      "unchanged_native_coordinates": [
+        39.730823,
+        -121.83832
+      ],
+      "census_range_coordinates": [
+        39.730986998454,
+        -121.839436965343
+      ],
+      "native_point_distance_m": 97.2424689800553
+    },
+    {
+      "listing_id": "308979",
+      "name": "Uptown Whittier Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308979",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "13018 Philadelphia St., Bright Ave.",
+        "city": "Whittier",
+        "state": "CA",
+        "zip": "90601"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "13018 PHILADELPHIA ST, WHITTIER, CA, 90601",
+      "unchanged_native_coordinates": [
+        33.97909916170565,
+        -118.03709594503825
+      ],
+      "census_range_coordinates": [
+        33.979044001213,
+        -118.037175553199
+      ],
+      "native_point_distance_m": 9.565725799450039
+    },
+    {
+      "listing_id": "301277",
+      "name": "Old L.A. Certified Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "native-301277",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "North Figueroa & Ave. 58",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90042"
+      },
+      "result_status": "Tie",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        34.110124,
+        -118.1919
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308735",
+      "name": "Lancaster Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308735",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "758 W",
+        "city": "Lancaster",
+        "state": "CA",
+        "zip": "93534"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        34.69763919367278,
+        -118.14371795276627
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "301158",
+      "name": "Burlington Farmers Market",
+      "region": "VT",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-301158",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "345 Pine Street",
+        "city": "Burlington",
+        "state": "VT",
+        "zip": "05401"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "345 PINE ST, BURLINGTON, VT, 05401",
+      "unchanged_native_coordinates": [
+        44.46973,
+        -73.215415
+      ],
+      "census_range_coordinates": [
+        44.469074298215,
+        -73.215186257017
+      ],
+      "native_point_distance_m": 75.13610189677011
+    },
+    {
+      "listing_id": "301303",
+      "name": "East Palo Alto Community Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "review_hold: independent Census address positions disagree with native East Palo Alto point",
+      "query_id": "official-301303",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "2555 Pulgas Ave., at Bay Rd.",
+        "city": "East Palo Alto",
+        "state": "CA",
+        "zip": "94303"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "PULGAS AVE & BAY RD, EAST PALO ALTO, CA, 94303",
+      "unchanged_native_coordinates": [
+        37.469415,
+        -122.13255
+      ],
+      "census_range_coordinates": [
+        37.472916990173,
+        -122.131892028056
+      ],
+      "native_point_distance_m": 393.7090941025448
+    },
+    {
+      "listing_id": "308615",
+      "name": "Country Farm and Craft Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "review_hold: unresolved shared arrival with 308803; distinct calendars do not prove distinct destinations",
+      "query_id": "official-308615",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "11th Street between city park and library from Spring Street to Park Street",
+        "city": "Paso Robles",
+        "state": "CA",
+        "zip": "93446"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        35.6256099816531,
+        -120.69130998137003
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308857",
+      "name": "Downtown Palo Alto Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308857",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "600 Gilman St., Gilman at Hamilton",
+        "city": "Palo Alto",
+        "state": "CA",
+        "zip": "94301"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "GILMAN ST & HAMILTON AVE, PALO ALTO, CA, 94301",
+      "unchanged_native_coordinates": [
+        37.44570999752996,
+        -122.15974004108446
+      ],
+      "census_range_coordinates": [
+        37.44569001647,
+        -122.159720029297
+      ],
+      "native_point_distance_m": 2.8385647952271444
+    },
+    {
+      "listing_id": "308740",
+      "name": "Leucadia Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308740",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Paul Ecke Elementary, 185 Union St. at Vulcan St.",
+        "city": "Encinitas",
+        "state": "CA",
+        "zip": "92024"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "UNION ST & N VULCAN AVE, ENCINITAS, CA, 92024",
+      "unchanged_native_coordinates": [
+        33.05810928148101,
+        -117.29803306939098
+      ],
+      "census_range_coordinates": [
+        33.058122004175,
+        -117.298602022185
+      ],
+      "native_point_distance_m": 53.04210435902021
+    },
+    {
+      "listing_id": "308581",
+      "name": "Burbank Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308581",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "150 N. 3rd St.",
+        "city": "Burbank",
+        "state": "CA",
+        "zip": "91502"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "150 N 3RD ST, BURBANK, CA, 91502",
+      "unchanged_native_coordinates": [
+        34.18261808931688,
+        -118.30825060885198
+      ],
+      "census_range_coordinates": [
+        34.182650115243,
+        -118.30820415996
+      ],
+      "native_point_distance_m": 5.562116431249831
+    },
+    {
+      "listing_id": "308582",
+      "name": "Calistoga Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308582",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1311 Washington St.",
+        "city": "Calistoga",
+        "state": "CA",
+        "zip": "94515"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "1311 WASHINGTON ST, CALISTOGA, CA, 94515",
+      "unchanged_native_coordinates": [
+        38.57895432702172,
+        -122.5801618006825
+      ],
+      "census_range_coordinates": [
+        38.57890172054,
+        -122.580183872937
+      ],
+      "native_point_distance_m": 6.156199762075227
+    },
+    {
+      "listing_id": "308583",
+      "name": "Canyon Lake Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308583",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "31516 Railroad Canyon Rd.",
+        "city": "Canyon Lake",
+        "state": "CA",
+        "zip": "92587"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "31516 RAILROAD CANYON RD, CANYON LAKE, CA, 92587",
+      "unchanged_native_coordinates": [
+        33.672553996403025,
+        -117.25148496090037
+      ],
+      "census_range_coordinates": [
+        33.673317590224,
+        -117.251277496067
+      ],
+      "native_point_distance_m": 87.05117471108731
+    },
+    {
+      "listing_id": "308860",
+      "name": "Fillmore Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308860",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1700 O'Farrell Street between Fillmore and Steiner Sts.",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94155"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1700 OFARRELL ST, SAN FRANCISCO, CA, 94115",
+      "unchanged_native_coordinates": [
+        37.78327999998969,
+        -122.43270996139977
+      ],
+      "census_range_coordinates": [
+        37.783340413222,
+        -122.432789097081
+      ],
+      "native_point_distance_m": 9.669137796217463
+    },
+    {
+      "listing_id": "301265",
+      "name": "Orange Home Grown Farmers & Artisans Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-301265",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "303 W. Palm Ave.",
+        "city": "Orange",
+        "state": "CA",
+        "zip": "92866"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "303 W PALM AVE, ORANGE, CA, 92866",
+      "unchanged_native_coordinates": [
+        33.791554,
+        -117.85586
+      ],
+      "census_range_coordinates": [
+        33.791567274828,
+        -117.855341543192
+      ],
+      "native_point_distance_m": 47.93351732639433
+    },
+    {
+      "listing_id": "308694",
+      "name": "Historic Folsom Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308694",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "915 SUTTER ST",
+        "city": "Folsom",
+        "state": "CA",
+        "zip": "95630"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "915 SUTTER ST, FOLSOM, CA, 95630",
+      "unchanged_native_coordinates": [
+        38.67609265976986,
+        -121.17929917413308
+      ],
+      "census_range_coordinates": [
+        38.676067037905,
+        -121.17922930588
+      ],
+      "native_point_distance_m": 6.701001638045867
+    },
+    {
+      "listing_id": "308796",
+      "name": "Otay Ranch Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308796",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "2015 Birch Rd & Eastlake Blvd.",
+        "city": "Chula Vista",
+        "state": "CA",
+        "zip": "91915"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "BIRCH RD & EASTLAKE PKWY, CHULA VISTA, CA, 91915",
+      "unchanged_native_coordinates": [
+        32.62107567231322,
+        -116.9679269386885
+      ],
+      "census_range_coordinates": [
+        32.621417004333,
+        -116.962847964625
+      ],
+      "native_point_distance_m": 477.1791312170553
+    },
+    {
+      "listing_id": "308692",
+      "name": "High Desert Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308692",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "18422 BEAR VALLEY RD",
+        "city": "Victorville",
+        "state": "CA",
+        "zip": "92392"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        34.47096770952907,
+        -117.26025714106152
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308552",
+      "name": "Anaheim Kaiser Permanente Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308552",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "3440 E. La Palma Ave., E. La Palma & N. Crosby Wy.",
+        "city": "Anaheim",
+        "state": "CA",
+        "zip": "92806"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "E LA PALMA AVE & N COSBY WAY, ANAHEIM, CA, 92806",
+      "unchanged_native_coordinates": [
+        33.85399423047023,
+        -117.84593264003831
+      ],
+      "census_range_coordinates": [
+        33.854314985221,
+        -117.844664000402
+      ],
+      "native_point_distance_m": 122.45869021284378
+    },
+    {
+      "listing_id": "301493",
+      "name": "Running Springs Farmers Market and Artisan Faire",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-301493",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "2645 Whispering Pines Drive",
+        "city": "Running Springs",
+        "state": "CA",
+        "zip": "92382"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "2645 WHISPERING PINES DR, RUNNING SPRINGS, CA, 92382",
+      "unchanged_native_coordinates": [
+        34.206855,
+        -117.104915
+      ],
+      "census_range_coordinates": [
+        34.205941048769,
+        -117.105575271187
+      ],
+      "native_point_distance_m": 118.383909172061
+    },
+    {
+      "listing_id": "308559",
+      "name": "Arroyo Grande Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308559",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1464 E. Grand Ave., between Courtland and Grand",
+        "city": "Arroyo Grande",
+        "state": "CA",
+        "zip": "93420"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1464 E GRAND AVE, ARROYO GRANDE, CA, 93420",
+      "unchanged_native_coordinates": [
+        35.120784817738546,
+        -120.6057478400831
+      ],
+      "census_range_coordinates": [
+        35.120834692049,
+        -120.605727793535
+      ],
+      "native_point_distance_m": 5.8377917311422465
+    },
+    {
+      "listing_id": "308689",
+      "name": "Hayward Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308689",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "777 B ST",
+        "city": "Hayward",
+        "state": "CA",
+        "zip": "94541"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "777 B ST, HAYWARD, CA, 94541",
+      "unchanged_native_coordinates": [
+        37.67130614404075,
+        -122.08562081427239
+      ],
+      "census_range_coordinates": [
+        37.671272145588,
+        -122.085542272723
+      ],
+      "native_point_distance_m": 7.878969019924832
+    },
+    {
+      "listing_id": "308689",
+      "name": "Hayward Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308689",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "777 B St. x Watkins St.",
+        "city": "Hayward",
+        "state": "CA",
+        "zip": "94541"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "777 B ST, HAYWARD, CA, 94541",
+      "unchanged_native_coordinates": [
+        37.67130614404075,
+        -122.08562081427239
+      ],
+      "census_range_coordinates": [
+        37.671272145588,
+        -122.085542272723
+      ],
+      "native_point_distance_m": 7.878969019924832
+    },
+    {
+      "listing_id": "308684",
+      "name": "Haggin Oaks Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308684",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "8800 Ming Ave.",
+        "city": "Bakersfield",
+        "state": "CA",
+        "zip": "93311"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "8800 MING AVE, BAKERSFIELD, CA, 93311",
+      "unchanged_native_coordinates": [
+        35.33976865958952,
+        -119.10021593646987
+      ],
+      "census_range_coordinates": [
+        35.33981797232,
+        -119.100309862685
+      ],
+      "native_point_distance_m": 10.131692554892275
+    },
+    {
+      "listing_id": "301493",
+      "name": "Running Springs Farmers Market and Artisan Faire",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-301493",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "2645 Whispering Pines Dr., between Palo Alto Way & Hunsaker Dr.",
+        "city": "Running Springs",
+        "state": "CA",
+        "zip": "92382"
+      },
+      "result_status": "Tie",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        34.206855,
+        -117.104915
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308684",
+      "name": "Haggin Oaks Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308684",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Kaiser Permanente, 8800 Ming Avenue (Corner of Ming and Haggin Oaks)",
+        "city": "Bakersfield",
+        "state": "CA",
+        "zip": "93311"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "8800 MING AVE, BAKERSFIELD, CA, 93311",
+      "unchanged_native_coordinates": [
+        35.33976865958952,
+        -119.10021593646987
+      ],
+      "census_range_coordinates": [
+        35.33981797232,
+        -119.100309862685
+      ],
+      "native_point_distance_m": 10.131692554892275
+    },
+    {
+      "listing_id": "308559",
+      "name": "Arroyo Grande Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308559",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1464 E. Grand Ave.",
+        "city": "Arroyo Grande",
+        "state": "CA",
+        "zip": "93420"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "1464 E GRAND AVE, ARROYO GRANDE, CA, 93420",
+      "unchanged_native_coordinates": [
+        35.120784817738546,
+        -120.6057478400831
+      ],
+      "census_range_coordinates": [
+        35.120834692049,
+        -120.605727793535
+      ],
+      "native_point_distance_m": 5.8377917311422465
+    },
+    {
+      "listing_id": "308889",
+      "name": "Pasadena Victory Park Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308889",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "2925 E. Sierra Madre Blvd. x Paloma St.",
+        "city": "Pasadena",
+        "state": "CA",
+        "zip": "91107"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "2925 E SIERRA MADRE BLVD, PASADENA, CA, 91107",
+      "unchanged_native_coordinates": [
+        34.15936998750985,
+        -118.09407996856332
+      ],
+      "census_range_coordinates": [
+        34.161415295189,
+        -118.091823268278
+      ],
+      "native_point_distance_m": 307.9572992861676
+    },
+    {
+      "listing_id": "308648",
+      "name": "Encino Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308648",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "17400 Victory Blvd, Between Whiteoak & Louise",
+        "city": "Van Nuys",
+        "state": "CA",
+        "zip": "91406"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "17400 VICTORY BLVD, VAN NUYS, CA, 91406",
+      "unchanged_native_coordinates": [
+        34.18661368116443,
+        -118.51264822211455
+      ],
+      "census_range_coordinates": [
+        34.186559700461,
+        -118.512745065404
+      ],
+      "native_point_distance_m": 10.741406643850022
+    },
+    {
+      "listing_id": "308552",
+      "name": "Anaheim Kaiser Permanente Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308552",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "3440 E. La Palma Ave.",
+        "city": "Anaheim",
+        "state": "CA",
+        "zip": "92806"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "3440 E LA PALMA AVE, ANAHEIM, CA, 92806",
+      "unchanged_native_coordinates": [
+        33.85399423047023,
+        -117.84593264003831
+      ],
+      "census_range_coordinates": [
+        33.854080309476,
+        -117.845362641308
+      ],
+      "native_point_distance_m": 53.498520695711676
+    },
+    {
+      "listing_id": "308655",
+      "name": "FIG at 7th Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308655",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "735 S Figueroa St x 7th",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90017"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "735 S FIGUEROA ST, LOS ANGELES, CA, 90017",
+      "unchanged_native_coordinates": [
+        34.04885242659186,
+        -118.26035403903576
+      ],
+      "census_range_coordinates": [
+        34.048910915272,
+        -118.260378814002
+      ],
+      "native_point_distance_m": 6.892566265195374
+    },
+    {
+      "listing_id": "308796",
+      "name": "Otay Ranch Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308796",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "2015 Birch Rd.",
+        "city": "Chula Vista",
+        "state": "CA",
+        "zip": "91915"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "2015 BIRCH RD, CHULA VISTA, CA, 91915",
+      "unchanged_native_coordinates": [
+        32.62107567231322,
+        -116.9679269386885
+      ],
+      "census_range_coordinates": [
+        32.621112989021,
+        -116.966969309195
+      ],
+      "native_point_distance_m": 89.782124371107
+    },
+    {
+      "listing_id": "301342",
+      "name": "Atwater Village Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-301342",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "3528 Larga Ave. at Glendale Blvd. & Larga, between Larga & Garden Ave.",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90039"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "LARGA AVE & GLENDALE BLVD, LOS ANGELES, CA, 90039",
+      "unchanged_native_coordinates": [
+        34.117828,
+        -118.26015
+      ],
+      "census_range_coordinates": [
+        34.118200006126,
+        -118.260433966672
+      ],
+      "native_point_distance_m": 48.93291374181378
+    },
+    {
+      "listing_id": "308653",
+      "name": "Farmers' Market at The Grove School",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308653",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "The Grove School, 11126 Iowa Ave., Corner of Iowa Ave. & Orange Ave.",
+        "city": "Redlands",
+        "state": "CA",
+        "zip": "92373"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        34.05163176793014,
+        -117.21309263490522
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308892",
+      "name": "Pomona Valley Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308892",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "683 N Garey Ave, Garey Ave. & Pearl St.",
+        "city": "Pomona",
+        "state": "CA",
+        "zip": "91767"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "N GAREY AVE & E PEARL ST, POMONA, CA, 91767",
+      "unchanged_native_coordinates": [
+        34.064510019526125,
+        -117.75042998499723
+      ],
+      "census_range_coordinates": [
+        34.064548007701,
+        -117.750380999756
+      ],
+      "native_point_distance_m": 6.18089366991782
+    },
+    {
+      "listing_id": "308772",
+      "name": "Morgan Hill Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "official-308772",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "CalTrain Station, 3rd St. & Depot St.",
+        "city": "Morgan Hill",
+        "state": "CA",
+        "zip": "95037"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "E 3RD ST & DEPOT ST, MORGAN HILL, CA, 95037",
+      "unchanged_native_coordinates": [
+        37.129040019181105,
+        -121.65064998047922
+      ],
+      "census_range_coordinates": [
+        37.129060010904,
+        -121.650650030004
+      ],
+      "native_point_distance_m": 2.222982496655131
+    },
+    {
+      "listing_id": "308890",
+      "name": "Pinole Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308890",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "798 Fernandez St. & Pear St.",
+        "city": "Pinole",
+        "state": "CA",
+        "zip": "94565"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "FERNANDEZ AVE & PEAR ST, PINOLE, CA, 94564",
+      "unchanged_native_coordinates": [
+        38.00524000451213,
+        -122.28964001046943
+      ],
+      "census_range_coordinates": [
+        38.005261015731,
+        -122.289641959017
+      ],
+      "native_point_distance_m": 2.342570384803035
+    },
+    {
+      "listing_id": "301225",
+      "name": "North Berkeley Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-301225",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Shattuck Ave. at Rose St. and Vine St.",
+        "city": "Berkeley",
+        "state": "CA",
+        "zip": "94703"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "SHATTUCK AVE & ROSE ST, BERKELEY, CA, 94709",
+      "unchanged_native_coordinates": [
+        37.880337,
+        -122.26907
+      ],
+      "census_range_coordinates": [
+        37.881984979737,
+        -122.269574023927
+      ],
+      "native_point_distance_m": 188.51056653069736
+    },
+    {
+      "listing_id": "301346",
+      "name": "Hollywood Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-301346",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1600 N. Ivar Avenue",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90028"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1600 IVAR AVE, LOS ANGELES, CA, 90028",
+      "unchanged_native_coordinates": [
+        34.099639,
+        -118.32819
+      ],
+      "census_range_coordinates": [
+        34.099809762557,
+        -118.32809203119
+      ],
+      "native_point_distance_m": 21.021726878885936
+    },
+    {
+      "listing_id": "301345",
+      "name": "Echo Park Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-301345",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1146 Logan St. x Sunset Blvd",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90026"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "1146 LOGAN ST, LOS ANGELES, CA, 90026",
+      "unchanged_native_coordinates": [
+        34.076409,
+        -118.25827
+      ],
+      "census_range_coordinates": [
+        34.075798870131,
+        -118.259189508137
+      ],
+      "native_point_distance_m": 108.51213631899087
+    },
+    {
+      "listing_id": "301343",
+      "name": "Central Avenue Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-301343",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "4301 S. Central Ave, E 43rd Street & Central Avenue",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90011"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "E 43RD ST & S CENTRAL AVE, LOS ANGELES, CA, 90011",
+      "unchanged_native_coordinates": [
+        34.005326,
+        -118.25679
+      ],
+      "census_range_coordinates": [
+        34.005753015359,
+        -118.256485010484
+      ],
+      "native_point_distance_m": 55.180673854383855
+    },
+    {
+      "listing_id": "308786",
+      "name": "Ojai Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308786",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "300 E. Matilija St.",
+        "city": "Ojai",
+        "state": "CA",
+        "zip": "93023"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "300 E MATILIJA ST, OJAI, CA, 93023",
+      "unchanged_native_coordinates": [
+        34.44883503772722,
+        -119.24409530412535
+      ],
+      "census_range_coordinates": [
+        34.448878776234,
+        -119.244045056158
+      ],
+      "native_point_distance_m": 6.69943991568213
+    },
+    {
+      "listing_id": "308545",
+      "name": "Alemany Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308545",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "100 Alemany Blvd.",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94110"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "100 ALEMANY BLVD, SAN FRANCISCO, CA, 94110",
+      "unchanged_native_coordinates": [
+        37.7369175274485,
+        -122.40882709362943
+      ],
+      "census_range_coordinates": [
+        37.73693073684,
+        -122.408891287882
+      ],
+      "native_point_distance_m": 5.832961163951072
+    },
+    {
+      "listing_id": "308546",
+      "name": "Alhambra Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308546",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "11 S. 2nd St., between Main & Commonwealth",
+        "city": "Alhambra",
+        "state": "CA",
+        "zip": "91802"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "11 S 2ND ST, ALHAMBRA, CA, 91801",
+      "unchanged_native_coordinates": [
+        34.09468700834303,
+        -118.12966500321853
+      ],
+      "census_range_coordinates": [
+        34.094067919803,
+        -118.128942363265
+      ],
+      "native_point_distance_m": 95.74316917446043
+    },
+    {
+      "listing_id": "308779",
+      "name": "Noe Valley Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308779",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Town Square, 3861 24th Street",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94114"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "3861 24TH ST, SAN FRANCISCO, CA, 94114",
+      "unchanged_native_coordinates": [
+        37.75161687944379,
+        -122.4288284694815
+      ],
+      "census_range_coordinates": [
+        37.751564360841,
+        -122.428816125684
+      ],
+      "native_point_distance_m": 5.9397862425555505
+    },
+    {
+      "listing_id": "301226",
+      "name": "South Berkeley Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-301226",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "0 Adeline Street at 63rd Street",
+        "city": "Berkeley",
+        "state": "CA",
+        "zip": "94703"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "ADELINE ST & 63RD ST, BERKELEY, CA, 94703",
+      "unchanged_native_coordinates": [
+        37.847765,
+        -122.27193
+      ],
+      "census_range_coordinates": [
+        37.847744992093,
+        -122.272006958772
+      ],
+      "native_point_distance_m": 7.114139985397585
+    },
+    {
+      "listing_id": "308547",
+      "name": "Alisal Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308547",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "632 Alisal St.",
+        "city": "Salinas",
+        "state": "CA",
+        "zip": "93905"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "632 E ALISAL ST, SALINAS, CA, 93905",
+      "unchanged_native_coordinates": [
+        36.673577645272836,
+        -121.63391384104067
+      ],
+      "census_range_coordinates": [
+        36.673519855492,
+        -121.63386149781
+      ],
+      "native_point_distance_m": 7.94257516381167
+    },
+    {
+      "listing_id": "308659",
+      "name": "Fortuna Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308659",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "10th St. between Main St. & L Sts.",
+        "city": "Fortuna",
+        "state": "CA",
+        "zip": "95540"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "10TH ST & MAIN ST, FORTUNA, CA, 95540",
+      "unchanged_native_coordinates": [
+        40.5979799994258,
+        -124.15661003634176
+      ],
+      "census_range_coordinates": [
+        40.598010017989,
+        -124.156618997465
+      ],
+      "native_point_distance_m": 3.422583259429139
+    },
+    {
+      "listing_id": "308546",
+      "name": "Alhambra Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308546",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "100 S Second St., between Main St. & Commonwealth Ave.",
+        "city": "Alhambra",
+        "state": "CA",
+        "zip": "91801"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "S 2ND ST & W MAIN ST, ALHAMBRA, CA, 91801",
+      "unchanged_native_coordinates": [
+        34.09468700834303,
+        -118.12966500321853
+      ],
+      "census_range_coordinates": [
+        34.09418199304,
+        -118.128941040655
+      ],
+      "native_point_distance_m": 87.16360358079274
+    },
+    {
+      "listing_id": "308782",
+      "name": "Northridge Farmers' Market & Family Festival",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308782",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "9301 Tampa Ave.",
+        "city": "Northridge",
+        "state": "CA",
+        "zip": "91324"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "9301 TAMPA AVE, NORTHRIDGE, CA, 91324",
+      "unchanged_native_coordinates": [
+        34.23940383695387,
+        -118.55357423770077
+      ],
+      "census_range_coordinates": [
+        34.239169249879,
+        -118.553638349201
+      ],
+      "native_point_distance_m": 26.742360232737756
+    },
+    {
+      "listing_id": "300381",
+      "name": "Palos Verdes Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-300381",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "27118 Silver Spur Rd., Hawthorne / Silver Spur",
+        "city": "Rolling Hills Estates",
+        "state": "CA",
+        "zip": "90275"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "27118 SILVER SPUR RD, ROLLING HILLS ESTATES, CA, 90274",
+      "unchanged_native_coordinates": [
+        33.779336,
+        -118.37372
+      ],
+      "census_range_coordinates": [
+        33.790925764814,
+        -118.364499212
+      ],
+      "native_point_distance_m": 1544.986869378296
+    },
+    {
+      "listing_id": "308547",
+      "name": "Alisal Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308547",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "632 East Alisal St. x Pearl St.",
+        "city": "Salinas",
+        "state": "CA",
+        "zip": "93905"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "632 E ALISAL ST, SALINAS, CA, 93905",
+      "unchanged_native_coordinates": [
+        36.673577645272836,
+        -121.63391384104067
+      ],
+      "census_range_coordinates": [
+        36.673519855492,
+        -121.63386149781
+      ],
+      "native_point_distance_m": 7.94257516381167
+    },
+    {
+      "listing_id": "308786",
+      "name": "Ojai Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308786",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "300 E. Matilija St. (between Signal & Montgomery St.)",
+        "city": "Ojai",
+        "state": "CA",
+        "zip": "93023"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "300 E MATILIJA ST, OJAI, CA, 93023",
+      "unchanged_native_coordinates": [
+        34.44883503772722,
+        -119.24409530412535
+      ],
+      "census_range_coordinates": [
+        34.448878776234,
+        -119.244045056158
+      ],
+      "native_point_distance_m": 6.69943991568213
+    },
+    {
+      "listing_id": "308545",
+      "name": "Alemany Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308545",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "100 Alemany Blvd. @ Putnam St.",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94110"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "ALEMANY BLVD & PUTNAM ST, SAN FRANCISCO, CA, 94110",
+      "unchanged_native_coordinates": [
+        37.7369175274485,
+        -122.40882709362943
+      ],
+      "census_range_coordinates": [
+        37.734932997685,
+        -122.411028484636
+      ],
+      "native_point_distance_m": 293.54740579487486
+    },
+    {
+      "listing_id": "300381",
+      "name": "Palos Verdes Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-300381",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "27118 Silver Spur Road",
+        "city": "Rolling Hills Estates",
+        "state": "CA",
+        "zip": "90274"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "27118 SILVER SPUR RD, ROLLING HILLS ESTATES, CA, 90274",
+      "unchanged_native_coordinates": [
+        33.779336,
+        -118.37372
+      ],
+      "census_range_coordinates": [
+        33.790925764814,
+        -118.364499212
+      ],
+      "native_point_distance_m": 1544.986869378296
+    },
+    {
+      "listing_id": "308782",
+      "name": "Northridge Farmers' Market & Family Festival",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308782",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "9301 Tampa Ave.",
+        "city": "Northridge",
+        "state": "CA",
+        "zip": "91324"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "9301 TAMPA AVE, NORTHRIDGE, CA, 91324",
+      "unchanged_native_coordinates": [
+        34.23940383695387,
+        -118.55357423770077
+      ],
+      "census_range_coordinates": [
+        34.239169249879,
+        -118.553638349201
+      ],
+      "native_point_distance_m": 26.742360232737756
+    },
+    {
+      "listing_id": "301226",
+      "name": "South Berkeley Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-301226",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Adeline at 63rd Street",
+        "city": "Berkeley",
+        "state": "CA",
+        "zip": "94703"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "ADELINE ST & 63RD ST, BERKELEY, CA, 94703",
+      "unchanged_native_coordinates": [
+        37.847765,
+        -122.27193
+      ],
+      "census_range_coordinates": [
+        37.847744992093,
+        -122.272006958772
+      ],
+      "native_point_distance_m": 7.114139985397585
+    },
+    {
+      "listing_id": "308779",
+      "name": "Noe Valley Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308779",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "3861 24th St., Between Sanchez and Vicksburg St.",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94114"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "3861 24TH ST, SAN FRANCISCO, CA, 94114",
+      "unchanged_native_coordinates": [
+        37.75161687944379,
+        -122.4288284694815
+      ],
+      "census_range_coordinates": [
+        37.751564360841,
+        -122.428816125684
+      ],
+      "native_point_distance_m": 5.9397862425555505
+    },
+    {
+      "listing_id": "301158",
+      "name": "Burlington Farmers Market",
+      "region": "VT",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-301158",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "345 Pine St",
+        "city": "Burlington",
+        "state": "VT",
+        "zip": ""
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "345 PINE ST, BURLINGTON, VT, 05401",
+      "unchanged_native_coordinates": [
+        44.46973,
+        -73.215415
+      ],
+      "census_range_coordinates": [
+        44.469074298215,
+        -73.215186257017
+      ],
+      "native_point_distance_m": 75.13610189677011
+    },
+    {
+      "listing_id": "308659",
+      "name": "Fortuna Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308659",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "10th St. and Main St.",
+        "city": "Fortuna",
+        "state": "CA",
+        "zip": "95540"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "10TH ST & MAIN ST, FORTUNA, CA, 95540",
+      "unchanged_native_coordinates": [
+        40.5979799994258,
+        -124.15661003634176
+      ],
+      "census_range_coordinates": [
+        40.598010017989,
+        -124.156618997465
+      ],
+      "native_point_distance_m": 3.422583259429139
+    },
+    {
+      "listing_id": "301342",
+      "name": "Atwater Village Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-301342",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "3528 Larga Ave",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90039"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "3528 LARGA AVE, LOS ANGELES, CA, 90039",
+      "unchanged_native_coordinates": [
+        34.117828,
+        -118.26015
+      ],
+      "census_range_coordinates": [
+        34.117343510317,
+        -118.259533245106
+      ],
+      "native_point_distance_m": 78.26786573237769
+    },
+    {
+      "listing_id": "301277",
+      "name": "Old L.A. Certified Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "official-301277",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "N. Figueroa St. & Avenue 58",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90042"
+      },
+      "result_status": "Tie",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        34.110124,
+        -118.1919
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "301343",
+      "name": "Central Avenue Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-301343",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "4301 S Central Ave",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90011"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "4301 S CENTRAL AVE, LOS ANGELES, CA, 90011",
+      "unchanged_native_coordinates": [
+        34.005326,
+        -118.25679
+      ],
+      "census_range_coordinates": [
+        34.005695562047,
+        -118.256553935597
+      ],
+      "native_point_distance_m": 46.49917062086561
+    },
+    {
+      "listing_id": "308655",
+      "name": "FIG at 7th Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308655",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "735 S. Figueroa St.",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90017"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "735 S FIGUEROA ST, LOS ANGELES, CA, 90017",
+      "unchanged_native_coordinates": [
+        34.04885242659186,
+        -118.26035403903576
+      ],
+      "census_range_coordinates": [
+        34.048910915272,
+        -118.260378814002
+      ],
+      "native_point_distance_m": 6.892566265195374
+    },
+    {
+      "listing_id": "301225",
+      "name": "North Berkeley Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-301225",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Shattuck and Vine",
+        "city": "Berkeley",
+        "state": "CA",
+        "zip": "94702"
+      },
+      "result_status": "Tie",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        37.880337,
+        -122.26907
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "301346",
+      "name": "Hollywood Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-301346",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1600 Ivar Ave",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90028"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "1600 IVAR AVE, LOS ANGELES, CA, 90028",
+      "unchanged_native_coordinates": [
+        34.099639,
+        -118.32819
+      ],
+      "census_range_coordinates": [
+        34.099809762557,
+        -118.32809203119
+      ],
+      "native_point_distance_m": 21.021726878885936
+    },
+    {
+      "listing_id": "301345",
+      "name": "Echo Park Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-301345",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1146 Logan St",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90026"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "1146 LOGAN ST, LOS ANGELES, CA, 90026",
+      "unchanged_native_coordinates": [
+        34.076409,
+        -118.25827
+      ],
+      "census_range_coordinates": [
+        34.075798870131,
+        -118.259189508137
+      ],
+      "native_point_distance_m": 108.51213631899087
+    },
+    {
+      "listing_id": "308772",
+      "name": "Morgan Hill Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "native-308772",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "3rd St. & Depot St.",
+        "city": "Morgan Hill",
+        "state": "CA",
+        "zip": "95037"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "E 3RD ST & DEPOT ST, MORGAN HILL, CA, 95037",
+      "unchanged_native_coordinates": [
+        37.129040019181105,
+        -121.65064998047922
+      ],
+      "census_range_coordinates": [
+        37.129060010904,
+        -121.650650030004
+      ],
+      "native_point_distance_m": 2.222982496655131
+    },
+    {
+      "listing_id": "308892",
+      "name": "Pomona Valley Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308892",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Pearl St. and Garey Ave.",
+        "city": "Pomona",
+        "state": "CA",
+        "zip": "91768"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "W PEARL ST & N GAREY AVE, POMONA, CA, 91768",
+      "unchanged_native_coordinates": [
+        34.064510019526125,
+        -117.75042998499723
+      ],
+      "census_range_coordinates": [
+        34.064548007701,
+        -117.750380999756
+      ],
+      "native_point_distance_m": 6.18089366991782
+    },
+    {
+      "listing_id": "308653",
+      "name": "Farmers' Market at The Grove School",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308653",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "11126 Iowa St.",
+        "city": "Redlands",
+        "state": "CA",
+        "zip": "92373"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "11126 IOWA ST, REDLANDS, CA, 92373",
+      "unchanged_native_coordinates": [
+        34.05163176793014,
+        -117.21309263490522
+      ],
+      "census_range_coordinates": [
+        34.051672354435,
+        -117.213158102011
+      ],
+      "native_point_distance_m": 7.532931201789797
+    },
+    {
+      "listing_id": "308890",
+      "name": "Pinole Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308890",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Fernandez Ave. and Pear St.",
+        "city": "Pinole",
+        "state": "CA",
+        "zip": "94564"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "FERNANDEZ AVE & PEAR ST, PINOLE, CA, 94564",
+      "unchanged_native_coordinates": [
+        38.00524000451213,
+        -122.28964001046943
+      ],
+      "census_range_coordinates": [
+        38.005261015731,
+        -122.289641959017
+      ],
+      "native_point_distance_m": 2.342570384803035
+    },
+    {
+      "listing_id": "308648",
+      "name": "Encino Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308648",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "17400 VICTORY BLVD",
+        "city": "Van Nuys",
+        "state": "CA",
+        "zip": "91406"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "17400 VICTORY BLVD, VAN NUYS, CA, 91406",
+      "unchanged_native_coordinates": [
+        34.18661368116443,
+        -118.51264822211455
+      ],
+      "census_range_coordinates": [
+        34.186559700461,
+        -118.512745065404
+      ],
+      "native_point_distance_m": 10.741406643850022
+    },
+    {
+      "listing_id": "308889",
+      "name": "Pasadena Victory Park Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308889",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Sierra Madre Blvd. and Paloma St.",
+        "city": "Pasadena",
+        "state": "CA",
+        "zip": "91101"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "E SIERRA MADRE BLVD & PALOMA ST, PASADENA, CA, 91107",
+      "unchanged_native_coordinates": [
+        34.15936998750985,
+        -118.09407996856332
+      ],
+      "census_range_coordinates": [
+        34.159368002917,
+        -118.0939460087
+      ],
+      "native_point_distance_m": 12.327818271386029
+    },
+    {
+      "listing_id": "308766",
+      "name": "Miracle Mile Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308766",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "5700 Wilshire Blvd.",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90036"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "5700 WILSHIRE BLVD, LOS ANGELES, CA, 90036",
+      "unchanged_native_coordinates": [
+        34.062362840030744,
+        -118.35403025173426
+      ],
+      "census_range_coordinates": [
+        34.062284062091,
+        -118.352663747329
+      ],
+      "native_point_distance_m": 126.18281822470942
+    },
+    {
+      "listing_id": "308760",
+      "name": "Melrose Place Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308760",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "8400 Melrose Pl.",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90069"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "8400 MELROSE PL, LOS ANGELES, CA, 90069",
+      "unchanged_native_coordinates": [
+        34.08363308804134,
+        -118.37323946879327
+      ],
+      "census_range_coordinates": [
+        34.08357865434,
+        -118.373226885303
+      ],
+      "native_point_distance_m": 6.1626912795142195
+    },
+    {
+      "listing_id": "308761",
+      "name": "Midtown Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308761",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "20th St. & K, Between J & K",
+        "city": "Sacramento",
+        "state": "CA",
+        "zip": "95811"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "20TH ST & K ST, SACRAMENTO, CA, 95811",
+      "unchanged_native_coordinates": [
+        38.5756000171302,
+        -121.48037999937328
+      ],
+      "census_range_coordinates": [
+        38.575593008721,
+        -121.480374961726
+      ],
+      "native_point_distance_m": 0.8939166221186484
+    },
+    {
+      "listing_id": "308762",
+      "name": "Mill Valley Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308762",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "759 E BLITHEDALE AVE",
+        "city": "Mill Valley",
+        "state": "CA",
+        "zip": "94941"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "759 E BLITHEDALE AVE, MILL VALLEY, CA, 94941",
+      "unchanged_native_coordinates": [
+        37.90285256663705,
+        -122.52415550254804
+      ],
+      "census_range_coordinates": [
+        37.903042864061,
+        -122.524110958036
+      ],
+      "native_point_distance_m": 21.518010708451524
+    },
+    {
+      "listing_id": "308884",
+      "name": "Oceanside Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308884",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "N. Coast Hwy. 101 and Pier View Way",
+        "city": "Oceanside",
+        "state": "CA",
+        "zip": "92054"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "N COAST HWY & PIER VIEW WAY, OCEANSIDE, CA, 92054",
+      "unchanged_native_coordinates": [
+        33.196710000371894,
+        -117.38021003891723
+      ],
+      "census_range_coordinates": [
+        33.196751001334,
+        -117.380242992089
+      ],
+      "native_point_distance_m": 5.494270900169045
+    },
+    {
+      "listing_id": "308763",
+      "name": "Millbrae Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308763",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "200 Block Broadway",
+        "city": "Millbrae",
+        "state": "CA",
+        "zip": "94030"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "200 BROADWAY, MILLBRAE, CA, 94030",
+      "unchanged_native_coordinates": [
+        37.599992527785574,
+        -122.39065190726255
+      ],
+      "census_range_coordinates": [
+        37.600002822515,
+        -122.390572968033
+      ],
+      "native_point_distance_m": 7.048017669203968
+    },
+    {
+      "listing_id": "301297",
+      "name": "Cambria Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-301297",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1000 Main Street",
+        "city": "Cambria",
+        "state": "CA",
+        "zip": "93428"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "1000 MAIN ST, CAMBRIA, CA, 93428",
+      "unchanged_native_coordinates": [
+        35.564323,
+        -121.09662
+      ],
+      "census_range_coordinates": [
+        35.565005322351,
+        -121.096883293269
+      ],
+      "native_point_distance_m": 79.52079314873458
+    },
+    {
+      "listing_id": "301327",
+      "name": "Pajaro Valley CFM",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-301327",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Peck and Union st.",
+        "city": "Watsonville",
+        "state": "CA",
+        "zip": "95076"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        36.910275,
+        -121.75536
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308999",
+      "name": "West Covina Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308999",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "195 Glendora Ave.",
+        "city": "West Covina",
+        "state": "CA",
+        "zip": "91790"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "195 S GLENDORA AVE, WEST COVINA, CA, 91790",
+      "unchanged_native_coordinates": [
+        34.07016858919737,
+        -117.9221236731223
+      ],
+      "census_range_coordinates": [
+        34.070241458861,
+        -117.922125796604
+      ],
+      "native_point_distance_m": 8.105097225458291
+    },
+    {
+      "listing_id": "301320",
+      "name": "Beverly Hills Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-301320",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "9300 Civic Center Dr",
+        "city": "Beverly Hills",
+        "state": "CA",
+        "zip": "90210"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "9300 CIVIC CENTER DR, BEVERLY HILLS, CA, 90210",
+      "unchanged_native_coordinates": [
+        34.073685,
+        -118.39874
+      ],
+      "census_range_coordinates": [
+        34.076345383347,
+        -118.396094887515
+      ],
+      "native_point_distance_m": 383.226530743238
+    },
+    {
+      "listing_id": "308639",
+      "name": "East Los Angeles Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308639",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "4801 E 3RD ST",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90022"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "4801 E 3RD ST, LOS ANGELES, CA, 90022",
+      "unchanged_native_coordinates": [
+        34.03337435914793,
+        -118.16072530655507
+      ],
+      "census_range_coordinates": [
+        34.033421039563,
+        -118.160843082858
+      ],
+      "native_point_distance_m": 12.030306312437911
+    },
+    {
+      "listing_id": "301321",
+      "name": "Walnut Creek Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-301321",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1799 Locust Street",
+        "city": "Walnut Creek",
+        "state": "CA",
+        "zip": "94596"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "1799 LOCUST ST, WALNUT CREEK, CA, 94596",
+      "unchanged_native_coordinates": [
+        37.902666,
+        -122.04047
+      ],
+      "census_range_coordinates": [
+        37.903531043523,
+        -122.06404873745
+      ],
+      "native_point_distance_m": 2070.9969047830123
+    },
+    {
+      "listing_id": "308755",
+      "name": "Marina Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308755",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "215 RESERVATION RD",
+        "city": "Marina",
+        "state": "CA",
+        "zip": "93933"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "215 RESERVATION RD, MARINA, CA, 93933",
+      "unchanged_native_coordinates": [
+        36.68741611452366,
+        -121.79913758922417
+      ],
+      "census_range_coordinates": [
+        36.687409564521,
+        -121.799002963834
+      ],
+      "native_point_distance_m": 12.026348534332122
+    },
+    {
+      "listing_id": "308877",
+      "name": "Los Gatos Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "native-308877",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Main St. at N. Santa Cruz Ave",
+        "city": "Los Gatos",
+        "state": "CA",
+        "zip": "95030"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "W MAIN ST & N SANTA CRUZ AVE, LOS GATOS, CA, 95030",
+      "unchanged_native_coordinates": [
+        37.22253000700033,
+        -121.98391000832613
+      ],
+      "census_range_coordinates": [
+        37.222390003551,
+        -121.983604979497
+      ],
+      "native_point_distance_m": 31.17379543398064
+    },
+    {
+      "listing_id": "300355",
+      "name": "Lincoln Heights Certified Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_no_unambiguous_literal_address_match",
+      "query_id": "native-300355",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "N. Broadway & Sichel",
+        "city": "Los Angeles",
+        "state": "CA",
+        "zip": "90031"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "N BROADWAY & SICHEL ST, LOS ANGELES, CA, 90031",
+      "unchanged_native_coordinates": [
+        34.07348,
+        -118.21309
+      ],
+      "census_range_coordinates": [
+        34.073677015064,
+        -118.213073962217
+      ],
+      "native_point_distance_m": 21.956820244057717
+    },
+    {
+      "listing_id": "308991",
+      "name": "Visalia Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-308991",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "S. Mooney Blvd & W. Caldwell Ave.",
+        "city": "Visalia",
+        "state": "CA",
+        "zip": "93277"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "MOONEY BLVD & W CALDWELL AVE, VISALIA, CA, 93277",
+      "unchanged_native_coordinates": [
+        36.306005383836045,
+        -119.3136980596752
+      ],
+      "census_range_coordinates": [
+        36.298470992197,
+        -119.313669012747
+      ],
+      "native_point_distance_m": 837.7901692700628
+    },
+    {
+      "listing_id": "308993",
+      "name": "Weaverville Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308993",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "691 Main St.",
+        "city": "Weaverville",
+        "state": "CA",
+        "zip": "96093"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "691 MAIN ST, WEAVERVILLE, CA, 96093",
+      "unchanged_native_coordinates": [
+        40.730418279702896,
+        -122.93963362422937
+      ],
+      "census_range_coordinates": [
+        40.730436311816,
+        -122.939571275778
+      ],
+      "native_point_distance_m": 5.623239713229669
+    },
+    {
+      "listing_id": "301265",
+      "name": "Orange Home Grown Farmers & Artisans Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-301265",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "303 W. Palm Ave. & Cypress St., (Artisan vendors in middle of street on Palm)",
+        "city": "Orange",
+        "state": "CA",
+        "zip": "92866"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "W PALM AVE & N CYPRESS ST, ORANGE, CA, 92866",
+      "unchanged_native_coordinates": [
+        33.791554,
+        -117.85586
+      ],
+      "census_range_coordinates": [
+        33.79151098502,
+        -117.856350974845
+      ],
+      "native_point_distance_m": 45.62259946272662
+    },
+    {
+      "listing_id": "308694",
+      "name": "Historic Folsom Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308694",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Historic",
+        "city": "Folsom",
+        "state": "CA",
+        "zip": "95630"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        38.67609265976986,
+        -121.17929917413308
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "308692",
+      "name": "High Desert Farmers Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "official-308692",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "Northeast corner of 18422 Bear Valley Rd. x Fish Hatchery Rd.",
+        "city": "Victorville",
+        "state": "CA",
+        "zip": "92395"
+      },
+      "result_status": "No_Match",
+      "match_type": null,
+      "matched_address": null,
+      "unchanged_native_coordinates": [
+        34.47096770952907,
+        -117.26025714106152
+      ],
+      "census_range_coordinates": null,
+      "native_point_distance_m": null
+    },
+    {
+      "listing_id": "301314",
+      "name": "California Avenue Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "review_hold: independent Census intersection is approximately 4.9 km from native California Avenue point",
+      "query_id": "native-301314",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "California Avenue, at El Camino",
+        "city": "Palo Alto",
+        "state": "CA",
+        "zip": "94306"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "S CALIFORNIA AVE & EL CAMINO REAL, PALO ALTO, CA, 94306",
+      "unchanged_native_coordinates": [
+        37.46778,
+        -122.13255
+      ],
+      "census_range_coordinates": [
+        37.424989985326,
+        -122.145880002825
+      ],
+      "native_point_distance_m": 4901.394976312433
+    },
+    {
+      "listing_id": "300109",
+      "name": "Solana Beach Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-300109",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "444 South Cedros Avenue",
+        "city": "Solana Beach",
+        "state": "CA",
+        "zip": "92075"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "444 S CEDROS AVE, SOLANA BEACH, CA, 92075",
+      "unchanged_native_coordinates": [
+        32.987194,
+        -117.2692
+      ],
+      "census_range_coordinates": [
+        32.987524251402,
+        -117.26948978177
+      ],
+      "native_point_distance_m": 45.596319069270265
+    },
+    {
+      "listing_id": "308868",
+      "name": "Hermosa Beach Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308868",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Valley Dr. and 11th St.",
+        "city": "Hermosa Beach",
+        "state": "CA",
+        "zip": "90254"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "VALLEY DR & 11TH ST, HERMOSA BEACH, CA, 90254",
+      "unchanged_native_coordinates": [
+        33.862599988404014,
+        -118.39494997560743
+      ],
+      "census_range_coordinates": [
+        33.862604004758,
+        -118.394896958584
+      ],
+      "native_point_distance_m": 4.915583040879443
+    },
+    {
+      "listing_id": "308867",
+      "name": "Heart of the City Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_matched_city_state_zip_disagreement",
+      "query_id": "native-308867",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Market St. and 7th St.",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94102"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "MARKET ST & 7TH ST, SAN FRANCISCO, CA, 94103",
+      "unchanged_native_coordinates": [
+        37.78047998332441,
+        -122.41250999384211
+      ],
+      "census_range_coordinates": [
+        37.780381999034,
+        -122.412393011099
+      ],
+      "native_point_distance_m": 14.980224461796134
+    },
+    {
+      "listing_id": "308988",
+      "name": "Vallejo Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308988",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Georgia St. and Marin St.",
+        "city": "Vallejo",
+        "state": "CA",
+        "zip": "94591"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "GEORGIA ST & MARIN ST, VALLEJO, CA, 94590",
+      "unchanged_native_coordinates": [
+        38.10110999182851,
+        -122.2565899986106
+      ],
+      "census_range_coordinates": [
+        38.101119006612,
+        -122.256641980723
+      ],
+      "native_point_distance_m": 4.657674869898263
+    },
+    {
+      "listing_id": "301311",
+      "name": "Santa Clara Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-301311",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "Jackson Street at Homestead Road",
+        "city": "Santa Clara",
+        "state": "CA",
+        "zip": "95050"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "JACKSON ST & HOMESTEAD RD, SANTA CLARA, CA, 95050",
+      "unchanged_native_coordinates": [
+        37.364613,
+        -121.96793
+      ],
+      "census_range_coordinates": [
+        37.347940003257,
+        -121.9463699589
+      ],
+      "native_point_distance_m": 2658.666152118232
+    },
+    {
+      "listing_id": "301313",
+      "name": "Willow Glen Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "native-301313",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "1425 Lincoln Avenue",
+        "city": "San Jose",
+        "state": "CA",
+        "zip": "95125"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "1425 LINCOLN AVE, SAN JOSE, CA, 95125",
+      "unchanged_native_coordinates": [
+        37.296867,
+        -121.8193
+      ],
+      "census_range_coordinates": [
+        37.303397668218,
+        -121.897104396755
+      ],
+      "native_point_distance_m": 6920.19656872381
+    },
+    {
+      "listing_id": "308860",
+      "name": "Fillmore Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "official_native_zip_conflict",
+      "query_id": "native-308860",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "O'Farrell at Fillmore",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94115"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "OFARRELL ST & FILLMORE ST, SAN FRANCISCO, CA, 94115",
+      "unchanged_native_coordinates": [
+        37.78327999998969,
+        -122.43270996139977
+      ],
+      "census_range_coordinates": [
+        37.783292993342,
+        -122.432705963339
+      ],
+      "native_point_distance_m": 1.4869034303964366
+    },
+    {
+      "listing_id": "308740",
+      "name": "Leucadia Farmers Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "native-308740",
+      "address_role": "native_kaggle",
+      "submitted_address": {
+        "street": "185 UNION ST",
+        "city": "Encinitas",
+        "state": "CA",
+        "zip": "92024"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "185 UNION ST, ENCINITAS, CA, 92024",
+      "unchanged_native_coordinates": [
+        33.05810928148101,
+        -117.29803306939098
+      ],
+      "census_range_coordinates": [
+        33.058054827183,
+        -117.298045143232
+      ],
+      "native_point_distance_m": 6.15870432791547
+    },
+    {
+      "listing_id": "301275",
+      "name": "Chico Certified Farmers Market - Chico Saturday",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_matched_city_state_zip_disagreement",
+      "query_id": "official-301275",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "2nd St. & Wall St., Municipal Lot #1",
+        "city": "Chico",
+        "state": "CA",
+        "zip": ""
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "E 2ND ST & WALL ST, CHICO, CA, 95928",
+      "unchanged_native_coordinates": [
+        39.730823,
+        -121.83832
+      ],
+      "census_range_coordinates": [
+        39.730986998454,
+        -121.839436965343
+      ],
+      "native_point_distance_m": 97.2424689800553
+    },
+    {
+      "listing_id": "301032",
+      "name": "Helen Albert Certified Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-301032",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1200 N. Vista St. @ Fountain Ave.",
+        "city": "West Hollywood",
+        "state": "CA",
+        "zip": "90046"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "N VISTA ST & W FOUNTAIN AVE, WEST HOLLYWOOD, CA, 90046",
+      "unchanged_native_coordinates": [
+        34.094113,
+        -118.35143
+      ],
+      "census_range_coordinates": [
+        34.094385015356,
+        -118.351727966342
+      ],
+      "native_point_distance_m": 40.837212708113995
+    },
+    {
+      "listing_id": "308582",
+      "name": "Calistoga Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308582",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "1311 Washington Street",
+        "city": "Calistoga",
+        "state": "CA",
+        "zip": "94515"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "1311 WASHINGTON ST, CALISTOGA, CA, 94515",
+      "unchanged_native_coordinates": [
+        38.57895432702172,
+        -122.5801618006825
+      ],
+      "census_range_coordinates": [
+        38.57890172054,
+        -122.580183872937
+      ],
+      "native_point_distance_m": 6.156199762075227
+    },
+    {
+      "listing_id": "308583",
+      "name": "Canyon Lake Certified Farmers' Market",
+      "region": "CA",
+      "decision": "selected",
+      "hold_reason": null,
+      "query_id": "official-308583",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "31516 Railroad Canyon Road",
+        "city": "Canyon Lake",
+        "state": "CA",
+        "zip": "92587"
+      },
+      "result_status": "Match",
+      "match_type": "Exact",
+      "matched_address": "31516 RAILROAD CANYON RD, CANYON LAKE, CA, 92587",
+      "unchanged_native_coordinates": [
+        33.672553996403025,
+        -117.25148496090037
+      ],
+      "census_range_coordinates": [
+        33.673317590224,
+        -117.251277496067
+      ],
+      "native_point_distance_m": 87.05117471108731
+    },
+    {
+      "listing_id": "308581",
+      "name": "Burbank Farmers' Market",
+      "region": "CA",
+      "decision": "hold",
+      "hold_reason": "census_native_point_more_than_100m_away",
+      "query_id": "official-308581",
+      "address_role": "official_roster",
+      "submitted_address": {
+        "street": "150 N. 3rd St., Glen Oaks Blvd. & Olive Blvd.",
+        "city": "Burbank",
+        "state": "CA",
+        "zip": "91502"
+      },
+      "result_status": "Match",
+      "match_type": "Non_Exact",
+      "matched_address": "S GLENOAKS BLVD & E OLIVE AVE, BURBANK, CA, 91502",
+      "unchanged_native_coordinates": [
+        34.18261808931688,
+        -118.30825060885198
+      ],
+      "census_range_coordinates": [
+        34.183186992383,
+        -118.306232002035
+      ],
+      "native_point_distance_m": 196.16310279172072
+    }
+  ]
+}

@@ -9,12 +9,15 @@ checks remain authoritative. A failed output has no completion marker.
 import argparse
 import hashlib
 import json
+import math
 import sys
+from itertools import product
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "backend")]
 from app.catalog.ingest import MAX_BYTES, MAX_ROWS, prepare  # noqa: E402
+from app.catalog.mixed import distance  # noqa: E402
 
 from scripts.catalog_mix import build as mix  # noqa: E402
 
@@ -44,6 +47,48 @@ def admitted(path, max_rows, max_bytes):
     )
 
 
+def proximity_review(rows, prior_ids):
+    """Use a 3-D spatial grid; preserve reviewed baseline coincidences only.
+
+    Every pair within 250 metres has adjacent Cartesian cells, including at
+    poles and the antimeridian. Exact shared arrivals need source resolution;
+    proximity alone never merges genuinely different neighboring destinations.
+    """
+    buckets, pairs = {}, []
+    size = 250 / 6_371_000
+    offsets = list(product((-1, 0, 1), repeat=3))
+    for row in rows:
+        lat, lon = math.radians(row["latitude"]), math.radians(row["longitude"])
+        point = (math.cos(lat) * math.cos(lon), math.cos(lat) * math.sin(lon), math.sin(lat))
+        cell = tuple(math.floor(value / size) for value in point)
+        for offset in offsets:
+            for other in buckets.get(tuple(a + b for a, b in zip(cell, offset, strict=True)), []):
+                if row["source_id"] in prior_ids and other["source_id"] in prior_ids:
+                    continue
+                metres = distance(row, other)
+                if metres <= 1:
+                    raise ValueError(
+                        "unresolved shared arrival: "
+                        + row["source_id"]
+                        + " / "
+                        + other["source_id"]
+                    )
+                if metres <= 250:
+                    pairs.append(
+                        {
+                            "provider_ids": [other["source_id"], row["source_id"]],
+                            "names": [other["name"], row["name"]],
+                            "distance_metres": metres,
+                        }
+                    )
+                    if len(pairs) > 5000:
+                        raise ValueError(
+                            "dense proximity review needs a separately bounded source selection"
+                        )
+        buckets.setdefault(cell, []).append(row)
+    return pairs
+
+
 def build(baseline, additions, output, *, max_rows, max_bytes):
     if not 500 < max_rows <= MAX_ROWS or not 1 <= max_bytes <= MAX_BYTES:
         raise ValueError("explicit expansion limits must fit unchanged importer ceilings")
@@ -70,6 +115,8 @@ def build(baseline, additions, output, *, max_rows, max_bytes):
         raise ValueError("replacement changes or omits a preserved row/provenance")
     if len(rows) <= 500:
         raise ValueError("expansion did not add any unique places")
+    pairs = proximity_review(rows, {row["source_id"] for row in prior})
+    write(output / "proximity-review.json", pairs)
     with (output / "catalog.preview.jsonl").open("xb") as stream:
         stream.write(row_bytes(rows))
     proof = {
@@ -81,6 +128,7 @@ def build(baseline, additions, output, *, max_rows, max_bytes):
         "max_rows": max_rows,
         "max_bytes": max_bytes,
         "database_or_network_calls": False,
+        "new_pairs_within_250_metres": len(pairs),
     }
     write(output / "completion.json", proof)
     return proof
