@@ -35,6 +35,26 @@ def test_automatic_calendar_filter_precedes_the_bounded_sql_limit(connection):
         [
             (
                 "fixture",
+                "usda-market:99999-closed",
+                "Closed-only fixture",
+                37.8,
+                -122.4,
+                "CA",
+                ["daytime", "food_destination"],
+                Json(
+                    [
+                        {
+                            "source_visit_calendar": {
+                                **calendar,
+                                "weekly_windows": [],
+                                "date_overrides": [{"date": "2026-10-17", "windows": []}],
+                            }
+                        }
+                    ]
+                ),
+            ),
+            (
+                "fixture",
                 "usda-market:99999-ready",
                 "Verified-calendar fixture",
                 37.8,
@@ -86,7 +106,7 @@ def connection(monkeypatch):
         if cur.fetchone()[0] != "catalog_test":
             pytest.fail("refusing a database not named catalog_test")
         cur.execute(
-            "DROP TABLE IF EXISTS places_catalog_active, places_catalog, places_catalog_imports CASCADE"
+            "DROP TABLE IF EXISTS places_catalog_active, places_catalog_calendars, places_catalog, places_catalog_imports CASCADE"
         )
         cur.execute((Path(__file__).parents[1] / "sql/places_catalog.sql").read_text())
     monkeypatch.setattr(repository.chat_crud, "_get_conn", lambda: conn)

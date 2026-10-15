@@ -5,6 +5,7 @@ import math
 from psycopg2.extras import RealDictCursor
 
 from app.catalog.attribution import combine
+from app.catalog.calendar_enrichment import project
 from app.catalog.identity import identity
 from app.core.config import settings
 from app.crud import chat_crud
@@ -12,12 +13,14 @@ from app.crud import chat_crud
 
 def source_attribution(row):
     source = identity(row["source_id"])[1]
-    primary = (
+    entry = row.get("calendar_enrichment") or {}
+    primary_override = entry.get("source_attribution") if entry.get("source_release") else None
+    primary = primary_override or (
         (row.get("source_catalogs") or {}).get(source, {}).get("attribution", row["attribution"])
     )
     additional = {
         p["source_attribution"]
-        for p in row["provenance"]
+        for p in project(row["provenance"], row.get("calendar_enrichment"))
         if isinstance(p.get("source_attribution"), str)
     }
     return combine([primary, *sorted(additional)])
@@ -72,7 +75,8 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
             cur.execute(
                 """
                 WITH candidates AS (
-                    SELECT p.*, i.release, i.manifest->>'attribution' AS attribution,
+                    SELECT p.*, e.entry AS calendar_enrichment,
+                    i.release, i.manifest->>'attribution' AS attribution,
                     i.manifest->'source_catalogs' AS source_catalogs,
                     2*3958.7613*asin(sqrt(least(1.0,
                       power(sin(radians(latitude-%s)/2),2)
@@ -81,6 +85,12 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
                     FROM places_catalog p
                     JOIN places_catalog_active a ON a.generation=p.generation
                     JOIN places_catalog_imports i ON i.generation=p.generation
+                    LEFT JOIN places_catalog_calendars e
+                      ON e.generation=p.generation AND e.source_id=p.source_id
+                    CROSS JOIN LATERAL (
+                      SELECT CASE WHEN e.entry IS NULL THEN p.provenance
+                        ELSE jsonb_build_array(e.entry) END AS calendar_provenance
+                    ) facts
                     WHERE p.latitude BETWEEN %s AND %s
                       AND ((%s >= -180 AND %s <= 180 AND p.longitude BETWEEN %s AND %s)
                         OR (%s < -180 AND (p.longitude >= %s+360 OR p.longitude <= %s))
@@ -89,11 +99,11 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
                       AND (NOT %s OR (
                         (NOT p.categories && ARRAY['food','culture','nightlife']::text[]
                           AND split_part(p.source_id, ':', 1) NOT IN ('usda-market','wikidata-park')
-                          AND NOT jsonb_path_exists(p.provenance, '$[*].source_visit_calendar'))
+                          AND NOT jsonb_path_exists(facts.calendar_provenance, '$[*].source_visit_calendar'))
                         OR (
-                          jsonb_array_length(jsonb_path_query_array(p.provenance, '$[*].source_visit_calendar'))=1
-                          AND jsonb_path_exists(p.provenance,
-                            '$[*].source_visit_calendar ? (@.schema_version == "roadtrips-source-visit-calendar/1" && (!exists(@.unknown_reasons) || @.unknown_reasons.size() == 0) && @.source_receipts.size() > 0 && (@.weekly_windows.size() > 0 || @.date_overrides.size() > 0))')
+                          jsonb_array_length(jsonb_path_query_array(facts.calendar_provenance, '$[*].source_visit_calendar'))=1
+                          AND jsonb_path_exists(facts.calendar_provenance,
+                            '$[*].source_visit_calendar ? (@.schema_version == "roadtrips-source-visit-calendar/1" && (!exists(@.unknown_reasons) || @.unknown_reasons.size() == 0) && @.source_receipts.size() > 0 && (@.weekly_windows.size() > 0 || exists(@.date_overrides[*].windows[*])))')
                         )
                       ))
                 ) SELECT * FROM candidates WHERE distance<=%s
@@ -132,12 +142,13 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
                 "categories": r["categories"],
                 "provider_rank": rank,
                 "source": identity(r["source_id"])[1],
-                "source_release": (r.get("source_catalogs") or {})
+                "source_release": (r.get("calendar_enrichment") or {}).get("source_release")
+                or (r.get("source_catalogs") or {})
                 .get(identity(r["source_id"])[1], {})
                 .get("release", r["release"]),
                 "source_attribution": source_attribution(r),
                 "source_updated_at": r["source_updated_at"],
-                "source_provenance": r["provenance"]
+                "source_provenance": project(r["provenance"], r.get("calendar_enrichment"))
                 + (
                     [
                         {

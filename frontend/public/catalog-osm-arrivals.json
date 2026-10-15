@@ -2036,6 +2036,82 @@
       "tags": {
         "amenity": "parking"
       }
+    },
+    {
+      "type": "way",
+      "id": 166068758,
+      "tags": {
+        "highway": "residential",
+        "name": "East 107th Street"
+      },
+      "geometry": [
+        {
+          "lat": 33.938616,
+          "lon": -118.2407456
+        },
+        {
+          "lat": 33.938618,
+          "lon": -118.240802
+        },
+        {
+          "lat": 33.9386514,
+          "lon": -118.2426991
+        },
+        {
+          "lat": 33.9386528,
+          "lon": -118.2427784
+        }
+      ]
+    },
+    {
+      "type": "way",
+      "id": 23525737,
+      "tags": {
+        "highway": "tertiary",
+        "name": "Dock Street",
+        "oneway": "yes"
+      },
+      "geometry": [
+        {
+          "lat": 40.935413,
+          "lon": -73.899068
+        },
+        {
+          "lat": 40.9353996,
+          "lon": -73.8992018
+        },
+        {
+          "lat": 40.9354994,
+          "lon": -73.8998853
+        },
+        {
+          "lat": 40.9355985,
+          "lon": -73.9005572
+        },
+        {
+          "lat": 40.9356722,
+          "lon": -73.9010271
+        },
+        {
+          "lat": 40.9356949,
+          "lon": -73.9012049
+        },
+        {
+          "lat": 40.9357024,
+          "lon": -73.9012639
+        },
+        {
+          "lat": 40.9358133,
+          "lon": -73.9020807
+        }
+      ]
     }
-  ]
+  ],
+  "additional_cultural_review": {
+    "review_sha256": "a2e57653cf2f101f7e48b8e85b3c5f0cee7176ea9ac7d0ea6c851a6258545fb0",
+    "attribution": "OpenStreetMap contributors",
+    "license": "ODbL-1.0",
+    "source_ids": ["la-cultural:8c79404ff1fc412b9bef", "nys-historic:37"],
+    "scope": "Public-road geometry/tags used for the reviewed cultural native-arrival checks; neither road snaps nor published parking replace native destination coordinates."
+  }
 }

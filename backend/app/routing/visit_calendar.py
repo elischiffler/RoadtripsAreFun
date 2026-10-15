@@ -158,7 +158,7 @@ def calendar_eligible(record: dict) -> bool:
     return bool(
         calendar
         and not calendar.unknown_reasons
-        and (calendar.weekly_windows or calendar.date_overrides)
+        and (calendar.weekly_windows or any(item.windows for item in calendar.date_overrides))
     )
 
 
