@@ -1,0 +1,407 @@
+{
+  "source_units": 75,
+  "admitted_units": 29,
+  "not_admitted_units": 46,
+  "items": [
+    {
+      "unit_code": "alag",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "5834": "active_or_uncertain_dated_closure"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "ania",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "5835": "active_or_uncertain_dated_closure"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "apis",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "5770": "active_or_uncertain_dated_closure",
+        "5771": "schedule_unknown_or_closed"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "bawa",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {},
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "bela",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "112": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "blue",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "1261": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "boha",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "5938": "auto_parking_unverified",
+        "5940": "auto_parking_unverified",
+        "5941": "auto_parking_unverified",
+        "5942": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "caha",
+      "reason": "Museum of the Sea publishes intermittent opening October10\u2013April15; no dependable current visit asserted.",
+      "facility_rejects": {
+        "2461": "closure_evidence"
+      },
+      "passing_basic_facilities_not_admitted": 4
+    },
+    {
+      "unit_code": "chat",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "84": "active_or_uncertain_dated_closure"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "chic",
+      "reason": "Original Travertine Nature Center coordinate failed the actual driving destination check with NoSegment.",
+      "facility_rejects": {},
+      "passing_basic_facilities_not_admitted": 1
+    },
+    {
+      "unit_code": "chis",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "144": "park_requires_non_driving_access",
+        "145": "park_requires_non_driving_access",
+        "5910": "auto_parking_unverified",
+        "5914": "auto_parking_unverified",
+        "5915": "auto_parking_unverified",
+        "5947": "auto_parking_unverified",
+        "5948": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "cuis",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "2362": "auto_parking_unverified",
+        "2365": "auto_parking_unverified",
+        "2366": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "dewa",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "6052": "visitor_arrival_evidence_missing",
+        "6128": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "drto",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "2391": "auto_parking_unverified",
+        "2392": "park_requires_non_driving_access"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "fiis",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "1266": "auto_parking_unverified",
+        "1267": "auto_parking_unverified",
+        "1268": "auto_parking_unverified",
+        "1269": "auto_parking_unverified",
+        "1275": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "gaar",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "146": "park_requires_non_driving_access",
+        "110": "auto_parking_unverified",
+        "122": "active_or_uncertain_dated_closure",
+        "119": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "gari",
+      "reason": "Source explicitly says Gauley River has no visitor center and redirects to Canyon Rim in New River Gorge; not counted as a second destination.",
+      "facility_rejects": {},
+      "passing_basic_facilities_not_admitted": 1
+    },
+    {
+      "unit_code": "glba",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "33": "park_requires_non_driving_access",
+        "34": "active_or_uncertain_dated_closure"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "gwmp",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {},
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "hosp",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "5751": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "isro",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "151": "park_requires_non_driving_access",
+        "149": "auto_parking_unverified",
+        "150": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "jeff",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "1208": "auto_parking_unverified",
+        "6107": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "jela",
+      "reason": "Passing facilities are cultural centers or a battlefield, not selected for this nature increment.",
+      "facility_rejects": {
+        "2488": "closure_evidence",
+        "2489": "schedule_unknown_or_closed",
+        "2507": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 3
+    },
+    {
+      "unit_code": "katm",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "121": "park_requires_non_driving_access",
+        "116": "auto_parking_unverified",
+        "5829": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "kefj",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "72": "auto_parking_unverified",
+        "73": "active_or_uncertain_dated_closure"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "kova",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "124": "park_requires_non_driving_access"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "lacl",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "127": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "lamr",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "2319": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "laro",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "5707": "active_or_uncertain_dated_closure"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "lode",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {},
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "miss",
+      "reason": "Original visitor-center coordinate is explicitly a walk-up point; published vehicle parking is elsewhere. No coordinate substituted.",
+      "facility_rejects": {},
+      "passing_basic_facilities_not_admitted": 1
+    },
+    {
+      "unit_code": "mnrr",
+      "reason": "Headquarters-only candidate; a recreation visitor arrival has not been selected.",
+      "facility_rejects": {},
+      "passing_basic_facilities_not_admitted": 1
+    },
+    {
+      "unit_code": "moja",
+      "reason": "Selected source directs checking current road conditions; current approach evidence remains unresolved.",
+      "facility_rejects": {
+        "2555": "closure_evidence",
+        "6076": "visitor_arrival_evidence_missing"
+      },
+      "passing_basic_facilities_not_admitted": 1
+    },
+    {
+      "unit_code": "natr",
+      "reason": "Selected cabin focuses on Meriwether Lewis history; not relabeled nature to inflate category counts.",
+      "facility_rejects": {
+        "5690": "closure_evidence",
+        "2340": "closure_evidence",
+        "2347": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 1
+    },
+    {
+      "unit_code": "noat",
+      "reason": "No road access to the preserve; a remote gateway center is not a driving arrival to it.",
+      "facility_rejects": {},
+      "passing_basic_facilities_not_admitted": 1
+    },
+    {
+      "unit_code": "noca",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "137": "schedule_unknown_or_closed",
+        "138": "auto_parking_unverified",
+        "141": "schedule_unknown_or_closed",
+        "142": "schedule_unknown_or_closed"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "orca",
+      "reason": "Only off-site Illinois Valley information facility passes basic checks; no reviewed arrival at the cave recreation site.",
+      "facility_rejects": {
+        "2520": "visitor_arrival_evidence_missing"
+      },
+      "passing_basic_facilities_not_admitted": 1
+    },
+    {
+      "unit_code": "rigr",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "5902": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "sari",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "2574": "schedule_unknown_or_closed"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "timu",
+      "reason": "Fort Caroline visitor interpretation requires cross-unit and historical-role review; not relabeled nature here.",
+      "facility_rejects": {
+        "180": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 1
+    },
+    {
+      "unit_code": "upde",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {},
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "vall",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "5924": "explicit_facility_state_missing"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "viis",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "85": "arrival_state_unresolved"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "wrst",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "108": "schedule_unknown_or_closed",
+        "115": "auto_parking_unverified",
+        "125": "schedule_unknown_or_closed",
+        "126": "schedule_unknown_or_closed",
+        "5912": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "yell",
+      "reason": "No selected facility passes explicit state, auto-parking, schedule/closure and general-car-arrival checks.",
+      "facility_rejects": {
+        "1252": "auto_parking_unverified",
+        "1247": "auto_parking_unverified",
+        "1248": "auto_parking_unverified",
+        "1249": "auto_parking_unverified",
+        "2584": "auto_parking_unverified",
+        "1254": "auto_parking_unverified",
+        "1253": "auto_parking_unverified",
+        "1255": "auto_parking_unverified",
+        "1251": "auto_parking_unverified",
+        "2588": "auto_parking_unverified",
+        "6035": "auto_parking_unverified"
+      },
+      "passing_basic_facilities_not_admitted": 0
+    },
+    {
+      "unit_code": "yuch",
+      "reason": "Fairbanks information office is not a driving arrival to the remote preserve.",
+      "facility_rejects": {
+        "113": "active_or_uncertain_dated_closure"
+      },
+      "passing_basic_facilities_not_admitted": 1
+    }
+  ]
+}

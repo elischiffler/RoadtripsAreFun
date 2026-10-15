@@ -1,0 +1,1831 @@
+{
+  "schema_version": "roadtrips-nps-nature-review/1",
+  "profile": "nps-nature-visitors/1",
+  "source_release": "nps-public-2026-10-15",
+  "checked_at": "2026-10-15T05:11:27.984439+00:00",
+  "baseline_identity_sha256": "212a6b1305d6f6842579cd4f1e9d46f8fbf84d9445c12a175904c988bf791a35",
+  "inventory": {
+    "url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+    "request_url": "https://carto.nps.gov/user/parktiles/api/v2/sql?q=SELECT+parkcode+AS+unit_code%2C+fullname%2C+designation%2C+states+FROM+parktiles.sd_parks+ORDER+BY+parkcode",
+    "path": "/workspace/catalog-nps-nature-20261015/inventory.json",
+    "sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+    "retrieved_at": "2026-10-15T03:15:52.594842+00:00"
+  },
+  "driving": {
+    "path": "/workspace/catalog-nps-nature-20261015/driving-reviewed.json",
+    "sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+    "retrieved_at": "2026-10-15T05:16:17.243641+00:00"
+  },
+  "batches": [
+    {
+      "id": "nature-01",
+      "records": [
+        {
+          "unit_code": "amis",
+          "visitor_center_id": 2320,
+          "operation_evidence": {
+            "code": "amis",
+            "url": "https://www.nps.gov/amis/structured_data_amis.json",
+            "retrieved_at": "2026-10-15T05:11:23.530618+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/amis.json",
+            "sha256": "4bfc9685a3d67c6feb1dadae7d115bda94fc5410f5f4aa255838ea19a2739666",
+            "bytes": 90497
+          },
+          "row": {
+            "source_id": "nps-public:amis:visitor-center",
+            "name": "Amistad National Recreation Area \u2014 Amistad National Recreation Area Visitor Center",
+            "latitude": 29.4659997959,
+            "longitude": -100.988411153,
+            "region": "TX",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "10477 Highway 90 West, Del Rio, TX, 78840",
+            "url": "https://www.nps.gov/amis/planyourvisit/indooractivities.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "amis",
+                "designation": "National Recreation Area",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2320",
+                "park_code": "amis",
+                "source_url": "https://www.nps.gov/amis/structured_data_amis.json",
+                "snapshot_sha256": "4bfc9685a3d67c6feb1dadae7d115bda94fc5410f5f4aa255838ea19a2739666",
+                "checked_at": "2026-10-15T05:11:23.530618+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Visitor-center purchases require a credit/debit card; no payment or permit is included. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "5e5b873f126cfb817172b6f3c1d63349e2536302a221fde3e368d8c0fddb3021",
+                "driving_snap_distance_m": 71.54750845,
+                "driving_road": "US Highway 90 West",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "asis",
+          "visitor_center_id": 2369,
+          "operation_evidence": {
+            "code": "asis",
+            "url": "https://www.nps.gov/asis/structured_data_asis.json",
+            "retrieved_at": "2026-10-15T05:11:23.701076+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/asis.json",
+            "sha256": "aadbe3565e2ffbf75eeb8989c638fe341fbad53546b6a7ea2f544d54de7ec21e",
+            "bytes": 147342
+          },
+          "row": {
+            "source_id": "nps-public:asis:visitor-center",
+            "name": "Assateague Island National Seashore \u2014 Assateague Island Visitor Center",
+            "latitude": 38.2478717,
+            "longitude": -75.1545833,
+            "region": "MD",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "11800 Marsh View Lane, Berlin, MD, 21811",
+            "url": "https://www.nps.gov/asis/planyourvisit/hours.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "asis",
+                "designation": "National Seashore",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2369",
+                "park_code": "asis",
+                "source_url": "https://www.nps.gov/asis/structured_data_asis.json",
+                "snapshot_sha256": "aadbe3565e2ffbf75eeb8989c638fe341fbad53546b6a7ea2f544d54de7ec21e",
+                "checked_at": "2026-10-15T05:11:23.701076+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Mainland Maryland visitor center before the Verrazzano Bridge; not a claim of arrival on the beach. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "83178f159db55112bae51e2a02eef43ab12dce6096d80fb4e356b3ee3ed83e42",
+                "driving_snap_distance_m": 17.60987852,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "bica",
+          "visitor_center_id": 2431,
+          "operation_evidence": {
+            "code": "bica",
+            "url": "https://www.nps.gov/bica/structured_data_bica.json",
+            "retrieved_at": "2026-10-15T05:11:23.836765+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/bica.json",
+            "sha256": "f5776dc621f6d539dfa2757785ce8cd518b37859bfa5c1c78fca1bc38767205f",
+            "bytes": 65010
+          },
+          "row": {
+            "source_id": "nps-public:bica:visitor-center",
+            "name": "Bighorn Canyon National Recreation Area \u2014 Cal S. Taggart Bighorn Canyon Visitor Center (Lovell, WY)",
+            "latitude": 44.837479952208064,
+            "longitude": -108.37667249937681,
+            "region": "WY",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "20 US Highway 14A East, Lovell, WY, 82431",
+            "url": "https://www.nps.gov/bica/planyourvisit/bighorn-canyon-visitor-center.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "bica",
+                "designation": "National Recreation Area",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2431",
+                "park_code": "bica",
+                "source_url": "https://www.nps.gov/bica/structured_data_bica.json",
+                "snapshot_sha256": "f5776dc621f6d539dfa2757785ce8cd518b37859bfa5c1c78fca1bc38767205f",
+                "checked_at": "2026-10-15T05:11:23.836765+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "The selected gateway facility is in Lovell, Wyoming; park lands also extend into Montana. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "8252c8641c1bed406a63e530aed96e4b97b3aaada1b9171c2b22bed7cafdb2e0",
+                "driving_snap_distance_m": 55.45305046,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "bicy",
+          "visitor_center_id": 6000,
+          "operation_evidence": {
+            "code": "bicy",
+            "url": "https://www.nps.gov/bicy/structured_data_bicy.json",
+            "retrieved_at": "2026-10-15T05:11:24.026102+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/bicy.json",
+            "sha256": "d77eef766156a2253b8d2f2a01a9435ea2f0d90bb790098fd31b338bd2f85532",
+            "bytes": 69237
+          },
+          "row": {
+            "source_id": "nps-public:bicy:visitor-center",
+            "name": "Big Cypress National Preserve \u2014 Oasis Visitor Center",
+            "latitude": 25.857293048500917,
+            "longitude": -81.03258097408633,
+            "region": "FL",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "52105 Tamiami Trail East, Ochopee, FL, 34141",
+            "url": "https://www.nps.gov/bicy/",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "bicy",
+                "designation": "National Preserve",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "6000",
+                "park_code": "bicy",
+                "source_url": "https://www.nps.gov/bicy/structured_data_bicy.json",
+                "snapshot_sha256": "d77eef766156a2253b8d2f2a01a9435ea2f0d90bb790098fd31b338bd2f85532",
+                "checked_at": "2026-10-15T05:11:24.026102+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Published schedule is labeled winter/in-season; reconfirm seasonal visitor-center hours. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "1fd5250edc5d76ceac2705d944532b76aa38c787cdc6e768e1830317e88e6f20",
+                "driving_snap_distance_m": 3.567749546,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "biso",
+          "visitor_center_id": 42,
+          "operation_evidence": {
+            "code": "biso",
+            "url": "https://www.nps.gov/biso/structured_data_biso.json",
+            "retrieved_at": "2026-10-15T05:11:24.066252+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/biso.json",
+            "sha256": "c9d28e2897829b5f09936f50d36d066b14733441ffecb33f34d455cbf3266b62",
+            "bytes": 84957
+          },
+          "row": {
+            "source_id": "nps-public:biso:visitor-center",
+            "name": "Big South Fork National River & Recreation Area \u2014 Bandy Creek Visitor Center",
+            "latitude": 36.4877129002,
+            "longitude": -84.6974761999,
+            "region": "TN",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "151 Stable Road, Oneida, TN, 37841",
+            "url": "https://www.nps.gov/biso/planyourvisit/visitorcenters.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "biso",
+                "designation": "National River & Recreation Area",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "42",
+                "park_code": "biso",
+                "source_url": "https://www.nps.gov/biso/structured_data_biso.json",
+                "snapshot_sha256": "c9d28e2897829b5f09936f50d36d066b14733441ffecb33f34d455cbf3266b62",
+                "checked_at": "2026-10-15T05:11:24.066252+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": " Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "e2d56da7203f220b489665f4be384f924f187b8c617ce5a2dcca37790ee5c882",
+                "driving_snap_distance_m": 23.39436043,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "bith",
+          "visitor_center_id": 98,
+          "operation_evidence": {
+            "code": "bith",
+            "url": "https://www.nps.gov/bith/structured_data_bith.json",
+            "retrieved_at": "2026-10-15T05:11:24.216589+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/bith.json",
+            "sha256": "8bc91b501bbd8fa40acba2896810f468a1203ea49fb9102aca8202c6f9bea50b",
+            "bytes": 20718
+          },
+          "row": {
+            "source_id": "nps-public:bith:visitor-center",
+            "name": "Big Thicket National Preserve \u2014 Big Thicket Visitor Center",
+            "latitude": 30.4583344542,
+            "longitude": -94.387404184,
+            "region": "TX",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "6102 FM 420, Kountze, TX, 77625",
+            "url": "https://www.nps.gov/bith/planyourvisit/visitor-center.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "bith",
+                "designation": "National Preserve",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "98",
+                "park_code": "bith",
+                "source_url": "https://www.nps.gov/bith/structured_data_bith.json",
+                "snapshot_sha256": "8bc91b501bbd8fa40acba2896810f468a1203ea49fb9102aca8202c6f9bea50b",
+                "checked_at": "2026-10-15T05:11:24.216589+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": " Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "6982884b962c40701a5e8e91e06768b674b135b35b366ce74333dceb5c6b7ed9",
+                "driving_snap_distance_m": 28.37958544,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "blri",
+          "visitor_center_id": 1288,
+          "operation_evidence": {
+            "code": "blri",
+            "url": "https://www.nps.gov/blri/structured_data_blri.json",
+            "retrieved_at": "2026-10-15T05:11:24.386200+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/blri.json",
+            "sha256": "f91041c1c71006eb9231664867911e89de2b5e7e49127aef54d89cb208cdbf8c",
+            "bytes": 191989
+          },
+          "row": {
+            "source_id": "nps-public:blri:visitor-center",
+            "name": "Blue Ridge Parkway \u2014 Blue Ridge Parkway Visitor Center (Milepost 384)",
+            "latitude": 35.56582264608358,
+            "longitude": -82.48632347368624,
+            "region": "NC",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "195 Hemphill Knob Rd, Asheville, NC, 28803",
+            "url": "https://www.nps.gov/blri/planyourvisit/blue-ridge-parkway-visitor-center.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "blri",
+                "designation": "Parkway",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "1288",
+                "park_code": "blri",
+                "source_url": "https://www.nps.gov/blri/structured_data_blri.json",
+                "snapshot_sha256": "f91041c1c71006eb9231664867911e89de2b5e7e49127aef54d89cb208cdbf8c",
+                "checked_at": "2026-10-15T05:11:24.386200+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Weather and road-section closures can affect Parkway access; this is the visitor-center arrival, not verified passage along the whole Parkway. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "6a5d052edd66b23d749ee2cf45f57f5aa5dcaab612bebf5fcc4e2e1b419e92bb",
+                "driving_snap_distance_m": 20.01918741,
+                "driving_road": "Hemphill Knob Road",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "buff",
+          "visitor_center_id": 2394,
+          "operation_evidence": {
+            "code": "buff",
+            "url": "https://www.nps.gov/buff/structured_data_buff.json",
+            "retrieved_at": "2026-10-15T05:11:24.593483+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/buff.json",
+            "sha256": "d6b0b9c83c6c375277ac5872cb1b8bd09d8126b254a04b6a71d9bb1d1b5ad0dc",
+            "bytes": 160137
+          },
+          "row": {
+            "source_id": "nps-public:buff:visitor-center",
+            "name": "Buffalo National River \u2014 Tyler Bend Visitor Center",
+            "latitude": 35.986547225,
+            "longitude": -92.7634170379,
+            "region": "AR",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "170 Ranger Road, St. Joe, AR, 72675",
+            "url": "https://www.nps.gov/buff/",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "buff",
+                "designation": "National River",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2394",
+                "park_code": "buff",
+                "source_url": "https://www.nps.gov/buff/structured_data_buff.json",
+                "snapshot_sha256": "d6b0b9c83c6c375277ac5872cb1b8bd09d8126b254a04b6a71d9bb1d1b5ad0dc",
+                "checked_at": "2026-10-15T05:11:24.593483+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": " Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "77c348112a6057f6fef855f7dd08d068fb0275fd0f01161463d7945359f9c8c9",
+                "driving_snap_distance_m": 26.94782915,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "caco",
+          "visitor_center_id": 2522,
+          "operation_evidence": {
+            "code": "caco",
+            "url": "https://www.nps.gov/caco/structured_data_caco.json",
+            "retrieved_at": "2026-10-15T05:11:24.701584+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/caco.json",
+            "sha256": "cbe04f5db880e0997193ab6495d53c09d9779960fbafabfbae06f29d86a98663",
+            "bytes": 42990
+          },
+          "row": {
+            "source_id": "nps-public:caco:visitor-center",
+            "name": "Cape Cod National Seashore \u2014 Salt Pond Visitor Center",
+            "latitude": 41.8372623997,
+            "longitude": -69.9727590999,
+            "region": "MA",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "50 Nauset Road, Eastham, MA, 02642",
+            "url": "https://www.nps.gov/caco/planyourvisit/visitorcenters.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "caco",
+                "designation": "National Seashore",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2522",
+                "park_code": "caco",
+                "source_url": "https://www.nps.gov/caco/structured_data_caco.json",
+                "snapshot_sha256": "cbe04f5db880e0997193ab6495d53c09d9779960fbafabfbae06f29d86a98663",
+                "checked_at": "2026-10-15T05:11:24.701584+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": " Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "6378784aa7231dcd0ac2f345652b5ebb8edfbf2b3437fdddc18dcaac9acff1bc",
+                "driving_snap_distance_m": 44.61829447,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "calo",
+          "visitor_center_id": 2478,
+          "operation_evidence": {
+            "code": "calo",
+            "url": "https://www.nps.gov/calo/structured_data_calo.json",
+            "retrieved_at": "2026-10-15T05:11:24.734822+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/calo.json",
+            "sha256": "b89a77e351976c92917aa06b9079174d40bc4569ae85a8c7f20eedbd83984cea",
+            "bytes": 84231
+          },
+          "row": {
+            "source_id": "nps-public:calo:visitor-center",
+            "name": "Cape Lookout National Seashore \u2014 Harkers Island Visitor Center",
+            "latitude": 34.685654145,
+            "longitude": -76.526237972,
+            "region": "NC",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "1800 Island Road, Harkers Island, NC, 28531",
+            "url": "https://www.nps.gov/calo/planyourvisit/visitorcenters.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "calo",
+                "designation": "National Seashore",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2478",
+                "park_code": "calo",
+                "source_url": "https://www.nps.gov/calo/structured_data_calo.json",
+                "snapshot_sha256": "b89a77e351976c92917aa06b9079174d40bc4569ae85a8c7f20eedbd83984cea",
+                "checked_at": "2026-10-15T05:11:24.734822+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Public Harkers Island mainland visitor center, picnic area and kayak launch. Offshore islands/light station require separate boat/ferry access; this is not a car arrival there. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "e8380f0ade7410c213e9957a4fbbc45039b50e1a24a7136de914663bd529eaa4",
+                "driving_snap_distance_m": 35.10813724,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "cure",
+          "visitor_center_id": 5768,
+          "operation_evidence": {
+            "code": "cure",
+            "url": "https://www.nps.gov/cure/structured_data_cure.json",
+            "retrieved_at": "2026-10-15T05:11:25.091928+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/cure.json",
+            "sha256": "2522d69f5bc8056713fd0b22e4de2459e9676820ae0c2b6922f4835e152a3540",
+            "bytes": 86209
+          },
+          "row": {
+            "source_id": "nps-public:cure:visitor-center",
+            "name": "Curecanti National Recreation Area \u2014 Elk Creek Visitor Center",
+            "latitude": 38.46700185248004,
+            "longitude": -107.16580068067412,
+            "region": "CO",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "102 Elk Creek, Gunnison, CO, 81230-9260",
+            "url": "https://www.nps.gov/cure/",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "cure",
+                "designation": "National Recreation Area",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "5768",
+                "park_code": "cure",
+                "source_url": "https://www.nps.gov/cure/structured_data_cure.json",
+                "snapshot_sha256": "2522d69f5bc8056713fd0b22e4de2459e9676820ae0c2b6922f4835e152a3540",
+                "checked_at": "2026-10-15T05:11:25.091928+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Published winter visitor-center hours are Monday\u2013Friday; verify seasonal hours. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "2e19247a7efcf3cc88c6238b7a1aa57ef409e6f34f60fdc3809ebdb282d67692",
+                "driving_snap_distance_m": 31.91739045,
+                "driving_road": "Elk Creek Road",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "gate",
+          "visitor_center_id": 2536,
+          "operation_evidence": {
+            "code": "gate",
+            "url": "https://www.nps.gov/gate/structured_data_gate.json",
+            "retrieved_at": "2026-10-15T05:11:25.389785+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/gate.json",
+            "sha256": "bdfd9855f1989b650f16c2c524863ca4e3eb23a7ac2e57fe2138589b0c2b2d4d",
+            "bytes": 49247
+          },
+          "row": {
+            "source_id": "nps-public:gate:visitor-center",
+            "name": "Gateway National Recreation Area \u2014 Jamaica Bay Wildlife Refuge Visitor Center",
+            "latitude": 40.616787,
+            "longitude": -73.824831,
+            "region": "NY",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "175-10 Cross Bay Blvd, Broad Channel, NY, 11693",
+            "url": "https://www.nps.gov/gate/",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "gate",
+                "designation": "National Recreation Area",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2536",
+                "park_code": "gate",
+                "source_url": "https://www.nps.gov/gate/structured_data_gate.json",
+                "snapshot_sha256": "bdfd9855f1989b650f16c2c524863ca4e3eb23a7ac2e57fe2138589b0c2b2d4d",
+                "checked_at": "2026-10-15T05:11:25.389785+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Jamaica Bay visitor-center building publishes weekend hours; grounds/building hours differ. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "8d31c682587e91f82670c975bae238d3eb5e05f3101b4afb880b7098b63c2f31",
+                "driving_snap_distance_m": 21.58988558,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "glca",
+          "visitor_center_id": 1223,
+          "operation_evidence": {
+            "code": "glca",
+            "url": "https://www.nps.gov/glca/structured_data_glca.json",
+            "retrieved_at": "2026-10-15T05:11:25.455919+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/glca.json",
+            "sha256": "c14135bfb46075bd2130728f0366e566fba38d299c52cfc16cb504f2e3605f17",
+            "bytes": 183054
+          },
+          "row": {
+            "source_id": "nps-public:glca:visitor-center",
+            "name": "Glen Canyon National Recreation Area \u2014 Carl Hayden Visitor Center",
+            "latitude": 36.93574646743254,
+            "longitude": -111.48559426771328,
+            "region": "AZ",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "Hwy 89 at Glen Canyon Dam, Page, AZ, 86040",
+            "url": "https://www.nps.gov/glca/planyourvisit/visitorcenters.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "glca",
+                "designation": "National Recreation Area",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "1223",
+                "park_code": "glca",
+                "source_url": "https://www.nps.gov/glca/structured_data_glca.json",
+                "snapshot_sha256": "c14135bfb46075bd2130728f0366e566fba38d299c52cfc16cb504f2e3605f17",
+                "checked_at": "2026-10-15T05:11:25.455919+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "The visitor center is public; the operator reports Glen Canyon Dam tours closed. No dam tour access is included. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "9b8f845fac7936b57bdc615adea91ca88394aea43df3514b95898f8586e3004a",
+                "driving_snap_distance_m": 45.53621469,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "goga",
+          "visitor_center_id": 1203,
+          "operation_evidence": {
+            "code": "goga",
+            "url": "https://www.nps.gov/goga/structured_data_goga.json",
+            "retrieved_at": "2026-10-15T05:11:25.458075+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/goga.json",
+            "sha256": "68a7256f21792fa22072aec120cd7c673899dda6420db2c3dab6887c3e5c0334",
+            "bytes": 92063
+          },
+          "row": {
+            "source_id": "nps-public:goga:visitor-center",
+            "name": "Golden Gate National Recreation Area \u2014 Lands End Lookout Visitor Center",
+            "latitude": 37.7797300961,
+            "longitude": -122.511611527,
+            "region": "CA",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "680 Point Lobos Ave, San Francisco, CA, 94121",
+            "url": "https://www.nps.gov/goga/planyourvisit/landsend.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "goga",
+                "designation": "National Recreation Area",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "1203",
+                "park_code": "goga",
+                "source_url": "https://www.nps.gov/goga/structured_data_goga.json",
+                "snapshot_sha256": "68a7256f21792fa22072aec120cd7c673899dda6420db2c3dab6887c3e5c0334",
+                "checked_at": "2026-10-15T05:11:25.458075+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": " Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "be2d9ba04a3823c86ebc83035e01d7ef6126c46107584aeb4dc89987e64e33db",
+                "driving_snap_distance_m": 21.92448525,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "guis",
+          "visitor_center_id": 1317,
+          "operation_evidence": {
+            "code": "guis",
+            "url": "https://www.nps.gov/guis/structured_data_guis.json",
+            "retrieved_at": "2026-10-15T05:11:25.567283+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/guis.json",
+            "sha256": "daac38635e25b5472ad80874d0bc28e446eff373aec0d9f0a55adbab4848ee71",
+            "bytes": 97676
+          },
+          "row": {
+            "source_id": "nps-public:guis:visitor-center",
+            "name": "Gulf Islands National Seashore \u2014 William M. Colmer Visitor Center",
+            "latitude": 30.391964049,
+            "longitude": -88.790993477,
+            "region": "MS",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "3500 Park Road, Ocean Springs, MS, 39564",
+            "url": "https://www.nps.gov/guis/planyourvisit/davis-bayou-area.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "guis",
+                "designation": "National Seashore",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "1317",
+                "park_code": "guis",
+                "source_url": "https://www.nps.gov/guis/structured_data_guis.json",
+                "snapshot_sha256": "daac38635e25b5472ad80874d0bc28e446eff373aec0d9f0a55adbab4848ee71",
+                "checked_at": "2026-10-15T05:11:25.567283+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Selected Davis Bayou facility is explicitly in Mississippi; Florida park headquarters is not used as its jurisdiction. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "55549fa8cfff3b8d882697fc3fae2ba36f63a09077b36dc25adcbf58ee389d6f",
+                "driving_snap_distance_m": 51.06155128,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "lake",
+          "visitor_center_id": 103,
+          "operation_evidence": {
+            "code": "lake",
+            "url": "https://www.nps.gov/lake/structured_data_lake.json",
+            "retrieved_at": "2026-10-15T05:11:25.916249+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/lake.json",
+            "sha256": "57da1619ff5fc2dfb8ff6cbd11bf5734463faec92a4b9b30e2fb2c9955ea1e6b",
+            "bytes": 121350
+          },
+          "row": {
+            "source_id": "nps-public:lake:visitor-center",
+            "name": "Lake Mead National Recreation Area \u2014 Lake Mead Visitor Center",
+            "latitude": 36.0100506879,
+            "longitude": -114.796778762,
+            "region": "NV",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "10 Lakeshore Road, Boulder City, NV, 89005",
+            "url": "https://www.nps.gov/lake/planyourvisit/visitorcenters.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "lake",
+                "designation": "National Recreation Area",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "103",
+                "park_code": "lake",
+                "source_url": "https://www.nps.gov/lake/structured_data_lake.json",
+                "snapshot_sha256": "57da1619ff5fc2dfb8ff6cbd11bf5734463faec92a4b9b30e2fb2c9955ea1e6b",
+                "checked_at": "2026-10-15T05:11:25.916249+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": " Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "a6ab6f14a96f6801b79b0d7504257265d3c2d9d09d60828379ec05e195dd8987",
+                "driving_snap_distance_m": 22.58391284,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "liri",
+          "visitor_center_id": 64,
+          "operation_evidence": {
+            "code": "liri",
+            "url": "https://www.nps.gov/liri/structured_data_liri.json",
+            "retrieved_at": "2026-10-15T05:11:26.071901+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/liri.json",
+            "sha256": "df6a5f1445ffdcf324c74ee7714d20f90e876c21eb64cd2557cfe5e3fcdcf6eb",
+            "bytes": 81006
+          },
+          "row": {
+            "source_id": "nps-public:liri:visitor-center",
+            "name": "Little River Canyon National Preserve \u2014 Jacksonville State University Little River Canyon Center",
+            "latitude": 34.3989183471,
+            "longitude": -85.6339173748,
+            "region": "AL",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "472 Alabama Highway 35, Fort Payne, AL, 35967",
+            "url": "https://www.nps.gov/liri/",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "liri",
+                "designation": "National Preserve",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "64",
+                "park_code": "liri",
+                "source_url": "https://www.nps.gov/liri/structured_data_liri.json",
+                "snapshot_sha256": "df6a5f1445ffdcf324c74ee7714d20f90e876c21eb64cd2557cfe5e3fcdcf6eb",
+                "checked_at": "2026-10-15T05:11:26.071901+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "University/NPS partner visitor center; publisher warns of GPS address variations. Use official directions and the unchanged facility point. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "30813de3930f668dc1a258792935bdfeb65481f70972d1f76413d80dad137866",
+                "driving_snap_distance_m": 17.87989314,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "neri",
+          "visitor_center_id": 2373,
+          "operation_evidence": {
+            "code": "neri",
+            "url": "https://www.nps.gov/neri/structured_data_neri.json",
+            "retrieved_at": "2026-10-15T05:11:26.429785+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/neri.json",
+            "sha256": "f53ea27ec26374e1fc5e2f45ad9a17fa5fbb8ade6782e0fed43d02fa8bfbc219",
+            "bytes": 112368
+          },
+          "row": {
+            "source_id": "nps-public:neri:visitor-center",
+            "name": "New River Gorge National Park & Preserve \u2014 Canyon Rim Visitor Center",
+            "latitude": 38.070050800525664,
+            "longitude": -81.07593529999019,
+            "region": "WV",
+            "categories": [
+              "daytime",
+              "national_park",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "162 Visitor Center Road, Lansing, WV, 25862",
+            "url": "https://www.nps.gov/neri/planyourvisit/crvc.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "neri",
+                "designation": "National Park & Preserve",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2373",
+                "park_code": "neri",
+                "source_url": "https://www.nps.gov/neri/structured_data_neri.json",
+                "snapshot_sha256": "f53ea27ec26374e1fc5e2f45ad9a17fa5fbb8ade6782e0fed43d02fa8bfbc219",
+                "checked_at": "2026-10-15T05:11:26.429785+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "national_parks",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": " Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "3dbe760915aa738082f87ec86051f3105476bf87aa23db7ba634de756bf4f3ff",
+                "driving_snap_distance_m": 39.38423979,
+                "driving_road": "Visitors Center Road / Visitors Center Road",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "niob",
+          "visitor_center_id": 27,
+          "operation_evidence": {
+            "code": "niob",
+            "url": "https://www.nps.gov/niob/structured_data_niob.json",
+            "retrieved_at": "2026-10-15T05:11:26.464613+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/niob.json",
+            "sha256": "c0e4f27c8023bf5838def2bd3420838a9c58d5b9e78cfe3b6083223e7bfc6b14",
+            "bytes": 32663
+          },
+          "row": {
+            "source_id": "nps-public:niob:visitor-center",
+            "name": "Niobrara National Scenic River \u2014 Niobrara National Scenic River Visitor Center",
+            "latitude": 42.8682584735,
+            "longitude": -100.5553722382,
+            "region": "NE",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "214 W. Highway 20, Valentine, NE, 69201",
+            "url": "https://www.nps.gov/niob/index.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "niob",
+                "designation": "National Scenic River",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "27",
+                "park_code": "niob",
+                "source_url": "https://www.nps.gov/niob/structured_data_niob.json",
+                "snapshot_sha256": "c0e4f27c8023bf5838def2bd3420838a9c58d5b9e78cfe3b6083223e7bfc6b14",
+                "checked_at": "2026-10-15T05:11:26.464613+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Summer/off-season visitor-center schedules differ; river outfitters, transport and water access are separate. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "0429a06ca9ac05a1e6ad1ae77fb36cca0ed1a92244ec7d66ddcba89d83318e8d",
+                "driving_snap_distance_m": 41.80861301,
+                "driving_road": "West C Street",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "obed",
+          "visitor_center_id": 38,
+          "operation_evidence": {
+            "code": "obed",
+            "url": "https://www.nps.gov/obed/structured_data_obed.json",
+            "retrieved_at": "2026-10-15T05:11:26.659863+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/obed.json",
+            "sha256": "1f163b8f6bdb2190a43114ccba4a1ee07a93df792764d4b9f020321334556462",
+            "bytes": 22767
+          },
+          "row": {
+            "source_id": "nps-public:obed:visitor-center",
+            "name": "Obed Wild & Scenic River \u2014 Obed Visitor Center",
+            "latitude": 36.10621404699341,
+            "longitude": -84.59852197391695,
+            "region": "TN",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "208 North Maiden Street, Wartburg, TN, 37887",
+            "url": "https://www.nps.gov/obed/planyourvisit/visitorcenters.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "obed",
+                "designation": "Wild & Scenic River",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "38",
+                "park_code": "obed",
+                "source_url": "https://www.nps.gov/obed/structured_data_obed.json",
+                "snapshot_sha256": "1f163b8f6bdb2190a43114ccba4a1ee07a93df792764d4b9f020321334556462",
+                "checked_at": "2026-10-15T05:11:26.659863+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": " Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "40cc4137f2a3018e6bed1b65fa7a715452e0f8a6c41e8070daa4e93cda556c00",
+                "driving_snap_distance_m": 9.534061321,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "nature-02",
+      "records": [
+        {
+          "unit_code": "ozar",
+          "visitor_center_id": 5983,
+          "operation_evidence": {
+            "code": "ozar",
+            "url": "https://www.nps.gov/ozar/structured_data_ozar.json",
+            "retrieved_at": "2026-10-15T05:11:26.676109+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/ozar.json",
+            "sha256": "caf5c72e4ab8bdd4b302da612b95db3a62b863871f8cb0e6b9709111b784895c",
+            "bytes": 247434
+          },
+          "row": {
+            "source_id": "nps-public:ozar:visitor-center",
+            "name": "Ozark National Scenic Riverways \u2014 Big Spring Entrance Station",
+            "latitude": 36.947673229367595,
+            "longitude": -91.00137339949832,
+            "region": "MO",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "Highway 103, Van Buren, MO, 63965",
+            "url": "https://www.nps.gov/ozar/planyourvisit/big-spring.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "ozar",
+                "designation": "National Scenic Riverways",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "5983",
+                "park_code": "ozar",
+                "source_url": "https://www.nps.gov/ozar/structured_data_ozar.json",
+                "snapshot_sha256": "caf5c72e4ab8bdd4b302da612b95db3a62b863871f8cb0e6b9709111b784895c",
+                "checked_at": "2026-10-15T05:11:26.676109+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Big Spring welcome/entrance station has visitor parking; fall/winter building hours exclude weekends and federal holidays. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "b2aa9dca5557298e65072c07982f0c3866f8ee9e12fbc4199235b0c2ef18cf43",
+                "driving_snap_distance_m": 10.92645177,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "pais",
+          "visitor_center_id": 2515,
+          "operation_evidence": {
+            "code": "pais",
+            "url": "https://www.nps.gov/pais/structured_data_pais.json",
+            "retrieved_at": "2026-10-15T05:11:26.782234+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/pais.json",
+            "sha256": "c425033fea536ec19d910f71200e1b1ff6263d4462e205611a50673166cb5df3",
+            "bytes": 68031
+          },
+          "row": {
+            "source_id": "nps-public:pais:visitor-center",
+            "name": "Padre Island National Seashore \u2014 Malaquite Visitor Center",
+            "latitude": 27.424191,
+            "longitude": -97.299053,
+            "region": "TX",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "Malaquite Visitor Center, 20420 Park Road 22, Corpus Christi, TX, 78418",
+            "url": "https://www.nps.gov/pais/planyourvisit/visitor-center.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "pais",
+                "designation": "National Seashore",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2515",
+                "park_code": "pais",
+                "source_url": "https://www.nps.gov/pais/structured_data_pais.json",
+                "snapshot_sha256": "c425033fea536ec19d910f71200e1b1ff6263d4462e205611a50673166cb5df3",
+                "checked_at": "2026-10-15T05:11:26.782234+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Visitor-center deck/ramp provides access toward Malaquite Beach; this record remains a visitor arrival, not a new beach-parking classification. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "2d2ea197520fba94b11ac706394f195aa7eebd169fa2053cc1527da063781f8d",
+                "driving_snap_distance_m": 36.35307645,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "piro",
+          "visitor_center_id": 5688,
+          "operation_evidence": {
+            "code": "piro",
+            "url": "https://www.nps.gov/piro/structured_data_piro.json",
+            "retrieved_at": "2026-10-15T05:11:26.789669+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/piro.json",
+            "sha256": "e6c000b550eb90683f70248b068d7fc04ea214c89106e5015ca413f540d9f027",
+            "bytes": 151305
+          },
+          "row": {
+            "source_id": "nps-public:piro:visitor-center",
+            "name": "Pictured Rocks National Lakeshore \u2014 Munising Falls Visitor Center",
+            "latitude": 46.423706501849196,
+            "longitude": -86.62383313060127,
+            "region": "MI",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "1505 Sand Point Road, Munising, MI, 49862",
+            "url": "https://www.nps.gov/piro/planyourvisit/visitorcenters.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "piro",
+                "designation": "National Lakeshore",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "5688",
+                "park_code": "piro",
+                "source_url": "https://www.nps.gov/piro/structured_data_piro.json",
+                "snapshot_sha256": "e6c000b550eb90683f70248b068d7fc04ea214c89106e5015ca413f540d9f027",
+                "checked_at": "2026-10-15T05:11:26.789669+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Winter/holiday schedules vary; consult current visitor-center and road conditions. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "9277e32d10e1b3d928c86dd53eb298b5cd324b06938a641025fb6d59f998d7a4",
+                "driving_snap_distance_m": 34.02220937,
+                "driving_road": "Munising Falls Parking Area",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "sacn",
+          "visitor_center_id": 2449,
+          "operation_evidence": {
+            "code": "sacn",
+            "url": "https://www.nps.gov/sacn/structured_data_sacn.json",
+            "retrieved_at": "2026-10-15T05:11:26.884615+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/sacn.json",
+            "sha256": "8adaafd5c95ea150da35d96fd4d8aa69f0c3d081b0ced235bca7a0eb003fb78f",
+            "bytes": 38686
+          },
+          "row": {
+            "source_id": "nps-public:sacn:visitor-center",
+            "name": "Saint Croix National Scenic Riverway \u2014 St. Croix River Visitor Center",
+            "latitude": 45.41615500012723,
+            "longitude": -92.64648199944116,
+            "region": "WI",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "401 North Hamilton St., St. Croix Falls, WI, 54024",
+            "url": "https://www.nps.gov/sacn/planyourvisit/visitor-centers.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "sacn",
+                "designation": "National Scenic Riverway",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2449",
+                "park_code": "sacn",
+                "source_url": "https://www.nps.gov/sacn/structured_data_sacn.json",
+                "snapshot_sha256": "8adaafd5c95ea150da35d96fd4d8aa69f0c3d081b0ced235bca7a0eb003fb78f",
+                "checked_at": "2026-10-15T05:11:26.884615+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Public visitor center operates mid-April\u2013October and closes November 1\u2013mid-April. No winter opening is asserted. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "99432286e199de48c7d155c501a0bac3165a0fd60690bc0c45fee789fc637b70",
+                "driving_snap_distance_m": 21.91357541,
+                "driving_road": "North Hamilton Street",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "samo",
+          "visitor_center_id": 2455,
+          "operation_evidence": {
+            "code": "samo",
+            "url": "https://www.nps.gov/samo/structured_data_samo.json",
+            "retrieved_at": "2026-10-15T05:11:26.938237+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/samo.json",
+            "sha256": "392b5c218ae048ac2ff6fb49727ca9942010bfbffe224950ea6ef64978770eb1",
+            "bytes": 35272
+          },
+          "row": {
+            "source_id": "nps-public:samo:visitor-center",
+            "name": "Santa Monica Mountains National Recreation Area \u2014 Santa Monica Mountains Anthony C. Beilenson Interagency Visitor Center",
+            "latitude": 34.1028431142,
+            "longitude": -118.707515784,
+            "region": "CA",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "26876 Mulholland Highway, Calabasas, CA, 91302",
+            "url": "https://www.nps.gov/samo/planyourvisit/visitor-center.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "samo",
+                "designation": "National Recreation Area",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2455",
+                "park_code": "samo",
+                "source_url": "https://www.nps.gov/samo/structured_data_samo.json",
+                "snapshot_sha256": "392b5c218ae048ac2ff6fb49727ca9942010bfbffe224950ea6ef64978770eb1",
+                "checked_at": "2026-10-15T05:11:26.938237+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Visitor-center building publishes Wednesday\u2013Sunday hours. Adjacent parking has a two-hour limit; additional parking may require payment. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "ec6dafd399d93b23e3cc3b953ca788294bdbf1c3fb33cd4191320edcb43c6c41",
+                "driving_snap_distance_m": 45.65139781,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "slbe",
+          "visitor_center_id": 2379,
+          "operation_evidence": {
+            "code": "slbe",
+            "url": "https://www.nps.gov/slbe/structured_data_slbe.json",
+            "retrieved_at": "2026-10-15T05:11:27.026599+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/slbe.json",
+            "sha256": "a1ca2100ea90324d9e3d6af742b7074fc945f0fe559dd19826880d8ebc33f576",
+            "bytes": 128914
+          },
+          "row": {
+            "source_id": "nps-public:slbe:visitor-center",
+            "name": "Sleeping Bear Dunes National Lakeshore \u2014 Philip A. Hart Visitor Center",
+            "latitude": 44.81153454723621,
+            "longitude": -86.05620324611664,
+            "region": "MI",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "Empire, MI, 49630",
+            "url": "https://www.nps.gov/slbe/planyourvisit/visitorcenters.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "slbe",
+                "designation": "National Lakeshore",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2379",
+                "park_code": "slbe",
+                "source_url": "https://www.nps.gov/slbe/structured_data_slbe.json",
+                "snapshot_sha256": "a1ca2100ea90324d9e3d6af742b7074fc945f0fe559dd19826880d8ebc33f576",
+                "checked_at": "2026-10-15T05:11:27.026599+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": " Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "350edddf612f8a509252f08280c70f6e5955ed77354cf14505be02ea80110c8d",
+                "driving_snap_distance_m": 26.89864428,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "tapr",
+          "visitor_center_id": 76,
+          "operation_evidence": {
+            "code": "tapr",
+            "url": "https://www.nps.gov/tapr/structured_data_tapr.json",
+            "retrieved_at": "2026-10-15T05:11:27.088026+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/tapr.json",
+            "sha256": "829be02f1545e9a571b9e45efe39cb3bd9624c2080b267050e09e82cffc4c7d2",
+            "bytes": 45907
+          },
+          "row": {
+            "source_id": "nps-public:tapr:visitor-center",
+            "name": "Tallgrass Prairie National Preserve \u2014 Tallgrass Prairie National Preserve Visitor Center",
+            "latitude": 38.43221402186521,
+            "longitude": -96.55830340244674,
+            "region": "KS",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "2480B KS Hwy 177, Strong City, KS, 66869",
+            "url": "https://www.nps.gov/tapr/planyourvisit/visitor-center.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "tapr",
+                "designation": "National Preserve",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "76",
+                "park_code": "tapr",
+                "source_url": "https://www.nps.gov/tapr/structured_data_tapr.json",
+                "snapshot_sha256": "829be02f1545e9a571b9e45efe39cb3bd9624c2080b267050e09e82cffc4c7d2",
+                "checked_at": "2026-10-15T05:11:27.088026+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Summer/winter schedules differ; the visitor center closes Mondays/Tuesdays in winter while some historic buildings have different hours. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "14b7ffe55b3dacfce83dd8ab31dd75f48302ff8fc93554aebee1a08be284a82e",
+                "driving_snap_distance_m": 38.38389288,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "whis",
+          "visitor_center_id": 2409,
+          "operation_evidence": {
+            "code": "whis",
+            "url": "https://www.nps.gov/whis/structured_data_whis.json",
+            "retrieved_at": "2026-10-15T05:11:27.950440+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/whis.json",
+            "sha256": "7111053d45edfb5835510357226da9f0aae472843317430ebcce5971871d81d2",
+            "bytes": 88964
+          },
+          "row": {
+            "source_id": "nps-public:whis:visitor-center",
+            "name": "Whiskeytown National Recreation Area \u2014 Whiskeytown Visitor Center",
+            "latitude": 40.6150317855,
+            "longitude": -122.520174756,
+            "region": "CA",
+            "categories": [
+              "daytime",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "14412 Kennedy Memorial Drive, Whiskeytown, CA, 96095",
+            "url": "https://www.nps.gov/whis/planyourvisit/visitorcenters.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "whis",
+                "designation": "National Recreation Area",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "2409",
+                "park_code": "whis",
+                "source_url": "https://www.nps.gov/whis/structured_data_whis.json",
+                "snapshot_sha256": "7111053d45edfb5835510357226da9f0aae472843317430ebcce5971871d81d2",
+                "checked_at": "2026-10-15T05:11:27.950440+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "nature",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": " Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "3b566995421d67cd5cab00c718d7d597f9945b8b5c98b0518e0718b0e32c7d7c",
+                "driving_snap_distance_m": 22.68852915,
+                "driving_road": "Whiskeytown Lake Visitors Center",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        },
+        {
+          "unit_code": "whsa",
+          "visitor_center_id": 99,
+          "operation_evidence": {
+            "code": "whsa",
+            "url": "https://www.nps.gov/whsa/structured_data_whsa.json",
+            "retrieved_at": "2026-10-15T05:11:27.984439+00:00",
+            "status": 200,
+            "path": "/workspace/catalog-nps-nature-20261015/snapshots/whsa.json",
+            "sha256": "7296638d1d2abe5bbb08348d0d181d2eda2c83cc41b4a7c96875f574c89b8796",
+            "bytes": 35637
+          },
+          "row": {
+            "source_id": "nps-public:whsa:visitor-center",
+            "name": "White Sands National Park \u2014 White Sands Visitor Center",
+            "latitude": 32.77965936894379,
+            "longitude": -106.17239080844018,
+            "region": "NM",
+            "categories": [
+              "daytime",
+              "national_park",
+              "nature",
+              "visitor_center"
+            ],
+            "address": "19955 Hwy 70 W., Alamogordo, NM, 88310",
+            "url": "https://www.nps.gov/whsa/planyourvisit/visitor-center.htm",
+            "source_updated_at": null,
+            "provenance": [
+              {
+                "dataset": "National Park Service public unit inventory",
+                "record_id": "whsa",
+                "designation": "National Park",
+                "source_url": "https://carto.nps.gov/user/parktiles/api/v2/sql",
+                "snapshot_sha256": "edb47cebd2274266bc751047817cbf50d1c2d9908c4dde0d040e6ddacc5d94a2",
+                "license": "LicenseRef-US-Government-Work",
+                "cartographic_geometry_used": false,
+                "cartographic_label_state_used_for_facility": false
+              },
+              {
+                "dataset": "National Park Service structured visitor facility",
+                "record_id": "99",
+                "park_code": "whsa",
+                "source_url": "https://www.nps.gov/whsa/structured_data_whsa.json",
+                "snapshot_sha256": "7296638d1d2abe5bbb08348d0d181d2eda2c83cc41b4a7c96875f574c89b8796",
+                "checked_at": "2026-10-15T05:11:27.984439+00:00",
+                "license": "LicenseRef-US-Government-Work",
+                "arrival_type": "visitor_center",
+                "arrival_state_source": "NPS facility physical address",
+                "primary_category": "national_parks",
+                "auto_parking_listed": true,
+                "operation_basis": "published visitor facility and nonempty weekly schedule; future access and dated hours unknown",
+                "limitations": "Visitor-center arrival, not a guarantee that Dunes Drive or US-70 remains accessible during missile testing or other restrictions. Check current facility hours, seasonal/road closures, reservations, fees and parking restrictions before travel; future access and parking availability are unknown.",
+                "profile": "nps-nature-visitors/1",
+                "coordinate_source": "original NPS visitor-facility coordinate; unchanged",
+                "driving_evidence_sha256": "449dfc2b5bdb4075dcece4341c1fd8109dc4d3970041d9701df052cc29992fb7",
+                "driving_response_sha256": "06a07dff136a7c992a91b924ee05c6451d90a4b5930f26bd20cb80130c546849",
+                "driving_snap_distance_m": 40.64344498,
+                "driving_road": "",
+                "opening_hours_imported": false
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

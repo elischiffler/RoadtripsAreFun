@@ -14,6 +14,7 @@
 !scripts/catalog_roadside_manifest.py
 !scripts/catalog_mix.py
 !scripts/catalog_expansion_manifest.py
+!scripts/catalog_nature_manifest.py
 !docs/
 !docs/data/
 !docs/data/catalog-expansion-20261015/
