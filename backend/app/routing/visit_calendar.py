@@ -140,7 +140,7 @@ def source_calendar(record: dict) -> Calendar | None:
 
 
 def requires_calendar(record: dict) -> bool:
-    """Identify timed venues; ordinary outdoor legacy records keep explicit unknown hours."""
+    """Identify timed venues; ordinary outdoor records keep explicit unknown hours."""
     return (
         str(record.get("provider_id", "")).startswith(("usda-market:", "wikidata-park:"))
         or bool(set(record.get("categories", [])) & {"food", "culture", "nightlife"})
@@ -236,10 +236,6 @@ def solve_visit(record: dict, earliest: datetime, deadline: datetime, *, dwell=N
     if not math.isfinite(dwell) or dwell <= 0:
         raise VisitCalendarConflict(record.get("provider_id", "unknown"), "invalid visit duration")
     if not requires_calendar(record):
-        if record.get("visit_duration") is not None:
-            raise VisitCalendarConflict(
-                record.get("provider_id", "unknown"), "new estimated visits require verified hours"
-            )
         return earliest, {"status": "unknown", "ticket_availability": "unknown"}
     provider_id = record.get("provider_id", "unknown")
     calendar = source_calendar(record)

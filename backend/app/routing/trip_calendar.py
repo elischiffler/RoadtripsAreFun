@@ -38,7 +38,7 @@ def possible_visit(record, departure: datetime, zone: ZoneInfo, *, dwell=None) -
     if not calendar_eligible(record):
         return False
     if not requires_calendar(record):
-        return record.get("visit_duration") is None
+        return True
     if departure.tzinfo is None or not isinstance(zone, ZoneInfo):
         return False
     calendar = source_calendar(record)
@@ -77,14 +77,12 @@ def possible_visit(record, departure: datetime, zone: ZoneInfo, *, dwell=None) -
 class TripCalendar:
     departure: datetime
     timezone_at: Callable[[list[float]], Awaitable[str]] | None
-    require_verified_hours: bool = False
 
     def snapshot(self):
         return {
             "departure": self.departure.isoformat(),
             "maximum_overnights": MAX_TRIP_OVERNIGHTS,
             "timezone_source": "candidate_provider",
-            "require_verified_hours": self.require_verified_hours,
             "scope": "necessary_full_dwell_window; final_itinerary_validation_required",
         }
 
@@ -92,7 +90,8 @@ class TripCalendar:
         if not calendar_eligible(record):
             return False
         if not requires_calendar(record):
-            return not self.require_verified_hours and record.get("visit_duration") is None
+            visit_seconds(record)  # Validate estimates without inventing outdoor hours.
+            return True
         if self.timezone_at is None:
             return False
         coordinates = record["coordinates"]

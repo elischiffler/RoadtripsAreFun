@@ -24,17 +24,21 @@ the current source-calendar or actual-road validation.
 `visit_duration` in route/itinerary JSON carries schema version, elapsed seconds,
 source and reason. The shared validator reads that value for requested-trip
 feasibility, CP-SAT opening windows, initial scheduling, final actual-road timing
-and itinerary reconstruction. Unknown/malformed source hours and explicit holds
-are ineligible for new plans. The discovery minimum is 15 minutes until an
+and itinerary reconstruction. Existing calendar policy is preserved: ordinary
+outdoor places without required calendars remain eligible with explicitly unknown
+hours; adding an estimate never invents or verifies hours. Timed venues still
+require usable calendars, malformed/explicitly held calendars remain ineligible,
+and full visits must fit any published window and the daily cutoff. The
+discovery minimum is 15 minutes until an
 estimate is available, followed by a full exact-dwell check. Fallback-feasible
 records get priority before bounded discovery/rating quotas so narrow windows
 cannot crowd out a usable fallback plan.
 
 Saved stops without this optional metadata retain the prior two-hour policy;
 no trip or database migration is required. Explicit malformed duration metadata
-is rejected rather than silently shortening an existing visit. Old untimed trips
-keep their labeled unknown-hours behavior. Regenerating a route creates a new
-plan and uses the new verified-hours requirement.
+is rejected rather than silently shortening an existing visit. Both saved and
+new untimed outdoor trips keep their labeled unknown-hours behavior; estimated
+dwell still counts in scheduling, final road validation and leaving times.
 
 Route and itinerary place cards share a formatter for arrival and leaving,
 including local date, IANA zone and UTC offset. Leaving carries the AI/fallback

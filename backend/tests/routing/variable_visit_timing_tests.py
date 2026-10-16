@@ -103,15 +103,18 @@ def test_variable_dwell_cannot_bypass_an_explicit_calendar_hold_or_fixed_start()
 
 
 @pytest.mark.asyncio
-async def test_new_estimated_visits_require_verified_hours_but_saved_untimed_trips_remain_compatible():
+async def test_estimates_preserve_the_deliberate_unknown_outdoor_policy():
     start = instant("2030-07-01T09:00")
     legacy = {"provider_id": "synthetic:legacy-outdoor", "coordinates": [34, -118]}
     assert solve_visit(legacy, start, start.replace(hour=20))[1]["status"] == "unknown"
     new = {**legacy, "visit_duration": duration(3600)}
-    with pytest.raises(VisitCalendarConflict, match="verified hours"):
-        solve_visit(new, start, start.replace(hour=20))
-    assert not possible_visit(new, start, ZONE)
-    assert not await TripCalendar(start, None, require_verified_hours=True).eligible(legacy)
+    arrival, availability = solve_visit(new, start, start.replace(hour=20))
+    assert arrival == start and availability == {
+        "status": "unknown",
+        "ticket_availability": "unknown",
+    }
+    assert possible_visit(new, start, ZONE)
+    assert await TripCalendar(start, None).eligible(new)
 
 
 def test_midnight_window_fits_entire_visit_and_next_day_closure_is_binding():

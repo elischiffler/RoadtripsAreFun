@@ -68,7 +68,7 @@ async def test_cached_short_estimate_never_bypasses_a_new_hold(identifier):
     async def zone(_point):
         return "America/Phoenix"
 
-    assert not await TripCalendar(START, zone, require_verified_hours=True).eligible(second[0])
+    assert not await TripCalendar(START, zone).eligible(second[0])
     with pytest.raises(VisitCalendarConflict):
         solve_visit(second[0], START, START.replace(hour=17))
 

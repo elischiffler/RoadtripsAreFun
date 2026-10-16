@@ -49,9 +49,7 @@ class CPSatPlanner(RoutePlanner):
         if services.timezone_at is not None:
             lon, lat = initial_route.geometry.coordinates[0]
             departure = local_time(departure, ZoneInfo(await services.timezone_at([lat, lon])))
-        discovery_plan.trip_calendar = TripCalendar(
-            departure, services.timezone_at, require_verified_hours=True
-        )
+        discovery_plan.trip_calendar = TripCalendar(departure, services.timezone_at)
         query_points = [query.coordinates for query in discovery_plan.queries]
         record_explanation(weights=options.weights or {})
         emit(
