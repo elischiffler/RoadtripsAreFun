@@ -48,12 +48,18 @@ export default function GlobalHeader() {
       <LogoButton driving={isDriving} progress={logoProgress} />
 
       <Box className="global-header-right">
+        <Button component={Link} to="/plan" sx={{ color: 'text.primary', px: 1 }}>
+          Plan a trip
+        </Button>
         <Button component={Link} to="/studio" sx={{ color: 'text.primary', px: 1 }}>
-          Trip Planning Studio
+          AI Studio
         </Button>
         {authed ? (
           <>
             <Box
+              component="button"
+              type="button"
+              aria-label="Account menu"
               className="avatar-placeholder"
               onClick={handleAvatarClick}
               aria-controls={open ? 'profile-menu' : undefined}

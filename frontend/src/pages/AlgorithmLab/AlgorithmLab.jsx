@@ -263,8 +263,8 @@ export default function AlgorithmLab() {
     <main className="algorithm-lab">
       <header className="lab-title">
         <div>
-          <h1>Trip Planning Studio</h1>
-          <p>See why a road trip fits.</p>
+          <h1>AI Studio</h1>
+          <p>Plan, compare and understand your trip.</p>
         </div>
         <div className="lab-header-actions">
           {session && (

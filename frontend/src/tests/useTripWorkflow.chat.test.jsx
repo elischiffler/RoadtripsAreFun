@@ -39,6 +39,7 @@ const CHAT_ID = 5;
 
 // Minimal harness: drives the hook and renders messages live from `chats`.
 function Harness({ chatLogsData, onChatReady = () => {}, agentChatId, savedData = null }) {
+  const [setupReceipt, setSetupReceipt] = useState(null);
   const [chats, setChats] = useState([{ id: CHAT_ID, title: 'Trip', messages: [] }]);
   const chatsRef = useRef(chats);
   chatsRef.current = chats;
@@ -60,6 +61,19 @@ function Harness({ chatLogsData, onChatReady = () => {}, agentChatId, savedData 
   return (
     <div>
       <button onClick={() => submit('chat_message', 'make it cheaper')}>send</button>
+      <button
+        onClick={async () =>
+          setSetupReceipt(
+            await submit('trip_setup', {
+              message: 'Trip-only persona_weights: explicit values',
+              displayText: 'My trip interests: Nature and food.',
+            })
+          )
+        }
+      >
+        send setup
+      </button>
+      <output data-testid="setup-receipt">{JSON.stringify(setupReceipt)}</output>
       {Object.entries(pendingLocations).flatMap(([field, pending]) =>
         pending.candidates.map((candidate) => (
           <button
@@ -649,4 +663,54 @@ it('does not send an agent turn after the account panel unmounts during creation
   await Promise.resolve();
   expect(sendAgentMessage).not.toHaveBeenCalled();
   expect(updateUserData).not.toHaveBeenCalled();
+});
+
+describe('trip setup receipt', () => {
+  it.each([true, false])(
+    'returns structured profile evidence from response or actions (%s)',
+    async (direct) => {
+      const tripProfile = { persona_weights: { nature: 0.8, food: 0.2 } };
+      sendAgentMessage.mockResolvedValueOnce({
+        reply: 'Saved.',
+        ...(direct ? { tripProfile } : {}),
+        actions: direct
+          ? []
+          : [{ type: 'trip_profile_updated', payload: { trip_profile: tripProfile } }],
+        validationIssues: {},
+      });
+      render(<Harness />);
+      await userEvent.click(screen.getByText('send setup'));
+      await waitFor(() =>
+        expect(screen.getByTestId('setup-receipt')).toHaveTextContent('persona_weights')
+      );
+      expect(JSON.parse(screen.getByTestId('setup-receipt').textContent)).toEqual({
+        ok: true,
+        tripProfile,
+        validationIssues: {},
+      });
+      const request = sendAgentMessage.mock.calls[0][0];
+      expect(request.message).toBe('Trip-only persona_weights: explicit values');
+      expect(request).not.toHaveProperty('persona_weights');
+      expect(screen.getByText('My trip interests: Nature and food.')).toBeInTheDocument();
+      expect(
+        screen.queryByText('Trip-only persona_weights: explicit values')
+      ).not.toBeInTheDocument();
+      expect(updateUserData.mock.calls.at(-1)[1].tripProfile).toEqual(tripProfile);
+    }
+  );
+  it('returns field validation issues without turning prose into profile data', async () => {
+    sendAgentMessage.mockResolvedValueOnce({
+      reply: 'Needs changes.',
+      actions: [],
+      validationIssues: { budget: 'Invalid budget' },
+    });
+    render(<Harness />);
+    await userEvent.click(screen.getByText('send setup'));
+    await waitFor(() =>
+      expect(screen.getByTestId('setup-receipt')).toHaveTextContent('Invalid budget')
+    );
+    expect(JSON.parse(screen.getByTestId('setup-receipt').textContent)).not.toHaveProperty(
+      'tripProfile'
+    );
+  });
 });

@@ -116,6 +116,9 @@ export const UserDataProvider = ({ children }) => {
     setChats([]);
     setCurrentStep(1);
     sessionStorage.removeItem('selectedChatId');
+    Object.keys(sessionStorage)
+      .filter((key) => key.startsWith('roadtrips.setup.v1.'))
+      .forEach((key) => sessionStorage.removeItem(key));
   };
 
   useEffect(() => {

@@ -242,7 +242,7 @@ describe('Trip Planning Studio access and lifecycle', () => {
     expect(
       screen.queryByRole('button', { name: 'routing algorithm settings' })
     ).not.toBeInTheDocument();
-    expect(await screen.findByRole('link', { name: 'Trip Planning Studio' })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: 'AI Studio' })).toHaveAttribute(
       'href',
       '/studio'
     );

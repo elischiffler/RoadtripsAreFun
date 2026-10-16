@@ -10,11 +10,20 @@ import SettingsPage from './pages/SettingsPage';
 import AlgorithmLab from './pages/AlgorithmLab/AlgorithmLab';
 import SignUpPage from './pages/AuthPages/SignUpPage';
 import NotFoundPage from './pages/NotFoundPage';
+import TripSetupPage from './pages/TripSetup/TripSetupPage';
 
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
+      {
+        path: 'plan',
+        element: (
+          <AuthWrapper>
+            <TripSetupPage />
+          </AuthWrapper>
+        ),
+      },
       {
         path: '/',
         element: <HomePage />,

@@ -499,7 +499,11 @@ export function useTripWorkflow({
   // ── Public: submit user input (agent chat only) ───────────────────────────
   const submit = useCallback(
     async (action, payload) => {
-      if (!['chat_message', 'location_confirmation', 'location_confirmations'].includes(action))
+      if (
+        !['chat_message', 'trip_setup', 'location_confirmation', 'location_confirmations'].includes(
+          action
+        )
+      )
         return;
 
       // Guard against StrictMode double-invoke or rapid double-clicks.
@@ -516,9 +520,11 @@ export function useTripWorkflow({
           ? `Use ${confirmations.map((selection) => selection.address).join(' and ')}`
           : confirmation
             ? `Use ${confirmation.address}`
-            : typeof payload === 'string'
-              ? payload.trim()
-              : '';
+            : action === 'trip_setup' && typeof payload?.message === 'string'
+              ? payload.message.trim()
+              : typeof payload === 'string'
+                ? payload.trim()
+                : '';
         if (!text) return;
 
         const created = await ensureChatCreated(
@@ -534,7 +540,11 @@ export function useTripWorkflow({
           );
           return false;
         }
-        addMessage(id, setChats, text, USER, undefined, chatsRef);
+        const displayText =
+          action === 'trip_setup' && typeof payload?.displayText === 'string'
+            ? payload.displayText
+            : text;
+        addMessage(id, setChats, displayText, USER, undefined, chatsRef);
         loading();
         setProcessProgress({ startedAt: Date.now(), entries: [] });
         const logProgress = import.meta.env.DEV ? createProgressLogger() : null;
@@ -593,6 +603,16 @@ export function useTripWorkflow({
             tripProfileRef.current = response.tripProfile;
           }
           await applyAgentActions(response.actions, response.presentation?.notes);
+          if (action === 'trip_setup') {
+            return {
+              ok: true,
+              tripProfile:
+                response.tripProfile ??
+                response.actions?.findLast((item) => item.type === 'trip_profile_updated')?.payload
+                  ?.trip_profile,
+              validationIssues: response.validationIssues ?? {},
+            };
+          }
         } else {
           // The turn produced NO reply (network / 503 / other). This is not an
           // agent-recoverable tool error — those are fed back within the turn and

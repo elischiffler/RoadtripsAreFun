@@ -16,6 +16,7 @@ import { useTripWorkflow, deriveProgress, renameChatToRoute } from './useTripWor
 import { deleteChat, initializeUserData } from './DatabaseUtils';
 import { chooseRestoredChatId, forgetAgentChatId, getOrCreateAgentChatId } from './chatSession';
 import './ChatPage.css';
+import TripSetup from '../TripSetup/TripSetup';
 
 // ── WorkflowPanel: isolated component so `key` can reset the workflow hook ──
 const WorkflowPanel = ({
@@ -30,6 +31,8 @@ const WorkflowPanel = ({
   chatEndRef,
   savedData,
   onChatReady,
+  setupMode = false,
+  onSetupContinue,
 }) => {
   const { submit, route, itinerary, isLoading, processProgress, pendingLocations } =
     useTripWorkflow({
@@ -56,6 +59,15 @@ const WorkflowPanel = ({
   const latestBotIndex = activeMessages.findLastIndex(
     (message) => message.sender === 'bot' && message.text != null
   );
+
+  if (setupMode)
+    return (
+      <TripSetup
+        onSubmit={(message) => submit('trip_setup', message)}
+        onContinue={onSetupContinue}
+        busy={isLoading}
+      />
+    );
 
   return (
     <>
@@ -199,11 +211,13 @@ WorkflowPanel.propTypes = {
   chatEndRef: PropTypes.shape({ current: PropTypes.any }).isRequired,
   savedData: PropTypes.object,
   onChatReady: PropTypes.func.isRequired,
+  setupMode: PropTypes.bool,
+  onSetupContinue: PropTypes.func,
 };
 
 WorkflowPanel.displayName = 'WorkflowPanel';
 
-const ChatPage = () => {
+const ChatPage = ({ setupMode = false, onSetupContinue }) => {
   const { UserData, setUserData, chats, setChats, setCurrentStep } = useContext(UserDataContext);
   const ChatLogsData = UserData.chatlogs;
   const accessToken = sessionStorage.getItem('accessToken');
@@ -257,6 +271,8 @@ const ChatPage = () => {
   const [isFetchingChats, setIsFetchingChats] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [setupReady, setSetupReady] = useState(false);
+  const setupInitialized = useRef(false);
   const chatEndRef = useRef(null);
   // Holds a { id, title, messages } for a new trip that hasn't had its destination confirmed yet.
   // It lives outside `chats` until onChatReady fires so it doesn't appear in the sidebar prematurely.
@@ -485,8 +501,17 @@ const ChatPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (!setupMode || isFetchingChats || loadError || setupInitialized.current) return;
+    setupInitialized.current = true;
+    handleNewChat();
+    setSetupReady(true);
+    // Run once after saved-trip IDs are loaded, so setup never edits an existing trip.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setupMode, isFetchingChats, loadError]);
+
   return (
-    <Box className="page-container">
+    <Box className={'page-container' + (setupMode ? ' page-container--setup' : '')}>
       {searchOpen && (
         <TripSearch
           chats={chats.filter((c) => c.id !== pendingChatRef.current?.id)}
@@ -516,30 +541,32 @@ const ChatPage = () => {
       )}
 
       {/* Trip management buttons — top-left (below header) */}
-      <Box className="fab-group fab-group--top">
-        <ThemedTooltip title="New trip" placement="right" arrow>
-          <Box
-            className="fab fab--new"
-            onClick={() => {
-              if (!isFetchingChats && !loadError) handleNewChat();
-            }}
-            role="button"
-            aria-label="New trip"
-          >
-            <AddIcon className="fab-icon" />
-          </Box>
-        </ThemedTooltip>
-        <ThemedTooltip title="Search trips  ⌘K" placement="right" arrow>
-          <Box
-            className="fab"
-            onClick={() => setSearchOpen(true)}
-            role="button"
-            aria-label="Search trips"
-          >
-            <SearchIcon className="fab-icon" />
-          </Box>
-        </ThemedTooltip>
-      </Box>
+      {!setupMode && (
+        <Box className="fab-group fab-group--top">
+          <ThemedTooltip title="New trip" placement="right" arrow>
+            <Box
+              className="fab fab--new"
+              onClick={() => {
+                if (!isFetchingChats && !loadError) handleNewChat();
+              }}
+              role="button"
+              aria-label="New trip"
+            >
+              <AddIcon className="fab-icon" />
+            </Box>
+          </ThemedTooltip>
+          <ThemedTooltip title="Search trips  ⌘K" placement="right" arrow>
+            <Box
+              className="fab"
+              onClick={() => setSearchOpen(true)}
+              role="button"
+              aria-label="Search trips"
+            >
+              <SearchIcon className="fab-icon" />
+            </Box>
+          </ThemedTooltip>
+        </Box>
+      )}
 
       {loadError && (
         <Box className="main-content" role="alert">
@@ -550,7 +577,7 @@ const ChatPage = () => {
         </Box>
       )}
       {/* WorkflowPanel: keyed so bumping workflowKey resets the hook */}
-      {!isFetchingChats && !loadError && (
+      {!isFetchingChats && !loadError && (!setupMode || setupReady) && (
         <WorkflowPanel
           key={workflowKey}
           chatId={selectedChatId}
@@ -564,10 +591,14 @@ const ChatPage = () => {
           chatEndRef={chatEndRef}
           savedData={savedData}
           onChatReady={handleChatReady}
+          setupMode={setupMode}
+          onSetupContinue={onSetupContinue}
         />
       )}
     </Box>
   );
 };
+
+ChatPage.propTypes = { setupMode: PropTypes.bool, onSetupContinue: PropTypes.func };
 
 export default ChatPage;

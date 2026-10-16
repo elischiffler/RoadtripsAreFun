@@ -26,6 +26,8 @@ export default function LogoButton({ driving = false, progress = 0 }) {
 
   return (
     <Box
+      component="button"
+      type="button"
       className={`logo-btn${drivingClass}`}
       onClick={() => navigate('/')}
       role="button"
