@@ -97,6 +97,19 @@ def _key(context, ai):
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
+def duration_context_hash(context):
+    """Identify a captured estimate's full context, independent of provider/cache.
+
+    Offline fixtures use original source names rather than their rating aliases.
+    Changing the prompt, place details, ratings, preferences or match invalidates
+    a capture; an estimate is never replayed based on place ID or score alone.
+    """
+    content = json.dumps(
+        [PROMPT_VERSION, context], sort_keys=True, separators=(",", ":"), allow_nan=False
+    )
+    return hashlib.sha256(content.encode()).hexdigest()
+
+
 def _parse(text, expected):
     if not isinstance(text, str) or len(text.encode()) > MAX_RESPONSE_BYTES:
         return {}

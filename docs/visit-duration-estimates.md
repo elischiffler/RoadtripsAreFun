@@ -50,8 +50,22 @@ variable overnight placement, actual-road daily deadlines, reload and consistent
 route/itinerary display. These fixtures establish no real opening hours, model
 quality, road times or production acceptance.
 
-PR #41 integration remains a release dependency: its offline pipeline and daily
-active-time evaluation must consume variable visit durations, including waits,
-instead of assuming 7,200 seconds per attraction. Complete that follow-up after
-PR #41 reaches `develop`, then return the rebased exact head for independent
-review. The calendar-correction and parent release gates still apply.
+PR #41 is integrated from reviewed `develop` head
+`fcd795af63f40ca7233cc4d45514acf50013dc0f`. Its offline provider now reads
+context-matched, immutable duration captures, or labels a missing-capture
+two-hour fallback. It never requests a fresh estimate. Capture contexts include
+the original source name/details, ratings, preferences and utility contributions;
+changed context cannot reuse a duration by ID or score alone. Real captures
+require model/prompt/configuration/time provenance predating the evaluation
+clock, plus matching per-entry capture IDs and bounded estimates. See the
+evaluation fixture README for the optional format.
+
+`balanced-route-v5` daily active time sums measured driving, elapsed visit
+timestamps and opening waits, excluding hotel rest. Missing, negative or
+conflicting timing leaves that day's total and the maximum unassessed, rather
+than publishing a partial total. Preselection workload screening reports the
+15-minute–6-hour range and leaves exact visit time unknown; its optimistic
+minimum remains explicitly separate from an infeasibility proof. Synthetic
+offline tests cover a short opening window, waits, capture invalidation/isolation,
+provenance, DST and agreement with route/itinerary clocks. The calendar-correction
+and parent release gates still apply.

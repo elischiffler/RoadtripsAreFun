@@ -343,6 +343,7 @@ async def attraction_candidates(
     *,
     ai: LLMProvider | None = None,
     places: PlaceProvider | None = None,
+    duration_estimator=estimate_durations,
 ) -> DiscoveryResult:
     """Discover attractions along the baseline route and calculate their match scores.
 
@@ -516,7 +517,7 @@ async def attraction_candidates(
                     **item["projection"],
                 )
                 output.append(candidate)
-        return await estimate_durations(output, weights, ai), attempts
+        return await duration_estimator(output, weights, ai), attempts
 
     while ready:
         frozen_queries = []
