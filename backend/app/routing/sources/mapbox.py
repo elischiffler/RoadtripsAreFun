@@ -5,7 +5,9 @@ import httpx
 from app.agent.progress import stage
 from app.agent.provider_diagnostics import retry_async
 from app.models.routing_models.routing_models import MapBox
+from app.models.trip_limits import MAPBOX_MAX_COORDINATES
 from app.routing import config
+from app.routing.base import PlanningError
 from app.routing.run_metrics import increment
 from app.routing.runtime import http_get, in_run, limited, singleflight
 
@@ -17,12 +19,23 @@ class UnusableRoadRoute(ValueError):
     retryable = False
 
 
+def require_route_capacity(coordinate_count):
+    if coordinate_count > MAPBOX_MAX_COORDINATES:
+        raise PlanningError(
+            f"Route transport capacity exceeded: {coordinate_count} coordinates including "
+            f"attractions, hotels and endpoints; Mapbox permits {MAPBOX_MAX_COORDINATES}. "
+            "Reduce the requested attractions or use a shorter trip.",
+            422,
+        )
+
+
 @in_run
 async def call_route(start_lat, start_lon, end_lat, end_lon, waypoints=None) -> MapBox_route:
     coordinates = f"{start_lon},{start_lat}"
     if waypoints:
         coordinates += f";{waypoints}"
     coordinates += f";{end_lon},{end_lat}"
+    require_route_capacity(len(coordinates.split(";")))
     url = f"https://api.mapbox.com/directions/v5/mapbox/driving/{coordinates}"
     params = {
         "alternatives": "false",

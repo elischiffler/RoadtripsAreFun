@@ -1,11 +1,11 @@
 import { expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import PlaceSource from '../components/PlaceSource';
+import PlaceSource from '../components/PlaceSource.jsx';
 import ItineraryDays from '../components/ItineraryDays';
 import RouteOverview from '../pages/AlgorithmLab/RouteOverview';
 import LabResults from '../pages/AlgorithmLab/LabResults';
-import { placeSourceLines } from '../components/placeSource';
+import { placeSourceLines } from '../components/placeSource.js';
 
 vi.mock('../components/Map', () => ({ default: () => <div>Map</div> }));
 const source = {

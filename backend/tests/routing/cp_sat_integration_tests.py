@@ -67,7 +67,7 @@ def test_http_selection_enforced(signed_token, route, alternate_planners, owner,
         )
     payload = Route_Payload(
         initial_route=route,
-        num_stops=0,
+        num_stops=1,
         budget=100,
         start=datetime(2035, 6, 1, 9),
         algorithm=requested,
@@ -118,7 +118,7 @@ async def test_tool_and_remote_selection(
         "route_handle": ctx.artifacts.put("initial_route", route),
         "traveler_count": 2,
         "hotel_rooms": [{"adults": 2, "child_ages": []}],
-        "num_stops": 0,
+        "num_stops": 1,
         "budget": 100,
         "start": "2035-06-01T09:00:00",
     }
@@ -207,7 +207,7 @@ async def test_cp_sat_uses_verified_identity_and_trip_override(monkeypatch, rout
     )
     payload = Route_Payload(
         initial_route=route,
-        num_stops=0,
+        num_stops=1,
         budget=100,
         start=datetime(2035, 6, 1, 9),
         algorithm="cp_sat",
@@ -228,7 +228,7 @@ async def test_cp_sat_uses_verified_identity_and_trip_override(monkeypatch, rout
 async def test_cp_sat_requires_identity_before_persona_lookup(route):
     payload = Route_Payload(
         initial_route=route,
-        num_stops=0,
+        num_stops=1,
         budget=100,
         algorithm="cp_sat",
         traveler_count=2,
@@ -242,7 +242,7 @@ async def test_cp_sat_requires_identity_before_persona_lookup(route):
 async def test_cp_sat_requires_upcoming_date(route):
     payload = Route_Payload(
         initial_route=route,
-        num_stops=0,
+        num_stops=1,
         budget=100,
         algorithm="cp_sat",
         traveler_count=2,

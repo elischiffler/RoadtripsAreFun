@@ -35,6 +35,7 @@ from app.crud.memory_crud import load_account_persona
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
 from app.routing import PlanningError, PlanOptions, RoutingServices, get_planner
+from app.routing.catalog_calendars import refresh_for_timing
 from app.routing.config import geolocator  # shared reverse-geocoder
 from app.routing.explanation import record_stage
 from app.routing.geometry import find_position as _find_position  # noqa: F401
@@ -261,6 +262,7 @@ async def plan_final_route(
             for leg in route.legs:
                 if idx < len(stopping_points) and stopping_points[idx]["type"] != "generic":
                     stopping_points[idx]["duration"] = leg.duration
+                    stopping_points[idx]["distance"] = leg.distance
                     if stopping_points[idx].get("address") is None:
                         location = await retry_async(
                             lambda: threaded(
@@ -285,6 +287,7 @@ async def plan_final_route(
                         {
                             "name": "Arrive at your destination",
                             "duration": leg.duration,
+                            "distance": leg.distance,
                             "type": "end",
                             "coordinates": [end_lat, end_lon],
                             "address": location.address if location else None,
@@ -295,6 +298,7 @@ async def plan_final_route(
             # Final timing validation
             if algorithm.startswith("cp_sat"):
                 with stage("route.validation"):
+                    await refresh_for_timing(stopping_points)
                     if services.timezone_at is not None:
                         start_timezone = await services.timezone_at([start_lat, start_lon])
                         for stop in stopping_points:

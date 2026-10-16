@@ -108,3 +108,21 @@ it('shows page-scoped statistics beside both old and new history records', async
   expect(screen.getByText(/older or unfinished run/)).toBeInTheDocument();
   expect(screen.getByText(/extra distance meters: 10.00/)).toHaveTextContent('1 assessed');
 });
+
+it('shows calculated utility, gaps and nightly utilization for current metrics', () => {
+  const current = structuredClone(metrics);
+  current.selection_measurements = { maximum_baseline_gap_seconds: 7200 };
+  current.trip_evaluation.utility = {
+    selected: { mean: 0.8, min: 0.6, max: 1, median: 0.85 },
+    delivered: null,
+  };
+  current.trip_evaluation.driving_gaps = {
+    maximum_stretch_seconds: 3600,
+    maximum_attraction_gap_seconds: 10800,
+  };
+  current.trip_evaluation.hotel_costs.budget_utilization = 1.2;
+  render(<TripEvaluation metrics={current} />);
+  expect(screen.getByText('80% / 60% / 100% / 85%')).toBeInTheDocument();
+  expect(screen.getByText('Unassessed / Unassessed / Unassessed / Unassessed')).toBeInTheDocument();
+  expect(screen.getByText('120%')).toBeInTheDocument();
+});

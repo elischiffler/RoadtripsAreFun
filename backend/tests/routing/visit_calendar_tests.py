@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 import pytest
 
 from app.agent.persona import AccountPersona
+from app.catalog import repository
 from app.catalog.market_visit_calendar import build
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import Route, Route_Payload
@@ -63,6 +64,19 @@ def candidate(rules=None, provider_id="usda-market:fixture", **changes):
         "timezone": ZONE.key,
         **changes,
     }
+
+
+def current_fixture(monkeypatch, row):
+    """Retained synthetic/current source facts, independently read on reuse."""
+    monkeypatch.setattr(
+        repository,
+        "current_records",
+        lambda ids: {
+            row["provider_id"]: {
+                key: copy.deepcopy(row[key]) for key in ["coordinates", "source_provenance"]
+            }
+        },
+    )
 
 
 @pytest.fixture
@@ -301,6 +315,7 @@ async def test_real_cp_sat_planner_reselects_infeasible_burlington(
 async def test_final_actual_road_conflict_reselects_without_another_discovery(
     monkeypatch, route, fake_services, burlington
 ):
+    current_fixture(monkeypatch, burlington)
     route.duration = route.legs[0].duration = 3600
     services = fake_services.bundle()
     calls = []
@@ -370,7 +385,8 @@ def test_calendar_timezone_must_be_resolved_iana():
 
 
 @pytest.mark.asyncio
-async def test_itinerary_preserves_wait_and_revalidates_overridden_date(burlington):
+async def test_itinerary_preserves_wait_and_revalidates_overridden_date(burlington, monkeypatch):
+    current_fixture(monkeypatch, burlington)
     route = Route(
         coordinates=[],
         distance=0,
@@ -405,10 +421,11 @@ async def test_itinerary_preserves_wait_and_revalidates_overridden_date(burlingt
 
 
 @pytest.mark.asyncio
-async def test_itinerary_uses_validated_elapsed_departure_across_dst():
+async def test_itinerary_uses_validated_elapsed_departure_across_dst(monkeypatch):
     row = candidate(
         calendar(weekly_windows=[{"weekdays": [6], "opens": "00:00", "closes": "04:00"}])
     )
+    current_fixture(monkeypatch, row)
     route = Route(
         coordinates=[],
         distance=0,

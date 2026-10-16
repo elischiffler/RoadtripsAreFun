@@ -1,0 +1,245 @@
+{
+  "$defs": {
+    "RatingCapture": {
+      "additionalProperties": false,
+      "properties": {
+        "capture_id": {
+          "minLength": 1,
+          "title": "Capture Id",
+          "type": "string"
+        },
+        "model": {
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "prompt_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Prompt Hash",
+          "type": "string"
+        },
+        "configuration": {
+          "title": "Configuration",
+          "type": "object"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "capture_id",
+        "model",
+        "prompt_hash",
+        "configuration",
+        "captured_at"
+      ],
+      "title": "RatingCapture",
+      "type": "object"
+    },
+    "RoutingCapture": {
+      "additionalProperties": false,
+      "properties": {
+        "capture_id": {
+          "minLength": 1,
+          "title": "Capture Id",
+          "type": "string"
+        },
+        "provider": {
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "profile": {
+          "minLength": 1,
+          "title": "Profile",
+          "type": "string"
+        },
+        "departure_context": {
+          "format": "date-time",
+          "title": "Departure Context",
+          "type": "string"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "capture_id",
+        "provider",
+        "profile",
+        "departure_context",
+        "captured_at"
+      ],
+      "title": "RoutingCapture",
+      "type": "object"
+    },
+    "SourceCatalog": {
+      "additionalProperties": false,
+      "properties": {
+        "release": {
+          "minLength": 1,
+          "title": "Release",
+          "type": "string"
+        },
+        "attribution": {
+          "minLength": 1,
+          "title": "Attribution",
+          "type": "string"
+        }
+      },
+      "required": [
+        "release",
+        "attribution"
+      ],
+      "title": "SourceCatalog",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 2,
+      "enum": [
+        2
+      ],
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "fixture_id": {
+      "title": "Fixture Id",
+      "type": "string"
+    },
+    "evidence_type": {
+      "enum": [
+        "catalog_selection_with_captured_measurements",
+        "catalog_recorded_pipeline"
+      ],
+      "title": "Evidence Type",
+      "type": "string"
+    },
+    "coverage": {
+      "title": "Coverage",
+      "type": "string"
+    },
+    "files": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Files",
+      "type": "object"
+    },
+    "attraction_count": {
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Attraction Count",
+      "type": "integer"
+    },
+    "catalog_generation": {
+      "minLength": 1,
+      "title": "Catalog Generation",
+      "type": "string"
+    },
+    "catalog_release": {
+      "minLength": 1,
+      "title": "Catalog Release",
+      "type": "string"
+    },
+    "attribution": {
+      "minLength": 1,
+      "title": "Attribution",
+      "type": "string"
+    },
+    "rights_evidence": {
+      "minLength": 1,
+      "title": "Rights Evidence",
+      "type": "string"
+    },
+    "rating_capture": {
+      "$ref": "#/$defs/RatingCapture"
+    },
+    "routing_capture": {
+      "$ref": "#/$defs/RoutingCapture"
+    },
+    "departure": {
+      "title": "Departure",
+      "type": "string"
+    },
+    "evaluation_clock": {
+      "title": "Evaluation Clock",
+      "type": "string"
+    },
+    "endpoints": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Endpoints",
+      "type": "array"
+    },
+    "sampling_seed": {
+      "default": 1729,
+      "title": "Sampling Seed",
+      "type": "integer"
+    },
+    "tzdata_version": {
+      "title": "Tzdata Version",
+      "type": "string"
+    },
+    "limitations": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "access_review_file": {
+      "minLength": 1,
+      "title": "Access Review File",
+      "type": "string"
+    },
+    "hotel_rating_capture": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RatingCapture"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "source_catalogs": {
+      "additionalProperties": {
+        "$ref": "#/$defs/SourceCatalog"
+      },
+      "default": {},
+      "title": "Source Catalogs",
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "fixture_id",
+    "evidence_type",
+    "coverage",
+    "files",
+    "attraction_count",
+    "catalog_generation",
+    "catalog_release",
+    "attribution",
+    "rights_evidence",
+    "rating_capture",
+    "routing_capture",
+    "departure",
+    "evaluation_clock",
+    "endpoints",
+    "tzdata_version",
+    "access_review_file"
+  ],
+  "title": "RealManifest",
+  "type": "object"
+}

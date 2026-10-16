@@ -3,7 +3,7 @@ name: Disposable PostgreSQL CRUD
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, develop]
 
 permissions:
   contents: read

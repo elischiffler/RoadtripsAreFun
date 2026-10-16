@@ -35,6 +35,42 @@ def active(connection):
     return generation
 
 
+def test_current_record_refresh_uses_active_hold_and_preserves_unknown_outdoor_filter(
+    connection, tmp_path
+):
+    prepared, prior, baseline = inputs(connection, tmp_path)
+    path, payload = artifact(
+        tmp_path / "overlay",
+        baseline=baseline,
+        generation=prior,
+        manifest=_parent_manifest(connection, prior),
+    )
+    payload["entries"][0]["source_visit_calendar"]["unknown_reasons"] = [
+        "Synthetic unresolved selected parking access"
+    ]
+    path.write_text(json.dumps(payload))
+    held = enrich.prepare(path)
+    sid = baseline[0]["source_id"]
+    before = repository.current_records([sid])[sid]
+    enrich.stage(connection, held)
+    assert repository.current_records([sid]) == {sid: before}
+    enrich.activate(connection, held)
+    current = repository.current_records([sid])[sid]
+    assert current["coordinates"] == [baseline[0]["latitude"], baseline[0]["longitude"]]
+    assert current["source_provenance"][-2]["source_visit_calendar"]["unknown_reasons"]
+    assert not calendar_eligible(current)
+    assert repository.nearby([37.8, -122.4], ["daytime"], require_visit_calendar=True) == []
+    assert repository.current_records(["missing"]) == {}
+
+
+def _parent_manifest(connection, generation):
+    with connection.cursor() as cur:
+        cur.execute(
+            "SELECT manifest FROM places_catalog_imports WHERE generation=%s", (generation,)
+        )
+        return cur.fetchone()[0]
+
+
 def test_companion_stage_cutover_rollback_preserves_rows_and_credits(connection, tmp_path):
     prepared, prior, baseline = inputs(connection, tmp_path)
     assert repository.nearby([37.8, -122.4], ["daytime"], require_visit_calendar=True) == []

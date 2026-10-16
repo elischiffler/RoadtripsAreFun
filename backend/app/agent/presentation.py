@@ -6,6 +6,7 @@ from datetime import datetime
 from app.agent.schemas import TripDetailPresentation
 from app.agent.trip_profile import TripProfile
 from app.models.scheduling_policy import SchedulingPolicy
+from app.models.trip_limits import MAX_STOPS, MIN_STOPS
 from app.routing.occupancy import COUNT_QUESTION, OCCUPANCY_QUESTION
 
 QUESTIONS = {
@@ -13,7 +14,7 @@ QUESTIONS = {
     "hotel_rooms": OCCUPANCY_QUESTION,
     "start_address": "What city or address are you starting from?",
     "destination_address": "What city or address are you traveling to?",
-    "num_stops": "How many attraction stops would you like (1–10)?",
+    "num_stops": f"How many attraction stops would you like ({MIN_STOPS}–{MAX_STOPS})?",
     "budget": "What is your hotel budget per night in dollars?",
     "departure_date": "What date would you like to leave?",
     "departure_time": "What time would you like to leave? You can choose 9:00 AM.",
