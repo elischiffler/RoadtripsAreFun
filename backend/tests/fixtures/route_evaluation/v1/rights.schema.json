@@ -1,0 +1,89 @@
+{
+  "$defs": {
+    "EvidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "minLength": 1,
+          "title": "Uri",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "uri",
+        "sha256"
+      ],
+      "title": "EvidenceReference",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "enum": [
+        1
+      ],
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "catalog_generation": {
+      "minLength": 1,
+      "title": "Catalog Generation",
+      "type": "string"
+    },
+    "catalog_release": {
+      "minLength": 1,
+      "title": "Catalog Release",
+      "type": "string"
+    },
+    "attribution": {
+      "minLength": 1,
+      "title": "Attribution",
+      "type": "string"
+    },
+    "approved_for_evaluation": {
+      "const": true,
+      "enum": [
+        true
+      ],
+      "title": "Approved For Evaluation",
+      "type": "boolean"
+    },
+    "reviewer": {
+      "minLength": 1,
+      "title": "Reviewer",
+      "type": "string"
+    },
+    "reviewed_at": {
+      "format": "date-time",
+      "title": "Reviewed At",
+      "type": "string"
+    },
+    "licenses": {
+      "items": {
+        "$ref": "#/$defs/EvidenceReference"
+      },
+      "minItems": 1,
+      "title": "Licenses",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "catalog_generation",
+    "catalog_release",
+    "attribution",
+    "approved_for_evaluation",
+    "reviewer",
+    "reviewed_at",
+    "licenses"
+  ],
+  "title": "RightsEvidence",
+  "type": "object"
+}

@@ -1,0 +1,38 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "capture_id": {
+      "minLength": 1,
+      "title": "Capture Id",
+      "type": "string"
+    },
+    "model": {
+      "minLength": 1,
+      "title": "Model",
+      "type": "string"
+    },
+    "prompt_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Prompt Hash",
+      "type": "string"
+    },
+    "configuration": {
+      "title": "Configuration",
+      "type": "object"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "capture_id",
+    "model",
+    "prompt_hash",
+    "configuration",
+    "captured_at"
+  ],
+  "title": "RatingCapture",
+  "type": "object"
+}

@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-from app.agent.persona import AccountPersona
 from app.main import app
 
 client = TestClient(app)
@@ -162,7 +161,7 @@ def test_get_initial_route_returns_steps():
 
 
 # ---------------------------------------------------------------------------
-# POST /generate-final-route  (0 stops — skips hotel/attraction search)
+# POST /generate-final-route stop-count validation
 # ---------------------------------------------------------------------------
 
 
@@ -189,55 +188,21 @@ def test_invalid_candidate_ratings_return_a_safe_explicit_provider_error(monkeyp
     assert response.json()["detail"] == CandidateRatingError.public_message
 
 
-def test_generate_final_route_zero_stops():
-    """Zero stops, short trip: only Mapbox is called, returns a valid Route."""
-    # A short trip (duration < 4hrs) won't trigger hotel search
-    short_trip_mapbox = _mapbox_response()
-    short_trip_mapbox["routes"][0]["duration"] = 7200.0  # 2 hours
-    short_trip_mapbox["routes"][0]["distance"] = 150000.0
-    short_trip_mapbox["routes"][0]["legs"][0]["duration"] = 7200.0
-    short_trip_mapbox["routes"][0]["legs"][0]["distance"] = 150000.0
-
-    mock_resp = MagicMock()
-    mock_resp.status_code = 200
-    mock_resp.json.return_value = short_trip_mapbox
-
-    mock_location = MagicMock()
-    mock_location.address = "Somewhere, USA"
-    mock_location.raw = {"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
-
-    with (
-        patch("app.routing.sources.mapbox.http_get", return_value=mock_resp),
-        patch("app.routers.routing_api.get_location", return_value=mock_location),
-        patch(
-            "app.routers.routing_api.load_account_persona", return_value=AccountPersona.default()
-        ),
-    ):
-        init_resp = client.get(
-            "/get-initial-route",
-            params={
-                "start_lat": 33.7186,
-                "start_lon": -117.9286,
-                "end_lat": 34.0522,
-                "end_lon": -118.2437,
+def test_generate_final_route_zero_stops_rejected_before_providers():
+    """Public normal trips require attractions; internal PlanOptions tests cover zero."""
+    with patch("app.routers.routing_api.plan_final_route") as planner:
+        response = client.post(
+            "/generate-final-route",
+            json={
+                "initial_route": _mapbox_response()["routes"][0],
+                "num_stops": 0,
+                "budget": 400,
+                "traveler_count": 2,
+                "hotel_rooms": [{"adults": 2, "child_ages": []}],
             },
         )
-        assert init_resp.status_code == 200
-
-        payload = {
-            "initial_route": init_resp.json(),
-            "traveler_count": 2,
-            "hotel_rooms": [{"adults": 2, "child_ages": []}],
-            "num_stops": 0,
-            "budget": 400,
-            "start": (datetime.now() + timedelta(days=1)).replace(hour=9, minute=0).isoformat(),
-        }
-        response = client.post("/generate-final-route", json=payload)
-
-    assert response.status_code == 200
-    data = response.json()
-    assert isinstance(data["distance"], float)
-    assert data["duration"] > 0
+    assert response.status_code == 422
+    planner.assert_not_called()
 
 
 def test_generate_final_route_invalid_payload():
@@ -287,7 +252,7 @@ def test_generate_final_route_unknown_algorithm_returns_400():
                 "initial_route": init_resp.json(),
                 "traveler_count": 2,
                 "hotel_rooms": [{"adults": 2, "child_ages": []}],
-                "num_stops": 0,
+                "num_stops": 1,
                 "budget": 400,
                 "algorithm": "does-not-exist",
             },

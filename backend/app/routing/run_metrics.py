@@ -8,11 +8,13 @@ from collections import defaultdict
 from contextlib import contextmanager
 from contextvars import ContextVar
 from datetime import UTC, datetime
-from statistics import mean, pstdev
+from statistics import mean, median, pstdev
 from threading import Lock
 from time import perf_counter
 
-METRIC_VERSION = "balanced-route-v3"
+from app.agent.persona import ATTRIBUTE_KEYS
+
+METRIC_VERSION = "balanced-route-v4"
 _active = ContextVar("lab_measurements", default=None)
 
 
@@ -96,11 +98,122 @@ def _instant(value):
         return None
 
 
+def utility_summary(values):
+    """Statistics for assessed attraction utilities; empty means are undefined."""
+    return {
+        "count": len(values),
+        "sum": math.fsum(values),
+        "mean": mean(values) if values else None,
+        "min": min(values) if values else None,
+        "max": max(values) if values else None,
+        "median": median(values) if values else None,
+    }
+
+
+def attraction_utilities(envelope, assessed):
+    candidates = envelope["explanation"].get("candidates", [])
+    selected = [item for item in candidates if item.get("selected")]
+    solved = (envelope["explanation"].get("solver") or {}).get("method_status") == "VALID" or (
+        envelope["explanation"].get("solver") or {}
+    ).get("status") in {
+        "OPTIMAL",
+        "FEASIBLE",
+        "EMPTY",
+    }
+    selected_values = [_number(item.get("utility")) for item in selected]
+    selected_stats = (
+        utility_summary(selected_values)
+        if solved and all(v is not None for v in selected_values)
+        else None
+    )
+    by_id = {item.get("provider_id"): _number(item.get("utility")) for item in selected}
+    delivered = [
+        stop
+        for stop in (envelope.get("route") or {}).get("stops", [])
+        if stop.get("type") == "stop"
+    ]
+    delivered_values = [by_id.get(stop.get("provider_id")) for stop in delivered]
+    missing = sum(value is None for value in delivered_values) if assessed else None
+    delivered_stats = utility_summary(delivered_values) if assessed and not missing else None
+    requested = envelope["input_snapshot"].get("num_stops")
+
+    def categories(items):
+        if not items or any(
+            set(item.get("attribute_ratings", {})) != set(ATTRIBUTE_KEYS) for item in items
+        ):
+            return None
+        weights = (
+            envelope["input_snapshot"].get("effective_weights")
+            or envelope["explanation"].get("weights")
+            or {}
+        )
+        return {
+            key: {
+                "mean_rating": mean(item["attribute_ratings"][key] for item in items),
+                "mean_contribution": mean(item["attribute_ratings"][key] for item in items)
+                * weights[key]
+                if key in weights
+                else None,
+            }
+            for key in ATTRIBUTE_KEYS
+        }
+
+    selected_by_id = {item.get("provider_id"): item for item in selected}
+    return {
+        "selected_categories": categories(selected) if solved else None,
+        "delivered_categories": categories(
+            [selected_by_id[stop.get("provider_id")] for stop in delivered]
+        )
+        if delivered_stats is not None and not missing
+        else None,
+        "selected": selected_stats,
+        "delivered": delivered_stats,
+        "missing_delivered_ids": missing,
+        "requested_normalized_delivered": delivered_stats["sum"] / requested
+        if delivered_stats and requested
+        else None,
+        "assessment_reason": None
+        if delivered_stats is not None
+        else "missing_scored_delivered_ids"
+        if missing
+        else "route_unavailable",
+    }
+
+
+def driving_gaps(stops, assessed):
+    legs = [stop for stop in stops if stop.get("type") in {"stop", "hotel", "end"}]
+    durations = [_number(stop.get("duration")) for stop in legs]
+    complete = assessed and bool(legs) and all(v is not None and v >= 0 for v in durations)
+    if not complete:
+        return {
+            "maximum_stretch_seconds": None,
+            "maximum_stretch_distance_meters": None,
+            "maximum_attraction_gap_seconds": None,
+            "assessment_reason": "final_leg_evidence_incomplete",
+        }
+    longest = max(range(len(legs)), key=lambda i: durations[i])
+    attraction_gaps, accumulated = [], 0
+    for stop, duration in zip(legs, durations):
+        accumulated += duration
+        if stop["type"] in {"stop", "end"}:
+            attraction_gaps.append(accumulated)
+            accumulated = 0
+    return {
+        "maximum_stretch_seconds": durations[longest],
+        "maximum_stretch_distance_meters": _number(legs[longest].get("distance")),
+        "from_id": legs[longest - 1].get("provider_id") if longest else "origin",
+        "to_id": legs[longest].get("provider_id", "destination"),
+        "attraction_gaps_seconds": attraction_gaps,
+        "maximum_attraction_gap_seconds": max(attraction_gaps, default=None),
+        "assessment_reason": None,
+    }
+
+
 def trip_evaluation(envelope):
     """Measurements from actual route evidence, including partially completed runs."""
     route = envelope.get("route")
     inputs = envelope["input_snapshot"]
-    live = envelope["mode"] == "live"
+    live = envelope["mode"] in {"live", "offline_pipeline"}
     assessed = live and route is not None
     stops = (route or {}).get("stops") or []
     baseline = envelope.get("direct_route") or {}
@@ -127,6 +240,13 @@ def trip_evaluation(envelope):
         driving["assessment_reason"] = "baseline_incomplete"
     elif assessed and any(baseline.get(name) == 0 for name in ("distance", "duration")):
         driving["assessment_reason"] = "zero_baseline_percentage_unassessed"
+    deltas = [
+        driving.get(f"extra_{name}_{unit}")
+        for name, unit in (("distance", "meters"), ("duration", "seconds"))
+    ]
+    driving["baseline_consistency_review_required"] = (
+        any(value < 0 for value in deltas) if all(value is not None for value in deltas) else None
+    )
     requested = inputs.get("num_stops")
     delivered = sum(stop.get("type") == "stop" for stop in stops) if assessed else None
     selected = sum(
@@ -175,6 +295,21 @@ def trip_evaluation(envelope):
         "above_target_total_usd": sum(max(0, price - budget) for price in prices)
         if quotes_complete and budget is not None
         else None,
+        "budget_utilization": sum(prices) / (budget * len(prices))
+        if quotes_complete and prices and budget is not None and budget > 0
+        else None,
+        "over_target_fraction": sum(price > budget for price in prices) / len(prices)
+        if quotes_complete and prices and budget is not None
+        else None,
+        "maximum_excess_usd": max((max(0, price - budget) for price in prices), default=0)
+        if quotes_complete and budget is not None
+        else None,
+        "signed_target_difference_usd": sum(price - budget for price in prices)
+        if quotes_complete and budget is not None
+        else None,
+        "unused_target_usd": sum(max(0, budget - price) for price in prices)
+        if quotes_complete and budget is not None
+        else None,
         "assessment_reason": reason
         if not assessed
         else "incomplete_room_quotes"
@@ -187,7 +322,22 @@ def trip_evaluation(envelope):
     arrival = _instant(final.get("arrival_time")) if assessed else None
     start = _instant(inputs.get("start_date"))
     itinerary = envelope.get("itinerary")
+    dwell = {"stop": [], "hotel": []}
+    for item in stops if assessed else []:
+        if item.get("type") not in dwell:
+            continue
+        arrived, left = _instant(item.get("arrival_time")), _instant(item.get("departure_time"))
+        dwell[item["type"]].append(
+            (left - arrived).total_seconds() if arrived and left and left >= arrived else None
+        )
+
+    def dwell_total(kind):
+        values = dwell[kind]
+        return sum(values) if assessed and all(value is not None for value in values) else None
+
     schedule = {
+        "visit_seconds": dwell_total("stop"),
+        "overnight_downtime_seconds": dwell_total("hotel"),
         "itinerary_days": len(itinerary) if live and itinerary is not None else None,
         "overnights": len(hotels) if assessed else None,
         "final_arrival": final.get("arrival_time") if arrival else None,
@@ -220,6 +370,34 @@ def trip_evaluation(envelope):
         if complete
         else "deadline_evidence_incomplete",
     }
+    daily_counts = {}
+    daily_active = {}
+    for stop in stops if assessed else []:
+        day = stop.get("travel_day")
+        if day is None:
+            continue
+        daily_counts.setdefault(day, 0)
+        daily_counts[day] += int(stop.get("type") == "stop")
+        duration = _number(stop.get("duration"))
+        if duration is not None:
+            daily_active[day] = (
+                daily_active.get(day, 0) + duration + (7200 if stop.get("type") == "stop" else 0)
+            )
+    target = envelope.get("scenario_target") or {}
+    target_assessed = bool(target) and schedule["itinerary_days"] is not None and bool(daily_counts)
+    target_metrics = {
+        "target_days": target.get("days"),
+        "target_stops_per_day": target.get("stops_per_day"),
+        "daily_attractions": daily_counts,
+        "daily_active_seconds": daily_active,
+        "maximum_daily_active_seconds": max(daily_active.values(), default=None),
+        "days_met": schedule["itinerary_days"] == target.get("days") if target_assessed else None,
+        "density_met": len(daily_counts) == target.get("days")
+        and all(n == target.get("stops_per_day") for n in daily_counts.values())
+        if target_assessed
+        else None,
+        "assessment_reason": None if target_assessed else "target_or_schedule_unavailable",
+    }
     stages = [
         {"name": stage["name"], "status": stage["status"]} for stage in envelope.get("stages", [])
     ]
@@ -241,6 +419,9 @@ def trip_evaluation(envelope):
         else []
     )
     return {
+        "utility": attraction_utilities(envelope, assessed),
+        "driving_gaps": driving_gaps(stops, assessed),
+        "scenario_target": target_metrics,
         "driving": driving,
         "stop_fulfillment": fulfillment,
         "schedule": schedule,
@@ -275,6 +456,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
                 "section_id",
                 "source_query_ids",
                 "source_release",
+                "source_generation",
                 "source_attribution",
                 "source_updated_at",
                 "source_provenance",
@@ -360,7 +542,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
     candidate_hash = fingerprint(
         {"candidates": model, "points": explanation.get("query_points"), "eligibility": eligibility}
     )
-    revision = os.getenv("ROADTRIPS_REVISION", "unversioned-local")
+    revision = envelope.get("revision") or os.getenv("ROADTRIPS_REVISION", "unversioned-local")
     comparison = fingerprint(
         {
             "input": input_hash,
@@ -368,6 +550,10 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
             "mode": envelope["mode"],
             "metric": METRIC_VERSION,
             "revision": revision,
+            "selection_config": {
+                k: solver.get(k)
+                for k in ("configuration", "baseline_seconds", "coefficient_conversion")
+            },
         }
     )
     cohort = fingerprint(
@@ -382,6 +568,14 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
     objective = solver.get("objective_value")
     return {
         "metric_version": METRIC_VERSION,
+        "evidence_layer": envelope.get("evidence_type")
+        or (
+            "live_pipeline"
+            if envelope["mode"] == "live"
+            else "offline_recorded_pipeline"
+            if envelope["mode"] == "offline_pipeline"
+            else "historical_selection_only"
+        ),
         "eligibility_policy": eligibility,
         "provider_measurements": telemetry.get("providers", {}),
         "distinct_requests": telemetry.get("requests", {}),
@@ -394,12 +588,14 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
                 "quality_loss",
                 "spacing_deviation_seconds",
                 "estimated_detour_seconds",
+                "baseline_gaps_seconds",
+                "maximum_baseline_gap_seconds",
             )
         },
         "objective_direction": "minimize",
         "trip_evaluation": trip_evaluation(envelope),
         "revision": revision,
-        "algorithm": "cp_sat",
+        "algorithm": envelope.get("method", "cp_sat"),
         "input_hash": input_hash,
         "candidate_hash": candidate_hash,
         "cohort_key": cohort,
@@ -409,8 +605,8 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
         "objective_scope": "attraction_selection",
         "solver_status": solver.get("status", "NOT_RUN"),
         "best_bound": solver.get("best_bound"),
-        "selected_utility_sum": sum(
-            item.get("utility", 0) for item in candidates if item.get("selected")
+        "selected_utility_sum": (attraction_utilities(envelope, bool(route))["selected"] or {}).get(
+            "sum"
         ),
         "candidate_count": len(candidates),
         "selected_count": len(selected),
@@ -476,6 +672,16 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
     }
 
 
+def percentile95(values):
+    """Linear empirical percentile, reported only with at least 20 observations."""
+    if len(values) < 20:
+        return None
+    ordered = sorted(values)
+    position = 0.95 * (len(ordered) - 1)
+    lower = math.floor(position)
+    return ordered[lower] + (position - lower) * (ordered[lower + 1] - ordered[lower])
+
+
 def aggregate_runs(rows):
     """Statistics over exactly the supplied history window; never mix different models."""
     groups = defaultdict(list)
@@ -502,7 +708,7 @@ def aggregate_runs(rows):
                 and m["objective_score"] is not None
             ):
                 references[m["comparison_key"]] = m["objective_score"]
-        minimized = version == "balanced-route-v3"
+        minimized = version in {"balanced-route-v3", "balanced-route-v4"}
         quality = (
             []
             if minimized
@@ -531,6 +737,9 @@ def aggregate_runs(rows):
                     "count": len(values),
                     "mean": mean(values),
                     "stddev": pstdev(values),
+                    "median": median(values),
+                    "p50": median(values),
+                    "p95": percentile95(values),
                     "min": min(values),
                     "max": max(values),
                 }
@@ -570,7 +779,30 @@ def aggregate_runs(rows):
                         ("extra_duration_seconds", "driving", "extra_duration_seconds"),
                         ("stop_fulfillment_ratio", "stop_fulfillment", "ratio"),
                         ("quoted_hotel_total_usd", "hotel_costs", "quoted_total_usd"),
+                        ("budget_utilization", "hotel_costs", "budget_utilization"),
+                        (
+                            "maximum_driving_stretch_seconds",
+                            "driving_gaps",
+                            "maximum_stretch_seconds",
+                        ),
                     )
+                },
+                "utility_statistics": {
+                    f"{layer}_{field}": stats(
+                        [
+                            summary[field]
+                            for m in metrics
+                            if (
+                                summary := m.get("trip_evaluation", {})
+                                .get("utility", {})
+                                .get(layer)
+                            )
+                            is not None
+                            and summary.get(field) is not None
+                        ]
+                    )
+                    for layer in ("selected", "delivered")
+                    for field in ("mean", "min", "max", "median")
                 },
                 "runs": len(items),
                 "objective": stats(scores),

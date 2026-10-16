@@ -53,6 +53,7 @@ from app.agent.trip_profile import TripProfile, TripProfileUpdate
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import MapBox, Route_Payload
 from app.models.scheduling_policy import SchedulingPolicy
+from app.models.trip_limits import MAX_STOPS, MIN_STOPS
 from app.routers.car_api import get_car_details, get_gas_price
 from app.routers.itinerary_api import build_itinerary
 from app.routers.routing_api import plan_final_route
@@ -290,7 +291,8 @@ class AppToolDispatcher:
                         },
                         "num_stops": {
                             "type": "integer",
-                            "minimum": 0,
+                            "minimum": MIN_STOPS,
+                            "maximum": MAX_STOPS,
                             "description": "Number of attraction stops to insert.",
                         },
                         "budget": {
@@ -430,7 +432,11 @@ class AppToolDispatcher:
                     "properties": {
                         "start_address": {"type": "string"},
                         "destination_address": {"type": "string"},
-                        "num_stops": {"type": "integer", "minimum": 1, "maximum": 10},
+                        "num_stops": {
+                            "type": "integer",
+                            "minimum": MIN_STOPS,
+                            "maximum": MAX_STOPS,
+                        },
                         "traveler_count": {
                             "type": "integer",
                             "minimum": 1,
@@ -688,7 +694,7 @@ class AppToolDispatcher:
             "initial_route": initial_route,
             "traveler_count": trip.traveler_count,
             "hotel_rooms": [room.model_dump() for room in trip.hotel_rooms],
-            "num_stops": int(num_stops),
+            "num_stops": num_stops,
             "budget": float(budget),
             "scheduling_policy": trip.scheduling_policy.model_dump(),
             "start_timezone": trip.start_timezone,

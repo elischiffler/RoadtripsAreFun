@@ -1,5 +1,5 @@
-import PlaceSource from './PlaceSource';
-import { placeSourceLines } from './placeSource';
+import PlaceSource from './PlaceSource.jsx';
+import { placeSourceLines } from './placeSource.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import PropTypes from 'prop-types';

@@ -10,15 +10,29 @@ from app.routing.profiles import crossmatch
 from app.routing.sources.persona_candidates import LocationProfile
 
 ENDPOINTS = {
-    "sf": {"label": "San Francisco, California, USA", "coordinates": [37.7749, -122.4194]},
-    "monterey": {"label": "Monterey, California, USA", "coordinates": [36.6002, -121.8947]},
-    "la": {"label": "Los Angeles, California, USA", "coordinates": [34.0522, -118.2437]},
+    "sf": {
+        "label": "San Francisco, California, USA",
+        "coordinates": [37.7749, -122.4194],
+        "timezone": "America/Los_Angeles",
+    },
+    "monterey": {
+        "label": "Monterey, California, USA",
+        "coordinates": [36.6002, -121.8947],
+        "timezone": "America/Los_Angeles",
+    },
+    "la": {
+        "label": "Los Angeles, California, USA",
+        "coordinates": [34.0522, -118.2437],
+        "timezone": "America/Los_Angeles",
+    },
 }
 
 ENDPOINTS.update(
     {
         "san-diego": {"label": "San Diego, California, USA", "timezone": "America/Los_Angeles"},
         "boise": {"label": "Boise, Idaho, USA", "timezone": "America/Boise"},
+        "denver": {"label": "Denver, Colorado, USA", "timezone": "America/Denver"},
+        "nyc": {"label": "New York City, New York, USA", "timezone": "America/New_York"},
         "chicago": {"label": "Chicago, Illinois, USA", "timezone": "America/Chicago"},
         "ely": {"label": "Ely, Nevada, USA", "timezone": "America/Los_Angeles"},
         "reno": {"label": "Reno, Nevada, USA", "timezone": "America/Los_Angeles"},

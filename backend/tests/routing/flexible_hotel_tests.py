@@ -371,7 +371,7 @@ def test_http_final_detours_enforce_same_hard_limit(
             "initial_route": route.model_dump(mode="json"),
             "traveler_count": 2,
             "hotel_rooms": [{"adults": 2, "child_ages": []}],
-            "num_stops": 0,
+            "num_stops": 1,
             "budget": 200,
             "start": START.isoformat(),
             "scheduling_policy": {"late_driving": late},

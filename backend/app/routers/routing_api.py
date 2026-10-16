@@ -261,6 +261,7 @@ async def plan_final_route(
             for leg in route.legs:
                 if idx < len(stopping_points) and stopping_points[idx]["type"] != "generic":
                     stopping_points[idx]["duration"] = leg.duration
+                    stopping_points[idx]["distance"] = leg.distance
                     if stopping_points[idx].get("address") is None:
                         location = await retry_async(
                             lambda: threaded(
@@ -285,6 +286,7 @@ async def plan_final_route(
                         {
                             "name": "Arrive at your destination",
                             "duration": leg.duration,
+                            "distance": leg.distance,
                             "type": "end",
                             "coordinates": [end_lat, end_lon],
                             "address": location.address if location else None,

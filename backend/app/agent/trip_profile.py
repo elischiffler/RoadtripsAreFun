@@ -34,14 +34,13 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from app.agent.persona import validate_weight_update
 from app.agent.trip_dates import PendingDeparture, normalize_departure_time
 from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
+from app.models.trip_limits import MAX_STOPS, MIN_STOPS
 from app.routing.occupancy import HotelRoom, HotelRooms, TravelerCount
 from app.utils.location_resolution import PendingLocation
 
 logger = logging.getLogger(__name__)
 
-# Bounds mirrored from the routing contract (num_stops is validated 1..10).
-MIN_STOPS = 1
-MAX_STOPS = 10
+
 CarStatus = Literal["unanswered", "skipped", "provided"]
 
 
@@ -104,7 +103,7 @@ class TripProfile(BaseModel):
     start_timezone: str | None = None  # IANA name from the start geocode
     destination_address: str | None = None
     destination_coords: list[float] | None = None  # [lat, lon]
-    num_stops: int | None = None  # 1..10
+    num_stops: int | None = Field(default=None, strict=True)  # shared configurable attraction limit
     traveler_count: TravelerCount | None = None
     hotel_rooms: HotelRooms | None = None
     budget: float | None = None  # nightly hotel budget, USD
@@ -310,7 +309,7 @@ class TripProfileUpdate(BaseModel):
     start_coords: list[float] | None = None
     destination_address: str | None = None
     destination_coords: list[float] | None = None
-    num_stops: int | None = None
+    num_stops: int | None = Field(default=None, strict=True)
     traveler_count: TravelerCount | None = None
     hotel_rooms: HotelRooms | None = None
     budget: float | None = None

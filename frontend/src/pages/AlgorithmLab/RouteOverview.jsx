@@ -1,4 +1,4 @@
-import PlaceSource from '../../components/PlaceSource';
+import PlaceSource from '../../components/PlaceSource.jsx';
 import PropTypes from 'prop-types';
 import Map from '../../components/Map';
 

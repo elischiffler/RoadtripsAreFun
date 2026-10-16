@@ -85,7 +85,7 @@ def test_catalog_only_exposes_live_trip_inputs(headers):
 @pytest.mark.parametrize(
     "patch",
     [
-        {"num_stops": 11},
+        {"num_stops": 31},
         {"num_stops": 0},
         {"budget": -1},
         {"budget": "NaN"},
