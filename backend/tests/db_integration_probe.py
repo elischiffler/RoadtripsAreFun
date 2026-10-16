@@ -336,10 +336,10 @@ def verify():
     )
     restored_log = ChatLogSchema.model_validate(chat_crud.get_chat(OWNER_A, CHAT_ID)["chat_log"])
     assert restored_log.messages[0].presentation is None
-    assert restored_log.messages[1].presentation.updated == ["Hotel budget: $200 per night"]
-    assert restored_log.messages[1].presentation.needed == ["What date would you like to leave?"]
-    assert restored_log.messages[1].presentation.introduction == "A few details remain."
-    assert restored_log.messages[1].presentation.questions == [
+    assert restored_log.messages[1].presentation["updated"] == ["Hotel budget: $200 per night"]
+    assert restored_log.messages[1].presentation["needed"] == ["What date would you like to leave?"]
+    assert restored_log.messages[1].presentation["introduction"] == "A few details remain."
+    assert restored_log.messages[1].presentation["questions"] == [
         "Which evening interests would you like suggestions for (optional)?"
     ]
     assert chat_crud.get_segments(OWNER_A, CHAT_ID, ROUTE_A) == GOOD_COORDS
