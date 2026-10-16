@@ -201,11 +201,20 @@ def _additions(payload, reader, *, max_rows):
         raise ValueError("incremental additions require a bounded typed source list")
     if not inputs:
         return [], [], [], 0, 0
-    from app.catalog import kaggle_cultural, kaggle_ny_markets
+    from app.catalog import (
+        kaggle_ca_markets,
+        kaggle_coastal,
+        kaggle_cultural,
+        kaggle_ny_markets,
+        kaggle_ny_markets_more,
+    )
 
     adapters = {
         "kaggle-cultural": kaggle_cultural.prepare,
         "kaggle-ny-markets": kaggle_ny_markets.prepare,
+        "kaggle-ca-markets": kaggle_ca_markets.prepare,
+        "kaggle-coastal": kaggle_coastal.prepare,
+        "kaggle-ny-markets-more": kaggle_ny_markets_more.prepare,
     }
     rows, entries, reports, scanned, size = [], [], [], 0, 0
     for item in inputs:
