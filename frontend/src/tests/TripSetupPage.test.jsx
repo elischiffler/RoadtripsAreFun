@@ -173,3 +173,16 @@ it('discards a late planning result after account sign-out', async () => {
   await waitFor(() => expect(planStructuredRoute).toHaveBeenCalledTimes(1));
   expect(ensureChatCreated).not.toHaveBeenCalled();
 });
+
+it('saves a fractional nightly target without rounding into the legacy integer slot', async () => {
+  const fractional = { ...draft, budget: '150.25' };
+  sessionStorage.setItem(
+    'roadtrips.setup.v1.' + encodeURIComponent(getSession().owner),
+    JSON.stringify({ version: 1, draft: fractional, step: 4 })
+  );
+  await confirm();
+  await screen.findByText('Trip saved.');
+  const snapshot = ensureChatCreated.mock.calls[0][1];
+  expect(snapshot.hotelBudget).toBeNull();
+  expect(snapshot.tripProfile.budget).toBe(150.25);
+});

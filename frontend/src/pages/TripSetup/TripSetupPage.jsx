@@ -123,7 +123,7 @@ export default function TripSetupPage() {
         startCoords: [origin.latitude, origin.longitude],
         endCoords: [destination.latitude, destination.longitude],
         stops: Number(proposal.draft.stops),
-        hotelBudget: Number(proposal.draft.budget),
+        // Preserve fractional targets in tripProfile; the legacy hotelBudget slot is integer-only.
         carDetails: [proposal.draft.year, proposal.draft.make, proposal.draft.model],
         isComplete: false,
         tripProfile: {

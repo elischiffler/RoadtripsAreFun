@@ -168,7 +168,23 @@ await page.route("**/*", async (intercepted) => {
   }
   if (path === "/get-initial-route") {
     assert.equal(url.searchParams.get("start_lat"), String(origin.latitude));
-    return json({ geometry: route.geometry, distance: 160000, duration: 7200 });
+    return json({
+      geometry: route.geometry,
+      distance: 160000,
+      duration: 7200,
+      weight: 7200,
+      weight_name: "duration",
+      legs: [
+        {
+          admins: [],
+          weight: 7200,
+          duration: 7200,
+          steps: [],
+          distance: 160000,
+          summary: "fixture",
+        },
+      ],
+    });
   }
   if (path === "/generate-final-route") {
     finalPayload = request.postDataJSON();
@@ -195,6 +211,8 @@ await page.route("**/*", async (intercepted) => {
     const data = request.postDataJSON();
     assert.notEqual(data.ChatData.chatId, 7);
     assert.deepEqual(data.ChatLog.messages, []);
+    assert.equal(data.ChatData.hotelBudget, null);
+    assert.equal(data.ChatData.tripProfile.budget, 150.25);
     assert.equal(
       rows.some(([record]) => record.chatId === data.ChatData.chatId),
       false,
@@ -252,6 +270,9 @@ try {
   await page.getByLabel("Destination", { exact: true }).fill("Denver");
   await page.getByLabel("Departure date", { exact: true }).fill("2027-06-01");
   await page.getByRole("button", { name: "Next", exact: true }).click();
+  await page
+    .getByLabel("Hotel target per room, per night (USD)", { exact: true })
+    .fill("150.25");
   await page.getByRole("button", { name: "Next", exact: true }).click();
   await page.getByRole("checkbox", { name: "Food", exact: true }).check();
   await page.reload();
@@ -349,6 +370,10 @@ try {
         origin === "https://fonts.gstatic.com",
     ),
     "Unexpected external service was requested; every external request is blocked",
+  );
+  await fs.writeFile(
+    join(out, "contract-fixture.json"),
+    JSON.stringify({ trip: rows.at(-1), route_payload: finalPayload }),
   );
   await fs.writeFile(
     join(out, "browser-results.json"),
