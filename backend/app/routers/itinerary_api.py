@@ -9,7 +9,7 @@ from app.agent.progress import stage
 from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time
 from app.routing.base import PlanningError
-from app.routing.catalog_calendars import refresh_for_timing
+from app.routing.catalog_calendars import CatalogLookup, refresh_for_timing
 from app.routing.sources.evenings import current_suggestions
 from app.routing.travel_timing import apply_timing
 from app.routing.visit_calendar import requires_calendar
@@ -49,12 +49,17 @@ async def generate_itinerary(request: Request) -> list[Itinerary_Day]:
         raise HTTPException(status_code=error.status_code, detail=error.detail)
 
 
-async def build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
+async def build_itinerary(
+    data: Itinerary_Payload, *, catalog_lookup: CatalogLookup | None = None
+) -> list[Itinerary_Day]:
+    """Build with live access facts by default; frozen adapters are server-only."""
     with stage("itinerary.build"):
-        return await _build_itinerary(data)
+        return await _build_itinerary(data, catalog_lookup=catalog_lookup)
 
 
-async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
+async def _build_itinerary(
+    data: Itinerary_Payload, *, catalog_lookup: CatalogLookup | None = None
+) -> list[Itinerary_Day]:
     """Build a day-by-day itinerary from a validated :class:`Itinerary_Payload`.
 
     The core itinerary logic, factored out of :func:`generate_itinerary` so both
@@ -71,7 +76,7 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
     Raises:
         HTTPException: if the route is incomplete or the data can't be processed.
     """
-    await refresh_for_timing(data.route.stops or [])
+    await refresh_for_timing(data.route.stops or [], catalog_lookup=catalog_lookup)
     if data.route.scheduling_policy is None and any(
         requires_calendar(stop) for stop in data.route.stops or []
     ):
