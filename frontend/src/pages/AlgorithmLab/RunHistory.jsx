@@ -1,4 +1,5 @@
 import RunError from './RunError';
+import ComparisonCharts from './ComparisonCharts';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { getLabRuns, labError } from '../../services/algorithmLab';
@@ -59,6 +60,7 @@ export default function RunHistory({ revision }) {
               ({data.page_summary.completion_assessed} finished runs assessed).
             </p>
           )}
+          <ComparisonCharts rows={data.runs} />
           <div className="lab-table-scroll">
             <table>
               <thead>
@@ -167,7 +169,7 @@ export default function RunHistory({ revision }) {
                                 <p key={label}>
                                   {label.replaceAll('_', ' ')}:{' '}
                                   {stats
-                                    ? `${stats.mean.toFixed(2)} ± ${stats.stddev.toFixed(2)}; min ${stats.min.toFixed(2)}, max ${stats.max.toFixed(2)} (${stats.count} assessed)`
+                                    ? `${stats.mean.toFixed(2)} ± ${stats.stddev.toFixed(2)}; min ${stats.min.toFixed(2)}, max ${stats.max.toFixed(2)}, median ${stats.median?.toFixed(2) ?? 'unassessed'} (${stats.count} assessed)`
                                     : 'Unassessed'}
                                 </p>
                               ))}

@@ -1,5 +1,5 @@
-import PlaceSource from '../../components/PlaceSource';
-import PlaceTiming from '../../components/PlaceTiming';
+import PlaceSource from '../../components/PlaceSource.jsx';
+import PlaceTiming from '../../components/PlaceTiming.jsx';
 import PropTypes from 'prop-types';
 import Map from '../../components/Map';
 

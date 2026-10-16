@@ -18,7 +18,76 @@ export default function TripEvaluation({ metrics }) {
   return (
     <section aria-label="Trip evaluation">
       <h3>Trip evaluation</h3>
+      <p className="lab-note">
+        {metrics.metric_version ?? 'Older metric version'} · Evidence:{' '}
+        {metrics.evidence_layer?.replaceAll('_', ' ') ?? 'Not recorded'}
+      </p>
       <dl className="lab-metrics">
+        <div>
+          <dt>Selected attraction utility · mean / min / max / median</dt>
+          <dd>
+            {['mean', 'min', 'max', 'median']
+              .map((key) =>
+                value(
+                  trip.utility?.selected?.[key] == null ? null : trip.utility.selected[key] * 100,
+                  '%'
+                )
+              )
+              .join(' / ')}
+          </dd>
+        </div>
+        <div>
+          <dt>Delivered attraction utility · mean / min / max / median</dt>
+          <dd>
+            {['mean', 'min', 'max', 'median']
+              .map((key) =>
+                value(
+                  trip.utility?.delivered?.[key] == null ? null : trip.utility.delivered[key] * 100,
+                  '%'
+                )
+              )
+              .join(' / ')}
+          </dd>
+        </div>
+        <div>
+          <dt>Maximum selection baseline gap</dt>
+          <dd>
+            {value(
+              metrics.selection_measurements?.maximum_baseline_gap_seconds == null
+                ? null
+                : metrics.selection_measurements.maximum_baseline_gap_seconds / 3600,
+              ' hours'
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Longest actual driving stretch</dt>
+          <dd>
+            {value(
+              trip.driving_gaps?.maximum_stretch_seconds == null
+                ? null
+                : trip.driving_gaps.maximum_stretch_seconds / 3600,
+              ' hours'
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Longest attraction-free driving gap</dt>
+          <dd>
+            {value(
+              trip.driving_gaps?.maximum_attraction_gap_seconds == null
+                ? null
+                : trip.driving_gaps.maximum_attraction_gap_seconds / 3600,
+              ' hours'
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Nightly room-target utilization</dt>
+          <dd>
+            {value(hotels.budget_utilization == null ? null : hotels.budget_utilization * 100, '%')}
+          </dd>
+        </div>
         <div>
           <dt>Extra driving distance</dt>
           <dd>
@@ -55,6 +124,26 @@ export default function TripEvaluation({ metrics }) {
             {value(schedule.itinerary_days)} / {value(schedule.overnights)}
           </dd>
         </div>
+        {trip.scenario_target?.target_days != null && (
+          <div>
+            <dt>Scenario days / daily attraction target</dt>
+            <dd>
+              {value(trip.scenario_target.target_days)} days ·{' '}
+              {value(trip.scenario_target.target_stops_per_day)} stops/day · Days:{' '}
+              {trip.scenario_target.days_met == null
+                ? 'Unassessed'
+                : trip.scenario_target.days_met
+                  ? 'Pass'
+                  : 'Fail'}{' '}
+              · Density:{' '}
+              {trip.scenario_target.density_met == null
+                ? 'Unassessed'
+                : trip.scenario_target.density_met
+                  ? 'Pass'
+                  : 'Fail'}
+            </dd>
+          </div>
+        )}
         <div>
           <dt>Final arrival</dt>
           <dd>

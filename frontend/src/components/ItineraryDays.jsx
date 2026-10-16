@@ -1,5 +1,5 @@
-import PlaceSource from './PlaceSource';
-import PlaceTiming from './PlaceTiming';
+import PlaceSource from './PlaceSource.jsx';
+import PlaceTiming from './PlaceTiming.jsx';
 import { Box, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import '../pages/ItineraryPage/ItineraryPage.css';

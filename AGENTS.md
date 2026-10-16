@@ -23,7 +23,12 @@ infer them from the local test or use production data to clear local gates.
 [Validation](docs/container-validation.md) records passed and blocked checks.
 Preserve thresholds and baseline failures.
 
-Use task branches and PRs, never merge or push main. Draft PRs are appropriate
+Use task branches from `develop` and target feature PRs at `develop`. Release
+through a reviewed `develop` to `main` PR after release-owner coordination; never
+push main directly. Main remains the production deployment branch. See
+[branch workflow](docs/branch-workflow.md). Draft PRs are appropriate
 while required verification is blocked. CI runs on every PR/main change without
 production credentials; repository settings must be checked separately before
-claiming enforcement. No new production Docker deployment is configured.
+claiming enforcement. Backend production releases follow
+[the EC2 deployment contract](docs/ec2-deployment.md); see
+[operations context](.steering/operations.md) for dated verified runtime state.

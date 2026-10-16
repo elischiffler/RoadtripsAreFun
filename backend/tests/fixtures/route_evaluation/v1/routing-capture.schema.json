@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "capture_id": {
+      "minLength": 1,
+      "title": "Capture Id",
+      "type": "string"
+    },
+    "provider": {
+      "minLength": 1,
+      "title": "Provider",
+      "type": "string"
+    },
+    "profile": {
+      "minLength": 1,
+      "title": "Profile",
+      "type": "string"
+    },
+    "departure_context": {
+      "format": "date-time",
+      "title": "Departure Context",
+      "type": "string"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "capture_id",
+    "provider",
+    "profile",
+    "departure_context",
+    "captured_at"
+  ],
+  "title": "RoutingCapture",
+  "type": "object"
+}
