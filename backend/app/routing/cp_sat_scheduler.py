@@ -20,9 +20,9 @@ from app.routing.occupancy import require_occupancy
 from app.routing.runtime import threaded
 from app.routing.services import RoutingServices
 from app.routing.visit_calendar import VisitCalendarConflict, requires_calendar, solve_visit
+from app.routing.visit_duration import visit_seconds
 
 MapBox_route = MapBox.MapBox_Route
-_VISIT_SECONDS = 2 * 3600
 _MAX_HOTEL_ATTEMPTS = 6
 _RETRY_DRIVE_SECONDS = 1800
 _MAX_HOTELS = 30
@@ -132,15 +132,17 @@ async def schedule_cp_sat_route(
     for event_index, (target, attraction) in enumerate(events):
         while True:
             drive_left = max(0.0, target - elapsed)
-            visit = _VISIT_SECONDS if attraction is not None else 0
+            visit = visit_seconds(attraction) if attraction is not None else 0
             position = (
                 attraction["coordinates"]
                 if attraction
                 else [coordinates[-1][1], coordinates[-1][0]]
             )
             event_zone = await zone_at(position)
-            remaining_visits = sum(item is not None for _, item in events[event_index:])
-            finish_seconds = total_drive - elapsed + remaining_visits * _VISIT_SECONDS
+            remaining_visits = sum(
+                visit_seconds(item) for _, item in events[event_index:] if item is not None
+            )
+            finish_seconds = total_drive - elapsed + remaining_visits
             can_finish = (
                 finish_seconds
                 <= seconds_until(now, policy.deadline(travel_day, end_zone, final=True)) + 1e-6
@@ -179,6 +181,7 @@ async def schedule_cp_sat_route(
                             "url": attraction.get("url"),
                             "timezone": getattr(event_zone, "key", None),
                             "availability": availability,
+                            "visit_duration": attraction.get("visit_duration"),
                         }
                     )
                 break

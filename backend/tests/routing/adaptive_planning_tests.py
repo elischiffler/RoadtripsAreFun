@@ -503,6 +503,21 @@ async def test_discovery_rating_and_road_solver_dependency_barriers(
     class BarrierPlaces(Places):
         async def attractions_near(self, point):
             result = await super().attractions_near(point)
+            for item in result:
+                item["source_provenance"] = [
+                    {
+                        "dataset": "Synthetic dependency fixture",
+                        "source_visit_calendar": {
+                            "schema_version": "roadtrips-source-visit-calendar/1",
+                            "weekly_windows": [
+                                {"weekdays": list(range(7)), "opens": "00:00", "closes": "23:59"}
+                            ],
+                            "source_receipts": [
+                                {"source_url": "https://operator.example/synthetic-barrier"}
+                            ],
+                        },
+                    }
+                ]
             completed_queries.append(tuple(point))
             return result
 
@@ -538,6 +553,11 @@ async def test_discovery_rating_and_road_solver_dependency_barriers(
 
     services.cp_sat_candidates, services.candidate_route = discovery, road
     services.cp_sat_hotels = schedule
+
+    async def timezone(_point):
+        return "Etc/UTC"
+
+    services.timezone_at = timezone
     monkeypatch.setattr(CPSatPlanner, "_select", staticmethod(select))
     monkeypatch.setattr("app.routing.planners.cp_sat.schedule_cp_sat_route", schedule)
     await CPSatPlanner().plan(route, PlanOptions(2, 100, start_date), services)

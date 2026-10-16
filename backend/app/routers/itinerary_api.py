@@ -13,6 +13,7 @@ from app.routing.catalog_calendars import CatalogLookup, refresh_for_timing
 from app.routing.sources.evenings import current_suggestions
 from app.routing.travel_timing import apply_timing
 from app.routing.visit_calendar import requires_calendar
+from app.routing.visit_duration import visit_seconds
 from app.utils.auth import require_authenticated_user
 
 # Initialize FastAPI
@@ -125,6 +126,10 @@ async def _build_itinerary(
             "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
             "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
             "name": stop["name"],
+            "type": stop["type"],
+            "arrival_time": stop.get("arrival_time"),
+            "departure_time": stop.get("departure_time"),
+            "visit_duration": stop.get("visit_duration"),
             "provider_id": stop.get("provider_id"),
             "source": stop.get("source"),
             "source_release": stop.get("source_release"),
@@ -213,19 +218,25 @@ async def _build_itinerary(
                     "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
                     "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
                     "name": "Depart from your hotel",
+                    "paired_departure": bool(
+                        stop.get("arrival_time") and stop.get("departure_time")
+                    ),
                 }
             )
         elif stop["type"] == "stop":
             current_time = (
                 datetime.fromisoformat(stop["departure_time"])
                 if data.route.scheduling_policy is not None
-                else advance(current_time, 7200)
+                else advance(current_time, visit_seconds(stop))
             )
             stop_list.append(
                 {
                     "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
                     "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
                     "name": "Depart from the stop",
+                    "paired_departure": bool(
+                        stop.get("arrival_time") and stop.get("departure_time")
+                    ),
                 }
             )
     if len(stop_list) >= 2:
@@ -255,6 +266,11 @@ async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]
         for stop in itinerary:
             point = {
                 "name": stop["name"],
+                "type": stop.get("type"),
+                "arrival_time": stop.get("arrival_time"),
+                "departure_time": stop.get("departure_time"),
+                "visit_duration": stop.get("visit_duration"),
+                "paired_departure": stop.get("paired_departure", False),
                 "source": stop.get("source"),
                 "provider_id": stop.get("provider_id"),
                 "source_release": stop.get("source_release"),

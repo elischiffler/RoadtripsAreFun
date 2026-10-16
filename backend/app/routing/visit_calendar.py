@@ -1,7 +1,7 @@
 """Source calendars and hard CP-SAT visit windows; no inferred opening hours.
 
-Calendars describe published access, not ticket inventory or reservations. The
-two-hour dwell is the planner's existing policy, never a claim by the source.
+Calendars describe published access, not ticket inventory or reservations.
+Visit dwell is a planning estimate, never a claim by the source.
 Weekly windows and normalized seasonal ranges are alternatives; importers must
 intersect conflicting source restrictions before emitting this contract.
 """
@@ -19,9 +19,10 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_valida
 from app.agent.trip_dates import _localize
 from app.models.scheduling_policy import advance, seconds_until
 from app.routing.base import PlanningError
+from app.routing.visit_duration import LEGACY_VISIT_SECONDS, dwell_source, visit_seconds
 
 SCHEMA = "roadtrips-source-visit-calendar/1"
-VISIT_SECONDS = 7200
+VISIT_SECONDS = LEGACY_VISIT_SECONDS  # Compatibility for saved trips and older adapters.
 _TICKS = 1_000_000  # Datetime precision; fractional road legs must not move fixed starts.
 
 
@@ -139,7 +140,7 @@ def source_calendar(record: dict) -> Calendar | None:
 
 
 def requires_calendar(record: dict) -> bool:
-    """Identify timed venues; ordinary outdoor legacy records keep explicit unknown hours."""
+    """Identify timed venues; ordinary outdoor records keep explicit unknown hours."""
     return (
         str(record.get("provider_id", "")).startswith(("usda-market:", "wikidata-park:"))
         or bool(set(record.get("categories", [])) & {"food", "culture", "nightlife"})
@@ -224,13 +225,16 @@ def open_intervals(calendar: Calendar, earliest: datetime, deadline: datetime, z
     return result
 
 
-def solve_visit(record: dict, earliest: datetime, deadline: datetime, *, dwell=VISIT_SECONDS):
+def solve_visit(record: dict, earliest: datetime, deadline: datetime, *, dwell=None):
     """Choose the earliest feasible start with hard CP-SAT window/dwell constraints.
 
     No objective penalty permits a closed visit. The bounded temporal subproblem
     feeds conflicts back into attraction reselection, and runs again after final
     road routing. Ticket/booking availability always remains unknown.
     """
+    dwell = visit_seconds(record) if dwell is None else dwell
+    if not math.isfinite(dwell) or dwell <= 0:
+        raise VisitCalendarConflict(record.get("provider_id", "unknown"), "invalid visit duration")
     if not requires_calendar(record):
         return earliest, {"status": "unknown", "ticket_availability": "unknown"}
     provider_id = record.get("provider_id", "unknown")
@@ -293,7 +297,7 @@ def solve_visit(record: dict, earliest: datetime, deadline: datetime, *, dwell=V
         "visit_end": advance(visit_start, dwell).isoformat(),
         "wait_seconds": wait_seconds,
         "dwell_seconds": dwell,
-        "dwell_source": "planner_policy",
+        "dwell_source": dwell_source(record),
         "ticket_availability": "unknown",
         "source_receipts": calendar.source_receipts,
     }

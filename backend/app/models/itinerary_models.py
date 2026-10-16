@@ -23,6 +23,11 @@ class Itinerary_Day(BaseModel):
         availability: dict | None = None
         name: str
         time: str
+        type: str | None = None
+        arrival_time: str | None = None
+        departure_time: str | None = None
+        visit_duration: dict | None = None
+        paired_departure: bool = False
         address: str | None = None
         url: str | None = None
         price: float | None = None

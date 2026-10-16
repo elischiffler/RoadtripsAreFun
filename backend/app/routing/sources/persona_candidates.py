@@ -14,7 +14,7 @@ from datetime import date, datetime
 from typing import Any, Literal, Protocol
 
 from geopy.distance import geodesic
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.agent.persona import ATTRIBUTE_KEYS, normalize_weights
 from app.agent.progress import emit, stage
@@ -43,8 +43,10 @@ from app.routing.runtime import (
     singleflight,
     threaded,
 )
+from app.routing.sources.visit_durations import estimate_durations
 from app.routing.trip_calendar import TripCalendar
 from app.routing.visit_calendar import calendar_eligible
+from app.routing.visit_duration import MIN_VISIT_SECONDS
 
 MAX_ATTRACTIONS = 60
 MAX_HOTELS = 10
@@ -92,6 +94,8 @@ class VerifiedPlace(BaseModel):
     address: str | None = None
     url: str | None = None
     categories: list[str] = []
+    activities: list[str] = Field(default_factory=list, max_length=20)
+    description: str | None = Field(default=None, max_length=2000)
     provider_rank: int = 0
     source: str | None = None
     source_release: str | None = None
@@ -310,6 +314,8 @@ def _candidate(
                 "address",
                 "url",
                 "categories",
+                "activities",
+                "description",
                 "provider_rank",
                 "source",
                 "source_release",
@@ -337,6 +343,7 @@ async def attraction_candidates(
     *,
     ai: LLMProvider | None = None,
     places: PlaceProvider | None = None,
+    duration_estimator=estimate_durations,
 ) -> DiscoveryResult:
     """Discover attractions along the baseline route and calculate their match scores.
 
@@ -411,7 +418,7 @@ async def attraction_candidates(
                 continue
             if _distance_miles(point, place.coordinates) > _ATTRACTION_RADIUS_MI:
                 continue
-            if not await calendar_ok(place.model_dump()):
+            if not await calendar_ok(place.model_dump(), before_estimate=True):
                 calendar_excluded.append(place.provider_id)
                 continue
             projection = measure.project(place.coordinates, query.progress_seconds)
@@ -422,6 +429,9 @@ async def attraction_candidates(
                     "source_query_ids": [query.id],
                     "projection": projection,
                     "provider_rank": place.provider_rank or rank,
+                    "fallback_visit_fits": await plan.trip_calendar.eligible(place.model_dump())
+                    if plan.trip_calendar
+                    else True,
                 }
             )
         emit(
@@ -434,12 +444,19 @@ async def attraction_candidates(
         )
         return output, calendar_excluded
 
-    async def calendar_ok(record):
-        return (
-            await plan.trip_calendar.eligible(record)
+    async def calendar_ok(record, *, before_estimate=False):
+        fits = (
+            await plan.trip_calendar.eligible(
+                record, dwell=MIN_VISIT_SECONDS if before_estimate else None
+            )
             if plan.trip_calendar
             else calendar_eligible(record)
         )
+        if not fits and not before_estimate:
+            explanation["calendar_excluded_provider_ids"] = sorted(
+                set(explanation["calendar_excluded_provider_ids"]) | {record["provider_id"]}
+            )
+        return fits
 
     async def rate(batch):
         """Rate a batch of verified places and return candidates with match scores."""
@@ -500,7 +517,7 @@ async def attraction_candidates(
                     **item["projection"],
                 )
                 output.append(candidate)
-        return output, attempts
+        return await duration_estimator(output, weights, ai), attempts
 
     while ready:
         frozen_queries = []
@@ -546,7 +563,11 @@ async def attraction_candidates(
             ranked,
             plan.raw_pool_cap,
             plan.section_count,
-            lambda item: (item["variety_order"], item["place"].provider_id),
+            lambda item: (
+                not item["fallback_visit_fits"],
+                item["variety_order"],
+                item["place"].provider_id,
+            ),
         )
         raw = {item["place"].provider_id: item for item in pool}
         remaining = plan.rating_cap - len(attempted)
@@ -556,7 +577,11 @@ async def attraction_candidates(
             [item for item in pool if item["place"].provider_id not in attempted],
             capacity,
             plan.section_count,
-            lambda item: (item["variety_order"], item["place"].provider_id),
+            lambda item: (
+                not item["fallback_visit_fits"],
+                item["variety_order"],
+                item["place"].provider_id,
+            ),
         )
         attempted.update(item["place"].provider_id for item in frozen)
         batches = [
@@ -813,7 +838,7 @@ class LivePlaceProvider:
 
     async def _trip_attractions(self, point, trip_calendar):
         """Bounded pages; only valid full-dwell candidates consume result slots."""
-        output, excluded, cursor = [], [], None
+        output, tight, excluded, cursor = [], [], [], None
         while True:
             increment("catalog")
             try:
@@ -839,15 +864,18 @@ class LivePlaceProvider:
                     or _distance_miles(point, place.coordinates) > _ATTRACTION_RADIUS_MI
                 ):
                     continue
-                if not await trip_calendar.eligible(place.model_dump()):
+                if not await trip_calendar.eligible(place.model_dump(), dwell=MIN_VISIT_SECONDS):
                     excluded.append(place.provider_id)
                     continue
-                output.append(place)
+                if await trip_calendar.eligible(place.model_dump()):
+                    output.append(place)
+                elif len(tight) < MAX_ATTRACTIONS:
+                    tight.append(place)
                 if len(output) == MAX_ATTRACTIONS:
                     return CalendarFilteredPlaces(output, excluded)
             cursor = page.next_cursor
             if cursor is None:
-                return CalendarFilteredPlaces(output, excluded)
+                return CalendarFilteredPlaces((output + tight)[:MAX_ATTRACTIONS], excluded)
 
     async def hotels_near(
         self,

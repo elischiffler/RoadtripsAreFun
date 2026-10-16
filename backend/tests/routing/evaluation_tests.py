@@ -77,6 +77,20 @@ def write_fixture(root, count=3, duration=3600):
             "section_id": 0,
             "source": "synthetic_unit_only",
             "categories": [],
+            "source_provenance": [
+                {
+                    "dataset": "Synthetic evaluation window; not real opening-hour evidence",
+                    "source_visit_calendar": {
+                        "schema_version": "roadtrips-source-visit-calendar/1",
+                        "weekly_windows": [
+                            {"weekdays": list(range(7)), "opens": "08:00", "closes": "20:00"}
+                        ],
+                        "source_receipts": [
+                            {"source_url": "https://operator.example/synthetic-evaluation"}
+                        ],
+                    },
+                }
+            ],
         }
         request = [coords(0), item["coordinates"], coords(1)]
         item["solo_route_key"] = route_key(request)
@@ -444,8 +458,11 @@ def test_final_timing_failure_retains_measured_route_and_raw_selection(tmp_path)
     data, manifest = write_fixture(root)
     for record in data["routes"].values():
         if len(record["request_coordinates"]) == 4:
-            for leg in record["response"]["legs"]:
-                leg["duration"] = 5 * 3600
+            # Keep both visits within their explicit fixture opening windows;
+            # only the final leg overruns the driving cutoff. A closed visit
+            # correctly triggers calendar reselection instead of this failure.
+            for leg, hours in zip(record["response"]["legs"], (1, 1, 13)):
+                leg["duration"] = hours * 3600
             record["response"]["duration"] = 15 * 3600
     save_fixture(root, data, manifest)
     request = spec(tmp_path, "offline-pipeline")

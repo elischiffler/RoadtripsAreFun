@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time, seconds_until
 from app.routing.base import PlanningError
 from app.routing.visit_calendar import VisitCalendarConflict, requires_calendar, solve_visit
+from app.routing.visit_duration import visit_seconds
 
 
 def apply_timing(
@@ -40,7 +41,7 @@ def apply_timing(
                 wait_seconds=max(0, seconds_until(road_arrival, arrival)),
                 availability=availability,
             )
-        departure = advance(arrival, 7200) if stop["type"] == "stop" else arrival
+        departure = advance(arrival, visit_seconds(stop)) if stop["type"] == "stop" else arrival
         if seconds_until(departure, deadline) < -1e-6:
             raise PlanningError(
                 f"Final route exceeds the daily driving window: {stop['name']} reaches "

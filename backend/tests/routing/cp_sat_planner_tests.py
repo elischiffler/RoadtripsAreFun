@@ -67,7 +67,32 @@ def configure(fake_services, attractions=(), hotels=()):
     async def candidates(route, plan, weights):
         calls["attractions"].append((route, [q.coordinates for q in plan.queries], weights))
         return DiscoveryResult(
-            [{**item, **project_place(route, item["coordinates"])} for item in attractions], {}
+            [
+                {
+                    **item,
+                    **project_place(route, item["coordinates"]),
+                    "source_provenance": [
+                        {
+                            "dataset": "Synthetic planner fixture hours",
+                            "source_visit_calendar": {
+                                "schema_version": "roadtrips-source-visit-calendar/1",
+                                "weekly_windows": [
+                                    {
+                                        "weekdays": list(range(7)),
+                                        "opens": "00:00",
+                                        "closes": "23:59",
+                                    }
+                                ],
+                                "source_receipts": [
+                                    {"source_url": "https://operator.example/synthetic-planner"}
+                                ],
+                            },
+                        }
+                    ],
+                }
+                for item in attractions
+            ],
+            {},
         )
 
     async def hotel_candidates(position, check_in, price_range, weights, hotel_rooms):
@@ -84,6 +109,11 @@ def configure(fake_services, attractions=(), hotels=()):
     services.candidate_route = roads
     services.cp_sat_candidates = candidates
     services.cp_sat_hotels = hotel_candidates
+
+    async def timezone(_point):
+        return "Etc/UTC"  # Explicit fixture zone; these are not live geography assertions.
+
+    services.timezone_at = timezone
     return services, calls
 
 

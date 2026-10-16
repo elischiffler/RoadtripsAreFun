@@ -28,8 +28,10 @@ from app.routing.sources.persona_candidates import (
     LivePlaceProvider,
     attraction_candidates,
 )
+from app.routing.sources.visit_durations import duration_context, duration_context_hash
 from app.routing.travel_timing import apply_timing
 from app.routing.visit_calendar import VisitCalendarConflict, calendar_eligible
+from app.routing.visit_duration import MIN_VISIT_SECONDS, fallback_duration
 
 
 class FrozenProviders(LivePlaceProvider):
@@ -67,7 +69,7 @@ class FrozenProviders(LivePlaceProvider):
         self.count("captured_catalog_queries")
         # Filter the complete immutable subset before the same five-mile/60 quota.
         # Otherwise closed venues could consume the slots of usable destinations.
-        output, excluded = [], []
+        output, tight, excluded = [], [], []
         for item in sorted(
             self.data["attractions"],
             key=lambda item: (item.get("provider_rank", 0), item["provider_id"]),
@@ -75,19 +77,24 @@ class FrozenProviders(LivePlaceProvider):
             if geodesic(point, item["coordinates"]).miles > 5:
                 continue
             usable = (
-                await trip_calendar.eligible(item)
+                await trip_calendar.eligible(item, dwell=MIN_VISIT_SECONDS)
                 if trip_calendar is not None
                 else not require_visit_calendar or calendar_eligible(item)
             )
             if not usable:
                 excluded.append(item["provider_id"])
                 continue
-            output.append(
-                {**copy.deepcopy(item), "name": f"__capture_id__{fingerprint(item['provider_id'])}"}
-            )
+            aliased = {
+                **copy.deepcopy(item),
+                "name": f"__capture_id__{fingerprint(item['provider_id'])}",
+            }
+            if trip_calendar is None or await trip_calendar.eligible(item):
+                output.append(aliased)
+            elif len(tight) < 60:
+                tight.append(aliased)
             if len(output) == 60:
                 break
-        return CalendarFilteredPlaces(output, excluded)
+        return CalendarFilteredPlaces((output + tight)[:60], excluded)
 
     def complete(self, messages, tools):
         self.count("captured_rating_reads")
@@ -111,7 +118,9 @@ class FrozenProviders(LivePlaceProvider):
         )
 
     async def candidates(self, route, plan, weights):
-        result = await attraction_candidates(route, plan, weights, ai=self, places=self)
+        result = await attraction_candidates(
+            route, plan, weights, ai=self, places=self, duration_estimator=self.durations
+        )
         for item in result.explanation.get("rated_candidates", []):
             original = self.by_id[item["provider_id"]]
             item["name"] = original["name"]
@@ -124,6 +133,31 @@ class FrozenProviders(LivePlaceProvider):
             for key in ("source_generation", "rating_capture_id", "evidence_references"):
                 if key in original:
                     item[key] = original[key]
+        return result
+
+    async def durations(self, candidates, weights, _ai):
+        """Read only context-matched captures; no fresh AI call or process cache.
+
+        The fixture loader validates bounds and real capture provenance. Missing
+        captures use the same conservative fallback and remain visibly labeled.
+        Original names are restored solely for the canonical context signature.
+        """
+        captures = getattr(self.fixture, "duration_estimates", {})
+        result = []
+        for candidate in candidates:
+            original = self.by_id[candidate["provider_id"]]
+            context = duration_context({**candidate, "name": original["name"]}, weights)
+            key = (candidate["provider_id"], duration_context_hash(context))
+            estimate = captures.get(key)
+            self.count("captured_duration_reads" if estimate else "duration_fallbacks")
+            result.append(
+                {
+                    **candidate,
+                    "visit_duration": copy.deepcopy(estimate)
+                    if estimate
+                    else fallback_duration("missing_estimate").model_dump(),
+                }
+            )
         return result
 
     async def hotels(self, position, check_in, price_range, weights, rooms):
