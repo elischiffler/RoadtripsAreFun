@@ -13,6 +13,7 @@ from app.agent.progress import emit
 from app.catalog import repository
 from app.models.scheduling_policy import advance, seconds_until
 from app.routing import config
+from app.routing.catalog_calendars import explicit_calendar_ineligible
 from app.routing.run_metrics import increment
 from app.routing.runtime import threaded
 from app.routing.sources.persona_candidates import VerifiedPlace
@@ -66,6 +67,8 @@ class LiveEveningProvider:
         records = []
         for row in rows[:20]:
             try:
+                if explicit_calendar_ineligible(row):
+                    continue
                 place = VerifiedPlace.model_validate(row)
                 kind = next((kind for kind in categories if kind in place.categories), None)
                 if kind is None or geodesic(hotel, place.coordinates).km > MAX_DISTANCE_KM:
@@ -111,6 +114,8 @@ def current_suggestions(hotel):
     arrival = datetime.fromisoformat(hotel["arrival_time"])
     deadline = datetime.fromisoformat(hotel["deadline"])
     for suggestion in hotel.get("evening_suggestions", []):
+        if explicit_calendar_ineligible(suggestion):
+            continue
         try:
             outward, inward = suggestion["travel_seconds"]
             earliest = advance(arrival, REST_SECONDS + outward)
@@ -165,7 +170,9 @@ async def _hotel_suggestions(hotel, arrival, deadline, interests, provider):
     places = []
     for record in records[:20]:
         try:
-            places.append(EveningPlace.model_validate(record))
+            place = EveningPlace.model_validate(record)
+            if not explicit_calendar_ineligible(place.model_dump()):
+                places.append(place)
         except (ValueError, TypeError):
             continue
     places.sort(

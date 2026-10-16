@@ -777,8 +777,8 @@ class AppToolDispatcher:
         # fixed 2024 default from reaching any agent call.
         payload_data: dict[str, Any] = {"route": route_obj, "start_time": start_time}
         payload = Itinerary_Payload.model_validate(payload_data)
-        # Itinerary building is pure (no whitelisted external calls), but proxy
-        # it too when remote is enabled to keep the routing path uniform.
+        # Itinerary building refreshes current catalog calendars before timing;
+        # proxy it too when remote is enabled to keep the routing path uniform.
         if routing_remote.remote_enabled():
             days = await routing_remote.build_itinerary_remote(payload, ctx.auth_token)
         else:

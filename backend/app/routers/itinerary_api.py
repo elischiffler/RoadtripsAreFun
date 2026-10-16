@@ -9,6 +9,7 @@ from app.agent.progress import stage
 from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time
 from app.routing.base import PlanningError
+from app.routing.catalog_calendars import refresh_for_timing
 from app.routing.sources.evenings import current_suggestions
 from app.routing.travel_timing import apply_timing
 from app.routing.visit_calendar import requires_calendar
@@ -70,6 +71,7 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
     Raises:
         HTTPException: if the route is incomplete or the data can't be processed.
     """
+    await refresh_for_timing(data.route.stops or [])
     if data.route.scheduling_policy is None and any(
         requires_calendar(stop) for stop in data.route.stops or []
     ):
