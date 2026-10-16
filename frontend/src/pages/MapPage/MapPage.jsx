@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import ItineraryButton from '../../components/buttons/ItineraryButton';
-import ChatButton from '../../components/buttons/ChatButton';
+import TripsButton from '../../components/buttons/TripsButton';
 import Map from '../../components/Map';
 import { useStoredTrip } from '../useStoredTrip';
 import './MapPage.css';
@@ -33,7 +33,7 @@ const MapPage = () => {
         </Box>
         {/* Floating bottom buttons even on empty state */}
         <Box className="map-overlay-buttons">
-          <ChatButton />
+          <TripsButton />
         </Box>
       </Box>
     );
@@ -47,7 +47,7 @@ const MapPage = () => {
       {/* Floating bottom-right button cluster */}
       <Box className="map-overlay-buttons">
         <ItineraryButton itinerary={UserChatData.itinerary} showRing={false} />
-        <ChatButton />
+        <TripsButton />
       </Box>
     </Box>
   );

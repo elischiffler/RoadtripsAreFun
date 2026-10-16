@@ -54,8 +54,8 @@ export default function HomePage() {
         </Link>
       </nav>
       <p className="home-saved">
-        <Link to="/chat">Continue a saved trip</Link>
-        <span> · </span> Your chats, maps and itineraries stay together.
+        <Link to="/trips">Open saved trips</Link>
+        <span> · </span> Your saved routes and itineraries stay together.
       </p>
     </main>
   );

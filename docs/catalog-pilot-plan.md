@@ -102,7 +102,7 @@ destructive-change authority; the active user instructions govern authorization.
 Production recovery/data gates remain necessary within that authorized scope.
 
 An activated nonempty catalog and green unit tests do not establish live flow.
-Validate authenticated chat and Studio, daytime/evening discovery, Mapbox arrival
+Validate saved account trips and Studio, daytime/evening discovery, Mapbox arrival
 and detour checks, selected-stop scheduling, maps, saved-history reload,
 attribution and explicit sparse-coverage behavior. PR #40 is ready for code
 review; review status does not clear production acceptance gates. The Vercel preview alone is

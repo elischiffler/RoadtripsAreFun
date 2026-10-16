@@ -13,7 +13,7 @@ Historical provider descriptions and measurements below retain their original
 meaning; they are not instructions for the current discovery implementation.
 
 Studio visitor and owner-authorized `/algorithm-lab/run` requests are recorded
-in their isolated identity scopes. Ordinary chat planning is excluded. The UI at `/studio` provides **Trip presets** and a
+in their isolated identity scopes. Account saved-trip records remain separate. The UI at `/studio` provides **Trip presets** and a
 persistent **Run history** table, with inputs and measurements in each disclosure.
 The nine presets include coastal nature, culture, overnight, short, medium, long,
 dense, sparse and tight hotel budget trips. Driving times and overnight counts

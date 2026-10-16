@@ -14,7 +14,7 @@ import {
   deleteChat,
   initializeUserData,
   updateUserData,
-} from '../pages/ChatPage/DatabaseUtils';
+} from '../services/savedTrips';
 
 // Provide a fake VITE_BACKEND_SERVER so import.meta.env works in tests
 beforeEach(() => {

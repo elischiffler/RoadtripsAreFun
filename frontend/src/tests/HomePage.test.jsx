@@ -11,9 +11,9 @@ describe('HomePage', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Plan a trip/ })).toHaveAttribute('href', '/plan');
     expect(screen.getByRole('link', { name: /AI Studio/ })).toHaveAttribute('href', '/studio');
-    expect(screen.getByRole('link', { name: 'Continue a saved trip' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Open saved trips' })).toHaveAttribute(
       'href',
-      '/chat'
+      '/trips'
     );
   });
 });

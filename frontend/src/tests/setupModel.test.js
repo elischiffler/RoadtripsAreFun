@@ -8,8 +8,6 @@ import {
   restoreDraft,
   roomInputs,
   setupErrors,
-  setupMessage,
-  weightsAcknowledged,
 } from '../pages/TripSetup/setupModel';
 
 describe('trip setup contract', () => {
@@ -79,52 +77,6 @@ describe('trip setup contract', () => {
     expect(setupErrors(draft, 3).schedule).toMatch(/before/);
     draft.schedule.morning_restart = '';
     expect(setupErrors(draft, 3).schedule).toMatch(/valid/);
-  });
-  it('sends only through the existing chat message contract and checks authoritative weights', () => {
-    const draft = {
-      ...newSetupDraft(),
-      start: ' Boulder ',
-      destination: 'Denver',
-      date: '2027-06-01',
-      carStatus: 'provided',
-      year: '2020',
-      make: 'Toyota',
-      model: 'Corolla',
-      interests: ['food'],
-    };
-    const message = setupMessage(draft);
-    const [detailsText, weightsText] = message
-      .split('Trip details: ')[1]
-      .split('\nTrip-only persona_weights: ');
-    const details = JSON.parse(detailsText),
-      weights = JSON.parse(weightsText);
-    expect(details.start_address).toBe('Boulder');
-    expect(details.car_year).toBe(2020);
-    expect(details.hotel_rooms).toEqual([{ adults: 1, child_ages: [] }]);
-    expect(weights).toEqual(preferenceWeights(draft));
-    expect(message).toMatch(/Do not plan yet/);
-    expect(message).toMatch(/Do not change my account/);
-    expect(
-      weightsAcknowledged({ ok: true, tripProfile: { persona_weights: weights } }, weights)
-    ).toBe(true);
-    expect(
-      weightsAcknowledged(
-        { ok: true, tripProfile: { persona_weights: preferenceWeights(newSetupDraft()) } },
-        weights
-      )
-    ).toBe(false);
-    expect(
-      weightsAcknowledged(
-        {
-          ok: true,
-          tripProfile: { persona_weights: weights },
-          validationIssues: { budget: 'Invalid' },
-        },
-        weights
-      )
-    ).toBe(false);
-    expect(weightsAcknowledged({ ok: true, tripProfile: {} }, weights)).toBe(false);
-    expect(weightsAcknowledged(false, weights)).toBe(false);
   });
   it('restores versioned drafts and rejects corrupt storage', () => {
     const draft = newSetupDraft();

@@ -43,12 +43,6 @@ vi.mock('mapbox-gl', () => ({
   },
 }));
 
-// ldrs web-components crash in jsdom — stub the register call
-vi.mock('ldrs', () => ({
-  ring: { register: vi.fn() },
-  waveform: { register: vi.fn() },
-}));
-
 // Stub navigator.geolocation for LocationInput tests
 Object.defineProperty(globalThis.navigator, 'geolocation', {
   writable: true,

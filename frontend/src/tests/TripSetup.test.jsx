@@ -29,7 +29,7 @@ describe('accessible trip setup', () => {
   it('keeps answers across Back, completed step edits and reload; focuses inline errors', async () => {
     const user = userEvent.setup();
     const submit = vi.fn();
-    const view = renderWithProviders(<TripSetup onSubmit={submit} onContinue={vi.fn()} />);
+    const view = renderWithProviders(<TripSetup onSubmit={submit} />);
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('alert')).toHaveFocus();
     expect(screen.getByLabelText('Starting city or address')).toHaveAttribute(
@@ -48,14 +48,14 @@ describe('accessible trip setup', () => {
     expect(screen.getByLabelText('Starting city or address')).toHaveValue('Boulder');
     await user.click(screen.getByRole('button', { name: /Step 3:/ }));
     view.unmount();
-    renderWithProviders(<TripSetup onSubmit={submit} onContinue={vi.fn()} />);
+    renderWithProviders(<TripSetup onSubmit={submit} />);
     expect(screen.getByRole('heading', { name: 'What you enjoy' })).toBeInTheDocument();
     expect(submit).not.toHaveBeenCalled();
   });
   it('rates actual places, exposes the effect, and supports skip/unsure/reset', async () => {
     seed(validDraft(), 2);
     const user = userEvent.setup();
-    renderWithProviders(<TripSetup onSubmit={vi.fn()} onContinue={vi.fn()} />);
+    renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
     const place = screen.getByRole('heading', { name: 'Halfway House' }).closest('article');
     expect(within(place).getByRole('link')).toHaveAttribute(
       'href',
@@ -80,7 +80,7 @@ describe('accessible trip setup', () => {
     seed(validDraft(), 1);
     const user = userEvent.setup(),
       submit = vi.fn();
-    renderWithProviders(<TripSetup onSubmit={submit} onContinue={vi.fn()} />);
+    renderWithProviders(<TripSetup onSubmit={submit} />);
     await user.click(screen.getByRole('button', { name: 'Add a room' }));
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('alert')).toHaveTextContent('Room occupants must add up');
@@ -101,50 +101,29 @@ describe('accessible trip setup', () => {
     await user.click(screen.getByRole('button', { name: 'Keep answers' }));
     expect(screen.getByRole('heading', { name: 'Review', exact: true })).toBeInTheDocument();
   });
-  it.each([true, false])(
-    'only confirms server-acknowledged preferences (match=%s)',
-    async (match) => {
-      const draft = { ...validDraft(), interests: ['food'] };
-      seed(draft, 4);
-      const user = userEvent.setup(),
-        proceed = vi.fn();
-      const submit = vi.fn().mockResolvedValue({
-        ok: true,
-        tripProfile: { persona_weights: preferenceWeights(match ? draft : newSetupDraft()) },
-      });
-      renderWithProviders(<TripSetup onSubmit={submit} onContinue={proceed} />);
-      await user.click(screen.getByRole('button', { name: 'Send details for confirmation' }));
-      expect(submit).toHaveBeenCalledTimes(1);
-      expect(submit.mock.calls[0][0].message).toContain('Trip-only persona_weights:');
-      expect(await screen.findByRole(match ? 'status' : 'alert')).toHaveTextContent(
-        match ? 'Your interests are confirmed.' : 'Your interests aren’t confirmed yet.'
-      );
-      expect(proceed).not.toHaveBeenCalled();
-      await user.click(screen.getByRole('button', { name: 'Continue in chat' }));
-      expect(proceed).toHaveBeenCalledTimes(1);
-    }
-  );
-  it('keeps a rejected draft and server validation details', async () => {
+  it('passes structured answers to address confirmation without generating a message', async () => {
+    const draft = { ...validDraft(), interests: ['food'] };
+    seed(draft, 4);
+    const submit = vi.fn().mockResolvedValue({ ok: true });
+    renderWithProviders(<TripSetup onSubmit={submit} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Check locations' }));
+    expect(submit).toHaveBeenCalledWith({ draft });
+    expect(submit.mock.calls[0][0]).not.toHaveProperty('message');
+    expect(screen.queryByText(/Continue in chat/)).not.toBeInTheDocument();
+  });
+  it('keeps address validation errors and draft answers', async () => {
     seed(validDraft(), 4);
     renderWithProviders(
-      <TripSetup
-        onSubmit={vi.fn().mockResolvedValue({
-          ok: true,
-          validationIssues: { budget: 'Enter a finite nightly amount.' },
-        })}
-        onContinue={vi.fn()}
-      />
+      <TripSetup onSubmit={vi.fn().mockResolvedValue({ error: 'Location not found' })} />
     );
-    await userEvent.click(screen.getByRole('button', { name: 'Send details for confirmation' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Enter a finite nightly amount.');
+    await userEvent.click(screen.getByRole('button', { name: 'Check locations' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Location not found');
     expect(sessionStorage.getItem(key())).not.toBeNull();
   });
   it('keeps the draft on a network failure, resets explicitly and removes account data on sign out', async () => {
     seed(validDraft(), 4);
-    renderWithProviders(
-      <TripSetup onSubmit={vi.fn().mockRejectedValue(new Error('offline'))} onContinue={vi.fn()} />
-    );
-    await userEvent.click(screen.getByRole('button', { name: 'Send details for confirmation' }));
+    renderWithProviders(<TripSetup onSubmit={vi.fn().mockRejectedValue(new Error('offline'))} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Check locations' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Your draft is kept');
     await userEvent.click(screen.getByRole('button', { name: 'Reset draft', exact: true }));
     await userEvent.click(screen.getByRole('button', { name: 'Clear draft answers' }));
@@ -155,18 +134,18 @@ describe('accessible trip setup', () => {
   });
   it('does not cross owners or accept corrupted drafts', () => {
     sessionStorage.setItem(key(), 'broken');
-    const view = renderWithProviders(<TripSetup onSubmit={vi.fn()} onContinue={vi.fn()} />);
+    const view = renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
     expect(screen.getByLabelText('Starting city or address')).toHaveValue('');
     fill('Starting city or address', 'Private draft');
     act(() => fixtureSession('another-owner'));
     expect(screen.getByLabelText('Starting city or address')).toHaveValue('');
     view.unmount();
-    renderWithProviders(<TripSetup onSubmit={vi.fn()} onContinue={vi.fn()} />);
+    renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
     expect(screen.getByLabelText('Starting city or address')).toHaveValue('');
   });
   it('prevents an all-zero manually edited profile from progressing', async () => {
     seed(validDraft(), 2);
-    renderWithProviders(<TripSetup onSubmit={vi.fn()} onContinue={vi.fn()} />);
+    renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
     await userEvent.click(screen.getByText('Edit interest amounts'));
     const details = screen.getByText('Edit interest amounts').closest('details');
     for (const label of Object.values(INTERESTS))

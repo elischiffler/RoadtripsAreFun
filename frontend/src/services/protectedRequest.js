@@ -22,7 +22,7 @@ export function sessionRequest(session, data, config = {}) {
 }
 
 // Only the verifier's exact rejection is replayable. Provider and application
-// 401s can occur after work, and must never trigger a second mutation/agent turn.
+// 401s can occur after work, and must never trigger a second mutation.
 export const isAuthRejection = (response) =>
   response?.status === 401 && response.data?.detail === 'Invalid authentication token';
 
@@ -32,7 +32,7 @@ function replayable(url, method) {
   const path = url.slice(base.length).split('?')[0];
   return {
     get: /^(chats|routing-settings|get-initial-route|get-car-details|get-gas-price|get-location|algorithm-lab\/presets)$/,
-    post: /^(chats\/create\/[^/]+|agent\/chat|generate-final-route|generate-itinerary|algorithm-lab\/run)$/,
+    post: /^(chats\/create\/[^/]+|generate-final-route|generate-itinerary|algorithm-lab\/run)$/,
     put: /^chats\/update\/[^/]+$/,
     delete: /^chats\/delete\/[^/]+$/,
   }[method]?.test(path);

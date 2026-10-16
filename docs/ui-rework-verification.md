@@ -1,51 +1,42 @@
-# Guided trip setup verification
+# Standalone guided planner verification
 
-This frontend change adds authenticated /plan, centered grouped setup steps, tab-local owner-scoped drafts, editable review, actual-place interest answers and an explicit backend preference receipt. Home links directly to setup, AI Studio and saved trips. Studio keeps its separate visitor password, presets, cancellation, history, metrics and comparison groups.
+This file supersedes the chat-dependent implementation evidence from PR55 head
+96b232cb57b30f7c3aec5fed1a53e5abca3879a9. That evidence remains historical.
+The current integration includes removal PR56 at
+8e9cba550f86be0d1b79045e66d76aea459aad3d and keeps its retired files deleted.
 
-## Contract and source scope
+## Current contract
 
-Setup sends through the existing authenticated agent/chat/stream message path, stable agentChatId and chat persistence. A plain-language summary is displayed/saved in the chat; canonical weights and tool instructions are carried only in the API message. No new API fields/endpoints or backend behavior were added. The full canonical 14-key vector must be returned in authoritative tripProfile (or a validated trip_profile_updated action), normalize to the chosen shares and have no validation issues before the UI says interests are confirmed. A mismatch/error keeps the draft and offers retry/chat. Address confirmation and server validation remain separate steps. This is a model-mediated existing tool path; local fixtures do not verify real LLM extraction or real account persistence.
+Authenticated /plan is a standalone form/container. It sends structured requests to:
+- POST /validate-location, retaining both single matches and multiple 409 candidates for explicit user confirmation;
+- GET /get-initial-route and POST /generate-final-route with the complete canonical preference vector, occupancy, hotel target, local departure and scheduling policy;
+- POST /generate-itinerary with the unchanged returned route, preserving shared visit-duration/timing fields;
+- existing owner-scoped /chats CRUD solely for compatible saved-trip records, with empty message arrays for new trips.
 
-Direct interest choices and optional place answers map through a documented reversible points rule. Only user-selected travel-interest reasons affect place-answer adjustments; skip/unsure have no effect. Manual amounts are normalized and must contain a positive value. Graphs show actual draft shares, with no confidence/personality claims. Existing research cohort/version/candidate/evidence filtering is preserved. No new route, hotel-price, method-comparison or availability statistics were fabricated.
+There is no form-to-message serialization, composer, conversation orchestration or retired API call. Saved IDs load before allocation. Creating a row precedes updates; failed saves stay visibly unsaved. Partial routes remain available, and itinerary/save retries do not rerun route generation. Account changes and aborted requests discard late client results. /chat remains a bookmark redirect to /trips.
 
-The two factual cards reference CC0 Boulder catalog records boulder:284 (Halfway House) and boulder:272 (Realization Point), from backend/tests/fixtures/catalog/boulder-reviewed-12.json. Facts are name, trailhead identity, Flagstaff Road and official visitor URL. Fixture AI vectors, timing, current availability and photos were not copied. Attribution and dated operator evidence appear in the UI. These two examples are a small optional prompt, not a representative preference study.
+The rated-place mapping, skip/unsure/manual controls and normalized preference graph are retained. The result graph is labeled “Interests sent to the planner”; the direct route API does not echo an effective-weight receipt. Car details are retained as saved metadata; fuel cost is not estimated. AI Studio remains separately gated with its controls/history/comparison semantics.
 
-Integration base is develop **3c38284** (PR52 parking holds), which includes PR50/41/39. PR51 remains separate/open; last observed head **3f8ce0cc9b8477889e9e261d3e7f8d4137ef99b0**. This patch does not edit ItineraryDays.jsx, AlgorithmLab/RouteOverview.jsx, PR51 timing components, backend scheduling, catalog/source data, credentials, security settings or production.
+## Checks
 
-## Local checks
+- Node 24 install, frontend format check/lint/build passed.
+- Frontend: 35 files / 235 tests passed; 91.05% lines/statements, 84.57% branches, 87.17% functions; thresholds unchanged.
+- Backend Ruff format/check passed. Full suite: 1,656 passed, 128 skipped; 79.23% coverage against the unchanged 63% gate.
+- The focused adapter/container tests cover provider choices, typed preference payloads, partial results, create-before-update, failed update retry, saved-ID load errors, account switch and preservation of returned timing fields.
+- Dedicated Chromium fixture flow passes: retained draft answers and 320px layout, explicit ambiguous-address choice, structured preferences in the route payload, partial route save, itinerary-only retry, unchanged old row, selected map/itinerary reload, old bookmark redirect and Studio gate.
+- Three exercised Axe WCAG A/AA views have zero findings: interests at 320px, mobile address confirmation and mobile structured results.
+- All API traffic in that browser flow is intercepted. External requests are aborted, including legacy font requests; no live Mentro or other provider calls are made.
 
-- Node 24.19.0; npm ci succeeded with a writable /workspace/.npm-cache. No dependency or lockfile change.
-- frontend npm run format:check and npm run lint passed.
-- frontend npm run test:coverage: **43 files, 339 tests passed**. Coverage: **89.10% lines/statements, 84.28% branches, 84.63% functions**, above unchanged gates. The later history-table focusability change also passed its 5 targeted tests.
-- frontend npm run build passed. Vite reports the existing large bundle warning; no gate was changed.
-- Root node --test tests/dev-runner.test.mjs: **5 passed**.
-- Python 3.12 / Ruff 0.16.7: ruff format --check . and ruff check . passed.
-- Backend pytest --cov=app --cov-report=term-missing --cov-fail-under=63: **1,880 passed, 128 skipped**, **81% coverage** on the PR52 integration base.
-- git diff --check passed.
+Browser reproduction (start a separate instance; never restart the user's PC preview):
+1. Install playwright-core@1.64.1 and @axe-core/playwright@4.14.0 under /tmp/roadtrips-ui-browser.
+2. From frontend: VITE_BACKEND_SERVER=http://127.0.0.1:18987/ VITE_COGNITO_ENDPOINT=http://127.0.0.1:18987 VITE_LOCAL_JOURNEY=true VITE_USERPOOL_ID=fixture-pool VITE_CLIENT_ID=fixture-client npm run dev -- --host 127.0.0.1 --port 5187
+3. From root: node tests/ui-rework/browser-check.mjs
+UI_BROWSER_TOOLS_DIR, CHROMIUM_PATH and ROADTRIPS_UI_EVIDENCE_DIR configure local tools/output only.
 
-These local checks cover the final source changes, except where a later targeted check is explicitly stated. Exact pushed-head GitHub CI is a separate gate; consult the PR checks.
+## Compatibility and open gates
 
-## Reproducible nonproduction browser check
+The retained direct route API interprets the supplied departure as origin-local wall time during planning and resolves timezones through its provider. However, its earlier is_upcoming_departure check treats a naive value as UTC. Near-now departures can therefore be accepted/rejected against the wrong instant. This existing backend boundary cannot be repaired correctly by guessing the browser timezone. A separate backend-owner change should localize and validate the origin departure before that future check, using the retained trip_dates/departure helpers; ambiguous/nonexistent DST times must remain rejected. This integration makes no backend behavior change and stays draft pending that compatibility decision.
 
-The checked-in tests/ui-rework/browser-check.mjs uses Chromium and intercepted local API fixtures only. It never reaches provider services, Cognito verification or a database. Captures include a visible fixture label.
+Real Cognito/provider planning and actual persistence remain unverified. Live Mentro calls require explicit user approval. Fixture results are not real trips, prices or performance statistics. Local Docker build networking was already blocked in the prior phases; container/disposable PostgreSQL gates must be satisfied by exact-head CI. No production deploy, data purge or security-setting change is part of this integration.
 
-1. Install browser tools outside the application dependency tree:
-   npm install --prefix /tmp/roadtrips-ui-browser playwright-core@1.64.1 @axe-core/playwright@4.14.0
-2. From frontend start:
-   VITE_BACKEND_SERVER=http://127.0.0.1:18084/ npm run dev -- --host 127.0.0.1 --port 5174
-3. From repository root:
-   ROADTRIPS_UI_EVIDENCE_DIR=/tmp/roadtrips-ui-evidence node tests/ui-rework/browser-check.mjs
-   UI_BROWSER_TOOLS_DIR and CHROMIUM_PATH may point to the local tools and Chromium executable.
-
-Observed: home navigation, keyboard focus into setup, focused field-error summary, step editing, reload of draft answers, actual-place rating reasons, normalized API submission, matching and mismatching receipts, fresh chat UUID without overwriting saved chat 7, pending endpoint confirmation in chat, sign-out draft cleanup, protected /plan redirect, independent Studio password gate, preserved live-run/preset/history controls and honest empty history. No route/provider run was requested.
-
-Axe WCAG 2 A/AA and 2.1 AA scans: **zero violations in eight exercised views**: home desktop; initial setup; interests desktop; interests mobile; interests at 320px; review mobile; review with 200% root text size; Studio mobile empty history. Tested no horizontal overflow at 320px and with 200% text on the narrow review, and reduced-motion removes the section animation. This is bounded automated/manual browser evidence, not a claim of comprehensive accessibility certification.
-
-Screenshots: home-desktop.png, setup-desktop.png, interests-desktop.png, interests-mobile.png, review-mobile.png, unconfirmed-mobile.png, studio-mobile.png. Browser report: browser-results.json. All use fixture identities/data, not personal account data.
-
-## Open gates
-
-The disposable PostgreSQL command node tests/postgres/run.mjs first failed because Docker tried writing /home/agent/.docker/buildx on a read-only path. Retrying with a fresh temporary DOCKER_CONFIG passed that tooling prerequisite but failed while building isolated images: pip could not reach the network for pinned annotated-types==0.7.0. No API/database test stack was started and no application assertion failed. Container smoke checks require a running diagnostic stack and remain unverified locally for the same Docker-build limitation. Required CI and independent review must clear applicable gates.
-
-Real Cognito owner separation, live LLM preference acknowledgement, complete provider itinerary, real reload/persistence and production/runtime parity remain unverified. Use an approved nonproduction environment to gather that evidence. No merge or deployment is authorized by this change.
-
+PR51 timing components and backend shared provider/message/profile interfaces are preserved. The coordinator should integrate/review removal PR56 before PR55, then evaluate the combined PR51 functionality. The user's task01a142f0 PC preview was not edited or restarted; later sync must bring its local changes forward deliberately.

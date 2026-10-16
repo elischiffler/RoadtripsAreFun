@@ -11,14 +11,11 @@ import {
   newSetupDraft,
   preferenceWeights,
   setupErrors,
-  setupMessage,
-  setupSummary,
-  weightsAcknowledged,
 } from './setupModel';
 import PreferenceProfile from './PreferenceProfile';
 import './TripSetup.css';
 
-export default function TripSetup({ onSubmit, onContinue, busy = false }) {
+export default function TripSetup({ onSubmit, busy = false }) {
   const { draft, setDraft, step, setStep, stored, reset } = useSetupDraft();
   const [errors, setErrors] = useState({});
   const [receipt, setReceipt] = useState(null);
@@ -87,14 +84,14 @@ export default function TripSetup({ onSubmit, onContinue, busy = false }) {
     setSending(true);
     setReceipt(null);
     try {
-      const result = await onSubmit({
-        message: setupMessage(draft),
-        displayText: setupSummary(draft),
-      });
+      const result = await onSubmit({ draft });
       if (!alive.current) return;
-      setReceipt({ ...result, confirmed: weightsAcknowledged(result, preferenceWeights(draft)) });
+      setReceipt(result?.error ? result : null);
     } catch {
-      if (alive.current) setReceipt({ confirmed: false });
+      if (alive.current)
+        setReceipt({
+          error: 'Could not check the locations. Your draft is kept. Please try again.',
+        });
     } finally {
       if (alive.current) setSending(false);
     }
@@ -145,7 +142,7 @@ export default function TripSetup({ onSubmit, onContinue, busy = false }) {
       <div className="setup-wayfinding">
         <Link to="/">Home</Link>
         <span>Plan a trip</span>
-        <Link to="/chat">Saved trips</Link>
+        <Link to="/trips">Saved trips</Link>
         <Link to="/studio">AI Studio</Link>
       </div>
       <header className="setup-intro">
@@ -654,34 +651,17 @@ export default function TripSetup({ onSubmit, onContinue, busy = false }) {
                     <p role="status">Fix the interest amounts before sending.</p>
                   )}
                   <p className="setup-hint">
-                    We’ll ask the planning service to save these details for this trip. You’ll
-                    confirm the suggested locations in chat before planning. Prices and travel-time
-                    estimates arrive with the route.
+                    Next, confirm the suggested addresses. The planner uses these interest shares
+                    for this trip. Prices and travel-time estimates arrive with the route.
                   </p>
                 </>
               )}
             </fieldset>
-            {receipt && (
-              <div
-                className={receipt.confirmed ? 'setup-confirmation' : 'setup-error-summary'}
-                role={receipt.confirmed ? 'status' : 'alert'}
-              >
-                <h3>
-                  {receipt.confirmed
-                    ? 'Your interests are confirmed.'
-                    : 'Your interests aren’t confirmed yet.'}
-                </h3>
-                <p>
-                  {receipt.confirmed
-                    ? 'The planning service returned the interest shares you chose. Continue in chat to confirm your locations and review any remaining details.'
-                    : 'Your draft is kept. The service did not confirm all the interest shares, or some details need attention. Retry or continue in chat to resolve them.'}
-                </p>
-                {Object.entries(receipt.validationIssues ?? {}).map(([key, value]) => (
-                  <p key={key}>{String(value)}</p>
-                ))}
-                <button type="button" className="setup-primary" onClick={onContinue}>
-                  Continue in chat
-                </button>
+            {receipt?.error && (
+              <div className="setup-error-summary" role="alert">
+                <h3>We couldn’t check those locations yet.</h3>
+                <p>{receipt.error}</p>
+                <p>Your draft is kept. Refine the addresses or try again.</p>
               </div>
             )}
           </div>
@@ -696,23 +676,11 @@ export default function TripSetup({ onSubmit, onContinue, busy = false }) {
             </button>
             <span>{stored ? 'Draft saved in this browser tab' : 'Draft kept on this screen'}</span>
             <button type="submit" className="setup-primary" disabled={locked}>
-              {locked
-                ? 'Checking with the planning service…'
-                : step === 4
-                  ? 'Send details for confirmation'
-                  : 'Next'}
+              {locked ? 'Checking locations…' : step === 4 ? 'Check locations' : 'Next'}
             </button>
           </footer>
         </form>
         <div className="setup-bottom-actions">
-          <button
-            type="button"
-            className="setup-text-button"
-            disabled={locked}
-            onClick={onContinue}
-          >
-            Prefer to chat?
-          </button>
           <button
             type="button"
             className="setup-text-button"
@@ -749,6 +717,5 @@ export default function TripSetup({ onSubmit, onContinue, busy = false }) {
 }
 TripSetup.propTypes = {
   onSubmit: PropTypes.func.isRequired,
-  onContinue: PropTypes.func.isRequired,
   busy: PropTypes.bool,
 };

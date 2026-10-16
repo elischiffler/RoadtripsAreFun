@@ -77,11 +77,10 @@ describe('ChatData defaults', () => {
 describe('UserDataContext provider', () => {
   const wrapper = ({ children }) => <UserDataProvider>{children}</UserDataProvider>;
 
-  it('provides UserData, chats, and currentStep', () => {
+  it('provides saved trip data and metadata', () => {
     const { result } = renderHook(() => useContext(UserDataContext), { wrapper });
     expect(result.current.UserData).toBeInstanceOf(Data);
     expect(result.current.chats).toEqual([]);
-    expect(result.current.currentStep).toBe(1);
   });
 
   it('setChats updates the chats array', () => {
@@ -91,11 +90,5 @@ describe('UserDataContext provider', () => {
     });
     expect(result.current.chats).toHaveLength(1);
     expect(result.current.chats[0].title).toBe('Test Trip');
-  });
-
-  it('setCurrentStep updates step', () => {
-    const { result } = renderHook(() => useContext(UserDataContext), { wrapper });
-    act(() => result.current.setCurrentStep(3));
-    expect(result.current.currentStep).toBe(3);
   });
 });

@@ -125,3 +125,16 @@
     gap: 0.2rem;
   }
 }
+
+@media (max-width: 600px) {
+  .global-header {
+    height: auto;
+    min-height: var(--header-height);
+    gap: 0.25rem;
+  }
+  .global-header-right {
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}

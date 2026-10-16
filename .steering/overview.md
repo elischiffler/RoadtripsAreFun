@@ -1,7 +1,7 @@
 # RoadtripsAreFun context
 
 RoadtripsAreFun combines a React/Vite frontend and Python/FastAPI backend for
-road trip planning, maps, itineraries, saved chats and conversational preferences.
+road trip planning, maps, itineraries, saved trips and shared AI preference extraction.
 The remote is `https://github.com/elischiffler/RoadtripsAreFun.git`.
 Source, manifests, schemas and `AGENTS.md` take precedence over these notes.
 
@@ -33,14 +33,14 @@ and pending work.
   minimizing spacing and measured solo detours. Scheduling, hotels and final
   Mapbox timing validation remain separate responsibilities.
 - The backend owns validated trip details, confirmed endpoints, departure dates,
-  explicit room occupancy, optional car choice and completion. Agent tools reuse
-  the ordinary planning capabilities; persisted state and tool outcomes determine
-  completion. See [architecture](architecture.md).
+  explicit room occupancy and optional car choice through planning APIs. Shared
+  preference extraction and AI providers remain in `backend/app/agent/`. See
+  [chat retirement](../docs/journeygenie-removal.md) for the removed UI and API.
 - `/studio` is a header-free visitor page; `/algorithm` redirects to it. Signed
   Studio sessions are independent of Cognito accounts. New runs use live providers;
   replay requests are rejected. Existing historical replay records retain their
   original meaning.
-- Cognito continues to protect account chats, maps, itineraries and settings.
+- Cognito continues to protect saved account trips, maps, itineraries and settings.
   Frontend renewal and narrowly bounded authentication retries are owned by
   `frontend/src/services/session.js` and `protectedRequest.js`.
 - The production API uses EC2 with external Neon. Successful CI on the exact

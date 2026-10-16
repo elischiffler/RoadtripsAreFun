@@ -173,11 +173,13 @@ describe('Cognito session renewal', () => {
     expect(sessionStorage.getItem('selectedChatId')).toBeNull();
     expect(sessionStorage.getItem('roadtrips.agentChatId.4')).toBeNull();
   });
-  it.each(['//evil.example', '/chat/../../login', '/chat\\evil', 'https://evil.example', '/login'])(
-    'rejects unsafe return path %s',
-    (path) => expect(safeReturnPath(path)).toBe('/chat')
-  );
-  it('allows the protected setup return path', () => expect(safeReturnPath('/plan')).toBe('/plan'));
+  it.each([
+    '//evil.example',
+    '/trips/../../login',
+    '/trips\\evil',
+    'https://evil.example',
+    '/login',
+  ])('rejects unsafe return path %s', (path) => expect(safeReturnPath(path)).toBe('/plan'));
   it('allows an application return path with query', () =>
     expect(safeReturnPath('/map?trip=4')).toBe('/map?trip=4'));
 });

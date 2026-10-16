@@ -13,7 +13,7 @@ Historical provider descriptions and measurements below retain their original
 meaning; they are not instructions for the current discovery implementation.
 
 Current contract: October 5, 2026, `codex/production-release`. Studio (`/studio`)
-and ordinary chat use the same live planner. Historical surplus objectives remain
+and direct route requests use the same live planner. Historical surplus objectives remain
 historical; the current metric version is `balanced-route-v3`.
 
 Provider records establish place identities and coordinates. AI estimates the
