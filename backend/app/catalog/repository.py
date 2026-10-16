@@ -48,6 +48,66 @@ def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calenda
     ).records
 
 
+def current_records(source_ids):
+    """Read authoritative facts for one bounded batch from one active generation.
+
+    Saved/client calendars are historical facts, never authority to bypass a
+    newer access hold. No place or saved-trip row is modified by this read.
+    """
+    if (
+        not isinstance(source_ids, list)
+        or not 1 <= len(source_ids) <= 1000
+        or any(not isinstance(sid, str) or not 1 <= len(sid) <= 512 for sid in source_ids)
+    ):
+        raise ValueError("current catalog identities require a bounded nonempty batch")
+    if not (settings.DATABASE_URL or "").strip():
+        raise RuntimeError("Places catalog database is not configured")
+    conn = chat_crud._get_conn()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("SET LOCAL statement_timeout='2000ms'")
+            cur.execute(
+                """
+                SELECT p.source_id,p.latitude,p.longitude,p.categories,p.provenance,p.generation,p.source_updated_at,
+                    e.entry AS calendar_enrichment,i.release,
+                    i.manifest->>'attribution' AS attribution,
+                    i.manifest->'source_catalogs' AS source_catalogs
+                FROM places_catalog p
+                JOIN places_catalog_active a ON a.generation=p.generation
+                JOIN places_catalog_imports i ON i.generation=p.generation
+                LEFT JOIN places_catalog_calendars e
+                    ON e.generation=p.generation AND e.source_id=p.source_id
+                WHERE p.source_id=ANY(%s::text[])
+                """,
+                (source_ids,),
+            )
+            rows = cur.fetchall()
+        return {
+            row["source_id"]: {
+                "categories": row["categories"],
+                "coordinates": [row["latitude"], row["longitude"]],
+                "source_provenance": project(row["provenance"], row["calendar_enrichment"])
+                + [
+                    {
+                        "dataset": "Roadtrips active catalog",
+                        "generation": row["generation"],
+                        "release": row["release"],
+                    }
+                ],
+                "source_attribution": source_attribution(row),
+                "source_updated_at": row["source_updated_at"],
+                "source_release": (row["calendar_enrichment"] or {}).get("source_release")
+                or (row["source_catalogs"] or {})
+                .get(identity(row["source_id"])[1], {})
+                .get("release", row["release"]),
+            }
+            for row in rows
+        }
+    finally:
+        conn.rollback()
+        chat_crud._put_conn(conn)
+
+
 def nearby_page(
     point, categories, radius_miles=5, limit=60, *, require_visit_calendar=False, cursor=None
 ):

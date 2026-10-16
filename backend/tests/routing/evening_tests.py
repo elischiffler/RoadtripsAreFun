@@ -4,6 +4,7 @@ import asyncio
 
 import pytest
 
+from app.catalog import repository
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import Route
 from app.models.scheduling_policy import SchedulingPolicy
@@ -53,6 +54,25 @@ def planned_hotel(hour=18):
     return stop
 
 
+def current_fixture(monkeypatch, hotel):
+    """An unchanged synthetic active catalog snapshot for reload controls."""
+    current = {
+        suggestion["provider_id"].removeprefix("overture:"): {
+            key: suggestion[key]
+            for key in (
+                "coordinates",
+                "source_provenance",
+                "source_attribution",
+                "source_release",
+                "source_updated_at",
+            )
+            if key in suggestion
+        }
+        for suggestion in hotel["evening_suggestions"]
+    }
+    monkeypatch.setattr(repository, "current_records", lambda ids: current)
+
+
 @pytest.mark.asyncio
 async def test_nearby_open_options_are_alternatives_after_rest_with_return_bound():
     provider = Provider(
@@ -96,7 +116,7 @@ async def test_distant_closed_wrong_interest_or_missing_link_is_skipped(patch):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("category", ["food", None])
-async def test_unknown_hours_or_category_only_tentative_and_survive_reload(category):
+async def test_unknown_hours_or_category_only_tentative_and_survive_reload(category, monkeypatch):
     hotel = planned_hotel()
     await evenings.enrich_evenings(
         [hotel], ["food"], provider=Provider([venue(category=category, opening_intervals=None)])
@@ -107,6 +127,7 @@ async def test_unknown_hours_or_category_only_tentative_and_survive_reload(categ
     route = saved_route([hotel, point(3600)], SchedulingPolicy(late_driving=True))
     reloaded = Route.model_validate_json(route.model_dump_json())
     assert reloaded.stops[0]["evening_suggestions"] == hotel["evening_suggestions"]
+    current_fixture(monkeypatch, hotel)
     itinerary = await build_itinerary(Itinerary_Payload(route=reloaded, start_time=START))
     options = [s for day in itinerary for s in day.stops if s.optional]
     assert len(options) == 1 and options[0].time == "Unscheduled"
@@ -202,10 +223,11 @@ async def test_catalog_evenings_exact_interests_and_unknown_hours(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_departure_override_hides_a_stale_evening_visit():
+async def test_departure_override_hides_a_stale_evening_visit(monkeypatch):
     hotel = planned_hotel()
     await evenings.enrich_evenings([hotel], ["food"], provider=Provider())
     route = saved_route([hotel, point(3600)], SchedulingPolicy(late_driving=True))
+    current_fixture(monkeypatch, hotel)
     itinerary = await build_itinerary(
         Itinerary_Payload(route=route, start_time=START.replace(hour=10))
     )
@@ -214,7 +236,7 @@ async def test_departure_override_hides_a_stale_evening_visit():
 
 
 @pytest.mark.asyncio
-async def test_catalog_attribution_survives_evening_itinerary():
+async def test_catalog_attribution_survives_evening_itinerary(monkeypatch):
     hotel = planned_hotel()
     metadata = {
         "source": "overture",
@@ -225,6 +247,7 @@ async def test_catalog_attribution_survives_evening_itinerary():
     await evenings.enrich_evenings(
         [hotel], ["food"], provider=Provider([venue(**metadata, opening_intervals=None)])
     )
+    current_fixture(monkeypatch, hotel)
     itinerary = await build_itinerary(
         Itinerary_Payload(
             route=saved_route([hotel, point(3600)], SchedulingPolicy(late_driving=True))
