@@ -7,8 +7,8 @@ Ruff 0.16.7 is pinned by backend CI and configured in `backend/ruff.toml`.
 ## Setup and local runtime
 
 Copy root `.env.example` to ignored `.env` and supply the intended development
-configuration. `backend/app/core/config.py`, `routing/config.py` and
-`frontend/vite.config.js` load from the repository root; never copy runtime secrets
+configuration. `backend/app/core/config.py` owns backend settings and
+`frontend/vite.config.js` configures the browser build; never copy runtime secrets
 into images or `VITE_*` variables. Vite values are public and embedded at build
 time. Configure browser/backend Cognito pool/client consistently; agent use also
 needs the Mentro gateway service credentials. A routing proxy reaches a deployed
@@ -111,3 +111,16 @@ Useful regression suites are `backend/tests/agent/`, `backend/tests/routing/`,
 `frontend/src/tests/`, and `backend/tests/db_integration_probe.py` through the
 disposable PostgreSQL runner. Use focused checks for documentation-only changes;
 preserve thresholds and distinguish baseline/environment failures from regressions.
+
+## Catalog and calendar checks
+
+`backend/app/catalog/` owns source admission, immutable generations and attributed
+calendar companions. `backend/app/routing/trip_calendar.py` filters full-dwell
+feasibility before discovery quotas; `visit_calendar.py` and `travel_timing.py`
+enforce the resulting windows during scheduling and after actual road routing.
+Run focused calendar/eligibility tests when changing these boundaries. Keep
+catalog import, active-generation writes and deployment under the release owner's
+coordination; a passing local test does not authorize a production activation.
+
+PR #41's offline evaluator is separately pending integration. Its missing real
+capture bundles and benchmark results must remain distinct from application CI.

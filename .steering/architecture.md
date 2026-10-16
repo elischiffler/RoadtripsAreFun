@@ -84,7 +84,8 @@ weighted sum of canonical attribute ratings; AI coordinates/prices/final scores
 are not trusted. Attraction and optional evening identity/coordinates come from
 licensed mixed-source records in PostgreSQL, with release, attribution and
 upstream evidence dates. The first bounded catalog release was deployed in PR #40;
-broader coverage and live journey acceptance remain separate evidence. See
+later reviewed releases and attributed calendar companions are also merged.
+Catalog totals and live journey acceptance remain separate evidence. See
 [rollout and rollback](../docs/neon-places-catalog.md) and the
 [integration audit](../docs/tripadvisor-removal.md). Unknown hours are not
 invented; empty coverage returns no places. `sources/google_hotels.py` verifies
@@ -101,7 +102,14 @@ nearby/rating pools across equal baseline driving-time sections, and road-checks
 all shortlisted candidates before solving. The solver selects K eligible places
 within ten percentage points of the best achievable average match, minimizing
 all baseline gap deviations plus measured solo detour time. Candidate capacity is
-18–60; query/rating budgets and sparse coverage remain inspectable.
+18–60; query/rating budgets and sparse coverage remain inspectable. Production
+eligibility keeps finite positive utilities. Source-calendar feasibility filters
+records before discovery quotas, road checks and the bounded shortlist.
+`trip_calendar.py` owns that necessary-condition test; `visit_calendar.py` owns
+hard visit windows and full two-hour dwell. Unknown or expired timed calendars
+fail closed. Final-road conflicts trigger bounded reselection with cached road
+checks; neither guessed opening hours nor an objective penalty can permit a
+closed visit.
 See `docs/adaptive-planning.md` and `docs/cp-sat-explained.md`.
 
 `cp_sat_scheduler.py` schedules two-hour visits and
@@ -153,7 +161,10 @@ Reads/writes use authenticated owner/chat scope; the frontend owns verbatim
 ChatLog writes. `schemas/chat_schemas.py` accepts optional presentation in JSONB.
 No new table migration is required for these JSON additions. Disposable DDL is
 `tests/postgres/schema.sql`; production readiness confirms expected table presence,
-not complete column/schema compatibility or migration history.
+not complete column/schema compatibility or migration history. Source catalog
+generations use `catalog/repository.py`, `backend/sql/places_catalog.sql` and
+`backend/sql/places_catalog_calendars.sql`; calendar companions retain attributed
+source evidence without overwriting immutable base rows.
 
 ## Algorithm Lab run measurements
 

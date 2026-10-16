@@ -32,25 +32,29 @@ the shared [host runbook](https://github.com/elischiffler/hosting-ops/blob/main/
 owns the listener, protected files, release directories, rollback and token rotation.
 Do not duplicate host scripts in this repository.
 
-## Verified repository and runtime state
+## Dated source and repository inspection
 
-October 5, 2026 (America/Los_Angeles), inspected main
-`56ac6dbd3eccbd03e105385cf5561582376c0b17`:
+October 16, 2026 (UTC), main
+`e9129a7551ef8c07405a9bf7552f6303765365af`:
 
-- Repository variable `EC2_DEPLOY_ENABLED=true` is configured.
-- The production environment has `EC2_DEPLOY_URL=https://ops.elischiffler.dev`,
-  an `EC2_DEPLOY_TOKEN` secret entry and a deployment policy permitting main only.
-  Secret contents were not printed. No SSH or AWS key is stored by this workflow.
-- The classic main branch-protection API returned 404 (not protected). Repository
-  ruleset enforcement was not audited. Successful CI gating in the deployment
-  scripts is verified separately from GitHub merge enforcement.
-- [Successful Actions deployment](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/37411743425)
-  and fresh host inspection confirmed healthy container `roadtrips-neon-api-1`,
-  image tag `roadtrips-api:56ac6dbd3eccbd03e105385cf5561582376c0b17`, matching OCI
-  revision label and recorded release metadata.
-- Public `https://api.roadtrips.elischiffler.dev` health/readiness, algorithms,
-  Studio session/presets/history, anonymous rejection and production CORS passed.
-  These checks do not establish a new complete trip or live Cognito acceptance.
+- The deployment workflow and checked-main scripts above remain in source. This
+  refresh did not inspect production environment variables/secrets or host state.
+- The classic main branch-protection endpoint returned 403, "Resource not
+  accessible by integration". Classic protection is unconfirmed through that
+  endpoint. A 404 likewise does not by itself prove a branch is unprotected.
+- Read-only repository APIs reported main `protected: false` and one repository
+  ruleset, `Main Restrictions`, with enforcement `disabled`. These observations
+  do not establish all possible organization or deployment policies. No setting
+  was changed. Deployment script CI gating and GitHub merge enforcement are
+  separate contracts.
+- PR #39's original October 5 host/public checks belong to commit
+  `c00cc1c6ca828fdcb8ab1c163d84667c770aa3d1` and their dated Actions links.
+  They do not verify the current live revision, complete trips, Cognito journeys,
+  browser persistence, backup recovery or catalog activation.
+- Production/catalog release coordination remains with its sole owner. Source
+  calendar corrections and independent review must clear before a main merge
+  that could trigger automatic deployment. Do not infer clearance from a place
+  count or successful readiness response.
 
 The backend runs on shared EC2 with external Neon using `compose.neon.yaml`:
 API-only, host-loopback port 8002, egress networking, verified database TLS,
@@ -70,7 +74,9 @@ current deployment uses the external-Neon stack, not a database migration.
 
 `backend/app/main.py` defines `/health` process liveness and `/ready` database
 readiness. Readiness checks connection and presence of `chats`, `route_segments`,
-`steps`, `chat_memory` and `algorithm_lab_runs` with bounded operations. It does
+`steps`, `chat_memory`, `algorithm_lab_runs` and the three base catalog tables.
+It also checks that the active generation has a positive declared count and at
+least one matching place, with bounded operations. It does
 not verify all columns, ownership rules or migration history. `backend/app/core/config.py`
 owns fail-closed target/TLS/preview configuration; `docs/self-hosted-postgres.md`
 owns TLS semantics. Weaker local TLS is limited to disposable isolated networks.

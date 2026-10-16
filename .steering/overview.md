@@ -5,12 +5,13 @@ road trip planning, maps, itineraries, saved chats and conversational preference
 The remote is `https://github.com/elischiffler/RoadtripsAreFun.git`.
 Source, manifests, schemas and `AGENTS.md` take precedence over these notes.
 
-This refresh inspected merged main `56ac6dbd3eccbd03e105385cf5561582376c0b17`
-on October 5, 2026 (America/Los_Angeles), using an isolated task checkout.
-The Studio release in PR #34 and EC2 deployment workflow in PR #38 are merged.
-The running backend's image revision matches that main commit. See
-[current work](current-work.md) and [operations](operations.md) for evidence and
-the limits of live acceptance.
+This refresh inspects main `e9129a7551ef8c07405a9bf7552f6303765365af`
+on October 16, 2026 (UTC), using an isolated task checkout. Studio and the EC2
+deployment workflow are merged, along with the source-backed catalog, positive
+match eligibility and source-calendar filtering. This source inspection does not
+establish the currently running revision or active catalog generation. See
+[current work](current-work.md) and [operations](operations.md) for dated evidence
+and pending work.
 
 ## Read next
 
