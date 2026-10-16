@@ -1,5 +1,9 @@
 # Algorithm Lab implementation contract
 
+This document retains dated planning/validation history. Conversational UI and
+API references below describe the retired feature; current entry points and
+retained compatibility are in [the removal record](journeygenie-removal.md).
+
 Status: **IMPLEMENTED ON TASK BRANCH**, public release/live acceptance pending. Baseline
 `53fd0bf`, October 4, 2026. Target: Tuesday, October 6. Product intent lives in
 [product-vision.md](product-vision.md); current code is explained in

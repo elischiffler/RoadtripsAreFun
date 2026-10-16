@@ -43,7 +43,8 @@ The frontend uses an earthy design system (cream, sand, bark, amber) with Playfa
 | Route        | Description                                                                           |
 | ------------ | ------------------------------------------------------------------------------------- |
 | `/`          | Landing page — app name, CTA, three interactive feature chips                         |
-| `/chat`      | Main chat interface for planning a trip                                               |
+| `/trips`     | Saved account trips, maps and itineraries                                             |
+| `/studio`    | Trip planning and AI research with visitor-scoped history                             |
 | `/map`       | Interactive Mapbox route view                                                         |
 | `/itinerary` | Day-by-day trip itinerary                                                             |
 | `/algorithm` | Owner-only Algorithm Lab, presets and on-demand solver explanations; no global header |
@@ -78,10 +79,8 @@ Technical docs live in [`docs/`](./docs):
 - [Current repository context](.steering/overview.md) — source ownership,
   repeatable checks, operational boundaries and the [active change map](.steering/current-work.md).
 
-- [Trip detail lists](docs/agent-trip-detail-lists.md),
-  [location confirmations](docs/agent-location-confirmations.md),
-  [process status](docs/agent-progress.md) and [dated hotel prices](docs/hotel-prices.md)
-  — current feature contracts and verification limits.
+- [Chat retirement and integration](docs/journeygenie-removal.md) — removed feature,
+  retained saved-trip compatibility and PR55 follow-up.
 
 - [Owner routing settings](./docs/owner-routing-settings.md) — verified Cognito
   eligibility, session lifecycle, shared planner enforcement, and validation limits.
@@ -157,8 +156,6 @@ make run
 ```
 
 This starts the backend at `http://localhost:8000` and the frontend at `http://localhost:5173` concurrently. Ctrl+C stops both.
-
-To see the agent's per-turn tool arguments and trip-profile changes in the backend terminal, stop `make run` and start `make debug` from the repo root. Debug logging includes trip details, so use it only while troubleshooting.
 
 Or run them individually:
 

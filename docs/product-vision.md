@@ -1,5 +1,9 @@
 # Product vision and Tuesday demonstration
 
+This document retains dated planning/validation history. Conversational UI and
+API references below describe the retired feature; current entry points and
+retained compatibility are in [the removal record](journeygenie-removal.md).
+
 Status: implemented in the senior-demo task branch, October 4, 2026 (America/Los_Angeles).
 Presentation target: Tuesday, October 6. Source baseline: feature `53fd0bf`,
 not a claim about deployed production. See [current work](../.steering/current-work.md).

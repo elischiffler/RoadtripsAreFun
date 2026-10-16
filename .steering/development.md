@@ -10,7 +10,7 @@ Copy root `.env.example` to ignored `.env` and supply the intended development
 configuration. `backend/app/core/config.py` owns backend settings and
 `frontend/vite.config.js` configures the browser build; never copy runtime secrets
 into images or `VITE_*` variables. Vite values are public and embedded at build
-time. Configure browser/backend Cognito pool/client consistently; agent use also
+time. Configure browser/backend Cognito pool/client consistently; AI-backed planning also
 needs the Mentro gateway service credentials. A routing proxy reaches a deployed
 backend and is not an isolated provider fixture.
 
@@ -47,7 +47,6 @@ The root Makefile starts a Node launcher that selects the native virtualenv
 interpreter. `make run` starts API8000 and Vite5173 in the same terminal; Ctrl+C
 stops both process trees. A server failure shuts down the other server. Vite
 fails if port 5173 is occupied instead of choosing a different port.
-`make debug` enables per-turn trip/tool logging, which can contain trip data.
 Use `make run-backend` and `make run-frontend` for separate processes.
 The uvloop requirement is skipped on Windows; Uvicorn uses asyncio there.
 Launcher regression checks: `node --test tests/dev-runner.test.mjs`.
@@ -98,13 +97,10 @@ node tests/postgres/run.mjs
 Smoke tests support alternate `ROADTRIPS_SMOKE_API`/`ROADTRIPS_SMOKE_WEB` URLs;
 match the preview frontend/CORS configuration. PostgreSQL tests create unique
 projects and preserve source/restore volumes and backups. See the runbook for
-isolated Python image checks and `tests/journey/run.py`'s separate Mentro fixture
-prerequisites. Do not use production data to satisfy a local gate.
+isolated Python image checks and their separate fixture prerequisites. Do not use production data to satisfy a local gate.
 
 ## Focused investigation
 
-Run `python -m tests.agent.token_benchmark` from `backend/`; the scripted proxy
-is explained in `docs/agent-token-benchmark.md` and is not live billing evidence.
 Run `python -m app.routing.benchmark` there for the offline registered-planner
 benchmark; HTTP `/benchmark` requires explicit enablement and authentication.
 Useful regression suites are `backend/tests/agent/`, `backend/tests/routing/`,

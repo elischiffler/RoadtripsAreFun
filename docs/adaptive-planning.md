@@ -2,7 +2,7 @@
 
 October 5, 2026; release branch `codex/production-release`, draft PR #34.
 This supersedes the old early-30-candidate and nearest-query-slot behavior.
-Studio and ordinary chat share `cp_sat`; all new trips use live providers.
+Studio and direct route planning share `cp_sat`; all new trips use live providers.
 
 ## Discovery budgets
 

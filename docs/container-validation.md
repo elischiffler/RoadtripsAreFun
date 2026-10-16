@@ -1,5 +1,9 @@
 # Container migration evidence
 
+This document retains dated planning/validation history. Conversational UI and
+API references below describe the retired feature; current entry points and
+retained compatibility are in [the removal record](journeygenie-removal.md).
+
 ## Public route authorization follow-up, 2026-09-27
 
 The browser-direct API path needs an authenticated Cognito access token for

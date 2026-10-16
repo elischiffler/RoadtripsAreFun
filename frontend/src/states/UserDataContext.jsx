@@ -106,28 +106,17 @@ export const UserDataProvider = ({ children }) => {
   // Initializes global instance of UserData
   const [UserData, setUserData] = useState(new Data());
   const [chats, setChats] = useState([]);
-  const drafts = useRef(new Map());
   const owner = useRef(getSession().owner);
-  const [currentStep, setCurrentStep] = useState(1);
 
   const clearUserData = () => {
-    drafts.current.clear();
     setUserData(new Data());
     setChats([]);
-    setCurrentStep(1);
     sessionStorage.removeItem('selectedChatId');
   };
 
   useEffect(() => {
     const changed = () => {
       const session = getSession();
-      if (session.status === 'signin-required')
-        setChats((previous) =>
-          previous.map((chat) => ({
-            ...chat,
-            messages: chat.messages.filter((message) => message.type !== 'loading-chat'),
-          }))
-        );
       if (session.status === 'signed-out' || session.owner !== owner.current) {
         clearUserData();
         owner.current = session.owner;
@@ -144,10 +133,7 @@ export const UserDataProvider = ({ children }) => {
         setUserData,
         chats,
         setChats,
-        currentStep,
-        setCurrentStep,
         clearUserData,
-        drafts,
       }}
     >
       {children}

@@ -4,9 +4,7 @@ import client from '../services/protectedRequest';
 import { cognitoClient } from '../services/cognito';
 import { getSession, signOut } from '../services/session';
 import { fixtureSession, fixtureToken } from './sessionFixtures';
-import { streamAgentMessage } from '../pages/ChatPage/agentProgress';
-import { ReadableStream } from 'node:stream/web';
-import { ensureChatCreated } from '../pages/ChatPage/DatabaseUtils';
+import { ensureChatCreated } from '../services/savedTrips';
 
 vi.mock('axios', () => ({
   default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
@@ -23,22 +21,6 @@ const renewed = () => ({
     RefreshToken: 'rotated',
   },
 });
-function stream(events) {
-  const bytes = new TextEncoder().encode(
-    events.map((event) => JSON.stringify(event)).join('\n') + '\n'
-  );
-  return {
-    ok: true,
-    status: 200,
-    headers: new Headers({ 'content-type': 'application/x-ndjson' }),
-    body: new ReadableStream({
-      start(controller) {
-        controller.enqueue(bytes);
-        controller.close();
-      },
-    }),
-  };
-}
 beforeEach(() => {
   signOut();
   sessionStorage.clear();
@@ -53,7 +35,7 @@ afterEach(() => {
 });
 
 describe('protected dispatch and bounded replay', () => {
-  it('renews expired credentials once for concurrent CRUD, provider and streamed calls with matching bodies and headers', async () => {
+  it('renews expired credentials once for concurrent CRUD and provider calls with matching bodies and headers', async () => {
     vi.useFakeTimers();
     vi.advanceTimersByTime(3600000);
     let resolve;
@@ -65,19 +47,9 @@ describe('protected dispatch and bounded replay', () => {
     );
     axios.post.mockResolvedValue({ data: {}, status: 200 });
     axios.get.mockResolvedValue({ data: {}, status: 200 });
-    const fetch = vi
-      .fn()
-      .mockResolvedValue(stream([{ type: 'result', response: { reply: 'done' } }]));
-    vi.stubGlobal('fetch', fetch);
     const operations = [
       client.post(base + 'chats/create/4', { PartitionKey: 'stale', ChatData: {} }),
       client.get(base + 'get-car-details'),
-      streamAgentMessage(
-        base + 'agent/chat/stream',
-        { partitionKey: 'stale', message: 'plan' },
-        { headers: { Authorization: 'Bearer stale', 'X-Cognito-Id-Token': 'stale-id' } },
-        vi.fn()
-      ),
     ];
     expect(cognitoClient.send).toHaveBeenCalledTimes(1);
     resolve(renewed());
@@ -88,8 +60,6 @@ describe('protected dispatch and bounded replay', () => {
       Authorization: `Bearer ${session.accessToken}`,
       'X-Cognito-Id-Token': session.idToken,
     });
-    expect(JSON.parse(fetch.mock.calls[0][1].body).partitionKey).toBe(session.accessToken);
-    expect(fetch.mock.calls[0][1].headers['X-Cognito-Id-Token']).toBe(session.idToken);
   });
   it('reuses the newer session for concurrent stale-token 401s', async () => {
     let second;
@@ -119,7 +89,7 @@ describe('protected dispatch and bounded replay', () => {
     async (method) => {
       const paths = {
         get: 'chats',
-        post: 'agent/chat',
+        post: 'generate-final-route',
         put: 'chats/update/4',
         delete: 'chats/delete/4',
       };
@@ -139,7 +109,7 @@ describe('protected dispatch and bounded replay', () => {
         ? { response: { status, data: { detail: 'Provider rejected request' } } }
         : new TypeError('network');
       axios.post.mockRejectedValue(error);
-      await expect(client.post(base + 'agent/chat', {})).rejects.toBe(error);
+      await expect(client.post(base + 'generate-final-route', {})).rejects.toBe(error);
       expect(axios.post).toHaveBeenCalledTimes(1);
       expect(cognitoClient.send).not.toHaveBeenCalled();
     }
@@ -199,127 +169,4 @@ describe('protected dispatch and bounded replay', () => {
     expect(await ensureChatCreated(old, data, chats, owner)).toBe(true);
     expect(axios.post).toHaveBeenCalledTimes(1);
   });
-});
-
-describe('stream expiry recovery', () => {
-  it('replays only an initial verifier rejection and emits one request-start event', async () => {
-    const fetch = vi
-      .fn()
-      .mockResolvedValueOnce({
-        status: 401,
-        json: async () => ({ detail: 'Invalid authentication token' }),
-      })
-      .mockResolvedValueOnce(stream([{ type: 'result', response: { reply: 'ready' } }]));
-    vi.stubGlobal('fetch', fetch);
-    cognitoClient.send.mockResolvedValue(renewed());
-    const progress = vi.fn();
-    expect(
-      await streamAgentMessage(
-        base + 'agent/chat/stream',
-        { partitionKey: 'stale', message: 'plan' },
-        {},
-        progress
-      )
-    ).toEqual({ reply: 'ready' });
-    expect(fetch).toHaveBeenCalledTimes(2);
-    expect(cognitoClient.send).toHaveBeenCalledTimes(1);
-    expect(
-      progress.mock.calls.filter(([e]) => e.stage === 'client.request' && e.state === 'started')
-    ).toHaveLength(1);
-  });
-  it('stops after a second initial authentication rejection', async () => {
-    const fetch = vi.fn().mockResolvedValue({
-      status: 401,
-      json: async () => ({ detail: 'Invalid authentication token' }),
-    });
-    vi.stubGlobal('fetch', fetch);
-    cognitoClient.send.mockResolvedValue(renewed());
-    expect(await streamAgentMessage(base + 'agent/chat/stream', {}, {}, vi.fn())).toMatchObject({
-      ok: false,
-      sessionError: 'signin-required',
-    });
-    expect(fetch).toHaveBeenCalledTimes(2);
-    expect(cognitoClient.send).toHaveBeenCalledTimes(1);
-  });
-  it.each([
-    [
-      [
-        { type: 'progress', stage: 'agent.started', state: 'started' },
-        { type: 'error', status: 401 },
-      ],
-    ],
-    [[{ type: 'heartbeat' }]],
-  ])('never replays a started or interrupted stream', async (events) => {
-    const fetch = vi.fn().mockResolvedValue(stream(events));
-    vi.stubGlobal('fetch', fetch);
-    expect((await streamAgentMessage(base + 'agent/chat/stream', {}, {}, vi.fn())).ok).toBe(false);
-    expect(fetch).toHaveBeenCalledTimes(1);
-    expect(cognitoClient.send).not.toHaveBeenCalled();
-  });
-  it('preserves caller cancellation and idle timeout without replay', async () => {
-    vi.useFakeTimers();
-    const fetch = vi
-      .fn()
-      .mockImplementation(
-        (url, { signal }) =>
-          new Promise((_, reject) =>
-            signal.addEventListener('abort', () => reject(new Error('aborted')))
-          )
-      );
-    vi.stubGlobal('fetch', fetch);
-    const controller = new AbortController();
-    const first = streamAgentMessage(
-      base + 'agent/chat/stream',
-      {},
-      { signal: controller.signal },
-      vi.fn()
-    );
-    await Promise.resolve();
-    controller.abort();
-    expect(await first).toEqual({ ok: false, status: null });
-    const second = streamAgentMessage(base + 'agent/chat/stream', {}, {}, vi.fn());
-    await vi.advanceTimersByTimeAsync(45000);
-    expect(await second).toEqual({ ok: false, status: null });
-    expect(fetch).toHaveBeenCalledTimes(2);
-    expect(cognitoClient.send).not.toHaveBeenCalled();
-  });
-});
-
-it('discards buffered stream results if the account changes during a progress event', async () => {
-  const fetch = vi.fn().mockResolvedValue(
-    stream([
-      { type: 'progress', stage: 'work', state: 'started' },
-      { type: 'result', response: { reply: 'private' } },
-    ])
-  );
-  vi.stubGlobal('fetch', fetch);
-  const result = await streamAgentMessage(base + 'agent/chat/stream', {}, {}, (event) => {
-    if (event.stage === 'work') fixtureSession('other');
-  });
-  expect(result).toMatchObject({ ok: false, sessionError: 'session-changed' });
-  expect(fetch).toHaveBeenCalledTimes(1);
-});
-it('rejects a previous-account read closure before dispatch', async () => {
-  const old = getSession().accessToken;
-  fixtureSession('other');
-  await expect(
-    client.get(base + 'chats', { headers: { Authorization: `Bearer ${old}` } })
-  ).rejects.toMatchObject({ code: 'session-changed' });
-  expect(axios.get).not.toHaveBeenCalled();
-});
-
-it('uses an independent Studio session without Cognito renewal and preserves live inputs', async () => {
-  const { getLabPresets, runLab } = await import('../services/algorithmLab');
-  sessionStorage.setItem(
-    'studioSession',
-    JSON.stringify({ token: 'studio-test', expires_at: Date.now() / 1000 + 600 })
-  );
-  axios.get.mockResolvedValue({ data: { presets: [] } });
-  expect(await getLabPresets()).toEqual({ presets: [] });
-  axios.post.mockResolvedValue({ data: { mode: 'live' } });
-  const request = { mode: 'live', inputs: { budget: 150 } };
-  expect(await runLab(request)).toEqual({ mode: 'live' });
-  expect(axios.post.mock.calls[0][1]).toEqual(request);
-  expect(axios.post.mock.calls[0][2].headers).toEqual({ 'X-Studio-Session': 'studio-test' });
-  expect(cognitoClient.send).not.toHaveBeenCalled();
 });

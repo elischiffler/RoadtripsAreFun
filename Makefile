@@ -1,4 +1,4 @@
-.PHONY: run debug run-backend run-frontend test test-backend test-frontend \
+.PHONY: run run-backend run-frontend test test-backend test-frontend \
         coverage coverage-backend coverage-frontend format lint lint-fix
 
 ifeq ($(OS),Windows_NT)
@@ -10,10 +10,6 @@ endif
 ## Run both development servers on Windows, macOS, Linux, or WSL
 run:
 	@node scripts/dev.mjs
-
-## Run with per-turn agent tool and trip-profile logs
-debug:
-	@node scripts/dev.mjs --debug
 
 run-backend:
 	@node scripts/dev.mjs --backend-only

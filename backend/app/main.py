@@ -11,7 +11,6 @@ from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.ops_events import format_http_event
 from app.routers import (
-    agent_api,
     algorithm_lab,
     car_api,
     chat_api,
@@ -25,15 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 def _configure_app_logging() -> None:
-    """Make ``app.*`` logs (including the AGENT_DEBUG turn trace) visible.
-
-    Uvicorn only configures its own ``uvicorn*`` loggers plus the root logger at
-    WARNING, so application ``logger.info(...)`` calls — notably the per-turn
-    agent trace in ``app.agent.debug`` — are silently dropped. We attach a
-    stream handler to the ``app`` logger namespace at INFO (overridable via
-    ``LOG_LEVEL``) so the console shows the trace during local debugging. Scoped
-    to ``app`` so uvicorn's access/error logging is left untouched.
-    """
+    """Expose application logs at the configured level."""
     level = getattr(logging, os.getenv("LOG_LEVEL", "INFO").upper(), logging.INFO)
     app_logger = logging.getLogger("app")
     app_logger.setLevel(level)
@@ -132,7 +123,6 @@ app.include_router(location_api.router)
 app.include_router(itinerary_api.router)
 app.include_router(car_api.router)
 app.include_router(chat_api.router)
-app.include_router(agent_api.router)
 
 
 @app.get("/")

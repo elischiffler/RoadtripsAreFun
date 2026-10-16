@@ -178,7 +178,7 @@ Finish current arrival/public-access review, address the category/geographic gap
 then follow the existing [rollout and rollback gates](neon-places-catalog.md).
 Repository review/protection, exact-main CI and the established serialized release
 path precede production acceptance. Capture the actual deployed revision and
-live chat/Studio, route/scheduling, attribution and saved-history flows with
+live saved-trip/Studio, route/scheduling, attribution and saved-history flows with
 catalog IDs/provenance and zero Tripadvisor discovery calls. PR #41's separate
 evaluation work is not modified by this catalog branch. Neither the local test
 catalog nor a preview fulfills the requested production completion.

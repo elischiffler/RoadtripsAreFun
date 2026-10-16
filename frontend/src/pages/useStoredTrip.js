@@ -1,7 +1,7 @@
 import { getSession, isCurrentSession } from '../services/session';
 import { useContext, useEffect } from 'react';
 import { UserDataContext } from '../states/UserDataContext';
-import { initializeUserData } from './ChatPage/DatabaseUtils';
+import { initializeUserData } from '../services/savedTrips';
 
 // Map and itinerary can be opened directly after a browser reload. Rehydrate
 // the selected saved trip when the in-memory context starts empty.

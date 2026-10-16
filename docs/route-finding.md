@@ -44,7 +44,7 @@ and hotel scraping in `backend/app/routers/routing_fns/webscraping_fns.py`.
 ## Two-phase design
 
 Route generation happens in two separate HTTP calls. The frontend
-(`frontend/src/pages/ChatPage/getRoute.jsx`) drives both.
+(`frontend/src/services/routes.js`) drives both.
 
 1. **`GET /get-initial-route`** — a cheap call that returns a raw Mapbox route
    with no stops. The frontend holds onto this object.
@@ -181,7 +181,7 @@ the full polyline (`geometry.coordinates`), a single `leg`, `duration`, and
 ## Phase 2: `POST /generate-final-route`
 
 `get_final_route(request)` validates the body into `Route_Payload` and calls the
-same planning core as the chat tool.
+shared planning core used by Studio.
 
 ### Trip personality and the CP-SAT planner
 
@@ -189,9 +189,8 @@ same planning core as the chat tool.
 field uses the same default. The authenticated endpoint loads the account's 14
 preference weights using the verified Cognito subject. Missing account weights
 are equal. A partial `persona_weights` request field changes only that trip;
-it is validated and normalized with the account baseline. The chat agent can
-read or update account weights when the traveler explicitly requests a saved
-preference, and stores trip-only weights in that chat's trip profile.
+it is validated and normalized with the account baseline. Shared preference
+extraction remains available; saved account weights retain their existing storage.
 
 The current planner distributes bounded nearby queries across drive-time sections.
 On the catalog branch, identity and coordinates come from eligible Overture
