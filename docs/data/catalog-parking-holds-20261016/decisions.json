@@ -1,0 +1,166 @@
+{
+  "schema_version": "roadtrips-source-parking-holds/1",
+  "release": "source-parking-holds-2026-10-16.v1",
+  "decisions": [
+    {
+      "source_id": "nps-heritage:wupa",
+      "source_receipt": {
+        "source_url": "https://www.nps.gov/wupa/structured_data_wupa.json",
+        "snapshot_sha256": "3b518a10f372c8bcfc7685cac1185413813ea683ea3b878a98ab26c7b76740f9",
+        "checked_at": "2026-10-15T03:15:59.865145+00:00",
+        "evidence_path": "evidence/3b518a10f372c8bcfc7685cac1185413813ea683ea3b878a98ab26c7b76740f9.bin",
+        "native_facility_id": 1305,
+        "native_json_pointer": "/visitorCenters/0"
+      },
+      "facility_pointer": "/visitorCenters/0",
+      "facility_id": 1305,
+      "parking_lots": [
+        {
+          "native_pointer": "/parkingLots/3",
+          "lot_id": "BB5DDB03-3C09-430C-B57E-795B5AC81A48",
+          "schedule_id": 19385
+        }
+      ],
+      "hold_reason": "Unresolved selected-arrival parking access: Explicit named lot provides access to selected visitor center and pueblo trail, at11m. Seven weekday cells set sunriseOpen=1 and sunsetClose=1 with blank literal clocks. Those boundaries are absent from the effective date-calendar contract. No alternative ordinary-car arrival is published in these retained selected-facility facts."
+    },
+    {
+      "source_id": "nps-heritage:manz",
+      "source_receipt": {
+        "source_url": "https://www.nps.gov/manz/structured_data_manz.json",
+        "snapshot_sha256": "2b17930d6752f522a66a9035a83eae61547ea525b506f6a7648abfc7e727d5e8",
+        "checked_at": "2026-10-15T03:15:57.167323+00:00",
+        "evidence_path": "evidence/2b17930d6752f522a66a9035a83eae61547ea525b506f6a7648abfc7e727d5e8.bin",
+        "native_facility_id": 5754,
+        "native_json_pointer": "/visitorCenters/0"
+      },
+      "facility_pointer": "/visitorCenters/0",
+      "facility_id": 5754,
+      "parking_lots": [
+        {
+          "native_pointer": "/parkingLots/0",
+          "lot_id": "32E5E1C8-1CEF-4E84-AFCB-9202748F3B0B",
+          "schedule_id": 20680
+        }
+      ],
+      "hold_reason": "Unresolved selected-arrival parking access: Same selected main lot1.2m away; source description explicitly says accessible,bus and regular visitor-center parking open dawn to dusk every day. Native sunrise/sunset flags agree. liveStatusIsActive=0 concerns live occupancy updates, not cancellation of this literal schedule."
+    },
+    {
+      "source_id": "nps-heritage:chyo",
+      "source_receipt": {
+        "source_url": "https://www.nps.gov/chyo/structured_data_chyo.json",
+        "snapshot_sha256": "0285bbbd6cbfabe80c16a98d3b86c50f08e55c438ffd5b06bb97622036578f0f",
+        "checked_at": "2026-10-15T03:15:54.152840+00:00",
+        "evidence_path": "evidence/0285bbbd6cbfabe80c16a98d3b86c50f08e55c438ffd5b06bb97622036578f0f.bin",
+        "native_facility_id": 1221,
+        "native_json_pointer": "/visitorCenters/0"
+      },
+      "facility_pointer": "/visitorCenters/0",
+      "facility_id": 1221,
+      "parking_lots": [
+        {
+          "native_pointer": "/parkingLots/0",
+          "lot_id": "B7C8066C-DD2D-49C9-80D5-E6DC92F23249",
+          "schedule_id": 20569
+        }
+      ],
+      "hold_reason": "Unresolved selected-arrival parking access: Main lot description explicitly says adjacent to Youngsholm, west of the house. Native lot has sunrise/sunset flags. Its positive83.89028 longitude conflicts with selected-83.890262 native location. No longitude sign repair is made. Treat the identified selected-lot restriction/identity conflict as unresolved rather than discard it."
+    },
+    {
+      "source_id": "nps-heritage:jica",
+      "source_receipt": {
+        "source_url": "https://www.nps.gov/jica/structured_data_jica.json",
+        "snapshot_sha256": "d2d8d702774b5710e75b2bbac81d98720dc2e939432d5c57458b1a47535aa9f3",
+        "checked_at": "2026-10-15T03:15:56.513974+00:00",
+        "evidence_path": "evidence/d2d8d702774b5710e75b2bbac81d98720dc2e939432d5c57458b1a47535aa9f3.bin",
+        "native_facility_id": 5775,
+        "native_json_pointer": "/visitorCenters/0"
+      },
+      "facility_pointer": "/visitorCenters/0",
+      "facility_id": 5775,
+      "parking_lots": [
+        {
+          "native_pointer": "/parkingLots/3",
+          "lot_id": "5701CCAA-FA3A-4134-93EA-812D8DDF0345",
+          "schedule_id": 18239
+        },
+        {
+          "native_pointer": "/parkingLots/4",
+          "lot_id": "07689309-6136-4C43-93AB-861F8D943CD9",
+          "schedule_id": 18240
+        }
+      ],
+      "hold_reason": "Unresolved selected-arrival parking access: Both Plains High School front/passenger-car lot33m and rear/bus/ADA lot48m publish sunrise/sunset flags. These are the selected school, not the separate Boyhood Home or Plains Depot. No ordinary-car alternate removes the solar bound in the retained facts."
+    },
+    {
+      "source_id": "nps-heritage:hamp",
+      "source_receipt": {
+        "source_url": "https://www.nps.gov/hamp/structured_data_hamp.json",
+        "snapshot_sha256": "613745296e77d6dcc9d9efe819908f248f9928f09f0ea475a84a91d319746e7e",
+        "checked_at": "2026-10-15T03:15:56.015780+00:00",
+        "evidence_path": "evidence/613745296e77d6dcc9d9efe819908f248f9928f09f0ea475a84a91d319746e7e.bin",
+        "native_facility_id": 5856,
+        "native_json_pointer": "/visitorCenters/0"
+      },
+      "facility_pointer": "/visitorCenters/0",
+      "facility_id": 5856,
+      "parking_lots": [
+        {
+          "native_pointer": "/parkingLots/1",
+          "lot_id": "01C4056D-48B1-4598-8045-21532AFEC2BD",
+          "schedule_id": 20536
+        }
+      ],
+      "hold_reason": "Unresolved selected-arrival parking access: Selected directions lead through mansion-side gates to main lot adjacent to visitor contact station. Main lot36m publishes08:30\u201317:00 in table but description says dawn to dusk. Both must be retained/intersected; fixed clock alone cannot erase the solar condition. Upper/farm lots are separate components."
+    },
+    {
+      "source_id": "nps-heritage:chir",
+      "source_receipt": {
+        "source_url": "https://www.nps.gov/chir/structured_data_chir.json",
+        "snapshot_sha256": "f7529df8f50c31d8aa86d86879ee312221fb57e9b02b7732b65dde5398c48699",
+        "checked_at": "2026-10-15T03:15:54.019790+00:00",
+        "evidence_path": "evidence/f7529df8f50c31d8aa86d86879ee312221fb57e9b02b7732b65dde5398c48699.bin",
+        "native_facility_id": 2445,
+        "native_json_pointer": "/visitorCenters/0"
+      },
+      "facility_pointer": "/visitorCenters/0",
+      "facility_id": 2445,
+      "parking_lots": [
+        {
+          "native_pointer": "/parkingLots/7",
+          "lot_id": "819F708D-96B3-4876-B86D-08D31701A0B2",
+          "schedule_id": 21804
+        }
+      ],
+      "hold_reason": "Unresolved selected-arrival parking access: Selected directions tell drivers to park in designated spots at this main visitor-center lot27.8m away. All seven native cells say03:00AM\u201302:30AM, with no published next-day flag. No AM/PM typo repair or inferred overnight is allowed. Separate overflow road parking210.9m has unknown clocks and does not itself bind an alternative to the unmodified native arrival. RV/large-camper/trailer restrictions are also explicit."
+    },
+    {
+      "source_id": "nps-heritage:scbl",
+      "source_receipt": {
+        "source_url": "https://www.nps.gov/scbl/structured_data_scbl.json",
+        "snapshot_sha256": "d90c2cc29b21741d024a6bec10691a487e2edca2394abccf59cbfa8db3980a72",
+        "checked_at": "2026-10-15T03:15:58.793561+00:00",
+        "evidence_path": "evidence/d90c2cc29b21741d024a6bec10691a487e2edca2394abccf59cbfa8db3980a72.bin",
+        "native_facility_id": 70,
+        "native_json_pointer": "/visitorCenters/0"
+      },
+      "facility_pointer": "/visitorCenters/0",
+      "facility_id": 70,
+      "parking_lots": [
+        {
+          "native_pointer": "/parkingLots/1",
+          "lot_id": "D6C24FB4-8568-4F38-990A-E75EA8DEBA5E",
+          "schedule_id": 19375
+        }
+      ],
+      "hold_reason": "Unresolved selected-arrival parking access: Named selected visitor-center parking lot45m away publishes sunrise/sunset flags. Description includes adjacent picnic-area overflow but no independently clocked alternate. Separate summit lot1066m has09:00\u201316:45 and cannot be substituted for selected-center access."
+    }
+  ],
+  "licenses": [
+    {
+      "evidence_path": "evidence/b7b042aaa6935f3b6c9c94cd21105285d5ab9bd0b13c09112a17e0f7fba19c08.bin",
+      "snapshot_sha256": "b7b042aaa6935f3b6c9c94cd21105285d5ab9bd0b13c09112a17e0f7fba19c08",
+      "identifier": "LicenseRef-US-Government-Work",
+      "source_url": "https://www.nps.gov/aboutus/disclaimer.htm"
+    }
+  ]
+}
