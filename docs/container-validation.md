@@ -28,7 +28,7 @@ changed by this PR.
 
 ## Signed local journey follow-up, 2026-09-24
 
-The new [journey driver](../tests/journey/run.py) launched the normal API image
+The new [journey driver](https://github.com/elischiffler/RoadtripsAreFun/blob/aa41b8f10c2bd449a6bd6c17c51bae9dfb92915f/tests/journey/run.py) launched the normal API image
 with a mounted test-only fixture script and the checked-in disposable DDL. A
 fresh `roadtrips-journey-efeb0b195e` run supplied locally signed RS256 access
 tokens, seeded San Luis Obispo/Santa Barbara locations, a 160,000-meter / 7,200-
