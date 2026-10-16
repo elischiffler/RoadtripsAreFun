@@ -1,6 +1,6 @@
 import ItineraryDays from '../../components/ItineraryDays';
 import { Box, Typography, Container } from '@mui/material';
-import ChatButton from '../../components/buttons/ChatButton';
+import TripsButton from '../../components/buttons/TripsButton';
 import MapButton from '../../components/buttons/MapButton';
 import { useStoredTrip } from '../useStoredTrip';
 import './ItineraryPage.css';
@@ -32,10 +32,10 @@ const ItineraryPage = () => {
         <ItineraryDays itinerary={UserChatData.itinerary} />
       </Box>
 
-      {/* Floating nav buttons — bottom-left, same position as chat page */}
+      {/* Floating nav buttons — bottom-left, beside the saved-trip navigation */}
       <Box className="itinerary-fab-group">
         <MapButton route={UserChatData.route} showRing={false} />
-        <ChatButton />
+        <TripsButton />
       </Box>
     </Container>
   );

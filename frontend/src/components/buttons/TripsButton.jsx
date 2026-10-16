@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom';
 import ThemedTooltip from '../ThemedTooltip';
 import './ButtonStyles.css';
 
-// ChatButton — plain outlined circular back-to-chat button (no progress ring)
-const ChatButton = () => {
+// TripsButton — plain outlined circular back-to-trips button (no progress ring)
+const TripsButton = () => {
   return (
-    <Link to="/chat" className="icon-btn-link">
-      <ThemedTooltip title="Back to Chat" placement="right" arrow>
+    <Link to="/trips" className="icon-btn-link">
+      <ThemedTooltip title="Saved trips" placement="right" arrow>
         <span>
-          <Box className="icon-btn icon-btn--outlined" aria-label="Back to Chat">
+          <Box className="icon-btn icon-btn--outlined" aria-label="Saved trips">
             <ArrowBackIcon sx={{ fontSize: 20, color: 'var(--bark-main)' }} />
           </Box>
         </span>
@@ -19,4 +19,4 @@ const ChatButton = () => {
   );
 };
 
-export default ChatButton;
+export default TripsButton;

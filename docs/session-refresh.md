@@ -26,20 +26,17 @@ a five-second retry cooldown. The client cannot resolve AWS configuration errors
 
 ## Dispatch and replay contract
 
-`protectedRequest.js` owns protected Axios dispatch. `agentProgress.js` uses the
-same session snapshot builder for streamed fetch. Immediately before each attempt,
+`protectedRequest.js` owns protected Axios dispatch. Immediately before each attempt,
 both authorization/identity headers and legacy `partitionKey`/`PartitionKey` body
 fields come from one session. Old closure tokens cannot replace fresh credentials
-or send old-account chat data under a new account. Responses and progress from an
-invalidated generation are discarded; streamed work is cancelled on account changes.
+or send old-account trip data under a new account. Responses from an
+invalidated generation are discarded.
 
 Replay requires HTTP 401 **and** the exact verifier detail
 `Invalid authentication token`. There is at most one refresh/replay per request;
 late stale-token 401s reuse a session already renewed by another caller. A second
 verifier rejection requires sign-in. Unknown endpoints, arbitrary 401s, 403s,
-5xx, network failures and timeouts are not replayed. NDJSON error frames,
-interrupted streams and started streams are never replayed. Existing 45-second
-idle timeout, reader cancellation and progress behavior remain intact.
+5xx, network failures and timeouts are not replayed. Studio streaming remains separate and never replays interrupted work.
 
 The replay allowlist was checked against these rejection boundaries:
 
@@ -47,8 +44,6 @@ The replay allowlist was checked against these rejection boundaries:
 | --- | --- |
 | Chat GET/DELETE | `chat_api.py` verifies the bearer before CRUD |
 | Chat create/update | `chat_api.py` verifies `PartitionKey` before CRUD |
-| Agent JSON | `run_turn` verifies `partitionKey` before memory loading, extraction or tools |
-| Agent NDJSON | `agent_chat_stream` verifies before constructing StreamingResponse |
 | Routing/settings/car/provider, owner Algorithm Lab and itinerary | Auth dependency runs before endpoint body |
 
 Application/provider failures with different detail are terminal even if 401.
@@ -58,15 +53,13 @@ work, so retrying those remains an explicit user action.
 ## UI continuity
 
 Protected children wait for restoration. Definitive expiry produces one login
-notice and an allowlisted local return path. The context keeps chat selection,
-route/itinerary, agent conversation IDs and in-memory unsent drafts through
-same-account renewal or interactive recovery. Drafts are never automatically sent.
-The protected `/algorithm` return path and Lab requests use the same session contract.
-Another account or explicit logout clears that state and account-scoped browser
-hints. Drafts survive navigation in the mounted application, not closing/reloading
-the tab. Renewed identity tokens revalidate server-owned routing eligibility while
-retaining a still-registered same-owner algorithm selection. Created/pending chat
-readiness remains account scoped and survives token renewal.
+notice and an allowlisted local return path, defaulting to `/trips`. The context
+keeps trip selection, saved compatibility metadata and route/itinerary through
+same-account recovery. Another account or explicit logout clears client state.
+Renewed identity tokens revalidate server-owned routing eligibility while retaining
+a still-registered same-owner selection. Saved-trip creation readiness remains
+account scoped and survives renewal. The retired conversational composer/drafts
+and streaming transport are removed.
 
 ## Repeatable checks and browser fixtures
 
@@ -75,25 +68,10 @@ From `frontend/`, run `npm ci`, `npm run format:check`, `npm run lint`,
 `protectedRequest.test.js`, `sessionRecovery.test.jsx` and routing-settings tests.
 Thresholds are unchanged. `node --test tests/dev-runner.test.mjs` runs from root.
 
-For isolated browser checks, start `node tests/session-refresh/fixture.mjs` from
-root, then start Vite from `frontend/` with:
+## Historical verification
 
-```powershell
-$env:VITE_BACKEND_SERVER='http://127.0.0.1:18090/'
-$env:VITE_COGNITO_ENDPOINT='http://127.0.0.1:18090'
-$env:VITE_CLIENT_ID='fixture'
-$env:VITE_USERPOOL_ID='us-west-1_fixture'
-npm run dev -- --host 127.0.0.1 --port 5175 --strictPort
-```
-
-Open `http://127.0.0.1:5175/login`. Any fixture credentials sign in as `user`;
-an email beginning with `other` signs in as the separate fixture account. The
-fixture is loopback-only and in-memory, accepts unsigned fixture JWTs, and never
-contacts AWS, a provider or a database. It must never be a production auth target.
-`POST /fixture/control` accepts `refreshMode` (`ready`, `revoked`, `outage`) and
-`rejectStream` (boolean). `GET /fixture/status` reports counts and request paths
-without tokens/passwords. Use browser instrumentation to expire fixture access/ID
-claims or call session renewal; never alter real tokens for this test.
+The dated report below describes the retired conversational fixture and is not
+current-flow evidence. Its script was removed with the chat feature.
 
 Validation on October 4, 2026 (America/Los_Angeles):
 

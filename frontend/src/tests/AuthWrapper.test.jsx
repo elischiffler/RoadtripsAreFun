@@ -21,7 +21,7 @@ function renderRoute(initialPath) {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route
-        path="/chat"
+        path="/trips"
         element={
           <AuthWrapper>
             <ProtectedPage />
@@ -42,19 +42,19 @@ describe('AuthWrapper', () => {
       'accessToken',
       `header.${btoa(JSON.stringify({ sub: 'user', iss: 'fixture', exp: 1 }))}.signature`
     );
-    renderRoute('/chat');
+    renderRoute('/trips');
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
   });
 
-  it('redirects to /login when no accessToken and visiting /chat', async () => {
-    renderRoute('/chat');
+  it('redirects to /login when no accessToken and visiting /trips', async () => {
+    renderRoute('/trips');
     expect(await screen.findByText('Login Page')).toBeInTheDocument();
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
   });
 
   it('renders the protected page when accessToken is present', async () => {
     fixtureSession();
-    renderRoute('/chat');
+    renderRoute('/trips');
     expect(await screen.findByText('Protected Content')).toBeInTheDocument();
   });
 });

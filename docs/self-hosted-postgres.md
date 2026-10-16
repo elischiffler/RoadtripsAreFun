@@ -23,7 +23,7 @@ startup. For cross-host deployments use configured TLS/certificates; prefer
 
 The user permits maintenance downtime but requires all data preserved. Freeze all
 writers, export and restore the final copy, validate all application tables and
-sequences, then test login, trips, chat and memory before reopening writes. After
+sequences, then test login, saved trips and retained memory before reopening writes. After
 new writes occur, reverting to Neon needs reconciliation; changing a URL alone
 would lose data. Cognito and Mentro stay external dependencies.
 

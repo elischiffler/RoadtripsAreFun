@@ -1,8 +1,8 @@
-import { getSession, isCurrentSession, SessionError } from '../../services/session';
-import axios from '../../services/protectedRequest';
-import { backendAuthConfig } from '../../services/backendAuth';
-import { getFreshRoutingAlgorithm } from '../../services/routingSettings';
-export { getRoutingAlgorithm, ROUTING_ALGORITHM_KEY } from '../../services/routingSettings';
+import { getSession, isCurrentSession, SessionError } from './session';
+import axios from './protectedRequest';
+import { backendAuthConfig } from './backendAuth';
+import { getFreshRoutingAlgorithm } from './routingSettings';
+export { getRoutingAlgorithm, ROUTING_ALGORITHM_KEY } from './routingSettings';
 export const getInitialRoute = async (start_lat, start_lon, end_lat, end_lon) => {
   try {
     const params = {

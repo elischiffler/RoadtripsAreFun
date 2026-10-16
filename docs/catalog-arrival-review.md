@@ -116,5 +116,5 @@ code review are tracked on PR #40; CodeRabbit re-review remains rate limited.
 Production has no catalog writes, activation or deployment. Current authorized
 host backup/freshness/isolated-restore evidence, review, exact-main checks and
 the established release path remain gates. Completion still requires the real
-deployed version and live chat/Studio, routing, attribution and saved-history
+deployed version and live saved-trip/Studio, routing, attribution and saved-history
 flows using database catalog IDs with zero Tripadvisor discovery calls.

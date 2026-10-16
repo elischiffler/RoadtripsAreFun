@@ -477,18 +477,6 @@ def test_itinerary_failure_keeps_route_and_missing_hotels_keep_stage(tmp_path, m
     assert "hotel" in row["error"].lower()
 
 
-def test_tool_schemas_advertise_the_shared_count_limit():
-    from app.agent.tool_dispatcher import AppToolDispatcher
-
-    tools = {tool.name: tool for tool in AppToolDispatcher().specs()}
-    for name in ("generate_final_route", "record_trip_details"):
-        schema = tools[name].parameters["properties"]
-        if "details" in schema:
-            schema = schema["details"]["properties"]
-        assert schema["num_stops"]["maximum"] == MAX_STOPS
-        assert schema["num_stops"]["minimum"] == 1
-
-
 def test_archive_identity_does_not_require_git_or_claim_a_clean_checkout(monkeypatch):
     import app.routing.evaluation.runner as runner
 

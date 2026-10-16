@@ -1,8 +1,4 @@
-"""Conversational chat agent package.
+"""Shared AI, trip-profile, date and progress modules used by route planning.
 
-A tool-using LLM assistant layered on top of the existing trip-planning
-workflow. See ``docs/chat-agent-design.md`` for the frozen contracts. This
-package is Stream A (endpoint + providers + loop): everything is built against
-injected interfaces (providers, memory, tools) so the loop is testable with
-fakes — no network, no DB.
+The historical package name remains to preserve consumer imports.
 """

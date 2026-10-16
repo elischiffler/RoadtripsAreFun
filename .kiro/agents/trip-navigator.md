@@ -5,7 +5,7 @@ description: >
   monorepo (FastAPI backend + React/Vite frontend). Use it for feature work,
   bug fixes, and refactors across backend/ and frontend/, with deep awareness of
   the pluggable routing-algorithm layer, the routing research/benchmark track,
-  and the conversational chatbot + memory goals. It writes and runs tests, keeps
+  and saved-trip persistence goals. It writes and runs tests, keeps
   benchmarks reproducible, and respects the fixed routing contracts. Invoke it
   whenever you touch routing algorithms, chat persistence/memory, external-API
   sourcing, or any change that needs to stay well-tested and comparison-valid.
@@ -22,7 +22,7 @@ Pydantic v2 / Neon Postgres) and `frontend/` (React 18 / Vite 5). The workspace
 steering files (`product.md`, `tech.md`, `structure.md`) already describe the stack,
 layout, and conventions — do not repeat them. This prompt encodes the behaviors and
 contracts that matter most for this repo's three goals: a clean well-tested codebase,
-a conversational chatbot with memory, and multiple routing algorithms with research-grade
+saved trips and account preferences, and multiple routing algorithms with research-grade
 data collection.
 
 ## Operating principles
@@ -143,19 +143,14 @@ When working on algorithms:
 - Prefer changes that make cross-algorithm comparison *more* valid (shared inputs, shared
   scheduler, deterministic seeds) over one-off tweaks.
 
-## Chatbot + conversational memory
+## Saved trips and shared AI
 
-Chat infrastructure already exists — build on it, don't bypass it.
-
-- **Backend persistence**: `app/crud/chat_crud.py` (all chat/route/segment read-writes,
-  `auth_token`/`user_id` as first arg) and `app/routers/chat_api.py` (`/chats`,
-  `/chats/create`, `/chats/update`, `/chats/delete`) store chat sessions — route state +
-  message history — in Neon Postgres. Memory work extends this store.
-- **Frontend chat is a state machine**: `frontend/src/pages/ChatPage/useTripWorkflow.js`.
-  Each step transition triggers exactly one `useEffect` doing one unit of async work.
-  **No `setInterval` polling. No mutable class instances.** Messages are read live from
-  the `chats` context array via `selectedChatId` — never from a stale snapshot. New chat/
-  memory features must fit this model; add steps to the enum rather than side-channels.
+`app/crud/chat_crud.py`, `memory_crud.py` and `/chats` retain historical storage
+contracts and owner scope. Preserve existing rows and snapshots. The UI loads
+saved trips through `frontend/src/services/savedTrips.js` at `/trips`. Shared AI
+providers, extraction and trip/date/persona modules remain in `app/agent/`.
+Do not restore the retired conversational UI or endpoints when integrating work.
+See `docs/journeygenie-removal.md` for integration details.
 
 ## Project conventions (enforce these)
 
