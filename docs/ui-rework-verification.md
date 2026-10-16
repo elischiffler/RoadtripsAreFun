@@ -23,7 +23,7 @@ The rated-place mapping, skip/unsure/manual controls and normalized preference g
 
 - Node 24 install, frontend format check/lint/build passed.
 - Frontend: 35 files / 236 tests passed; 91.06% lines/statements, 84.58% branches, 87.22% functions; thresholds unchanged.
-- Backend Ruff format/check passed. Full suite: 1,656 passed, 128 skipped; 79.23% coverage against the unchanged 63% gate.
+- Backend Ruff format/check passed. Full suite: 1,670 passed, 128 skipped; 79.25% coverage against the unchanged 63% gate.
 - The focused adapter/container tests cover provider choices, typed preference payloads, partial results, create-before-update, failed update retry, saved-ID load errors, account switch and preservation of returned timing fields.
 - Dedicated Chromium fixture flow passes: retained draft answers and 320px layout, explicit ambiguous-address choice, structured preferences in the route payload, partial route save, itinerary-only retry, unchanged old row, selected map/itinerary reload, old bookmark redirect and Studio gate.
 - Three exercised Axe WCAG A/AA views have zero findings: interests at 320px, mobile address confirmation and mobile structured results.
@@ -39,7 +39,7 @@ UI_BROWSER_TOOLS_DIR, CHROMIUM_PATH and ROADTRIPS_UI_EVIDENCE_DIR configure loca
 
 ## Compatibility and open gates
 
-The retained direct route API interprets the supplied departure as origin-local wall time during planning and resolves timezones through its provider. However, its earlier is_upcoming_departure check treats a naive value as UTC. Near-now departures can therefore be accepted/rejected against the wrong instant. This existing backend boundary cannot be repaired correctly by guessing the browser timezone. A separate backend-owner change should localize and validate the origin departure before that future check, using the retained trip_dates/departure helpers; ambiguous/nonexistent DST times must remain rejected. This integration makes no backend behavior change and stays draft pending that compatibility decision.
+The direct route boundary now resolves and validates the provider origin timezone before comparing a naive departure with the current instant. It uses the retained local_time / trip_dates DST checks; ambiguous or nonexistent local times return HTTP 422, and an unverifiable timezone returns a service error. Explicit offset-aware timestamps keep their original offset and instant. No browser timezone is guessed. PR51 head 32b47624da9d4ee767e9ff96e6a76f17eee61c0c was inspected before editing; it changes none of the validation files. Scheduler, duration and timing component files remain untouched. Focused fixed-clock tests mock all provider calls: `cd backend && pytest tests/routing/departure_validation_tests.py tests/routing/cp_sat_integration_tests.py`. These include east/west near-now comparisons, exact-now rejection, preserved explicit offsets, DST gaps/overlaps and missing/invalid timezone failures.
 
 Real Cognito/provider planning and actual persistence remain unverified. Live Mentro calls require explicit user approval. Fixture results are not real trips, prices or performance statistics. The disposable PostgreSQL probe was adapted to read retained presentation JSON by dictionary keys, preserving the same four value checks after retirement. This changes no application behavior.
 

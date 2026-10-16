@@ -157,6 +157,14 @@ async def test_cp_sat_requires_upcoming_date(route):
 
 @pytest.mark.asyncio
 async def test_final_mapbox_leg_shape_rejected(monkeypatch, route):
+    monkeypatch.setattr(
+        routing_api,
+        "get_location",
+        lambda **kwargs: SimpleNamespace(
+            raw={"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
+        ),
+    )
+
     class Planner:
         async def plan(self, initial, options, services):
             return PlanResult(
