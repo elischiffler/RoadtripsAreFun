@@ -13,6 +13,7 @@ def identity(source_id):
         ("wikidata-park:", "kaggle-rideinpark"),
         ("la-cultural:", "kaggle-la-cultural"),
         ("nys-historic:", "kaggle-nys-historic"),
+        ("chicago-facility:", "kaggle-chicago-facilities"),
     ):
         if source_id.startswith(prefix):
             return source_id, source
