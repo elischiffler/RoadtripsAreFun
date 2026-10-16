@@ -239,7 +239,7 @@ async def test_unknown_calendars_cannot_starve_an_eligible_outdoor_shortlist(bou
     assert found.explanation["eligible_count"] == 1
     assert found.explanation["queries"][0]["calendar_excluded_count"] == 18
     assert len(found.explanation["calendar_excluded_provider_ids"]) == 18
-    assert ai.calls == 1
+    assert ai.calls == 2  # One rating call and one optional duration call (fallback for this fake).
     selected = select_attractions(
         [{**row, "detour_seconds": 0} for row in found.candidates], [], 1, route.duration
     )

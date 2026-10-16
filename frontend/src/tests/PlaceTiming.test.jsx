@@ -66,6 +66,26 @@ describe('arrival and leaving display', () => {
     expect(screen.queryByText(/^Leaving:/)).not.toBeInTheDocument();
   });
 
+  it('hides only departure rows already paired with a place and keeps saved legacy rows', () => {
+    render(
+      <ItineraryDays
+        itinerary={[
+          {
+            date: 'November 3',
+            stops: [
+              { ...stop, time: '01:30 AM' },
+              { name: 'Depart from the stop', time: '01:30 AM', paired_departure: true },
+              { name: 'Legacy departure', time: '08:00 AM' },
+            ],
+          },
+        ]}
+      />
+    );
+    expect(screen.queryByText('Depart from the stop')).not.toBeInTheDocument();
+    expect(screen.getByText('Legacy departure')).toBeInTheDocument();
+    expect(screen.getByText('Departure time: 08:00 AM')).toBeInTheDocument();
+  });
+
   it('uses the same clocks in route and itinerary while preserving other card information', () => {
     const place = {
       ...stop,
