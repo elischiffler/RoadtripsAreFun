@@ -7,12 +7,13 @@ from types import SimpleNamespace
 
 from geopy.distance import geodesic
 
+from app.catalog.identity import catalog_source_id
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import Route
 from app.routers.itinerary_api import build_itinerary
 from app.routing.base import PlanningError, PlanOptions
 from app.routing.cp_sat_selection import select_attractions
-from app.routing.evaluation.fixtures import EvidenceError, route_key, validate_route
+from app.routing.evaluation.fixtures import EvidenceError, Fixture, route_key, validate_route
 from app.routing.evaluation.methods import comparator
 from app.routing.explanation import record_stage
 from app.routing.geometry import find_position
@@ -43,6 +44,24 @@ class FrozenProviders(LivePlaceProvider):
 
     def count(self, name):
         self.calls[name] = self.calls.get(name, 0) + 1
+
+    def catalog_records(self, source_ids):
+        """Project source facts from the validated capture, never the active DB."""
+        if not isinstance(self.fixture, Fixture):
+            raise EvidenceError("frozen itinerary facts require a validated fixture")
+        self.count("captured_catalog_fact_reads")
+        return {
+            sid: {
+                "coordinates": copy.deepcopy(item["coordinates"]),
+                "categories": copy.deepcopy(item.get("categories", [])),
+                "source_provenance": copy.deepcopy(item.get("source_provenance", [])),
+                "source_attribution": item.get("source_attribution"),
+                "source_updated_at": item.get("source_updated_at"),
+                "source_release": item.get("source_release"),
+            }
+            for item in self.data["attractions"]
+            if (sid := catalog_source_id(item["provider_id"])) in source_ids
+        }
 
     async def attractions_near(self, point, *, require_visit_calendar=False, trip_calendar=None):
         self.count("captured_catalog_queries")
@@ -268,7 +287,10 @@ async def pipeline(fixture, scenario, config, method, envelope, progress):
                 if review.valid_through < datetime.fromisoformat(stop["arrival_time"]).date():
                     raise EvidenceError("access review expires before observed attraction arrival")
     progress("itinerary")
-    itinerary = await build_itinerary(Itinerary_Payload(route=route, start_time=options.start))
+    itinerary = await build_itinerary(
+        Itinerary_Payload(route=route, start_time=options.start),
+        catalog_lookup=provider.catalog_records,
+    )
     envelope["itinerary"] = [day.model_dump(mode="json") for day in itinerary]
     progress("hotel_quote_validation")
     if any(
