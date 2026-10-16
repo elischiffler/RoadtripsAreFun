@@ -8,14 +8,16 @@ from app.routing.visit_calendar import VisitCalendarConflict, calendar_eligible
 
 
 def _explicit_calendar(record):
-    return any(
-        isinstance(fact, dict) and "source_visit_calendar" in fact
-        for fact in record.get("source_provenance", [])
-    )
+    provenance = record.get("source_provenance", [])
+    if not isinstance(provenance, list):
+        return True
+    return any(isinstance(fact, dict) and "source_visit_calendar" in fact for fact in provenance)
 
 
 def explicit_calendar_ineligible(record):
-    return _explicit_calendar(record) and not calendar_eligible(record)
+    return not isinstance(record.get("source_provenance", []), list) or (
+        _explicit_calendar(record) and not calendar_eligible(record)
+    )
 
 
 async def refresh_for_timing(stops):
@@ -40,7 +42,11 @@ async def refresh_for_timing(stops):
                 isinstance(fact, dict)
                 and fact.get("dataset")
                 in {"Roadtrips active catalog", "Roadtrips attributed calendar enrichment"}
-                for fact in record.get("source_provenance", [])
+                for fact in (
+                    record.get("source_provenance", [])
+                    if isinstance(record.get("source_provenance", []), list)
+                    else []
+                )
             )
         )
 
@@ -103,7 +109,8 @@ async def refresh_for_timing(stops):
             )
         if (sid is not None or _explicit_calendar(record)) and record.get("type") != "stop":
             raise VisitCalendarConflict(
-                record["provider_id"], "catalog visits require an attraction stop; replan this trip"
+                record.get("provider_id", "unknown"),
+                "catalog visits require an attraction stop; replan this trip",
             )
     for stop in stops:
         if stop.get("type") == "hotel" and "evening_suggestions" in stop:

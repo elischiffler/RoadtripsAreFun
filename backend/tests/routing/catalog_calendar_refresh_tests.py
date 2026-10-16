@@ -143,6 +143,27 @@ async def test_malformed_optional_payload_is_dropped_without_failing_route(sugge
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("provenance", [None, 123])
+async def test_malformed_optional_provenance_is_dropped(provenance):
+    hotel = {
+        "type": "hotel",
+        "evening_suggestions": [{"source_provenance": provenance}],
+        "price": 123,
+    }
+    await refresh_for_timing([hotel])
+    assert hotel["evening_suggestions"] == [] and hotel["price"] == 123
+
+
+@pytest.mark.asyncio
+async def test_explicit_positive_calendar_requires_stop_type_without_identity():
+    item = {**record(held=False), "type": "generic"}
+    item.pop("provider_id")
+    item.pop("source")
+    with pytest.raises(VisitCalendarConflict, match="attraction stop"):
+        await refresh_for_timing([item])
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "mutation",
     [
