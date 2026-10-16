@@ -291,6 +291,8 @@ async def test_live_discovery_seam_estimates_after_match_and_admits_short_verifi
     record = candidate(3600, closes="11:00")
     record.pop("visit_duration")
     record["categories"] = ["daytime", "culture"]
+    record["activities"] = ["Synthetic exhibit activity"]
+    record["description"] = "Synthetic place details for the duration prompt"
     prompts = []
 
     class Places:
@@ -303,6 +305,7 @@ async def test_live_discovery_seam_estimates_after_match_and_admits_short_verifi
             prompts.append(prompt)
             if "Estimate a realistic visit length" in prompt:
                 assert '"score":' in prompt and "traveler_preferences" in prompt
+                assert "Synthetic exhibit activity" in prompt and record["description"] in prompt
                 return LLMResponse(
                     content=json.dumps(
                         {"estimates": [{"provider_id": record["provider_id"], "minutes": 60}]}

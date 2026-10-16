@@ -14,7 +14,7 @@ from datetime import date, datetime
 from typing import Any, Literal, Protocol
 
 from geopy.distance import geodesic
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.agent.persona import ATTRIBUTE_KEYS, normalize_weights
 from app.agent.progress import emit, stage
@@ -94,6 +94,8 @@ class VerifiedPlace(BaseModel):
     address: str | None = None
     url: str | None = None
     categories: list[str] = []
+    activities: list[str] = Field(default_factory=list, max_length=20)
+    description: str | None = Field(default=None, max_length=2000)
     provider_rank: int = 0
     source: str | None = None
     source_release: str | None = None
@@ -312,6 +314,8 @@ def _candidate(
                 "address",
                 "url",
                 "categories",
+                "activities",
+                "description",
                 "provider_rank",
                 "source",
                 "source_release",
