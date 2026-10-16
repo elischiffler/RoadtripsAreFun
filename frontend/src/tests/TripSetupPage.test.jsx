@@ -108,6 +108,9 @@ it('plans only after explicit provider-address confirmation and creates a new sa
     'href',
     '/itinerary'
   );
+  await userEvent.click(screen.getByRole('button', { name: 'Edit draft for another trip' }));
+  expect(screen.getByRole('heading', { name: 'Review', exact: true })).toBeInTheDocument();
+  expect(existing.route).toEqual({ name: 'Original saved route' });
 });
 it('retains a partial route and retries only itinerary, updating an existing saved row', async () => {
   planStructuredItinerary.mockRejectedValueOnce(new Error('temporary'));

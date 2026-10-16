@@ -337,6 +337,18 @@ export default function TripSetupPage() {
               </p>
             ))}
             <PreferenceProfile weights={result.weights} label="Interests sent to the planner" />
+            <button
+              type="button"
+              className="setup-secondary"
+              disabled={busy}
+              onClick={() => {
+                setResult(null);
+                setProposal(null);
+                setError('');
+              }}
+            >
+              Edit draft for another trip
+            </button>
             {result.itineraryError && (
               <div role="alert">
                 <p>
