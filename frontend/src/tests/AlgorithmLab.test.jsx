@@ -110,6 +110,17 @@ const catalog = {
   ],
   limits: { min_stops: 1, max_stops: 20, max_rooms: 4, max_guests_per_room: 6, max_child_age: 17 },
 };
+function useTwoDayCatalog() {
+  const fallback = axios.get.getMockImplementation();
+  const data = structuredClone(catalog);
+  data.endpoints.push({ id: 'boise', label: 'Boise' });
+  const preset = data.presets.find((item) => item.id === 'family');
+  preset.id = 'medium-two-day';
+  preset.inputs.destination_id = 'boise';
+  axios.get.mockImplementation((url, ...args) =>
+    url.endsWith('studio/presets') ? Promise.resolve({ data }) : fallback(url, ...args)
+  );
+}
 const response = () => ({
   schema_version: 1,
   mode: 'live',
@@ -305,6 +316,40 @@ describe('Trip Planning Studio access and lifecycle', () => {
 });
 
 describe('Trip Planning Studio experiments', () => {
+  it('starts fresh on the two-day trip and preserves edits and the Studio session on refresh', async () => {
+    useTwoDayCatalog();
+    const session = sessionStorage.getItem('studioSession');
+    await mount();
+    expect(screen.getByText('Selected trip: Medium two-day')).toBeInTheDocument();
+    expect(screen.getByLabelText('Start')).toHaveValue('sf');
+    expect(screen.getByLabelText('Destination')).toHaveValue('boise');
+    expect(screen.getByLabelText('Maximum attractions')).toHaveValue(4);
+    fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '5' } });
+    act(() => window.dispatchEvent(new Event('focus')));
+    await userEvent.click(screen.getByRole('button', { name: 'History' }));
+    await screen.findByRole('region', { name: 'Saved run history' });
+    expect(screen.getByLabelText('Maximum attractions')).toHaveValue(5);
+    expect(sessionStorage.getItem('studioSession')).toBe(session);
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it('keeps an explicit selection until Reset preset restores the two-day trip', async () => {
+    useTwoDayCatalog();
+    await mount();
+    await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Culture trip/ }));
+    act(() => window.dispatchEvent(new Event('focus')));
+    expect(screen.getByText('Selected trip: Culture trip')).toBeInTheDocument();
+    expect(screen.getByLabelText('Destination')).toHaveValue('monterey');
+    fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '5' } });
+    await userEvent.click(screen.getByRole('button', { name: 'Reset preset' }));
+    expect(screen.getByText('Selected trip: Medium two-day')).toBeInTheDocument();
+    expect(screen.getByLabelText('Destination')).toHaveValue('boise');
+    expect(screen.getByLabelText('Maximum attractions')).toHaveValue(4);
+    expect(screen.queryByText('Modified')).not.toBeInTheDocument();
+    expect(axios.post).not.toHaveBeenCalled();
+  });
+
   it('opens presets in a modal and dismisses without changing the form or starting a run', async () => {
     await mount();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -359,9 +404,10 @@ describe('Trip Planning Studio experiments', () => {
     await userEvent.click(screen.getByRole('button', { name: /Medium two-day/ }));
     fireEvent.change(screen.getByLabelText('Room 1 child 2 age'), { target: { value: '13' } });
     await userEvent.click(screen.getByRole('button', { name: 'Reset preset' }));
-    expect(screen.getByLabelText('Room 1 child 2 age')).toHaveValue(12);
+    expect(screen.queryByLabelText('Room 1 child 2 age')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Travelers')).toHaveValue(2);
     await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
-    expect(screen.getByRole('button', { name: /Medium two-day/ })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: /Coastal nature/ })).toHaveAttribute(
       'aria-pressed',
       'true'
     );

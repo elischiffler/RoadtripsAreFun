@@ -19,10 +19,14 @@ There is no form-to-message serialization, composer, conversation orchestration 
 
 The rated-place mapping, skip/unsure/manual controls and normalized preference graph are retained. The result graph is labeled “Interests sent to the planner”; the direct route API does not echo an effective-weight receipt. Car details are retained as saved metadata; fuel cost is not estimated. AI Studio remains separately gated with its controls/history/comparison semantics.
 
+## Studio default preset
+
+Fresh Studio forms and explicit Reset preset (including Cancel and reset) now choose the existing medium-two-day San Francisco–Boise preset. An older catalog without that ID falls back to its first preset. The default is applied only on catalog initialization or explicit reset; focus/session refreshes, history toggles, current edits and explicit preset selections retain their existing behavior. This changes no backend preset, planner algorithm or live-run behavior. The Studio suite uses mocked requests only.
+
 ## Checks
 
 - Node 24 install, frontend format check/lint/build passed.
-- Frontend: 35 files / 236 tests passed; 91.06% lines/statements, 84.58% branches, 87.22% functions; thresholds unchanged.
+- Frontend: 35 files / 238 tests passed; 91.07% lines/statements, 84.60% branches, 87.26% functions; thresholds unchanged.
 - Backend Ruff format/check passed. Full suite: 1,670 passed, 128 skipped; 79.25% coverage against the unchanged 63% gate.
 - The focused adapter/container tests cover provider choices, typed preference payloads, partial results, create-before-update, failed update retry, saved-ID load errors, account switch and preservation of returned timing fields.
 - Dedicated Chromium fixture flow passes: retained draft answers and 320px layout, explicit ambiguous-address choice, structured preferences in the route payload, partial route save, itinerary-only retry, unchanged old row, selected map/itinerary reload, old bookmark redirect and Studio gate.
