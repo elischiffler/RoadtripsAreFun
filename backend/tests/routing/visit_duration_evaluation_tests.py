@@ -120,6 +120,72 @@ def test_separate_fixtures_do_not_share_cached_duration_captures(tmp_path):
         assert row["metrics"]["trip_evaluation"]["schedule"]["visit_seconds"] == seconds
 
 
+@pytest.mark.parametrize(
+    "namespace,source", [("boulder:", "boulder-osmp"), ("overture:", "overture")]
+)
+@pytest.mark.parametrize("seconds", [900, 10800, None])
+def test_validated_frozen_catalog_lookup_preserves_variable_dwell_and_metrics(
+    tmp_path, monkeypatch, namespace, source, seconds
+):
+    import json
+    from datetime import datetime
+
+    from app.catalog import repository
+    from app.crud import chat_crud
+    from app.routing.evaluation import network
+    from tests.routing.frozen_itinerary_catalog_tests import catalog_fixture
+
+    root = tmp_path / "short-1d"
+    data = catalog_fixture(root, namespace, source)
+    manifest = json.loads((root / "manifest.json").read_text())
+    request = spec(tmp_path, "offline-pipeline")
+    if seconds is not None:
+        data["visit_duration_estimates"] = [
+            capture(item, request["scenario"]["inputs"]["persona_weights"], seconds)
+            for item in data["attractions"]
+        ]
+    save_fixture(root, data, manifest)
+    attempted = []
+
+    def forbidden(*args, **kwargs):
+        attempted.append(True)
+        raise AssertionError("Validated frozen evaluation must not read live catalog or network")
+
+    for name in ("current_records", "nearby", "nearby_page"):
+        monkeypatch.setattr(repository, name, forbidden)
+    monkeypatch.setattr(chat_crud, "_get_conn", forbidden)
+    monkeypatch.setattr(network, "denied", forbidden)
+    row = execute(request)
+    assert row["status"] == "completed", row["error"]
+    assert row["external_calls"] == 0 and attempted == []
+    assert row["offline_provider_reads"]["captured_catalog_fact_reads"] == 1
+    assert len(row["selected_ids"]) == 1
+    stop = next(item for item in row["route"]["stops"] if item["type"] == "stop")
+    expected = 7200 if seconds is None else seconds
+    assert stop["visit_duration"]["seconds"] == expected
+    assert stop["visit_duration"]["source"] == (
+        "conservative_fallback" if seconds is None else "ai_estimate"
+    )
+    assert (
+        datetime.fromisoformat(stop["departure_time"])
+        - datetime.fromisoformat(stop["arrival_time"])
+    ).total_seconds() == expected
+    trip = row["metrics"]["trip_evaluation"]
+    assert trip["schedule"]["visit_seconds"] == expected
+    assert trip["scenario_target"]["maximum_daily_active_seconds"] == pytest.approx(3600 + expected)
+    displayed = next(
+        item
+        for day in row["itinerary"]
+        for item in day["stops"]
+        if item["provider_id"] == stop["provider_id"]
+    )
+    assert displayed["visit_duration"] == stop["visit_duration"]
+    assert displayed["arrival_time"] == stop["arrival_time"]
+    assert displayed["departure_time"] == stop["departure_time"]
+    assert displayed["source_release"] == "explicit-synthetic-frozen-release"
+    assert json.loads((root / "data.json").read_text()) == data
+
+
 def test_real_schema_accepts_context_scoped_capture_with_complete_provenance(tmp_path):
     data, manifest, ledger, rights = reviewed_bundle(tmp_path)
     weights = spec(tmp_path)["scenario"]["inputs"]["persona_weights"]

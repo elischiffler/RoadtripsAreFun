@@ -69,3 +69,14 @@ minimum remains explicitly separate from an infeasibility proof. Synthetic
 offline tests cover a short opening window, waits, capture invalidation/isolation,
 provenance, DST and agreement with route/itinerary clocks. The calendar-correction
 and parent release gates still apply.
+
+The reviewed PR54 frozen-catalog fix is integrated from `develop`
+`aa41b8f10c2bd449a6bd6c17c51bae9dfb92915f`, including the seven-calendar
+correction. Its validated `Fixture` lookup remains server-only and preserves
+the shared identity/hold guard; ordinary HTTP/agent calls use active facts.
+Additional synthetic regressions run recognized Boulder/Overture namespaces
+with 15-minute/three-hour captured visits and missing-capture fallbacks while
+forbidding database/network reads. They assert unchanged fixture bytes, retained
+source attribution, matching route/itinerary clocks and actual active-time
+metrics. Cached short estimates, long visits and fallbacks cannot bypass any
+of the seven holds, and rejected agent retries preserve saved duration metadata.
