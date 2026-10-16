@@ -23,7 +23,7 @@ it('shows persisted measurements and uses the server history cursor', async () =
           cohort_key: 'cohort',
           objective_score: 1200,
           latency_ms: { total: 7.5 },
-          external_calls: { mapbox: 0 },
+          external_calls: { mapbox: 0, tripadvisor: 7 },
           feasibility: null,
         },
       },
@@ -45,6 +45,9 @@ it('shows persisted measurements and uses the server history cursor', async () =
   fireEvent.click(screen.getByText('Inspect'));
   expect(screen.getByText(/Nightly-target feasibility: Unassessed/)).toBeInTheDocument();
   expect(screen.getByText(/3 comparable run/)).toBeInTheDocument();
+  expect(
+    screen.getByText(/Tripadvisor Terra API attempts \(saved measurement\): 7/)
+  ).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Older runs' }));
   await screen.findByText(/Showing 0 runs from 51/);
   expect(getLabRuns.mock.calls[1][1]).toBe(50);
@@ -54,6 +57,28 @@ it('reports history outages without inventing empty history', async () => {
   render(<RunHistory revision={0} />);
   expect(await screen.findByRole('alert')).toHaveTextContent('History unavailable');
   expect(screen.queryByRole('table')).not.toBeInTheDocument();
+});
+
+it('shows catalog measurements without labeling a new run as a historical provider run', async () => {
+  getLabRuns.mockResolvedValue({
+    runs: [
+      {
+        id: 'catalog-run',
+        preset_id: 'catalog-day',
+        mode: 'live',
+        started_at: '2026-10-15T12:00:00Z',
+        status: 'completed',
+        metrics: { latency_ms: { total: 10 }, external_calls: { catalog: 2, mapbox: 1 } },
+      },
+    ],
+    groups: [],
+    next_offset: null,
+  });
+  render(<RunHistory revision={0} />);
+  await screen.findByText('catalog-day');
+  fireEvent.click(screen.getByText('Inspect'));
+  expect(screen.getByText(/"catalog": 2/, { selector: 'pre' })).toBeInTheDocument();
+  expect(screen.queryByText(/Tripadvisor Terra API attempts/)).not.toBeInTheDocument();
 });
 
 it('opens a saved trip without generating another provider run', async () => {

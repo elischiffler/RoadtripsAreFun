@@ -150,9 +150,9 @@ class ORToolsKnapsackPlanner(RoutePlanner):
 
     @staticmethod
     def _value(candidate: dict[str, Any]) -> int:
-        """Integer profit for the solver, derived from popularity.
+        """Legacy integer profit derived from deterministic catalog ordering.
 
-        Each candidate carries the TripAdvisor popularity ``rank`` (1 = best) that
+        Each candidate carries a catalog ordering ``rank`` (1 = first) that
         ``find_stop`` recorded, so better-ranked attractions get a higher profit
         (``1/rank`` scaled to an integer). If the rank is missing or invalid
         (e.g. an attraction with no ranking data), fall back to a flat baseline

@@ -77,7 +77,7 @@ class Places:
         key = f"{point[1]:.8f}"
         return [
             {
-                "provider_id": f"terra:{key}:{i}",
+                "provider_id": f"overture:{key}:{i}",
                 "name": f"Place {key}:{i}",
                 "coordinates": point,
                 "categories": ["museum" if i % 2 else "park"],
@@ -155,7 +155,7 @@ async def test_sparse_sections_and_search_exhaustion_are_explicit():
 async def test_rating_budget_exhausts_without_rerating_identity():
     route = corridor()
     plan = make_discovery_plan(route, 2)
-    ai, places = EchoAI(0.4), Places()
+    ai, places = EchoAI(0.0), Places()
     result = await attraction_candidates(route, plan, default_weights(), ai=ai, places=places)
     names = [name for batch in ai.calls for name in batch]
     assert len(names) == len(set(names)) == plan.rating_cap

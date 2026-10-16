@@ -1,0 +1,72 @@
+{
+  "checked_at": "2026-10-15T02:28:13.484176+00:00",
+  "local_only": true,
+  "accepted": 72,
+  "states": 24,
+  "primary_categories": {
+    "roadside": 1,
+    "entertainment": 1,
+    "nature": 12,
+    "beaches": 12,
+    "landmarks": 0,
+    "museums": 9,
+    "national_parks": 37
+  },
+  "generation": "2c09cc2993640b966c6f73231c031aafbf765695ef748f2017067a1c88bf4e3f",
+  "manifest_sha256": "c07a387c48ff5553e6943c3ff9d05a410735e43ad64e4cab7a3686efe460fd47",
+  "original_rows_and_coordinates_unchanged": true,
+  "original_72_generation_preserved": "3d9d99878577fa635fb46390051e64d40d6b1810a9446cd1ef4f5d3125c0e384",
+  "attribution_statements_deduplicated_in_producer_and_response": true,
+  "sample_source_attribution": "Overture Maps Foundation; BrightQuery; Foursquare; Microsoft; Overture; Overture-signals; meta",
+  "indexed_catalog_bytes": 507904,
+  "database_bytes": 8509119,
+  "archive_bytes": 35537,
+  "archive_sha256": "432718911de637ba9f79fac7fc32249b97547ee00109348c25c7edc1784ed2a9",
+  "source_restore_all_tables_and_pointer_equal": true,
+  "source_table_state": {
+    "places_catalog": {
+      "rows": 144,
+      "content_md5": "a5339f57f840ec756b61814fde7aa3e5"
+    },
+    "places_catalog_imports": {
+      "rows": 2,
+      "content_md5": "b65605fe1303c991d8a0d54948da3cd6"
+    },
+    "places_catalog_active": {
+      "rows": 1,
+      "content_md5": "9a7da6e78dcf8b3f93686f964d535321"
+    },
+    "active_generation": "2c09cc2993640b966c6f73231c031aafbf765695ef748f2017067a1c88bf4e3f"
+  },
+  "restored_table_state": {
+    "places_catalog": {
+      "rows": 144,
+      "content_md5": "a5339f57f840ec756b61814fde7aa3e5"
+    },
+    "places_catalog_imports": {
+      "rows": 2,
+      "content_md5": "b65605fe1303c991d8a0d54948da3cd6"
+    },
+    "places_catalog_active": {
+      "rows": 1,
+      "content_md5": "9a7da6e78dcf8b3f93686f964d535321"
+    },
+    "active_generation": "2c09cc2993640b966c6f73231c031aafbf765695ef748f2017067a1c88bf4e3f"
+  },
+  "idempotent_stage": true,
+  "rollback_to_preserved_generation": true,
+  "real_adapter_evaluation": {
+    "legacy_provider_id": "overture:57193dd5-6aa9-4857-98bc-60e2097c3af0",
+    "persona_provider_ids": [
+      "overture:57193dd5-6aa9-4857-98bc-60e2097c3af0"
+    ],
+    "evening_provider_ids": [
+      "overture:03f811cd-0401-40ad-b75c-1ae7328cf6b7"
+    ],
+    "http_calls": 0,
+    "tripadvisor_calls": 0
+  },
+  "backend_tests": 940,
+  "backend_coverage_percent": 87.58,
+  "production_changed": false
+}

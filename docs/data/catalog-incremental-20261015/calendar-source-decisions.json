@@ -1,0 +1,3674 @@
+{
+  "nps": [
+    {
+      "source_id": "nps:bisc",
+      "name": "Biscayne National Park \u2014 Dante Fascell Visitor Center",
+      "region": "FL",
+      "native_facility_id": 2552,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-80.334822",
+        "latitude": "25.464444"
+      },
+      "source_url": "https://www.nps.gov/bisc/structured_data_bisc.json",
+      "snapshot_sha256": "fe8fa1d2de5a56cfdc094bc7efbe6c189255563cb988767bd32de7fac7e34a99",
+      "checked_at": "2026-10-15T00:11:53.767708+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 78,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps:lavo",
+      "name": "Lassen Volcanic National Park \u2014 Loomis Museum",
+      "region": "CA",
+      "native_facility_id": 2596,
+      "native_pointer": "/visitorCenters/1",
+      "native_coordinates": {
+        "longitude": "-121.563149108",
+        "latitude": "40.5361249158"
+      },
+      "source_url": "https://www.nps.gov/lavo/structured_data_lavo.json",
+      "snapshot_sha256": "ff1928e66d2e43bb7d4698c4e23ccb2a5623bf98a8b48a897faad8b27c7a4ccd",
+      "checked_at": "2026-10-15T00:11:55.646647+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "dual_literal_date_and_holiday_selectors",
+        "mixed_or_unpaired_selector_endpoints",
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "dual_literal_date_and_holiday_selectors",
+        "mixed_or_unpaired_selector_endpoints",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps:meve",
+      "name": "Mesa Verde National Park \u2014 Mesa Verde Museum",
+      "region": "CO",
+      "native_facility_id": 5744,
+      "native_pointer": "/visitorCenters/1",
+      "native_coordinates": {
+        "longitude": "-108.488294",
+        "latitude": "37.18453"
+      },
+      "source_url": "https://www.nps.gov/meve/structured_data_meve.json",
+      "snapshot_sha256": "4b21633de665800444a635dcd737ceef8c02eebbcaace55ce3a0c8ffacbae888",
+      "checked_at": "2026-10-15T00:11:55.827880+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "year_specific_exception_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "year_specific_exception_text"
+      ]
+    },
+    {
+      "source_id": "nps:mora",
+      "name": "Mount Rainier National Park \u2014 Longmire Museum",
+      "region": "WA",
+      "native_facility_id": 1270,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-121.812359610396",
+        "latitude": "46.7497616262962"
+      },
+      "source_url": "https://www.nps.gov/mora/structured_data_mora.json",
+      "snapshot_sha256": "f77b484bc884c3891d5b3b534cf6848a6091d92d7afef12395f6e221e0b318ff",
+      "checked_at": "2026-10-15T00:11:55.762947+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "prose_only_split_or_entry_cutoff"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "prose_only_split_or_entry_cutoff"
+      ]
+    },
+    {
+      "source_id": "nps:pefo",
+      "name": "Petrified Forest National Park \u2014 Rainbow Forest Museum",
+      "region": "AZ",
+      "native_facility_id": 1281,
+      "native_pointer": "/visitorCenters/1",
+      "native_coordinates": {
+        "longitude": "-109.865823355",
+        "latitude": "34.8151527674"
+      },
+      "source_url": "https://www.nps.gov/pefo/structured_data_pefo.json",
+      "snapshot_sha256": "e408cff451489b73850c8badced69b5c9d9b66c54842b89481c0891b6f4f6cae",
+      "checked_at": "2026-10-15T00:11:55.931250+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps:seki",
+      "name": "Sequoia & Kings Canyon National Parks \u2014 Giant Forest Museum",
+      "region": "CA",
+      "native_facility_id": 191,
+      "native_pointer": "/visitorCenters/1",
+      "native_coordinates": {
+        "longitude": "-118.7726831068016",
+        "latitude": "36.56468778866104"
+      },
+      "source_url": "https://www.nps.gov/seki/structured_data_seki.json",
+      "snapshot_sha256": "b1670d05192e5b5787809047980838224ce5f966d36e1c8d065261fddd6e232f",
+      "checked_at": "2026-10-15T00:11:56.196980+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps:zion",
+      "name": "Zion National Park \u2014 Human History Museum",
+      "region": "UT",
+      "native_facility_id": 5847,
+      "native_pointer": "/visitorCenters/2",
+      "native_coordinates": {
+        "longitude": "-112.9804420000",
+        "latitude": "37.2094460000"
+      },
+      "source_url": "https://www.nps.gov/zion/structured_data_zion.json",
+      "snapshot_sha256": "bdef7fc32aab48af8fecd07732a54cb8538273fe2ea16fb55ff6e7949ddd6f65",
+      "checked_at": "2026-10-15T00:11:56.742309+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:arpo",
+      "name": "Arkansas Post National Memorial \u2014 Arkansas Post Visitor Center",
+      "region": "AR",
+      "native_facility_id": 5712,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-91.345107954",
+        "latitude": "34.0165748386"
+      },
+      "source_url": "https://www.nps.gov/arpo/structured_data_arpo.json",
+      "snapshot_sha256": "7742fcefd2f50631b696e32e206a6dbf108c5bd09105c6ea76781629cbfb01d8",
+      "checked_at": "2026-10-15T02:31:32.274776+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 54,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:ande",
+      "name": "Andersonville National Historic Site \u2014 National Prisoner of War Museum",
+      "region": "GA",
+      "native_facility_id": 2568,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-84.1271101999",
+        "latitude": "32.1974984"
+      },
+      "source_url": "https://www.nps.gov/ande/structured_data_ande.json",
+      "snapshot_sha256": "c8992ad11d7021e835b06155d5b27c5fc122bf169c5bd5d3943041c83bc24643",
+      "checked_at": "2026-10-15T02:31:32.744264+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "dual_literal_date_and_holiday_selectors"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "dual_literal_date_and_holiday_selectors"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:efmo",
+      "name": "Effigy Mounds National Monument \u2014 Visitor Center",
+      "region": "IA",
+      "native_facility_id": 136,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-91.18553137399994",
+        "latitude": "43.088812767000036"
+      },
+      "source_url": "https://www.nps.gov/efmo/structured_data_efmo.json",
+      "snapshot_sha256": "c4afcb39816f899180fa416e0287466607ecfc66ac811842b33ad9a479d322e4",
+      "checked_at": "2026-10-15T02:31:33.008690+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:crmo",
+      "name": "Craters Of The Moon National Monument & Preserve \u2014 Robert Limbert Visitor Center",
+      "region": "ID",
+      "native_facility_id": 1265,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-113.561750105",
+        "latitude": "43.4620552216"
+      },
+      "source_url": "https://www.nps.gov/crmo/structured_data_crmo.json",
+      "snapshot_sha256": "f5a5cfe4b434d81f965229e3b6c389b32ee59bd65e0d8e0304ff8215fa4afdbf",
+      "checked_at": "2026-10-15T02:31:33.035006+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:liho",
+      "name": "Lincoln Home National Historic Site \u2014 Lincoln Home Visitor Center",
+      "region": "IL",
+      "native_facility_id": 5860,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-89.646174",
+        "latitude": "39.797466"
+      },
+      "source_url": "https://www.nps.gov/liho/structured_data_liho.json",
+      "snapshot_sha256": "ff6753f46b46999a195df339b6706368ada49303988f1bb5fa8c97565c724a08",
+      "checked_at": "2026-10-15T02:31:33.168860+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 75,
+      "withheld_ambiguous_dates": [
+        {
+          "date": "2026-12-24",
+          "reason": "Christmas Eve exception explicitly says 2024; 2026 month/day ambiguity withheld"
+        }
+      ],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:cari",
+      "name": "Cane River Creole National Historical Park \u2014 Oakland Plantation Store",
+      "region": "LA",
+      "native_facility_id": 3649,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-93.001969",
+        "latitude": "31.665043"
+      },
+      "source_url": "https://www.nps.gov/cari/structured_data_cari.json",
+      "snapshot_sha256": "7bc9d80048458946ca4a9a0c1fc76b1f2a3943c57c26e8554295f2dc9026225e",
+      "checked_at": "2026-10-15T02:31:33.360892+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 53,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:adam",
+      "name": "Adams National Historical Park \u2014 Adams National Historical Park Visitor Center",
+      "region": "MA",
+      "native_facility_id": 1233,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-71.00359799954816",
+        "latitude": "42.25218300056556"
+      },
+      "source_url": "https://www.nps.gov/adam/structured_data_adam.json",
+      "snapshot_sha256": "a2b659716eb1826a0a6417e350ef17d0d9c2660005298e7434e8731a99ca2181",
+      "checked_at": "2026-10-15T02:31:33.558943+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "prose_negative_or_uncertain_day_needs_veto",
+        "season_language_requires_scope_and_date_review",
+        "year_specific_exception_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "prose_negative_or_uncertain_day_needs_veto",
+        "season_language_requires_scope_and_date_review",
+        "year_specific_exception_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:gwca",
+      "name": "George Washington Carver National Monument \u2014 George Washington Carver National Monument",
+      "region": "MO",
+      "native_facility_id": 1226,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-94.3546447352",
+        "latitude": "36.9861450234"
+      },
+      "source_url": "https://www.nps.gov/gwca/structured_data_gwca.json",
+      "snapshot_sha256": "53617b442d6ce6add205ec7b64b1a437ce65b81a679d24e4ac2021bd643630af",
+      "checked_at": "2026-10-15T02:31:33.952571+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:agfo",
+      "name": "Agate Fossil Beds National Monument \u2014 Agate Fossil Beds National Monument Visitor Center",
+      "region": "NE",
+      "native_facility_id": 104,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-103.734175665",
+        "latitude": "42.4252104811"
+      },
+      "source_url": "https://www.nps.gov/agfo/structured_data_agfo.json",
+      "snapshot_sha256": "fe654eddc9a8cc3cc78e789ab6f45e70c1353f8fb550dbbb2df0c1aca1da7f6e",
+      "checked_at": "2026-10-15T02:31:34.202478+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:edis",
+      "name": "Thomas Edison National Historical Park \u2014 Laboratory Complex Visitor Center",
+      "region": "NJ",
+      "native_facility_id": 2423,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-74.2338966996005",
+        "latitude": "40.78398500000733"
+      },
+      "source_url": "https://www.nps.gov/edis/structured_data_edis.json",
+      "snapshot_sha256": "ee20f8bcb568c736a69103fb47709bcb57fc548516f5b2ac593662acc1e20dd6",
+      "checked_at": "2026-10-15T02:31:34.465047+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "base_sunrise_sunset_or_unusable_clock",
+        "reverse_clock_cell_must_not_be_repaired_or_assumed_overnight"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "base_sunrise_sunset_or_unusable_clock",
+        "reverse_clock_cell_must_not_be_repaired_or_assumed_overnight"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:waba",
+      "name": "Washita Battlefield National Historic Site \u2014 Visitor Center",
+      "region": "OK",
+      "native_facility_id": 175,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-99.6863789122",
+        "latitude": "35.6167207032"
+      },
+      "source_url": "https://www.nps.gov/waba/structured_data_waba.json",
+      "snapshot_sha256": "5739a427498c9235808823a17348a50ced5e1655b096de4697042763f8e98755",
+      "checked_at": "2026-10-15T02:31:34.654436+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:rowi",
+      "name": "Roger Williams National Memorial \u2014 Visitor Center",
+      "region": "RI",
+      "native_facility_id": 189,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-71.41072170607106",
+        "latitude": "41.831326839746765"
+      },
+      "source_url": "https://www.nps.gov/rowi/structured_data_rowi.json",
+      "snapshot_sha256": "b26cad2b17c0e2e1cd84d749f832de415281363e3e4f691fc0327619c87fdf65",
+      "checked_at": "2026-10-15T02:31:34.900697+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 43,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:azru",
+      "name": "Aztec Ruins National Monument \u2014 Aztec Ruins National Monument Visitor Center",
+      "region": "NM",
+      "native_facility_id": 2377,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-108.000256921",
+        "latitude": "36.8345854962"
+      },
+      "source_url": "https://www.nps.gov/azru/structured_data_azru.json",
+      "snapshot_sha256": "098a6c6343f3d9971220b599aad8e6bcba87c8bb5b94266cb1cc57bdcee5b841",
+      "checked_at": "2026-10-15T03:15:52.954315+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:cavo",
+      "name": "Capulin Volcano National Monument \u2014 Capulin Volcano Visitor Center",
+      "region": "NM",
+      "native_facility_id": 5766,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-103.9800076906156",
+        "latitude": "36.77869847042733"
+      },
+      "source_url": "https://www.nps.gov/cavo/structured_data_cavo.json",
+      "snapshot_sha256": "5994ff880646228a2d3982067f03f878380d122bf6f2c09795c44ed0e2196e0a",
+      "checked_at": "2026-10-15T03:15:53.791049+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:chir",
+      "name": "Chiricahua National Monument \u2014 Chiricahua National Monument Visitor Center",
+      "region": "AZ",
+      "native_facility_id": 2445,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-109.35641828182577",
+        "latitude": "32.005433119638944"
+      },
+      "source_url": "https://www.nps.gov/chir/structured_data_chir.json",
+      "snapshot_sha256": "f7529df8f50c31d8aa86d86879ee312221fb57e9b02b7732b65dde5398c48699",
+      "checked_at": "2026-10-15T03:15:54.019790+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "dual_literal_date_and_holiday_selectors",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "dual_literal_date_and_holiday_selectors",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:colm",
+      "name": "Colorado National Monument \u2014 Saddlehorn Visitor Center",
+      "region": "CO",
+      "native_facility_id": 2437,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-108.7344360352",
+        "latitude": "39.1007588668"
+      },
+      "source_url": "https://www.nps.gov/colm/structured_data_colm.json",
+      "snapshot_sha256": "fb3a745fbc32110b4a1f7c21fdd76768f8c890544303e79e3ec8a45bd92a4cf4",
+      "checked_at": "2026-10-15T03:15:54.241487+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:coro",
+      "name": "Coronado National Memorial \u2014 Coronado National Memorial Visitor Center",
+      "region": "AZ",
+      "native_facility_id": 2442,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-110.25373",
+        "latitude": "31.34625"
+      },
+      "source_url": "https://www.nps.gov/coro/structured_data_coro.json",
+      "snapshot_sha256": "d090b5f7e45e94470ef9b40f45e511e0f2c1fe2887dac1d85ab37236065a671a",
+      "checked_at": "2026-10-15T03:15:54.318872+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:dino",
+      "name": "Dinosaur National Monument \u2014 Quarry Visitor Center - Utah",
+      "region": "UT",
+      "native_facility_id": 25,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-109.30700298",
+        "latitude": "40.4381752425"
+      },
+      "source_url": "https://www.nps.gov/dino/structured_data_dino.json",
+      "snapshot_sha256": "fb4ff3178e46139d49a26725326360873a0e31d6a90842f70c6daa3313512e72",
+      "checked_at": "2026-10-15T03:15:54.498310+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:elma",
+      "name": "El Malpais National Monument \u2014 El Malpais Visitor Center",
+      "region": "NM",
+      "native_facility_id": 1310,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-107.8288490649312",
+        "latitude": "35.11864976250002"
+      },
+      "source_url": "https://www.nps.gov/elma/structured_data_elma.json",
+      "snapshot_sha256": "b14021417cb950ad18ee2607f16e24bab4412567cd8fee2775c7d36e7a78721a",
+      "checked_at": "2026-10-15T03:15:54.611289+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:elmo",
+      "name": "El Morro National Monument \u2014 El Morro Visitor Center",
+      "region": "NM",
+      "native_facility_id": 1312,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-108.34891673461374",
+        "latitude": "35.03839471454545"
+      },
+      "source_url": "https://www.nps.gov/elmo/structured_data_elmo.json",
+      "snapshot_sha256": "89f70067a8ae31c7f221f1d7f88afc70671e93f32e30cbda3b9a930f866f7534",
+      "checked_at": "2026-10-15T03:15:54.611703+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "dual_literal_date_and_holiday_selectors",
+        "prose_only_split_or_entry_cutoff",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "dual_literal_date_and_holiday_selectors",
+        "prose_only_split_or_entry_cutoff",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:flfo",
+      "name": "Florissant Fossil Beds National Monument \u2014 Florissant Fossil Beds Visitor Center",
+      "region": "CO",
+      "native_facility_id": 1199,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-105.285455055",
+        "latitude": "38.9134931341"
+      },
+      "source_url": "https://www.nps.gov/flfo/structured_data_flfo.json",
+      "snapshot_sha256": "78155731aafae757ffdb25abb11932fb1d1869c815a70fe4bd9dbb7f06daa5bb",
+      "checked_at": "2026-10-15T03:15:54.780120+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "dual_literal_date_and_holiday_selectors",
+        "mixed_or_unpaired_selector_endpoints",
+        "selector_requires_additional_rule_or_clarification",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "dual_literal_date_and_holiday_selectors",
+        "mixed_or_unpaired_selector_endpoints",
+        "selector_requires_additional_rule_or_clarification",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:foun",
+      "name": "Fort Union National Monument \u2014 Fort Union National Monument Visitor Center",
+      "region": "NM",
+      "native_facility_id": 1222,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-105.01152919527829",
+        "latitude": "35.905048666265714"
+      },
+      "source_url": "https://www.nps.gov/foun/structured_data_foun.json",
+      "snapshot_sha256": "df8415ad978dd737c71d6dceffc4fa0814dd1ba0a01afedeb02df13e08f19cc9",
+      "checked_at": "2026-10-15T03:15:55.295131+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:gicl",
+      "name": "Gila Cliff Dwellings National Monument \u2014 Gila Visitor Center",
+      "region": "NM",
+      "native_facility_id": 2318,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-108.24170165",
+        "latitude": "33.2238206084"
+      },
+      "source_url": "https://www.nps.gov/gicl/structured_data_gicl.json",
+      "snapshot_sha256": "317cadab18d73ee6246373f421c1b8b1598813b4e8e279e9a616c0ca3f39c3f4",
+      "checked_at": "2026-10-15T03:15:55.763224+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:moca",
+      "name": "Montezuma Castle National Monument \u2014 Montezuma Castle Visitor Center",
+      "region": "AZ",
+      "native_facility_id": 154,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-111.839796941",
+        "latitude": "34.6117752905"
+      },
+      "source_url": "https://www.nps.gov/moca/structured_data_moca.json",
+      "snapshot_sha256": "3224d6ed9a2d26687aa3fbc643ea14d1d7d2b6d32cecb598f87e9eb35a6e5c43",
+      "checked_at": "2026-10-15T03:15:57.481656+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 73,
+      "withheld_ambiguous_dates": [
+        {
+          "date": "2026-11-25",
+          "reason": "Published possible early closure has no exact closing clock"
+        },
+        {
+          "date": "2026-12-24",
+          "reason": "Published possible early closure has no exact closing clock"
+        },
+        {
+          "date": "2026-12-31",
+          "reason": "Published possible early closure has no exact closing clock"
+        }
+      ],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:nabr",
+      "name": "Natural Bridges National Monument \u2014 Natural Bridges Visitor Center",
+      "region": "UT",
+      "native_facility_id": 2493,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-109.977023723",
+        "latitude": "37.6093541764"
+      },
+      "source_url": "https://www.nps.gov/nabr/structured_data_nabr.json",
+      "snapshot_sha256": "4c2b635d302ab33c539d6154f255d59d3a98fb1efaef16ec073d162ebed1cf96",
+      "checked_at": "2026-10-15T03:15:57.617988+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:orpi",
+      "name": "Organ Pipe Cactus National Monument \u2014 Kris Eggle Visitor Center",
+      "region": "AZ",
+      "native_facility_id": 2312,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-112.801219539",
+        "latitude": "31.9548999477"
+      },
+      "source_url": "https://www.nps.gov/orpi/structured_data_orpi.json",
+      "snapshot_sha256": "d149f45599fe48839e7262cc4c17761a5d7824c02f1e3e8c414368a7028d1e03",
+      "checked_at": "2026-10-15T03:15:57.971504+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:peco",
+      "name": "Pecos National Historical Park \u2014 E. E. Fogelson Visitor Center",
+      "region": "NM",
+      "native_facility_id": 1304,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-105.68622101360268",
+        "latitude": "35.55040794557632"
+      },
+      "source_url": "https://www.nps.gov/peco/structured_data_peco.json",
+      "snapshot_sha256": "87fe29bf6bc9cae73f4be24f460a011200d6f1ed34d222c9df90b1e271f7bc79",
+      "checked_at": "2026-10-15T03:15:58.078550+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:pisp",
+      "name": "Pipe Spring National Monument \u2014 Pipe Spring Visitor Center and Cultural Museum",
+      "region": "AZ",
+      "native_facility_id": 2549,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-112.737358266",
+        "latitude": "36.8625540285"
+      },
+      "source_url": "https://www.nps.gov/pisp/structured_data_pisp.json",
+      "snapshot_sha256": "0883f64232e24880aa3590a8f79a1ebc61790aa3d170627717052cc5650ae873",
+      "checked_at": "2026-10-15T03:15:58.197677+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:sapu",
+      "name": "Salinas Pueblo Missions National Monument \u2014 Ab\u00f3 Visitor Center",
+      "region": "NM",
+      "native_facility_id": 2532,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-106.37448352194161",
+        "latitude": "34.45014103950183"
+      },
+      "source_url": "https://www.nps.gov/sapu/structured_data_sapu.json",
+      "snapshot_sha256": "39f1ec25426b1d1b43309fd7d2be54b0f6a1d164e5686429baa24406d61fcab3",
+      "checked_at": "2026-10-15T03:15:58.740235+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:sucr",
+      "name": "Sunset Crater Volcano National Monument \u2014 Sunset Crater Volcano Visitor Center",
+      "region": "AZ",
+      "native_facility_id": 1306,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-111.543541135",
+        "latitude": "35.3689807426"
+      },
+      "source_url": "https://www.nps.gov/sucr/structured_data_sucr.json",
+      "snapshot_sha256": "1c6842df4503a8da043732309ca53d60f06348d291cf23e508d65a08bf98be4b",
+      "checked_at": "2026-10-15T03:15:59.039810+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:tont",
+      "name": "Tonto National Monument \u2014 Visitor Center",
+      "region": "AZ",
+      "native_facility_id": 2516,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-111.11299003038016",
+        "latitude": "33.64496622331095"
+      },
+      "source_url": "https://www.nps.gov/tont/structured_data_tont.json",
+      "snapshot_sha256": "894ade1b5d46ca4f01c6a19a907716f3429d4e52211724e627e9c0f1745f019e",
+      "checked_at": "2026-10-15T03:15:59.207337+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_exception_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_exception_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:tuma",
+      "name": "Tumac\u00e1cori National Historical Park \u2014 Tumac\u00e1cori Visitor Center and Museum",
+      "region": "AZ",
+      "native_facility_id": 91,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-111.05106242",
+        "latitude": "31.5678351658"
+      },
+      "source_url": "https://www.nps.gov/tuma/structured_data_tuma.json",
+      "snapshot_sha256": "22cf93a559acac42544f36d28b34a869785e6e67cc385645d1e883790a0d4d73",
+      "checked_at": "2026-10-15T03:15:59.331936+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:tuzi",
+      "name": "Tuzigoot National Monument \u2014 Tuzigoot Visitor Center",
+      "region": "AZ",
+      "native_facility_id": 1309,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-112.026316416",
+        "latitude": "34.7701859452"
+      },
+      "source_url": "https://www.nps.gov/tuzi/structured_data_tuzi.json",
+      "snapshot_sha256": "56b60b7c49b76f16c6f694e666537eadf9dbb4d75955115a9459893392cf4618",
+      "checked_at": "2026-10-15T03:15:59.395491+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:wupa",
+      "name": "Wupatki National Monument \u2014 Wupatki Visitor Center",
+      "region": "AZ",
+      "native_facility_id": 1305,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-111.3713264465",
+        "latitude": "35.5200717464"
+      },
+      "source_url": "https://www.nps.gov/wupa/structured_data_wupa.json",
+      "snapshot_sha256": "3b518a10f372c8bcfc7685cac1185413813ea683ea3b878a98ab26c7b76740f9",
+      "checked_at": "2026-10-15T03:15:59.865145+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 18,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-11-01"
+      }
+    },
+    {
+      "source_id": "nps-heritage:cabr",
+      "name": "Cabrillo National Monument \u2014 Visitor Center and View Building",
+      "region": "CA",
+      "native_facility_id": 1234,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-117.2394958",
+        "latitude": "32.6748319"
+      },
+      "source_url": "https://www.nps.gov/cabr/structured_data_cabr.json",
+      "snapshot_sha256": "fd6a93c4e80d07cffa0987762b4cc84619dfe60c2e224fea63e5c4877bb0e7d0",
+      "checked_at": "2026-10-15T03:15:53.488206+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "Retained facility URL returned official 404 in bounded current spotcheck; resolve a current facility/hour URL before this profile is admitted.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "Retained facility URL returned official 404 in bounded current spotcheck; resolve a current facility/hour URL before this profile is admitted."
+      ]
+    },
+    {
+      "source_id": "nps-heritage:fova",
+      "name": "Fort Vancouver National Historic Site \u2014 Fort Vancouver Visitor Center",
+      "region": "WA",
+      "native_facility_id": 1303,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-122.656637435",
+        "latitude": "45.6262024521"
+      },
+      "source_url": "https://www.nps.gov/fova/structured_data_fova.json",
+      "snapshot_sha256": "ffd95794933cbf9b65366a1281f86863505253adf7d66693aa84e89a24cf374a",
+      "checked_at": "2026-10-15T03:15:55.380099+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 47,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-20"
+      }
+    },
+    {
+      "source_id": "nps-heritage:joda",
+      "name": "John Day Fossil Beds National Monument \u2014 Thomas Condon Visitor Center",
+      "region": "OR",
+      "native_facility_id": 2491,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-119.6463446618",
+        "latitude": "44.5528073661"
+      },
+      "source_url": "https://www.nps.gov/joda/structured_data_joda.json",
+      "snapshot_sha256": "3fa9619c5f465723263c35a2d24d43964bb1b41e5dcfb251947d99c2ad44948c",
+      "checked_at": "2026-10-15T03:15:56.557133+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:jomu",
+      "name": "John Muir National Historic Site \u2014 John Muir National Historic Site Visitor Center",
+      "region": "CA",
+      "native_facility_id": 94,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-122.13101258743364",
+        "latitude": "37.9921704989769"
+      },
+      "source_url": "https://www.nps.gov/jomu/structured_data_jomu.json",
+      "snapshot_sha256": "01f3d933f9a8c1ffba8b7ee279da6521c5fd8f6224bc91c6cfa55a401c85a580",
+      "checked_at": "2026-10-15T03:15:56.621653+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "dual_literal_date_and_holiday_selectors",
+        "prose_negative_or_uncertain_day_needs_veto",
+        "prose_only_split_or_entry_cutoff"
+      ],
+      "positive_dated_days": 54,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:kaho",
+      "name": "Kaloko-Honok\u014dhau National Historical Park \u2014 Hale Ho'okipa Visitor Center",
+      "region": "HI",
+      "native_facility_id": 2432,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-156.021742028",
+        "latitude": "19.6787199896"
+      },
+      "source_url": "https://www.nps.gov/kaho/structured_data_kaho.json",
+      "snapshot_sha256": "e4a51331bc2d0890dd5b0a69952f3ebfea4d3525d664625117c1da8b1bcadb51",
+      "checked_at": "2026-10-15T03:15:56.622212+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "prose_negative_or_uncertain_day_needs_veto"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "prose_negative_or_uncertain_day_needs_veto"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:labe",
+      "name": "Lava Beds National Monument \u2014 Lava Beds Visitor Center",
+      "region": "CA",
+      "native_facility_id": 2428,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-121.50986194610594",
+        "latitude": "41.71419836838832"
+      },
+      "source_url": "https://www.nps.gov/labe/structured_data_labe.json",
+      "snapshot_sha256": "07b7147e0dd848d9da091ef640ecabf78d99693faff2dce94be755c2ff9cde01",
+      "checked_at": "2026-10-15T03:15:56.916537+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:manz",
+      "name": "Manzanar National Historic Site \u2014 Manzanar Visitor Center",
+      "region": "CA",
+      "native_facility_id": 5754,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-118.148236746",
+        "latitude": "36.7275135006"
+      },
+      "source_url": "https://www.nps.gov/manz/structured_data_manz.json",
+      "snapshot_sha256": "2b17930d6752f522a66a9035a83eae61547ea525b506f6a7648abfc7e727d5e8",
+      "checked_at": "2026-10-15T03:15:57.167323+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 43,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:puhe",
+      "name": "Pu\u02bbukohol\u0101 Heiau National Historic Site \u2014 Pu'ukohol\u0101 Heiau National Historic Site",
+      "region": "HI",
+      "native_facility_id": 2594,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-155.82178265001664",
+        "latitude": "20.025568505713622"
+      },
+      "source_url": "https://www.nps.gov/puhe/structured_data_puhe.json",
+      "snapshot_sha256": "57be6f51b624731d58d544aaa066fe5f9a67bac4a5c59e50cc44fae6ac7baccb",
+      "checked_at": "2026-10-15T03:15:58.250534+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 78,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:puho",
+      "name": "Pu\u02bbuhonua O H\u014dnaunau National Historical Park \u2014 Pu\u02bbuhonua o H\u014dnaunau National Historical Park Visitor Center",
+      "region": "HI",
+      "native_facility_id": 2452,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-155.91053366661072",
+        "latitude": "19.421490919767205"
+      },
+      "source_url": "https://www.nps.gov/puho/structured_data_puho.json",
+      "snapshot_sha256": "f761fba826d255b6d9af81c8ece5281c5ea4337c0dc52e179a98a8b18f375ed7",
+      "checked_at": "2026-10-15T03:15:58.282051+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "Applicable parent gate closes at sunset and defers exact closing time to phone/Facebook; no verified literal full-dwell access end.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "Applicable parent gate closes at sunset and defers exact closing time to phone/Facebook; no verified literal full-dwell access end."
+      ]
+    },
+    {
+      "source_id": "nps-heritage:rori",
+      "name": "Rosie the Riveter WWII Home Front National Historical Park \u2014 Rosie the Riveter Visitor Education Center",
+      "region": "CA",
+      "native_facility_id": 92,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-122.357319832",
+        "latitude": "37.9097205585"
+      },
+      "source_url": "https://www.nps.gov/rori/structured_data_rori.json",
+      "snapshot_sha256": "809cdac8d847911e745e14eb5e2af6d5d0df73740cb34dc8a698114a78bed9a5",
+      "checked_at": "2026-10-15T03:15:58.438220+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "dual_literal_date_and_holiday_selectors"
+      ],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:deto",
+      "name": "Devils Tower National Monument \u2014 Devils Tower National Monument Visitor Center",
+      "region": "WY",
+      "native_facility_id": 2396,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-104.72011681100003",
+        "latitude": "44.590497289000005"
+      },
+      "source_url": "https://www.nps.gov/deto/structured_data_deto.json",
+      "snapshot_sha256": "96be16eb046c2abd5e4ff25cb51f3c02dd122a5f8afe47395a9fe153c008ab68",
+      "checked_at": "2026-10-15T03:15:54.490070+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review",
+        "year_specific_exception_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review",
+        "year_specific_exception_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:fobu",
+      "name": "Fossil Butte National Monument \u2014 Fossil Butte Visitor Center",
+      "region": "WY",
+      "native_facility_id": 1191,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-110.77037356107894",
+        "latitude": "41.8365441313045"
+      },
+      "source_url": "https://www.nps.gov/fobu/structured_data_fobu.json",
+      "snapshot_sha256": "d2bffb813dab62e9ad2a5c0d8a6bc22daeb726e59178b16a32a5366fc1b1a103",
+      "checked_at": "2026-10-15T03:15:54.832203+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review",
+        "year_specific_base_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review",
+        "year_specific_base_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:fola",
+      "name": "Fort Laramie National Historic Site \u2014 Fort Laramie National Historic Site Visitor Center",
+      "region": "WY",
+      "native_facility_id": 2424,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-104.55601867703916",
+        "latitude": "42.203687976672164"
+      },
+      "source_url": "https://www.nps.gov/fola/structured_data_fola.json",
+      "snapshot_sha256": "3e464a0843f44be114ac992c550b9cb720571b418af201643f6b3278009e3c6b",
+      "checked_at": "2026-10-15T03:15:54.944142+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "dual_literal_date_and_holiday_selectors",
+        "mixed_or_unpaired_selector_endpoints",
+        "selector_requires_additional_rule_or_clarification",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "dual_literal_date_and_holiday_selectors",
+        "mixed_or_unpaired_selector_endpoints",
+        "selector_requires_additional_rule_or_clarification",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:fosc",
+      "name": "Fort Scott National Historic Site \u2014 Visitor Center",
+      "region": "KS",
+      "native_facility_id": 2457,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-94.705244",
+        "latitude": "37.843197"
+      },
+      "source_url": "https://www.nps.gov/fosc/structured_data_fosc.json",
+      "snapshot_sha256": "9925e9fbdf4ad73da117547e8f8278ee74665ac050f3c505e0b0609a4d1f1ef7",
+      "checked_at": "2026-10-15T03:15:55.159717+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:grko",
+      "name": "Grant-Kohrs Ranch National Historic Site \u2014 Visitor Center at Grant-Kohrs Ranch",
+      "region": "MT",
+      "native_facility_id": 2336,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-112.736707174",
+        "latitude": "46.4061345059"
+      },
+      "source_url": "https://www.nps.gov/grko/structured_data_grko.json",
+      "snapshot_sha256": "f4580b6fc4c29531cf273e14fb3b197af4071b5fa9aee17e86d7b562030c614c",
+      "checked_at": "2026-10-15T03:15:55.863501+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "selector_requires_additional_rule_or_clarification"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "selector_requires_additional_rule_or_clarification"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:grpo",
+      "name": "Grand Portage National Monument \u2014 Heritage Center",
+      "region": "MN",
+      "native_facility_id": 5810,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-89.68656720069367",
+        "latitude": "47.96068779984491"
+      },
+      "source_url": "https://www.nps.gov/grpo/structured_data_grpo.json",
+      "snapshot_sha256": "87b6349dc50d31e0d14532eec752871339f8e4f386b647971009c78bc947828d",
+      "checked_at": "2026-10-15T03:15:55.905775+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text",
+        "year_specific_exception_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text",
+        "year_specific_exception_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:heho",
+      "name": "Herbert Hoover National Historic Site \u2014 Visitor Center",
+      "region": "IA",
+      "native_facility_id": 36,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-91.345702",
+        "latitude": "41.670864"
+      },
+      "source_url": "https://www.nps.gov/heho/structured_data_heho.json",
+      "snapshot_sha256": "9e56089ae413c44f5371f2429dd1ae6a2a769c3742d27e46de74c4bd525e315f",
+      "checked_at": "2026-10-15T03:15:56.132573+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:home",
+      "name": "Homestead National Historical Park \u2014 Heritage Center",
+      "region": "NE",
+      "native_facility_id": 1225,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-96.82677324985298",
+        "latitude": "40.28573515168458"
+      },
+      "source_url": "https://www.nps.gov/home/structured_data_home.json",
+      "snapshot_sha256": "90e6c3f2a5c542204a4d0b12cf436ea4d36613a7edde87bb672dcb4414fcd6f3",
+      "checked_at": "2026-10-15T03:15:56.286337+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:jeca",
+      "name": "Jewel Cave National Monument \u2014 Jewel Cave National Monument - Visitor Center",
+      "region": "SD",
+      "native_facility_id": 5761,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-103.829500854",
+        "latitude": "43.7298476222"
+      },
+      "source_url": "https://www.nps.gov/jeca/structured_data_jeca.json",
+      "snapshot_sha256": "9711023e89c18113b51a47b007ab74233fbc107392b8f1a3f7998ff1c92be002",
+      "checked_at": "2026-10-15T03:15:56.499490+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "dual_literal_date_and_holiday_selectors",
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "dual_literal_date_and_holiday_selectors",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:knri",
+      "name": "Knife River Indian Villages National Historic Site \u2014 Knife River Indian Villages National Historic Site Visitor Center",
+      "region": "ND",
+      "native_facility_id": 2611,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-101.38547069499998",
+        "latitude": "47.33150417300004"
+      },
+      "source_url": "https://www.nps.gov/knri/structured_data_knri.json",
+      "snapshot_sha256": "e2b59d07c06476ced84912eeb2e8cac3034997495bbde9fe1fcc68777a286fa0",
+      "checked_at": "2026-10-15T03:15:56.883646+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:pipe",
+      "name": "Pipestone National Monument \u2014 Visitor Center",
+      "region": "MN",
+      "native_facility_id": 5792,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-96.325693",
+        "latitude": "44.013558"
+      },
+      "source_url": "https://www.nps.gov/pipe/structured_data_pipe.json",
+      "snapshot_sha256": "c6d82c1d036e431ed5d718c118616ff023c4761170c217efd49fb2f552cc8040",
+      "checked_at": "2026-10-15T03:15:58.168600+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "prose_negative_or_uncertain_day_needs_veto",
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "prose_negative_or_uncertain_day_needs_veto",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:scbl",
+      "name": "Scotts Bluff National Monument \u2014 Scotts Bluff National Monument Visitor Center",
+      "region": "NE",
+      "native_facility_id": 70,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-103.707290552",
+        "latitude": "41.8286895574"
+      },
+      "source_url": "https://www.nps.gov/scbl/structured_data_scbl.json",
+      "snapshot_sha256": "d90c2cc29b21741d024a6bec10691a487e2edca2394abccf59cbfa8db3980a72",
+      "checked_at": "2026-10-15T03:15:58.793561+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "dual_literal_date_and_holiday_selectors",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "dual_literal_date_and_holiday_selectors",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:ulsg",
+      "name": "Ulysses S Grant National Historic Site \u2014 Ulysses S. Grant National Historic Site Visitor Center",
+      "region": "MO",
+      "native_facility_id": 2429,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-90.3517518004",
+        "latitude": "38.551002834"
+      },
+      "source_url": "https://www.nps.gov/ulsg/structured_data_ulsg.json",
+      "snapshot_sha256": "3a444930bc5c331c2b7da520da7f59b13f644c96d1b185d089951be7a210f529",
+      "checked_at": "2026-10-15T03:15:59.396227+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "prose_only_split_or_entry_cutoff",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "prose_only_split_or_entry_cutoff",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:wicr",
+      "name": "Wilson's Creek National Battlefield \u2014 Wilson's Creek Visitor Center & Museum",
+      "region": "MO",
+      "native_facility_id": 1276,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-93.41972520499996",
+        "latitude": "37.11561758600004"
+      },
+      "source_url": "https://www.nps.gov/wicr/structured_data_wicr.json",
+      "snapshot_sha256": "cbb2a09095cd8b6ab6b0f9bb9844e7bab909c2c810e6b1082cdae96d3f1f7942",
+      "checked_at": "2026-10-15T03:15:59.744465+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:abli",
+      "name": "Abraham Lincoln Birthplace National Historical Park \u2014 Visitor Center at Abraham Lincoln Birthplace",
+      "region": "KY",
+      "native_facility_id": 5710,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-85.73592437396144",
+        "latitude": "37.53090244631183"
+      },
+      "source_url": "https://www.nps.gov/abli/structured_data_abli.json",
+      "snapshot_sha256": "ff3fee807b18ec681f84624a1b85c3339a7d34ed572cd41c1ff9a19f2483be91",
+      "checked_at": "2026-10-15T03:15:52.599973+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:anjo",
+      "name": "Andrew Johnson National Historic Site \u2014 Andrew Johnson NHS Visitor Center",
+      "region": "TN",
+      "native_facility_id": 66,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-82.8295418735",
+        "latitude": "36.1629146461"
+      },
+      "source_url": "https://www.nps.gov/anjo/structured_data_anjo.json",
+      "snapshot_sha256": "4081b658ad57b623d8c87bc6ddfa02fdb0bc4326abe9ae28dfc7dde03bbc06b3",
+      "checked_at": "2026-10-15T03:15:52.835639+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:cane",
+      "name": "Camp Nelson National Monument \u2014 Camp Nelson National Monument Visitor Center, Museum, and Barracks",
+      "region": "KY",
+      "native_facility_id": 5733,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-84.600577",
+        "latitude": "37.797005"
+      },
+      "source_url": "https://www.nps.gov/cane/structured_data_cane.json",
+      "snapshot_sha256": "ed5907cfbe7f870b273a0880342d3173f77a8fc213b6095b80a5e0487d195c24",
+      "checked_at": "2026-10-15T03:15:53.654879+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "dual_literal_date_and_holiday_selectors",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_exception_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "dual_literal_date_and_holiday_selectors",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_exception_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:chyo",
+      "name": "Charles Young Buffalo Soldiers National Monument \u2014 Youngsholm",
+      "region": "OH",
+      "native_facility_id": 1221,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-83.89026218097183",
+        "latitude": "39.7072819996766"
+      },
+      "source_url": "https://www.nps.gov/chyo/structured_data_chyo.json",
+      "snapshot_sha256": "0285bbbd6cbfabe80c16a98d3b86c50f08e55c438ffd5b06bb97622036578f0f",
+      "checked_at": "2026-10-15T03:15:54.152840+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 32,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:cuga",
+      "name": "Cumberland Gap National Historical Park \u2014 Cumberland Gap National Historical Park Visitor Center",
+      "region": "KY",
+      "native_facility_id": 2560,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-83.69530389977439",
+        "latitude": "36.602737100452515"
+      },
+      "source_url": "https://www.nps.gov/cuga/structured_data_cuga.json",
+      "snapshot_sha256": "f92ea82e369e2793f7a248d723102b3a05f7dcbcca9f840e350c7965f18107a2",
+      "checked_at": "2026-10-15T03:15:54.382668+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:daav",
+      "name": "Dayton Aviation Heritage National Historical Park \u2014 Wright-Dunbar Interpretive Center",
+      "region": "OH",
+      "native_facility_id": 5719,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-84.2116754793",
+        "latitude": "39.7557853053"
+      },
+      "source_url": "https://www.nps.gov/daav/structured_data_daav.json",
+      "snapshot_sha256": "59b2804915c9f771a342fe9e73fab46e3a5d1dfeae5d0c98be5082b5e7435137",
+      "checked_at": "2026-10-15T03:15:54.417173+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:fila",
+      "name": "First Ladies National Historic Site \u2014 Visitor Center",
+      "region": "OH",
+      "native_facility_id": 5832,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-81.375218",
+        "latitude": "40.797588"
+      },
+      "source_url": "https://www.nps.gov/fila/structured_data_fila.json",
+      "snapshot_sha256": "9cc7d911f466725cdfd0d7adfd188cc51e4a61b8c790125078b5c948e6c81b1d",
+      "checked_at": "2026-10-15T03:15:54.757072+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:fodo",
+      "name": "Fort Donelson National Battlefield \u2014 Fort Donelson Visitor Center",
+      "region": "TN",
+      "native_facility_id": 1207,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-87.86259097576647",
+        "latitude": "36.48240704749231"
+      },
+      "source_url": "https://www.nps.gov/fodo/structured_data_fodo.json",
+      "snapshot_sha256": "8696643248f7dc9b1e89d1c4f5fe2d49a34d2bb1abd464293702e252a99e2d87",
+      "checked_at": "2026-10-15T03:15:54.878848+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:hocu",
+      "name": "Hopewell Culture National Historical Park \u2014 Mound City Group Visitor Center",
+      "region": "OH",
+      "native_facility_id": 1231,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-83.0065438716",
+        "latitude": "39.3759933216"
+      },
+      "source_url": "https://www.nps.gov/hocu/structured_data_hocu.json",
+      "snapshot_sha256": "da5f93832c65b608e603850ba0c7f58cce9723cc534eafcdf38299dd6ddc156d",
+      "checked_at": "2026-10-15T03:15:56.160080+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "dual_literal_date_and_holiday_selectors"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "dual_literal_date_and_holiday_selectors"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:kewe",
+      "name": "Keweenaw National Historical Park \u2014 Calumet Visitor Center",
+      "region": "MI",
+      "native_facility_id": 1257,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-88.45249999999999",
+        "latitude": "47.244"
+      },
+      "source_url": "https://www.nps.gov/kewe/structured_data_kewe.json",
+      "snapshot_sha256": "4b7380848bf968df2b1d09ccf5f9e43a7a09d94421ce8205ec8836f08129df66",
+      "checked_at": "2026-10-15T03:15:56.778922+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:misp",
+      "name": "Mill Springs Battlefield National Monument \u2014 Mill Springs Battlefield Visitor Center and Museum",
+      "region": "KY",
+      "native_facility_id": 5815,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-84.736124",
+        "latitude": "37.068880"
+      },
+      "source_url": "https://www.nps.gov/misp/structured_data_misp.json",
+      "snapshot_sha256": "594e77f3a576fbbd4c4d1c5d74d274d2828534fb55851374050d4d64a0977ce7",
+      "checked_at": "2026-10-15T03:15:57.473498+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:pull",
+      "name": "Pullman National Historical Park \u2014 Administration Clock Tower Building Visitor Center",
+      "region": "IL",
+      "native_facility_id": 5966,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-87.6074468156807",
+        "latitude": "41.69376838696189"
+      },
+      "source_url": "https://www.nps.gov/pull/structured_data_pull.json",
+      "snapshot_sha256": "e3a495c13493c254fb35105f9b8962e9422293722c434f9d80ad923a88e5783a",
+      "checked_at": "2026-10-15T03:15:58.311670+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "base_sunrise_sunset_or_unusable_clock",
+        "reverse_clock_cell_must_not_be_repaired_or_assumed_overnight"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "base_sunrise_sunset_or_unusable_clock",
+        "reverse_clock_cell_must_not_be_repaired_or_assumed_overnight"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:rira",
+      "name": "River Raisin National Battlefield Park \u2014 River Raisin National Battlefield Park Visitor / Education Center",
+      "region": "MI",
+      "native_facility_id": 1236,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-83.38035591070599",
+        "latitude": "41.916037821160664"
+      },
+      "source_url": "https://www.nps.gov/rira/structured_data_rira.json",
+      "snapshot_sha256": "47884544d27c865918661695d9e7f0bfa3cee2487ef618f63b3ab512d989ee18",
+      "checked_at": "2026-10-15T03:15:58.435777+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:shil",
+      "name": "Shiloh National Military Park \u2014 Shiloh Battlefield Visitor Center",
+      "region": "TN",
+      "native_facility_id": 2598,
+      "native_pointer": "/visitorCenters/1",
+      "native_coordinates": {
+        "longitude": "-88.322339375",
+        "latitude": "35.1513127479"
+      },
+      "source_url": "https://www.nps.gov/shil/structured_data_shil.json",
+      "snapshot_sha256": "b05edad0c08dbb8bbffe4c654f52b4e00252d8228b57b7aad84af894d60c0cb7",
+      "checked_at": "2026-10-15T03:15:58.795912+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:wiho",
+      "name": "William Howard Taft National Historic Site \u2014 Taft Education Center",
+      "region": "OH",
+      "native_facility_id": 5886,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-84.508390",
+        "latitude": "39.119681"
+      },
+      "source_url": "https://www.nps.gov/wiho/structured_data_wiho.json",
+      "snapshot_sha256": "94a48df1b34d1c2f0edec20c2906c0764dc6d8eda2376139f8c0cdfc9cdec1e0",
+      "checked_at": "2026-10-15T03:15:59.749262+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "prose_negative_or_uncertain_day_needs_veto"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "prose_negative_or_uncertain_day_needs_veto"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:alfl",
+      "name": "Alibates Flint Quarries National Monument \u2014 Alibates Visitor Center",
+      "region": "TX",
+      "native_facility_id": 1293,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-101.703339609",
+        "latitude": "35.5793188151"
+      },
+      "source_url": "https://www.nps.gov/alfl/structured_data_alfl.json",
+      "snapshot_sha256": "1a75bff766066653218102c224a8ea002bdb827ede8ce366118cfdac9594f222",
+      "checked_at": "2026-10-15T03:15:52.601025+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:chch",
+      "name": "Chickamauga & Chattanooga National Military Park \u2014 Chickamauga Battlefield Visitor Center",
+      "region": "GA",
+      "native_facility_id": 1224,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-85.2599410001",
+        "latitude": "34.9403109997"
+      },
+      "source_url": "https://www.nps.gov/chch/structured_data_chch.json",
+      "snapshot_sha256": "4bd51d2c7e3ece4a1b4cae4ef6e472d22e88958e9dbe4b3a5b5e68f75799d822",
+      "checked_at": "2026-10-15T03:15:53.915568+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 77,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:chsc",
+      "name": "Little Rock Central High School National Historic Site \u2014 Little Rock Central High School National Historic Site Visitor Center",
+      "region": "AR",
+      "native_facility_id": 1245,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-92.29739157441182",
+        "latitude": "34.73801759287234"
+      },
+      "source_url": "https://www.nps.gov/chsc/structured_data_chsc.json",
+      "snapshot_sha256": "77c4e752dc614030237c43a8f54f2daebeec1a86f5df42e43f93645ca8d93091",
+      "checked_at": "2026-10-15T03:15:54.138114+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "year_specific_exception_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "year_specific_exception_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:cowp",
+      "name": "Cowpens National Battlefield \u2014 Cowpens National Battlefield",
+      "region": "SC",
+      "native_facility_id": 40,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-81.8180292723",
+        "latitude": "35.1367011463"
+      },
+      "source_url": "https://www.nps.gov/cowp/structured_data_cowp.json",
+      "snapshot_sha256": "673e9dbd590fd1dc5a941804325f5fe184ae31f2638e002302392afcb9c7733f",
+      "checked_at": "2026-10-15T03:15:54.375596+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:fofr",
+      "name": "Fort Frederica National Monument \u2014 Fort Frederica Visitor Center",
+      "region": "GA",
+      "native_facility_id": 1295,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-81.389303974",
+        "latitude": "31.2233940463"
+      },
+      "source_url": "https://www.nps.gov/fofr/structured_data_fofr.json",
+      "snapshot_sha256": "23b9b9b64252d2f4269fd567c679e40b4675752fcb50913c0c0c361e5f9f366c",
+      "checked_at": "2026-10-15T03:15:54.942443+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 54,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:fora",
+      "name": "Fort Raleigh National Historic Site \u2014 Lindsay Warren Visitor Center",
+      "region": "NC",
+      "native_facility_id": 32,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-75.708939",
+        "latitude": "35.936954"
+      },
+      "source_url": "https://www.nps.gov/fora/structured_data_fora.json",
+      "snapshot_sha256": "14d4292c893ee667f22b6a933b183fd8f2b6884ed5425aef9cbc5d940b8edb68",
+      "checked_at": "2026-10-15T03:15:55.158632+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 77,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:fosu",
+      "name": "Fort Sumter and Fort Moultrie National Historical Park \u2014 Fort Moultrie Visitor Center",
+      "region": "SC",
+      "native_facility_id": 62,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-79.85758787298687",
+        "latitude": "32.76035244619513"
+      },
+      "source_url": "https://www.nps.gov/fosu/structured_data_fosu.json",
+      "snapshot_sha256": "6f3a103cf62893528356619c64c4511d479845f4cadff615f28a72d120123ac4",
+      "checked_at": "2026-10-15T03:15:55.267158+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:guco",
+      "name": "Guilford Courthouse National Military Park \u2014 Visitor Center",
+      "region": "NC",
+      "native_facility_id": 2571,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-79.84638889",
+        "latitude": "36.13138889"
+      },
+      "source_url": "https://www.nps.gov/guco/structured_data_guco.json",
+      "snapshot_sha256": "1959c8f2b3fe459aabe475eae25a75716c63aeb9d6693c2f8b56d7273259d83c",
+      "checked_at": "2026-10-15T03:15:55.914740+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:jica",
+      "name": "Jimmy Carter National Historical Park \u2014 Plains High School Visitor Center and Museum",
+      "region": "GA",
+      "native_facility_id": 5775,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-84.392788",
+        "latitude": "32.036620"
+      },
+      "source_url": "https://www.nps.gov/jica/structured_data_jica.json",
+      "snapshot_sha256": "d2d8d702774b5710e75b2bbac81d98720dc2e939432d5c57458b1a47535aa9f3",
+      "checked_at": "2026-10-15T03:15:56.513974+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:kemo",
+      "name": "Kennesaw Mountain National Battlefield Park \u2014 Kennesaw Mountain National Battlefield Park Visitor Center",
+      "region": "GA",
+      "native_facility_id": 5739,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-84.5780439742",
+        "latitude": "33.9830763468"
+      },
+      "source_url": "https://www.nps.gov/kemo/structured_data_kemo.json",
+      "snapshot_sha256": "ade152521fff84fbf2c99994e00bb5411b8e813081e610c713c00eb921994521",
+      "checked_at": "2026-10-15T03:15:56.742802+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:kimo",
+      "name": "Kings Mountain National Military Park \u2014 Kings Mountain National Military Park",
+      "region": "SC",
+      "native_facility_id": 96,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-81.37714567274486",
+        "latitude": "35.14132184627828"
+      },
+      "source_url": "https://www.nps.gov/kimo/structured_data_kimo.json",
+      "snapshot_sha256": "e245a05a56585d04ac67919ad10e134f2762e4523e050d197df0af2e05d951e7",
+      "checked_at": "2026-10-15T03:15:56.809859+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:lyjo",
+      "name": "Lyndon B Johnson National Historical Park \u2014 Visitor Center and Park Headquarters",
+      "region": "TX",
+      "native_facility_id": 2326,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-98.4112238369",
+        "latitude": "30.2742525096"
+      },
+      "source_url": "https://www.nps.gov/lyjo/structured_data_lyjo.json",
+      "snapshot_sha256": "76f0e6bae9a764786030c024b349affbd1998498da43b6b6978bfa8ade28080e",
+      "checked_at": "2026-10-15T03:15:57.080598+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:malu",
+      "name": "Martin Luther King, Jr. National Historical Park \u2014 Martin Luther King, Jr. National Historical Park Visitor Center",
+      "region": "GA",
+      "native_facility_id": 2579,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-84.3733810743",
+        "latitude": "33.7563109473"
+      },
+      "source_url": "https://www.nps.gov/malu/structured_data_malu.json",
+      "snapshot_sha256": "a8354ac629791e5cbdf97b1ff52ecdc4eb65d7c5425cd84cc3a09b6ff45a8eae",
+      "checked_at": "2026-10-15T03:15:57.098297+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "prose_negative_or_uncertain_day_needs_veto"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "prose_negative_or_uncertain_day_needs_veto"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:mocr",
+      "name": "Moores Creek National Battlefield \u2014 Visitor Center",
+      "region": "NC",
+      "native_facility_id": 2441,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-78.1096625715557",
+        "latitude": "34.45789194596478"
+      },
+      "source_url": "https://www.nps.gov/mocr/structured_data_mocr.json",
+      "snapshot_sha256": "74ab181506dd2dc9b66911f2d04b8dd4a1dfa512a3a2f4a19555f894229d431b",
+      "checked_at": "2026-10-15T03:15:57.493903+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "prose_negative_or_uncertain_day_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "prose_negative_or_uncertain_day_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:nisi",
+      "name": "Ninety Six National Historic Site \u2014 Ninety Six National Historic Site",
+      "region": "SC",
+      "native_facility_id": 57,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-82.0232488734",
+        "latitude": "34.1466337466"
+      },
+      "source_url": "https://www.nps.gov/nisi/structured_data_nisi.json",
+      "snapshot_sha256": "63d480b8494f71f9d8e8abd1da83cff38e8e0c1536c6b641a964da51fa6e0916",
+      "checked_at": "2026-10-15T03:15:57.838766+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:ocmu",
+      "name": "Ocmulgee Mounds National Historical Park \u2014 Ocmulgee Mounds Visitor Center",
+      "region": "GA",
+      "native_facility_id": 56,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-83.6038177994",
+        "latitude": "32.8426167998"
+      },
+      "source_url": "https://www.nps.gov/ocmu/structured_data_ocmu.json",
+      "snapshot_sha256": "b77d54272186420a8c94ffda6ab48b7bc177b38d28177df96550aeb2ff4b6571",
+      "checked_at": "2026-10-15T03:15:57.932850+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "dual_literal_date_and_holiday_selectors",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "dual_literal_date_and_holiday_selectors",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:paal",
+      "name": "Palo Alto Battlefield National Historical Park \u2014 Palo Alto Visitor Center",
+      "region": "TX",
+      "native_facility_id": 35,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-97.479093",
+        "latitude": "26.016775"
+      },
+      "source_url": "https://www.nps.gov/paal/structured_data_paal.json",
+      "snapshot_sha256": "b6bf21014c78d1b0240eb5f231f4e1c45a7e19b4114f27cf07ad96612447243d",
+      "checked_at": "2026-10-15T03:15:57.980982+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "prose_only_split_or_entry_cutoff"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "prose_only_split_or_entry_cutoff"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:reer",
+      "name": "Reconstruction Era National Historical Park \u2014 Pinckney-Porter's Chapel Visitor Contact Station",
+      "region": "SC",
+      "native_facility_id": 5949,
+      "native_pointer": "/visitorCenters/2",
+      "native_coordinates": {
+        "longitude": "-80.6854337454",
+        "latitude": "32.3883014224"
+      },
+      "source_url": "https://www.nps.gov/reer/structured_data_reer.json",
+      "snapshot_sha256": "65c3882dfb303016f99e88c88de05bbdc8861c511960dd617512657a338f146b",
+      "checked_at": "2026-10-15T03:15:58.341012+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:ruca",
+      "name": "Russell Cave National Monument \u2014 Gilbert Grosvenor Visitor Center",
+      "region": "AL",
+      "native_facility_id": 4685,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-85.8099173746",
+        "latitude": "34.9786490475"
+      },
+      "source_url": "https://www.nps.gov/ruca/structured_data_ruca.json",
+      "snapshot_sha256": "62d6059270e2ba2042c8434e17b99fdc9253c85e8df14288fc0e10bed018e4e0",
+      "checked_at": "2026-10-15T03:15:58.461715+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:saan",
+      "name": "San Antonio Missions National Historical Park \u2014 Visitor Center at Mission San Jos\u00e9",
+      "region": "TX",
+      "native_facility_id": 2309,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-98.48032539",
+        "latitude": "29.36014983"
+      },
+      "source_url": "https://www.nps.gov/saan/structured_data_saan.json",
+      "snapshot_sha256": "9fa32bbdffaab7b93073a14694ab916e8e4f33c972c0e72d0afccc2aa0b2411a",
+      "checked_at": "2026-10-15T03:15:58.481837+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "prose_negative_or_uncertain_day_needs_veto",
+        "prose_only_split_or_entry_cutoff"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "prose_negative_or_uncertain_day_needs_veto",
+        "prose_only_split_or_entry_cutoff"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:waco",
+      "name": "Waco Mammoth National Monument \u2014 Welcome Center",
+      "region": "TX",
+      "native_facility_id": 2337,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-97.1759782992",
+        "latitude": "31.6067370778"
+      },
+      "source_url": "https://www.nps.gov/waco/structured_data_waco.json",
+      "snapshot_sha256": "f0baf9feddc41b2f6c69cf2266383c265a0cfa8234d4ddf7145e21e388d63c87",
+      "checked_at": "2026-10-15T03:15:59.622463+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "base_sunrise_sunset_or_unusable_clock",
+        "prose_only_split_or_entry_cutoff",
+        "reverse_clock_cell_must_not_be_repaired_or_assumed_overnight"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "base_sunrise_sunset_or_unusable_clock",
+        "prose_only_split_or_entry_cutoff",
+        "reverse_clock_cell_must_not_be_repaired_or_assumed_overnight"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:wicl",
+      "name": "President William Jefferson Clinton Birthplace Home National Historic Site \u2014 President William Jefferson Clinton Birthplace Home National Historic Site Visitor Center",
+      "region": "AR",
+      "native_facility_id": 3679,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-93.59596252441406",
+        "latitude": "33.667711140800485"
+      },
+      "source_url": "https://www.nps.gov/wicl/structured_data_wicl.json",
+      "snapshot_sha256": "409916d44bdcd616193f247616eb85bd936a50700d4372f94ff03550ceb9b48f",
+      "checked_at": "2026-10-15T03:15:59.698591+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:wrbr",
+      "name": "Wright Brothers National Memorial \u2014 Wright Brothers Visitor Center and Museum",
+      "region": "NC",
+      "native_facility_id": 2460,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-75.667668",
+        "latitude": "36.020693"
+      },
+      "source_url": "https://www.nps.gov/wrbr/structured_data_wrbr.json",
+      "snapshot_sha256": "e269096e0a659fd135c9267bbddc6410f32935fd75c4d6bfeb1def8344d0d12a",
+      "checked_at": "2026-10-15T03:15:59.792590+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 77,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:anti",
+      "name": "Antietam National Battlefield \u2014 Antietam National Battlefield Visitor Center",
+      "region": "MD",
+      "native_facility_id": 75,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-77.74452499941674",
+        "latitude": "39.474208050396456"
+      },
+      "source_url": "https://www.nps.gov/anti/structured_data_anti.json",
+      "snapshot_sha256": "e195af655a4b29bd6d1c228555c04b4db2e015e9fef4999163050cc572a86b4e",
+      "checked_at": "2026-10-15T03:15:52.865096+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 76,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:blrv",
+      "name": "Blackstone River Valley National Historical Park \u2014 Old Slater Mill Visitor Center",
+      "region": "RI",
+      "native_facility_id": 5944,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-71.38252999999997",
+        "latitude": "41.877713"
+      },
+      "source_url": "https://www.nps.gov/blrv/structured_data_blrv.json",
+      "snapshot_sha256": "f6911fb0a286b92026f13cf819e1c4433ce9458cdbde3078427ee6f4ad53ef18",
+      "checked_at": "2026-10-15T03:15:53.197067+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_exception_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "active_blank_exception_clock_without_closure_evidence",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_exception_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:flni",
+      "name": "Flight 93 National Memorial \u2014 Flight 93 Visitor Center",
+      "region": "PA",
+      "native_facility_id": 5767,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-78.9058756827",
+        "latitude": "40.0573423746"
+      },
+      "source_url": "https://www.nps.gov/flni/structured_data_flni.json",
+      "snapshot_sha256": "387e9e343fd3d9a73cfde168fcc4f5e6e01917c198cce3d78d4daa660a37189d",
+      "checked_at": "2026-10-15T03:15:54.813466+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "dual_literal_date_and_holiday_selectors",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "dual_literal_date_and_holiday_selectors",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:fomc",
+      "name": "Fort McHenry National Monument and Historic Shrine \u2014 Paul S. Sarbanes Visitor and Education Center",
+      "region": "MD",
+      "native_facility_id": 5855,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-76.5796",
+        "latitude": "39.2655"
+      },
+      "source_url": "https://www.nps.gov/fomc/structured_data_fomc.json",
+      "snapshot_sha256": "ea8820642cf0e0092c6d33ce866bf0878544a49dd63cb7515629f832c198c55f",
+      "checked_at": "2026-10-15T03:15:55.034418+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "prose_only_split_or_entry_cutoff",
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "prose_only_split_or_entry_cutoff",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:fone",
+      "name": "Fort Necessity National Battlefield \u2014 Fort Necessity/National Road Interpretive and Education Center",
+      "region": "PA",
+      "native_facility_id": 2545,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-79.586068",
+        "latitude": "39.814121"
+      },
+      "source_url": "https://www.nps.gov/fone/structured_data_fone.json",
+      "snapshot_sha256": "dafb4980845034eedaab9c76b63fd3e9ebe08ee506c455d170431e1402fce38d",
+      "checked_at": "2026-10-15T03:15:55.055942+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "dual_literal_date_and_holiday_selectors",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "dual_literal_date_and_holiday_selectors",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:frdo",
+      "name": "Frederick Douglass National Historic Site \u2014 Frederick Douglass NHS Visitor Center",
+      "region": "DC",
+      "native_facility_id": 5967,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-76.98519700295012",
+        "latitude": "38.86343464276205"
+      },
+      "source_url": "https://www.nps.gov/frdo/structured_data_frdo.json",
+      "snapshot_sha256": "64ccb860db70b8714d6b0ad9256ee91f6d9fab99e787b97855b7cf09ca55d778",
+      "checked_at": "2026-10-15T03:15:55.383038+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:frsp",
+      "name": "Fredericksburg & Spotsylvania National Military Park \u2014 Chancellorsville Battlefield Visitor Center",
+      "region": "VA",
+      "native_facility_id": 5747,
+      "native_pointer": "/visitorCenters/1",
+      "native_coordinates": {
+        "longitude": "-77.6499274997",
+        "latitude": "38.3111533997"
+      },
+      "source_url": "https://www.nps.gov/frsp/structured_data_frsp.json",
+      "snapshot_sha256": "6a92dd43bfa9ea9a388abfee96d8e1223ed4b04df3924dd5af1dc6c550cb6882",
+      "checked_at": "2026-10-15T03:15:55.513150+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_exception_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_exception_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:gewa",
+      "name": "George Washington Birthplace National Monument \u2014 Visitor Center",
+      "region": "VA",
+      "native_facility_id": 5703,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-76.9179594",
+        "latitude": "38.1829706"
+      },
+      "source_url": "https://www.nps.gov/gewa/structured_data_gewa.json",
+      "snapshot_sha256": "6204a58e53a0532fe929345514a529e1497b3150cfb5c4732d4516165ccdc57f",
+      "checked_at": "2026-10-15T03:15:55.752299+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 54,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:hamp",
+      "name": "Hampton National Historic Site \u2014 Visitor Center",
+      "region": "MD",
+      "native_facility_id": 5856,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-76.5904",
+        "latitude": "39.4160"
+      },
+      "source_url": "https://www.nps.gov/hamp/structured_data_hamp.json",
+      "snapshot_sha256": "613745296e77d6dcc9d9efe819908f248f9928f09f0ea475a84a91d319746e7e",
+      "checked_at": "2026-10-15T03:15:56.015780+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 43,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:hofu",
+      "name": "Hopewell Furnace National Historic Site \u2014 Hopewell Furnace National Historic Site Visitor Center - 2 Mark Bird Lane, Elverson, PA 19520",
+      "region": "PA",
+      "native_facility_id": 5891,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-75.77384143082361",
+        "latitude": "40.20671755720824"
+      },
+      "source_url": "https://www.nps.gov/hofu/structured_data_hofu.json",
+      "snapshot_sha256": "c612479c65d7256b7dc86f3f80fa5c56b10a0b4ae21786e3f0124c7d6ed65363",
+      "checked_at": "2026-10-15T03:15:56.244585+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:jofl",
+      "name": "Johnstown Flood National Memorial \u2014 Johnstown Flood National Memorial Visitor Center",
+      "region": "PA",
+      "native_facility_id": 1228,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-78.7712280007",
+        "latitude": "40.3498079995"
+      },
+      "source_url": "https://www.nps.gov/jofl/structured_data_jofl.json",
+      "snapshot_sha256": "e6050ecd72484471373812ebbcf0309743ccc7d20aa915a83f2b39cbb25219f4",
+      "checked_at": "2026-10-15T03:15:56.620214+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "prose_only_split_or_entry_cutoff",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "prose_only_split_or_entry_cutoff",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:lowe",
+      "name": "Lowell National Historical Park \u2014 Lowell National Historical Park Visitor Center",
+      "region": "MA",
+      "native_facility_id": 5783,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-71.31315777203497",
+        "latitude": "42.64454346502211"
+      },
+      "source_url": "https://www.nps.gov/lowe/structured_data_lowe.json",
+      "snapshot_sha256": "b54d6aa7f2ea22d284a5f72b97a998cf3155b0fec5c6b9adbfa001f6b87ee091",
+      "checked_at": "2026-10-15T03:15:57.042511+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "C_active_clock_or_selector_source_hold",
+      "research_flags": [
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_exception_clock_without_closure_evidence",
+        "some_placeholder_or_unusable_exception_cells",
+        "year_specific_base_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:mima",
+      "name": "Minute Man National Historical Park \u2014 Minute Man Visitor Center",
+      "region": "MA",
+      "native_facility_id": 2490,
+      "native_pointer": "/visitorCenters/1",
+      "native_coordinates": {
+        "longitude": "-71.26950940005008",
+        "latitude": "42.44876789954837"
+      },
+      "source_url": "https://www.nps.gov/mima/structured_data_mima.json",
+      "snapshot_sha256": "15e105e3f7297a54f014007273a603c0e0a0c70a71ec4d199873d756ce08772f",
+      "checked_at": "2026-10-15T03:15:57.390536+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "prose_only_split_or_entry_cutoff",
+        "year_specific_base_text",
+        "year_specific_exception_text"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "prose_only_split_or_entry_cutoff",
+        "year_specific_base_text",
+        "year_specific_exception_text"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:mono",
+      "name": "Monocacy National Battlefield \u2014 Visitor Center",
+      "region": "MD",
+      "native_facility_id": 2386,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-77.3956055465402",
+        "latitude": "39.37722109791633"
+      },
+      "source_url": "https://www.nps.gov/mono/structured_data_mono.json",
+      "snapshot_sha256": "7a35d117f148d224eda8df290b196443c0063f37e81dba0340223a616434ffd6",
+      "checked_at": "2026-10-15T03:15:57.534310+00:00",
+      "calendar_status": "emitted_finite_dated_supplement",
+      "reason": "Supported subset only; other dates have no verified availability.",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 54,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": {
+        "start": "2026-10-15",
+        "end": "2026-12-31"
+      }
+    },
+    {
+      "source_id": "nps-heritage:nebe",
+      "name": "New Bedford Whaling National Historical Park \u2014 Visitor Center & Park Garden",
+      "region": "MA",
+      "native_facility_id": 2443,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-70.9241640007",
+        "latitude": "41.6357047995"
+      },
+      "source_url": "https://www.nps.gov/nebe/structured_data_nebe.json",
+      "snapshot_sha256": "19bccac449efe49f6094ec91a2d5856e8c5ad2b214b3994f1517644e5c9de8ea",
+      "checked_at": "2026-10-15T03:15:57.712597+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "base_sunrise_sunset_or_unusable_clock",
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "base_sunrise_sunset_or_unusable_clock",
+        "season_language_requires_scope_and_date_review"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:pete",
+      "name": "Petersburg National Battlefield \u2014 Eastern Front Visitor Center",
+      "region": "VA",
+      "native_facility_id": 5836,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-77.3569040463363",
+        "latitude": "37.24376507688345"
+      },
+      "source_url": "https://www.nps.gov/pete/structured_data_pete.json",
+      "snapshot_sha256": "800cb4981ea26ba9cdf5b11f577547c707f4f2d07cda250bd86c88dad3d9258e",
+      "checked_at": "2026-10-15T03:15:58.163037+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No supported positive dated window after all source restrictions",
+      "research_tier": "A_regular_weekly_and_holiday_transform_candidate",
+      "research_flags": [],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No supported positive dated window after all source restrictions"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:sara",
+      "name": "Saratoga National Historical Park \u2014 Visitor Center",
+      "region": "NY",
+      "native_facility_id": 2528,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-73.6489270987",
+        "latitude": "43.0122119"
+      },
+      "source_url": "https://www.nps.gov/sara/structured_data_sara.json",
+      "snapshot_sha256": "3c383183188785ca5b9578e29f8e20875d70234937c6509ad6bfa6f0059107a3",
+      "checked_at": "2026-10-15T03:15:58.776951+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:spar",
+      "name": "Springfield Armory National Historic Site \u2014 Springfield Armory National Historic Site Visitor Center and Museum",
+      "region": "MA",
+      "native_facility_id": 2609,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-72.5809334998",
+        "latitude": "42.1089906011"
+      },
+      "source_url": "https://www.nps.gov/spar/structured_data_spar.json",
+      "snapshot_sha256": "a1dfed5e4a06601250577d9311509e6059bec095a7c0ff21d1feff130cd8f2ab",
+      "checked_at": "2026-10-15T03:15:58.905109+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "active_blank_cell_with_negative_prose_needs_veto",
+        "season_language_requires_scope_and_date_review",
+        "some_placeholder_or_unusable_exception_cells"
+      ]
+    },
+    {
+      "source_id": "nps-heritage:thst",
+      "name": "Thomas Stone National Historic Site \u2014 Thomas Stone Visitor Center",
+      "region": "MD",
+      "native_facility_id": 5700,
+      "native_pointer": "/visitorCenters/0",
+      "native_coordinates": {
+        "longitude": "-77.03608722890806",
+        "latitude": "38.53023752176617"
+      },
+      "source_url": "https://www.nps.gov/thst/structured_data_thst.json",
+      "snapshot_sha256": "3a31ac6e401501fe0061141927198d251220fe334f087d426ba5dbcc25f9e3bc",
+      "checked_at": "2026-10-15T03:15:59.139120+00:00",
+      "calendar_status": "held_no_calendar",
+      "reason": "No independently reviewed exact schedule/prose profile",
+      "research_tier": "B_scoped_season_prose_or_exception_rule_candidate",
+      "research_flags": [
+        "dual_literal_date_and_holiday_selectors",
+        "season_language_requires_scope_and_date_review"
+      ],
+      "positive_dated_days": 0,
+      "withheld_ambiguous_dates": [],
+      "evaluated_date_scope": null,
+      "remaining_blockers": [
+        "No independently reviewed exact schedule/prose profile",
+        "dual_literal_date_and_holiday_selectors",
+        "season_language_requires_scope_and_date_review"
+      ]
+    }
+  ],
+  "venues": [
+    {
+      "source_id": "kaggle-loc:279",
+      "name": "The World's Only Corn Palace",
+      "reasons": [
+        "Seasonal daily/weekday branches, festival hours variation and Christmas Eve half-day cutoff need a complete dated exception profile."
+      ]
+    },
+    {
+      "source_id": "2abb1511-8b94-4503-8c49-46c17ddae309",
+      "name": "Connections Museum",
+      "reasons": [
+        "Unknown child ages and whether parents of children under twelve have completed the requested prior visit."
+      ]
+    },
+    {
+      "source_id": "69bc4e96-e908-43cc-af03-8aa4c9d5880f",
+      "name": "Seattle Pinball Museum",
+      "reasons": [
+        "Unknown child ages/adult accompaniment and infant/toddler carrying-pack compliance; source exception is not a general under-seven permission."
+      ]
+    },
+    {
+      "source_id": "b40354ec-e19c-42e4-9600-4a55887eb235",
+      "name": "Fort Ward Museum & Historic Site",
+      "reasons": [
+        "Saturday literal 11 p.m.\u20135 p.m. is contradictory; Sunday opening meridiem and other holiday closings unresolved."
+      ]
+    },
+    {
+      "source_id": "60b146ed-0641-4d47-add5-9ed70d34cb26",
+      "name": "Jacques Marchais Museum of Tibetan Art",
+      "reasons": [
+        "Major holiday closures unresolved and calendar Museum Admission 13:00\u201316:30 does not establish whether these are fixed entry appointments."
+      ]
+    },
+    {
+      "source_id": "848aaf62-f0db-4f4c-917f-19c5a1c3fe23",
+      "name": "Historic Richmond Town",
+      "reasons": [
+        "Visible and structured public-hour intervals are disjoint; seasonal closure and event-only access exceptions remain unresolved."
+      ]
+    },
+    {
+      "source_id": "08b82fef-d926-46f4-b92c-42aa32ada778",
+      "name": "Gone With the Wind Museum at Brumby Hall",
+      "reasons": [
+        "City holiday/observance policy and year-specific Good Friday closure unresolved; no automatic city-holiday equivalence assumed."
+      ]
+    },
+    {
+      "source_id": "dd062c88-fb8c-4b5d-bde9-39acea846503",
+      "name": "Lombardino's Restaurant",
+      "reasons": [
+        "Published 4:30\u20138:30 has no explicit meridiem; September 5/6 closure lacks year and is not an annual recurrence."
+      ]
+    },
+    {
+      "source_id": "134bc52d-0c47-4bac-be75-850c593498e4",
+      "name": "Lallande",
+      "reasons": [
+        "No unambiguous public closing clock; final seating is not closing. Unknown party size may exceed maximum five; do not split reservations."
+      ]
+    },
+    {
+      "source_id": "9c27cb43-ae9f-4c1f-bf9a-d2f71713053f",
+      "name": "The Museum of Jurassic Technology",
+      "reasons": [
+        "Unknown party classification: source asks all group and school visits to coordinate at least two weeks in advance outside public open hours."
+      ]
+    },
+    {
+      "source_id": "c630ba4d-42aa-40af-87d7-57e2256b5f1b",
+      "name": "Martin Auto Museum",
+      "reasons": [
+        "Unknown party classification: operator asks callers to contact museum before bringing a large group; no threshold published."
+      ]
+    }
+  ],
+  "new11": [
+    {
+      "source_id": "usda-market:308735",
+      "reason": "Strict opening meridiem remains unresolved; city acquisition403; no bypass or inferred PM"
+    },
+    {
+      "source_id": "wikidata-park:Q23994725",
+      "reason": "Published event title conflicts with machine date; neither year inferred"
+    }
+  ],
+  "usfs": [
+    {
+      "source_id": "usfs:12433",
+      "name": "Iron Spring Interpretive Site",
+      "status": "withheld_unknown",
+      "hold_reason": "All-day wording conflicts with day-use restriction; no explicit endpoints or 24h inference",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:12441",
+      "name": "Sierra Vista Interpretive Site",
+      "status": "withheld_unknown",
+      "hold_reason": "All-day wording conflicts with day-use restriction; no explicit endpoints or 24h inference",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:12479",
+      "name": "Independence Pass Interpretive Site",
+      "status": "withheld_unknown",
+      "hold_reason": "Weather/snow-qualified access and complete daily clocks remain unresolved",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:20698",
+      "name": "Eastern Sierra Visitor Center",
+      "status": "supplement_available_with_explicit_unknown_dates",
+      "hold_reason": null,
+      "visitor_html_status": 403,
+      "policy_unknown_dates": {
+        "2026-11-11": "Holiday opening has not been verified; no source closure claimed"
+      }
+    },
+    {
+      "source_id": "usfs:28954",
+      "name": "Brown/Hermit Lakes Interpretive Site",
+      "status": "withheld_unknown",
+      "hold_reason": "Weather/snow-qualified access and complete daily clocks remain unresolved",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:29044",
+      "name": "Highway 149 Interpretive Site",
+      "status": "withheld_unknown",
+      "hold_reason": "Weather/snow-qualified access and complete daily clocks remain unresolved",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:29052",
+      "name": "Hwy 149 Moose Interpretive Site",
+      "status": "withheld_unknown",
+      "hold_reason": "Weather/snow-qualified access and complete daily clocks remain unresolved",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:29244",
+      "name": "Wagon Wheel Gap Interpretive Site",
+      "status": "withheld_unknown",
+      "hold_reason": "Weather/snow-qualified access and complete daily clocks remain unresolved",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:29918",
+      "name": "Columbia Gorge Discovery Center",
+      "status": "supplement_available_with_explicit_unknown_dates",
+      "hold_reason": null,
+      "visitor_html_status": 403,
+      "policy_unknown_dates": {
+        "2026-11-11": "Holiday opening has not been verified; no source closure claimed"
+      }
+    },
+    {
+      "source_id": "usfs:35235",
+      "name": "Sears-kay Ruins",
+      "status": "supplement_available_with_explicit_unknown_dates",
+      "hold_reason": null,
+      "visitor_html_status": 403,
+      "policy_unknown_dates": {
+        "2026-11-11": "Holiday opening has not been verified; no source closure claimed"
+      }
+    },
+    {
+      "source_id": "usfs:39566",
+      "name": "Gladie Visitor Center",
+      "status": "supplement_available_with_explicit_unknown_dates",
+      "hold_reason": null,
+      "visitor_html_status": 403,
+      "policy_unknown_dates": {
+        "2026-11-11": "Holiday opening has not been verified; no source closure claimed"
+      }
+    },
+    {
+      "source_id": "usfs:44573",
+      "name": "Roosevelt Dam Overlook",
+      "status": "withheld_unknown",
+      "hold_reason": "Year-round/day-use text supplies no complete daily opening clocks; not 24h",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:64853",
+      "name": "Fitchburg Furnace Interpretive Site",
+      "status": "supplement_available_with_explicit_unknown_dates",
+      "hold_reason": null,
+      "visitor_html_status": 403,
+      "policy_unknown_dates": {
+        "2026-11-11": "Holiday opening has not been verified; no source closure claimed"
+      }
+    },
+    {
+      "source_id": "usfs:68020",
+      "name": "Log Flume Interpretive Site",
+      "status": "withheld_unknown",
+      "hold_reason": "Solar access and seasonal bounds unresolved; no acquired dated sunrise/sunset clocks",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:75516",
+      "name": "Tea Kettle Rock",
+      "status": "withheld_unknown",
+      "hold_reason": "Weather/snow-qualified access and complete daily clocks remain unresolved",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:77641",
+      "name": "Palisades Visitor Center",
+      "status": "withheld_unknown",
+      "hold_reason": "Seasonal clock variants lack exact transition dates; no winter boundary inferred",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:83273",
+      "name": "Big Tree Botanical Area  Interpretive Si",
+      "status": "withheld_unknown",
+      "hold_reason": "Year-round/day-use text supplies no complete daily opening clocks; not 24h",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:83747",
+      "name": "Sherman Overlook Day Use",
+      "status": "withheld_unknown",
+      "hold_reason": "Solar access and seasonal bounds unresolved; no acquired dated sunrise/sunset clocks",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    },
+    {
+      "source_id": "usfs:84460",
+      "name": "Columbine Visitor Center & Nature Trail",
+      "status": "withheld_unknown",
+      "hold_reason": "Conditional or volunteer-dependent hours do not verify a chosen opening time",
+      "visitor_html_status": "not_acquired_in_this_pass",
+      "policy_unknown_dates": {}
+    }
+  ],
+  "notes": "Calendar supplements do not add places. All negative bodies, original restrictions and per-date exclusions remain in the private source bundle."
+}

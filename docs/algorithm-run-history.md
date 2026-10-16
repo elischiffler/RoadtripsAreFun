@@ -1,5 +1,17 @@
 # Algorithm Lab experiment history
 
+## Catalog discovery (October 15, 2026)
+
+Daytime and optional evening discovery read the active, licensed mixed-source
+catalog in Neon PostgreSQL. PR #40 deployed the first bounded release; this does
+not establish nationwide coverage or complete live journey acceptance.
+Missing coverage returns no places. Hotels, Mapbox road checks, geocoding and
+model-estimated interest ratings remain separate dependencies. See
+[rollout and rollback](neon-places-catalog.md) and the
+[Tripadvisor integration removal audit](tripadvisor-removal.md).
+Historical provider descriptions and measurements below retain their original
+meaning; they are not instructions for the current discovery implementation.
+
 Studio visitor and owner-authorized `/algorithm-lab/run` requests are recorded
 in their isolated identity scopes. Ordinary chat planning is excluded. The UI at `/studio` provides **Trip presets** and a
 persistent **Run history** table, with inputs and measurements in each disclosure.
@@ -49,17 +61,17 @@ Treat stored trip dates, preferences and resolved city data as private account d
 
 ## What the measurements mean
 
-| Field | Meaning |
-| --- | --- |
-| Objective | Current minimized spacing-plus-detour cost and bound in seconds. Historical maximized surplus scores keep their original units. Neither measures whole-trip optimality. |
-| Utility sum | Sum of selected trip/location dot products, retained alongside the integer objective. Candidate counts affect objective scaling, so cross-pool raw scores need care. |
-| Feasibility | Pass/fail of provider identities, successful final driving/scheduling checks and every quoted room meeting the nightly target. Missing evidence/replay is unassessed. Over-target quotes fail this measurement even though the current planner may return them with warnings. |
-| Full-trip budget | Unassessed: no hard total-trip budget constraint exists. Room inventory and booking availability are not guaranteed. |
-| Latency | Monotonic wall time for execution, excluding DB writes and browser/network overhead. Gathering, selection, AI generation, final reroute/check stage and existing named stage timings are retained where reached. Nested stages overlap; do not sum them. |
-| Calls | Actual backend outbound request attempts for TripAdvisor Terra, Mapbox, Mentro generation, Google Hotels and OpenCage. Includes failed attempts; includes gateway authentication; excludes Cognito/JWKS, gateway-internal work and automatic HTTP redirects. |
-| Provider events | Mentro empty-response retries and exhausted empty-response caps. These are separate from AI route-validation retries. |
-| AI route validation | Null with a reason: pure-AI/custom route solvers and their retry/fallback loops are not active. No fabricated counts or fallback success. |
-| Determinism | Empirical equality of canonical successful output hashes for at least two identical-input runs. Includes selected IDs, ordered stops, dates, costs and route duration. It is not a proof of future determinism. |
+| Field               | Meaning                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Objective           | Current minimized spacing-plus-detour cost and bound in seconds. Historical maximized surplus scores keep their original units. Neither measures whole-trip optimality.                                                                                                                                                                                                                                                                           |
+| Utility sum         | Sum of selected trip/location dot products, retained alongside the integer objective. Candidate counts affect objective scaling, so cross-pool raw scores need care.                                                                                                                                                                                                                                                                              |
+| Feasibility         | Pass/fail of provider identities, successful final driving/scheduling checks and every quoted room meeting the nightly target. Missing evidence/replay is unassessed. Over-target quotes fail this measurement even though the current planner may return them with warnings.                                                                                                                                                                     |
+| Full-trip budget    | Unassessed: no hard total-trip budget constraint exists. Room inventory and booking availability are not guaranteed.                                                                                                                                                                                                                                                                                                                              |
+| Latency             | Monotonic wall time for execution, excluding DB writes and browser/network overhead. Gathering, selection, AI generation, final reroute/check stage and existing named stage timings are retained where reached. Nested stages overlap; do not sum them.                                                                                                                                                                                          |
+| Calls               | Provider attempts: catalog database lookups plus outbound attempts for Mapbox, Mentro generation, Google Hotels and OpenCage. Historical `tripadvisor` counts retain their original Terra API meaning. Includes failed attempts and gateway authentication; excludes Cognito/JWKS, gateway-internal work and automatic HTTP redirects. Catalog lookups are not external API calls, even though the compatibility field is named `external_calls`. |
+| Provider events     | Mentro empty-response retries and exhausted empty-response caps. These are separate from AI route-validation retries.                                                                                                                                                                                                                                                                                                                             |
+| AI route validation | Null with a reason: pure-AI/custom route solvers and their retry/fallback loops are not active. No fabricated counts or fallback success.                                                                                                                                                                                                                                                                                                         |
+| Determinism         | Empirical equality of canonical successful output hashes for at least two identical-input runs. Includes selected IDs, ordered stops, dates, costs and route duration. It is not a proof of future determinism.                                                                                                                                                                                                                                   |
 
 Inputs retain both submitted and effective normalized weights plus resolved trip
 fields. Candidate identity, ratings, utility, measured progress, source queries, sections, detour provenance and selection constraints are

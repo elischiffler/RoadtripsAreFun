@@ -55,7 +55,14 @@ vi.mock('mapbox-gl', () => ({
 }));
 
 const stops = [
-  { name: 'Forest walk', type: 'stop', coordinates: [37.4, -122.1], address: 'Trailhead road' },
+  {
+    name: 'Forest walk',
+    type: 'stop',
+    coordinates: [37.4, -122.1],
+    address: 'Trailhead road',
+    source_release: '2026-09-23.1',
+    source_attribution: 'Overture Maps Foundation',
+  },
   { name: 'Coastal hotel', type: 'hotel', coordinates: [36.8, -121.9] },
   { name: 'Missing coordinates', type: 'stop' },
   { name: '<img src=x onerror=alert(1)>', type: 'stop', coordinates: [36.7, -121.8] },
@@ -98,6 +105,8 @@ it('uses numbered, accessible pins at converted stop coordinates with one safe p
   const first = screen.getByRole('button', { name: 'Stop 1: Forest walk' });
   await userEvent.click(first);
   expect(screen.getByRole('dialog')).toHaveTextContent('Forest walkAttractionTrailhead road');
+  expect(screen.getByRole('dialog')).toHaveTextContent('Source release: 2026-09-23.1');
+  expect(screen.getByRole('dialog')).toHaveTextContent('Source: Overture Maps Foundation');
   expect(first).toHaveAttribute('aria-expanded', 'true');
   await userEvent.click(screen.getByRole('button', { name: 'Stop 2: Coastal hotel' }));
   expect(screen.getAllByRole('dialog')).toHaveLength(1);

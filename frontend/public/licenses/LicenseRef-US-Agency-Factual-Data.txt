@@ -1,0 +1,25 @@
+USDA Forest Service and U.S. Census Bureau factual public data
+
+No claim to copyright in original U.S. Government works under 17 U.S.C. 105.
+No agency endorsement is implied. Only agency-published facility identities,
+coordinates, categorical types, operation/access facts, source dates and derived
+state codes are imported. Photos, illustrations, logos, creative descriptions,
+third-party works and commercial datasets are not imported.
+
+Sources:
+https://data.fs.usda.gov/geodata/edw/datasets.php?xmlKeyword=recreation
+https://data.fs.usda.gov/geodata/edw/edw_resources/meta/Rec_Infra_RecSite.xml
+https://www.arcgis.com/home/item.html?id=8232a5a6beec48c7a4cd5971d8387111
+https://tigerweb.geo.census.gov/arcgis/rest/services/Generalized_ACS2025/State_County/MapServer
+https://www.copyright.gov/title17/92chap1.html#105
+
+USFS warns that its data are dynamic, may change, and are not legal documents
+or evidence of land ownership, jurisdiction, or unrestricted road access. Census
+cartographic state polygons are used for catalog state classification, not legal
+boundary adjudication. Publisher operation status is dated evidence, not a
+guarantee of future public access or parking availability.
+
+Driving-network checks are separate derived evidence:
+OSRM; © OpenStreetMap contributors, Open Database License (ODbL).
+https://www.openstreetmap.org/copyright
+No OSM place coordinates replace the native USFS coordinates.

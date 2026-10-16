@@ -49,8 +49,13 @@ from app.routing.sources.evenings import enrich_evenings, evening_interests
 from app.routing.sources.hotels import find_hotel as _find_hotel  # noqa: F401
 from app.routing.sources.hotels import get_nearby_city as _get_nearby_city  # noqa: F401
 from app.routing.sources.mapbox import call_route as _call_route
-from app.routing.sources.persona_candidates import attraction_candidates, hotel_candidates
+from app.routing.sources.persona_candidates import (
+    CandidateRatingError,
+    attraction_candidates,
+    hotel_candidates,
+)
 from app.routing.travel_timing import apply_timing
+from app.routing.visit_calendar import VisitCalendarConflict
 from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location  # noqa: F401  (patched in tests)
 
@@ -161,6 +166,8 @@ async def get_final_route(
             can_select_algorithm=owner_routing_claims(user_id, x_cognito_id_token) is not None,
         )
 
+    except CandidateRatingError as exception:
+        raise HTTPException(status_code=502, detail=exception.public_message) from None
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail)
     except HTTPException as exception:
@@ -225,88 +232,104 @@ async def plan_final_route(
         hotel_rooms=payload.hotel_rooms,
     )
 
-    # Run the planner to find stopping points.
-    result = await planner.plan(initial_route, options, services)
-    stopping_points, total_cost = result.stopping_points, result.total_cost
+    # At most one exclusion per bounded candidate. Discovery/solo road checks
+    # are cached on these request-local options, including final-leg retries.
+    for _ in range(61):
+        try:
+            # Run the planner to find stopping points.
+            result = await planner.plan(initial_route, options, services)
+            stopping_points, total_cost = result.stopping_points, result.total_cost
 
-    coordinates = [stop["coordinates"] for stop in stopping_points]
+            coordinates = [stop["coordinates"] for stop in stopping_points]
 
-    # Final road route: stop records use [lat, lon], Mapbox waypoints use lon,lat.
-    waypoints = ";".join([f"{lon},{lat}" for lat, lon in coordinates])
-    with stage("route.final_reroute", waypoints=len(coordinates)):
-        route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
-    if algorithm.startswith("cp_sat"):
-        if (
-            len(route.legs) != len(coordinates) + 1
-            or not math.isfinite(route.duration)
-            or route.duration < 0
-        ):
-            raise PlanningError("Mapbox returned an incomplete final route", 502)
-    distance, duration = route.distance, route.duration
-    geometry = route.geometry
-    steps = []
+            # Final road route: stop records use [lat, lon], Mapbox waypoints use lon,lat.
+            waypoints = ";".join([f"{lon},{lat}" for lat, lon in coordinates])
+            with stage("route.final_reroute", waypoints=len(coordinates)):
+                route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
+            if algorithm.startswith("cp_sat"):
+                if (
+                    len(route.legs) != len(coordinates) + 1
+                    or not math.isfinite(route.duration)
+                    or route.duration < 0
+                ):
+                    raise PlanningError("Mapbox returned an incomplete final route", 502)
+            distance, duration = route.distance, route.duration
+            geometry = route.geometry
+            steps = []
 
-    idx = 0
-    for leg in route.legs:
-        if idx < len(stopping_points) and stopping_points[idx]["type"] != "generic":
-            stopping_points[idx]["duration"] = leg.duration
-            if stopping_points[idx].get("address") is None:
-                location = await retry_async(
-                    lambda: threaded(
-                        "geocoding",
-                        get_location,
-                        geocoder=geolocator,
-                        coords=stopping_points[idx]["coordinates"],
+            idx = 0
+            for leg in route.legs:
+                if idx < len(stopping_points) and stopping_points[idx]["type"] != "generic":
+                    stopping_points[idx]["duration"] = leg.duration
+                    if stopping_points[idx].get("address") is None:
+                        location = await retry_async(
+                            lambda: threaded(
+                                "geocoding",
+                                get_location,
+                                geocoder=geolocator,
+                                coords=stopping_points[idx]["coordinates"],
+                            )
+                        )
+                        if location:
+                            stopping_points[idx]["address"] = location.address
+                else:
+                    location = await retry_async(
+                        lambda: threaded(
+                            "geocoding",
+                            get_location,
+                            geocoder=geolocator,
+                            coords=[end_lat, end_lon],
+                        )
                     )
+                    stopping_points.append(
+                        {
+                            "name": "Arrive at your destination",
+                            "duration": leg.duration,
+                            "type": "end",
+                            "coordinates": [end_lat, end_lon],
+                            "address": location.address if location else None,
+                        }
+                    )
+                idx += 1
+            start_timezone = payload.start_timezone
+            # Final timing validation
+            if algorithm.startswith("cp_sat"):
+                with stage("route.validation"):
+                    if services.timezone_at is not None:
+                        start_timezone = await services.timezone_at([start_lat, start_lon])
+                        for stop in stopping_points:
+                            stop["timezone"] = await services.timezone_at(stop["coordinates"])
+                    apply_timing(stopping_points, start, payload.scheduling_policy, start_timezone)
+                record_stage(
+                    "reroute", "complete", "Mapbox actual legs passed local timing checks."
                 )
-                if location:
-                    stopping_points[idx]["address"] = location.address
-        else:
-            location = await retry_async(
-                lambda: threaded(
-                    "geocoding", get_location, geocoder=geolocator, coords=[end_lat, end_lon]
+                await enrich_evenings(
+                    stopping_points, evening_interests(payload.evening_interests, weights)
                 )
+            # Clients consume stops and geometry; turn-by-turn steps remain empty.
+            coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
+            return Route(
+                coordinates=coordinates,
+                distance=distance,
+                duration=duration,
+                steps=steps,
+                stops=stopping_points,
+                geometry=geometry,
+                cost=total_cost,
+                scheduling_policy=payload.scheduling_policy,
+                start_timezone=start_timezone,
+                departure_time=start,
+                traveler_count=payload.traveler_count,
+                hotel_rooms=payload.hotel_rooms,
+                warnings=[stop["warning"] for stop in stopping_points if stop.get("warning")]
+                or None,
             )
-            stopping_points.append(
-                {
-                    "name": "Arrive at your destination",
-                    "duration": leg.duration,
-                    "type": "end",
-                    "coordinates": [end_lat, end_lon],
-                    "address": location.address if location else None,
-                }
-            )
-        idx += 1
-    start_timezone = payload.start_timezone
-    # Final timing validation
-    if algorithm.startswith("cp_sat"):
-        with stage("route.validation"):
-            if services.timezone_at is not None:
-                start_timezone = await services.timezone_at([start_lat, start_lon])
-                for stop in stopping_points:
-                    stop["timezone"] = await services.timezone_at(stop["coordinates"])
-            apply_timing(stopping_points, start, payload.scheduling_policy, start_timezone)
-        record_stage("reroute", "complete", "Mapbox actual legs passed local timing checks.")
-        await enrich_evenings(
-            stopping_points, evening_interests(payload.evening_interests, weights)
-        )
-    # Clients consume stops and geometry; turn-by-turn steps remain empty.
-    coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
-    return Route(
-        coordinates=coordinates,
-        distance=distance,
-        duration=duration,
-        steps=steps,
-        stops=stopping_points,
-        geometry=geometry,
-        cost=total_cost,
-        scheduling_policy=payload.scheduling_policy,
-        start_timezone=start_timezone,
-        departure_time=start,
-        traveler_count=payload.traveler_count,
-        hotel_rooms=payload.hotel_rooms,
-        warnings=[stop["warning"] for stop in stopping_points if stop.get("warning")] or None,
-    )
+        except VisitCalendarConflict as exc:
+            if exc.provider_id in options.excluded_provider_ids:
+                raise
+            options.excluded_provider_ids |= {exc.provider_id}
+            record_stage("availability", "excluded_after_actual_road_route", exc.detail)
+    raise PlanningError("Source-calendar reselection limit exceeded", 422)
 
 
 @router.get("/algorithms")

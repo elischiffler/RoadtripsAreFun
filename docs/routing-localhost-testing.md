@@ -1,5 +1,17 @@
 # Testing the Routing Algorithms on localhost
 
+## Catalog discovery (October 15, 2026)
+
+Daytime and optional evening discovery read the active, licensed mixed-source
+catalog in Neon PostgreSQL. PR #40 deployed the first bounded release; this does
+not establish nationwide coverage or complete live journey acceptance.
+Missing coverage returns no places. Hotels, Mapbox road checks, geocoding and
+model-estimated interest ratings remain separate dependencies. See
+[rollout and rollback](neon-places-catalog.md) and the
+[Tripadvisor integration removal audit](tripadvisor-removal.md).
+Historical provider descriptions and measurements below retain their original
+meaning; they are not instructions for the current discovery implementation.
+
 > Historical instructions for the retired greedy and OR-Tools planners. The
 > current registered/default planner is `cp_sat`; use `/algorithms` to inspect
 > available choices. CP-SAT requires an authenticated request and a future start.
@@ -45,7 +57,7 @@ python -c "from ortools.algorithms.python import knapsack_solver; print('ortools
 
 ## 1. Offline benchmark (recommended first)
 
-This is the best tool for *comparing* the algorithms. It runs every planner
+This is the best tool for _comparing_ the algorithms. It runs every planner
 against a fixed set of trip scenarios using **cached, deterministic candidate
 data** — so it makes zero external API calls, needs no keys, and gives identical
 results every run. Any difference in the numbers comes purely from the algorithm.
@@ -73,15 +85,15 @@ greedy *          -200.0      5             5        600.0      10.0       1.57 
 ortools           -591.667    5             6        720.0      10.0       2.85       7
 ```
 
-| Column | Meaning |
-|---|---|
-| `algorithm` | The planner. `*` marks the best objective score for that case. |
-| `score` | The scalar objective (higher is better): `w_v·value − w_c·cost − w_d·detour`. |
-| `attractions` / `hotels` | Counts of each stop type in the produced trip. |
-| `cost` | Summed hotel cost. |
-| `detour_h` | Total hours lost to attraction detours. |
-| `ms` | Planning wall-clock time. |
-| `api` | Number of external candidate-sourcing calls (the real cost driver). |
+| Column                   | Meaning                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------- |
+| `algorithm`              | The planner. `*` marks the best objective score for that case.                |
+| `score`                  | The scalar objective (higher is better): `w_v·value − w_c·cost − w_d·detour`. |
+| `attractions` / `hotels` | Counts of each stop type in the produced trip.                                |
+| `cost`                   | Summed hotel cost.                                                            |
+| `detour_h`               | Total hours lost to attraction detours.                                       |
+| `ms`                     | Planning wall-clock time.                                                     |
+| `api`                    | Number of external candidate-sourcing calls (the real cost driver).           |
 
 The objective weights live in `app/routing/base.py` (`DEFAULT_WEIGHTS`). Tune them
 to reflect a traveler profile ("see everything" vs "cheap and fast") and re-run.
@@ -123,8 +135,10 @@ make run
 ```
 
 The server listens on `http://localhost:8000`. Live route generation calls real
-external APIs (Mapbox, TripAdvisor, Google), so you need a populated `.env`
-(see `.env.example`).
+external APIs (Mapbox, Google Hotels and the model gateway), plus bounded catalog
+queries through `DATABASE_URL`. Use an isolated database with the catalog migration
+and permitted sample records, and populate `.env` from `.env.example`. A remote
+proxy exercises the deployed backend revision, which may precede this migration.
 
 ### Step 1 — get an initial route
 
@@ -185,14 +199,14 @@ no live API calls).
 
 ## Quick reference
 
-| Goal | Command |
-|---|---|
-| Compare algorithms (offline) | `python -m app.routing.benchmark` |
-| Compare, JSON output | `python -m app.routing.benchmark --json` |
-| Run planner tests | `pytest tests/routing -v` |
-| Start dev server | `make run` |
-| Default to OR-Tools | `ROUTING_ALGORITHM=ortools make run` |
-| Benchmark over HTTP | `BENCHMARK_ENABLED=true make run` then GET `/benchmark` |
+| Goal                         | Command                                                 |
+| ---------------------------- | ------------------------------------------------------- |
+| Compare algorithms (offline) | `python -m app.routing.benchmark`                       |
+| Compare, JSON output         | `python -m app.routing.benchmark --json`                |
+| Run planner tests            | `pytest tests/routing -v`                               |
+| Start dev server             | `make run`                                              |
+| Default to OR-Tools          | `ROUTING_ALGORITHM=ortools make run`                    |
+| Benchmark over HTTP          | `BENCHMARK_ENABLED=true make run` then GET `/benchmark` |
 
 ---
 

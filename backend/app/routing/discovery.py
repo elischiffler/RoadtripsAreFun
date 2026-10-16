@@ -1,10 +1,15 @@
 """Typed budgets and deterministic section-balanced discovery contracts."""
 
+from __future__ import annotations
+
 import math
 from dataclasses import asdict, dataclass, field
-from typing import Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from app.routing.geometry import RouteMeasure
+
+if TYPE_CHECKING:
+    from app.routing.trip_calendar import TripCalendar
 
 
 @dataclass(frozen=True)
@@ -26,6 +31,7 @@ class DiscoveryPlan:
     rating_cap: int
     raw_pool_cap: int
     queries: list[SearchQuery] = field(default_factory=list)
+    trip_calendar: TripCalendar | None = field(default=None, repr=False)
 
     def section(self, seconds):
         """Return the zero-based route section containing the given baseline driving seconds."""
@@ -37,7 +43,12 @@ class DiscoveryPlan:
 
     def snapshot(self):
         """Return the plan and its search queries as a dictionary for stored diagnostics."""
-        return asdict(self)
+        # The request-local provider callback is never persisted or deep-copied.
+        result = {key: value for key, value in self.__dict__.items() if key != "trip_calendar"}
+        result["queries"] = [asdict(query) for query in self.queries]
+        if self.trip_calendar is not None:
+            result["trip_calendar"] = self.trip_calendar.snapshot()
+        return result
 
 
 @dataclass

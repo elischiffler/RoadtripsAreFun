@@ -7,10 +7,11 @@ from pydantic import ValidationError
 
 from app.agent.progress import stage
 from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
-from app.models.scheduling_policy import advance, local_time
+from app.models.scheduling_policy import SchedulingPolicy, advance, local_time
 from app.routing.base import PlanningError
 from app.routing.sources.evenings import current_suggestions
 from app.routing.travel_timing import apply_timing
+from app.routing.visit_calendar import requires_calendar
 from app.utils.auth import require_authenticated_user
 
 # Initialize FastAPI
@@ -69,6 +70,12 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
     Raises:
         HTTPException: if the route is incomplete or the data can't be processed.
     """
+    if data.route.scheduling_policy is None and any(
+        requires_calendar(stop) for stop in data.route.stops or []
+    ):
+        # Legacy untimed trips keep their display behavior. Source-timed visits
+        # always revalidate, even when a saved/caller route omitted its policy.
+        data.route.scheduling_policy = SchedulingPolicy()
     # An omitted departure must reuse the planned travel day, including on
     # direct HTTP calls. Recover policy routes saved before departure_time was
     # added from the actual first arrival; legacy routes retain their old default.
@@ -77,7 +84,8 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
         first = data.route.stops[0]
         if first.get("arrival_time"):
             current_time = advance(
-                datetime.fromisoformat(first["arrival_time"]), -first["duration"]
+                datetime.fromisoformat(first.get("road_arrival_time") or first["arrival_time"]),
+                -first["duration"],
             )
     current_time = current_time or datetime(2024, 9, 21, 9)
     if data.route.scheduling_policy is not None:
@@ -110,6 +118,13 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
             "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
             "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
             "name": stop["name"],
+            "provider_id": stop.get("provider_id"),
+            "source": stop.get("source"),
+            "source_release": stop.get("source_release"),
+            "source_attribution": stop.get("source_attribution"),
+            "source_updated_at": stop.get("source_updated_at"),
+            "source_provenance": stop.get("source_provenance", []),
+            "availability": stop.get("availability"),
             "url": stop.get("url"),
             "price": stop.get("price"),
             "traveler_count": stop.get("traveler_count"),
@@ -120,7 +135,23 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
             "kind": "arrival",
             "timezone": stop.get("timezone"),
             "notice": " · ".join(
-                value for value in (stop.get("late_check_in_notice"), stop.get("warning")) if value
+                value
+                for value in (
+                    stop.get("late_check_in_notice"),
+                    stop.get("warning"),
+                    (
+                        f"Wait {stop['wait_seconds'] / 60:g} minutes for published opening."
+                        if stop.get("wait_seconds", 0) > 0
+                        else None
+                    ),
+                    (
+                        "Visit fits published hours; tickets and reservations are unverified."
+                        if (stop.get("availability") or {}).get("status")
+                        == "within_published_window"
+                        else None
+                    ),
+                )
+                if value
             )
             or None,
         }
@@ -140,6 +171,12 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
                         if suggestion.get("visit_time")
                         else "Unscheduled",
                         "name": suggestion["name"],
+                        "source": suggestion.get("source"),
+                        "provider_id": suggestion.get("provider_id"),
+                        "source_release": suggestion.get("source_release"),
+                        "source_attribution": suggestion.get("source_attribution"),
+                        "source_updated_at": suggestion.get("source_updated_at"),
+                        "source_provenance": suggestion.get("source_provenance", []),
                         "url": suggestion.get("url"),
                         "address": suggestion.get("address"),
                         "kind": "evening",
@@ -172,7 +209,11 @@ async def _build_itinerary(data: Itinerary_Payload) -> list[Itinerary_Day]:
                 }
             )
         elif stop["type"] == "stop":
-            current_time = advance(current_time, 7200)
+            current_time = (
+                datetime.fromisoformat(stop["departure_time"])
+                if data.route.scheduling_policy is not None
+                else advance(current_time, 7200)
+            )
             stop_list.append(
                 {
                     "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
@@ -207,6 +248,13 @@ async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]
         for stop in itinerary:
             point = {
                 "name": stop["name"],
+                "source": stop.get("source"),
+                "provider_id": stop.get("provider_id"),
+                "source_release": stop.get("source_release"),
+                "source_attribution": stop.get("source_attribution"),
+                "source_updated_at": stop.get("source_updated_at"),
+                "source_provenance": stop.get("source_provenance", []),
+                "availability": stop.get("availability"),
                 "time": stop["time"],
                 "address": stop.get("address"),
                 "url": stop.get("url"),

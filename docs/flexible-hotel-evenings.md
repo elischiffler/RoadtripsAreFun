@@ -82,17 +82,16 @@ includes 30 minutes for check-in/rest and a one-hour visit, with return before
 the effective cutoff. Late arrivals with insufficient time skip discovery.
 Both suggestions are alternatives: choose one, not two consecutive visits.
 
-The existing Terra API supplies categories, place status and weekly opening
-periods ([provider field reference](https://docs.terra.tripadvisor.com/reference/locationget)).
-Weekly periods do not establish date-specific holiday exceptions. The live
-adapter therefore returns tentative suggestions labeled "Check opening hours",
-with no assigned visit or return time. Unknown category adds "and venue category".
-Closed places are excluded. A provider adapter may supply dated, aware opening
-intervals; only then, with a verified category, can an optional visit time be
-shown. Fixtures prove this path; no live date-specific adapter is claimed.
+The catalog supplies source identities, coordinates and supported categories.
+Its evening adapter returns no verified opening intervals, so suggestions remain
+tentative and labeled "Check opening hours", with no assigned visit or return
+time. Unknown category adds "and venue category". Catalog records marked closed
+are excluded. A provider adapter may supply dated, aware opening intervals;
+only then, with a verified category, can an optional visit time be shown.
+Fixtures prove this path; no live date-specific adapter is claimed.
 
 Discovery has an eight-second budget across the route, four seconds per hotel,
-and three-second HTTP timeouts. Progress uses the existing minimal animated
+and three-second Mapbox driving-check HTTP timeouts. Progress uses the existing minimal animated
 status line. Provider failures/no results/timeout do not change route completion,
 daytime stop counts, hotel prices or budget warnings. Suggestions survive reload;
 itinerary departure overrides hide visits that no longer fit rather than showing

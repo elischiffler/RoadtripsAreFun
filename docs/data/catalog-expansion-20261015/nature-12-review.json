@@ -1,0 +1,1009 @@
+{
+  "schema_version": "roadtrips-boulder-expansion-review/1",
+  "checked_at": "2026-10-15T03:51:59.626321+00:00",
+  "source_acquisition": {
+    "url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+    "path": "/workspace/catalog-expansion-phase2-20261015/boulder-v1.zip",
+    "sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+    "bytes": 4705510,
+    "retrieved_at": "2026-10-15T03:37:14.739124+00:00",
+    "status": 200
+  },
+  "source_release": "kaggle-boulder-v1",
+  "source_attribution": "City of Boulder Open Space and Mountain Parks (CC0 1.0); Kaggle mirror by paultimothymooney. No City endorsement.",
+  "license": "CC0-1.0",
+  "baseline_count": 185,
+  "new_count": 12,
+  "hypothetical_combined_count": 197,
+  "remaining_to_500": 303,
+  "records": [
+    {
+      "source_id": "boulder:418",
+      "name": "Joder Ranch",
+      "latitude": 40.11024237719,
+      "longitude": -105.2819794865,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "?",
+      "url": "https://bouldercolorado.gov/trailhead/joder-ranch",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "418",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.110147443507,
+            "longitude": -105.28260645327066
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/joder-ranch",
+          "sha256": "f0b1051c2f54dd07f2d4f65d6ab269e2c47e5d95718fe81c9f88b311ccc688aa",
+          "checked_at": "2026-10-15T03:39:10.521054+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.11024237719,
+          "longitude": -105.2819794865,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:19.210163+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.2809794865,40.11024237719;-105.2819794865,40.11024237719?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          40.11024237719,
+          -105.2819794865
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 7.190915814,
+        "road_name": "North Foothills Highway",
+        "response_sha256": "213757a454f64d9a69a3bcc3449fc1eee246ab17bdda6cb2905f85d6282f4248"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only."
+    },
+    {
+      "source_id": "boulder:512",
+      "name": "Bobolink",
+      "latitude": 39.999995473805,
+      "longitude": -105.21470815462,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "5880 Baseline Rd",
+      "url": "https://bouldercolorado.gov/trailhead/bobolink",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "512",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 39.99988941327414,
+            "longitude": -105.2148386806101
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/bobolink",
+          "sha256": "f51ab84cc8b7a52dedbf6bda8c67d08a02ca90ead934fe90dbe7338fbc405802",
+          "checked_at": "2026-10-15T03:39:10.521499+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 39.999995473805,
+          "longitude": -105.21470815462,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:21.823706+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.21370815462,39.999995473805;-105.21470815462,39.999995473805?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          39.999995473805,
+          -105.21470815462
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 0.5979749337,
+        "road_name": "",
+        "response_sha256": "63ebc0d526978c4e3ad3ba5db46dbb3bd78c3cf931204d1fb3bd115a0486a081"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only."
+    },
+    {
+      "source_id": "boulder:250",
+      "name": "Chautauqua",
+      "latitude": 39.998910206824,
+      "longitude": -105.28252474797,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "900 Baseline",
+      "url": "https://bouldercolorado.gov/trailhead/chautauqua",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "250",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 39.99879048300894,
+            "longitude": -105.28289876027858
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/chautauqua",
+          "sha256": "7dce9d680df1dea48ea7efaeb6af29f81f5d9c0801d272e8ac15a2a200abeeff",
+          "checked_at": "2026-10-15T03:39:10.704731+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 39.998910206824,
+          "longitude": -105.28252474797,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:24.365982+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.28152474797,39.998910206824;-105.28252474797,39.998910206824?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          39.998910206824,
+          -105.28252474797
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 3.230172616,
+        "road_name": "",
+        "response_sha256": "8a84fff1a602dbffdb36f44ab3d8b9563807fa48158cd5a1c0a5b054984617fb"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only."
+    },
+    {
+      "source_id": "boulder:263",
+      "name": "Gregory Canyon",
+      "latitude": 39.997657803335,
+      "longitude": -105.29268855687,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "171 Flagstaff Rd",
+      "url": "https://bouldercolorado.gov/trailhead/gregory-canyon",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "263",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 39.99751136441606,
+            "longitude": -105.29263782163898
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/gregory-canyon",
+          "sha256": "1c88f3e2f208095720a350ee79423dfbb07bf8bb49f9a0a7f64819074f4ab1b8",
+          "checked_at": "2026-10-15T03:39:10.807897+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 39.997657803335,
+          "longitude": -105.29268855687,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:28.554408+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.29168855687,39.997657803335;-105.29268855687,39.997657803335?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          39.997657803335,
+          -105.29268855687
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 0.1400928693,
+        "road_name": "Gregory Canyon Road",
+        "response_sha256": "bd852ba8bd6818457578ac3615913a6aa434b472e78700e49c633ee9830eef52"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only. Gregory Canyon access road may close in cooler months due to ice/snow; no future-season vehicle access is guaranteed."
+    },
+    {
+      "source_id": "boulder:507",
+      "name": "Cottonwood",
+      "latitude": 40.039982064338,
+      "longitude": -105.23691171336,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "5102 Independence Rd",
+      "url": "https://bouldercolorado.gov/trailhead/cottonwood",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "507",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.039976085382925,
+            "longitude": -105.23696984909611
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/cottonwood",
+          "sha256": "e697a58d70346adb72c75dc538acb3f227aeb2bded925dcce18ffb4a9f709a5c",
+          "checked_at": "2026-10-15T03:39:11.480653+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.039982064338,
+          "longitude": -105.23691171336,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:33.222984+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.23591171336,40.039982064338;-105.23691171336,40.039982064338?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          40.039982064338,
+          -105.23691171336
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 2.932178242,
+        "road_name": "",
+        "response_sha256": "c84d3638be785623ac1fc8303fb9aee9a017e18d0e8855ad959dbec2721cda58"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only."
+    },
+    {
+      "source_id": "boulder:403",
+      "name": "Four Mile Creek",
+      "latitude": 40.062768754231,
+      "longitude": -105.28890533946,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "420 Lee Hill Rd",
+      "url": "https://bouldercolorado.gov/trailhead/four-mile-creek",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "403",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.062717182742134,
+            "longitude": -105.28894864046326
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/four-mile-creek",
+          "sha256": "0b750f1f842607906da5e7db59f54a4ed79ad85d1167c43128bcf826d4f3989e",
+          "checked_at": "2026-10-15T03:39:11.599740+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.062768754231,
+          "longitude": -105.28890533946,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:37.397346+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.28790533946,40.062768754231;-105.28890533946,40.062768754231?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          40.062768754231,
+          -105.28890533946
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 0.2378911304,
+        "road_name": "",
+        "response_sha256": "adad00a81d8ab9d10611457f3f21f6f0ea612e72feedabcf1ee2d63471ca1a59"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only."
+    },
+    {
+      "source_id": "boulder:401",
+      "name": "Foothills",
+      "latitude": 40.070578155791,
+      "longitude": -105.28243293037,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "5273 North Broadway",
+      "url": "https://bouldercolorado.gov/trailhead/foothills",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "401",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.070482582414186,
+            "longitude": -105.28245822688025
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/foothills",
+          "sha256": "55a9e512e189dee693f6321230ca400a2c08f16882dbf079aa04f3a19e2141ba",
+          "checked_at": "2026-10-15T03:39:11.609187+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.070578155791,
+          "longitude": -105.28243293037,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:38.588569+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.28143293037,40.070578155791;-105.28243293037,40.070578155791?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          40.070578155791,
+          -105.28243293037
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 14.66296594,
+        "road_name": "",
+        "response_sha256": "18a15952056b8e361ebf6b65e02feb05cd54ec7feaadb85b97d997f69adff168"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only."
+    },
+    {
+      "source_id": "boulder:407a",
+      "name": "Wonderland Lake",
+      "latitude": 40.050907588695,
+      "longitude": -105.28256708822,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "4201 N. Broadway",
+      "url": "https://bouldercolorado.gov/trailhead/wonderland-lake",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "407a",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.050862768816486,
+            "longitude": -105.28241980656458
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/wonderland-lake",
+          "sha256": "68a0f1f9a64e0409cb7e984e5c599e5376af0dbaacc12b9b9e712e21acf319a2",
+          "checked_at": "2026-10-15T03:39:11.626669+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.050907588695,
+          "longitude": -105.28256708822,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:39.880911+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.28156708822,40.050907588695;-105.28256708822,40.050907588695?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          40.050907588695,
+          -105.28256708822
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 5.995948008,
+        "road_name": "",
+        "response_sha256": "c358b269ce8c1f82d3cc92f394d3b10d587a246b46d898cb174268facab563c1"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only."
+    },
+    {
+      "source_id": "boulder:503",
+      "name": "Teller Farm North",
+      "latitude": 40.040019352638,
+      "longitude": -105.14257024141,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "8990 Valmont",
+      "url": "https://bouldercolorado.gov/trailhead/teller-farm-north",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "503",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.03976095621058,
+            "longitude": -105.14253241593401
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/teller-farm-north",
+          "sha256": "d49012d9bb3031c8ff758a03dfd3f8be70053bc6f9b9fae3d6eba5aa68b923e6",
+          "checked_at": "2026-10-15T03:39:11.714718+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.040019352638,
+          "longitude": -105.14257024141,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:41.287933+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.14157024141,40.040019352638;-105.14257024141,40.040019352638?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          40.040019352638,
+          -105.14257024141
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 5.008233345,
+        "road_name": "",
+        "response_sha256": "c1a22f50919b4865b8f8da06608e1044b1cf23b75230f73a9596c8bd45799882"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only."
+    },
+    {
+      "source_id": "boulder:513",
+      "name": "Cherryvale",
+      "latitude": 39.982917551229,
+      "longitude": -105.21448534186,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "66 S. Cherryvale Rd",
+      "url": "https://bouldercolorado.gov/trailhead/cherryvale",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "513",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 39.982766934608655,
+            "longitude": -105.2145567093446
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/cherryvale",
+          "sha256": "cd217cde8870a9d3ee8c1e8cc332958b3e20961f9847860111e1cb4a7540ffb8",
+          "checked_at": "2026-10-15T03:39:12.310854+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 39.982917551229,
+          "longitude": -105.21448534186,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:42.586852+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.21348534186,39.982917551229;-105.21448534186,39.982917551229?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          39.982917551229,
+          -105.21448534186
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 12.71725757,
+        "road_name": "",
+        "response_sha256": "94cd4e9eb2e32f26b6cbf2849cdfd4644c56ebce401e6f22fe579e8cb014edd2"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only."
+    },
+    {
+      "source_id": "boulder:417",
+      "name": "Buckingham Park",
+      "latitude": 40.111138865084,
+      "longitude": -105.30590787395,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "2500 Left-hand Canyon Dr",
+      "url": "https://bouldercolorado.gov/trailhead/buckingham-park",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "417",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.11129787002803,
+            "longitude": -105.3064337417828
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/buckingham-park",
+          "sha256": "91d8b5fc0fe01ff88546432441454e028192875c6a432f557ca8b778d3ac244b",
+          "checked_at": "2026-10-15T03:39:12.369619+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.111138865084,
+          "longitude": -105.30590787395,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:44.467269+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.30490787395,40.111138865084;-105.30590787395,40.111138865084?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          40.111138865084,
+          -105.30590787395
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 9.972839461,
+        "road_name": "Lefthand Canyon Drive",
+        "response_sha256": "ea875a31092328ba9a6d64c533e3b14e68f52bbb079dcf1352c47e3425198999"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only."
+    },
+    {
+      "source_id": "boulder:508c",
+      "name": "Sawhill Ponds",
+      "latitude": 40.039746420042,
+      "longitude": -105.18483321365,
+      "region": "CO",
+      "categories": [
+        "daytime",
+        "nature",
+        "trailhead"
+      ],
+      "address": "3400 75th St",
+      "url": "https://bouldercolorado.gov/trailhead/sawhill-ponds",
+      "source_updated_at": null,
+      "provenance": [
+        {
+          "dataset": "City of Boulder OSMP via Kaggle",
+          "record_id": "508c",
+          "release": "kaggle-boulder-v1",
+          "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+          "source_url": "https://www.kaggle.com/api/v1/datasets/download/paultimothymooney/trailstrailheadsandrockformationsinboulder?datasetVersionNumber=1",
+          "license": "CC0-1.0",
+          "source_point": {
+            "latitude": 40.03953506946036,
+            "longitude": -105.18506448959076
+          },
+          "source_metadata_date": "2019-04-17"
+        },
+        {
+          "dataset": "City of Boulder current trailhead",
+          "url": "https://bouldercolorado.gov/trailhead/sawhill-ponds",
+          "sha256": "6c751826bb842623f34de5c8fa62981de4eb8b48284f74deb0aa5ad3fc086b6e",
+          "checked_at": "2026-10-15T03:39:12.504466+00:00",
+          "status_at_check": "Open",
+          "arrival_type": "trailhead_parking",
+          "latitude": 40.039746420042,
+          "longitude": -105.18483321365,
+          "limitations": "Access, parking and fees may change; check operator closures before travel. Opening hours remain unknown to the scheduler."
+        }
+      ],
+      "independent_driving_review": {
+        "checked_at": "2026-10-15T03:47:46.945555+00:00",
+        "request_url": "https://router.project-osrm.org/route/v1/driving/-105.18383321364999,40.039746420042;-105.18483321365,40.039746420042?overview=false&steps=false&radiuses=1000;75",
+        "checked_waypoint": "destination",
+        "source_coordinates": [
+          40.039746420042,
+          -105.18483321365
+        ],
+        "http_status": 200,
+        "code": "Ok",
+        "snap_distance_m": 0.2560881204,
+        "road_name": "",
+        "response_sha256": "f2bd8f4e855b271ef942e15fb41fd8dc1204f4571a68cabf674ba20008bf0d64"
+      },
+      "manual_access_notes": "Published City Status Open, actual visitor parking and one directions point. Fees and availability remain unknown. OSRM check is network proximity only."
+    }
+  ],
+  "manual_holds": {
+    "245": "Alternate Chautauqua-area arrival; keep Chautauqua rather than inflate destination count.",
+    "308": "Published Red Rocks construction closures have unresolved current scope at Centennial access.",
+    "503a": "Known South Teller trailhead closure October 20, 2026; future recheck required rather than import unsupported blackout hours.",
+    "409": "Operator explicitly directs checking muddy-condition closures; linked dynamic feed returned 503, so current trail access remains uncertain.",
+    "410": "Alternate Boulder Valley Ranch-area arrival; current muddy-condition review unresolved.",
+    "408": "Alternate Boulder Valley Ranch-area arrival; operator-directed muddy-condition feed unavailable."
+  },
+  "other_attempts": [
+    {
+      "name": "NCAR",
+      "native_id": "235",
+      "url": "https://bouldercolorado.gov/trailhead/ncar",
+      "retrieved_at": "2026-10-15T03:39:10.520213+00:00",
+      "status": 200,
+      "path": "/workspace/catalog-expansion-phase2-20261015/boulder-pages/ncar.html",
+      "sha256": "9d170d34fc2414e532db88247281f06b5e55f05ed9e8c9b80a54373f2ab4c9ea",
+      "bytes": 61687,
+      "parsed_point": null,
+      "reason": "parking_unverified"
+    },
+    {
+      "name": "Fourth of July",
+      "native_id": "1001",
+      "url": "https://bouldercolorado.gov/trailhead/fourth-of-july",
+      "retrieved_at": "2026-10-15T03:39:10.520715+00:00",
+      "status": 404
+    },
+    {
+      "name": "Dry Creek",
+      "native_id": "514",
+      "url": "https://bouldercolorado.gov/trailhead/dry-creek",
+      "retrieved_at": "2026-10-15T03:39:10.696215+00:00",
+      "status": 200,
+      "path": "/workspace/catalog-expansion-phase2-20261015/boulder-pages/dry-creek.html",
+      "sha256": "7f7a253e6bb69542da4711dc7a6adc5cbd177495476e79f69a770324967c638c",
+      "bytes": 56277,
+      "parsed_point": null,
+      "reason": "operator_not_open"
+    },
+    {
+      "name": "East Boulder Trail at White Rocks",
+      "native_id": "502a",
+      "url": "https://bouldercolorado.gov/trailhead/east-boulder-trail-at-white-rocks",
+      "retrieved_at": "2026-10-15T03:39:10.876290+00:00",
+      "status": 404
+    },
+    {
+      "name": "Settler's Park",
+      "native_id": "286",
+      "url": "https://bouldercolorado.gov/trailhead/settlers-park",
+      "retrieved_at": "2026-10-15T03:39:11.142138+00:00",
+      "status": 404
+    }
+  ],
+  "previous_same_flagstaff_summit_destination_omitted": "279",
+  "source_report": {
+    "scanned": 36,
+    "accepted": 12,
+    "bytes": 5433804,
+    "rejects": {
+      "operator_evidence_missing": 24
+    },
+    "regions": {
+      "CO": 12
+    },
+    "primary_categories": {
+      "nature": 12
+    }
+  },
+  "close_pairs": [],
+  "policy_evidence": [
+    {
+      "url": "https://bouldercolorado.gov/services/open-data",
+      "retrieved_at": "2026-10-15T03:45:43.289289+00:00",
+      "status": 200,
+      "path": "/workspace/catalog-expansion-phase2-20261015/boulder-rights.html",
+      "sha256": "85dcb725140c8b9fa5a88d0607aad6837e4a21630ab041cb456da784e3db3d0e"
+    },
+    {
+      "url": "https://bouldercolorado.gov/services/osmp-closures",
+      "retrieved_at": "2026-10-15T03:45:43.370189+00:00",
+      "status": 200,
+      "path": "/workspace/catalog-expansion-phase2-20261015/boulder-closures.html",
+      "sha256": "f66f51d8defb5bc01e7dd30eebdaf7436b1cd405cf56de57ca2e3ecf47512991"
+    },
+    {
+      "url": "https://bouldercolorado.gov/muddy-trail-closures",
+      "retrieved_at": "2026-10-15T03:45:43.564199+00:00",
+      "status": 200,
+      "path": "/workspace/catalog-expansion-phase2-20261015/boulder-muddy.html",
+      "sha256": "cc6934a9ce714d6360bf8f8d5fef1cb3de0623f9c9937a5fa7f0804f90028c87"
+    }
+  ],
+  "driving_check_count": 18,
+  "driving_evidence": {
+    "path": "/workspace/catalog-expansion-phase2-20261015/boulder-driving.json",
+    "sha256": "cbbf245defd88b58d32be0f62d03f45ad283c2b55bb7a1fe189abd5d5811ca21"
+  },
+  "opening_hours_imported": false,
+  "ratings_imported": false,
+  "production_changed": false,
+  "original_103_preserved": true,
+  "evidence_archive": {
+    "path": "/workspace/catalog-expansion-phase2-20261015/roadtrips-nature-12-evidence-20261015.tar.gz",
+    "bytes": 5122900,
+    "sha256": "98b867d86156fffc3e554803a21da9c64f9e0313f27a686bea70237467859345"
+  },
+  "relocated_rebuild_equal": true,
+  "combined_expansion_only_report": {
+    "accepted": 115,
+    "bytes": 9847771,
+    "categories": {
+      "culture": 111,
+      "daytime": 115,
+      "historic_site": 103,
+      "museum": 8,
+      "nature": 12,
+      "trailhead": 12,
+      "visitor_center": 103
+    },
+    "duplicates": 0,
+    "regions": {
+      "AL": 1,
+      "AR": 2,
+      "AZ": 10,
+      "CA": 5,
+      "CO": 14,
+      "DC": 1,
+      "GA": 6,
+      "HI": 3,
+      "IA": 1,
+      "IL": 1,
+      "KS": 1,
+      "KY": 4,
+      "MA": 4,
+      "MD": 5,
+      "MI": 2,
+      "MN": 2,
+      "MO": 2,
+      "MT": 1,
+      "NC": 4,
+      "ND": 1,
+      "NE": 2,
+      "NM": 8,
+      "NY": 1,
+      "OH": 5,
+      "OR": 1,
+      "PA": 4,
+      "RI": 1,
+      "SC": 5,
+      "SD": 1,
+      "TN": 3,
+      "TX": 5,
+      "UT": 2,
+      "VA": 3,
+      "WA": 1,
+      "WY": 3
+    },
+    "rejects": {},
+    "scanned": 139,
+    "source_counts": {
+      "boulder-osmp": 12,
+      "nps-heritage": 103
+    },
+    "source_reports": [
+      {
+        "artifact_sha256": "5937823c50a32e9f3c9e1f8edf8d26375ea858b4c41d049e7dc29ef9534c446d",
+        "report": {
+          "accepted": 22,
+          "bytes": 1028554,
+          "primary_categories": {
+            "landmarks": 20,
+            "museums": 2
+          },
+          "regions": {
+            "AZ": 10,
+            "CO": 2,
+            "NM": 8,
+            "UT": 2
+          },
+          "rejects": {},
+          "scanned": 22
+        },
+        "source": "nps-heritage"
+      },
+      {
+        "artifact_sha256": "bc7c86bbbfd993b186db4d974c62a00ce08b795a46c1e850e351ab50f1491959",
+        "report": {
+          "accepted": 10,
+          "bytes": 398859,
+          "primary_categories": {
+            "landmarks": 10
+          },
+          "regions": {
+            "CA": 5,
+            "HI": 3,
+            "OR": 1,
+            "WA": 1
+          },
+          "rejects": {},
+          "scanned": 10
+        },
+        "source": "nps-heritage"
+      },
+      {
+        "artifact_sha256": "09803ce5b62184ff1eec98a4d0c544bb4d257a2aa2b4da6add2cabcfbdb810ac",
+        "report": {
+          "accepted": 14,
+          "bytes": 560383,
+          "primary_categories": {
+            "landmarks": 13,
+            "museums": 1
+          },
+          "regions": {
+            "IA": 1,
+            "KS": 1,
+            "MN": 2,
+            "MO": 2,
+            "MT": 1,
+            "ND": 1,
+            "NE": 2,
+            "SD": 1,
+            "WY": 3
+          },
+          "rejects": {},
+          "scanned": 14
+        },
+        "source": "nps-heritage"
+      },
+      {
+        "artifact_sha256": "666534392d34218155cbb59db976867b5ce55ea1ebcb1ea72946e1b555b971c6",
+        "report": {
+          "accepted": 15,
+          "bytes": 625217,
+          "primary_categories": {
+            "landmarks": 13,
+            "museums": 2
+          },
+          "regions": {
+            "IL": 1,
+            "KY": 4,
+            "MI": 2,
+            "OH": 5,
+            "TN": 3
+          },
+          "rejects": {},
+          "scanned": 15
+        },
+        "source": "nps-heritage"
+      },
+      {
+        "artifact_sha256": "af1d944995d94ebd8586ecfa931f131367d9c0e94a9dedadb30004a4ccdde5ce",
+        "report": {
+          "accepted": 23,
+          "bytes": 949904,
+          "primary_categories": {
+            "landmarks": 21,
+            "museums": 2
+          },
+          "regions": {
+            "AL": 1,
+            "AR": 2,
+            "GA": 6,
+            "NC": 4,
+            "SC": 5,
+            "TX": 5
+          },
+          "rejects": {},
+          "scanned": 23
+        },
+        "source": "nps-heritage"
+      },
+      {
+        "artifact_sha256": "96ac3d2bc4cf482f28538b5c9ad2d1b5be81415157ec51438759581a201b6102",
+        "report": {
+          "accepted": 19,
+          "bytes": 851050,
+          "primary_categories": {
+            "landmarks": 18,
+            "museums": 1
+          },
+          "regions": {
+            "DC": 1,
+            "MA": 4,
+            "MD": 5,
+            "NY": 1,
+            "PA": 4,
+            "RI": 1,
+            "VA": 3
+          },
+          "rejects": {},
+          "scanned": 19
+        },
+        "source": "nps-heritage"
+      },
+      {
+        "artifact_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+        "report": {
+          "accepted": 12,
+          "bytes": 5433804,
+          "primary_categories": {
+            "nature": 12
+          },
+          "regions": {
+            "CO": 12
+          },
+          "rejects": {
+            "operator_evidence_missing": 24
+          },
+          "scanned": 36
+        },
+        "source": "boulder-osmp"
+      }
+    ]
+  }
+}

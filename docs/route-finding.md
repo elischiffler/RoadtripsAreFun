@@ -1,5 +1,17 @@
 # Route-Finding Algorithm
 
+## Catalog discovery (October 15, 2026)
+
+Daytime and optional evening discovery read the active, licensed mixed-source
+catalog in Neon PostgreSQL. PR #40 deployed the first bounded release; this does
+not establish nationwide coverage or complete live journey acceptance.
+Missing coverage returns no places. Hotels, Mapbox road checks, geocoding and
+model-estimated interest ratings remain separate dependencies. See
+[rollout and rollback](neon-places-catalog.md) and the
+[Tripadvisor integration removal audit](tripadvisor-removal.md).
+Historical provider descriptions and measurements below retain their original
+meaning; they are not instructions for the current discovery implementation.
+
 How MyRoadtrip turns a start and end point into a multi-day road trip with
 attractions and overnight hotels.
 
@@ -16,8 +28,8 @@ the active CP-SAT selection model or current scheduling defaults.
 > implementation; see [pluggable-routing-refactor.md](./pluggable-routing-refactor.md)
 > for the planner interface.
 
-The greedy algorithm below is defined by its *selection* logic in
-`backend/app/routing/planners/greedy.py`. The day-by-day *scheduling* loop it
+The greedy algorithm below is defined by its _selection_ logic in
+`backend/app/routing/planners/greedy.py`. The day-by-day _scheduling_ loop it
 uses (formerly the body of `_add_stops`) now lives in the shared
 `backend/app/routing/scheduler.py`, which the OR-Tools planner also uses so both
 schedule identically. Candidate sourcing lives in `backend/app/routing/sources/`
@@ -113,7 +125,7 @@ hybrid) for the planned optimization work. A short summary:
   of the **Orienteering Problem** (a "TSP with profits") layered with **time
   windows** and a **budget/knapsack** constraint. The route ordering itself is
   fixed by geography (start → end along the driving line), so the hard part is
-  *selection and scheduling*, not sequencing.
+  _selection and scheduling_, not sequencing.
 - **What kind of algorithm this is.** A **greedy, single-pass heuristic**. It
   walks the route once in simulated time and commits to a locally-best choice at
   each decision point (the nearest well-ranked attraction, the best in-budget
@@ -181,12 +193,13 @@ it is validated and normalized with the account baseline. The chat agent can
 read or update account weights when the traveler explicitly requests a saved
 preference, and stores trip-only weights in that chat's trip profile.
 
-The planner samples up to 30 points in drive-time order, asks AI for named
-attractions, and matches proposals to TripAdvisor Terra records before using
-their identity or coordinates. It computes utility from the 14 attribute
-ratings and effective weights. CP-SAT selects at most the requested number
-of attractions, with at most one per query point and utility at least 0.60.
-The final route preserves that point order.
+The current planner distributes bounded nearby queries across drive-time sections.
+On the catalog branch, identity and coordinates come from eligible Overture
+records; AI estimates the 14 interest ratings separately. CP-SAT selects eligible
+attractions within the existing average-match bound while minimizing spacing and
+measured detour cost. The five-mile nearby radius remains unchanged. Source
+release/attribution/evidence dates accompany candidates and selected stops;
+unknown availability remains explicit. See [the current adaptive pipeline](cp-sat-explained.md).
 
 For each overnight, hotel ratings must match a verified Google Hotels identity
 and a displayed one-night USD total for the requested check-in date (two adults,
@@ -196,7 +209,7 @@ no usable verified hotel fails planning. The final Mapbox reroute must contain
 one leg per selected waypoint plus the destination and fit each day's drive
 window after attraction visits. A detour that breaks the schedule is rejected.
 
-Live CP-SAT needs the AI gateway, Terra credentials, Google Hotels HTML,
+The catalog branch needs an initialized, populated catalog, the AI gateway, Google Hotels HTML,
 OpenCage location verification, Mapbox, authenticated Cognito requests, and access to `chat_memory` for
 account persona storage. Fixture tests do not establish provider availability, production
 schema history, or deployment readiness.
@@ -219,7 +232,7 @@ Notes on the leg-walking loop:
 
 - Each leg's `duration` is attached to the corresponding stop. The final leg
   into the destination appends a synthetic `{"name": "Arrive at your
-  destination", "type": "end"}` stop.
+destination", "type": "end"}` stop.
 - `Route.steps` is intentionally left empty. No client reads it — the frontend
   and the itinerary endpoint use `stops` and `geometry`, never `steps` — so the
   turn-by-turn list isn't built. The endpoint has a `NOTE` marking where to
@@ -230,7 +243,7 @@ Notes on the leg-walking loop:
 
 ## The scheduler: `_add_stops`
 
-This is the core of the algorithm. It simulates driving the *initial* single-leg
+This is the core of the algorithm. It simulates driving the _initial_ single-leg
 route day by day, deciding at each moment whether to stop for an attraction or
 end the day at a hotel. It never calls Mapbox itself — it works entirely off the
 initial route's `legs[0].steps` and `geometry.coordinates`, using
@@ -282,17 +295,18 @@ the step's coordinate list and geodesic distances. Returns `[lat, lon]`.
 
 ---
 
-## Attraction discovery: `_find_stop` / `_get_details`
+## Attraction discovery: catalog adapters
 
-Attractions come from the TripAdvisor Content API. `_find_stop` runs a nearby
-search, then calls `_get_details` on each candidate to read its ranking, keeping
-the best one.
+CP-SAT uses `LivePlaceProvider.attractions_near` for bounded daytime catalog
+records, with source identities, coordinates, releases and attribution. Model
+ratings remain separate estimates; catalog records do not establish popularity
+or live operating status.
 
-Selection is by TripAdvisor popularity ranking (rank 1 = most popular). The loop
-short-circuits if it finds a rank-1 result. Locations whose details fail to parse
-are assigned rank 999 and effectively de-prioritized. A 404 (no usable results)
-bubbles up to `_add_stops`, which doubles the search radius and retries an hour
-later.
+The legacy `find_stop` contract also reads the catalog, limits its radius to five
+miles and returns the first deterministic result with compatibility `rank: 1`.
+It returns 404 for empty coverage and 503 for an unavailable database. There is
+no external details lookup or discovery fallback. Historical scheduler behavior
+described above does not restore the removed provider integration.
 
 ---
 
@@ -324,13 +338,13 @@ Lives in `webscraping_fns.py`:
 
 Defined in `backend/app/models/routing_models/routing_models.py`.
 
-| Model | Role |
-|---|---|
-| `Route_Payload` | Request body for `/generate-final-route` — `initial_route`, `num_stops`, `budget`, optional `start`, `algorithm`, and trip-only `persona_weights`. |
-| `MapBox` / `MapBox_Route` | The full Mapbox Directions response. `MapBox_Route` (aliased `MapBox_route`) is what phase 1 returns. Nesting: `MapBox → routes → legs → steps`. |
-| `Mapbox_geo` | `coordinates` (`[lon, lat]`) + `type`. Used for both raw and final geometry. |
-| `Route` | The final response — `coordinates` (`[lat, lon]`), `distance`, `duration`, `steps`, `stops`, `geometry`, `cost`, and optional `warnings`. |
-| `Route_Step` | `distance`, `duration`, `instruction`, `location` — the shape a turn-by-turn step would take. Not currently emitted (see note below); kept for when a client needs per-maneuver instructions. |
+| Model                     | Role                                                                                                                                                                                          |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Route_Payload`           | Request body for `/generate-final-route` — `initial_route`, `num_stops`, `budget`, optional `start`, `algorithm`, and trip-only `persona_weights`.                                            |
+| `MapBox` / `MapBox_Route` | The full Mapbox Directions response. `MapBox_Route` (aliased `MapBox_route`) is what phase 1 returns. Nesting: `MapBox → routes → legs → steps`.                                              |
+| `Mapbox_geo`              | `coordinates` (`[lon, lat]`) + `type`. Used for both raw and final geometry.                                                                                                                  |
+| `Route`                   | The final response — `coordinates` (`[lat, lon]`), `distance`, `duration`, `steps`, `stops`, `geometry`, `cost`, and optional `warnings`.                                                     |
+| `Route_Step`              | `distance`, `duration`, `instruction`, `location` — the shape a turn-by-turn step would take. Not currently emitted (see note below); kept for when a client needs per-maneuver instructions. |
 
 ---
 

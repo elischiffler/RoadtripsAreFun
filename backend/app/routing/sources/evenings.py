@@ -2,7 +2,6 @@
 
 import asyncio
 import math
-import re
 from datetime import UTC, datetime
 from typing import Literal
 
@@ -11,13 +10,12 @@ from geopy.distance import geodesic
 from pydantic import BaseModel, ConfigDict, model_validator
 
 from app.agent.progress import emit
-from app.models.routing_models.trip_advisor_models import Terra_Page_Nearby_Location
+from app.catalog import repository
 from app.models.scheduling_policy import advance, seconds_until
 from app.routing import config
 from app.routing.run_metrics import increment
-from app.routing.sources.attractions import _auth_headers
+from app.routing.runtime import threaded
 from app.routing.sources.persona_candidates import VerifiedPlace
-from app.routing.terra_pacing import terra_requests
 
 MAX_DISTANCE_KM = 2
 MAX_TRAVEL_SECONDS = 15 * 60  # Each direction, verified by driving directions.
@@ -50,81 +48,33 @@ class EveningPlace(VerifiedPlace):
 class LiveEveningProvider:
     async def nearby(self, hotel, interests, arrival):
         del arrival
-        if not config.TRIPADVISOR_API:
+        categories = [kind for kind in interests if kind in {"food", "culture", "nightlife"}]
+        if not categories:
             return []
-        categories = []
-        if set(interests) & {"food", "nightlife"}:
-            categories.append("RESTAURANT")
-        if set(interests) & {"culture", "nightlife"}:
-            categories.append("ATTRACTION")
+        increment("catalog")
+        try:
+            rows = await threaded(
+                "catalog",
+                repository.nearby,
+                hotel,
+                categories,
+                radius_miles=MAX_DISTANCE_KM / 1.609344,
+                limit=20,
+            )
+        except Exception:
+            raise RuntimeError("Places catalog lookup unavailable") from None
         records = []
-        async with httpx.AsyncClient(timeout=3) as client:
-            for category in categories:
-                increment("tripadvisor")
-                response = await terra_requests.call(
-                    lambda: client.get(
-                        f"{config.TRIPADVISOR_BASE_URL}/locations/nearby",
-                        params={
-                            "lat": hotel[0],
-                            "lon": hotel[1],
-                            "radius": MAX_DISTANCE_KM,
-                            "unit": "KM",
-                            "category": category,
-                            "sort": "distance",
-                            "size": 10,
-                        },
-                        headers=_auth_headers(),
-                    )
+        for row in rows[:20]:
+            try:
+                place = VerifiedPlace.model_validate(row)
+                kind = next((kind for kind in categories if kind in place.categories), None)
+                if kind is None or geodesic(hotel, place.coordinates).km > MAX_DISTANCE_KM:
+                    continue
+                records.append(
+                    EveningPlace(**place.model_dump(), category=kind, opening_intervals=None)
                 )
-                response.raise_for_status()
-                page = Terra_Page_Nearby_Location.model_validate(response.json())
-                for entry in page.data[:10]:
-                    place = entry.location
-                    if not place or not place.id or not place.coordinates:
-                        continue
-                    extra = place.model_extra or {}
-                    status = extra.get("status", {})
-                    categories_data = extra.get("categories") or []
-                    labels = " ".join(
-                        str(item.get("display_name", "")) + " " + str(item.get("hierarchy", ""))
-                        for item in categories_data
-                        if isinstance(item, dict)
-                    ).lower()
-                    kind = None
-                    if re.search(r"\b(nightlife|bars|nightclubs?|dance clubs|discos)\b", labels):
-                        kind = "nightlife"
-                    elif any(
-                        label in labels
-                        for label in ("museum", "theater", "theatre", "gallery", "culture")
-                    ):
-                        kind = "culture"
-                    elif category == "RESTAURANT" and "Eat & Drink" in [
-                        item.get("top_level_category")
-                        for item in categories_data
-                        if isinstance(item, dict)
-                    ]:
-                        kind = "food"
-                    try:
-                        records.append(
-                            EveningPlace(
-                                provider_id=f"terra:{place.id}",
-                                name=place.primary_name(),
-                                coordinates=[
-                                    place.coordinates.latitude,
-                                    place.coordinates.longitude,
-                                ],
-                                address=place.formatted_address(),
-                                url=place.web_url(),
-                                category=kind,
-                                closed=isinstance(status, dict)
-                                and status.get("value") in {"CLOSED", "TEMPORARILY_CLOSED"},
-                                # Terra supplies weekly periods, not date-specific exceptions.
-                                # Do not promise that a weekly schedule proves this dated visit.
-                                opening_intervals=None,
-                            )
-                        )
-                    except (ValueError, TypeError):
-                        continue
+            except (ValueError, TypeError):
+                continue
         return records
 
     async def travel(self, hotel, venue):

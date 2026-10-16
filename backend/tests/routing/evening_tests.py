@@ -2,7 +2,6 @@
 
 import asyncio
 
-import httpx
 import pytest
 
 from app.models.itinerary_models import Itinerary_Payload
@@ -16,7 +15,7 @@ from tests.routing.flexible_hotel_tests import START, ZONE, point, saved_route
 
 def venue(**patch):
     return {
-        "provider_id": "terra:123",
+        "provider_id": "overture:123",
         "name": "Local cafe",
         "coordinates": [34.001, -118],
         "url": "https://example.test/cafe",
@@ -59,8 +58,8 @@ async def test_nearby_open_options_are_alternatives_after_rest_with_return_bound
     provider = Provider(
         [
             venue(),
-            venue(provider_id="terra:124", name="Gallery", category="culture"),
-            venue(provider_id="terra:125"),
+            venue(provider_id="overture:124", name="Gallery", category="culture"),
+            venue(provider_id="overture:125"),
         ]
     )
     hotel = planned_hotel()
@@ -167,54 +166,39 @@ def test_equal_persona_is_not_explicit_evening_interest():
 
 
 @pytest.mark.asyncio
-async def test_live_adapter_uses_provider_category_status_and_never_treats_weekly_hours_as_dated(
-    monkeypatch,
-):
-    requests = []
-
-    def response(request):
-        requests.append(request)
-        return httpx.Response(
-            200,
-            json={
-                "data": [
-                    {
-                        "location": {
-                            "id": 1,
-                            "names": [{"value": "Local cafe", "primary": True}],
-                            "coordinates": {"latitude": 34.001, "longitude": -118},
-                            "urls": {"tripadvisor": {"main": "https://example.test/cafe"}},
-                            "categories": [
-                                {"top_level_category": "Eat & Drink", "display_name": "Restaurants"}
-                            ],
-                            "status": {"value": "OPEN"},
-                            "opening_hours": {
-                                "timezone": ZONE,
-                                "periods": [
-                                    {
-                                        "day_of_week": "Wednesday",
-                                        "opens": "17:00",
-                                        "closes": "23:00",
-                                    }
-                                ],
-                            },
-                        }
-                    }
-                ]
+async def test_catalog_evenings_exact_interests_and_unknown_hours(monkeypatch):
+    def nearby(point, categories, **kwargs):
+        assert categories == ["food"]
+        assert kwargs["radius_miles"] == evenings.MAX_DISTANCE_KM / 1.609344
+        assert kwargs["limit"] == 20
+        return [
+            {
+                "provider_id": "overture:cafe",
+                "name": "Cafe",
+                "coordinates": [34.001, -118],
+                "categories": ["food"],
+                "url": "https://example.test",
+                "source_release": "release",
             },
-        )
+            {
+                "provider_id": "overture:bar",
+                "name": "Bar",
+                "coordinates": [34.001, -118],
+                "categories": ["nightlife"],
+            },
+            {
+                "provider_id": "overture:far",
+                "name": "Far",
+                "coordinates": [35, -118],
+                "categories": ["food"],
+            },
+        ]
 
-    client = httpx.AsyncClient
-    monkeypatch.setattr(
-        evenings.httpx,
-        "AsyncClient",
-        lambda **kwargs: client(transport=httpx.MockTransport(response), **kwargs),
-    )
-    monkeypatch.setattr(evenings.config, "TRIPADVISOR_API", "fixture")
+    monkeypatch.setattr(evenings.repository, "nearby", nearby)
     records = await evenings.LiveEveningProvider().nearby([34, -118], ["food"], START)
     assert len(records) == 1 and records[0].category == "food"
     assert records[0].opening_intervals is None
-    assert requests[0].url.params["radius"] == "2" and requests[0].url.params["unit"] == "KM"
+    assert records[0].source_release == "release"
 
 
 @pytest.mark.asyncio
@@ -227,3 +211,26 @@ async def test_departure_override_hides_a_stale_evening_visit():
     )
     assert not any(stop.optional for day in itinerary for stop in day.stops)
     assert hotel["evening_suggestions"]
+
+
+@pytest.mark.asyncio
+async def test_catalog_attribution_survives_evening_itinerary():
+    hotel = planned_hotel()
+    metadata = {
+        "source": "overture",
+        "source_release": "2026-09-23.1",
+        "source_attribution": "Overture contributors",
+        "source_updated_at": "2026-09-01T00:00:00Z",
+    }
+    await evenings.enrich_evenings(
+        [hotel], ["food"], provider=Provider([venue(**metadata, opening_intervals=None)])
+    )
+    itinerary = await build_itinerary(
+        Itinerary_Payload(
+            route=saved_route([hotel, point(3600)], SchedulingPolicy(late_driving=True))
+        )
+    )
+    optional = [stop for day in itinerary for stop in day.stops if stop.optional]
+    assert len(optional) == 1
+    assert all(optional[0].model_dump()[key] == value for key, value in metadata.items())
+    assert optional[0].status == "tentative"

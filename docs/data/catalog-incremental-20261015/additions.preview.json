@@ -1,0 +1,2122 @@
+[
+  {
+    "source_id": "la-cultural:8c79404ff1fc412b9bef",
+    "name": "Watts Towers Campus - Watts Towers Arts Center",
+    "latitude": 33.938627,
+    "longitude": -118.241932,
+    "region": "CA",
+    "categories": [
+      "art_gallery",
+      "culture",
+      "daytime",
+      "museum"
+    ],
+    "address": "1727 East 107th Street, Los Angeles, CA 90002",
+    "url": "https://culture.lacity.gov/cultural-centers/watts-towers-campus",
+    "source_updated_at": null,
+    "provenance": [
+      {
+        "dataset": "cityofLA/la-cultural-centers-theatres-sites-galleries",
+        "source_url": "https://www.kaggle.com/datasets/cityofLA/la-cultural-centers-theatres-sites-galleries/versions/25",
+        "release": "25",
+        "license": "CC0-1.0",
+        "archive_sha256": "a96469b64c7bdbb3b0050a56949376fbaee182d31fcf68d2ca895094bedb6f51",
+        "source_csv_sha256": "faabfe9edc7a3d4feb7ba4e0ae9dc5467e3f46c8111582add1138eb22224179a",
+        "record_id": "Watts Towers Campus - Watts Towers Arts Center",
+        "source_id_method": "SHA256 of exact native CENTER NAME; source has no ID column",
+        "source_coordinates": [
+          33.938627,
+          -118.241932
+        ],
+        "source_point_replaced": false,
+        "native_record": {
+          "CENTER NAME": "Watts Towers Campus - Watts Towers Arts Center",
+          "ADDRESS": "{'human_address': '{\"address\": \"1727 East 107th Street\", \"city\": \"Los Angeles\", \"state\": \"CA\", \"zip\": \"90002\"}', 'longitude': '-118.241932', 'latitude': '33.938627'}",
+          "HOURS": "Wednesday- Saturday, 10:00AM - 4:00PM; Sunday, 12:00PM - 4:00PM",
+          "PARKING": "Off-street parking, lot available"
+        },
+        "rights": {
+          "CC0-1.0": {
+            "path": "sources/la-cultural-metadata.json",
+            "url": "https://data.lacity.org/api/views/vdjf-if28.json",
+            "sha256": "61359246d8c2d9b8cf2d72c4f1b90a68eed499ac56f17286e6844939daea8138",
+            "retrieved_at": "2026-10-15T19:53:50.811463+00:00"
+          },
+          "ODbL-1.0": {
+            "path": "sources/odbl-1.0.html",
+            "url": "https://opendatacommons.org/licenses/odbl/1-0/",
+            "sha256": "1879937103eecd9837a86d1a52132b8b2f42855e90d89409bee54103ffc5d5b6",
+            "retrieved_at": "2026-10-15T19:53:55.739639+00:00"
+          }
+        },
+        "changes": "Visitor-component and source-calendar intersection; no coordinate changes or invented hours/prices."
+      },
+      {
+        "dataset": "Current cultural visitor component and public arrival",
+        "primary_category": "museums",
+        "component": "Public galleries on the Watts Towers Arts Center campus; separate guided tower tours are not selected",
+        "source_constraints": [
+          {
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/cityofLA/la-cultural-centers-theatres-sites-galleries?datasetVersionNumber=25",
+            "snapshot_sha256": "a96469b64c7bdbb3b0050a56949376fbaee182d31fcf68d2ca895094bedb6f51",
+            "checked_at": "2026-10-15T19:52:10.379572+00:00",
+            "evidence_path": "sources/cityofLA--la-cultural-centers-theatres-sites-galleries-v25.zip",
+            "extraction_pointer": "zip:cultural-centers-theaters-historic-sites-and-galleries-location-and-contact-information.csv#record=Watts Towers Campus - Watts Towers Arts Center",
+            "fields": {
+              "HOURS": "Wednesday- Saturday, 10:00AM - 4:00PM; Sunday, 12:00PM - 4:00PM",
+              "PARKING": "Off-street parking, lot available"
+            },
+            "restrictions": [
+              "Native source values retained; absence of a field is unknown."
+            ]
+          },
+          {
+            "source_url": "https://data.lacity.org/resource/vdjf-if28.json?$limit=1000",
+            "snapshot_sha256": "68d1b1f0b440e2632e45dc7230fe2788c00dc922bbbaee3a411d99f5568dcea0",
+            "checked_at": "2026-10-15T19:53:50.761768+00:00",
+            "evidence_path": "sources/la-cultural-current.json",
+            "extraction_pointer": "record['center_name'='Watts Towers Campus - Watts Towers Arts Center']",
+            "fields": {
+              "HOURS": "Wednesday- Saturday, 10:00AM - 4:00PM; Sunday, 12:00PM - 4:00PM",
+              "PARKING": "Off-street parking, lot available"
+            },
+            "restrictions": [
+              "Current official registry reconciled; its old clocks do not override a narrower current operator schedule."
+            ]
+          },
+          {
+            "source_url": "https://culture.lacity.gov/cultural-centers/watts-towers-campus",
+            "snapshot_sha256": "ff3e3e66e079ed3b36f941fe6bfeeaf2d5ab5cc2622736dee477390abd83e3ec",
+            "checked_at": "2026-10-15T19:57:18.355217+00:00",
+            "evidence_path": "sources/operator-watts-towers-arts-center-campus.html",
+            "extraction_pointer": "//h3[normalize-space(.)='Hours']/parent::*; //h2[normalize-space(.)='Campus Renovation Update']/following-sibling::*",
+            "facts": [
+              "Galleries: Wednesday to Saturday from 10:00 a.m. to 4:00 p.m.",
+              "Watts Towers Guided Tours: Thursday to Saturday from 11:00 a.m. to 3:00 p.m.",
+              "Beginning July 8, 2026",
+              "has reopened to the public",
+              "Campus renovations will continue through Spring 2028",
+              "Watts Towers Arts Center Campus Parking, 10624 Graham Avenue, Los Angeles, CA 90002"
+            ],
+            "restrictions": [
+              "Gallery and guided-tour windows are distinct; this row selects galleries.",
+              "Temporary June closure and July 8, 2026 reopening; construction continues through Spring 2028.",
+              "Parking is published separately at 10624 Graham Avenue; availability is unknown.",
+              "Old source Sunday access is not retained because current gallery days are narrower."
+            ]
+          }
+        ],
+        "practical_arrival": {
+          "method": "operator-street-frontage",
+          "road_way_id": 166068758,
+          "snap_distance_m": 1.220131353,
+          "road_name": "East 107th Street",
+          "coordinate_replaced": false,
+          "parking_availability": "unknown",
+          "operator_parking_facts": [
+            "Watts Towers Arts Center Campus Parking, 10624 Graham Avenue, Los Angeles, CA 90002",
+            "1727 East 107th Street"
+          ]
+        },
+        "future_ticket_availability": "unknown",
+        "prices_imported": false,
+        "source_visit_calendar_emitted_separately": true,
+        "review_sha256": "a2e57653cf2f101f7e48b8e85b3c5f0cee7176ea9ac7d0ea6c851a6258545fb0"
+      },
+      {
+        "dataset": "OSRM actual driving destination and OpenStreetMap public arrival",
+        "license": "ODbL-1.0",
+        "attribution": "OpenStreetMap contributors; OSRM",
+        "route": {
+          "source_url": "https://router.project-osrm.org/route/v1/driving/-118.23993200000001,33.940627;-118.241932,33.938627?overview=false&steps=false",
+          "snapshot_sha256": "54114ee847a927644e4a5ce2b34e294b11f453b38cfd3d52ada29459cd28e92c",
+          "checked_at": "2026-10-15T20:25:05.890889+00:00",
+          "evidence_path": "sources/la-8c79404ff1fc-route.json",
+          "extraction_pointer": "$.waypoints[-1]"
+        },
+        "map": {
+          "source_url": "https://api.openstreetmap.org/api/0.6/map?bbox=-118.243132%2C33.937427%2C-118.24073200000001%2C33.939826999999994",
+          "snapshot_sha256": "867238a1b544f705877ac5608c61265380e215bc5a3c46c33e6b417864871323",
+          "checked_at": "2026-10-15T20:27:24.701384+00:00",
+          "evidence_path": "sources/la-8c79404ff1fc-osm-map.xml",
+          "extraction_pointer": "/osm/way[@id='166068758']"
+        },
+        "public_elements": [
+          {
+            "type": "way",
+            "id": 166068758
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "source_id": "nys-historic:37",
+    "name": "Philipse Manor Hall",
+    "latitude": 40.93555005,
+    "longitude": -73.89931286,
+    "region": "NY",
+    "categories": [
+      "culture",
+      "daytime",
+      "history_museum",
+      "museum"
+    ],
+    "address": "29 Warburton Avenue, Yonkers, NY 10701",
+    "url": "https://www.philipsemanorhall.com/plan-your-visit",
+    "source_updated_at": null,
+    "provenance": [
+      {
+        "dataset": "new-york-state/nys-state-historic-sites",
+        "source_url": "https://www.kaggle.com/datasets/new-york-state/nys-state-historic-sites/versions/9",
+        "release": "9",
+        "license": "CC0-1.0",
+        "archive_sha256": "45053965f919f7341687afcc730de6945d888fc2f142efcbfd697b8dc9f29687",
+        "source_csv_sha256": "139b36148be92a3aee59502f3b73a11d5e9b50a7333655910e0a9dc58a218a64",
+        "record_id": "Philipse Manor Hall",
+        "source_id_method": "native facility URL",
+        "source_coordinates": [
+          40.93555005,
+          -73.89931286
+        ],
+        "source_point_replaced": false,
+        "native_record": {
+          "Name": "Philipse Manor Hall",
+          "Facility URL": "{'url': 'https://parks.ny.gov/historic-sites/37/details.aspx'}",
+          "Latitude": "40.93555005",
+          "Longitude": "-73.89931286"
+        },
+        "rights": {
+          "CC0-1.0": {
+            "path": "sources/metadata-new-york-state--nys-state-historic-sites.json",
+            "url": "https://www.kaggle.com/api/v1/datasets/view/new-york-state/nys-state-historic-sites",
+            "sha256": "8031ffa200aa161fa252ad3e61c74277970a6d68e85a144b06aaf755ff3c815d",
+            "retrieved_at": "2026-10-15T19:52:08.977558+00:00"
+          },
+          "ODbL-1.0": {
+            "path": "sources/odbl-1.0.html",
+            "url": "https://opendatacommons.org/licenses/odbl/1-0/",
+            "sha256": "1879937103eecd9837a86d1a52132b8b2f42855e90d89409bee54103ffc5d5b6",
+            "retrieved_at": "2026-10-15T19:53:55.739639+00:00"
+          },
+          "LicenseRef-Open-NY-Factual-Data": {
+            "path": "sources/ny-terms.pdf",
+            "url": "https://data.ny.gov/api/views/77gx-ii52/files/ef0c1840-ad54-4240-92fd-6397c49fde46",
+            "sha256": "9437c849705d58df008f01fc23f404444becce6b86676adc3974f9160a4cb650",
+            "retrieved_at": "2026-10-15T19:57:59.717865+00:00"
+          }
+        },
+        "changes": "Visitor-component and source-calendar intersection; no coordinate changes or invented hours/prices."
+      },
+      {
+        "dataset": "Current cultural visitor component and public arrival",
+        "primary_category": "museums",
+        "component": "Self-guided museum/site access during the affirmatively dated Family Halloween Day public event",
+        "source_constraints": [
+          {
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/new-york-state/nys-state-historic-sites?datasetVersionNumber=9",
+            "snapshot_sha256": "45053965f919f7341687afcc730de6945d888fc2f142efcbfd697b8dc9f29687",
+            "checked_at": "2026-10-15T19:52:10.469085+00:00",
+            "evidence_path": "sources/new-york-state--nys-state-historic-sites-v9.zip",
+            "extraction_pointer": "zip:state-historic-sites.csv#record=Philipse Manor Hall",
+            "fields": {
+              "Facility URL": "{'url': 'https://parks.ny.gov/historic-sites/37/details.aspx'}"
+            },
+            "restrictions": [
+              "Native source values retained; absence of a field is unknown."
+            ]
+          },
+          {
+            "source_url": "https://data.ny.gov/resource/m384-u5q6.json?$limit=1000",
+            "snapshot_sha256": "1854d03750735fdf6efdf99c8ed56b7506c8a0fd384842090bca4ddc14464360",
+            "checked_at": "2026-10-15T19:53:53.259774+00:00",
+            "evidence_path": "sources/ny-historic-current.json",
+            "extraction_pointer": "record['name'='Philipse Manor Hall']",
+            "fields": {
+              "Facility URL": "{'url': 'https://parks.ny.gov/historic-sites/37/details.aspx'}"
+            },
+            "restrictions": [
+              "Current official registry reconciled; its old clocks do not override a narrower current operator schedule."
+            ]
+          },
+          {
+            "source_url": "https://parks.ny.gov/visit/historic-sites/philipse-manor-hall-state-historic-site",
+            "snapshot_sha256": "7d509fc2dce2e474b1a345105d19d671520c07068222ebfd4fefad454bbc6942",
+            "checked_at": "2026-10-15T19:57:22.012987+00:00",
+            "evidence_path": "sources/operator-philipse-manor-hall.html",
+            "extraction_pointer": "//h2[normalize-space(.)='Hours and Fees']/parent::*/following-sibling::*",
+            "facts": [
+              "Monday \u2013 Closed Tuesday \u2013 Closed",
+              "Wednesday \u2013 10 am to 5 pm",
+              "The site may be closed for holidays or open additional hours for special programs."
+            ],
+            "restrictions": [
+              "Potential unspecified holiday closure is not assumed away; generic weekly admission remains withheld."
+            ]
+          },
+          {
+            "source_url": "https://www.philipsemanorhall.com/plan-your-visit",
+            "snapshot_sha256": "9573889e83a33b94ca8c0542e27c40dd80ce438e7ca12eed663ff329278586b5",
+            "checked_at": "2026-10-15T20:29:09.293771+00:00",
+            "evidence_path": "sources/philipse-plan-visit.html",
+            "extraction_pointer": "visible text: Hours, Guided Tours, Directions and Parking",
+            "facts": [
+              "Philipse Manor Hall State Historic Site is self-guided",
+              "Wednesday: 10 am-5 pm",
+              "Saturday: 10 am-5 pm",
+              "The main entrance for pedestrians and to the small parking lot is on Warburton Ave.",
+              "Parking: Limited parking available in the small Philipse Manor Hall lot, entrance located on Warburton Ave.",
+              "reservations are recommended"
+            ],
+            "restrictions": [
+              "Self-guided access is distinct from optional guided tours and their starts.",
+              "Parking capacity and future ticket inventory are unknown."
+            ]
+          },
+          {
+            "source_url": "https://www.philipsemanorhall.com/programs-and-events/family-halloween-day-2026",
+            "snapshot_sha256": "025ec256d882ade911e91cad432a8dea582cdddb9ec652c9d14070a1e03f1e45",
+            "checked_at": "2026-10-15T20:29:09.300756+00:00",
+            "evidence_path": "sources/philipse-halloween-2026.html",
+            "extraction_pointer": "visible text: Family Halloween Day date, event time and Spooky Crafts",
+            "facts": [
+              "Saturday, October 31, 2026",
+              "12:00 PM - 4:00 PM",
+              "Spooky Crafts"
+            ],
+            "restrictions": [
+              "Only the affirmative October 31 event window is automatically supported.",
+              "Movie programme times describe individual screenings; the selected visit is the public self-guided museum/event access, not a reservation for a specific film."
+            ]
+          }
+        ],
+        "practical_arrival": {
+          "method": "operator-entry-frontage",
+          "road_way_id": 23525737,
+          "snap_distance_m": 14.59293711,
+          "road_name": "Dock Street",
+          "coordinate_replaced": false,
+          "parking_availability": "unknown",
+          "operator_parking_facts": [
+            "The main entrance for pedestrians and to the small parking lot is on Warburton Ave.",
+            "Parking: Limited parking available in the small Philipse Manor Hall lot, entrance located on Warburton Ave."
+          ]
+        },
+        "future_ticket_availability": "unknown",
+        "prices_imported": false,
+        "source_visit_calendar_emitted_separately": true,
+        "review_sha256": "a2e57653cf2f101f7e48b8e85b3c5f0cee7176ea9ac7d0ea6c851a6258545fb0"
+      },
+      {
+        "dataset": "OSRM actual driving destination and OpenStreetMap public arrival",
+        "license": "ODbL-1.0",
+        "attribution": "OpenStreetMap contributors; OSRM",
+        "route": {
+          "source_url": "https://router.project-osrm.org/route/v1/driving/-73.89731286,40.937550050000006;-73.89931286,40.93555005?overview=false&steps=false",
+          "snapshot_sha256": "2667dc0264938a78dc1ded7f65016213135c8ff9cac55364f2bfabb3c57db7d2",
+          "checked_at": "2026-10-15T20:25:04.321128+00:00",
+          "evidence_path": "sources/ny-37-route.json",
+          "extraction_pointer": "$.waypoints[-1]"
+        },
+        "map": {
+          "source_url": "https://api.openstreetmap.org/api/0.6/map?bbox=-73.90051285999999%2C40.934350050000006%2C-73.89811286%2C40.93675005",
+          "snapshot_sha256": "a7e1bfacc920891729f7f3d25746afe802dbba6b7077d1969c2b51b95f3d467d",
+          "checked_at": "2026-10-15T20:27:23.476037+00:00",
+          "evidence_path": "sources/ny-37-osm-map.xml",
+          "extraction_pointer": "/osm/way[@id='23525737']"
+        },
+        "public_elements": [
+          {
+            "type": "way",
+            "id": 23525737
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:300016",
+    "name": "Clarence Hollow Farmers' Market",
+    "latitude": 42.98032,
+    "longitude": -78.58945,
+    "region": "NY",
+    "address": "10717 Main St.",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "300016",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "42.98032",
+          "longitude_raw": "-78.58945",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 144,
+          "official_address": "10717 Main St",
+          "official_location": "Town lot btwn Ransom & Salt Rds, 10717 Main St",
+          "official_city": "Clarence",
+          "official_zip": "14031",
+          "native_zip": "14031",
+          "official_latitude_raw": "42.9808",
+          "official_longitude_raw": "-78.58904",
+          "native_point_distance_m": 62.93769643043973,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "300016",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "June to October",
+              "source_updated_at_raw": "Feb 2nd, 2021",
+              "location": "10717 Main St.",
+              "city": "Clarence"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "300016",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "June to October",
+              "source_updated_at_raw": "Feb 2nd, 2021",
+              "location": "10717 Main St.",
+              "city": "Clarence"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "144",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "June 6-October 31",
+              "hours": "Sat 8am-1pm",
+              "location": "10717 Main St",
+              "city": "Clarence"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "9c8bc3fea12a95a11f5dd49d2fb1ff5f6ea9b6c27a1231cb9bc4b35c34d1f23a",
+        "driving_checked_at": "2026-10-15T20:38:26.429394+00:00",
+        "driving_snap_distance_m": 0.8924738321,
+        "driving_road": "",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:311799",
+    "name": "79th Street Greenmarket",
+    "latitude": 40.78102834727456,
+    "longitude": -73.97616213937675,
+    "region": "NY",
+    "address": "366 Columbus Ave",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "http://www.grownyc.org/greenmarket",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "311799",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "40.78102834727456",
+          "longitude_raw": "-73.97616213937675",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 361,
+          "official_address": "366 Columbus Ave",
+          "official_location": "79th St & Columbus Ave",
+          "official_city": "New York",
+          "official_zip": "10024",
+          "native_zip": "10024",
+          "official_latitude_raw": "40.7809",
+          "official_longitude_raw": "-73.97648",
+          "native_point_distance_m": 30.330685140096655,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "311799",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "366 Columbus Ave",
+              "city": "New York"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "311799",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "366 Columbus Ave",
+              "city": "New York"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "361",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "Year-round",
+              "hours": "Sun 9am-4pm",
+              "location": "366 Columbus Ave",
+              "city": "New York"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "cdcc5999147be6403477eaad8236ea23c3ed3e58d25e3c9198e35f1ba5c92e35",
+        "driving_checked_at": "2026-10-15T20:38:26.429809+00:00",
+        "driving_snap_distance_m": 1.558441736,
+        "driving_road": "Columbus Avenue",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:311813",
+    "name": "Bensonhurst Greenmarket",
+    "latitude": 40.609827996160824,
+    "longitude": -73.99958515943747,
+    "region": "NY",
+    "address": "8118 18th Ave",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "311813",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "40.609827996160824",
+          "longitude_raw": "-73.99958515943747",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 229,
+          "official_address": "8118 18th Ave",
+          "official_location": "18th Ave btwn 81st & 82nd St",
+          "official_city": "Brooklyn",
+          "official_zip": "11214",
+          "native_zip": "11214",
+          "official_latitude_raw": "40.60987",
+          "official_longitude_raw": "-73.99966",
+          "native_point_distance_m": 7.856668050046875,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "311813",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": null,
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "8118 18th Ave",
+              "city": "Brooklyn"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "311813",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": null,
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "8118 18th Ave",
+              "city": "Brooklyn"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "229",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "June 7-November 29",
+              "hours": "Sun 9am-3pm",
+              "location": "8118 18th Ave",
+              "city": "Brooklyn"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "028c4437517101e05d78a78bb3255f550f524eada9a819450c7dd25a353acf3d",
+        "driving_checked_at": "2026-10-15T20:38:26.430152+00:00",
+        "driving_snap_distance_m": 0.4048057459,
+        "driving_road": "18th Avenue",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:311840",
+    "name": "Carroll Gardens Greenmarket",
+    "latitude": 40.679857904668324,
+    "longitude": -73.99512451883244,
+    "region": "NY",
+    "address": "330 Smith St",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "http://www.grownyc.org/greenmarket/brooklyn/carroll-gardens",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "311840",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "40.679857904668324",
+          "longitude_raw": "-73.99512451883244",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 233,
+          "official_address": "330 Smith Street",
+          "official_location": "Smith St & Carroll St",
+          "official_city": "Brooklyn",
+          "official_zip": "11231",
+          "native_zip": "11231",
+          "official_latitude_raw": "40.68036",
+          "official_longitude_raw": "-73.99536",
+          "native_point_distance_m": 59.25661168103533,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "311840",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "330 Smith St",
+              "city": "Brooklyn"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "311840",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "330 Smith St",
+              "city": "Brooklyn"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "233",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "Year-round",
+              "hours": "Sun 8am-2pm",
+              "location": "330 Smith Street",
+              "city": "Brooklyn"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "c35cf11ba8f2cfa88007c5835565a3781fa3105cb74f63470f24426c4a62f4c5",
+        "driving_checked_at": "2026-10-15T20:38:26.948186+00:00",
+        "driving_snap_distance_m": 0.5537706382,
+        "driving_road": "Smith Street",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:311865",
+    "name": "Corona Greenmarket",
+    "latitude": 40.74987401047055,
+    "longitude": -73.86264448092193,
+    "region": "NY",
+    "address": "103-28 Roosevelt Ave",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "http://www.grownyc.org/greenmarket",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "311865",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "40.74987401047055",
+          "longitude_raw": "-73.86264448092193",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 482,
+          "official_address": "103-28 Roosevelt Ave",
+          "official_location": "Roosevelt Ave & 103rd St",
+          "official_city": "Corona",
+          "official_zip": "11368",
+          "native_zip": "11368",
+          "official_latitude_raw": "40.74994",
+          "official_longitude_raw": "-73.86221",
+          "native_point_distance_m": 37.327893316999784,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "311865",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "June 12-November 20",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "103-28 Roosevelt Ave",
+              "city": "Corona"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "311865",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "June 12-November 20",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "103-28 Roosevelt Ave",
+              "city": "Corona"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "482",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "June 12-November 20",
+              "hours": "Fri 8am-3pm",
+              "location": "103-28 Roosevelt Ave",
+              "city": "Corona"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "d1082185c7e575a41c63f3ae48fa4a6fab67afa29128542a49098885e471758b",
+        "driving_checked_at": "2026-10-15T20:38:27.063371+00:00",
+        "driving_snap_distance_m": 0.4521572532,
+        "driving_road": "Roosevelt Avenue",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:311866",
+    "name": "Cortelyou Greenmarket",
+    "latitude": 40.64048360189466,
+    "longitude": -73.96607500022274,
+    "region": "NY",
+    "address": "1305 Cortelyou Rd",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "https://www.grownyc.org/farmstands",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "311866",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "40.64048360189466",
+          "longitude_raw": "-73.96607500022274",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 234,
+          "official_address": "1305 Cortelyou Road",
+          "official_location": "Cortelyou Rd btwn Rugby & Argyle Rds",
+          "official_city": "Brooklyn",
+          "official_zip": "11226",
+          "native_zip": "11226",
+          "official_latitude_raw": "40.64071",
+          "official_longitude_raw": "-73.9659",
+          "native_point_distance_m": 29.185183170156993,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "311866",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "1305 Cortelyou Rd",
+              "city": "Brooklyn"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "311866",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "1305 Cortelyou Rd",
+              "city": "Brooklyn"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "234",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "Year-round",
+              "hours": "Sun 8am-2pm",
+              "location": "1305 Cortelyou Road",
+              "city": "Brooklyn"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "9f8b4c84b0e3fca3297d234435f1b56dfa4fd964bbe7599357c600467b2d1ad6",
+        "driving_checked_at": "2026-10-15T20:38:27.064367+00:00",
+        "driving_snap_distance_m": 0.2376643408,
+        "driving_road": "Cortelyou Road",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:311873",
+    "name": "Deep Roots Farmers Market",
+    "latitude": 40.85892334797113,
+    "longitude": -73.64427872585777,
+    "region": "NY",
+    "address": "100 Garvies Point Rd",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "311873",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "40.85892334797113",
+          "longitude_raw": "-73.64427872585777",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 348,
+          "official_address": "100 Garvies Point Rd",
+          "official_location": "100 Garvies Point Rd Glen Cove",
+          "official_city": "Glen Cove",
+          "official_zip": "11542",
+          "native_zip": "11542",
+          "official_latitude_raw": "40.85889",
+          "official_longitude_raw": "-73.64328",
+          "native_point_distance_m": 84.07392516971339,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "311873",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "May 30-November 7",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "100 Garvies Point Rd",
+              "city": "Glen Cove"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "311873",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "May 30-November 7",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "100 Garvies Point Rd",
+              "city": "Glen Cove"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "348",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "May 30-November 7",
+              "hours": "Sat 9am-1pm",
+              "location": "100 Garvies Point Rd",
+              "city": "Glen Cove"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "30fa2db7c2a01a4036bcdfded6286c75ab2a5c48df634e957aad0f32da0ca12a",
+        "driving_checked_at": "2026-10-15T20:38:27.211503+00:00",
+        "driving_snap_distance_m": 0.3436529838,
+        "driving_road": "Garvies Point Road",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:311875",
+    "name": "Delaware Community Farmers Market",
+    "latitude": 42.64253346304897,
+    "longitude": -73.77802449329049,
+    "region": "NY",
+    "address": "331 DELAWARE AVE",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "311875",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "42.64253346304897",
+          "longitude_raw": "-73.77802449329049",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 1,
+          "official_address": "331 Delaware Ave",
+          "official_location": "Delaware Branch Library parking lot, 331 Delaware Ave Albany",
+          "official_city": "Albany",
+          "official_zip": "12209",
+          "native_zip": "12209",
+          "official_latitude_raw": "42.64305",
+          "official_longitude_raw": "-73.77824",
+          "native_point_distance_m": 60.0803132947486,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "311875",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "June 23-November 3",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "331 DELAWARE AVE",
+              "city": "Albany"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "311875",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "June 23-November 3",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "331 DELAWARE AVE",
+              "city": "Albany"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "1",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "June 23-November 3",
+              "hours": "Tue 4pm-7pm",
+              "location": "331 Delaware Ave",
+              "city": "Albany"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "9166589c51b2af6e9e46b85effa628fe5cedb88fcbab492cf34a0bb8b3602f05",
+        "driving_checked_at": "2026-10-15T20:38:27.318827+00:00",
+        "driving_snap_distance_m": 1.565225794,
+        "driving_road": "Delaware Avenue",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:311929",
+    "name": "Hamilton Farmers Market",
+    "latitude": 42.82690295341981,
+    "longitude": -75.5434816433544,
+    "region": "NY",
+    "address": "3 Broad Street",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "http://www.hamilton-ny.gov",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "311929",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "42.82690295341981",
+          "longitude_raw": "-75.5434816433544",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 267,
+          "official_address": "3 Broad St",
+          "official_location": "Village Green 3 Broad St",
+          "official_city": "Hamilton",
+          "official_zip": "13346",
+          "native_zip": "13346",
+          "official_latitude_raw": "42.82684",
+          "official_longitude_raw": "-75.54436",
+          "native_point_distance_m": 71.9726128452034,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "311929",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "May 2-October 24",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "3 Broad Street",
+              "city": "Hamilton"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "311929",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "May 2-October 24",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "3 Broad Street",
+              "city": "Hamilton"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "267",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "May 2-October 24",
+              "hours": "Sat 8am-1pm",
+              "location": "3 Broad St",
+              "city": "Hamilton"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "8e979284971456d9c308f302f9497e13ccfbaebd6ff7b56a9973b51fe25b6b46",
+        "driving_checked_at": "2026-10-15T20:38:27.423598+00:00",
+        "driving_snap_distance_m": 1.421374602,
+        "driving_road": "Broad Street",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:311952",
+    "name": "Inwood Greenmarket",
+    "latitude": 40.869068746809816,
+    "longitude": -73.9203689660966,
+    "region": "NY",
+    "address": "620 Isham St",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "http://www.grownyc.org/greenmarket/manhattan/inwood",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "311952",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "40.869068746809816",
+          "longitude_raw": "-73.9203689660966",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 378,
+          "official_address": "620 Isham Street",
+          "official_location": "Isham St btwn Seaman Ave & Cooper St",
+          "official_city": "New York",
+          "official_zip": "10034",
+          "native_zip": "10034",
+          "official_latitude_raw": "40.86925",
+          "official_longitude_raw": "-73.92066",
+          "native_point_distance_m": 31.702957762004715,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "311952",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "620 Isham St",
+              "city": "New York"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "311952",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "620 Isham St",
+              "city": "New York"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "378",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "Year-round",
+              "hours": "Sat 8am-3pm",
+              "location": "620 Isham Street",
+              "city": "New York"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "df58922f02d910af3e3bc40c664ac8a82d52a4d51fb309894e4d1ece7f992d84",
+        "driving_checked_at": "2026-10-15T20:38:27.532756+00:00",
+        "driving_snap_distance_m": 0.3549928356,
+        "driving_road": "Isham Street",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:311977",
+    "name": "Lima Presbyterian Church Farmers' Market",
+    "latitude": 42.90484296484404,
+    "longitude": -77.61205460560095,
+    "region": "NY",
+    "address": "7295 W. Main St",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "http://limapreschurch.org",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "311977",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "42.90484296484404",
+          "longitude_raw": "-77.61205460560095",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 263,
+          "official_address": "7295 W. Main St.",
+          "official_location": "7295 W Main St Corner of Route 15A",
+          "official_city": "Lima",
+          "official_zip": "14485",
+          "native_zip": "14485",
+          "official_latitude_raw": "42.90496",
+          "official_longitude_raw": "-77.61175",
+          "native_point_distance_m": 28.015668242763976,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "311977",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "June 23-October 20",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "7295 W. Main St",
+              "city": "Lima"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "311977",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "June 23-October 20",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "7295 W. Main St",
+              "city": "Lima"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "263",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "June 23-October 20",
+              "hours": "Tue 3pm-6pm",
+              "location": "7295 W. Main St.",
+              "city": "Lima"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "94a134142b12c673cfeaac00ec02400cd18bb356862bf1ff584168fd4aa39fc2",
+        "driving_checked_at": "2026-10-15T20:38:27.600674+00:00",
+        "driving_snap_distance_m": 0.1110912748,
+        "driving_road": "West Main Street",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:312027",
+    "name": "Oneida County Public Market",
+    "latitude": 43.10389442516073,
+    "longitude": -75.22381452221418,
+    "region": "NY",
+    "address": "321 MAIN ST",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "https://oneidacountypublicmarket.com/",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "312027",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "43.10389442516073",
+          "longitude_raw": "-75.22381452221418",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 414,
+          "official_address": "321 Main Street",
+          "official_location": "REA Wing Union Station, 321 Main St Utica",
+          "official_city": "Utica",
+          "official_zip": "13501",
+          "native_zip": "13501",
+          "official_latitude_raw": "43.10393",
+          "official_longitude_raw": "-75.2239",
+          "native_point_distance_m": 7.9877987205401135,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "312027",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "Year-round, Saturdays 9am-1pm",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "321 MAIN ST",
+              "city": "Utica"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "312027",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "Year-round, Saturdays 9am-1pm",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "321 MAIN ST",
+              "city": "Utica"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "414",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "Year-round",
+              "hours": "Sat 9am-1pm",
+              "location": "321 Main Street",
+              "city": "Utica"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "8824615e1da8564f07acdde646fa6a8e04266d347bb913507fa65185c12c66e0",
+        "driving_checked_at": "2026-10-15T20:38:27.639065+00:00",
+        "driving_snap_distance_m": 0.9774691795,
+        "driving_road": "Main Street",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:312062",
+    "name": "Rhinebeck Farmers Market",
+    "latitude": 41.92701506212216,
+    "longitude": -73.91015284673918,
+    "region": "NY",
+    "address": "61 E Market St",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "http://www.rhinebeckfarmersmarket.com",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "312062",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "41.92701506212216",
+          "longitude_raw": "-73.91015284673918",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 140,
+          "official_address": "61 East Market St",
+          "official_location": "61 E Market St",
+          "official_city": "Rhinebeck",
+          "official_zip": "12572",
+          "native_zip": "12572",
+          "official_latitude_raw": "41.92704",
+          "official_longitude_raw": "-73.91027",
+          "native_point_distance_m": 10.080814369520127,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "312062",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "May 3-December 27",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "61 E Market St",
+              "city": "Rhinebeck"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "312062",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "May 3-December 27",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "61 E Market St",
+              "city": "Rhinebeck"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "140",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "May 3-December 27",
+              "hours": "Sun 10am-2pm",
+              "location": "61 East Market St",
+              "city": "Rhinebeck"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "1bc70d67071fac6d4553c0931e2a6fe8010fde7cad02123cbd5bfb1f5fe71d51",
+        "driving_checked_at": "2026-10-15T20:38:27.716396+00:00",
+        "driving_snap_distance_m": 1.335440485,
+        "driving_road": "East Market Street",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:312077",
+    "name": "Schenectady Greenmarket",
+    "latitude": 42.81380118753227,
+    "longitude": -73.9401882483477,
+    "region": "NY",
+    "address": "105 Jay St",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "http://www.schenectadygreenmarket.com",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "312077",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "42.81380118753227",
+          "longitude_raw": "-73.9401882483477",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 535,
+          "official_address": "105 Jay St",
+          "official_location": "Franklin St & Jay St near City Hall",
+          "official_city": "Schenectady",
+          "official_zip": "12305",
+          "native_zip": "12305",
+          "official_latitude_raw": "42.81372",
+          "official_longitude_raw": "-73.94015",
+          "native_point_distance_m": 9.551541057111704,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "312077",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "May 7-October 29",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "105 Jay St",
+              "city": "Schenectady"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "312077",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "May 7-October 29",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "105 Jay St",
+              "city": "Schenectady"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "535",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "April 12-November 22",
+              "hours": "Sun 10am-2pm",
+              "location": "105 Jay St",
+              "city": "Schenectady"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "e80badef31631646fd7023e310f5393d687edf80e8418f4a1ced163c30265378",
+        "driving_checked_at": "2026-10-15T20:38:27.779239+00:00",
+        "driving_snap_distance_m": 2.368433309,
+        "driving_road": "Franklin Street",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:312094",
+    "name": "St. George Greenmarket",
+    "latitude": 40.64187072611348,
+    "longitude": -74.07726953227315,
+    "region": "NY",
+    "address": "35 Hyatt St",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "http://www.grownyc.org/greenmarket/staten-island/saint-george",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "312094",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "40.64187072611348",
+          "longitude_raw": "-74.07726953227315",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 510,
+          "official_address": "35 Hyatt Street",
+          "official_location": "St Marks Pl & Hyatt St",
+          "official_city": "Staten Island",
+          "official_zip": "10301",
+          "native_zip": "10301",
+          "official_latitude_raw": "40.64159",
+          "official_longitude_raw": "-74.07791",
+          "native_point_distance_m": 62.40687241957039,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "312094",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "35 Hyatt St",
+              "city": "Staten Island"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "312094",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "35 Hyatt St",
+              "city": "Staten Island"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "510",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "Year-round",
+              "hours": "Sat 8am-1pm",
+              "location": "35 Hyatt Street",
+              "city": "Staten Island"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "36225c769f842dfcc79cb2a0728796d334ea4e478736c7e234c7e49513e3a2cb",
+        "driving_checked_at": "2026-10-15T20:38:27.889806+00:00",
+        "driving_snap_distance_m": 0.5115973088,
+        "driving_road": "Hyatt Street",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:312114",
+    "name": "Tompkins Square Greenmarket",
+    "latitude": 40.72610574033582,
+    "longitude": -73.98350356241781,
+    "region": "NY",
+    "address": "111 Avenue A",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "http://www.grownyc.org/greenmarket/manhattan/tompkins-square",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "312114",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "40.72610574033582",
+          "longitude_raw": "-73.98350356241781",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 384,
+          "official_address": "111 Avenue A",
+          "official_location": "Ave A & 7th St",
+          "official_city": "New York",
+          "official_zip": "10009",
+          "native_zip": "10009",
+          "official_latitude_raw": "40.72621",
+          "official_longitude_raw": "-73.9836",
+          "native_point_distance_m": 14.157755153728866,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "312114",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "111 Avenue A",
+              "city": "New York"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "312114",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "Year-round",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "111 Avenue A",
+              "city": "New York"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "384",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "Year-round",
+              "hours": "Sun 9am-4pm",
+              "location": "111 Avenue A",
+              "city": "New York"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "a9d17ea6779da47193b2e7b6418fbc521fece82dfc489c2d7529c8d66188ca95",
+        "driving_checked_at": "2026-10-15T20:38:27.906562+00:00",
+        "driving_snap_distance_m": 0.9544954888,
+        "driving_road": "Avenue A",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  },
+  {
+    "source_id": "usda-market:312123",
+    "name": "Victor Farmers Market",
+    "latitude": 42.98219896477045,
+    "longitude": -77.40831721519596,
+    "region": "NY",
+    "address": "60 E Main St",
+    "categories": [
+      "farmers_market",
+      "food_destination",
+      "daytime",
+      "public_destination"
+    ],
+    "source_updated_at": null,
+    "url": "http://www.victorny.org",
+    "provenance": [
+      {
+        "dataset": "kaggle-usda-markets",
+        "record_id": "312123",
+        "source_url": "https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4",
+        "license": "CC-BY-4.0",
+        "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+        "checked_at": "2026-10-15T17:47:24.598237+00:00",
+        "coordinate_source": "Unchanged native Kaggle v4 latitude/longitude strings; current publisher identity/location agrees exactly",
+        "native_source_point": {
+          "latitude_raw": "42.98219896477045",
+          "longitude_raw": "-77.40831721519596",
+          "archive_member": "us-farmers-markets-2026.csv",
+          "csv_sha256": "42a4ec12c0900d1b7a513c084cec5d0fc5045194cfbe8ad72062b78da3c76648"
+        },
+        "point_role": "Published recurring public market destination, not surveyed entrance or parking",
+        "arrival_type": "Independent current state roster point within 100 m of native point and OSRM driving destination within 75 m; parking unknown",
+        "primary_category": "food_destination",
+        "coordinate_corroboration": {
+          "dataset": "New York State Department of Agriculture and Markets via OPEN-NY",
+          "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+          "license": "LicenseRef-NY-Open-Data",
+          "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+          "checked_at": "2026-10-15T19:51:52.340529+00:00",
+          "row_index": 440,
+          "official_address": "60 East Main St",
+          "official_location": "Village Hall parking lot 60 East Main St",
+          "official_city": "Victor",
+          "official_zip": "14564",
+          "native_zip": "14564",
+          "official_latitude_raw": "42.98236",
+          "official_longitude_raw": "-77.4088",
+          "native_point_distance_m": 43.162298405362904,
+          "native_coordinates_replaced": false,
+          "point_role": "Independent agency-published location corroboration; precision and surveyed arrival role unknown"
+        },
+        "published_access_facts": [
+          {
+            "feed": "kaggle_feed",
+            "record_id": "312123",
+            "source_url": "https://www.kaggle.com/api/v1/datasets/download/harvestlymarkets/us-farmers-markets-by-state-2026?datasetVersionNumber=4",
+            "snapshot_sha256": "dea363d2a400f008fa28c933dc6816af2bb7166bea5e5795adc9ec79989d30b1",
+            "checked_at": "2026-10-15T17:47:24.598237+00:00",
+            "fields": {
+              "season": "June 3-October 28",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "60 E Main St",
+              "city": "Victor"
+            }
+          },
+          {
+            "feed": "canonical_feed",
+            "record_id": "312123",
+            "source_url": "https://harvestlymarkets.com/data/us-farmers-markets-2026.csv",
+            "snapshot_sha256": "76b5e9887643a7cb82d91c89682d52c5c531c88d74fc9e2bed3ef79146039514",
+            "checked_at": "2026-10-15T17:48:41.803170+00:00",
+            "fields": {
+              "season": "June 3-October 28",
+              "source_updated_at_raw": "Mar 27th, 2023",
+              "location": "60 E Main St",
+              "city": "Victor"
+            }
+          },
+          {
+            "feed": "official_visitor_facts",
+            "record_id": "440",
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=5000",
+            "snapshot_sha256": "e0a4b8b72db5b58439035c6347a9dedaa29957955caf6107e2d42c2b4a0a7429",
+            "checked_at": "2026-10-15T19:51:52.340529+00:00",
+            "fields": {
+              "season": "June 3-October 28",
+              "hours": "Wed 3pm-6pm",
+              "location": "60 East Main St",
+              "city": "Victor"
+            }
+          }
+        ],
+        "parking": null,
+        "price": null,
+        "opening_hours_imported": false,
+        "scheduler_hours": "unknown; separate source calendar required",
+        "normalized_source_updated_at": "unknown; raw historical source updated string retained in attributed facts",
+        "driving_evidence_sha256": "1eb76b460f31a0aaaeae1cd2dd37221d8b14a7711e630fb21e5e1b1ecaa5d170",
+        "driving_checked_at": "2026-10-15T20:38:27.994311+00:00",
+        "driving_snap_distance_m": 2.89462639,
+        "driving_road": "East Main Street",
+        "limitations": "Only published market weekdays/clocks within every source season are schedulable. Separate dated review calendar required. Future operation, ticket/capacity, weather, price, parking and actual market-day vehicle access unknown. Road proximity does not prove an entrance."
+      }
+    ]
+  }
+]

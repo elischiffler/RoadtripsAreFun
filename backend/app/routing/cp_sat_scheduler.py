@@ -13,18 +13,20 @@ from geopy.distance import geodesic
 from app.agent.progress import emit
 from app.models.routing_models.routing_models import MapBox
 from app.models.scheduling_policy import advance, local_time, seconds_until
-from app.routing.base import PlanningError, PlanOptions
+from app.routing.base import MAX_TRIP_OVERNIGHTS, PlanningError, PlanOptions
 from app.routing.discovery import SelectedAttraction
 from app.routing.geometry import RouteMeasure
 from app.routing.occupancy import require_occupancy
+from app.routing.runtime import threaded
 from app.routing.services import RoutingServices
+from app.routing.visit_calendar import VisitCalendarConflict, requires_calendar, solve_visit
 
 MapBox_route = MapBox.MapBox_Route
 _VISIT_SECONDS = 2 * 3600
 _MAX_HOTEL_ATTEMPTS = 6
 _RETRY_DRIVE_SECONDS = 1800
 _MAX_HOTELS = 30
-_MAX_OVERNIGHTS = 60
+_MAX_OVERNIGHTS = MAX_TRIP_OVERNIGHTS
 
 
 def _usable_hotel(hotel: Any) -> bool:
@@ -150,17 +152,33 @@ async def schedule_cp_sat_route(
             )
             if drive_left + visit <= seconds_until(now, event_limit) + 1e-6:
                 elapsed = target
-                now = advance(now, drive_left + visit).astimezone(event_zone)
+                arrival = advance(now, drive_left).astimezone(event_zone)
+                availability = None
+                if attraction is not None:
+                    if requires_calendar(attraction) and services.timezone_at is None:
+                        raise VisitCalendarConflict(
+                            attraction["provider_id"], "provider-resolved IANA timezone is unknown"
+                        )
+                    arrival, availability = await threaded(
+                        "solver", solve_visit, attraction, arrival, event_limit
+                    )
+                now = advance(arrival, visit)
                 if attraction is not None:
                     stops.append(
                         {
                             "provider_id": attraction["provider_id"],
                             "name": attraction["name"],
+                            "source": attraction.get("source"),
+                            "source_release": attraction.get("source_release"),
+                            "source_attribution": attraction.get("source_attribution"),
+                            "source_updated_at": attraction.get("source_updated_at"),
+                            "source_provenance": attraction.get("source_provenance", []),
                             "type": "stop",
                             "coordinates": list(attraction["coordinates"]),
                             "address": attraction.get("address"),
                             "url": attraction.get("url"),
                             "timezone": getattr(event_zone, "key", None),
+                            "availability": availability,
                         }
                     )
                 break

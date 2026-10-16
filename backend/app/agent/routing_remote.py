@@ -1,10 +1,9 @@
 """Remote routing proxy (B1) — run IP-whitelisted routing on the deployed backend.
 
-TripAdvisor / hotel / Mapbox calls only work from the deployed roadtrip
-backend's whitelisted IP. For LOCAL development the agent's routing tools proxy
-through that deployed backend's existing HTTP endpoints, so the whitelisted IP
-does the external work and we get back the same objects the local functions
-would produce.
+For local development the agent's routing tools can proxy through the deployed
+backend's existing HTTP endpoints, using that backend's catalog and provider
+configuration. Responses reflect its deployed revision, which can precede local
+catalog changes. The proxy is not an isolated fixture or evidence of deployment.
 
 Each function here mirrors a local routing capability but calls the remote
 endpoint and re-validates the JSON into the SAME Pydantic model the local path
@@ -71,8 +70,8 @@ async def plan_final_route_remote(
 ) -> Route:
     """Proxy ``POST /generate-final-route`` and validate into a ``Route``.
 
-    The deployed endpoint runs the planner (and all whitelisted TripAdvisor /
-    hotel lookups) on its side; we re-validate its response into the same
+    The deployed endpoint runs its configured planner and provider/catalog
+    lookups on its side; we re-validate its response into the same
     ``Route`` the local ``plan_final_route`` returns.
     """
     body = payload.model_dump(mode="json")

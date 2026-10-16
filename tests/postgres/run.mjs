@@ -29,16 +29,17 @@ function assertSchemaMatchesSources() {
   const readme = readFileSync(join(repositoryRoot, "README.md"), "utf8");
   const memory = readFileSync(join(repositoryRoot, "backend/app/crud/memory_crud.py"), "utf8");
   const labDdl = readFileSync(join(repositoryRoot, "backend/sql/algorithm_lab_runs.sql"), "utf8");
+  const catalogDdl = readFileSync(join(repositoryRoot, "backend/sql/places_catalog.sql"), "utf8");
   const schema = readFileSync(join(directory, "schema.sql"), "utf8");
   const readmeDdl = /## Database Schema[\s\S]*?```sql\s*([\s\S]*?)```/.exec(readme)?.[1];
   const memoryDdl = /_CREATE_TABLE_SQL = """([\s\S]*?)"""/.exec(memory)?.[1];
   if (!readmeDdl || !memoryDdl) throw new Error("Authoritative schema source missing");
   const canonical = (value) =>
     value.replace(/--[^\n]*/g, "").replace(/[\s;]/g, "").toLowerCase();
-  if (canonical(schema) !== canonical(`${readmeDdl}\n${memoryDdl}\n${labDdl}`)) {
-    throw new Error("Disposable schema drifted from README or memory_crud DDL");
+  if (canonical(schema) !== canonical(`${readmeDdl}\n${memoryDdl}\n${labDdl}\n${catalogDdl}`)) {
+    throw new Error("Disposable schema drifted from README, memory, Lab or catalog DDL");
   }
-  console.log("Schema matches checked-in README and memory CRUD DDL");
+  console.log("Schema matches checked-in README, memory, Lab and catalog DDL");
 }
 
 function docker(args, options = {}) {
@@ -96,6 +97,15 @@ function assertApiDependencyFailure() {
   console.log("API /ready: expected 503 during database loss");
 }
 
+function assertCatalogFixture(service) {
+  const result = docker(["exec", "-T", service, "psql", "-U", "postgres", "-d", "roadtrips", "-Atc",
+    "SELECT a.generation || ':' || i.row_count || ':' || p.source_id FROM places_catalog_active a JOIN places_catalog_imports i USING(generation) JOIN places_catalog p USING(generation);",
+  ]).trim();
+  if (result !== "disposable-synthetic:1:synthetic-museum") {
+    throw new Error("Synthetic catalog generation or activation pointer did not survive");
+  }
+}
+
 function objectCount(service) {
   return Number(
     docker([
@@ -147,10 +157,35 @@ let restoreStarted = false;
 let apiStarted = false;
 try {
   console.log(`Project ${project}: build isolated Python test and API images (${revision})`);
-  docker(["build", "test", "api"], { stdio: "inherit", timeout: 600_000 });
+  if (process.env.DB_TEST_SKIP_BUILD === "true") {
+    if (!cleanCheckout) {
+      throw new Error("DB_TEST_SKIP_BUILD requires a clean checkout; rebuild instead");
+    }
+    const inspect = (image) => JSON.parse(execFileSync(
+      "docker", ["image", "inspect", image], { env: environment, encoding: "utf8" },
+    ))[0];
+    for (const image of ["roadtrips-crud-test-runner:local", "roadtrips-crud-api:local"]) {
+      if (inspect(image).Config.Labels?.["org.opencontainers.image.revision"] !== revision) {
+        throw new Error(`Prebuilt ${image} revision does not match this checkout; rebuild before testing`);
+      }
+    }
+    console.log("Using explicitly selected prebuilt test/API images; Docker build gate not exercised");
+  } else {
+    docker(["build", "test", "api"], { stdio: "inherit", timeout: 600_000 });
+  }
   docker(["up", "-d", "--wait", "--wait-timeout", "60", "postgres"]);
   sourceStarted = true;
+  if (objectCount("postgres") !== 0) {
+    throw new Error("Schema initialization refused: disposable source is populated; choose a new DB_TEST_RUN_ID");
+  }
+  docker(["exec", "-T", "postgres", "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", "roadtrips"], {
+    input: readFileSync(join(directory, "schema.sql")),
+  });
   probe("seed");
+  docker(["exec", "-T", "postgres", "psql", "-U", "postgres", "-d", "roadtrips", "-v", "ON_ERROR_STOP=1"], {
+    input: readFileSync(join(directory, "catalog-fixture.sql"), "utf8"),
+  });
+  assertCatalogFixture("postgres");
 
   docker(["--profile", "api", "up", "-d", "--wait", "--wait-timeout", "60", "api"]);
   apiStarted = true;
@@ -190,6 +225,7 @@ try {
   restoreStarted = true;
   restoreOnlyIfEmpty(archive);
   probe("verify", "restore");
+  assertCatalogFixture("restore");
   let refused = false;
   try {
     restoreOnlyIfEmpty(archive);
@@ -200,6 +236,7 @@ try {
   }
   if (!refused) throw new Error("Populated-target restore was not refused");
   probe("verify", "restore");
+  assertCatalogFixture("restore");
 
   console.log(`PASS: source and restore volumes preserved (${project}_source-data, ${project}_restore-data)`);
 } finally {

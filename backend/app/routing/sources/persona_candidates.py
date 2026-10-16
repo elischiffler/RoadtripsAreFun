@@ -12,7 +12,6 @@ import math
 import re
 from datetime import date, datetime
 from typing import Any, Literal, Protocol
-from urllib.parse import urlparse
 
 from geopy.distance import geodesic
 from pydantic import BaseModel, ConfigDict, field_validator
@@ -22,6 +21,7 @@ from app.agent.progress import emit, stage
 from app.agent.provider_diagnostics import retry_async
 from app.agent.providers import LLMProvider, build_default_chain
 from app.agent.schemas import LLMMessage
+from app.catalog import repository
 from app.routing import config
 from app.routing.discovery import (
     DiscoveryPlan,
@@ -33,10 +33,9 @@ from app.routing.discovery import (
 from app.routing.explanation import record_explanation
 from app.routing.geometry import RouteMeasure
 from app.routing.occupancy import MAX_ROOMS, HotelRoom
-from app.routing.profiles import AttributeRatings, crossmatch
+from app.routing.profiles import AttributeRatings, crossmatch, eligible_utility
 from app.routing.run_metrics import increment, timed
 from app.routing.runtime import (
-    http_get,
     in_run,
     joined,
     limited,
@@ -44,8 +43,8 @@ from app.routing.runtime import (
     singleflight,
     threaded,
 )
-from app.routing.sources.attractions import _auth_headers
-from app.routing.terra_pacing import terra_requests
+from app.routing.trip_calendar import TripCalendar
+from app.routing.visit_calendar import calendar_eligible
 
 MAX_ATTRACTIONS = 60
 MAX_HOTELS = 10
@@ -57,6 +56,15 @@ _HOTEL_RADIUS_MI = 30.0
 
 class CandidateProviderError(RuntimeError):
     """Required AI or place provider is unavailable or returned unusable data."""
+
+
+class CandidateRatingError(CandidateProviderError):
+    """Source places exist, but bounded AI attempts produced no usable ratings."""
+
+    provider = "ai_ratings"
+    provider_code = "INVALID_ATTRIBUTE_RATINGS"
+    public_message = "AI returned no complete ratings matching the catalog places."
+    retryable = False
 
 
 class ProposedPlace(BaseModel):
@@ -76,7 +84,7 @@ class ProposedPlace(BaseModel):
 
 
 class VerifiedPlace(BaseModel):
-    """Identity and coordinates returned by a place provider."""
+    """Validated source identity and coordinates, without a live availability claim."""
 
     provider_id: str
     name: str
@@ -85,6 +93,11 @@ class VerifiedPlace(BaseModel):
     url: str | None = None
     categories: list[str] = []
     provider_rank: int = 0
+    source: str | None = None
+    source_release: str | None = None
+    source_attribution: str | None = None
+    source_updated_at: str | None = None
+    source_provenance: list[dict[str, Any]] = []
 
     @field_validator("provider_id", "name")
     @classmethod
@@ -135,7 +148,7 @@ class VerifiedHotel(VerifiedPlace):
 
 class PlaceProvider(Protocol):
     async def attractions_near(self, point: list[float]) -> list[VerifiedPlace]:
-        """Return provider-verified attraction records near the supplied [lat, lon] point."""
+        """Return catalog source records near the supplied [lat, lon] point."""
         ...
 
     async def hotels_near(
@@ -164,35 +177,66 @@ def _distance_miles(first: list[float], second: list[float]) -> float:
     return geodesic(first, second).miles
 
 
-def _parse_proposals(text: str, limit: int) -> list[ProposedPlace]:
+def _parse_proposals(
+    text: str, limit: int, *, diagnostics: dict | None = None
+) -> list[ProposedPlace]:
     """Parse AI JSON into at most limit validated name-and-rating proposals.
 
     Optional JSON fences are removed; malformed responses and invalid entries are skipped.
     """
+    diagnostics = diagnostics if diagnostics is not None else {}
+    diagnostics.update(status="valid", received=0, valid=0, invalid=0, incomplete_vectors=0)
+    if not isinstance(text, str):
+        diagnostics["status"] = "invalid_shape"
+        return []
     text = text.strip()
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.IGNORECASE)
     try:
         payload = json.loads(text)
     except (TypeError, ValueError):
+        diagnostics["status"] = "invalid_json"
         return []
     if isinstance(payload, dict):
         payload = payload.get("candidates")
     if not isinstance(payload, list):
+        diagnostics["status"] = "invalid_shape"
         return []
+    diagnostics["received"] = len(payload)
     proposals = []
     for item in payload[:limit]:
         try:
             proposals.append(ProposedPlace.model_validate(item))
         except (TypeError, ValueError):
+            diagnostics["invalid"] += 1
+            ratings = item.get("attribute_ratings") if isinstance(item, dict) else None
+            if not isinstance(ratings, dict) or set(ATTRIBUTE_KEYS) - ratings.keys():
+                diagnostics["incomplete_vectors"] += 1
             continue
+    diagnostics["valid"] = len(proposals)
+    diagnostics["status"] = (
+        "empty_response"
+        if not payload
+        else "invalid_entries"
+        if not proposals
+        else "partial"
+        if diagnostics["invalid"]
+        else "valid"
+    )
     return proposals
 
 
 async def _propose(
-    ai: LLMProvider, kind: str, point: list[float], limit: int, names: list[str] | None = None
+    ai: LLMProvider,
+    kind: str,
+    point: list[float],
+    limit: int,
+    names: list[str] | None = None,
+    *,
+    diagnostics: dict | None = None,
+    repair: bool = False,
 ) -> list[ProposedPlace]:
-    """Request estimated place ratings, optionally restricted to provider-verified names.
+    """Request estimated place ratings, optionally restricted to source-record names.
 
     Returns a bounded list of valid proposals. AI provider failures raise
     CandidateProviderError; identity and offer verification happen separately.
@@ -210,10 +254,15 @@ async def _propose(
         f"Return only JSON in this exact shape: {example}. "
         "Do not include prices, coordinates, or a final utility score."
     )
-    if names is not None:
+    if repair:
         prompt += (
-            " Rate only these provider-verified names, preserving each exactly: "
-            + json.dumps(names)
+            " The previous response contained no usable ratings for the supplied names. "
+            "Return the exact supplied names and all 14 numeric attribute_ratings in [0,1]. "
+            "Do not omit fields or add places. Return the requested JSON object only."
+        )
+    if names is not None:
+        prompt += " Rate only these source-record names, preserving each exactly: " + json.dumps(
+            names
         )
 
     async def generate():
@@ -233,10 +282,12 @@ async def _propose(
             )
 
     try:
-        response = await singleflight(("ratings", kind, tuple(point), tuple(names or [])), generate)
+        response = await singleflight(
+            ("ratings", kind, tuple(point), tuple(names or []), repair), generate
+        )
     except Exception as exc:
         raise CandidateProviderError("AI candidate provider unavailable") from exc
-    return _parse_proposals(response.content, limit)
+    return _parse_proposals(response.content, limit, diagnostics=diagnostics)
 
 
 def _candidate(
@@ -260,12 +311,17 @@ def _candidate(
                 "url",
                 "categories",
                 "provider_rank",
+                "source",
+                "source_release",
+                "source_attribution",
+                "source_updated_at",
+                "source_provenance",
             }
         ),
         attribute_ratings=proposal.attribute_ratings,
         provenance={
             "identity_source": place.provider_id.split(":", 1)[0],
-            "ratings_source": "AI estimates; provider verifies identity, not ratings",
+            "ratings_source": "AI estimates; source records supply identity, not live verification",
             "verified_at": None,
         },
     )
@@ -293,13 +349,21 @@ async def attraction_candidates(
         return DiscoveryResult([], {"plan": plan.snapshot(), "stop_reason": "zero_requested"})
     ai = ai or run_resource("rating_provider", build_default_chain)
     places = places or LivePlaceProvider()
-    if isinstance(places, LivePlaceProvider):
-        places.require_attractions()
     measure = RouteMeasure(raw_route)
     raw, rated, attempted, queried = {}, {}, set(), []
     observations, rounds = [], []
     used_coordinates = set()
-    explanation = {"plan": plan.snapshot(), "queries": observations, "rounds": rounds}
+    explanation = {
+        "plan": plan.snapshot(),
+        "queries": observations,
+        "rounds": rounds,
+        "rating_attempts": [],
+        "eligibility_policy": "positive_utility",
+        "calendar_eligibility_policy": "requested_trip_full_dwell_before_discovery_quotas"
+        if plan.trip_calendar
+        else "structurally_usable_source_calendar",
+        "calendar_excluded_provider_ids": [],
+    }
     record_explanation(discovery=explanation)
     ready = list(plan.queries)
 
@@ -319,17 +383,36 @@ async def attraction_candidates(
             """Fetch nearby provider records with query diagnostics, concurrency limits, and retries."""
             with stage("attractions.provider", query=query.id, section=query.section_id):
                 return await retry_async(
-                    lambda: limited("nearby", lambda: places.attractions_near(point))
+                    lambda: limited(
+                        "nearby",
+                        lambda: (
+                            places.attractions_near(
+                                point, require_visit_calendar=True, trip_calendar=plan.trip_calendar
+                            )
+                            if isinstance(places, LivePlaceProvider)
+                            else places.attractions_near(point)
+                        ),
+                    )
                 )
 
-        records = await singleflight(("nearby", tuple(point)), lookup)
-        output = []
+        records = await singleflight(
+            (
+                "nearby",
+                tuple(point),
+                plan.trip_calendar.departure.isoformat() if plan.trip_calendar else None,
+            ),
+            lookup,
+        )
+        output, calendar_excluded = [], list(getattr(records, "calendar_excluded", ()))
         for rank, record in enumerate(records):
             try:
                 place = VerifiedPlace.model_validate(record)
             except ValueError:
                 continue
             if _distance_miles(point, place.coordinates) > _ATTRACTION_RADIUS_MI:
+                continue
+            if not await calendar_ok(place.model_dump()):
+                calendar_excluded.append(place.provider_id)
                 continue
             projection = measure.project(place.coordinates, query.progress_seconds)
             output.append(
@@ -349,7 +432,14 @@ async def attraction_candidates(
             adaptive=True,
             candidates=len(output),
         )
-        return output
+        return output, calendar_excluded
+
+    async def calendar_ok(record):
+        return (
+            await plan.trip_calendar.eligible(record)
+            if plan.trip_calendar
+            else calendar_eligible(record)
+        )
 
     async def rate(batch):
         """Rate a batch of verified places and return candidates with match scores."""
@@ -360,16 +450,44 @@ async def attraction_candidates(
             sections=sorted({item["section_id"] for item in batch}),
             queryIds=sorted({query for item in batch for query in item["source_query_ids"]}),
         ):
-            proposals = await _propose(
-                ai,
-                "attractions",
-                point,
-                MAX_PROPOSALS_PER_QUERY,
-                names=[item["place"].name for item in batch],
-            )
-        by_name = {}
-        for proposal in proposals:
-            by_name.setdefault(_name_key(proposal.name), proposal)
+            attempts = []
+            for attempt in range(2):
+                validation = {}
+                proposals = await _propose(
+                    ai,
+                    "attractions",
+                    point,
+                    MAX_PROPOSALS_PER_QUERY,
+                    names=[item["place"].name for item in batch],
+                    diagnostics=validation,
+                    repair=bool(attempt),
+                )
+                by_name = {}
+                for proposal in proposals:
+                    by_name.setdefault(_name_key(proposal.name), proposal)
+                expected = {_name_key(item["place"].name) for item in batch}
+                matched = expected & by_name.keys()
+                validation.update(
+                    attempt=attempt + 1,
+                    matched_sources=len(matched),
+                    unmatched_names=len(by_name.keys() - expected),
+                    missing_sources=len(expected - by_name.keys()),
+                    match_status="matched"
+                    if matched == expected
+                    else "partial"
+                    if matched
+                    else "name_mismatch"
+                    if by_name
+                    else "no_valid_ratings",
+                    source_query_ids=sorted(
+                        {q for item in batch for q in item["source_query_ids"]}
+                    ),
+                )
+                attempts.append(validation)
+                if matched:
+                    break
+            if not matched:
+                return [], attempts
         output = []
         for item in batch:
             place = item["place"]
@@ -382,7 +500,7 @@ async def attraction_candidates(
                     **item["projection"],
                 )
                 output.append(candidate)
-        return output
+        return output, attempts
 
     while ready:
         frozen_queries = []
@@ -396,9 +514,19 @@ async def attraction_candidates(
             break
         query_results = await joined([query(item) for item in frozen_queries])
         # Completion order never determines identity, category quotas or rating order.
-        for query_item, records in zip(frozen_queries, query_results):
+        for query_item, (records, calendar_excluded) in zip(frozen_queries, query_results):
             queried.append(query_item)
-            observations.append({**query_item.__dict__, "verified_count": len(records)})
+            observations.append(
+                {
+                    **query_item.__dict__,
+                    "verified_count": len(records) + len(calendar_excluded),
+                    "calendar_eligible_count": len(records),
+                    "calendar_excluded_count": len(calendar_excluded),
+                }
+            )
+            explanation["calendar_excluded_provider_ids"] = sorted(
+                set(explanation["calendar_excluded_provider_ids"]) | set(calendar_excluded)
+            )
             for item in records:
                 key = item["place"].provider_id
                 if key in raw:
@@ -441,7 +569,8 @@ async def attraction_candidates(
         }
         rounds.append(round_record)
         results = await joined([rate(batch) for batch in batches])
-        for batch_result in results:
+        for batch_result, rating_attempts in results:
+            explanation["rating_attempts"].extend(rating_attempts)
             for candidate in batch_result:
                 rated[candidate["provider_id"]] = candidate
                 emit(
@@ -450,7 +579,23 @@ async def attraction_candidates(
                     collected=len(rated),
                     section=candidate["section_id"],
                 )
-        eligible = [item for item in rated.values() if item["utility"] >= 0.60]
+        if frozen and not rated:
+            explanation.update(
+                stop_reason="rating_validation_failed",
+                outcome="invalid_ratings",
+                raw_pool_count=len(raw),
+                successful_ratings=0,
+                distinct_rated=len(attempted),
+                eligible_count=0,
+                shortlist_count=0,
+            )
+            with stage("attractions.ratings", candidates=len(frozen)):
+                raise CandidateRatingError(CandidateRatingError.public_message)
+        eligible = [
+            item
+            for item in rated.values()
+            if eligible_utility(item["utility"]) and await calendar_ok(item)
+        ]
         counts = [
             sum(item["section_id"] == i for item in eligible) for i in range(plan.section_count)
         ]
@@ -493,7 +638,11 @@ async def attraction_candidates(
             if len(queried) + len(ready) >= plan.maximum_searches:
                 break
     explanation.setdefault("stop_reason", "no_distinct_search_points")
-    eligible = [item for item in rated.values() if item["utility"] >= 0.60]
+    eligible = [
+        item
+        for item in rated.values()
+        if eligible_utility(item["utility"]) and await calendar_ok(item)
+    ]
     for key, item in rated.items():
         if key in raw:
             item["source_query_ids"] = raw[key]["source_query_ids"]
@@ -516,6 +665,11 @@ async def attraction_candidates(
             if not any(item["section_id"] == i for item in eligible)
         ],
         coverage_note="Five-mile nearby samples; intervals between samples are unsearched, not continuous coverage.",
+        outcome="no_catalog_candidates"
+        if not raw
+        else "no_positive_utility"
+        if not eligible
+        else "eligible_candidates",
     )
     gaps = []
     for section in range(plan.section_count):
@@ -600,14 +754,16 @@ async def _room_candidates(
     return results
 
 
-class LivePlaceProvider:
-    """Terra identities and configurable dated hotel prices."""
+class CalendarFilteredPlaces(list):
+    """Query-local exclusions, without mutable state shared by parallel queries."""
 
-    @staticmethod
-    def require_attractions() -> None:
-        """Require Terra attraction credentials or raise CandidateProviderError."""
-        if not config.TRIPADVISOR_API:
-            raise CandidateProviderError("TripAdvisor Terra is not configured")
+    def __init__(self, records, excluded):
+        super().__init__(records)
+        self.calendar_excluded = tuple(excluded)
+
+
+class LivePlaceProvider:
+    """Versioned catalog identities and independent dated hotel prices."""
 
     @staticmethod
     def require_hotels() -> None:
@@ -615,63 +771,83 @@ class LivePlaceProvider:
         if not config.OPENCAGE_KEY:
             raise CandidateProviderError("Google Hotels location verification is not configured")
 
-    async def attractions_near(self, point: list[float]) -> list[VerifiedPlace]:
-        """Fetch Terra attraction listings within five miles of a [lat, lon] point.
-
-        Returns validated identities and coordinates in provider rank order;
-        non-attraction listings and unusable records are skipped.
-        """
-        self.require_attractions()
+    async def attractions_near(
+        self,
+        point: list[float],
+        *,
+        require_visit_calendar: bool = False,
+        trip_calendar: TripCalendar | None = None,
+    ) -> list[VerifiedPlace]:
+        """Read bounded source facts; these are not live venue verification."""
+        if trip_calendar is not None:
+            return await self._trip_attractions(point, trip_calendar)
+        increment("catalog")
         try:
-            increment("tripadvisor")
-            response = await terra_requests.call(
-                lambda: http_get(
-                    f"{config.TRIPADVISOR_BASE_URL}/locations/nearby",
-                    params={
-                        "lat": point[0],
-                        "lon": point[1],
-                        "radius": 5,
-                        "unit": "MI",
-                        "category": "ATTRACTION",
-                        "sort": "rating,desc",
-                    },
-                    headers=_auth_headers(),
-                )
+            calendar_filter = {"require_visit_calendar": True} if require_visit_calendar else {}
+            records = await threaded(
+                "catalog",
+                repository.nearby,
+                point,
+                ["daytime"],
+                radius_miles=_ATTRACTION_RADIUS_MI,
+                limit=MAX_ATTRACTIONS,
+                **calendar_filter,
             )
-            response.raise_for_status()
-            from app.models.routing_models.trip_advisor_models import Terra_Page_Nearby_Location
-
-            payload = response.json()
-            if not isinstance(payload, dict) or not isinstance(payload.get("data"), list):
-                raise ValueError("Terra nearby response has no locations list")
-            page = Terra_Page_Nearby_Location.model_validate(payload)
-        except Exception as exc:
-            raise CandidateProviderError("TripAdvisor Terra attraction lookup failed") from exc
-        records = []
-        for rank, entry in enumerate(page.data):
-            location = entry.location
-            if location is None or location.id is None or location.coordinates is None:
-                continue
-            # Some live nearby responses include other categories despite the
-            # ATTRACTION filter. Require the provider's attraction listing type.
-            listing = urlparse(location.web_url() or "")
-            if not listing.path.startswith("/Attraction_Review-"):
-                continue
+        except Exception:
+            # Database exceptions can contain connection details. Do not retain them
+            # in the public diagnostic exception chain.
+            raise CandidateProviderError("Places catalog lookup unavailable") from None
+        output = []
+        for record in records[:MAX_ATTRACTIONS]:
             try:
-                records.append(
-                    VerifiedPlace(
-                        provider_id=f"terra:{location.id}",
-                        name=location.primary_name(),
-                        coordinates=[location.coordinates.latitude, location.coordinates.longitude],
-                        address=location.formatted_address(),
-                        url=location.web_url(),
-                        provider_rank=rank,
-                        categories=_provider_categories(location),
-                    )
-                )
+                place = VerifiedPlace.model_validate(record)
+                if (
+                    "daytime" in place.categories
+                    and _distance_miles(point, place.coordinates) <= _ATTRACTION_RADIUS_MI
+                    and (not require_visit_calendar or calendar_eligible(place.model_dump()))
+                ):
+                    output.append(place)
             except (TypeError, ValueError):
                 continue
-        return records
+        return output
+
+    async def _trip_attractions(self, point, trip_calendar):
+        """Bounded pages; only valid full-dwell candidates consume result slots."""
+        output, excluded, cursor = [], [], None
+        while True:
+            increment("catalog")
+            try:
+                page = await threaded(
+                    "catalog",
+                    repository.nearby_page,
+                    point,
+                    ["daytime"],
+                    radius_miles=_ATTRACTION_RADIUS_MI,
+                    limit=MAX_ATTRACTIONS,
+                    require_visit_calendar=True,
+                    cursor=cursor,
+                )
+            except Exception:
+                raise CandidateProviderError("Places catalog lookup unavailable") from None
+            for record in page.records:
+                try:
+                    place = VerifiedPlace.model_validate(record)
+                except (TypeError, ValueError):
+                    continue
+                if (
+                    "daytime" not in place.categories
+                    or _distance_miles(point, place.coordinates) > _ATTRACTION_RADIUS_MI
+                ):
+                    continue
+                if not await trip_calendar.eligible(place.model_dump()):
+                    excluded.append(place.provider_id)
+                    continue
+                output.append(place)
+                if len(output) == MAX_ATTRACTIONS:
+                    return CalendarFilteredPlaces(output, excluded)
+            cursor = page.next_cursor
+            if cursor is None:
+                return CalendarFilteredPlaces(output, excluded)
 
     async def hotels_near(
         self,
@@ -772,15 +948,3 @@ async def hotel_candidates(
             }
         )
     return results
-
-
-def _provider_categories(location):
-    """Extract category names from provider strings or named category objects."""
-    values = getattr(location, "categories", None) or []
-    if not isinstance(values, list):
-        return []
-    return [
-        value if isinstance(value, str) else value["name"]
-        for value in values
-        if isinstance(value, str) or isinstance(value, dict) and isinstance(value.get("name"), str)
-    ]

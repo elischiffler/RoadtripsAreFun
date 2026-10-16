@@ -36,6 +36,7 @@ DEFAULT_WEIGHTS: dict[str, float] = {
 
 # Each attraction stop costs a fixed ~2h detour today (matches the scheduler).
 _DETOUR_HOURS_PER_STOP = 2.0
+MAX_TRIP_OVERNIGHTS = 60
 
 # A stopping point is an ad-hoc dict — this loose shape is the de-facto contract
 # the itinerary endpoint, CRUD storage, and frontend all depend on. Documented
@@ -84,6 +85,12 @@ class PlanOptions:
     preferences: dict[str, Any] | None = None
     weights: dict[str, float] | None = None
     scheduling_policy: SchedulingPolicy = field(default_factory=SchedulingPolicy)
+    # Request-local only: actual-leg calendar conflicts trigger reselection from
+    # the same bounded, road-checked discovery pool without more sourcing calls.
+    excluded_provider_ids: frozenset[str] = field(default_factory=frozenset)
+    _verified_cp_sat_candidates: list[dict[str, Any]] | None = field(
+        default=None, init=False, repr=False
+    )
 
 
 @dataclass

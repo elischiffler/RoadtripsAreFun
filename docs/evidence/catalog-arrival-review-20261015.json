@@ -1,0 +1,573 @@
+{
+  "checked_date": "2026-10-15",
+  "ordinary_publisher_requests": 16,
+  "responses_200": 16,
+  "new_roadside_destinations": 1,
+  "candidate_records_wholesale_promoted": 0,
+  "museum_closure_withheld_source_id": "27260a45-e524-43e3-8267-937dcaeaeb9b",
+  "original_400_evaluation_preserved": true,
+  "sources": [
+    {
+      "key": "bolder-plan",
+      "url": "https://bolderadventurepark.com/plan-your-visit/",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:52.324951+00:00",
+      "sha256": "c53a8354d1c99c8f6ebef27ff1d9314a16dbc9aaa15efe1b019f6542469899aa",
+      "bytes": 221894,
+      "decision": "pending_parking_and_restrictions",
+      "reason": "Tickets/waivers and activity height/weight limits require visit-specific handling; parking/arrival evidence incomplete."
+    },
+    {
+      "key": "bolder-contact",
+      "url": "https://bolderadventurepark.com/contact-us/",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:52.865709+00:00",
+      "sha256": "bb32d21ef1611d39e0cce226b45c541f682f3afb12d2b91ce0edbb105fba6fb8",
+      "bytes": 167148,
+      "decision": "pending_parking_and_restrictions",
+      "reason": "Current address/hours retained; this alone does not clear practical arrival."
+    },
+    {
+      "key": "wingluke-visit",
+      "url": "https://www.wingluke.org/visit",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:53.319601+00:00",
+      "sha256": "74b0b54ca07ea4fc058d41da74e63af30cdec0f8ad4ed9ea866a484e3814c63d",
+      "bytes": 715864,
+      "decision": "reviewed_venue_frontage",
+      "reason": "Primary visitor address and I-5 car directions match; public paid lots/street parking require a walk; no on-site parking. Future availability unknown."
+    },
+    {
+      "key": "denverfire-visit",
+      "url": "https://denverfirefightersmuseum.org/plan-your-visit",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:53.919219+00:00",
+      "sha256": "1a0d1260cbe7376f2e4df659ddf51c7ab71c1f36d8ad4578f1734233efe85069",
+      "bytes": 172186,
+      "decision": "pending_precise_arrival",
+      "reason": "Public visitor address, schedule and nearby metered/paid parking documented. The checked road-link has no name, so precise approach remains under review."
+    },
+    {
+      "key": "hudson-visit",
+      "url": "https://hudsongardens.org/explore/plan-your-visit/",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:54.643548+00:00",
+      "sha256": "2698643d0a9fcb6de5969a5372c0b6c4217e221b7193f57b078906ae641992ee",
+      "bytes": 122228,
+      "decision": "pending_precise_arrival",
+      "reason": "Current public access, vehicle entrance from South Santa Fe Drive and parking documented. Must distinguish driving entrance from pedestrian trail entrance/grounds centroid."
+    },
+    {
+      "key": "hudson-map",
+      "url": "https://hudsongardens.org/hudson-gardens-map/",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:55.449034+00:00",
+      "sha256": "052561766d9a6e3fb01cff67785bd2b38dde0f8b23009bda8de79811964b4b10",
+      "bytes": 106099,
+      "decision": "pending_precise_arrival",
+      "reason": "Published map retained for entrance review; no new coordinate inferred."
+    },
+    {
+      "key": "orlando-faq",
+      "url": "https://orlandotreetrek.com/faqs/",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:55.788395+00:00",
+      "sha256": "2dbca3828695c7b3ec895ad34589e97e5f97bda8f0f3a0e24c57ab77d58b1c8a",
+      "bytes": 138595,
+      "decision": "pending_parking_and_restrictions",
+      "reason": "Age/height/course duration, reservations and weather controls require visit-specific handling; parking/arrival evidence incomplete."
+    },
+    {
+      "key": "orlando-contact",
+      "url": "https://orlandotreetrek.com/contact-us/",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:56.726078+00:00",
+      "sha256": "73b91d7fd868469718c70836e29eac19090a65332a89638be815984cc7faad3c",
+      "bytes": 143047,
+      "decision": "pending_parking_and_restrictions",
+      "reason": "Public address and car directions retained; practical parking arrival remains unverified."
+    },
+    {
+      "key": "legoland-directions",
+      "url": "https://www.legolanddiscoverycenter.com/arizona/plan-your-day/before-you-visit/directions-parking/",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:57.636686+00:00",
+      "sha256": "8e7938e228823a111c1ee44035607c87170c2dc634a4d8607abec47bbf857e21",
+      "bytes": 119892,
+      "decision": "pending_party_and_arrival_review",
+      "reason": "Mall address/directions retained; venue entrance and party restrictions remain under review."
+    },
+    {
+      "key": "legoland-closures",
+      "url": "https://www.legolanddiscoverycenter.com/arizona/plan-your-day/before-you-visit/temporary-closures/",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:57.948137+00:00",
+      "sha256": "8dd931e0fafcf76c4ca69b97e2201133f9c59cc4f947feb63b173f7b9d741bb6",
+      "bytes": 126231,
+      "decision": "pending_party_and_arrival_review",
+      "reason": "Closure page says attractions open in retained content; its heading alone must not be treated as a closure. Party restrictions and entrance still require review."
+    },
+    {
+      "key": "moidenver-contact",
+      "url": "https://moidenver.com/contact-us/",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:58.335049+00:00",
+      "sha256": "842a672900cf7249b5114b2f7ef0ae2f15309f8184461b6cea4715117b17c7fb",
+      "bytes": 218119,
+      "decision": "withhold_current_closure",
+      "reason": "Primary publisher reports temporary closure; old source open flag and generic daily hours do not override it."
+    },
+    {
+      "key": "moidenver-faq",
+      "url": "https://moidenver.com/faq/",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:58.785633+00:00",
+      "sha256": "57bd6227425bdbcb150807623817962438b8a6b247602f28b6c0b55dc95e05c4",
+      "bytes": 211191,
+      "decision": "withhold_current_closure",
+      "reason": "Current remodeling/closure disclosure corroborates contact page."
+    },
+    {
+      "key": "lexington-faq",
+      "url": "https://www.lexingtonhistory.org/faq",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:59.157961+00:00",
+      "sha256": "27d2af65254c64b3288699dcb6fab7e0c0637f362fa65c8a45b377c226cecbb7",
+      "bytes": 274650,
+      "decision": "pending_precise_arrival",
+      "reason": "Retained page alone does not establish a practical arrival point."
+    },
+    {
+      "key": "cornpalace-canonical",
+      "url": "https://www.cornpalace.com/",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:26:59.579779+00:00",
+      "sha256": "a3d51f9385eae6055ac01e6befc7a858b83ae72ae46be293ceb95c9e820f9e0e",
+      "bytes": 116433,
+      "decision": "corroborating_publisher",
+      "reason": "Canonical publisher site acquired successfully; bare-domain historical 404 did not establish closure."
+    },
+    {
+      "key": "cornpalace-canonical-visit",
+      "url": "https://www.cornpalace.com/31/Visiting",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:27:00.471091+00:00",
+      "sha256": "791137478efb6f987aa2b0e5fc126d351d7bfcccead8da6a75e2fb02664ade36",
+      "bytes": 96509,
+      "decision": "admitted_explicit_roadside_profile",
+      "reason": "Current public visitor address matches licensed venue point. Venue frontage, not car-park coordinates; future hours/access unknown."
+    },
+    {
+      "key": "cornpalace-canonical-parking",
+      "url": "https://www.cornpalace.com/173/Parking",
+      "http_status": 200,
+      "retrieved_at": "2026-10-15T01:27:01.003058+00:00",
+      "sha256": "fafe7de212f0ac973b33b9dbd09d155eb8c9b6c7ec8125afd760492f8bfa18d6",
+      "bytes": 86784,
+      "decision": "admitted_explicit_roadside_profile",
+      "reason": "Official parking information retained; RV/trailer lot is a short walk, not the imported point."
+    }
+  ],
+  "driving_checks": [
+    {
+      "source_id": "0ba6e9be-d740-457f-9663-253b005a321c",
+      "name": "The Hudson Gardens and Event Center",
+      "checked_at": "2026-10-15T01:31:05.317001+00:00",
+      "source_coordinates": [
+        39.60470956,
+        -105.02207147
+      ],
+      "http_status": 200,
+      "response_sha256": "5e149e01bb842747862ce11eb93c724b503b09a5def6ed7818823f64ac5c2f06",
+      "response_bytes": 467,
+      "code": "Ok",
+      "snap_distance_m": 28.601,
+      "road_name": "",
+      "route_duration_s": 71.22
+    },
+    {
+      "source_id": "0af14639-7edf-402e-95c5-8a0eeb00d6f2",
+      "name": "Denver Firefighters Museum",
+      "checked_at": "2026-10-15T01:31:05.645406+00:00",
+      "source_coordinates": [
+        39.74065528,
+        -104.99243115
+      ],
+      "http_status": 200,
+      "response_sha256": "75deccabf50d7dfe09efeecd8220b113e0f7f1735248d27f08524a59e1d82a9b",
+      "response_bytes": 493,
+      "code": "Ok",
+      "snap_distance_m": 16.937,
+      "road_name": "",
+      "route_duration_s": 141.237
+    },
+    {
+      "source_id": "03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+      "name": "Wing Luke Museum",
+      "checked_at": "2026-10-15T01:31:05.941408+00:00",
+      "source_coordinates": [
+        47.59825849,
+        -122.32289613
+      ],
+      "http_status": 200,
+      "response_sha256": "dc558349a6f34ab124d983243d126572729b1f0760be20aa6409ed5baaba17cb",
+      "response_bytes": 525,
+      "code": "Ok",
+      "snap_distance_m": 11.178,
+      "road_name": "South King Street",
+      "route_duration_s": 45.54
+    },
+    {
+      "source_id": "007cc51a-5945-4058-acb3-56e48ce4aaef",
+      "name": "Bolder Adventure Park",
+      "checked_at": "2026-10-15T01:31:06.225669+00:00",
+      "source_coordinates": [
+        32.69866112,
+        -97.03732818
+      ],
+      "http_status": 200,
+      "response_sha256": "4c266379086a008aa4991c5a51f9cb8fbac418709a9e24e688d372b8c2e538b9",
+      "response_bytes": 469,
+      "code": "Ok",
+      "snap_distance_m": 8.109,
+      "road_name": "",
+      "route_duration_s": 30.079
+    },
+    {
+      "source_id": "1e20b575-dfec-4473-b496-cedc6066e905",
+      "name": "LEGOLAND Discovery Center",
+      "checked_at": "2026-10-15T01:31:06.530261+00:00",
+      "source_coordinates": [
+        33.38561346,
+        -111.96345259
+      ],
+      "http_status": 200,
+      "response_sha256": "da9b52060e95d42b415e869799220a5c5da960ade614490d2eaf6bf729b860c7",
+      "response_bytes": 471,
+      "code": "Ok",
+      "snap_distance_m": 38.56,
+      "road_name": "",
+      "route_duration_s": 15.692
+    },
+    {
+      "source_id": "1a756d09-57d4-490b-ab30-4330b9b9ab2e",
+      "name": "Orlando Tree Trek Adventure Park",
+      "checked_at": "2026-10-15T01:31:06.860207+00:00",
+      "source_coordinates": [
+        28.2967149,
+        -81.59347752
+      ],
+      "http_status": 200,
+      "response_sha256": "2b53945016a976caf5b5c38df0b47138a15d34842bdb6c9fd903c88e40c312a7",
+      "response_bytes": 470,
+      "code": "Ok",
+      "snap_distance_m": 16.808,
+      "road_name": "",
+      "route_duration_s": 12.265
+    },
+    {
+      "source_id": "bb5dda13-ffd0-4791-8715-7b82aed55d42",
+      "name": "The World's Only Corn Palace",
+      "checked_at": "2026-10-15T01:31:07.178095+00:00",
+      "source_coordinates": [
+        43.71485882,
+        -98.02536536
+      ],
+      "http_status": 200,
+      "response_sha256": "8ec0163a33bddae7430d2e7a714d246af77287df0077d11a1fdd7b9f2fa3e19f",
+      "response_bytes": 533,
+      "code": "Ok",
+      "snap_distance_m": 16.262,
+      "road_name": "North Main Street",
+      "route_duration_s": 22.13
+    }
+  ],
+  "additional_roadside_sources": [
+    {
+      "key": "zillah-current-teapot",
+      "url": "https://www.cityofzillah.us/visitors/zillah_teapot.php",
+      "retrieved_at": "2026-10-15T01:43:56.463215+00:00",
+      "http_status": 200,
+      "sha256": "8f4b1ab30468e4d7ce79e1cebbac941b7dfa91644a82a999bfd7f6a8845356d2",
+      "bytes": 90742,
+      "decision": "withhold_pending_schedule_and_arrival",
+      "reason": "Current city page confirms relocation to 117 First Avenue in 2012; older highway location is historical. No current place-specific schedule/practical arrival coordinate admitted."
+    },
+    {
+      "key": "cabazon-current-visitor",
+      "url": "https://www.cabazondinosaurs.com/",
+      "retrieved_at": "2026-10-15T01:43:56.952242+00:00",
+      "http_status": 200,
+      "sha256": "8b722d981915f6db47f3401ada2114149653d03922ba11af05cef042940ff9d8",
+      "bytes": 594741,
+      "decision": "withhold_pending_rights_and_arrival_review",
+      "reason": "Publisher provides public visitor address but restricts commercial use of names/media; no clearance inferred. Licensed practical arrival point not yet admitted."
+    }
+  ],
+  "denied_source_requests": [
+    {
+      "url": "https://www.catoosa.com/",
+      "http_status": 403,
+      "action": "Stopped; no alternate route used."
+    }
+  ],
+  "reviewed_bundle": {
+    "accepted": 70,
+    "states": 24,
+    "primary_categories": {
+      "roadside": 1,
+      "entertainment": 0,
+      "nature": 12,
+      "beaches": 12,
+      "landmarks": 0,
+      "museums": 8,
+      "national_parks": 37
+    },
+    "source_counts": {
+      "boulder-osmp": 12,
+      "nps": 45,
+      "nps-public": 12,
+      "kaggle-loc-roadside": 1
+    },
+    "regions": {
+      "CO": 16,
+      "ME": 1,
+      "UT": 5,
+      "SD": 3,
+      "TX": 2,
+      "FL": 3,
+      "NM": 1,
+      "SC": 1,
+      "OR": 1,
+      "OH": 1,
+      "AK": 2,
+      "CA": 13,
+      "MT": 1,
+      "NV": 1,
+      "AZ": 3,
+      "TN": 1,
+      "WY": 2,
+      "HI": 2,
+      "KY": 1,
+      "WA": 2,
+      "VA": 1,
+      "ND": 1,
+      "MN": 1,
+      "IN": 5
+    },
+    "generation": "7c5bc43052ab34703ca890563a1c5a427dcc2ff426b135a9e38e13f4a92302df",
+    "manifest_sha256": "2de2c789b169f2fad016eeb8d9c73f372ccaafb2e136ec1f43ad0a5b6d51ad69",
+    "indexed_catalog_bytes": 425984,
+    "database_bytes": 8419007,
+    "previous_generation": "755d5def2d1cece69042118c07534b1e067a4c16740ed00bf4e17dd62265f057",
+    "stage_idempotence_passed": true,
+    "activation_rollback_passed": true,
+    "archive_bytes": 32021,
+    "archive_sha256": "25435cdf04e01a3af30b0d0a3e11cf754f320b9ce68a815052336a1c9d6983df",
+    "restore_all_tables_and_pointer_equal": true,
+    "source_table_state": {
+      "places_catalog": {
+        "rows": 139,
+        "content_md5": "ba2a14c86b3a01161f33162eb7b75f2a"
+      },
+      "places_catalog_imports": {
+        "rows": 2,
+        "content_md5": "b0a9de2a232768fe62c3069db0a84816"
+      },
+      "places_catalog_active": {
+        "rows": 1,
+        "content_md5": "fd1eb821c6cff543f2f7ca5bbecb51c2"
+      },
+      "active_generation": "7c5bc43052ab34703ca890563a1c5a427dcc2ff426b135a9e38e13f4a92302df"
+    },
+    "restored_table_state": {
+      "places_catalog": {
+        "rows": 139,
+        "content_md5": "ba2a14c86b3a01161f33162eb7b75f2a"
+      },
+      "places_catalog_imports": {
+        "rows": 2,
+        "content_md5": "b0a9de2a232768fe62c3069db0a84816"
+      },
+      "places_catalog_active": {
+        "rows": 1,
+        "content_md5": "fd1eb821c6cff543f2f7ca5bbecb51c2"
+      },
+      "active_generation": "7c5bc43052ab34703ca890563a1c5a427dcc2ff426b135a9e38e13f4a92302df"
+    },
+    "real_discovery_adapters": {
+      "legacy_provider_id": "kaggle-loc:279",
+      "persona_provider_ids": [
+        "kaggle-loc:279"
+      ],
+      "evening_provider_ids": [
+        "kaggle-loc:279"
+      ],
+      "http_calls": 0,
+      "tripadvisor_calls": 0
+    },
+    "sample": {
+      "provider_id": "kaggle-loc:279",
+      "source": "kaggle-loc-roadside",
+      "source_release": "kaggle-loc-v4+review-2026-10-15",
+      "name": "The World's Only Corn Palace",
+      "coordinates": [
+        43.71485882,
+        -98.02536536
+      ],
+      "source_attribution": "Kaggle roadside metadata v4 by Heads or Tails (CC0); Library of Congress, Prints & Photographs Division, John Margolies archive; licensed Overture arrival facts. No photographs imported.",
+      "source_updated_at": null
+    },
+    "sample_source_provenance": [
+      {
+        "dataset": "meta",
+        "license": "CDLA-Permissive-2.0",
+        "version": "2026-09-14",
+        "property": "",
+        "provider": "meta",
+        "resource": "meta",
+        "record_id": "95155847387",
+        "update_time": "2026-09-14T00:00:00.000Z"
+      },
+      {
+        "dataset": "Overture",
+        "license": "CDLA-Permissive-2.0",
+        "version": "2026-09-17",
+        "property": "/properties/confidence",
+        "provider": "overture",
+        "resource": "confidence_calculation",
+        "update_time": "2026-09-17T22:52:12Z"
+      },
+      {
+        "dataset": "Overture-signals",
+        "license": "CDLA-Permissive-2.0",
+        "version": "2026-09-14",
+        "property": "/properties/operating_status",
+        "provider": "overture",
+        "resource": "operating_status_signal",
+        "record_id": "76e0dfbc-ed55-4882-8571-35a1be91ae7f",
+        "update_time": "2026-09-14T15:43:16Z"
+      },
+      {
+        "sha256": "7ef1e5093de5a6c798aee0456dd8103e3c33186a54cd4df760edb809610e7ca2",
+        "dataset": "Overture reviewed arrival point",
+        "release": "2026-09-23.1",
+        "record_id": "bb5dda13-ffd0-4791-8715-7b82aed55d42",
+        "source_url": "s3://overturemaps-us-west-2/release/2026-09-23.1/theme=places/type=place/",
+        "original_category": "stadium_arena"
+      },
+      {
+        "sha256": "f0f3452e84c40d8cf05d35a7750ca1ac308f91f3dc9fe5e59e95abda14bd887a",
+        "dataset": "Kaggle LOC roadside metadata",
+        "license": "CC0-1.0",
+        "release": "4",
+        "record_id": "279",
+        "source_url": "https://www.kaggle.com/datasets/headsortails/us-roadside-attractions-photographs/versions/4",
+        "photo_coordinates_used": false,
+        "alternate_photo_indices": [
+          2539,
+          5771,
+          5772,
+          5773,
+          5774,
+          5775,
+          5776,
+          5777,
+          5778,
+          5779,
+          5780,
+          5781,
+          5782,
+          5783,
+          5784,
+          5785,
+          5786,
+          5787,
+          5788,
+          5789,
+          5790,
+          5791,
+          5792,
+          5793,
+          5794
+        ]
+      },
+      {
+        "sha256": "3c7ad29bc2ad742dc3b0b37145b71ce9b3aadeab19bbbdc359b2190a22b9f43c",
+        "dataset": "LOC Margolies archive rights statement",
+        "license": "LicenseRef-LOC-Margolies-Notice",
+        "record_id": "723_marg.html",
+        "source_url": "https://guides.loc.gov/ld.php?content_id=76336558",
+        "photographs_imported": false
+      },
+      {
+        "dataset": "Corn Palace official visitor and parking evidence",
+        "checked_at": "2026-10-15T01:27:00.471091+00:00",
+        "source_url": "https://www.cornpalace.com/31/Visiting",
+        "limitations": "Parking may require a short walk. Check dated closures, event restrictions and holiday hours; future opening/parking availability is unknown.",
+        "parking_url": "https://www.cornpalace.com/173/Parking",
+        "arrival_type": "venue frontage at published visitor address",
+        "driving_road": "North Main Street",
+        "snapshot_sha256": [
+          "791137478efb6f987aa2b0e5fc126d351d7bfcccead8da6a75e2fb02664ade36",
+          "fafe7de212f0ac973b33b9dbd09d155eb8c9b6c7ec8125afd760492f8bfa18d6"
+        ],
+        "primary_category": "roadside",
+        "coordinate_source": "licensed Overture venue point; unchanged",
+        "driving_snap_distance_m": 16.262
+      },
+      {
+        "dataset": "Roadtrips active catalog",
+        "generation": "7c5bc43052ab34703ca890563a1c5a427dcc2ff426b135a9e38e13f4a92302df",
+        "release": "pilot-2026-10-15.1"
+      }
+    ],
+    "remaining_to_500": 430,
+    "missing_states": [
+      "AL",
+      "AR",
+      "CT",
+      "DE",
+      "GA",
+      "IA",
+      "ID",
+      "IL",
+      "KS",
+      "LA",
+      "MA",
+      "MD",
+      "MI",
+      "MO",
+      "MS",
+      "NC",
+      "NE",
+      "NH",
+      "NJ",
+      "NY",
+      "OK",
+      "PA",
+      "RI",
+      "VT",
+      "WI",
+      "WV"
+    ],
+    "missing_dc": true
+  },
+  "preserved_400_evaluation": {
+    "unchanged": true,
+    "active_generation": "644b404dd237d07fba916a6bc636decf66d31056c7898668921acf6be1e33aa3",
+    "temporarily_closed_candidate_preserved_for_evaluation_only": "27260a45-e524-43e3-8267-937dcaeaeb9b",
+    "overture_candidates_pending": 331
+  },
+  "production_changed": false,
+  "validation": {
+    "backend_passed": 922,
+    "backend_coverage_percent": 87.54,
+    "floor_unchanged": 63,
+    "new_roadside_synthetic_cases": 20,
+    "real_postgres_cases_included": 5,
+    "frontend_passed": 314,
+    "frontend_line_coverage_percent": 90.23,
+    "frontend_format_lint_build": "passed"
+  }
+}

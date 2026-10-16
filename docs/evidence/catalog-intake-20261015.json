@@ -1,0 +1,184 @@
+{
+  "scope": "Authentic public Kaggle intake and disposable PostgreSQL validation; no production catalog writes",
+  "sources": [
+    {
+      "kaggle_slug": "paultimothymooney/trailstrailheadsandrockformationsinboulder",
+      "version": 1,
+      "archive_bytes": 4705510,
+      "archive_sha256": "5dfb978b50c8d238eda2362dcd99b1a1b2328bbe2fc8827803fdc99bb48ff5c4",
+      "member": "OSMP_Trailheads.csv",
+      "member_bytes": 15823,
+      "member_sha256": "1e4fff46786be564577818f740d54efd2d36ad16cde3e18a8b597b6bc6102c48",
+      "rows": 36,
+      "duplicate_keys": 0,
+      "finite_wgs84_source_points": 36,
+      "source_points_are_verified_arrivals": false,
+      "accepted_for_import": 0
+    },
+    {
+      "kaggle_slug": "robikscube/rollercoaster-database",
+      "version": 2,
+      "archive_bytes": 1007277,
+      "archive_sha256": "16dd8ded1cd2cebf81e721eefdc82e2721730683226717ec8ffdb799135be9af",
+      "member": "coaster_db.csv",
+      "member_bytes": 457428,
+      "member_sha256": "ab5252b3a4d8e8fa523b41f8e05b0e08fdce3d73bdb49220e9d94364202ac240",
+      "rows": 1087,
+      "duplicate_keys": 97,
+      "finite_wgs84_source_points": 812,
+      "source_points_are_verified_arrivals": false,
+      "accepted_for_import": 0
+    },
+    {
+      "kaggle_slug": "imls/museum-directory",
+      "version": 1,
+      "archive_bytes": 1914327,
+      "archive_sha256": "6628bbe151ee7bbffb5e53515d30d10e6ed6858e45b7c27cf3c3b3af4bae879d",
+      "member": "museums.csv",
+      "member_bytes": 6817303,
+      "member_sha256": "5ce330cca06844b68fde45815686792f0e369b15bbb401fa5bfa7e1a456993db",
+      "rows": 33072,
+      "duplicate_keys": 0,
+      "finite_wgs84_source_points": 33007,
+      "source_points_are_verified_arrivals": false,
+      "accepted_for_import": 0
+    },
+    {
+      "kaggle_slug": "nationalparkservice/park-biodiversity",
+      "version": 3,
+      "archive_bytes": 2602745,
+      "archive_sha256": "19537d3229511b8471801b2a0525958b05bcd2231ed033418c63834ef114f8ec",
+      "member": "parks.csv",
+      "member_bytes": 3285,
+      "member_sha256": "dd31c26589b256f9f7fbe876a12960a91651f4091be0c21de878ebcf7d46a218",
+      "rows": 56,
+      "duplicate_keys": 0,
+      "finite_wgs84_source_points": 56,
+      "source_points_are_verified_arrivals": false,
+      "accepted_for_import": 0
+    },
+    {
+      "kaggle_slug": "headsortails/us-roadside-attractions-photographs",
+      "version": 4,
+      "archive_bytes": 236882,
+      "archive_sha256": "ccb612de965ec24613d8185cd4675d9b7bdf5672149721c8406b3bcdde21b556",
+      "member": "us_roadside_attractions.csv",
+      "member_bytes": 1482330,
+      "member_sha256": "f0f3452e84c40d8cf05d35a7750ca1ac308f91f3dc9fe5e59e95abda14bd887a",
+      "rows": 11710,
+      "duplicate_keys": 0,
+      "finite_wgs84_source_points": null,
+      "source_points_are_verified_arrivals": false,
+      "accepted_for_import": 0
+    }
+  ],
+  "boulder_dry_run": {
+    "scanned": 36,
+    "accepted": 12,
+    "bytes": 4705510,
+    "rejects": {
+      "operator_evidence_missing": 23,
+      "same_flagstaff_summit_destination": 1
+    },
+    "regions": {
+      "CO": 12
+    },
+    "primary_categories": {
+      "nature": 12
+    }
+  },
+  "isolated_postgres": {
+    "authentic_catalog": true,
+    "active_generation": "c15d1c9c224f5e13b6c8c070209eeb0ea53b04be39f6423a46624e1df0b11ec5",
+    "previous_generation": "ee77cc84674be415631449e92e0e19510a4089cefd3e11646e08da6364166cbe",
+    "rows": 12,
+    "content_md5": "681166eb3122875e06986086416f06d7",
+    "catalog_bytes": 204800,
+    "database_bytes": 8197823,
+    "idempotent_stage": true,
+    "activation_rollback_verified": true,
+    "nearby_source_ids": [
+      "boulder:272",
+      "boulder:277",
+      "boulder:282",
+      "boulder:284",
+      "boulder:283",
+      "boulder:297",
+      "boulder:210",
+      "boulder:201",
+      "boulder:101"
+    ],
+    "provenance_preserved": true,
+    "production_changed": false,
+    "restored_active_generation": "c15d1c9c224f5e13b6c8c070209eeb0ea53b04be39f6423a46624e1df0b11ec5",
+    "restore_rows": 12,
+    "restore_content_md5": "681166eb3122875e06986086416f06d7",
+    "restore_matches": true,
+    "dump_bytes": 10630,
+    "dump_sha256": "9e2bbf8632582a0feda04be73413cc1c156c06b79f3b2d4e71b3b16f2c96afef"
+  },
+  "production_connectivity": [
+    {
+      "label": "frontend",
+      "url": "https://roadtrips.elischiffler.dev",
+      "status": 200,
+      "checked_at": "2026-10-14T23:58:56.796268+00:00"
+    },
+    {
+      "label": "api_health",
+      "url": "https://api.roadtrips.elischiffler.dev/health",
+      "status": 200,
+      "checked_at": "2026-10-14T23:58:57.286021+00:00",
+      "body": {
+        "status": "ok"
+      }
+    },
+    {
+      "label": "api_ready",
+      "url": "https://api.roadtrips.elischiffler.dev/ready",
+      "status": 200,
+      "checked_at": "2026-10-14T23:58:58.500723+00:00",
+      "body": {
+        "status": "ready"
+      }
+    },
+    {
+      "label": "algorithms",
+      "url": "https://api.roadtrips.elischiffler.dev/algorithms",
+      "status": 200,
+      "checked_at": "2026-10-14T23:58:58.903014+00:00",
+      "body": {
+        "algorithms": [
+          "cp_sat"
+        ],
+        "default": "cp_sat"
+      }
+    }
+  ],
+  "coverage": {
+    "accepted_locally": 12,
+    "accepted_in_neon": 0,
+    "local_primary_categories": {
+      "nature": 12,
+      "roadside": 0,
+      "entertainment": 0,
+      "beaches": 0,
+      "landmarks": 0,
+      "museums": 0,
+      "national_parks": 0
+    },
+    "local_regions": {
+      "CO": 12
+    },
+    "national_coverage": false,
+    "evening_coverage": false
+  },
+  "checks": {
+    "backend_passed": 866,
+    "backend_application_coverage": 88.29,
+    "frontend_passed": 314,
+    "frontend_line_coverage": 90.23,
+    "production_flow_validated": false,
+    "current_production_backup_evidence_available": false
+  }
+}

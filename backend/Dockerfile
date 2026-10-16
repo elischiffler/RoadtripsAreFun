@@ -5,7 +5,14 @@ COPY backend/requirements.txt ./requirements.txt
 RUN python -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
 
 FROM dependencies AS test
+ARG VCS_REF
+LABEL org.opencontainers.image.revision=$VCS_REF
 COPY backend/ ./
+COPY scripts/ /scripts/
+COPY frontend/public/licenses/ /frontend/public/licenses/
+COPY docs/data/catalog-expansion-20261015/ /docs/data/catalog-expansion-20261015/
+COPY docs/data/catalog-expansion-kaggle-20261015/ /docs/data/catalog-expansion-kaggle-20261015/
+COPY docs/data/catalog-expansion-500-20261015/reviewed-500.preview.jsonl /docs/data/catalog-expansion-500-20261015/reviewed-500.preview.jsonl
 ENV PATH="/opt/venv/bin:$PATH" PYTHONDONTWRITEBYTECODE=1
 CMD ["pytest", "--cov=app", "--cov-report=term-missing", "--cov-fail-under=63"]
 

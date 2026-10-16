@@ -274,6 +274,10 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
                 "utility",
                 "section_id",
                 "source_query_ids",
+                "source_release",
+                "source_attribution",
+                "source_updated_at",
+                "source_provenance",
                 "route_progress_seconds",
                 "detour_seconds",
             )
@@ -349,7 +353,13 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
         "duration": (route or {}).get("duration"),
     }
     input_hash = fingerprint(canonical_inputs)
-    candidate_hash = fingerprint({"candidates": model, "points": explanation.get("query_points")})
+    eligibility = {
+        key: solver.get(key)
+        for key in ("eligibility_policy", "utility_threshold", "utility_threshold_inclusive")
+    }
+    candidate_hash = fingerprint(
+        {"candidates": model, "points": explanation.get("query_points"), "eligibility": eligibility}
+    )
     revision = os.getenv("ROADTRIPS_REVISION", "unversioned-local")
     comparison = fingerprint(
         {
@@ -366,11 +376,13 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
             "mode": envelope["mode"],
             "metric": METRIC_VERSION,
             "revision": revision,
+            "eligibility": eligibility,
         }
     )
     objective = solver.get("objective_value")
     return {
         "metric_version": METRIC_VERSION,
+        "eligibility_policy": eligibility,
         "provider_measurements": telemetry.get("providers", {}),
         "distinct_requests": telemetry.get("requests", {}),
         "discovery_requests": len((explanation.get("discovery") or {}).get("queries", [])),
@@ -438,7 +450,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
         "external_calls": {
             key: telemetry["calls"].get(key, 0)
             for key in (
-                "tripadvisor",
+                "catalog",
                 "mapbox",
                 "language_model",
                 "gateway_auth",

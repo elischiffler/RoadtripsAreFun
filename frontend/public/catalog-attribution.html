@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Places catalog sources — RoadtripsAreFun</title>
+  </head>
+  <body>
+    <main>
+      <h1>Places catalog sources</h1>
+      <p>
+        Catalog places identify their contributing source. Supported inputs include Overture Maps
+        Foundation, reviewed City of Boulder trailheads mirrored on Kaggle, and National Park
+        Service park identities and visitor arrival data. Each result identifies its source release
+        and, when available, the upstream evidence date. Dataset identity is not a live confirmation
+        of access, opening hours or availability. Attribute ratings are model estimates, not source
+        reviews.
+      </p>
+      <p>
+        RoadtripsAreFun filters United States records, maps road-trip categories, normalizes
+        coordinates and address fields, and omits unused properties. Source identifiers and
+        attribution are retained. Coverage is limited to the areas and categories in the active
+        import; it is not exhaustive.
+      </p>
+      <ul>
+        <li>
+          USDA Forest Service public recreation facility facts and U.S. Census Bureau ACS 2025
+          cartographic state boundaries: see the
+          <a href="/licenses/LicenseRef-US-Agency-Factual-Data.txt">agency factual-data notice</a>.
+          Native facility coordinates are preserved. State classification uses Census polygons;
+          driving checks use OSRM and
+          <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors (ODbL)</a
+          >. Access evidence is dated; check current seasonal and road restrictions. No agency
+          endorsement.
+        </li>
+        <li>
+          Meta, Microsoft, PinMeTo, Krick, RenderSEO, DAC and BrightQuery:
+          <a href="/licenses/CDLA-Permissive-2.0.txt">CDLA Permissive 2.0</a>.
+        </li>
+        <li>
+          Foursquare: Copyright 2024 Foursquare Labs, Inc. All rights reserved. Transformed to the
+          Overture schema, changed March 18, 2026.
+          <a href="/licenses/Apache-2.0.txt">Apache License 2.0</a> and
+          <a href="/licenses/Foursquare-NOTICE.txt">full Foursquare notice</a>.
+        </li>
+        <li>
+          AllThePlaces:
+          <a href="/licenses/CC0-1.0.txt">CC0 1.0</a>.
+        </li>
+        <li>
+          City of Boulder Open Space and Mountain Parks:
+          <a href="/licenses/CC0-1.0.txt">CC0 1.0</a>,
+          <a href="https://bouldercolorado.gov/services/open-data">city terms</a>. Trailhead archive
+          version 1 is mirrored by
+          <a
+            href="https://www.kaggle.com/datasets/paultimothymooney/trailstrailheadsandrockformationsinboulder"
+            >paultimothymooney on Kaggle</a
+          >. Current arrival points and dated status evidence come from the city's trailhead pages.
+          No City endorsement is implied.
+        </li>
+        <li>
+          Roadside metadata compiled by Heads or Tails in Kaggle's
+          <a
+            href="https://www.kaggle.com/datasets/headsortails/us-roadside-attractions-photographs/versions/4"
+            >US roadside attractions photographs version 4</a
+          >: <a href="/licenses/CC0-1.0.txt">CC0 1.0</a> for the metadata compilation. Library of
+          Congress, Prints &amp; Photographs Division, John Margolies archive:
+          <a href="/licenses/LicenseRef-LOC-Margolies-Notice.txt">archive-specific rights notice</a
+          >. Current arrival facts are independently reviewed against official visitor information
+          and licensed Overture coordinates. Photographs and website prose are omitted.
+        </li>
+        <li>
+          National Park Service park identities mirrored in Kaggle's
+          <a href="https://www.kaggle.com/datasets/nationalparkservice/park-biodiversity"
+            >park-biodiversity version 3</a
+          >: <a href="/licenses/CC0-1.0.txt">CC0 1.0</a>. Current visitor facilities and beach
+          parking arrivals use factual fields from the
+          <a href="https://www.nps.gov/subjects/digital/structured-data.htm"
+            >NPS published structured data</a
+          >. See the
+          <a href="/licenses/LicenseRef-US-Government-Work.txt">government-work rights notice</a>.
+          No NPS endorsement is implied. Park-center coordinates, photographs, species records and
+          third-party creative works are omitted. Reviewed heritage-unit arrivals also use the NPS
+          public unit inventory for identity and designation, with current visitor-facility state,
+          coordinates, parking and access evidence kept separately. Cartographic park-label geometry
+          is not an arrival source. Some dated driving-arrival reviews use the OSRM routing engine
+          and
+          <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors (ODbL)</a
+          >. Those network checks do not replace the original publisher's facility coordinates.
+        </li>
+        <li>
+          Harvestly Markets, derived from USDA Local Food Portal data:
+          <a
+            href="https://www.kaggle.com/datasets/harvestlymarkets/us-farmers-markets-by-state-2026/versions/4"
+            >U.S. Farmers Markets by State 2026, Kaggle version 4</a
+          >, reconciled with the publisher's October 11, 2026 snapshot and current public visitor
+          records. <a href="/licenses/CC-BY-4.0.txt">CC BY 4.0</a>;
+          <a href="https://harvestlymarkets.com/data-sources/">source and methodology</a>. Roadtrips
+          filters, classifies and normalizes factual records while preserving native identities and
+          coordinates. Historical update dates and separately attributed source seasons remain in
+          provenance. A current listing does not guarantee a market is open on a trip date. No
+          endorsement is implied; source data carries no warranty. Descriptions, personal contact
+          details and photographs are omitted. Independent
+          <a href="https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html"
+            >U.S. Census Bureau address-range checks</a
+          >
+          corroborate published addresses; see the
+          <a href="/licenses/LicenseRef-US-Census-Geocoder.txt">government-data notice</a>.
+          Interpolated checks preserve native market points and do not establish surveyed entrances
+          or parking access. New York records independently use current
+          <a href="https://data.ny.gov/resource/qq4h-8p86.json">state agriculture market facts</a>
+          under the <a href="/licenses/LicenseRef-NY-Open-Data.txt">OPEN-NY terms notice</a>. Agency
+          point comparisons preserve the Kaggle points and do not verify parking.
+          Independently attributed seasonal and visitor-location facts also come from the
+          <a href="https://www.cdfa.ca.gov/is/docs/CurrentMrktsCounty.pdf"
+            >California Department of Food and Agriculture certified-market roster</a
+          > and the
+          <a href="https://agriculture.ny.gov/farmersmarkets">New York agriculture department's
+            regional consumer market schedules</a
+          >. These additional sources corroborate factual public market locations and dated
+          schedules; their prose and artwork are omitted. OPEN-NY terms apply to the OPEN-NY
+          registry facts, without extending that grant to the regional PDF publications. Native
+          unknown street fields remain unknown; independently published visitor addresses are
+          retained separately with their own source receipts.
+        </li>
+        <li>
+          Chicago Park District factual facility identities and coordinates, mirrored in
+          <a
+            href="https://www.kaggle.com/datasets/chicago/chicago-parks-locations,-facilities-features/versions/15"
+            >Chicago parks facilities and features, Kaggle version 15</a
+          >, use the publisher's independently verified
+          <a href="/licenses/LicenseRef-Chicago-Park-District-Public-Domain.txt"
+            >public-domain factual-data notice</a
+          >. Current official beach and park facts supply separately attributed shore-access
+          schedules and restrictions. Shore access does not establish permission to swim; ended
+          swimming seasons and facility-specific restrictions remain separate. Public-road arrival
+          evidence uses OSRM and
+          <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>.
+          The selected coastal network evidence and derived access assessments are available
+          under <a href="/licenses/ODbL-1.0.txt">ODbL 1.0</a> in the
+          <a href="/catalog-osm-coastal-arrivals.json">coastal arrival evidence file</a>.
+          Original facility points are preserved; a driving snap does not establish parking
+          availability. No agency endorsement is implied.
+        </li>
+        <li>
+          City of Los Angeles cultural venues:
+          <a
+            href="https://www.kaggle.com/datasets/cityofLA/la-cultural-centers-theatres-sites-galleries/versions/25"
+            >Kaggle version 25</a
+          >, and New York State historic sites:
+          <a
+            href="https://www.kaggle.com/datasets/new-york-state/nys-state-historic-sites/versions/9"
+            >Kaggle version 9</a
+          >, use the official publishers' factual inventories and
+          <a href="/licenses/CC0-1.0.txt">CC0 notices</a>. New York's separately retained
+          <a href="/licenses/LicenseRef-NY-Open-Data.txt">OPEN-NY terms</a> also apply to its
+          current agency facts. Roadtrips retains native coordinates and separately attributes
+          current component hours, restrictions and arrival evidence. Closed or unresolved
+          components are withheld. No endorsement or ticket availability is implied.
+        </li>
+        <li>
+          Ride in Park:
+          <a href="https://www.kaggle.com/datasets/rideinpark/theme-parks-of-the-world/versions/1"
+            >Theme Parks of the World, Kaggle version 1</a
+          >, <a href="/licenses/CC-BY-4.0.txt">CC BY 4.0</a>. Original Wikidata identities and
+          coordinates are preserved; Wikidata structured data uses
+          <a href="/licenses/CC0-1.0.txt">CC0 1.0</a>. Roadtrips filters and classifies
+          independently reviewed destinations, retaining operator access restrictions separately. No
+          endorsement or warranty is implied. Operator prose, images and Wikipedia article text are
+          omitted. Independent arrival checks retain attributed public-road and parking evidence
+          from OpenStreetMap; native place coordinates are preserved. Roadtrips' OSM evidence and
+          derived access assessments remain available under
+          <a href="/licenses/ODbL-1.0.txt">ODbL 1.0</a> in the
+          <a href="/catalog-osm-arrivals.json">selected arrival evidence file</a>. Driving evidence
+          uses OSRM and
+          <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors (ODbL)</a
+          >; a road snap does not establish parking or unrestricted access.
+        </li>
+      </ul>
+      <p>
+        Only sources present in a record's retained provenance apply to that record. Overture
+        processing provenance accompanies the upstream source; it does not replace the upstream
+        license. Overture-signals operating-status processing uses CDLA Permissive 2.0 and requires
+        an independently identified admitted upstream source. No Tripadvisor content is used to seed
+        the catalog. OpenStreetMap place records are not included in this catalog version; its
+        routing-network evidence is credited separately above.
+      </p>
+      <p>
+        See Overture's
+        <a href="https://docs.overturemaps.org/attribution/">source attribution</a>
+        and <a href="https://docs.overturemaps.org/guides/places/">Places guide</a>.
+      </p>
+    </main>
+  </body>
+</html>

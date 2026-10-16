@@ -1,5 +1,17 @@
 # Explain the adaptive CP-SAT pipeline
 
+## Catalog discovery (October 15, 2026)
+
+Daytime and optional evening discovery read the active, licensed mixed-source
+catalog in Neon PostgreSQL. PR #40 deployed the first bounded release; this does
+not establish nationwide coverage or complete live journey acceptance.
+Missing coverage returns no places. Hotels, Mapbox road checks, geocoding and
+model-estimated interest ratings remain separate dependencies. See
+[rollout and rollback](neon-places-catalog.md) and the
+[Tripadvisor integration removal audit](tripadvisor-removal.md).
+Historical provider descriptions and measurements below retain their original
+meaning; they are not instructions for the current discovery implementation.
+
 Current contract: October 5, 2026, `codex/production-release`. Studio (`/studio`)
 and ordinary chat use the same live planner. Historical surplus objectives remain
 historical; the current metric version is `balanced-route-v3`.
@@ -13,7 +25,10 @@ fact. Account interests and trip overrides retain their existing precedence.
 
 The baseline Mapbox route supplies geometry and step driving durations. Equal
 driving-time sections receive evenly spaced search points in round-robin order.
-Nearby Terra searches retain the five-mile radius and verified attraction filter.
+The catalog branch retains the five-mile radius with explicit daytime category
+filtering. Catalog identity and coordinates are source facts; release and evidence
+dates do not establish current business availability. Unknown opening hours remain
+unknown. Sparse catalog results are reported without a live-provider fallback.
 Raw, rating and solver capacities are balanced across sections, with unused
 capacity redistributed. Available categories provide variety; absent categories
 are not invented. See [adaptive planning](adaptive-planning.md) for the budgets.
@@ -34,7 +49,10 @@ general provider failures fail the required stage.
 
 ## The selection model
 
-Eligible candidates have utility at least `0.60` and usable measured road routes.
+Eligible candidates have positive utility and usable measured road routes.
+Neutral or specialized places remain available when they are the best matches in
+the catalog. Ratings keep their original values; the existing ten-point quality
+bound compares the selected average with the best achievable average.
 Let `K = min(requested_count, eligible_count)`. Select exactly K candidates. There
 is no nearest-query-slot constraint. With zero requested stops discovery is
 skipped; no eligible candidates produce the honest empty-selection status.

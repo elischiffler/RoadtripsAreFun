@@ -703,7 +703,7 @@ class AppToolDispatcher:
         if trip.persona_weights or args.get("persona_weights"):
             payload_data["persona_weights"] = args.get("persona_weights") or trip.persona_weights
         payload = Route_Payload.model_validate(payload_data)
-        # Proxy planning (and its whitelisted TripAdvisor/hotel calls) to the
+        # Proxy planning (including catalog and hotel lookups) to the
         # deployed backend in local dev; run locally on the deployed backend.
         if routing_remote.remote_enabled():
             route = await routing_remote.plan_final_route_remote(

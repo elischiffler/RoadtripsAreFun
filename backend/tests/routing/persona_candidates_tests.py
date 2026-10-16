@@ -66,16 +66,21 @@ async def test_attractions_verify_identity_coordinates_ratings_and_utility():
     places = FakePlaces(
         attractions=[
             source.VerifiedPlace(
-                provider_id="terra:7", name="Real Museum", coordinates=[40, -74], address="7 Main"
+                provider_id="overture:7",
+                name="Real Museum",
+                coordinates=[40, -74],
+                address="7 Main",
             ),
-            source.VerifiedPlace(provider_id="terra:8", name="Bad Ratings", coordinates=[40, -74]),
+            source.VerifiedPlace(
+                provider_id="overture:8", name="Bad Ratings", coordinates=[40, -74]
+            ),
         ]
     )
     result = await discover(
         object(), [[40, -74]], default_weights(), ai=FakeAI(proposals), places=places
     )
     assert len(result) == 1
-    assert result[0]["provider_id"] == "terra:7"
+    assert result[0]["provider_id"] == "overture:7"
     assert result[0]["coordinates"] == [40, -74]
     assert result[0]["utility"] == pytest.approx(0.7)
     assert result[0]["address"] == "7 Main"
@@ -87,7 +92,7 @@ async def test_attractions_reject_distant_malformed_and_cap_output():
         async def attractions_near(self, point):
             self.calls += 1
             return [
-                {"provider_id": f"terra:{self.calls}", "name": "Park", "coordinates": point},
+                {"provider_id": f"overture:{self.calls}", "name": "Park", "coordinates": point},
                 {"provider_id": "bad", "name": "Park", "coordinates": [999, 0]},
             ]
 
@@ -99,7 +104,7 @@ async def test_attractions_reject_distant_malformed_and_cap_output():
 
     distant = FakePlaces(
         attractions=[
-            source.VerifiedPlace(provider_id="terra:9", name="Park", coordinates=[41, -74])
+            source.VerifiedPlace(provider_id="overture:9", name="Park", coordinates=[41, -74])
         ]
     )
     assert not await discover(None, [[40, -74]], default_weights(), ai=ai, places=distant)
@@ -206,7 +211,7 @@ async def test_unavailable_providers_fail_clearly():
             places=FakePlaces(
                 attractions=[
                     source.VerifiedPlace(
-                        provider_id="terra:verified", name="Real Museum", coordinates=[40, -74]
+                        provider_id="overture:verified", name="Real Museum", coordinates=[40, -74]
                     )
                 ]
             ),
@@ -214,9 +219,9 @@ async def test_unavailable_providers_fail_clearly():
 
     class BrokenPlaces(FakePlaces):
         async def attractions_near(self, _point):
-            raise source.CandidateProviderError("Terra unavailable")
+            raise source.CandidateProviderError("Catalog unavailable")
 
-    with pytest.raises(source.CandidateProviderError, match="Terra unavailable"):
+    with pytest.raises(source.CandidateProviderError, match="Catalog unavailable"):
         await discover(
             None,
             [[40, -74]],
@@ -250,7 +255,7 @@ async def test_google_adapter_supplies_verified_names_prices_and_links(monkeypat
 
     class RatingAI(FakeAI):
         def complete(self, messages, tools):
-            assert "provider-verified names" in messages[-1].content
+            assert "source-record names" in messages[-1].content
             assert '["Hotel One"]' in messages[-1].content
             return super().complete(messages, tools)
 
@@ -286,7 +291,9 @@ async def test_collection_progress_only_reports_verified_unique_matches():
     )
     places = FakePlaces(
         attractions=[
-            source.VerifiedPlace(provider_id="terra:7", name="Real Museum", coordinates=[40, -74]),
+            source.VerifiedPlace(
+                provider_id="overture:7", name="Real Museum", coordinates=[40, -74]
+            ),
         ]
     )
     with reporting(events.append):
@@ -311,15 +318,17 @@ async def test_collection_progress_only_reports_verified_unique_matches():
 async def test_attraction_ratings_are_grounded_in_nearby_provider_names():
     class GroundedAI(FakeAI):
         def complete(self, messages, tools):
-            assert "Rate only these provider-verified names" in messages[-1].content
+            assert "Rate only these source-record names" in messages[-1].content
             assert "Real Museum" in messages[-1].content
             assert "Distant attraction" not in messages[-1].content
             return super().complete(messages, tools)
 
     records = [
-        source.VerifiedPlace(provider_id="terra:near", name="Real Museum", coordinates=[40, -74]),
         source.VerifiedPlace(
-            provider_id="terra:far", name="Distant attraction", coordinates=[50, -74]
+            provider_id="overture:near", name="Real Museum", coordinates=[40, -74]
+        ),
+        source.VerifiedPlace(
+            provider_id="overture:far", name="Distant attraction", coordinates=[50, -74]
         ),
     ]
     candidates = await discover(
@@ -329,94 +338,58 @@ async def test_attraction_ratings_are_grounded_in_nearby_provider_names():
         ai=GroundedAI([{"name": "Real Museum", "attribute_ratings": _ratings()}]),
         places=FakePlaces(attractions=records),
     )
-    assert [candidate["provider_id"] for candidate in candidates] == ["terra:near"]
+    assert [candidate["provider_id"] for candidate in candidates] == ["overture:near"]
 
 
 @pytest.mark.asyncio
-async def test_live_attractions_reject_hotel_and_restaurant_listings(monkeypatch):
-    import httpx
+async def test_catalog_daytime_filters_bounds_and_preserves_attribution(monkeypatch):
+    def nearby(point, categories, **kwargs):
+        assert point == [40, -74] and categories == ["daytime"]
+        assert kwargs == {"radius_miles": 5.0, "limit": 60}
+        return [
+            {
+                "provider_id": "overture:1",
+                "name": "Museum",
+                "coordinates": [40, -74],
+                "categories": ["daytime", "culture"],
+                "source": "overture",
+                "source_release": "2026-09-23.1",
+                "source_attribution": "Overture contributors",
+            },
+            {
+                "provider_id": "overture:2",
+                "name": "Hotel",
+                "coordinates": [40, -74],
+                "categories": ["hotel"],
+            },
+            {
+                "provider_id": "overture:3",
+                "name": "Far",
+                "coordinates": [45, -74],
+                "categories": ["daytime"],
+            },
+        ]
 
-    entries = [
-        {
-            "location": {
-                "id": index,
-                "names": [{"value": name, "primary": True}],
-                "coordinates": {"latitude": 40, "longitude": -74},
-                "urls": {
-                    "tripadvisor": {"main": f"https://www.tripadvisor.com/{kind}-g1-d{index}"}
-                },
-            }
-        }
-        for index, (name, kind) in enumerate(
-            [
-                ("Museum", "Attraction_Review"),
-                ("Hotel", "Hotel_Review"),
-                ("Cafe", "Restaurant_Review"),
-            ],
-            start=1,
-        )
-    ]
-
-    def respond(request):
-        assert request.url.params["category"] == "ATTRACTION"
-        return httpx.Response(200, json={"data": entries})
-
-    client_type = httpx.AsyncClient
-    monkeypatch.setattr(source.LivePlaceProvider, "require_attractions", lambda self: None)
-    monkeypatch.setattr(source, "_auth_headers", lambda: {})
-    monkeypatch.setattr(
-        httpx,
-        "AsyncClient",
-        lambda **kwargs: client_type(transport=httpx.MockTransport(respond), **kwargs),
-    )
+    monkeypatch.setattr(source.repository, "nearby", nearby)
     records = await source.LivePlaceProvider().attractions_near([40, -74])
     assert [record.name for record in records] == ["Museum"]
-
-
-@pytest.mark.parametrize("status,attempts", [(429, 3), (401, 1)])
-async def test_live_terra_preserves_status_retry_after_and_hard_error_classification(
-    monkeypatch, status, attempts
-):
-    import httpx
-
-    from app.agent.provider_diagnostics import collecting_attempts, diagnostic, retry_async
-    from app.routing.runtime import limited, run_context
-    from app.routing.terra_pacing import TerraPacer
-
-    calls, delays = [], []
-    now = [0.0]
-
-    async def pacing_sleep(seconds):
-        now[0] += seconds
-
-    monkeypatch.setattr(
-        source, "terra_requests", TerraPacer(1, clock=lambda: now[0], sleep=pacing_sleep)
+    candidate = source._candidate(
+        records[0],
+        source.ProposedPlace(name="Museum", attribute_ratings=_ratings()),
+        default_weights(),
     )
+    assert candidate["source_release"] == "2026-09-23.1"
+    assert candidate["source_attribution"] == "Overture contributors"
+    assert candidate["provenance"]["verified_at"] is None
 
-    async def get(*args, **kwargs):
-        calls.append(1)
-        return httpx.Response(
-            status,
-            headers={"Retry-After": "7"},
-            request=httpx.Request("GET", "https://provider.test"),
-        )
 
-    async def sleep(seconds):
-        delays.append(seconds)
+@pytest.mark.asyncio
+async def test_catalog_error_does_not_leak_database_credentials(monkeypatch):
+    def fail(*args, **kwargs):
+        raise RuntimeError("postgresql://secret:password@private")
 
-    monkeypatch.setattr(source, "http_get", get)
-    monkeypatch.setattr(source, "_auth_headers", lambda: {})
-    monkeypatch.setattr(source.LivePlaceProvider, "require_attractions", staticmethod(lambda: None))
-    monkeypatch.setattr("app.agent.provider_diagnostics.asyncio.sleep", sleep)
-    with collecting_attempts() as records:
-        async with run_context():
-            with pytest.raises(source.CandidateProviderError) as raised:
-                await retry_async(
-                    lambda: limited(
-                        "nearby", lambda: source.LivePlaceProvider().attractions_near([40, -74])
-                    )
-                )
-    assert len(calls) == attempts
-    assert delays == ([7, 7] if status == 429 else [])
-    assert diagnostic(raised.value)["http_status"] == status
-    assert records[-1]["outcome"] == "failed"
+    monkeypatch.setattr(source.repository, "nearby", fail)
+    with pytest.raises(source.CandidateProviderError, match="catalog lookup unavailable") as raised:
+        await source.LivePlaceProvider().attractions_near([40, -74])
+    assert raised.value.__suppress_context__
+    assert "password" not in str(raised.value)

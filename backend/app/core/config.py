@@ -26,7 +26,6 @@ def validate_local_environment(env) -> None:
         raise ValueError("ROUTING_REMOTE_URL must be unset for an isolated preview")
     for name in (
         "MAPBOX_API",
-        "TRIPADVISOR_API",
         "GOOGLE_PLACES_API",
         "OPENCAGE_KEY",
         "CAR_DATA_API",
@@ -101,7 +100,7 @@ class Settings:
     MENTRO_SERVICE_PASSWORD = os.getenv("MENTRO_SERVICE_PASSWORD")
 
     # When set (local dev), the agent's routing tools proxy the IP-whitelisted
-    # external calls (Mapbox/TripAdvisor/hotels) through the DEPLOYED roadtrip
+    # external calls (Mapbox/hotels) through the DEPLOYED roadtrip
     # backend at this URL, which has the whitelisted IP. Unset on the deployed
     # backend itself, so the same tools run the routing locally there. See
     # app/agent/routing_remote.py and docs/chat-agent-design.md.
