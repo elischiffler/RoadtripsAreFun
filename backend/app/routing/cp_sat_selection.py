@@ -11,8 +11,9 @@ from app.agent.progress import emit
 from app.routing.base import PlanningError
 from app.routing.discovery import SelectedAttraction
 from app.routing.explanation import record_explanation
+from app.routing.profiles import UTILITY_FLOOR, eligible_utility
+from app.routing.visit_calendar import calendar_eligible
 
-MIN_UTILITY = 0.60
 MAX_CANDIDATES = 60
 UTILITY_SCALE = 1_000_000
 MAX_AVERAGE_QUALITY_LOSS = 0.10
@@ -22,7 +23,7 @@ TIME_LIMIT_SECONDS = 5.0
 @dataclass(frozen=True)
 class SelectionConfig:
     candidate_limit: int = MAX_CANDIDATES
-    utility_threshold: float = MIN_UTILITY
+    utility_threshold: float = UTILITY_FLOOR
     quality_loss: float = MAX_AVERAGE_QUALITY_LOSS
     spacing_weight: float = 1.0
     detour_weight: float = 1.0
@@ -127,6 +128,12 @@ def _prepare(candidates, baseline_seconds, config=PRODUCTION_CONFIG):
             explanation["reason"] = "duplicate_provider_id"
             continue
         seen.add(provider_id)
+        if not calendar_eligible(candidate):
+            explanation["reason"] = "unknown_source_visit_calendar"
+            continue
+        if not eligible_utility(utility):
+            explanation["reason"] = "nonpositive_utility"
+            continue
         if utility < config.utility_threshold:
             explanation["reason"] = "below_utility_threshold"
             continue
@@ -238,6 +245,10 @@ def select_attractions(
         "eligible_count": 0,
         "selected_count": 0,
         "utility_threshold": config.utility_threshold,
+        "utility_threshold_inclusive": config.utility_threshold > UTILITY_FLOOR,
+        "eligibility_policy": "positive_utility"
+        if config.utility_threshold == UTILITY_FLOOR
+        else "positive_utility_with_evaluation_threshold",
         "utility_scale": UTILITY_SCALE,
         "objective": "minimize_all_gap_deviation_plus_solo_detour_seconds",
         "objective_direction": "minimize",
@@ -260,6 +271,7 @@ def select_attractions(
         eligible=len(eligible),
         requestedStops=num_stops,
         threshold=config.utility_threshold,
+        thresholdInclusive=config.utility_threshold > UTILITY_FLOOR,
         sections=len({candidate.get("section_id") for candidate, _ in eligible}),
     )
     if not eligible:

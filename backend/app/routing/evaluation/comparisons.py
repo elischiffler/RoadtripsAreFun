@@ -5,7 +5,7 @@ from collections import defaultdict
 
 DEFAULTS = {
     "quality_loss": 0.10,
-    "utility_threshold": 0.60,
+    "utility_threshold": 0.0,
     "detour_weight": 1,
     "time_limit_seconds": 5,
     "budget": 180,

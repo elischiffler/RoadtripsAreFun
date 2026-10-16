@@ -1,0 +1,26 @@
+U.S. Census Bureau address-range corroboration
+
+Credit: U.S. Census Bureau, Geocoding Services, Public_AR_ACS2026 address-range
+benchmark (identifier 8). Original federal government factual data are not
+copyright protected under 17 U.S.C. 105. No Census endorsement is implied.
+Agency names, seals and trademarks are not licensed for endorsement or branding.
+
+Census Geocoding Services calculate positions along MAF/TIGER address ranges.
+These interpolated positions are independent sanity checks of published venue
+addresses, not surveyed entrances, parking locations or guarantees of access.
+Native Kaggle/USDA market coordinates are preserved, never replaced by Census
+points. Positional accuracy, current operation and suitability for a particular
+trip are not guaranteed. Unknown addresses or conflicting successful matches
+remain explicit and can prevent source admission.
+
+Official provenance, reuse and citation references:
+https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html
+https://geocoding.geo.census.gov/geocoder/benchmarks?format=json
+https://www2.census.gov/geo/pdfs/maps-data/data/tiger/tgrshp2026/TGRSHP2026_TechDoc_Ch1.pdf
+https://www.census.gov/about/policies/citation.html
+https://www.copyright.gov/title17/92chap1.html#105
+
+Only factual match results, source addresses and diagnostic distances are
+retained. Creative descriptions, photographs, logos and third-party works are
+not imported under this notice. Other catalog and routing sources retain their
+separate licenses and attribution.

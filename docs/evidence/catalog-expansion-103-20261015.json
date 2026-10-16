@@ -1,0 +1,557 @@
+{
+  "checked_at": "2026-10-15T03:25:57.550805+00:00",
+  "expansion_only": true,
+  "production_changed": false,
+  "original_release_changed": false,
+  "baseline_generation": "cfdb55a51fe8abfe015fcbb12b8d23c7a09fa71945d95758bd00756ec502ada0",
+  "baseline_identity_export_sha256": "ac7924ab511a5302ef4609ee18dd5c1df1dd3fba013528f90d1b25dce4db9335",
+  "source_release": "nps-heritage-2026-10-15",
+  "accepted": 103,
+  "primary_categories": {
+    "landmarks": 95,
+    "museums": 8
+  },
+  "regions": {
+    "AL": 1,
+    "AR": 2,
+    "AZ": 10,
+    "CA": 5,
+    "CO": 2,
+    "DC": 1,
+    "GA": 6,
+    "HI": 3,
+    "IA": 1,
+    "IL": 1,
+    "KS": 1,
+    "KY": 4,
+    "MA": 4,
+    "MD": 5,
+    "MI": 2,
+    "MN": 2,
+    "MO": 2,
+    "MT": 1,
+    "NC": 4,
+    "ND": 1,
+    "NE": 2,
+    "NM": 8,
+    "NY": 1,
+    "OH": 5,
+    "OR": 1,
+    "PA": 4,
+    "RI": 1,
+    "SC": 5,
+    "SD": 1,
+    "TN": 3,
+    "TX": 5,
+    "UT": 2,
+    "VA": 3,
+    "WA": 1,
+    "WY": 3
+  },
+  "states": 34,
+  "dc": 1,
+  "hypothetical_combined_total": 185,
+  "combined_regions": {
+    "AK": 1,
+    "AL": 1,
+    "AR": 3,
+    "AZ": 13,
+    "CA": 18,
+    "CO": 18,
+    "DC": 1,
+    "FL": 3,
+    "GA": 7,
+    "HI": 6,
+    "IA": 2,
+    "ID": 1,
+    "IL": 2,
+    "IN": 5,
+    "KS": 1,
+    "KY": 5,
+    "LA": 1,
+    "MA": 5,
+    "MD": 5,
+    "ME": 1,
+    "MI": 2,
+    "MN": 3,
+    "MO": 3,
+    "MT": 2,
+    "NC": 4,
+    "ND": 2,
+    "NE": 3,
+    "NJ": 1,
+    "NM": 9,
+    "NV": 1,
+    "NY": 1,
+    "OH": 6,
+    "OK": 1,
+    "OR": 2,
+    "PA": 4,
+    "RI": 2,
+    "SC": 6,
+    "SD": 4,
+    "TN": 4,
+    "TX": 7,
+    "UT": 7,
+    "VA": 4,
+    "WA": 4,
+    "WY": 4
+  },
+  "combined_states": 43,
+  "combined_primary_categories": {
+    "roadside": 1,
+    "entertainment": 1,
+    "nature": 12,
+    "beaches": 12,
+    "landmarks": 106,
+    "museums": 17,
+    "national_parks": 36
+  },
+  "combined_missing_jurisdictions": [
+    "CT",
+    "DE",
+    "MS",
+    "NH",
+    "VT",
+    "WI",
+    "WV"
+  ],
+  "remaining_to_500": 315,
+  "snapshot_units_reviewed": 257,
+  "retained_snapshot_bytes": 7804267,
+  "excluded_units": 154,
+  "exclusion_counts": {
+    "no_passing_facility": 130,
+    "inventory_name_mismatch": 2,
+    "remote Natchez Trace center is not Brices Cross Roads arrival": 1,
+    "contradictory weekday schedule needs operator clarification": 1,
+    "hiking arrival; accessible-only approach not ordinary general vehicle access": 1,
+    "fort requires ferry; mainland visitor point held for separate role review": 1,
+    "Thousand Springs partner center remote from parent monument": 1,
+    "seasonal road-dependent late season access needs separate current conditions review": 1,
+    "partner memorial outside Seattle unit; needs independent destination identity": 1,
+    "partner museum; nuclear facilities and visitor point require separate identity review": 1,
+    "published seasonal closure language remains unresolved": 1,
+    "remote St George public lands information office": 1,
+    "published visitor information center closure": 1,
+    "reservation-only shuttle from another historic site": 1,
+    "island ferry-dependent corridor not part of this road-only batch": 1,
+    "disconnected island road system requires separate corridor review": 1,
+    "published museum restoration closure": 1,
+    "remote Natchez Trace center rather than battlefield": 1,
+    "driving_destination_unverified": 6
+  },
+  "driving_checks": 109,
+  "successful_destination_checks": 103,
+  "driving_held": {
+    "nps-heritage:apco": "NoSegment",
+    "nps-heritage:cham": "NoSegment",
+    "nps-heritage:choh": "NoSegment",
+    "nps-heritage:fosm": "NoSegment",
+    "nps-heritage:fous": "NoSegment",
+    "nps-heritage:valr": "NoSegment"
+  },
+  "max_destination_snap_metres": 71.76947369,
+  "driving_raw_response_checksums_and_destination_fields_rechecked": true,
+  "driving_attribution": "OSRM routing engine; \u00a9 OpenStreetMap contributors",
+  "driving_license_url": "https://www.openstreetmap.org/copyright",
+  "original_nps_coordinates_unchanged": true,
+  "ratings_imported": 0,
+  "evening_hours_imported": 0,
+  "food_records_added": 0,
+  "nightlife_records_added": 0,
+  "deduplication": {
+    "starter_and_batch_identity_conflicts": 0,
+    "normalized_name_colocations_within_250m": 0,
+    "new_place_pairs_within_250m": 0,
+    "unchanged_starter_close_pairs": [
+      {
+        "first": "boulder:201",
+        "second": "boulder:101",
+        "distance_m": 143.9792552131012,
+        "shared_normalized_name": false
+      },
+      {
+        "first": "boulder:284",
+        "second": "boulder:283",
+        "distance_m": 181.48268437214864,
+        "shared_normalized_name": false
+      }
+    ],
+    "source_unit_codes_unique": true,
+    "one_facility_per_parent_unit": true,
+    "same_site_alternative_facilities_not_counted": true
+  },
+  "policy_evidence": [
+    {
+      "url": "https://www.nps.gov/aboutus/disclaimer.htm",
+      "sha256": "c74222e99ad0c87fc4850e699164bf10b9cea8af92a06b9a5e82830bc507f778",
+      "bytes": 38448,
+      "retrieved_at": "2026-10-15T03:25:48.524758+00:00"
+    },
+    {
+      "url": "https://www.nps.gov/subjects/digital/structured-data.htm",
+      "sha256": "c13bd3a59f82e44ef113bc48e559bc560aaf150ee30920214f7a69808543ecc7",
+      "bytes": 41457,
+      "retrieved_at": "2026-10-15T03:25:49.385313+00:00"
+    }
+  ],
+  "batches": [
+    {
+      "batch": "heritage-01",
+      "scope": "Southwest highway loops",
+      "bundle_sha256": "5937823c50a32e9f3c9e1f8edf8d26375ea858b4c41d049e7dc29ef9534c446d",
+      "manifest_sha256": "cc52f18c64bad8b7d490276f6e36f33a9b058262cbcfe28e3071dceccfd0b7fe",
+      "report": {
+        "scanned": 22,
+        "accepted": 22,
+        "bytes": 1028554,
+        "rejects": {},
+        "regions": {
+          "NM": 8,
+          "AZ": 10,
+          "CO": 2,
+          "UT": 2
+        },
+        "primary_categories": {
+          "landmarks": 20,
+          "museums": 2
+        }
+      }
+    },
+    {
+      "batch": "heritage-02",
+      "scope": "Pacific coast and Hawaii island roads",
+      "bundle_sha256": "bc7c86bbbfd993b186db4d974c62a00ce08b795a46c1e850e351ab50f1491959",
+      "manifest_sha256": "acd9604cdedb532e4acfc6a7d85c25515971a25e36525905b4ccbd02ffcd70c5",
+      "report": {
+        "scanned": 10,
+        "accepted": 10,
+        "bytes": 398859,
+        "rejects": {},
+        "regions": {
+          "CA": 5,
+          "WA": 1,
+          "OR": 1,
+          "HI": 3
+        },
+        "primary_categories": {
+          "landmarks": 10
+        }
+      }
+    },
+    {
+      "batch": "heritage-03",
+      "scope": "Northern Plains and Missouri River connections",
+      "bundle_sha256": "09803ce5b62184ff1eec98a4d0c544bb4d257a2aa2b4da6add2cabcfbdb810ac",
+      "manifest_sha256": "dfebc220093f9a4bac0cd89d5e6051d269c08b54b710d54c289a8e04528a77cc",
+      "report": {
+        "scanned": 14,
+        "accepted": 14,
+        "bytes": 560383,
+        "rejects": {},
+        "regions": {
+          "WY": 3,
+          "KS": 1,
+          "MT": 1,
+          "MN": 2,
+          "IA": 1,
+          "NE": 2,
+          "SD": 1,
+          "ND": 1,
+          "MO": 2
+        },
+        "primary_categories": {
+          "landmarks": 13,
+          "museums": 1
+        }
+      }
+    },
+    {
+      "batch": "heritage-04",
+      "scope": "Great Lakes and Ohio-Tennessee connections",
+      "bundle_sha256": "666534392d34218155cbb59db976867b5ce55ea1ebcb1ea72946e1b555b971c6",
+      "manifest_sha256": "15af84589b0706962fccb2a181ce46231697238d237fbbab50b7d0593ba6b152",
+      "report": {
+        "scanned": 15,
+        "accepted": 15,
+        "bytes": 625217,
+        "rejects": {},
+        "regions": {
+          "KY": 4,
+          "TN": 3,
+          "OH": 5,
+          "MI": 2,
+          "IL": 1
+        },
+        "primary_categories": {
+          "landmarks": 13,
+          "museums": 2
+        }
+      }
+    },
+    {
+      "batch": "heritage-05",
+      "scope": "Gulf and Southeast highway connections",
+      "bundle_sha256": "af1d944995d94ebd8586ecfa931f131367d9c0e94a9dedadb30004a4ccdde5ce",
+      "manifest_sha256": "4507895db7640aa22b053c763fa8cd044731149dc41d79bbfad95a50a041d08a",
+      "report": {
+        "scanned": 23,
+        "accepted": 23,
+        "bytes": 949904,
+        "rejects": {},
+        "regions": {
+          "TX": 5,
+          "GA": 6,
+          "AR": 2,
+          "SC": 5,
+          "NC": 4,
+          "AL": 1
+        },
+        "primary_categories": {
+          "landmarks": 21,
+          "museums": 2
+        }
+      }
+    },
+    {
+      "batch": "heritage-06",
+      "scope": "Mid-Atlantic and Northeast corridors",
+      "bundle_sha256": "96ac3d2bc4cf482f28538b5c9ad2d1b5be81415157ec51438759581a201b6102",
+      "manifest_sha256": "5ac358fa75851c8804239edc77c0e27f458adbc817143a50054143cd9c6e3afd",
+      "report": {
+        "scanned": 19,
+        "accepted": 19,
+        "bytes": 851050,
+        "rejects": {},
+        "regions": {
+          "MD": 5,
+          "RI": 1,
+          "PA": 4,
+          "DC": 1,
+          "VA": 3,
+          "MA": 4,
+          "NY": 1
+        },
+        "primary_categories": {
+          "landmarks": 18,
+          "museums": 1
+        }
+      }
+    }
+  ],
+  "mixed_expansion_only_report": {
+    "scanned": 103,
+    "accepted": 103,
+    "bytes": 4413967,
+    "duplicates": 0,
+    "rejects": {},
+    "regions": {
+      "NM": 8,
+      "AZ": 10,
+      "CO": 2,
+      "UT": 2,
+      "CA": 5,
+      "WA": 1,
+      "OR": 1,
+      "HI": 3,
+      "WY": 3,
+      "KS": 1,
+      "MT": 1,
+      "MN": 2,
+      "IA": 1,
+      "NE": 2,
+      "SD": 1,
+      "ND": 1,
+      "MO": 2,
+      "KY": 4,
+      "TN": 3,
+      "OH": 5,
+      "MI": 2,
+      "IL": 1,
+      "TX": 5,
+      "GA": 6,
+      "AR": 2,
+      "SC": 5,
+      "NC": 4,
+      "AL": 1,
+      "MD": 5,
+      "RI": 1,
+      "PA": 4,
+      "DC": 1,
+      "VA": 3,
+      "MA": 4,
+      "NY": 1
+    },
+    "categories": {
+      "culture": 111,
+      "daytime": 103,
+      "historic_site": 103,
+      "visitor_center": 103,
+      "museum": 8
+    },
+    "source_counts": {
+      "nps-heritage": 103
+    },
+    "source_reports": [
+      {
+        "source": "nps-heritage",
+        "artifact_sha256": "5937823c50a32e9f3c9e1f8edf8d26375ea858b4c41d049e7dc29ef9534c446d",
+        "report": {
+          "scanned": 22,
+          "accepted": 22,
+          "bytes": 1028554,
+          "rejects": {},
+          "regions": {
+            "NM": 8,
+            "AZ": 10,
+            "CO": 2,
+            "UT": 2
+          },
+          "primary_categories": {
+            "landmarks": 20,
+            "museums": 2
+          }
+        }
+      },
+      {
+        "source": "nps-heritage",
+        "artifact_sha256": "bc7c86bbbfd993b186db4d974c62a00ce08b795a46c1e850e351ab50f1491959",
+        "report": {
+          "scanned": 10,
+          "accepted": 10,
+          "bytes": 398859,
+          "rejects": {},
+          "regions": {
+            "CA": 5,
+            "WA": 1,
+            "OR": 1,
+            "HI": 3
+          },
+          "primary_categories": {
+            "landmarks": 10
+          }
+        }
+      },
+      {
+        "source": "nps-heritage",
+        "artifact_sha256": "09803ce5b62184ff1eec98a4d0c544bb4d257a2aa2b4da6add2cabcfbdb810ac",
+        "report": {
+          "scanned": 14,
+          "accepted": 14,
+          "bytes": 560383,
+          "rejects": {},
+          "regions": {
+            "WY": 3,
+            "KS": 1,
+            "MT": 1,
+            "MN": 2,
+            "IA": 1,
+            "NE": 2,
+            "SD": 1,
+            "ND": 1,
+            "MO": 2
+          },
+          "primary_categories": {
+            "landmarks": 13,
+            "museums": 1
+          }
+        }
+      },
+      {
+        "source": "nps-heritage",
+        "artifact_sha256": "666534392d34218155cbb59db976867b5ce55ea1ebcb1ea72946e1b555b971c6",
+        "report": {
+          "scanned": 15,
+          "accepted": 15,
+          "bytes": 625217,
+          "rejects": {},
+          "regions": {
+            "KY": 4,
+            "TN": 3,
+            "OH": 5,
+            "MI": 2,
+            "IL": 1
+          },
+          "primary_categories": {
+            "landmarks": 13,
+            "museums": 2
+          }
+        }
+      },
+      {
+        "source": "nps-heritage",
+        "artifact_sha256": "af1d944995d94ebd8586ecfa931f131367d9c0e94a9dedadb30004a4ccdde5ce",
+        "report": {
+          "scanned": 23,
+          "accepted": 23,
+          "bytes": 949904,
+          "rejects": {},
+          "regions": {
+            "TX": 5,
+            "GA": 6,
+            "AR": 2,
+            "SC": 5,
+            "NC": 4,
+            "AL": 1
+          },
+          "primary_categories": {
+            "landmarks": 21,
+            "museums": 2
+          }
+        }
+      },
+      {
+        "source": "nps-heritage",
+        "artifact_sha256": "96ac3d2bc4cf482f28538b5c9ad2d1b5be81415157ec51438759581a201b6102",
+        "report": {
+          "scanned": 19,
+          "accepted": 19,
+          "bytes": 851050,
+          "rejects": {},
+          "regions": {
+            "MD": 5,
+            "RI": 1,
+            "PA": 4,
+            "DC": 1,
+            "VA": 3,
+            "MA": 4,
+            "NY": 1
+          },
+          "primary_categories": {
+            "landmarks": 18,
+            "museums": 1
+          }
+        }
+      }
+    ]
+  },
+  "review_preview_sha256": "3b9788409c63f453d6f4a84c610d5bbdc3937808f1e781b6ab043c011dd3fa53",
+  "focused_tests": {
+    "passed": 116,
+    "scope": "catalog expansion, heritage, NPS, dated closures, mixed, ingest, arrival review, combine",
+    "full_application_suites_rerun": false
+  },
+  "blockers": [
+    "Original 82-place source recipe and referenced artifacts absent in this environment; full replacement assembly not validated.",
+    "Original 329 unreviewed Overture candidates absent; none admitted by this expansion.",
+    "No newly reviewed food/nightlife, dedicated entertainment, beaches or roadside additions; 500 target not reached."
+  ],
+  "evidence_archive": {
+    "path": "/workspace/catalog-expansion-20261015/roadtrips-expansion-103-evidence-20261015.tar.gz",
+    "bytes": 1264176,
+    "sha256": "b2b13b60c2c62f4b47933a97b51f27d0288ac64661e78bf68078c773dae1e318",
+    "source_artifacts_in_git": false
+  },
+  "relocated_archive_rebuild": {
+    "batches": 6,
+    "accepted": 103,
+    "normalized_output_equal": true
+  },
+  "attribution_page_prettier": "passed",
+  "test_image_layout_simulation": {
+    "expansion_tests_passed": 10,
+    "docker_daemon_or_container_run": false,
+    "runtime_image_changed": false
+  }
+}

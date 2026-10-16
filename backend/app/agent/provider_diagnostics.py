@@ -24,7 +24,7 @@ def safe_message(value):
     from app.routing import config
 
     text = str(value)
-    for key in ("MAPBOX_API", "TRIPADVISOR_API", "GOOGLE_PLACES_API", "OPENCAGE_KEY"):
+    for key in ("MAPBOX_API", "GOOGLE_PLACES_API", "OPENCAGE_KEY"):
         secret = getattr(config, key, None)
         if secret:
             text = text.replace(str(secret), "[redacted]")

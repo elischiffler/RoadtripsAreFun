@@ -1,9 +1,22 @@
 # Neon places catalog: staged rollout
 
-Status on October 15, 2026: five authentic Kaggle inputs downloaded/profiled;
-12 Boulder nature destinations validated through isolated staging, activation,
-rollback and restore. **No production DDL applied, no Neon catalog loaded**.
-See [authentic intake, actual counts and exact remaining gates](catalog-kaggle-intake.md).
+Current bounded candidate: [82 places across 36 states](catalog-release-82.md),
+with all seven requested categories, corrected NPS dated-closure selections and
+12 verified heritage arrivals. The prior 72-place bundles and 400-record evaluation
+remain preserved. The approximate 500 target is still 418 short.
+
+Latest [arrival review](catalog-arrival-review.md) validates a separate 72-arrival
+local generation with one Kaggle/LOC roadside destination, two current publisher
+reviews on original Overture venues, preserved original coordinates and exact-content recovery. The 400-record evaluation below remains
+unchanged. Neither dataset is a completed production cutover or a balanced
+roughly 500-place pilot.
+
+Status on October 15, 2026: 400 authentic records validated through isolated
+staging, activation, rollback and exact-content restore. This includes 69
+Boulder/NPS facility arrivals; the 331 Overture test candidates still need
+completed independent current-access/arrival review. **No production DDL or Neon
+catalog import has occurred**. See [actual mixed-source counts and gaps](catalog-mixed-pilot.md)
+and [original Kaggle archive inspection](catalog-kaggle-intake.md).
 Do not deploy this revision until the schema, activated catalog and real coverage
 have passed the gates below. `/ready` requires a nonempty active generation.
 This work keeps the database on Neon; EC2 migration is paused.
@@ -49,9 +62,15 @@ destinations, not a national bulk import; see [pilot scope and acceptance](catal
 The Overture extractor/normalizer remain separate from the new reviewed
 `kaggle-boulder-trailheads/1` adapter. That adapter pins the measured original ZIP,
 parses retained city evidence for current arrivals, and uses `boulder:` identities
-with explicit provenance. Other Kaggle sources still need rights/arrival review
-and their own adapters. The regional combiner remains Overture-only and refuses
-Boulder; a complete cross-source generation is pending. Do not relabel sources,
+with explicit provenance. Explicit NPS visitor-facility and beach-parking schemas
+are also implemented, as is the explicit `kaggle-loc-roadside-arrivals/1` Corn
+Palace profile; other sites/sources still need rights/arrival review and adapters.
+The regional combiner remains Overture-only. `scripts/catalog_mix.py` assembles
+complete Overture, Boulder, NPS, NPS-public and reviewed roadside generations from retained original
+artifacts and their `.manifest.json` sidecars. It pins and revalidates child
+manifests, source namespaces, releases, license/notice evidence and reviewed
+deduplication mappings; unresolved colocated identities fail closed. See the
+[actual mixed-pilot proof](catalog-mixed-pilot.md). Do not relabel sources,
 apply a blanket Kaggle license allowlist or weaken natural-area arrival guards.
 
 ## Bounded extraction and isolated validation

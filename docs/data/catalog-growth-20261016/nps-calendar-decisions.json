@@ -1,0 +1,461 @@
+{
+  "summary": {
+    "requested_rows": 87,
+    "emitted_rows": 42,
+    "held_rows": 45,
+    "positive_dated_days": 2861,
+    "positive_dated_windows": 2939,
+    "withheld_ambiguous_dates": 14
+  },
+  "positive_source_ids": [
+    "nps:mora",
+    "nps:pefo",
+    "nps:seki",
+    "nps:zion",
+    "nps-heritage:ande",
+    "nps-heritage:efmo",
+    "nps-heritage:crmo",
+    "nps-heritage:agfo",
+    "nps-heritage:chir",
+    "nps-heritage:colm",
+    "nps-heritage:dino",
+    "nps-heritage:elma",
+    "nps-heritage:nabr",
+    "nps-heritage:orpi",
+    "nps-heritage:peco",
+    "nps-heritage:pisp",
+    "nps-heritage:sucr",
+    "nps-heritage:tont",
+    "nps-heritage:tuma",
+    "nps-heritage:tuzi",
+    "nps-heritage:cabr",
+    "nps-heritage:joda",
+    "nps-heritage:labe",
+    "nps-heritage:deto",
+    "nps-heritage:grko",
+    "nps-heritage:grpo",
+    "nps-heritage:heho",
+    "nps-heritage:pipe",
+    "nps-heritage:scbl",
+    "nps-heritage:ulsg",
+    "nps-heritage:abli",
+    "nps-heritage:anjo",
+    "nps-heritage:chsc",
+    "nps-heritage:guco",
+    "nps-heritage:kimo",
+    "nps-heritage:malu",
+    "nps-heritage:ruca",
+    "nps-heritage:waco",
+    "nps-heritage:wicl",
+    "nps-heritage:frdo",
+    "nps-heritage:jofl",
+    "nps-heritage:spar"
+  ],
+  "holds": [
+    {
+      "source_id": "nps:lavo",
+      "source_url": "https://www.nps.gov/lavo/structured_data_lavo.json",
+      "snapshot_sha256": "ff1928e66d2e43bb7d4698c4e23ccb2a5623bf98a8b48a897faad8b27c7a4ccd",
+      "checked_at": "2026-10-15T00:11:55.646647+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/ff1928e66d2e43bb7d4698c4e23ccb2a5623bf98a8b48a897faad8b27c7a4ccd.bin",
+      "native_json_pointer": "/visitorCenters/1",
+      "reason": "Loomis off-season prose begins post-Columbus-Day, earlier than November 2 table; no positive acquisition-year fall dates survive the stricter closure."
+    },
+    {
+      "source_id": "nps:meve",
+      "source_url": "https://www.nps.gov/meve/structured_data_meve.json",
+      "snapshot_sha256": "4b21633de665800444a635dcd737ceef8c02eebbcaace55ce3a0c8ffacbae888",
+      "checked_at": "2026-10-15T00:11:55.827880+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/4b21633de665800444a635dcd737ceef8c02eebbcaace55ce3a0c8ffacbae888.bin",
+      "native_json_pointer": "/visitorCenters/1",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:adam",
+      "source_url": "https://www.nps.gov/adam/structured_data_adam.json",
+      "snapshot_sha256": "a2b659716eb1826a0a6417e350ef17d0d9c2660005298e7434e8731a99ca2181",
+      "checked_at": "2026-10-15T02:31:33.558943+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/a2b659716eb1826a0a6417e350ef17d0d9c2660005298e7434e8731a99ca2181.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:edis",
+      "source_url": "https://www.nps.gov/edis/structured_data_edis.json",
+      "snapshot_sha256": "ee20f8bcb568c736a69103fb47709bcb57fc548516f5b2ac593662acc1e20dd6",
+      "checked_at": "2026-10-15T02:31:34.465047+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/ee20f8bcb568c736a69103fb47709bcb57fc548516f5b2ac593662acc1e20dd6.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:coro",
+      "source_url": "https://www.nps.gov/coro/structured_data_coro.json",
+      "snapshot_sha256": "d090b5f7e45e94470ef9b40f45e511e0f2c1fe2887dac1d85ab37236065a671a",
+      "checked_at": "2026-10-15T03:15:54.318872+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/d090b5f7e45e94470ef9b40f45e511e0f2c1fe2887dac1d85ab37236065a671a.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:elmo",
+      "source_url": "https://www.nps.gov/elmo/structured_data_elmo.json",
+      "snapshot_sha256": "89f70067a8ae31c7f221f1d7f88afc70671e93f32e30cbda3b9a930f866f7534",
+      "checked_at": "2026-10-15T03:15:54.611703+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/89f70067a8ae31c7f221f1d7f88afc70671e93f32e30cbda3b9a930f866f7534.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:flfo",
+      "source_url": "https://www.nps.gov/flfo/structured_data_flfo.json",
+      "snapshot_sha256": "78155731aafae757ffdb25abb11932fb1d1869c815a70fe4bd9dbb7f06daa5bb",
+      "checked_at": "2026-10-15T03:15:54.780120+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/78155731aafae757ffdb25abb11932fb1d1869c815a70fe4bd9dbb7f06daa5bb.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:sapu",
+      "source_url": "https://www.nps.gov/sapu/structured_data_sapu.json",
+      "snapshot_sha256": "39f1ec25426b1d1b43309fd7d2be54b0f6a1d164e5686429baa24406d61fcab3",
+      "checked_at": "2026-10-15T03:15:58.740235+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/39f1ec25426b1d1b43309fd7d2be54b0f6a1d164e5686429baa24406d61fcab3.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:kaho",
+      "source_url": "https://www.nps.gov/kaho/structured_data_kaho.json",
+      "snapshot_sha256": "e4a51331bc2d0890dd5b0a69952f3ebfea4d3525d664625117c1da8b1bcadb51",
+      "checked_at": "2026-10-15T03:15:56.622212+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/e4a51331bc2d0890dd5b0a69952f3ebfea4d3525d664625117c1da8b1bcadb51.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:puho",
+      "source_url": "https://www.nps.gov/puho/structured_data_puho.json",
+      "snapshot_sha256": "f761fba826d255b6d9af81c8ece5281c5ea4337c0dc52e179a98a8b18f375ed7",
+      "checked_at": "2026-10-15T03:15:58.282051+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/f761fba826d255b6d9af81c8ece5281c5ea4337c0dc52e179a98a8b18f375ed7.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "Applicable park gate closes at sunset, exact clock deferred to phone/social page; no verified literal full-dwell access end."
+    },
+    {
+      "source_id": "nps-heritage:fobu",
+      "source_url": "https://www.nps.gov/fobu/structured_data_fobu.json",
+      "snapshot_sha256": "d2bffb813dab62e9ad2a5c0d8a6bc22daeb726e59178b16a32a5366fc1b1a103",
+      "checked_at": "2026-10-15T03:15:54.832203+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/d2bffb813dab62e9ad2a5c0d8a6bc22daeb726e59178b16a32a5366fc1b1a103.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "Parent explicitly limits entry sunrise\u2013sunset and says motor access varies; no literal access end supplied."
+    },
+    {
+      "source_id": "nps-heritage:fola",
+      "source_url": "https://www.nps.gov/fola/structured_data_fola.json",
+      "snapshot_sha256": "3e464a0843f44be114ac992c550b9cb720571b418af201643f6b3278009e3c6b",
+      "checked_at": "2026-10-15T03:15:54.944142+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/3e464a0843f44be114ac992c550b9cb720571b418af201643f6b3278009e3c6b.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "Parent grounds dawn\u2013dusk access boundary remains unresolved for selected facility; mixed holiday/date seasonal selectors also require further review."
+    },
+    {
+      "source_id": "nps-heritage:fosc",
+      "source_url": "https://www.nps.gov/fosc/structured_data_fosc.json",
+      "snapshot_sha256": "9925e9fbdf4ad73da117547e8f8278ee74665ac050f3c505e0b0609a4d1f1ef7",
+      "checked_at": "2026-10-15T03:15:55.159717+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/9925e9fbdf4ad73da117547e8f8278ee74665ac050f3c505e0b0609a4d1f1ef7.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "Parent parking and access follow half-hour solar boundaries; no exact gate clocks and blank holiday exceptions remain unresolved."
+    },
+    {
+      "source_id": "nps-heritage:jeca",
+      "source_url": "https://www.nps.gov/jeca/structured_data_jeca.json",
+      "snapshot_sha256": "9711023e89c18113b51a47b007ab74233fbc107392b8f1a3f7998ff1c92be002",
+      "checked_at": "2026-10-15T03:15:56.499490+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/9711023e89c18113b51a47b007ab74233fbc107392b8f1a3f7998ff1c92be002.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:knri",
+      "source_url": "https://www.nps.gov/knri/structured_data_knri.json",
+      "snapshot_sha256": "e2b59d07c06476ced84912eeb2e8cac3034997495bbde9fe1fcc68777a286fa0",
+      "checked_at": "2026-10-15T03:15:56.883646+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/e2b59d07c06476ced84912eeb2e8cac3034997495bbde9fe1fcc68777a286fa0.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "Parent all-park sunrise/sunset boundary is not clearly separated from selected visitor-center motor access; no solar clock inferred."
+    },
+    {
+      "source_id": "nps-heritage:cane",
+      "source_url": "https://www.nps.gov/cane/structured_data_cane.json",
+      "snapshot_sha256": "ed5907cfbe7f870b273a0880342d3173f77a8fc213b6095b80a5e0487d195c24",
+      "checked_at": "2026-10-15T03:15:53.654879+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/ed5907cfbe7f870b273a0880342d3173f77a8fc213b6095b80a5e0487d195c24.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:cuga",
+      "source_url": "https://www.nps.gov/cuga/structured_data_cuga.json",
+      "snapshot_sha256": "f92ea82e369e2793f7a248d723102b3a05f7dcbcca9f840e350c7965f18107a2",
+      "checked_at": "2026-10-15T03:15:54.382668+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/f92ea82e369e2793f7a248d723102b3a05f7dcbcca9f840e350c7965f18107a2.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:daav",
+      "source_url": "https://www.nps.gov/daav/structured_data_daav.json",
+      "snapshot_sha256": "59b2804915c9f771a342fe9e73fab46e3a5d1dfeae5d0c98be5082b5e7435137",
+      "checked_at": "2026-10-15T03:15:54.417173+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/59b2804915c9f771a342fe9e73fab46e3a5d1dfeae5d0c98be5082b5e7435137.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:fila",
+      "source_url": "https://www.nps.gov/fila/structured_data_fila.json",
+      "snapshot_sha256": "9cc7d911f466725cdfd0d7adfd188cc51e4a61b8c790125078b5c948e6c81b1d",
+      "checked_at": "2026-10-15T03:15:54.757072+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/9cc7d911f466725cdfd0d7adfd188cc51e4a61b8c790125078b5c948e6c81b1d.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:fodo",
+      "source_url": "https://www.nps.gov/fodo/structured_data_fodo.json",
+      "snapshot_sha256": "8696643248f7dc9b1e89d1c4f5fe2d49a34d2bb1abd464293702e252a99e2d87",
+      "checked_at": "2026-10-15T03:15:54.878848+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/8696643248f7dc9b1e89d1c4f5fe2d49a34d2bb1abd464293702e252a99e2d87.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:hocu",
+      "source_url": "https://www.nps.gov/hocu/structured_data_hocu.json",
+      "snapshot_sha256": "da5f93832c65b608e603850ba0c7f58cce9723cc534eafcdf38299dd6ddc156d",
+      "checked_at": "2026-10-15T03:15:56.160080+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/da5f93832c65b608e603850ba0c7f58cce9723cc534eafcdf38299dd6ddc156d.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:kewe",
+      "source_url": "https://www.nps.gov/kewe/structured_data_kewe.json",
+      "snapshot_sha256": "4b7380848bf968df2b1d09ccf5f9e43a7a09d94421ce8205ec8836f08129df66",
+      "checked_at": "2026-10-15T03:15:56.778922+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/4b7380848bf968df2b1d09ccf5f9e43a7a09d94421ce8205ec8836f08129df66.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:misp",
+      "source_url": "https://www.nps.gov/misp/structured_data_misp.json",
+      "snapshot_sha256": "594e77f3a576fbbd4c4d1c5d74d274d2828534fb55851374050d4d64a0977ce7",
+      "checked_at": "2026-10-15T03:15:57.473498+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/594e77f3a576fbbd4c4d1c5d74d274d2828534fb55851374050d4d64a0977ce7.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:pull",
+      "source_url": "https://www.nps.gov/pull/structured_data_pull.json",
+      "snapshot_sha256": "e3a495c13493c254fb35105f9b8962e9422293722c434f9d80ad923a88e5783a",
+      "checked_at": "2026-10-15T03:15:58.311670+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/e3a495c13493c254fb35105f9b8962e9422293722c434f9d80ad923a88e5783a.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:shil",
+      "source_url": "https://www.nps.gov/shil/structured_data_shil.json",
+      "snapshot_sha256": "b05edad0c08dbb8bbffe4c654f52b4e00252d8228b57b7aad84af894d60c0cb7",
+      "checked_at": "2026-10-15T03:15:58.795912+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/b05edad0c08dbb8bbffe4c654f52b4e00252d8228b57b7aad84af894d60c0cb7.bin",
+      "native_json_pointer": "/visitorCenters/1",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:wiho",
+      "source_url": "https://www.nps.gov/wiho/structured_data_wiho.json",
+      "snapshot_sha256": "94a48df1b34d1c2f0edec20c2906c0764dc6d8eda2376139f8c0cdfc9cdec1e0",
+      "checked_at": "2026-10-15T03:15:59.749262+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/94a48df1b34d1c2f0edec20c2906c0764dc6d8eda2376139f8c0cdfc9cdec1e0.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:cowp",
+      "source_url": "https://www.nps.gov/cowp/structured_data_cowp.json",
+      "snapshot_sha256": "673e9dbd590fd1dc5a941804325f5fe184ae31f2638e002302392afcb9c7733f",
+      "checked_at": "2026-10-15T03:15:54.375596+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/673e9dbd590fd1dc5a941804325f5fe184ae31f2638e002302392afcb9c7733f.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:mocr",
+      "source_url": "https://www.nps.gov/mocr/structured_data_mocr.json",
+      "snapshot_sha256": "74ab181506dd2dc9b66911f2d04b8dd4a1dfa512a3a2f4a19555f894229d431b",
+      "checked_at": "2026-10-15T03:15:57.493903+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/74ab181506dd2dc9b66911f2d04b8dd4a1dfa512a3a2f4a19555f894229d431b.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:nisi",
+      "source_url": "https://www.nps.gov/nisi/structured_data_nisi.json",
+      "snapshot_sha256": "63d480b8494f71f9d8e8abd1da83cff38e8e0c1536c6b641a964da51fa6e0916",
+      "checked_at": "2026-10-15T03:15:57.838766+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/63d480b8494f71f9d8e8abd1da83cff38e8e0c1536c6b641a964da51fa6e0916.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:ocmu",
+      "source_url": "https://www.nps.gov/ocmu/structured_data_ocmu.json",
+      "snapshot_sha256": "b77d54272186420a8c94ffda6ab48b7bc177b38d28177df96550aeb2ff4b6571",
+      "checked_at": "2026-10-15T03:15:57.932850+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/b77d54272186420a8c94ffda6ab48b7bc177b38d28177df96550aeb2ff4b6571.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:paal",
+      "source_url": "https://www.nps.gov/paal/structured_data_paal.json",
+      "snapshot_sha256": "b6bf21014c78d1b0240eb5f231f4e1c45a7e19b4114f27cf07ad96612447243d",
+      "checked_at": "2026-10-15T03:15:57.980982+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/b6bf21014c78d1b0240eb5f231f4e1c45a7e19b4114f27cf07ad96612447243d.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "Selected visitor center may close during unspecified lunch hour; do not invent an uninterrupted two-hour session from nominal daily clocks."
+    },
+    {
+      "source_id": "nps-heritage:reer",
+      "source_url": "https://www.nps.gov/reer/structured_data_reer.json",
+      "snapshot_sha256": "65c3882dfb303016f99e88c88de05bbdc8861c511960dd617512657a338f146b",
+      "checked_at": "2026-10-15T03:15:58.341012+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/65c3882dfb303016f99e88c88de05bbdc8861c511960dd617512657a338f146b.bin",
+      "native_json_pointer": "/visitorCenters/2",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:saan",
+      "source_url": "https://www.nps.gov/saan/structured_data_saan.json",
+      "snapshot_sha256": "9fa32bbdffaab7b93073a14694ab916e8e4f33c972c0e72d0afccc2aa0b2411a",
+      "checked_at": "2026-10-15T03:15:58.481837+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/9fa32bbdffaab7b93073a14694ab916e8e4f33c972c0e72d0afccc2aa0b2411a.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "Selected visitor-center description says often closed for lunch without exact clocks; Park Store 13:00\u201314:00 break cannot establish the visitor-center break."
+    },
+    {
+      "source_id": "nps-heritage:blrv",
+      "source_url": "https://www.nps.gov/blrv/structured_data_blrv.json",
+      "snapshot_sha256": "f6911fb0a286b92026f13cf819e1c4433ce9458cdbde3078427ee6f4ad53ef18",
+      "checked_at": "2026-10-15T03:15:53.197067+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/f6911fb0a286b92026f13cf819e1c4433ce9458cdbde3078427ee6f4ad53ef18.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:flni",
+      "source_url": "https://www.nps.gov/flni/structured_data_flni.json",
+      "snapshot_sha256": "387e9e343fd3d9a73cfde168fcc4f5e6e01917c198cce3d78d4daa660a37189d",
+      "checked_at": "2026-10-15T03:15:54.813466+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/387e9e343fd3d9a73cfde168fcc4f5e6e01917c198cce3d78d4daa660a37189d.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "Parent gates/grounds follow sunrise\u2013sunset and adverse-weather closures; no literal motor-access end verified."
+    },
+    {
+      "source_id": "nps-heritage:fomc",
+      "source_url": "https://www.nps.gov/fomc/structured_data_fomc.json",
+      "snapshot_sha256": "ea8820642cf0e0092c6d33ce866bf0878544a49dd63cb7515629f832c198c55f",
+      "checked_at": "2026-10-15T03:15:55.034418+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/ea8820642cf0e0092c6d33ce866bf0878544a49dd63cb7515629f832c198c55f.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:fone",
+      "source_url": "https://www.nps.gov/fone/structured_data_fone.json",
+      "snapshot_sha256": "dafb4980845034eedaab9c76b63fd3e9ebe08ee506c455d170431e1402fce38d",
+      "checked_at": "2026-10-15T03:15:55.055942+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/dafb4980845034eedaab9c76b63fd3e9ebe08ee506c455d170431e1402fce38d.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "Entrance is explicitly allowed sunrise\u2013sunset; indoor schedule alone does not establish full-dwell motor access."
+    },
+    {
+      "source_id": "nps-heritage:frsp",
+      "source_url": "https://www.nps.gov/frsp/structured_data_frsp.json",
+      "snapshot_sha256": "6a92dd43bfa9ea9a388abfee96d8e1223ed4b04df3924dd5af1dc6c550cb6882",
+      "checked_at": "2026-10-15T03:15:55.513150+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/6a92dd43bfa9ea9a388abfee96d8e1223ed4b04df3924dd5af1dc6c550cb6882.bin",
+      "native_json_pointer": "/visitorCenters/1",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:hofu",
+      "source_url": "https://www.nps.gov/hofu/structured_data_hofu.json",
+      "snapshot_sha256": "c612479c65d7256b7dc86f3f80fa5c56b10a0b4ae21786e3f0124c7d6ed65363",
+      "checked_at": "2026-10-15T03:15:56.244585+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/c612479c65d7256b7dc86f3f80fa5c56b10a0b4ae21786e3f0124c7d6ed65363.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:lowe",
+      "source_url": "https://www.nps.gov/lowe/structured_data_lowe.json",
+      "snapshot_sha256": "b54d6aa7f2ea22d284a5f72b97a998cf3155b0fec5c6b9adbfa001f6b87ee091",
+      "checked_at": "2026-10-15T03:15:57.042511+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/b54d6aa7f2ea22d284a5f72b97a998cf3155b0fec5c6b9adbfa001f6b87ee091.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:mima",
+      "source_url": "https://www.nps.gov/mima/structured_data_mima.json",
+      "snapshot_sha256": "15e105e3f7297a54f014007273a603c0e0a0c70a71ec4d199873d756ce08772f",
+      "checked_at": "2026-10-15T03:15:57.390536+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/15e105e3f7297a54f014007273a603c0e0a0c70a71ec4d199873d756ce08772f.bin",
+      "native_json_pointer": "/visitorCenters/1",
+      "reason": "Parking gates close at sunset; no verified literal full-dwell motor-access end, despite explicit 2026 facility dates."
+    },
+    {
+      "source_id": "nps-heritage:nebe",
+      "source_url": "https://www.nps.gov/nebe/structured_data_nebe.json",
+      "snapshot_sha256": "19bccac449efe49f6094ec91a2d5856e8c5ad2b214b3994f1517644e5c9de8ea",
+      "checked_at": "2026-10-15T03:15:57.712597+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/19bccac449efe49f6094ec91a2d5856e8c5ad2b214b3994f1517644e5c9de8ea.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "Base clock boundaries are astronomical/zero and seasonal exception clocks cannot silently replace them; requires explicit reviewed active-season override semantics."
+    },
+    {
+      "source_id": "nps-heritage:pete",
+      "source_url": "https://www.nps.gov/pete/structured_data_pete.json",
+      "snapshot_sha256": "800cb4981ea26ba9cdf5b11f577547c707f4f2d07cda250bd86c88dad3d9258e",
+      "checked_at": "2026-10-15T03:15:58.163037+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/800cb4981ea26ba9cdf5b11f577547c707f4f2d07cda250bd86c88dad3d9258e.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "Applicable access schedule has astronomical boundaries and season conflicts; no literal full-dwell access end established for the review scope."
+    },
+    {
+      "source_id": "nps-heritage:sara",
+      "source_url": "https://www.nps.gov/sara/structured_data_sara.json",
+      "snapshot_sha256": "3c383183188785ca5b9578e29f8e20875d70234937c6509ad6bfa6f0059107a3",
+      "checked_at": "2026-10-15T03:15:58.776951+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/3c383183188785ca5b9578e29f8e20875d70234937c6509ad6bfa6f0059107a3.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    },
+    {
+      "source_id": "nps-heritage:thst",
+      "source_url": "https://www.nps.gov/thst/structured_data_thst.json",
+      "snapshot_sha256": "3a31ac6e401501fe0061141927198d251220fe334f087d426ba5dbcc25f9e3bc",
+      "checked_at": "2026-10-15T03:15:59.139120+00:00",
+      "evidence_path": "/tmp/roadtrips-growth-next/hours/nps-more-v1/evidence/3a31ac6e401501fe0061141927198d251220fe334f087d426ba5dbcc25f9e3bc.bin",
+      "native_json_pointer": "/visitorCenters/0",
+      "reason": "No reviewed second-batch native profile; retained source constraints require further scoped review."
+    }
+  ]
+}

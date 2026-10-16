@@ -498,3 +498,133 @@ def test_archive_identity_does_not_require_git_or_claim_a_clean_checkout(monkeyp
     assert result["revision"] == "unversioned-source"
     assert result["dirty"] is None and result["git_metadata_available"] is False
     assert len(result["source_snapshot_hash"]) == 64
+
+
+def test_production_config_keeps_positive_matches_and_unknown_calendar_rejection():
+    candidates = [
+        {
+            "provider_id": key,
+            "name": key,
+            "coordinates": [34, -118],
+            "utility": utility,
+            "route_progress_seconds": progress,
+            "detour_seconds": 0,
+        }
+        for key, utility, progress in [
+            ("positive", 0.2, 900),
+            ("zero", 0, 1800),
+            ("timed", 0.9, 2700),
+        ]
+    ]
+    candidates[-1]["categories"] = ["culture"]
+    for method in ("cp_sat", "utility_first", "spacing_first"):
+        with capture_explanation() as explanation:
+            if method == "cp_sat":
+                selected = select_attractions(candidates, [], 3, 3600)
+            else:
+                from app.routing.evaluation.methods import comparator
+
+                selected = comparator(method, candidates, [], 3, 3600, PRODUCTION_CONFIG)
+        assert [item.candidate["provider_id"] for item in selected] == ["positive"]
+        assert explanation["solver"]["eligibility_policy"] == "positive_utility"
+        assert explanation["solver"]["utility_threshold_inclusive"] is False
+        reasons = {item["provider_id"]: item["reason"] for item in explanation["candidates"]}
+        assert reasons["zero"] == "nonpositive_utility"
+        assert reasons["timed"] == "unknown_source_visit_calendar"
+
+
+@pytest.mark.asyncio
+async def test_frozen_provider_filters_closed_trip_calendars_before_nearby_quota():
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    from app.routing.evaluation.offline import FrozenProviders
+    from app.routing.trip_calendar import TripCalendar
+
+    closed = {
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "weekly_windows": [{"weekdays": list(range(7)), "opens": "08:00", "closes": "18:00"}],
+        "seasons": [{"kind": "dated", "start": "2026-01-01", "end": "2026-10-14"}],
+        "source_receipts": [{"source_url": "https://example.test/explicit-synthetic-calendar"}],
+    }
+    records = [
+        {
+            "provider_id": f"closed:{i:02}",
+            "name": "closed control",
+            "coordinates": [34, -118],
+            "provider_rank": i,
+            "source_provenance": [{"source_visit_calendar": closed}],
+        }
+        for i in range(60)
+    ] + [
+        {
+            "provider_id": "usable",
+            "name": "outdoor control",
+            "coordinates": [34, -118],
+            "provider_rank": 60,
+        }
+    ]
+    provider = FrozenProviders(SimpleNamespace(data={"attractions": records}))
+    calendar = TripCalendar(
+        datetime(2026, 10, 17, 8, tzinfo=ZoneInfo("America/Los_Angeles")), provider.timezone
+    )
+    provider.data["nodes"] = [{"coordinates": [34, -118], "timezone": "America/Los_Angeles"}]
+    result = await provider.attractions_near(
+        [34, -118], require_visit_calendar=True, trip_calendar=calendar
+    )
+    assert [item["provider_id"] for item in result] == ["usable"]
+    assert len(result.calendar_excluded) == 60
+
+
+def test_offline_pipeline_reselects_after_actual_road_calendar_conflict(tmp_path, monkeypatch):
+    from app.routing.evaluation import offline
+    from app.routing.visit_calendar import VisitCalendarConflict
+
+    write_fixture(tmp_path / "short-1d")
+    real_timing = offline.apply_timing
+    rejected = []
+
+    def conflict_once(stops, *args):
+        if not rejected:
+            rejected.append(next(stop["provider_id"] for stop in stops if stop["type"] == "stop"))
+            raise VisitCalendarConflict(rejected[0], "explicit synthetic final-road conflict")
+        return real_timing(stops, *args)
+
+    monkeypatch.setattr(offline, "apply_timing", conflict_once)
+    row = execute(spec(tmp_path, track="offline-pipeline"))
+    assert row["status"] == "completed", row["error"]
+    assert rejected and rejected[0] not in row["selected_ids"]
+    assert row["external_calls"] == 0
+
+
+@pytest.mark.parametrize("method", ["cp_sat", "utility_first", "spacing_first"])
+def test_frozen_selection_applies_requested_trip_calendars(tmp_path, method):
+    fixture_root = tmp_path / "short-1d"
+    write_fixture(fixture_root)
+    path = fixture_root / "data.json"
+    data = json.loads(path.read_text())
+    data["attractions"][0]["source_provenance"] = [
+        {
+            "source_visit_calendar": {
+                "schema_version": "roadtrips-source-visit-calendar/1",
+                "weekly_windows": [
+                    {"weekdays": list(range(7)), "opens": "08:00", "closes": "18:00"}
+                ],
+                "seasons": [{"kind": "dated", "start": "2026-01-01", "end": "2026-10-14"}],
+                "source_receipts": [
+                    {"source_url": "https://example.test/explicit-synthetic-calendar"}
+                ],
+            }
+        }
+    ]
+    content = json.dumps(data).encode()
+    path.write_bytes(content)
+    manifest_path = fixture_root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["files"]["data.json"] = hashlib.sha256(content).hexdigest()
+    manifest_path.write_text(json.dumps(manifest))
+    row = execute(spec(tmp_path, method=method))
+    assert row["status"] == "completed", row["error"]
+    assert row["calendar_excluded_ids"] == ["synthetic:0"]
+    assert "synthetic:0" not in row["selected_ids"]
+    assert row["external_calls"] == 0

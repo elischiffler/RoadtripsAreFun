@@ -1,5 +1,41 @@
 # Route evaluation validation
 
+## October 16 current-main integration
+
+The readiness branch preserves evaluation head
+`2270815513f71a4a1fc58323898854f3bc1ae9c3` and incorporates main
+`e9129a7551ef8c07405a9bf7552f6303765365af` without rewriting either history.
+Conflicts in selection, metrics, final routing and API tests retain current
+positive-match eligibility, source calendars, calendar retries and explicit
+invalid-rating errors, together with evaluation instrumentation and shared limits.
+
+The frozen provider filters requested-trip calendars before its 60-place quota.
+Frozen selection tracks apply the same trip-date eligibility. The recorded full
+pipeline retries selection after actual-road calendar conflicts with the same
+request-local caches and exclusions as production. Regression controls cover a
+low positive match, zero utility, unknown calendars, 60 expired venues ahead of
+a usable destination, final-road reselection and all three selection methods.
+These controls are synthetic unit evidence, not measured trip-quality results.
+
+Current commands and exact pushed-head CI are recorded in PR #41. Local full
+suites use the pinned backend requirements and Node 24 with the committed lockfile;
+coverage thresholds are unchanged. Historical results below retain their original
+source and platform scope and do not establish current-head Windows/browser or
+live-provider acceptance.
+
+The actual nine Studio preset inputs are read from `preset_catalog()`, preserving
+all dates, occupancy, interests and optional evening fields. This checkout has no
+real route-evaluation capture manifests. Preset input validation can pass while
+all nine provider evaluations remain blocked before solver work. The 30-scenario
+core campaign separately records every blocked cell. No teaching fixture is
+substituted for those trips. Full real-data evaluation needs reviewed captures of
+ratings, exact roads, room-night hotels and timezones, plus generation-aligned
+rights/access evidence. Live provider calls require approved execution/spending
+scope; none were made in this preparation. Saved trips and production data are
+untouched. Later catalog totals do not supply these missing captures.
+
+## Historical validation
+
 Validation performed in an isolated Mac checkout and task branch, based on
 catalog PR40 `5ab14e01e0ababd3525093ff67fac7ac29d2bd6f`, re-fetched and verified
 before PR creation. The original MyRoadtrip/catalog checkout and catalog branch

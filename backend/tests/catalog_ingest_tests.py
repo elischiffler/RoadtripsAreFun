@@ -6,7 +6,7 @@ import pytest
 
 from app.catalog.ingest import prepare
 from app.catalog.normalize import normalize
-from app.catalog.repository import nearby
+from app.catalog.repository import nearby, source_attribution
 
 
 def feature(**updates):
@@ -47,6 +47,22 @@ def bundle(tmp_path, features):
         },
     }
     return path, manifest
+
+
+def test_source_credits_deduplicate_statements_and_preserve_license_details_and_order():
+    row = {
+        "source_id": "example-source",
+        "attribution": "Provider A (CC0); Provider B; Provider A (CC0)",
+        "provenance": [
+            {"source_attribution": "Provider B; Provider C; Copyright Provider C"},
+            {"source_attribution": "Provider C; Copyright Provider C"},
+        ],
+    }
+    assert source_attribution(row) == (
+        "Provider A (CC0); Provider B; Provider C; Copyright Provider C"
+    )
+    row["source_catalogs"] = {"overture": {"attribution": " Leaf ; Provider B; Leaf; "}}
+    assert source_attribution(row) == "Leaf; Provider B; Provider C; Copyright Provider C"
 
 
 @pytest.mark.parametrize("region", ["CA", "AK", "HI", "DC"])
@@ -189,3 +205,25 @@ def test_reject_unofficial_source_url(tmp_path):
     manifest["source_url"] = "https://unlicensed.example/data"
     with pytest.raises(ValueError, match="official pinned"):
         prepare(path, manifest)
+
+
+def test_inspected_overture_status_processing_preserves_license_and_version(tmp_path):
+    signals = {
+        "dataset": "Overture-signals",
+        "property": "/properties/operating_status",
+        "license": "CDLA-Permissive-2.0",
+        "update_time": "2026-09-14T00:00:00Z",
+        "version": "2026-09-14",
+        "resource": "operating_status_signal",
+    }
+    path, manifest = bundle(tmp_path, [feature(sources=[{"dataset": "meta"}, signals])])
+    rows, _ = prepare(path, manifest)
+    assert rows[0]["provenance"][1]["version"] == "2026-09-14"
+    assert rows[0]["provenance"][1]["license"] == "CDLA-Permissive-2.0"
+    for bad in [
+        [signals],
+        [{"dataset": "meta"}, {**signals, "property": "/properties/names"}],
+        [{"dataset": "meta"}, {**signals, "license": "unknown"}],
+    ]:
+        path, manifest = bundle(tmp_path, [feature(sources=bad)])
+        assert prepare(path, manifest)[1]["rejects"] == {"unapproved_provenance": 1}

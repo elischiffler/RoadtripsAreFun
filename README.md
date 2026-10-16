@@ -5,10 +5,12 @@ Local Docker preview: [runbook](docs/container-runbook.md) and
 checks are separate from the production AWS API, which uses external Neon.
 The local preview does not establish production Auth or provider acceptance.
 
-Catalog migration in progress: the task branch replaces Tripadvisor daytime and
-evening discovery with licensed Overture places stored in PostgreSQL, targeting
-Neon. Production loading and live acceptance remain pending; do not interpret
-local tests as deployed coverage. See [rollout, scope and blockers](docs/neon-places-catalog.md).
+Daytime and optional evening discovery use the licensed mixed-source places
+catalog in Neon PostgreSQL. The first bounded catalog release was deployed with
+[PR #40](https://github.com/elischiffler/RoadtripsAreFun/pull/40); coverage remains
+limited. See [release evidence](docs/catalog-release-82.md),
+[rollout and rollback](docs/neon-places-catalog.md) and the
+[Tripadvisor integration removal audit](docs/tripadvisor-removal.md).
 
 A road trip planning application. This monorepo contains two services:
 
@@ -256,6 +258,10 @@ approved database. It is additive and required by `/ready`; requests never creat
 tables. See [measurement and migration contract](docs/algorithm-run-history.md).
 
 ### Places catalog rollout
+
+The independent [catalog expansion PR](docs/catalog-expansion-venues-17.md)
+provides 132 reviewed additions and a reproducible 214-place offline union,
+including the first food/nightlife entries. It does not activate or deploy them.
 
 The catalog revision replaces Tripadvisor place discovery with a bounded,
 licensed US catalog on Neon. Apply its schema and activate validated coverage

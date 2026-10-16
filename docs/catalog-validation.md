@@ -1,5 +1,21 @@
 # Catalog validation — October 14, 2026
 
+Latest release evidence: [82-place candidate](catalog-release-82.md), 957 backend
+tests at 88.03% coverage, 314 frontend tests and authentic exact-content recovery.
+Earlier 72-place and 400-record results below remain historical snapshots.
+
+Latest [arrival-review evidence](catalog-arrival-review.md): a separate 72-arrival
+bundle passes authentic staging, rollback, exact-content restore and all three
+discovery adapters with HTTP blocked. It includes one Kaggle roadside destination
+and the first reviewed entertainment venue. The original 400-record evaluation
+and production remain unchanged. The roughly 500 target, broad category/corridor
+coverage and production gates remain open.
+
+Current expansion: the [October 15 mixed-source pilot](catalog-mixed-pilot.md)
+records 400 authentic local evaluation records, 69 documented Boulder/NPS
+arrivals, and incomplete current-access review for 331 Overture candidates.
+Production remains unchanged. The dated sections below retain earlier evidence.
+
 Implementation evidence for issue #36; production rollout remains blocked.
 The dated sections below describe earlier synthetic-only checks. The
 [October 14–15 authentic intake](catalog-kaggle-intake.md) supersedes the old

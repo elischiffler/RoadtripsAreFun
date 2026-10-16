@@ -45,6 +45,11 @@ def comparator(method, candidates, query_points, requested, baseline, config):
         raise ValueError("unknown offline comparator")
     summary = {
         "status": "NOT_APPLICABLE",
+        "utility_threshold": config.utility_threshold,
+        "utility_threshold_inclusive": config.utility_threshold > 0,
+        "eligibility_policy": "positive_utility"
+        if config.utility_threshold == 0
+        else "positive_utility_with_evaluation_threshold",
         "method_status": "VALID",
         "objective_value": None,
         "best_bound": None,

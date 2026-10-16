@@ -106,7 +106,10 @@ required bindings for real data:
   order, with zero diagonals and corresponding unreachable nulls.
 
 The selector's 100 records are usable real places before persona eligibility;
-not every place must exceed utility 0.60. Threshold underfulfillment remains a
+not every place must exceed an experimental utility threshold. Production keeps
+finite positive utilities; the optional threshold sweep adds stricter cutoffs.
+Requested-trip source calendars apply before nearby quotas and frozen selection.
+Threshold underfulfillment remains a
 measured outcome. Production discovery/selection capacity stays at 60. All actual
 Directions requests count hotels and endpoints toward 25 coordinates.
 
@@ -128,7 +131,7 @@ remain explicit rather than silently shrinking trips. The optional configured
 limit can be raised only within the existing 30 hard ceiling; 25-coordinate
 transport checks still apply.
 
-Data-blocked: 100 reviewed eligible places in each of four distinct corridors;
+Data-blocked in the October 16 integration checkout: 100 reviewed eligible places in each of four distinct corridors;
 frozen rights/review evidence; captured ratings/direct/solo/final roads, dated
 hotels and timezone lookups; real calculated campaigns and primary figures.
 Separate live acceptance requires approved provider/count/spending scope and

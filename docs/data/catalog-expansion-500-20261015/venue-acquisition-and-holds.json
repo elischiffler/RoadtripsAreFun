@@ -1,0 +1,254 @@
+[
+  {
+    "url": "https://randallmuseum.org/directions-hours/",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+    "url": "https://martinautomuseum.org/visit",
+    "acquired": true,
+    "status": 200,
+    "bytes": 89176,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.phxtrolley.org/your-visit",
+    "acquired": true,
+    "status": 200,
+    "bytes": 696312,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.castlesncoasters.com/about-n-waiver",
+    "acquired": true,
+    "status": 200,
+    "bytes": 765665,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.enchantedisland.com/park-information/",
+    "acquired": true,
+    "status": 200,
+    "bytes": 31366,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://oprfmuseum.org/",
+    "acquired": true,
+    "status": 200,
+    "bytes": 34757,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.museumnm.org/visit/",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>"
+  },
+  {
+    "url": "https://www.maritimemuseumofsd.org/",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>"
+  },
+  {
+    "url": "https://www.museumofus.org/visit",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "HTTPError: HTTP Error 404: Not Found"
+  },
+  {
+    "url": "https://www.luckystrikeent.com/en/faqs",
+    "acquired": true,
+    "status": 200,
+    "bytes": 1148754,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://paniqescaperoom.com/san-francisco/en",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+    "url": "https://la.mazerooms.com/",
+    "acquired": true,
+    "status": 200,
+    "bytes": 256232,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.losvirtuality.com/",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+    "url": "https://www.balboatheater.com/",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "URLError: <urlopen error Tunnel connection failed: 403 Forbidden>"
+  },
+  {
+    "url": "https://www.escapology.com/en/marina-del-rey-ca",
+    "acquired": true,
+    "status": 200,
+    "bytes": 271686,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.legolanddiscoverycenter.com/arizona/plan-your-day/before-you-visit/temporary-closures/",
+    "acquired": true,
+    "status": 200,
+    "bytes": 126231,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.legolanddiscoverycenter.com/arizona/plan-your-day/information/faqs/",
+    "acquired": true,
+    "status": 200,
+    "bytes": 169773,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.castlesncoasters.com/contact-us",
+    "acquired": true,
+    "status": 200,
+    "bytes": 751860,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.randallmuseum.org/",
+    "acquired": true,
+    "status": 200,
+    "bytes": 295904,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.heard.org/tickets/",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+    "url": "https://martinautomuseum.org/",
+    "acquired": true,
+    "status": 200,
+    "bytes": 410978,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.mjt.org/vistinfo/hours.html",
+    "acquired": true,
+    "status": 200,
+    "bytes": 6766,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.mjtgiftshop.org/pages/about-our-store-1",
+    "acquired": true,
+    "status": 200,
+    "bytes": 69484,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.japanesefriendshipgarden.org/visit",
+    "acquired": true,
+    "status": 200,
+    "bytes": 1861040,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.enchantedisland.com/",
+    "acquired": true,
+    "status": 200,
+    "bytes": 31366,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.castlesncoasters.com/",
+    "acquired": true,
+    "status": 200,
+    "bytes": 1218942,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.luckystrikeent.com/location/lucky-strike-mar-vista",
+    "acquired": true,
+    "status": 200,
+    "bytes": 952543,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.legolanddiscoverycenter.com/arizona/plan-your-day/before-you-visit/directions-parking/",
+    "acquired": true,
+    "status": 200,
+    "bytes": 119892,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://www.glbthistory.org/museum-about-visitor-info",
+    "acquired": true,
+    "status": 200,
+    "bytes": 253443,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://sfmcd.org/visit/",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+    "url": "https://childrensmuseumofphoenix.org/visit/",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+    "url": "https://drafthouse.com/sf/theater/new-mission",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+    "url": "https://www.phxtrolley.org/",
+    "acquired": true,
+    "status": 200,
+    "bytes": 839052,
+    "reason": "Acquired page; not admission by itself. Exact six-profile review and retained facts are required."
+  },
+  {
+    "url": "https://oprfmuseum.org/visit/",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "HTTPError: HTTP Error 404: Not Found"
+  },
+  {
+    "url": "https://www.museumofflying.org/visit-us/",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "HTTPError: HTTP Error 403: Forbidden"
+  },
+  {
+    "url": "https://www.flightpathlax.com/visit-us/",
+    "acquired": false,
+    "status": null,
+    "bytes": null,
+    "reason": "HTTPError: HTTP Error 403: Forbidden"
+  }
+]

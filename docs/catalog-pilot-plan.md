@@ -1,11 +1,16 @@
 # Authentic 500-place pilot
 
-This is the requested intake/acceptance plan for issue #36 and draft PR #40.
-It contains no place records. The [October 14–15 intake](catalog-kaggle-intake.md)
-now records five downloaded/profiled authentic inputs and 12 Boulder nature
-destinations admitted, staged, activated and restored **only in isolated local
-PostgreSQL**. Neon counts remain zero. Other category coverage and all states/DC
-except Colorado remain missing. See [source review](catalog-source-review.md).
+This is the requested intake/acceptance plan for issue #36 and PR #40.
+The [latest arrival review](catalog-arrival-review.md) validates a separate
+72-arrival local bundle: one roadside, one entertainment, 12 nature, 12 beaches,
+nine museums and 37 national parks across 24 states. It is 428 short of the roughly
+500 target, with no dedicated landmark batch and no DC record. The original
+400-record evaluation below is preserved for further review.
+The [October 15 mixed-source pilot](catalog-mixed-pilot.md) now records 400
+unique authentic **local evaluation** records across 30 states and DC. Of those,
+69 have documented Boulder/NPS arrival evidence; current public-access/arrival
+review remains incomplete for 331 Overture candidates. No production catalog
+was loaded. Earlier archive findings remain in [source review](catalog-source-review.md).
 
 ## Selection targets
 
@@ -15,16 +20,20 @@ checks. Report a smaller accepted batch when evidence is insufficient. Assign
 each destination one primary reporting category so these counts do not double
 count; retain other supported labels for discovery.
 
-| Primary reporting category | Working target | Accepted now |
-| --- | ---: | ---: |
-| Niche/roadside stops | 80 | 0 |
-| Entertainment destinations | 80 | 0 |
-| Nature/scenic/trailhead destinations | 90 | 12 local only |
-| Beaches with public arrivals | 60 | 0 |
-| Landmarks/public art/historic stops | 70 | 0 |
-| Museums | 70 | 0 |
-| National parks with verified public arrivals | 50 | 0 |
-| **Total unique destinations** | **500** | **12 local only** |
+| Primary reporting category                   | Working target |                  Local evaluation now |
+| -------------------------------------------- | -------------: | ------------------------------------: |
+| Niche/roadside stops                         |             80 |      1 in separate reviewed bundle |
+| Entertainment destinations                   |             80 |                         56 candidates |
+| Nature/scenic/trailhead destinations         |             90 |           33 (12 documented arrivals) |
+| Beaches with public arrivals                 |             60 |                12 documented arrivals |
+| Landmarks/public art/historic stops          |             70 |                         31 candidates |
+| Museums                                      |             70 |       231 (8 documented NPS arrivals) |
+| National parks with verified public arrivals |             50 |                37 documented arrivals |
+| **Total unique destinations**                |        **500** | **400 local; 69 documented arrivals** |
+
+The 100-record total shortfall does not describe category balance: museums are
+overrepresented while roadside intake is limited to one documented venue. Candidate counts are not
+production eligibility claims. See the mixed-pilot receipt for every state gap.
 
 Spread accepted destinations across Northeast, Southeast, Midwest, Mountain and
 Pacific states, with Alaska and Hawaii explicitly represented or reported as
@@ -64,19 +73,14 @@ counts. Keep a cross-source mapping when a destination has more than one source.
 
 ## Implementation and validation still required
 
-The original Overture pipeline remains intact:
-
-- `backend/app/catalog/ingest.py` validates an official pinned Overture URL/release
-  and an explicit Overture upstream allowlist; the explicit Boulder schema now
-  dispatches separately to the inspected ZIP and retained operator evidence.
-- `backend/app/catalog/normalize.py` expects Overture fields and rejects generic
-  natural-area centers. Kaggle evidence must not be disguised as Overture fields.
-- `scripts/catalog_combine.py` combines only matching Overture releases/schemas;
-  it is not a cross-source merge command.
-- `backend/app/catalog/repository.py` currently emits `overture:` identities and
-  source labels for Overture, and `boulder:` identities / `boulder-osmp` for the
-  reviewed City source. Public attribution now describes both. No generic Kaggle
-  or complete multi-source generation adapter is claimed.
+The original Overture pipeline and atomic generation operations remain intact.
+Explicit source adapters now cover reviewed Boulder trailheads, Kaggle NPS park
+identities enriched with official facility arrivals, official beach parking and
+the explicit Kaggle/LOC Corn Palace roadside profile.
+The bounded mixed-generation assembler re-admits original child artifacts and
+retains separate source identity, release, licensing and attribution. The
+Overture combiner remains source-specific. See [implementation and real local
+proof](catalog-mixed-pilot.md); these capabilities do not clear unresolved data.
 
 After an authentic archive and its rights are reviewed, implement an explicit
 adapter for its actual schema. Preserve source-specific stable identities,
@@ -93,12 +97,13 @@ attribution, indexed footprint and restore. Publish category/source/state counts
 plus duplicates/rejects, gaps and sampled arrival/current-operation evidence.
 Only then follow the existing [Neon rollout gates](neon-places-catalog.md), using
 the existing authorized target and preserving application data and generations.
-No production deployment, merge, paid capacity, credential configuration or
-destructive import is authorized by this plan.
+This document itself grants no deployment, merge, capacity, credential or
+destructive-change authority; the active user instructions govern authorization.
+Production recovery/data gates remain necessary within that authorized scope.
 
 An activated nonempty catalog and green unit tests do not establish live flow.
 Validate authenticated chat and Studio, daytime/evening discovery, Mapbox arrival
 and detour checks, selected-stop scheduling, maps, saved-history reload,
-attribution and explicit sparse-coverage behavior. Keep PR #40 draft until real
-data and those acceptance results can be reviewed. The Vercel preview alone is
+attribution and explicit sparse-coverage behavior. PR #40 is ready for code
+review; review status does not clear production acceptance gates. The Vercel preview alone is
 not that evidence.

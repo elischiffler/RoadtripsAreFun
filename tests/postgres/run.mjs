@@ -158,13 +158,16 @@ let apiStarted = false;
 try {
   console.log(`Project ${project}: build isolated Python test and API images (${revision})`);
   if (process.env.DB_TEST_SKIP_BUILD === "true") {
+    if (!cleanCheckout) {
+      throw new Error("DB_TEST_SKIP_BUILD requires a clean checkout; rebuild instead");
+    }
     const inspect = (image) => JSON.parse(execFileSync(
       "docker", ["image", "inspect", image], { env: environment, encoding: "utf8" },
     ))[0];
-    inspect("roadtrips-crud-test-runner:local");
-    const runtime = inspect("roadtrips-crud-api:local");
-    if (runtime.Config.Labels?.["org.opencontainers.image.revision"] !== revision) {
-      throw new Error("Prebuilt API revision does not match this checkout; rebuild before testing");
+    for (const image of ["roadtrips-crud-test-runner:local", "roadtrips-crud-api:local"]) {
+      if (inspect(image).Config.Labels?.["org.opencontainers.image.revision"] !== revision) {
+        throw new Error(`Prebuilt ${image} revision does not match this checkout; rebuild before testing`);
+      }
     }
     console.log("Using explicitly selected prebuilt test/API images; Docker build gate not exercised");
   } else {

@@ -9,7 +9,18 @@ from urllib.parse import urlparse
 
 from psycopg2.extras import Json, execute_values
 
-from app.catalog import boulder
+from app.catalog import (
+    arrival_review,
+    boulder,
+    kaggle_markets,
+    kaggle_parks,
+    mixed,
+    nps,
+    nps_heritage,
+    nps_public,
+    roadside,
+    usfs,
+)
 from app.catalog.normalize import normalize
 
 UPSTREAM_LICENSES = {
@@ -46,10 +57,64 @@ def validate_manifest(manifest):
             raise ValueError(f"manifest missing {field}")
     if len(json.dumps(manifest).encode()) > 32_768:
         raise ValueError("manifest exceeds 32 KiB")
+    if (
+        "arrival_review" in manifest
+        and manifest["schema_version"] != "roadtrips-overture-places-v1"
+    ):
+        raise ValueError("current arrival reviews require original Overture source inputs")
+    if manifest["schema_version"] in {kaggle_markets.SCHEMA, kaggle_parks.SCHEMA}:
+        required = (
+            {"CC-BY-4.0", "LicenseRef-US-Census-Geocoder"}
+            if manifest["schema_version"] == kaggle_markets.SCHEMA
+            else {"CC-BY-4.0", "CC0-1.0", "ODbL-1.0"}
+        )
+        if set(manifest["licenses"]) != required:
+            raise ValueError("reviewed Kaggle source requires its exact upstream rights evidence")
+        for evidence in manifest["licenses"].values():
+            validate_license_file(evidence)
+        return
+    if manifest["schema_version"] == usfs.SCHEMA:
+        if set(manifest["licenses"]) != {"LicenseRef-US-Agency-Factual-Data"}:
+            raise ValueError("USFS requires retained government factual-data rights evidence")
+        validate_license_file(manifest["licenses"]["LicenseRef-US-Agency-Factual-Data"])
+        return
     if manifest["schema_version"] == boulder.SCHEMA:
         if set(manifest["licenses"]) != {"CC0-1.0"}:
             raise ValueError("Boulder requires retained CC0 license evidence")
         validate_license_file(manifest["licenses"]["CC0-1.0"])
+        return
+    if manifest["schema_version"] == nps.SCHEMA:
+        if set(manifest["licenses"]) != {"CC0-1.0", "LicenseRef-US-Government-Work"}:
+            raise ValueError("NPS requires archive and government-work rights evidence")
+        for evidence in manifest["licenses"].values():
+            validate_license_file(evidence)
+        return
+    if manifest["schema_version"] == mixed.SCHEMA:
+        if not isinstance(manifest["licenses"], dict):
+            raise ValueError("mixed licenses must map to retained evidence")
+        for identifier, evidence in manifest["licenses"].items():
+            validate_license_file(evidence)
+            if identifier == "Apache-2.0":
+                validate_license_file(evidence.get("notice"))
+        return
+    if manifest["schema_version"] in {nps_public.SCHEMA, nps_heritage.SCHEMA}:
+        if set(manifest["licenses"]) != {"LicenseRef-US-Government-Work"}:
+            raise ValueError("public NPS inputs require retained government-work evidence")
+        validate_license_file(manifest["licenses"]["LicenseRef-US-Government-Work"])
+        return
+    if manifest["schema_version"] == roadside.SCHEMA:
+        identifiers = set(manifest["licenses"])
+        if not {"CC0-1.0", "LicenseRef-LOC-Margolies-Notice"} <= identifiers or identifiers - {
+            "CC0-1.0",
+            "LicenseRef-LOC-Margolies-Notice",
+            "CDLA-Permissive-2.0",
+            "Apache-2.0",
+        }:
+            raise ValueError("roadside requires reviewed archive and licensed point evidence")
+        for identifier, evidence in manifest["licenses"].items():
+            validate_license_file(evidence)
+            if identifier == "Apache-2.0":
+                validate_license_file(evidence.get("notice"))
         return
     release = manifest["release"]
     if not isinstance(release, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}\.\d+", release):
@@ -94,17 +159,40 @@ def provenance_licenses(row):
     """Return required SPDX identifiers, or None for unreviewed upstreams."""
     upstream = {s["dataset"].casefold() for s in row["provenance"]}
     known = upstream & UPSTREAM_LICENSES.keys()
-    if not known or upstream - UPSTREAM_LICENSES.keys() - {"overture"}:
+    if not known or upstream - UPSTREAM_LICENSES.keys() - {"overture", "overture-signals"}:
         return None
-    return {UPSTREAM_LICENSES[s] for s in known}
+    signals = [s for s in row["provenance"] if s["dataset"].casefold() == "overture-signals"]
+    if any(
+        s.get("property") != "/properties/operating_status"
+        or s.get("license") != "CDLA-Permissive-2.0"
+        for s in signals
+    ):
+        return None
+    return {UPSTREAM_LICENSES[s] for s in known} | ({"CDLA-Permissive-2.0"} if signals else set())
 
 
 def prepare(path, manifest, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
     validate_manifest(manifest)
     if not 1 <= max_rows <= MAX_ROWS or not 1 <= max_bytes <= MAX_BYTES:
         raise ValueError("import limits exceed hard ceiling")
+    if manifest["schema_version"] == kaggle_markets.SCHEMA:
+        return kaggle_markets.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == kaggle_parks.SCHEMA:
+        return kaggle_parks.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == usfs.SCHEMA:
+        return usfs.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     if manifest["schema_version"] == boulder.SCHEMA:
         return boulder.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == nps.SCHEMA:
+        return nps.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == mixed.SCHEMA:
+        return mixed.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == nps_public.SCHEMA:
+        return nps_public.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == nps_heritage.SCHEMA:
+        return nps_heritage.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    if manifest["schema_version"] == roadside.SCHEMA:
+        return roadside.prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
     digest = hashlib.sha256()
     rows = {}
     rejects = Counter()
@@ -136,17 +224,24 @@ def prepare(path, manifest, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
             rows[row["source_id"]] = row
     if digest.hexdigest() != manifest["sha256"]:
         raise ValueError("input checksum does not match manifest")
+    reviewed = {}
+    if "arrival_review" in manifest:
+        reviewed = arrival_review.apply(
+            list(rows.values()), manifest["arrival_review"], max_bytes=max_bytes - size
+        )
+        size += reviewed.pop("bytes")
     return list(rows.values()), {
         "scanned": scanned,
         "accepted": len(rows),
         "bytes": size,
         "rejects": dict(rejects),
+        **reviewed,
     }
 
 
 def catalog_size(cur):
     cur.execute(
-        "SELECT COALESCE(sum(pg_total_relation_size(c.oid)),0) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind='r' AND c.relname IN ('places_catalog','places_catalog_imports','places_catalog_active')"
+        "SELECT COALESCE(sum(pg_total_relation_size(c.oid)),0) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind='r' AND c.relname IN ('places_catalog','places_catalog_imports','places_catalog_active','places_catalog_calendars')"
     )
     return int(cur.fetchone()[0])
 

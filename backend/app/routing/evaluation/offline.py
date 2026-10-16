@@ -14,6 +14,7 @@ from app.routing.base import PlanningError, PlanOptions
 from app.routing.cp_sat_selection import select_attractions
 from app.routing.evaluation.fixtures import EvidenceError, route_key, validate_route
 from app.routing.evaluation.methods import comparator
+from app.routing.explanation import record_stage
 from app.routing.geometry import find_position
 from app.routing.planners.cp_sat import CPSatPlanner
 from app.routing.pricing import get_price_range
@@ -21,11 +22,16 @@ from app.routing.profiles import crossmatch
 from app.routing.run_metrics import fingerprint
 from app.routing.services import RoutingServices
 from app.routing.sources.mapbox import require_route_capacity
-from app.routing.sources.persona_candidates import attraction_candidates
+from app.routing.sources.persona_candidates import (
+    CalendarFilteredPlaces,
+    LivePlaceProvider,
+    attraction_candidates,
+)
 from app.routing.travel_timing import apply_timing
+from app.routing.visit_calendar import VisitCalendarConflict, calendar_eligible
 
 
-class FrozenProviders:
+class FrozenProviders(LivePlaceProvider):
     def __init__(self, fixture):
         self.fixture = fixture
         self.data = fixture.data
@@ -38,17 +44,31 @@ class FrozenProviders:
     def count(self, name):
         self.calls[name] = self.calls.get(name, 0) + 1
 
-    async def attractions_near(self, point):
+    async def attractions_near(self, point, *, require_visit_calendar=False, trip_calendar=None):
         self.count("captured_catalog_queries")
-        # A simulation against the immutable source subset. Same five-mile/60 guard.
-        return sorted(
-            (
-                {**copy.deepcopy(item), "name": f"__capture_id__{fingerprint(item['provider_id'])}"}
-                for item in self.data["attractions"]
-                if geodesic(point, item["coordinates"]).miles <= 5
-            ),
+        # Filter the complete immutable subset before the same five-mile/60 quota.
+        # Otherwise closed venues could consume the slots of usable destinations.
+        output, excluded = [], []
+        for item in sorted(
+            self.data["attractions"],
             key=lambda item: (item.get("provider_rank", 0), item["provider_id"]),
-        )[:60]
+        ):
+            if geodesic(point, item["coordinates"]).miles > 5:
+                continue
+            usable = (
+                await trip_calendar.eligible(item)
+                if trip_calendar is not None
+                else not require_visit_calendar or calendar_eligible(item)
+            )
+            if not usable:
+                excluded.append(item["provider_id"])
+                continue
+            output.append(
+                {**copy.deepcopy(item), "name": f"__capture_id__{fingerprint(item['provider_id'])}"}
+            )
+            if len(output) == 60:
+                break
+        return CalendarFilteredPlaces(output, excluded)
 
     def complete(self, messages, tools):
         self.count("captured_rating_reads")
@@ -181,49 +201,66 @@ async def pipeline(fixture, scenario, config, method, envelope, progress):
         traveler_count=inputs.traveler_count,
         hotel_rooms=inputs.hotel_rooms,
     )
-    progress("discovery_selection_scheduling")
-    result = await EvaluationPlanner(config, method).plan(fixture.baseline, options, services)
-    stops = result.stopping_points
-    progress("final_reroute")
     origin = fixture.nodes[fixture.data["origin_id"]]
     end = fixture.nodes[fixture.data["destination_id"]]
-    points = [stop["coordinates"] for stop in stops]
-    final = await provider.road(
-        *origin["coordinates"], *end["coordinates"], ";".join(f"{lon},{lat}" for lat, lon in points)
-    )
-    for stop, leg in zip(stops, final.legs):
-        stop.update(duration=leg.duration, distance=leg.distance)
-    stops.append(
-        {
-            "type": "end",
-            "name": "Arrive at your destination",
-            "coordinates": end["coordinates"],
-            "duration": final.legs[-1].duration,
-            "distance": final.legs[-1].distance,
-        }
-    )
-    for stop in stops:
-        stop["timezone"] = await provider.timezone(stop["coordinates"])
-    route = Route(
-        coordinates=[origin["coordinates"], *points, end["coordinates"]],
-        distance=final.distance,
-        duration=final.duration,
-        steps=[],
-        stops=stops,
-        geometry=final.geometry,
-        cost=result.total_cost,
-        scheduling_policy=options.scheduling_policy,
-        start_timezone=origin["timezone"],
-        departure_time=options.start,
-        traveler_count=inputs.traveler_count,
-        hotel_rooms=inputs.hotel_rooms,
-        warnings=[stop["warning"] for stop in stops if stop.get("warning")] or None,
-    )
-    progress("final_timing")
-    try:
-        apply_timing(route.stops, options.start, options.scheduling_policy, origin["timezone"])
-    finally:
-        envelope["route"] = route.model_dump(mode="json")
+    # Match production's bounded reselection after actual road timing conflicts.
+    for _ in range(61):
+        try:
+            progress("discovery_selection_scheduling")
+            result = await EvaluationPlanner(config, method).plan(
+                fixture.baseline, options, services
+            )
+            stops = result.stopping_points
+            progress("final_reroute")
+            points = [stop["coordinates"] for stop in stops]
+            final = await provider.road(
+                *origin["coordinates"],
+                *end["coordinates"],
+                ";".join(f"{lon},{lat}" for lat, lon in points),
+            )
+            for stop, leg in zip(stops, final.legs):
+                stop.update(duration=leg.duration, distance=leg.distance)
+            stops.append(
+                {
+                    "type": "end",
+                    "name": "Arrive at your destination",
+                    "coordinates": end["coordinates"],
+                    "duration": final.legs[-1].duration,
+                    "distance": final.legs[-1].distance,
+                }
+            )
+            for stop in stops:
+                stop["timezone"] = await provider.timezone(stop["coordinates"])
+            route = Route(
+                coordinates=[origin["coordinates"], *points, end["coordinates"]],
+                distance=final.distance,
+                duration=final.duration,
+                steps=[],
+                stops=stops,
+                geometry=final.geometry,
+                cost=result.total_cost,
+                scheduling_policy=options.scheduling_policy,
+                start_timezone=origin["timezone"],
+                departure_time=options.start,
+                traveler_count=inputs.traveler_count,
+                hotel_rooms=inputs.hotel_rooms,
+                warnings=[stop["warning"] for stop in stops if stop.get("warning")] or None,
+            )
+            progress("final_timing")
+            try:
+                apply_timing(
+                    route.stops, options.start, options.scheduling_policy, origin["timezone"]
+                )
+            finally:
+                envelope["route"] = route.model_dump(mode="json")
+            break
+        except VisitCalendarConflict as exc:
+            if exc.provider_id in options.excluded_provider_ids:
+                raise
+            options.excluded_provider_ids |= {exc.provider_id}
+            record_stage("availability", "excluded_after_actual_road_route", exc.detail)
+    else:
+        raise PlanningError("Source-calendar reselection limit exceeded", 422)
     if fixture.reviews:
         for stop in route.stops:
             if stop["type"] == "stop":

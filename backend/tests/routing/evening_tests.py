@@ -15,7 +15,7 @@ from tests.routing.flexible_hotel_tests import START, ZONE, point, saved_route
 
 def venue(**patch):
     return {
-        "provider_id": "terra:123",
+        "provider_id": "overture:123",
         "name": "Local cafe",
         "coordinates": [34.001, -118],
         "url": "https://example.test/cafe",
@@ -58,8 +58,8 @@ async def test_nearby_open_options_are_alternatives_after_rest_with_return_bound
     provider = Provider(
         [
             venue(),
-            venue(provider_id="terra:124", name="Gallery", category="culture"),
-            venue(provider_id="terra:125"),
+            venue(provider_id="overture:124", name="Gallery", category="culture"),
+            venue(provider_id="overture:125"),
         ]
     )
     hotel = planned_hotel()

@@ -1,0 +1,4 @@
+# Optional source-replay extraction only; ordinary API/import preparation uses
+# immutable extracted tables and does not import these modules.
+pdfplumber==0.11.8
+pdfminer.six==20251107

@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -162,6 +163,29 @@ def test_get_initial_route_returns_steps():
 # ---------------------------------------------------------------------------
 # POST /generate-final-route stop-count validation
 # ---------------------------------------------------------------------------
+
+
+def test_invalid_candidate_ratings_return_a_safe_explicit_provider_error(monkeypatch):
+    from app.routers import routing_api
+    from app.routing.sources.persona_candidates import CandidateRatingError
+
+    async def invalid(*args, **kwargs):
+        raise CandidateRatingError(CandidateRatingError.public_message)
+
+    monkeypatch.setattr(routing_api, "plan_final_route", invalid)
+    response = client.post(
+        "/generate-final-route",
+        json={
+            "initial_route": _mapbox_response()["routes"][0],
+            "num_stops": 1,
+            "budget": 180,
+            "start": (datetime.now() + timedelta(days=7)).isoformat(),
+            "traveler_count": 2,
+            "hotel_rooms": [{"adults": 2, "child_ages": []}],
+        },
+    )
+    assert response.status_code == 502
+    assert response.json()["detail"] == CandidateRatingError.public_message
 
 
 def test_generate_final_route_zero_stops_rejected_before_providers():

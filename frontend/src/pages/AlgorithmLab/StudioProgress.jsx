@@ -24,7 +24,7 @@ const phases = [
   [
     'selection',
     'Choose attractions with CP-SAT',
-    'Candidates need a match of at least 0.60 and a verified road detour. CP-SAT selects the available requested count, keeps average match within 10 percentage points of the best achievable average, and minimizes route-gap deviation plus detour time.',
+    'Candidates need a positive preference match and a verified road detour. CP-SAT selects the available requested count, keeps average match within 10 percentage points of the best achievable average, and minimizes route-gap deviation plus detour time.',
   ],
   [
     'schedule',
@@ -94,7 +94,7 @@ function describe(event) {
     case 'attractions.collected':
       return `${query}Scored ${event.name}. ${event.collected} candidates collected.`;
     case 'route.model':
-      return `${event.eligible} of ${event.candidates} candidates meet the ${event.threshold} match threshold, across ${event.sections ?? event.slots} route sections. Attraction cap: ${event.requestedStops}.`;
+      return `${event.eligible} of ${event.candidates} candidates have a match ${event.thresholdInclusive === false ? '>' : '≥'} ${event.threshold}, across ${event.sections ?? event.slots} route sections. Attraction cap: ${event.requestedStops}.`;
     case 'route.solution':
       return `${event.solverStatus}: selected ${event.selected} of ${event.eligible} eligible attractions.`;
     case 'route.selected':

@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time, seconds_until
 from app.routing.base import PlanningError
+from app.routing.visit_calendar import VisitCalendarConflict, requires_calendar, solve_visit
 
 
 def apply_timing(
@@ -20,6 +21,10 @@ def apply_timing(
         duration = stop["duration"]
         if not math.isfinite(duration) or duration < 0:
             raise PlanningError("Mapbox returned an invalid leg duration", 502)
+        if stop["type"] == "stop" and requires_calendar(stop) and not stop.get("timezone"):
+            raise VisitCalendarConflict(
+                stop.get("provider_id", "unknown"), "arrival IANA timezone is unknown"
+            )
         zone = ZoneInfo(stop["timezone"]) if stop.get("timezone") else now.tzinfo
         arrival = advance(now, duration)
         if zone is not None:
@@ -27,6 +32,14 @@ def apply_timing(
         final = stop["type"] == "end"
         cutoff = policy.arrival_cutoff(final=final)
         deadline = policy.deadline(travel_day, zone, final=final)
+        if stop["type"] == "stop":
+            road_arrival = arrival
+            arrival, availability = solve_visit(stop, arrival, deadline)
+            stop.update(
+                road_arrival_time=road_arrival.isoformat(),
+                wait_seconds=max(0, seconds_until(road_arrival, arrival)),
+                availability=availability,
+            )
         departure = advance(arrival, 7200) if stop["type"] == "stop" else arrival
         if seconds_until(departure, deadline) < -1e-6:
             raise PlanningError(

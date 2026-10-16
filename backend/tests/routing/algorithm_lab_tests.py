@@ -139,7 +139,7 @@ def test_solver_objective_matches_exhaustive_subsets(preset):
     candidates, points = replay_candidates("teaching-v1", weights)
     with capture_explanation() as result:
         CPSatPlanner._select(candidates, points, 2, 3000)
-    eligible = [item for item in result["candidates"] if item.get("utility", 0) >= 0.60]
+    eligible = [item for item in result["candidates"] if item.get("utility", 0) > 0]
     count = min(2, len(eligible))
     best_quality = sum(sorted((item["utility"] for item in eligible), reverse=True)[:count])
     costs = []
@@ -163,13 +163,14 @@ def test_explanations_distinguish_duplicates_threshold_and_cap():
     weights = preset_catalog()[0]["inputs"]["persona_weights"]
     candidates, points = replay_candidates("teaching-v1", weights)
     candidates += [copy.deepcopy(candidates[0]), {"provider_id": "broken"}]
+    candidates.append({**candidates[0], "provider_id": "zero", "utility": 0})
     with capture_explanation() as result:
         CPSatPlanner._select(candidates, points, 1, 3000)
     reasons = {item["reason"] for item in result["candidates"]}
     assert {
         "selected",
         "eligible_not_selected",
-        "below_utility_threshold",
+        "nonpositive_utility",
         "duplicate_provider_id",
         "invalid_candidate",
     } <= reasons

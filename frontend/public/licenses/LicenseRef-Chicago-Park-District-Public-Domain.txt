@@ -1,0 +1,10 @@
+Chicago Park District factual facilities data
+
+Archived and current official metadata identify the publisher as Chicago Park District, provenance official, and licenseId PUBLIC_DOMAIN.
+
+Sources:
+https://data.cityofchicago.org/api/views/y7qa-tvqx.json
+https://data.cityofchicago.org/api/views/eix4-gf83.json
+https://www.kaggle.com/datasets/chicago/chicago-parks-locations,-facilities-features/versions/15
+
+This notice covers the factual facility identity/geometry fields used by this import. Photographs, creative descriptions and nonselected third-party works are not destination facts emitted by this adapter. Source records, official license metadata and SHA256 receipts are retained in the source bundle. OpenStreetMap arrival derivatives retain separate ODbL1.0 attribution and evidence.

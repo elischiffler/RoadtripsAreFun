@@ -19,7 +19,8 @@ import time
 from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
-from urllib.request import urlopen
+from urllib.parse import urlparse
+from urllib.request import getproxies, proxy_bypass, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
@@ -60,7 +61,64 @@ def retained_license(spdx):
     return record
 
 
-def source_features(bbox, release):
+def official_s3_path(assets, release):
+    """Read the inspected STAC asset layouts; permit only the pinned public S3 path."""
+    if not isinstance(assets, dict):
+        raise ValueError("unexpected STAC assets")
+    asset = assets.get("aws-s3") or assets.get("aws")
+    if not isinstance(asset, dict):
+        raise ValueError("STAC has no supported AWS asset")
+    href = asset.get("href")
+    if not isinstance(href, str):
+        raise ValueError("STAC asset has no URL")
+    url = urlparse(href)
+    if url.scheme == "https":
+        if url.netloc != "overturemaps-us-west-2.s3.us-west-2.amazonaws.com":
+            raise ValueError("STAC returned an unofficial S3 host")
+        bucket = "overturemaps-us-west-2"
+    elif url.scheme == "s3" and url.netloc == "overturemaps-us-west-2":
+        bucket = url.netloc
+    else:
+        raise ValueError("STAC returned an unofficial S3 asset")
+    prefix = f"/release/{release}/theme=places/type=place/"
+    if (
+        not url.path.startswith(prefix)
+        or ".." in url.path
+        or not url.path.endswith(".parquet")
+        or url.query
+        or url.fragment
+    ):
+        raise ValueError("STAC returned a path outside the pinned official places release")
+    return bucket + url.path
+
+
+def s3_transport_options():
+    """Use the workspace's existing proxy/CA trust with Arrow's explicit options."""
+    options = {
+        "anonymous": True,
+        "region": "us-west-2",
+        "connect_timeout": 10,
+        "request_timeout": 20,
+    }
+    host = "overturemaps-us-west-2.s3.us-west-2.amazonaws.com"
+    proxy = getproxies().get("https")
+    if proxy and not proxy_bypass(host):
+        options["proxy_options"] = proxy
+    ca = os.environ.get("SSL_CERT_FILE") or os.environ.get("REQUESTS_CA_BUNDLE")
+    if ca:
+        options["tls_ca_file_path"] = ca
+    return options
+
+
+def source_features(
+    bbox,
+    release,
+    *,
+    category_filter=None,
+    require_open=False,
+    min_confidence=0,
+    stac_index=None,
+):
     """Yield small batches from STAC-selected official S3 objects only."""
     import pyarrow.compute as pc
     import pyarrow.dataset as ds
@@ -69,10 +127,16 @@ def source_features(bbox, release):
     from shapely import from_wkb
     from shapely.geometry import mapping
 
-    with urlopen(
-        f"https://stac.overturemaps.org/{release}/collections.parquet", timeout=15
-    ) as response:
-        data = response.read(16 * 1024 * 1024 + 1)
+    if stac_index is None:
+        with urlopen(
+            f"https://stac.overturemaps.org/{release}/collections.parquet", timeout=15
+        ) as response:
+            data = response.read(16 * 1024 * 1024 + 1)
+    else:
+        # Explicit reuse of retained, immutable release metadata. No network
+        # fallback or alternate endpoint after an access/rate-limit failure.
+        with Path(stac_index).open("rb") as response:
+            data = response.read(16 * 1024 * 1024 + 1)
     if len(data) > 16 * 1024 * 1024:
         raise ValueError("STAC index exceeds 16 MiB")
     index = pq.read_table(io.BytesIO(data))
@@ -85,9 +149,7 @@ def source_features(bbox, release):
         & (pc.field("bbox", "ymin") < north)
         & (pc.field("bbox", "ymax") > south)
     )
-    paths = [
-        asset["aws-s3"]["href"].removeprefix("s3://") for asset in matches["assets"].to_pylist()
-    ]
+    paths = [official_s3_path(asset, release) for asset in matches["assets"].to_pylist()]
     if not paths:
         return
     if len(paths) > 100:
@@ -97,9 +159,7 @@ def source_features(bbox, release):
         raise ValueError("STAC returned a path outside the pinned official places release")
     dataset = ds.dataset(
         paths,
-        filesystem=fs.S3FileSystem(
-            anonymous=True, region="us-west-2", connect_timeout=10, request_timeout=20
-        ),
+        filesystem=fs.S3FileSystem(**s3_transport_options()),
         format="parquet",
     )
     needed = {
@@ -111,6 +171,7 @@ def source_features(bbox, release):
         "basic_category",
         "taxonomy",
         "operating_status",
+        "confidence",
         "websites",
     }
     if not {"id", "geometry", "names", "addresses", "sources", "taxonomy"} <= set(
@@ -123,6 +184,19 @@ def source_features(bbox, release):
         & (pc.field("bbox", "ymin") >= south)
         & (pc.field("bbox", "ymax") <= north)
     )
+    if require_open:
+        condition = condition & (pc.field("operating_status") == "open")
+    if min_confidence:
+        condition = condition & (pc.field("confidence") >= min_confidence)
+    if category_filter:
+        # Apply scalar taxonomy predicates before decoding generic businesses.
+        # Final normalized-category admission still runs for every emitted row.
+        labels = sorted(
+            set(category_filter) | {"museum", "garden", "performing_arts", "arts_and_crafts_space"}
+        )
+        condition = condition & (
+            pc.field("basic_category").isin(labels) | pc.field("taxonomy", "primary").isin(labels)
+        )
     scanner = dataset.scanner(
         columns=sorted(needed & set(dataset.schema.names)),
         filter=condition,
@@ -150,12 +224,28 @@ def extract(
     max_scanned=10_000,
     max_bytes=20 * 1024 * 1024,
     max_seconds=120,
+    category_filter=None,
+    require_open=False,
+    min_confidence=0,
 ):
     """Filter before writing; always publish manifest with the exact truncation cause."""
     if not 1 <= max_records <= MAX_RECORDS or not 1 <= max_scanned <= MAX_SCANNED:
         raise ValueError("row limits exceed hard ceilings")
     if not 1 <= max_bytes <= MAX_BYTES or not 1 <= max_seconds <= 600:
         raise ValueError("byte/time limits exceed hard ceilings")
+    categories_requested = set(category_filter or [])
+    if len(categories_requested) > 30 or any(
+        not isinstance(c, str) or not c.replace("_", "").isalnum() or len(c) > 100
+        for c in categories_requested
+    ):
+        raise ValueError("category filters require at most 30 explicit taxonomy labels")
+    if (
+        isinstance(min_confidence, bool)
+        or not isinstance(min_confidence, (int, float))
+        or not math.isfinite(min_confidence)
+        or not 0 <= min_confidence <= 1
+    ):
+        raise ValueError("minimum source confidence must be within 0..1")
     output = Path(output)
     manifest_path = output.with_suffix(output.suffix + ".manifest.json")
     if output.exists() or manifest_path.exists():
@@ -198,9 +288,30 @@ def extract(
                 if decoded_bytes > max_bytes:
                     reason = "decoded_byte_limit"
                     break
+                # Shapely mapping emits tuples; validate the exact JSON form
+                # that the file importer will read, including coordinate arrays.
+                feature = json.loads(encoded)
                 row, rejection = normalize(feature)
                 if rejection:
                     rejects[rejection] += 1
+                    continue
+                properties = feature.get("properties", {})
+                if require_open and properties.get("operating_status") != "open":
+                    rejects["open_status_required"] += 1
+                    continue
+                confidence = properties.get("confidence")
+                if min_confidence and (
+                    isinstance(confidence, bool)
+                    or not isinstance(confidence, (int, float))
+                    or not math.isfinite(confidence)
+                    or confidence < min_confidence
+                ):
+                    rejects["source_confidence"] += 1
+                    continue
+                if categories_requested and not categories_requested.intersection(
+                    row["categories"]
+                ):
+                    rejects["category_selection"] += 1
                     continue
                 source_licenses = provenance_licenses(row)
                 if not source_licenses:
@@ -236,6 +347,9 @@ def extract(
                 "max_scanned": max_scanned,
                 "max_decoded_bytes": max_bytes,
                 "max_seconds": max_seconds,
+                "category_selection": sorted(categories_requested),
+                "require_open": require_open,
+                "minimum_existence_confidence": min_confidence,
             },
             "attribution": "Overture Maps Foundation; " + "; ".join(sorted(upstreams)),
             "licenses": {license: retained_license(license) for license in sorted(licenses)},
@@ -290,10 +404,23 @@ def main():
     parser.add_argument("--max-scanned", type=int, default=10_000)
     parser.add_argument("--max-bytes", type=int, default=20 * 1024 * 1024)
     parser.add_argument("--max-seconds", type=int, default=120)
+    parser.add_argument("--category", action="append", default=[])
+    parser.add_argument("--require-open", action="store_true")
+    parser.add_argument("--min-confidence", type=float, default=0)
+    parser.add_argument(
+        "--stac-index", type=Path, help="explicit retained official collections.parquet"
+    )
     args = parser.parse_args()
     try:
         manifest = extract(
-            source_features(args.bbox, args.release),
+            source_features(
+                args.bbox,
+                args.release,
+                category_filter=args.category,
+                require_open=args.require_open,
+                min_confidence=args.min_confidence,
+                stac_index=args.stac_index,
+            ),
             args.output,
             bbox=args.bbox,
             region=args.region_label,
@@ -302,6 +429,9 @@ def main():
             max_scanned=args.max_scanned,
             max_bytes=args.max_bytes,
             max_seconds=args.max_seconds,
+            category_filter=args.category,
+            require_open=args.require_open,
+            min_confidence=args.min_confidence,
         )
     except Exception as exc:
         print(

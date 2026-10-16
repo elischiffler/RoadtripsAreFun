@@ -29,16 +29,17 @@ from app.routing.evaluation import HARNESS_VERSION
 from app.routing.evaluation.fixtures import EvidenceError, Fixture
 from app.routing.evaluation.methods import comparator
 from app.routing.evaluation.network import no_network
-from app.routing.evaluation.offline import pipeline
+from app.routing.evaluation.offline import FrozenProviders, pipeline
 from app.routing.evaluation.scenarios import PERSONAS, Scenario
 from app.routing.evaluation.workload import screen_workload
 from app.routing.explanation import capture_explanation, record_explanation
 from app.routing.profiles import crossmatch
 from app.routing.run_metrics import METRIC_VERSION, compile_metrics, fingerprint, measuring, timed
+from app.routing.trip_calendar import TripCalendar
 
 PARAMETERS = {
     "quality_loss": (0, 0.05, 0.10, 0.20),
-    "utility_threshold": (0.50, 0.60, 0.70),
+    "utility_threshold": (0, 0.50, 0.60, 0.70),
     "detour_weight": (0, 0.25, 1, 4),
     "time_limit_seconds": (0.25, 1, 5, 15),
     "persona_interpolation": (0, 0.25, 0.50, 0.75, 1),
@@ -267,6 +268,19 @@ def execute(spec):
                         raise EvidenceError("frozen scenario production shortlist missing")
                     by_id = {item["provider_id"]: item for item in candidates}
                     candidates = [by_id[key] for key in ids]
+                row["stage"] = "selection_calendar_evidence"
+                calendar = TripCalendar(scenario.departure(), FrozenProviders(fixture).timezone)
+
+                async def eligible_candidates():
+                    kept, excluded = [], []
+                    for item in candidates:
+                        if await calendar.eligible(item):
+                            kept.append(item)
+                        else:
+                            excluded.append(item["provider_id"])
+                    return kept, excluded
+
+                candidates, row["calendar_excluded_ids"] = asyncio.run(eligible_candidates())
                 row["stage"] = "selection"
                 record_explanation(weights=scenario.inputs.persona_weights)
                 with timed("route.solver"):

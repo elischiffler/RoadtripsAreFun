@@ -43,6 +43,13 @@ def test_combine_retains_regions_and_deduplicates_normalized_identity(tmp_path):
     assert len(prepare(output, manifest)[0]) == 2
 
 
+def test_combined_attribution_deduplicates_shared_source_names(tmp_path):
+    a = regional(tmp_path, "a", [feature()], attribution="Provider A; Provider B")
+    b = regional(tmp_path, "b", [feature(id="another")], attribution="Provider B; Provider C")
+    manifest = combiner.combine([a, b], tmp_path / "credits.jsonl")
+    assert manifest["attribution"] == "Provider A; Provider B; Provider C"
+
+
 @pytest.mark.parametrize("case", ["conflict", "release", "schema", "checksum", "rows", "bytes"])
 def test_invalid_combination_never_publishes_partial_output(tmp_path, case):
     first = regional(tmp_path, "first", [feature()])
@@ -96,3 +103,17 @@ def test_manifest_publication_failure_removes_only_new_output(tmp_path, monkeypa
     with pytest.raises(OSError, match="publication failed"):
         combiner.combine([first], output)
     assert not output.exists()
+
+
+def test_explicit_selection_is_exact_and_retains_original_source_features(tmp_path):
+    first = regional(tmp_path, "first", [feature(), feature(id="exclude")])
+    output = tmp_path / "selected.jsonl"
+    manifest = combiner.combine([first], output, selected_ids={"stable-1"})
+    assert prepare(output, manifest)[1]["accepted"] == 1
+    assert json.loads(output.read_text()) == feature()
+    assert manifest["filters"]["selected_id_count"] == 1
+    assert manifest["inputs"][0]["manifest_sha256"]
+    missing = tmp_path / "missing.jsonl"
+    with pytest.raises(ValueError, match="absent"):
+        combiner.combine([first], missing, selected_ids={"absent"})
+    assert not missing.exists()

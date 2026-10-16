@@ -4,7 +4,9 @@ The evaluator runs locally with frozen evidence. It makes no provider calls and
 writes no database rows. Archive/container runs without Git record a source-byte snapshot hash and explicit unavailable Git/dirty metadata; a supplied `ROADTRIPS_REVISION` is retained. The public Lab/Studio APIs remain live-only, with their
 existing owner/visitor authentication and replay rejection.
 
-Implemented against catalog PR 40 at `5ab14e01e0ababd3525093ff67fac7ac29d2bd6f`.
+Originally implemented against catalog PR 40 at `5ab14e01e0ababd3525093ff67fac7ac29d2bd6f`.
+The October 16 integration incorporates main `e9129a7551ef8c07405a9bf7552f6303765365af`,
+including positive utility eligibility and source calendars.
 The approved Library plan was materialized on the Mac, verified readable at
 67,165 bytes, SHA-256
 `e014b9ddc9c509b77463710493056ae8f12f3218b7ec66d608ed2a196024b273`.
@@ -61,7 +63,7 @@ the medium corridor at two attractions/day with both personas. `--sweep` runs on
 factor at a time on a frozen selection pool:
 
 - `quality_loss`: 0, 0.05, 0.10, 0.20.
-- `utility_threshold`: 0.50, 0.60, 0.70.
+- `utility_threshold`: 0 (the production positive-match rule), 0.50, 0.60, 0.70.
 - `detour_weight`: 0, 0.25, 1, 4, keeping spacing weight 1.
 - `time_limit_seconds`: 0.25, 1, 5, 15.
 - `persona_interpolation`: nature to entertainment at 0, 0.25, 0.50, 0.75, 1.
@@ -76,7 +78,7 @@ repair; failure to satisfy the bound is a method failure. Comparators use
 `--seed 0|1|2`, `--repeat 1..10`, `--workers 1..8`, and `--time-limit` (at most 60 seconds) support bounded search repeats and reference solves.
 
 Selection uses the shared CP-SAT model. Production defaults remain 60 candidates,
-0.60 eligibility, 0.10 average loss, spacing/detour coefficients 1/1, five seconds,
+strictly positive utility eligibility, 0.10 average loss, spacing/detour coefficients 1/1, five seconds,
 one worker and seed 0. Only the offline 100 track raises the candidate guard.
 Rational coefficients retain their explicit integer conversion. The original
 floor/ceiling utility rounding is preserved; diagnostics expose when the scaled
@@ -132,7 +134,9 @@ primary figures. The only fixed-zone fallback is explicitly synthetic.
 
 The offline pipeline uses actual adaptive `attraction_candidates` against the
 immutable source subset, the same five-mile/60 nearby bound and frozen ratings.
-It reuses the production planner, road checking, hotel scheduler, `apply_timing`
+It applies requested-trip source calendars before nearby quotas, preserves all
+positive utility matches by default, and reuses the production planner, road
+checking, hotel scheduler, final-road calendar reselection, `apply_timing`
 and `build_itinerary`. This is a catalog-subset simulation with recorded road
 responses, not a live capture or proof of nationwide coverage. Missing evidence
 blocks the cell, and never invokes a provider. Worker socket connection and DNS
@@ -184,9 +188,10 @@ diagnostics. It records visits, overnight downtime, CPU/peak RSS, physical RAM
 where supported and separate warmups. Lab history includes actual page-scoped
 comparison charts without adding replay access or paid calls.
 
-The current checkpoint reports 400 local catalog imports with 331 access reviews
-pending. No expansion data or completed real 100-place capture was supplied to
-this checkout. Imported count does not establish eligible corridor coverage.
+The older 400-place checkpoint is historical. Current main includes the later
+catalog releases and source-calendar work; repository data changes do not establish
+live activation or an evaluation capture. No completed real 100-place route-evaluation
+bundle was supplied to this checkout. Imported count does not establish eligible corridor coverage.
 Real captures/campaigns/primary figures and separately approved live acceptance
 remain data/authorization gates. No main merge, production activation,
 credential/database change or paid provider capture is included.

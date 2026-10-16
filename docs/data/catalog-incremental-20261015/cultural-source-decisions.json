@@ -1,0 +1,624 @@
+[
+  {
+    "dataset": "la",
+    "name": "Art in the Park at Hermon Park",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Banning's Landing Community Arts Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Barnsdall Art Center",
+    "status": "hold",
+    "reason": "Shared geocoded curb/campus point; actual component visitor arrival is not independently proved. Theater/class/office clocks also cannot substitute for gallery or guided-tour access."
+  },
+  {
+    "dataset": "la",
+    "name": "Barnsdall Gallery Theatre",
+    "status": "hold",
+    "reason": "Shared geocoded curb/campus point; actual component visitor arrival is not independently proved. Theater/class/office clocks also cannot substitute for gallery or guided-tour access."
+  },
+  {
+    "dataset": "la",
+    "name": "Barnsdall Junior Arts Center",
+    "status": "hold",
+    "reason": "Shared geocoded curb/campus point; actual component visitor arrival is not independently proved. Theater/class/office clocks also cannot substitute for gallery or guided-tour access."
+  },
+  {
+    "dataset": "la",
+    "name": "Barnsdall Junior Arts Center Gallery",
+    "status": "hold",
+    "reason": "Shared geocoded curb/campus point; actual component visitor arrival is not independently proved. Theater/class/office clocks also cannot substitute for gallery or guided-tour access."
+  },
+  {
+    "dataset": "la",
+    "name": "Bridge Gallery at City Hall",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Canoga Park Youth Arts Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Center for the Arts Eagle Rock",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Encino Arts and Cultural Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Hollyhock House",
+    "status": "hold",
+    "reason": "Shared geocoded curb/campus point; actual component visitor arrival is not independently proved. Theater/class/office clocks also cannot substitute for gallery or guided-tour access."
+  },
+  {
+    "dataset": "la",
+    "name": "Lankershim Arts Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Lincoln Heights Youth Arts Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Los Angeles Municipal Art Gallery",
+    "status": "hold",
+    "reason": "Shared geocoded curb/campus point; actual component visitor arrival is not independently proved. Theater/class/office clocks also cannot substitute for gallery or guided-tour access."
+  },
+  {
+    "dataset": "la",
+    "name": "Los Angeles Theatre Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Madrid Theatre",
+    "status": "hold",
+    "reason": "Current official operator explicitly closes this theater for renovation; old bulk hours cannot override it.",
+    "evidence": [
+      {
+        "path": "sources/operator-madrid-theatre.html",
+        "url": "https://culture.lacity.gov/cultural-centers/madrid-theatre",
+        "sha256": "53a1f5bd0e26314c2ab7e9705279542a6b78facfd5d0ce6ea50fbbe6ba54a005",
+        "retrieved_at": "2026-10-15T19:56:58.660038+00:00",
+        "required_facts": [
+          "Closed for Renovations"
+        ]
+      }
+    ]
+  },
+  {
+    "dataset": "la",
+    "name": "Manchester Youth Arts Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "McGroarty Arts Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Nate Holden Performing Arts Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Sun Valley Youth Arts Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Van Nuys World Airport",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "la",
+    "name": "Vision Theatre",
+    "status": "hold",
+    "reason": "Current official operator explicitly closes this theater for renovation; old bulk hours cannot override it.",
+    "evidence": [
+      {
+        "path": "sources/operator-vision-theatre-performing-arts-center.html",
+        "url": "https://culture.lacity.gov/cultural-centers/vision-theatre",
+        "sha256": "8119d18428985a422b3c8c7e0a5f7a2a6837b5bdfb8a74a7bb5fac0113bd8ded",
+        "retrieved_at": "2026-10-15T19:57:09.469474+00:00",
+        "required_facts": [
+          "Closed for Renovations"
+        ]
+      }
+    ]
+  },
+  {
+    "dataset": "la",
+    "name": "Warner Grand Theatre",
+    "status": "hold",
+    "reason": "Current official operator explicitly closes this theater for renovation; old bulk hours cannot override it.",
+    "evidence": [
+      {
+        "path": "sources/operator-warner-grand-theatre.html",
+        "url": "https://culture.lacity.gov/cultural-centers/warner-grand-theatre",
+        "sha256": "586b90c97a5c83c89416b5c4f1f3f2e1f47d6ebbcbb3f603efaca8e94b8ce484",
+        "retrieved_at": "2026-10-15T19:57:15.202687+00:00",
+        "required_facts": [
+          "Closed for renovation"
+        ]
+      }
+    ]
+  },
+  {
+    "dataset": "la",
+    "name": "Watts Towers Campus - Charles Mingus Youth Arts Center",
+    "status": "hold",
+    "reason": "Same native campus arrival as selected Watts arts-center gallery destination; do not inflate four further route stops."
+  },
+  {
+    "dataset": "la",
+    "name": "Watts Towers Campus - Dr. Joseph and Bootsie Howard Gallery",
+    "status": "hold",
+    "reason": "Same native campus arrival as selected Watts arts-center gallery destination; do not inflate four further route stops."
+  },
+  {
+    "dataset": "la",
+    "name": "Watts Towers Campus - Noah Purifoy Gallery",
+    "status": "hold",
+    "reason": "Same native campus arrival as selected Watts arts-center gallery destination; do not inflate four further route stops."
+  },
+  {
+    "dataset": "la",
+    "name": "Watts Towers Campus - Watts Towers",
+    "status": "hold",
+    "reason": "Same native campus arrival as selected Watts arts-center gallery destination; do not inflate four further route stops."
+  },
+  {
+    "dataset": "la",
+    "name": "Watts Towers Campus - Watts Towers Arts Center",
+    "status": "admit",
+    "reason": "Reviewed source calendar and public destination arrival pass.",
+    "source_id": "la-cultural:8c79404ff1fc412b9bef",
+    "arrival": {
+      "method": "operator-street-frontage",
+      "road_way_id": 166068758,
+      "snap_distance_m": 1.220131353,
+      "road_name": "East 107th Street",
+      "coordinate_replaced": false,
+      "parking_availability": "unknown",
+      "operator_parking_facts": [
+        "Watts Towers Arts Center Campus Parking, 10624 Graham Avenue, Los Angeles, CA 90002",
+        "1727 East 107th Street"
+      ]
+    }
+  },
+  {
+    "dataset": "la",
+    "name": "William Grant Still Art Center",
+    "status": "hold",
+    "reason": "Published unless-special-programming/classes exception lacks a complete dated exclusion calendar in this bounded pass.",
+    "evidence": [
+      {
+        "path": "sources/operator-william-grant-still-arts-center.html",
+        "url": "https://culture.lacity.gov/cultural-centers/william-grant-still-arts-center",
+        "sha256": "93bf2fd1a2deb9acc7ba42e156c44f4396172f512f527a04f3ee87b355ff5747",
+        "retrieved_at": "2026-10-15T19:57:17.659790+00:00",
+        "required_facts": [
+          "unless for special programming or classes"
+        ]
+      }
+    ]
+  },
+  {
+    "dataset": "la",
+    "name": "William Reagh - LA Photography Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Bennington Battlefield",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Caumsett",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 218.6506134m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-caumsett-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-73.46667735,40.93012462;-73.46867735,40.92812462?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-73.46667735,40.93012462;-73.46867735,40.92812462?overview=false&steps=false",
+      "sha256": "6933e9ef9676f989da555aa34d4494f418dc6ffecc003eb8da577f5d0ebf77ea",
+      "retrieved_at": "2026-10-15T20:24:59.399843+00:00",
+      "bytes": 577
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Clermont",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 131.2789354m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-16-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-73.90904016,42.08530974;-73.91104016,42.08330974?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-73.90904016,42.08530974;-73.91104016,42.08330974?overview=false&steps=false",
+      "sha256": "453acc48ac3b020ea4d341095907a12ee54ee02abcddc04a782b99263ecf5538",
+      "retrieved_at": "2026-10-15T20:24:59.030694+00:00",
+      "bytes": 598
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Clinton House",
+    "status": "hold",
+    "reason": "Official facility URL redirects to the generic site directory; positive destination-specific visitor operation is not established."
+  },
+  {
+    "dataset": "ny",
+    "name": "Crailo",
+    "status": "hold",
+    "reason": "Guided-tour/fixed-start/early-check-in semantics or exact whole-visit component arrival are not fully supported by this self-guided pilot. Retained official pages and actual route/map receipts support later review."
+  },
+  {
+    "dataset": "ny",
+    "name": "Crown Point",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 94.79555935m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-34-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-73.42966319,44.02532481;-73.43166319,44.02332481?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-73.42966319,44.02532481;-73.43166319,44.02332481?overview=false&steps=false",
+      "sha256": "da9477229872e7e4da1c278a28092543585cc7905efe93f3ab1548f70e014c1f",
+      "retrieved_at": "2026-10-15T20:25:00.276543+00:00",
+      "bytes": 597
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Darwin Martin House Complex and Visitor Center",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Fort Montgomery",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Fort Ontario",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Ganondagan",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 207.6709043m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-26-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-77.42006824,42.966829870000005;-77.42206824,42.96482987?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-77.42006824,42.966829870000005;-77.42206824,42.96482987?overview=false&steps=false",
+      "sha256": "73f5baa8fb9a28c909c7c0a7de960ede561c466f55fc2420ff08369d849199ea",
+      "retrieved_at": "2026-10-15T20:25:01.030083+00:00",
+      "bytes": 596
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Grant Cottage",
+    "status": "hold",
+    "reason": "Guided-tour/fixed-start/early-check-in semantics or exact whole-visit component arrival are not fully supported by this self-guided pilot. Retained official pages and actual route/map receipts support later review."
+  },
+  {
+    "dataset": "ny",
+    "name": "Guy Park",
+    "status": "hold",
+    "reason": "Native and current registry supply no official facility URL; current component and calendar not established."
+  },
+  {
+    "dataset": "ny",
+    "name": "Herkimer Home",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 90.45000059m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-14-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-74.81386505,43.02732856;-74.81586505,43.02532856?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-74.81386505,43.02732856;-74.81586505,43.02532856?overview=false&steps=false",
+      "sha256": "557eb891572da1c6113ce681ef8b9e1b115f17cafa35b0e80bbfcbd28f87532d",
+      "retrieved_at": "2026-10-15T20:25:01.991093+00:00",
+      "bytes": 606
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Hyde Hall",
+    "status": "hold",
+    "reason": "Guided-tour/fixed-start/early-check-in semantics or exact whole-visit component arrival are not fully supported by this self-guided pilot. Retained official pages and actual route/map receipts support later review."
+  },
+  {
+    "dataset": "ny",
+    "name": "John Brown Farm",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 297.6423662m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-29-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-73.96950675000001,44.251574500000004;-73.97150675,44.2495745?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-73.96950675000001,44.251574500000004;-73.97150675,44.2495745?overview=false&steps=false",
+      "sha256": "59236035e6e4288336a61d5c58ee99ce4fe26a778e04522e7e9faa163f33ff2c",
+      "retrieved_at": "2026-10-15T20:25:03.167283+00:00",
+      "bytes": 603
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "John Burroughs Memorial",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "John Jay Homestead",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Johnson Hall",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Knox Headquarters",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 151.7015845m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-5-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-74.04582194000001,41.45543523;-74.04782194,41.45343523?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-74.04582194000001,41.45543523;-74.04782194,41.45343523?overview=false&steps=false",
+      "sha256": "51635fe10c4c03a8732568b3be22de3c4374550d471690e4d9c66ce70b691d2f",
+      "retrieved_at": "2026-10-15T20:25:03.599110+00:00",
+      "bytes": 593
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Lorenzo",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 224.7916242m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-15-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-75.86369996,42.92490209;-75.86569996,42.92290209?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-75.86369996,42.92490209;-75.86569996,42.92290209?overview=false&steps=false",
+      "sha256": "ce31fccfba81f80e36de00794735984143fcccd7233e084e41c4ee4d31370175",
+      "retrieved_at": "2026-10-15T20:25:03.714714+00:00",
+      "bytes": 607
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "New Windsor Cantonement",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 151.456453m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-22-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-74.05745727,41.47539278;-74.05945727,41.47339278?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-74.05745727,41.47539278;-74.05945727,41.47339278?overview=false&steps=false",
+      "sha256": "7334541d8236b4d01494b53d8f8e803d82ef737144d18b574c342ac5821c3660",
+      "retrieved_at": "2026-10-15T20:25:03.970611+00:00",
+      "bytes": 607
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Olana",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Old Croton Aqueduct",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Old Erie Canal",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Old Fort Niagara",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 94.74086294m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-31-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-79.06111435000001,43.26459391;-79.06311435,43.26259391?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-79.06111435000001,43.26459391;-79.06311435,43.26259391?overview=false&steps=false",
+      "sha256": "ac7abfc08f7dcf089c68d62a0ec44250df1e899e4300a25ac578ec63f45c0cc4",
+      "retrieved_at": "2026-10-15T20:25:04.435312+00:00",
+      "bytes": 595
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Oriskany Battlefield",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Parrot Hall",
+    "status": "hold",
+    "reason": "Native and current registry supply no official facility URL; current component and calendar not established."
+  },
+  {
+    "dataset": "ny",
+    "name": "Philipse Manor Hall",
+    "status": "admit",
+    "reason": "Reviewed source calendar and public destination arrival pass.",
+    "source_id": "nys-historic:37",
+    "arrival": {
+      "method": "operator-entry-frontage",
+      "road_way_id": 23525737,
+      "snap_distance_m": 14.59293711,
+      "road_name": "Dock Street",
+      "coordinate_replaced": false,
+      "parking_availability": "unknown",
+      "operator_parking_facts": [
+        "The main entrance for pedestrians and to the small parking lot is on Warburton Ave.",
+        "Parking: Limited parking available in the small Philipse Manor Hall lot, entrance located on Warburton Ave."
+      ]
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Planting Fields Arboretum",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 228.3785566m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-24-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-73.55522533,40.864175280000005;-73.55722533,40.86217528?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-73.55522533,40.864175280000005;-73.55722533,40.86217528?overview=false&steps=false",
+      "sha256": "a9cd3ba2cc0e0c12fb47e0bc93331bae7d967a24798034e569cf854a689cca78",
+      "retrieved_at": "2026-10-15T20:25:04.700198+00:00",
+      "bytes": 577
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Sackets Harbor",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 91.40482048m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-7-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-76.12778027,43.94830983;-76.12978027,43.94630983?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-76.12778027,43.94830983;-76.12978027,43.94630983?overview=false&steps=false",
+      "sha256": "41c84f741b05925685adb1d6f44394891e3f7ed101c9df280a8f7ad00222e2ab",
+      "retrieved_at": "2026-10-15T20:25:04.586983+00:00",
+      "bytes": 604
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Schoharie Crossing",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Schuyler Mansion",
+    "status": "hold",
+    "reason": "Guided-tour/fixed-start/early-check-in semantics or exact whole-visit component arrival are not fully supported by this self-guided pilot. Retained official pages and actual route/map receipts support later review."
+  },
+  {
+    "dataset": "ny",
+    "name": "Senate House",
+    "status": "hold",
+    "reason": "Guided-tour/fixed-start/early-check-in semantics or exact whole-visit component arrival are not fully supported by this self-guided pilot. Retained official pages and actual route/map receipts support later review."
+  },
+  {
+    "dataset": "ny",
+    "name": "Sonnenberg Gardens and Mansion",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 159.1027628m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-36-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-77.2701596,42.90014677;-77.2721596,42.89814677?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-77.2701596,42.90014677;-77.2721596,42.89814677?overview=false&steps=false",
+      "sha256": "b006e7fc9a0878a90ad701cd667993d07711346febebb84e86f8a3bcde29b12f",
+      "retrieved_at": "2026-10-15T20:25:04.963798+00:00",
+      "bytes": 584
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Staatsburgh",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Steuben Memorial",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Stony Point Battlefield",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  },
+  {
+    "dataset": "ny",
+    "name": "Susan B Anthony",
+    "status": "hold",
+    "reason": "Native and current registry supply no official facility URL; current component and calendar not established."
+  },
+  {
+    "dataset": "ny",
+    "name": "Walkway over the Hudson",
+    "status": "hold",
+    "reason": "Actual driving destination from unchanged native point exceeds75m: 381.6261142m. No relocation or guard increase.",
+    "driving_evidence": {
+      "path": "sources/ny-walkway-over-the-hudson-route.json",
+      "url": "https://router.project-osrm.org/route/v1/driving/-73.94295089,41.712587;-73.94495089,41.710587?overview=false&steps=false",
+      "status": 200,
+      "final_url": "https://router.project-osrm.org/route/v1/driving/-73.94295089,41.712587;-73.94495089,41.710587?overview=false&steps=false",
+      "sha256": "c6219d0f47ffb67da1dcb6f9603d47b6edc1849cdfa078b9317786595b678710",
+      "retrieved_at": "2026-10-15T20:25:05.102138+00:00",
+      "bytes": 610
+    }
+  },
+  {
+    "dataset": "ny",
+    "name": "Walt Whitman Birthplace",
+    "status": "hold",
+    "reason": "Guided-tour/fixed-start/early-check-in semantics or exact whole-visit component arrival are not fully supported by this self-guided pilot. Retained official pages and actual route/map receipts support later review."
+  },
+  {
+    "dataset": "ny",
+    "name": "Washington's Headquarters",
+    "status": "hold",
+    "reason": "Outside the bounded admitted pilot; no complete reviewed calendar and public destination arrival combination is claimed."
+  }
+]

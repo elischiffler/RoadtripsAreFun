@@ -249,10 +249,14 @@ export default function LabResults({ result, previous }) {
                 <dt>
                   Utility threshold{' '}
                   <HelpTip label="utility threshold">
-                    Candidates below this match score are excluded before solving.
+                    The comparison shown excludes zero matches for current runs. Older saved runs
+                    retain their recorded threshold.
                   </HelpTip>
                 </dt>
-                <dd>{numeric(solver.utility_threshold)}</dd>
+                <dd>
+                  {solver.utility_threshold_inclusive === false ? '> ' : '≥ '}
+                  {numeric(solver.utility_threshold)}
+                </dd>
               </div>
             </dl>
             {balanced && (

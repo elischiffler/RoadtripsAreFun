@@ -1,0 +1,310 @@
+[
+  {
+    "source_key": "chi-facility-91",
+    "status": "hold",
+    "reason": "No complete approved public arrival/current component calendar combination in this bounded pilot.",
+    "native_name": "ASHE (ARTHUR) BEACH",
+    "destination_distance_m": 47.77794167,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.555352,41.764635000000006;-87.557352,41.762635?overview=false&steps=false",
+      "snapshot_sha256": "971f110f1cfc5cefbce49cca486f70a593b413f2d16138ba41a70a624f713c6d",
+      "checked_at": "2026-10-15T20:58:48.080019+00:00",
+      "evidence_path": "chi-facility-91-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-319",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "BURNHAM (DANIEL)",
+    "destination_distance_m": 102.9306583,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.604207,41.841114000000005;-87.606207,41.839114?overview=false&steps=false",
+      "snapshot_sha256": "2f19c03f74559e31561c3722d48aa15ae2f445f6a02f7276d9a923aa15280b14",
+      "checked_at": "2026-10-15T20:58:48.343182+00:00",
+      "evidence_path": "chi-facility-319-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-320",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "BURNHAM (DANIEL)",
+    "destination_distance_m": 160.4032486,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.59333000000001,41.822407000000005;-87.59533,41.820407?overview=false&steps=false",
+      "snapshot_sha256": "7aeda8a86295d51949e06284addaa593d69e96eccf5795f9a515a5c78eb918fd",
+      "checked_at": "2026-10-15T20:58:48.342802+00:00",
+      "evidence_path": "chi-facility-320-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-348",
+    "status": "hold",
+    "reason": "No complete approved public arrival/current component calendar combination in this bounded pilot.",
+    "native_name": "CALUMET",
+    "destination_distance_m": 67.03027922,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.526527,41.717146;-87.528527,41.715146?overview=false&steps=false",
+      "snapshot_sha256": "213124f62e89dd912dd64e460e80133b580401463a3f2772bec6855a4292ef46",
+      "checked_at": "2026-10-15T20:58:48.582878+00:00",
+      "evidence_path": "chi-facility-348-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-349",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "CALUMET",
+    "destination_distance_m": 109.8715504,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.522867,41.720189000000005;-87.524867,41.718189?overview=false&steps=false",
+      "snapshot_sha256": "4016590b000e78bc995d49109b8602e0522bd82c38e3787a7302c444102634fb",
+      "checked_at": "2026-10-15T20:58:48.475386+00:00",
+      "evidence_path": "chi-facility-349-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-901",
+    "status": "hold",
+    "reason": "Current operator closes the entire beach indefinitely for erosion; park opening clocks cannot override beach closure.",
+    "native_name": "FARGO (JAMES) BEACH",
+    "destination_distance_m": 27.66457347,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.661039,42.019081;-87.663039,42.017081?overview=false&steps=false",
+      "snapshot_sha256": "f697d3348958414271034c31e2fa37849fa0578e300d35e9749ed98f9870b91f",
+      "checked_at": "2026-10-15T20:58:48.733709+00:00",
+      "evidence_path": "chi-facility-901-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1275",
+    "status": "hold",
+    "reason": "Hartigan shares nearby shore/campus with selected Doria within 250 m; its actual service-alley arrival also lacks selected documented parking proof.",
+    "native_name": "HARTIGAN (DAVID) BEACH",
+    "destination_distance_m": 32.44030705,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.65474300000001,42.004384;-87.656743,42.002384?overview=false&steps=false",
+      "snapshot_sha256": "4012100366678507c54290b8a97e77a2a7474b639a154da250034595fac6995e",
+      "checked_at": "2026-10-15T20:58:49.362557+00:00",
+      "evidence_path": "chi-facility-1275-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1373",
+    "status": "hold",
+    "reason": "Current operator closes the entire beach indefinitely for erosion; park opening clocks cannot override beach closure.",
+    "native_name": "HOWARD (URE) BEACH",
+    "destination_distance_m": 43.38483073,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.66191500000001,42.020864;-87.663915,42.018864?overview=false&steps=false",
+      "snapshot_sha256": "1f9e235a602ed61a7bf2f963ca0b233194533189ac7650d803aef41e41af6958",
+      "checked_at": "2026-10-15T20:58:49.685424+00:00",
+      "evidence_path": "chi-facility-1373-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1388",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "HUMBOLDT (BARON VON)",
+    "destination_distance_m": 114.1794677,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.70170300000001,41.908365;-87.703703,41.906365?overview=false&steps=false",
+      "snapshot_sha256": "b10b5452fb0af4c03838cf29a768b34a7546b708eb34401c982c435818036f2a",
+      "checked_at": "2026-10-15T20:58:49.885196+00:00",
+      "evidence_path": "chi-facility-1388-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1453",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "JACKSON (ANDREW)",
+    "destination_distance_m": 111.3749017,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.57188500000001,41.784112;-87.573885,41.782112?overview=false&steps=false",
+      "snapshot_sha256": "1686fda6854a3b2bbc038b4dcec3d4b103b7a174981e33a713fdbb1b0d6d84a0",
+      "checked_at": "2026-10-15T20:58:49.949449+00:00",
+      "evidence_path": "chi-facility-1453-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1454",
+    "status": "hold",
+    "reason": "No complete approved public arrival/current component calendar combination in this bounded pilot.",
+    "native_name": "JACKSON (ANDREW)",
+    "destination_distance_m": 44.37067382,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.576975,41.792897;-87.578975,41.790897?overview=false&steps=false",
+      "snapshot_sha256": "ff801e89e6d2412256580ee5552c72464c09bece7aa5917fe36b661031d7bca5",
+      "checked_at": "2026-10-15T20:58:49.992011+00:00",
+      "evidence_path": "chi-facility-1454-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1675",
+    "status": "hold",
+    "reason": "Earlier alternate Lane feature is absent within 0.2 m from current canonical registry and overlaps selected unchanged GISOBJID 2965; held duplicate, not relocated.",
+    "native_name": "LANE (GEORGE) BEACH",
+    "destination_distance_m": 34.40277336,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.65264,41.991881;-87.65464,41.989881?overview=false&steps=false",
+      "snapshot_sha256": "a9a5f6c415e53b9b7ebb4b8e3a966a1bdf32e56e3d1572bb34f58495e249df29",
+      "checked_at": "2026-10-15T20:58:50.102085+00:00",
+      "evidence_path": "chi-facility-1675-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1740",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "LINCOLN (ABRAHAM)",
+    "destination_distance_m": 88.28624169,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.610985,41.895436000000004;-87.612985,41.893436?overview=false&steps=false",
+      "snapshot_sha256": "719913c86783c9f6e754ba1f1abe18bdf36c7d8d9638f926d00ba927e0ed91c8",
+      "checked_at": "2026-10-15T20:58:50.243162+00:00",
+      "evidence_path": "chi-facility-1740-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1741",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "LINCOLN (ABRAHAM)",
+    "destination_distance_m": 116.158002,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.62275000000001,41.916484000000004;-87.62475,41.914484?overview=false&steps=false",
+      "snapshot_sha256": "00d001040066cca9e8173448446a570a35e91065f1ff8a25f21084d992dbbf6e",
+      "checked_at": "2026-10-15T20:58:50.390277+00:00",
+      "evidence_path": "chi-facility-1741-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1742",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "LINCOLN (ABRAHAM)",
+    "destination_distance_m": 249.6284923,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.63387300000001,41.967498;-87.635873,41.965498?overview=false&steps=false",
+      "snapshot_sha256": "13ebe039e510343f00ad5eee0314a96103121156f01415e886791205bfe85a92",
+      "checked_at": "2026-10-15T20:58:50.389797+00:00",
+      "evidence_path": "chi-facility-1742-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1743",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "LINCOLN (ABRAHAM)",
+    "destination_distance_m": 130.4188808,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.647446,41.980473;-87.649446,41.978473?overview=false&steps=false",
+      "snapshot_sha256": "9ba4368f05e8bf96d3006f8f8de2b045a94e6b32e84ec3fde5761c387c856f49",
+      "checked_at": "2026-10-15T20:58:50.622104+00:00",
+      "evidence_path": "chi-facility-1743-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1744",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "LINCOLN (ABRAHAM)",
+    "destination_distance_m": 138.7733735,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.649742,41.988026000000005;-87.651742,41.986026?overview=false&steps=false",
+      "snapshot_sha256": "fd877a5ec0633ea3d56d454da9b644901278e7eb3087ba423c2aa202fcd6f7e5",
+      "checked_at": "2026-10-15T20:58:50.530407+00:00",
+      "evidence_path": "chi-facility-1744-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1745",
+    "status": "hold",
+    "reason": "Actual unchanged native route ends on a motorway ramp, not a practical visitor arrival; no coordinate replacement.",
+    "native_name": "LINCOLN (ABRAHAM)",
+    "destination_distance_m": 74.55035901,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.620794,41.90489;-87.622794,41.90289?overview=false&steps=false",
+      "snapshot_sha256": "3d1c2f44303489aab6700484ba5f499f9aaad924a145c7b77bf5c53b6b26e008",
+      "checked_at": "2026-10-15T20:58:50.528770+00:00",
+      "evidence_path": "chi-facility-1745-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-1846",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "LOYOLA",
+    "destination_distance_m": 95.85195484,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.65709700000001,42.011768000000004;-87.659097,42.009768?overview=false&steps=false",
+      "snapshot_sha256": "bd8d266d8f0b201e1fcfc1056ff6f0618a256fc60bbc4e4b43531b6e6325bc2a",
+      "checked_at": "2026-10-15T20:58:50.727737+00:00",
+      "evidence_path": "chi-facility-1846-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-2061",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "SOUTH SHORE CULTL. CTR.",
+    "destination_distance_m": 154.5648091,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.55966500000001,41.770547;-87.561665,41.768547?overview=false&steps=false",
+      "snapshot_sha256": "2761566f58b5ba4fd0b302eb1ee52911af13af73f8277ae5a3eca0ec00414bf1",
+      "checked_at": "2026-10-15T20:58:50.669347+00:00",
+      "evidence_path": "chi-facility-2061-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-3547",
+    "status": "hold",
+    "reason": "Actual unchanged native driving destination exceeds 75 m; no coordinate replacement.",
+    "native_name": "NORTHERLY ISLAND",
+    "destination_distance_m": 124.9762156,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.60561200000001,41.86567;-87.607612,41.86367?overview=false&steps=false",
+      "snapshot_sha256": "0b308099fe4ce0e502970b315d84ebde410f99c7fec1280c97899a0777a7f815",
+      "checked_at": "2026-10-15T20:58:50.776727+00:00",
+      "evidence_path": "chi-facility-3547-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  },
+  {
+    "source_key": "chi-facility-3972",
+    "status": "hold",
+    "reason": "Current operator closes the entire beach indefinitely for erosion; park opening clocks cannot override beach closure.",
+    "native_name": "ROGERS (PHILLIP) BEACH",
+    "destination_distance_m": 47.6191268,
+    "driving": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-87.662715,42.023485;-87.664715,42.021485?overview=false&steps=false",
+      "snapshot_sha256": "207d801a5b39f4e967924dcf4de2530b85e0fdbc1845bd419314808b30d4b457",
+      "checked_at": "2026-10-15T20:58:50.990995+00:00",
+      "evidence_path": "chi-facility-3972-route.json",
+      "extraction_pointer": "$.waypoints[-1]"
+    }
+  }
+]

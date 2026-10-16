@@ -535,7 +535,13 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
         "duration": (route or {}).get("duration"),
     }
     input_hash = fingerprint(canonical_inputs)
-    candidate_hash = fingerprint({"candidates": model, "points": explanation.get("query_points")})
+    eligibility = {
+        key: solver.get(key)
+        for key in ("eligibility_policy", "utility_threshold", "utility_threshold_inclusive")
+    }
+    candidate_hash = fingerprint(
+        {"candidates": model, "points": explanation.get("query_points"), "eligibility": eligibility}
+    )
     revision = envelope.get("revision") or os.getenv("ROADTRIPS_REVISION", "unversioned-local")
     comparison = fingerprint(
         {
@@ -556,6 +562,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
             "mode": envelope["mode"],
             "metric": METRIC_VERSION,
             "revision": revision,
+            "eligibility": eligibility,
         }
     )
     objective = solver.get("objective_value")
@@ -569,6 +576,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
             if envelope["mode"] == "offline_pipeline"
             else "historical_selection_only"
         ),
+        "eligibility_policy": eligibility,
         "provider_measurements": telemetry.get("providers", {}),
         "distinct_requests": telemetry.get("requests", {}),
         "discovery_requests": len((explanation.get("discovery") or {}).get("queries", [])),
@@ -639,7 +647,6 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
             key: telemetry["calls"].get(key, 0)
             for key in (
                 "catalog",
-                "tripadvisor",
                 "mapbox",
                 "language_model",
                 "gateway_auth",

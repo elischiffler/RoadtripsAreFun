@@ -1,0 +1,609 @@
+{
+  "checked_at": "2026-10-15T02:01:13.496175+00:00",
+  "local_only": true,
+  "generation": "3d9d99878577fa635fb46390051e64d40d6b1810a9446cd1ef4f5d3125c0e384",
+  "manifest_sha256": "144290357712730e9601a71929f75e12b9594140cd545a8f9a48bc2bf107d737",
+  "accepted": 72,
+  "states": 24,
+  "regions": {
+    "CO": 16,
+    "ME": 1,
+    "UT": 5,
+    "SD": 3,
+    "TX": 2,
+    "FL": 3,
+    "NM": 1,
+    "SC": 1,
+    "OR": 1,
+    "OH": 1,
+    "AK": 2,
+    "CA": 13,
+    "MT": 1,
+    "NV": 1,
+    "AZ": 3,
+    "TN": 1,
+    "WY": 2,
+    "HI": 3,
+    "KY": 1,
+    "WA": 3,
+    "VA": 1,
+    "ND": 1,
+    "MN": 1,
+    "IN": 5
+  },
+  "source_counts": {
+    "boulder-osmp": 12,
+    "nps": 45,
+    "nps-public": 12,
+    "kaggle-loc-roadside": 1,
+    "overture": 2
+  },
+  "primary_categories": {
+    "roadside": 1,
+    "entertainment": 1,
+    "nature": 12,
+    "beaches": 12,
+    "landmarks": 0,
+    "museums": 9,
+    "national_parks": 37
+  },
+  "remaining_to_500": 428,
+  "all_rows_original_licensed_coordinates": true,
+  "no_photographs_imported": true,
+  "no_operating_hours_invented": true,
+  "original_400_evaluation_preserved": true,
+  "original_70_bundle_preserved": true,
+  "overture_current_reviews_added": 2,
+  "overture_evaluation_records_outside_reviewed_bundle": 329,
+  "currently_closed_candidate_excluded": "27260a45-e524-43e3-8267-937dcaeaeb9b",
+  "primary_root_recheck": {
+    "exact_original_urls_retried_after_503": 20,
+    "http_200": 19,
+    "retained_html": 18,
+    "read_timeout": 1,
+    "over_2_mib_not_retained": 1,
+    "aggregate_retained_bytes": 3684063,
+    "records": [
+      {
+        "id": "3c872a87-1d00-4a60-8d78-31395992bd63",
+        "name": "Razzmatazz",
+        "source_url": "https://www.razzmatazzchicago.com",
+        "retrieved_at": "2026-10-15T01:50:15.213775+00:00",
+        "http_status": 200,
+        "final_url": "https://www.razzmatazzchicago.com/",
+        "content_type": "text/html",
+        "bytes": 130669,
+        "sha256": "e271aa80a50f4009f80118cc959f4fcdd743aca32505299b61a88d235e707479"
+      },
+      {
+        "id": "3cfb316e-8df7-4f71-b404-038082e25166",
+        "name": "Ripley's Believe It or Not",
+        "source_url": "https://www.ripleys.com/attractions/ripleys-believe-it-or-not-grand-prairie",
+        "retrieved_at": "2026-10-15T01:50:15.214308+00:00",
+        "http_status": 200,
+        "final_url": "https://www.ripleys.com/attractions/ripleys-believe-it-or-not-grand-prairie",
+        "content_type": "text/html",
+        "bytes": 244561,
+        "sha256": "354ea71afee468a2ff57c2a0e079208ae557de4fa3cb45e0bbdeefd75a69d398"
+      },
+      {
+        "id": "3d6e8a51-30c2-4f8a-9a5f-b9433478e2c3",
+        "name": "Elitch Gardens",
+        "source_url": "http://elitchgardens.com",
+        "retrieved_at": "2026-10-15T01:50:16.088247+00:00",
+        "http_status": 200,
+        "final_url": "https://elitchgardens.com/",
+        "content_type": "text/html; charset=UTF-8",
+        "bytes": 387896,
+        "sha256": "ffb42682380febc6f5f091c63e4d0890ae6ff4e72091545f9a9d043518c54236"
+      },
+      {
+        "id": "57193dd5-6aa9-4857-98bc-60e2097c3af0",
+        "name": "Waikiki Aquarium",
+        "source_url": "https://www.waikikiaquarium.org/",
+        "retrieved_at": "2026-10-15T01:50:16.581924+00:00",
+        "http_status": 200,
+        "final_url": "https://www.waikikiaquarium.org/",
+        "content_type": "text/html; charset=UTF-8",
+        "bytes": 76563,
+        "sha256": "65fbf4b0cba7c273c3663933de7e76f69942f0158b05dc39f2c0a063835e823b"
+      },
+      {
+        "id": "582405bc-c6e5-4a9b-8370-491fe1e1c7a0",
+        "name": "Lake Katherine Nature Center and Botanic Gardens",
+        "source_url": "http://www.lakekatherine.org",
+        "retrieved_at": "2026-10-15T01:50:16.583363+00:00",
+        "http_status": 200,
+        "final_url": "https://www.lakekatherine.org/",
+        "content_type": "text/html; charset=utf-8",
+        "bytes": 87826,
+        "sha256": "bc87c757f0b00697f0ece63f73dc38012f87064e0a125e750db431dbf9963c22"
+      },
+      {
+        "id": "6688077a-3183-4652-b937-7f21d37c5155",
+        "name": "Escapology Escape Rooms Stonestown Galleria",
+        "source_url": "https://www.escapology.com/en/san-francisco-stonestown-galleria-ca/",
+        "retrieved_at": "2026-10-15T01:50:17.506290+00:00",
+        "http_status": 200,
+        "final_url": "https://www.escapology.com/en/san-francisco-stonestown-galleria-ca",
+        "content_type": "text/html; charset=utf-8",
+        "bytes": 305968,
+        "sha256": "79f6e581a8b92608dec4a95aefffb4cbd2f4291082c0ea690162c6a888ba56f7"
+      },
+      {
+        "id": "68fdd41c-2420-41a9-89f7-0259f8900a94",
+        "name": "Key Quest Escape Room Phoenix",
+        "source_url": "https://www.keyquest-escaperoom.com/",
+        "retrieved_at": "2026-10-15T01:50:18.643524+00:00",
+        "http_status": 200,
+        "final_url": "https://www.keyquest-escaperoom.com/",
+        "content_type": "text/html; charset=utf-8",
+        "bytes": 133732,
+        "sha256": "d737c6d67129f1fec1e7b9e7918b0f8559660abc7dc1dcf8263b38389b82c516"
+      },
+      {
+        "id": "6f59d98a-179e-40f2-aa71-30d89146b959",
+        "name": "Foster Botanical Garden",
+        "source_url": "http://www.honolulu.gov/parks/hbg/honolulu-botanical-gardens/182-site-dpr-cat/568-foster-botanical-garden.html",
+        "retrieved_at": "2026-10-15T01:50:19.372674+00:00",
+        "error_type": "ReadTimeout"
+      },
+      {
+        "id": "73b8191a-71cd-4d10-93c8-64c7b60ecb0d",
+        "name": "Seattle Sensory Garden",
+        "source_url": "http://seattlesensorygarden.com/",
+        "retrieved_at": "2026-10-15T01:50:20.102395+00:00",
+        "http_status": 200,
+        "final_url": "http://seattlesensorygarden.com/",
+        "content_type": "text/html",
+        "bytes": 114,
+        "sha256": "6dc9c7fc93bb488bb0520a6c780a8d3c0fb5486a4711aca49b4c53fac7393023"
+      },
+      {
+        "id": "761df86a-2a22-413b-bbbd-b8b4b2ae460e",
+        "name": "Heal the Bay Aquarium",
+        "source_url": "http://www.healthebay.org/aquarium",
+        "retrieved_at": "2026-10-15T01:50:20.362137+00:00",
+        "http_status": 200,
+        "final_url": "https://healthebay.org/aquarium/",
+        "content_type": "text/html; charset=UTF-8",
+        "bytes": 124286,
+        "sha256": "ac06da8e8d0e3aa2c9f75fbb6b52f9c998ba3740a6b961018da6dcc33cdd3638"
+      },
+      {
+        "id": "9ed16e33-f4da-4e15-b1ff-3f6dce6986c8",
+        "name": "PanIQ Escape Room",
+        "source_url": "https://paniqescaperoom.com/san-francisco",
+        "retrieved_at": "2026-10-15T01:50:23.108601+00:00",
+        "http_status": 200,
+        "final_url": "https://paniqescaperoom.com/san-francisco/en",
+        "content_type": "text/html; charset=utf-8",
+        "bytes": 50332,
+        "sha256": "0ad3be57f821dd8b939b16d4111518478f4945f5720228132972026b52656172"
+      },
+      {
+        "id": "b89d3db3-931f-4571-8f1e-e9aa60df75de",
+        "name": "Playland Arcade",
+        "source_url": "http://www.playlandarcadesmpier.com",
+        "retrieved_at": "2026-10-15T01:50:23.967876+00:00",
+        "http_status": 200,
+        "final_url": "http://www.playlandarcadesmpier.com/",
+        "content_type": "text/html",
+        "bytes": 114,
+        "sha256": "6dc9c7fc93bb488bb0520a6c780a8d3c0fb5486a4711aca49b4c53fac7393023"
+      },
+      {
+        "id": "bcc88450-5f12-4e37-97cf-94e36fa7311b",
+        "name": "SEA LIFE Grapevine Aquarium",
+        "source_url": "http://www.visitsealife.com/grapevine",
+        "retrieved_at": "2026-10-15T01:50:24.258997+00:00",
+        "http_status": 200,
+        "final_url": "https://www.visitsealife.com/grapevine/",
+        "content_type": "text/html; charset=utf-8",
+        "bytes": 199397,
+        "sha256": "0b777fb71f97753b2bafd75a2e3f527e8bf74a5e9987763fc4cd902afdfa960a"
+      },
+      {
+        "id": "d2b4ace9-d9b7-4c18-9580-24dcd49398f0",
+        "name": "Glen Echo Park Aquarium",
+        "source_url": "http://www.gepaquarium.org/",
+        "retrieved_at": "2026-10-15T01:50:25.077123+00:00",
+        "http_status": 200,
+        "final_url": "https://www.gepaquarium.org/",
+        "content_type": "text/html;charset=utf-8",
+        "bytes": 360432,
+        "sha256": "1ede569f9cd57ef62003b32461c03772ba5173857a284d8bc7c293ea8b8b4413"
+      },
+      {
+        "id": "e082091c-fca6-43ec-923a-34c496076962",
+        "name": "SEA LIFE Arizona Aquarium",
+        "source_url": "http://www.visitsealife.com/Arizona",
+        "retrieved_at": "2026-10-15T01:50:25.875961+00:00",
+        "http_status": 200,
+        "final_url": "https://www.visitsealife.com/arizona/",
+        "content_type": "text/html; charset=utf-8",
+        "bytes": 202613,
+        "sha256": "985d9fb09b142cbd287e12ebc7e32cec33445871a35042d2223e2dbf822ab9ba"
+      },
+      {
+        "id": "e4919ff5-f961-431a-9f46-0ecdd6b20a5d",
+        "name": "Japanese Friendship Garden",
+        "source_url": "http://www.japanesefriendshipgarden.org/",
+        "retrieved_at": "2026-10-15T01:50:26.499865+00:00",
+        "http_status": 200,
+        "final_url": "https://www.japanesefriendshipgarden.org/",
+        "content_type": "text/html; charset=UTF-8",
+        "oversized": true
+      },
+      {
+        "id": "e5507741-3aa9-4b12-bdc2-4698fe66dd3e",
+        "name": "Escapology Escape Rooms Marina del Rey",
+        "source_url": "https://www.escapology.com/en/marina-del-rey-ca",
+        "retrieved_at": "2026-10-15T01:50:27.529796+00:00",
+        "http_status": 200,
+        "final_url": "https://www.escapology.com/en/marina-del-rey-ca",
+        "content_type": "text/html; charset=utf-8",
+        "bytes": 250461,
+        "sha256": "cdcafb7fc75d305ed18d5f4c4f592f94890ef1310b40881719e085474926fee5"
+      },
+      {
+        "id": "e6e4d69f-c144-49f2-90d3-ff1061c39c81",
+        "name": "Downtown Aquarium",
+        "source_url": "http://www.aquariumrestaurants.com/downtownaquariumdenver/",
+        "retrieved_at": "2026-10-15T01:50:29.272879+00:00",
+        "http_status": 200,
+        "final_url": "https://www.aquariumrestaurants.com/downtownaquariumdenver/",
+        "content_type": "text/html",
+        "bytes": 38425,
+        "sha256": "d8a7713315abe53fa3d7c8735b9e493b89109c1f0f5a019ff9ba7ccd3a2dbeb8"
+      },
+      {
+        "id": "ec6d0e66-3dd6-4a64-84c8-1642185cab57",
+        "name": "Chihuly Garden and Glass",
+        "source_url": "http://www.chihulygardenandglass.com/",
+        "retrieved_at": "2026-10-15T01:50:29.384805+00:00",
+        "http_status": 200,
+        "final_url": "https://www.chihulygardenandglass.com/",
+        "content_type": "text/html; charset=UTF-8",
+        "bytes": 113952,
+        "sha256": "0c67462c96f3e55e220cc0f60738a3725826fe7ef5ca1bfff66ecee843687da0"
+      },
+      {
+        "id": "f0afb33e-1f5e-4f70-8109-aa3d02395f22",
+        "name": "Kubota Garden",
+        "source_url": "http://kubotagarden.org/",
+        "retrieved_at": "2026-10-15T01:50:29.844440+00:00",
+        "http_status": 200,
+        "final_url": "https://www.kubotagarden.org/",
+        "content_type": "text/html; charset=UTF-8",
+        "bytes": 976722,
+        "sha256": "666615daa682303d783de43d3cedd3f3e29edd5060e86d4a83f7510b36824905"
+      }
+    ]
+  },
+  "publisher_linked_followups": [
+    {
+      "id": "3cfb316e-8df7-4f71-b404-038082e25166",
+      "name": "Ripley's Believe It or Not",
+      "url": "https://www.ripleys.com/attractions/ripleys-believe-it-or-not-grand-prairie/hours",
+      "retrieved_at": "2026-10-15T01:51:37.014484+00:00",
+      "http_status": 200,
+      "final_url": "https://www.ripleys.com/attractions/ripleys-believe-it-or-not-grand-prairie/hours",
+      "bytes": 271804,
+      "sha256": "1a59118f58be7d98ed072ede5fc8c0ddc5ef88634217152680ffb432e37bdf60"
+    },
+    {
+      "id": "3d6e8a51-30c2-4f8a-9a5f-b9433478e2c3",
+      "name": "Elitch Gardens",
+      "url": "https://elitchgardens.com/plan-a-visit/park-hours/",
+      "retrieved_at": "2026-10-15T01:51:37.979915+00:00",
+      "http_status": 200,
+      "final_url": "https://elitchgardens.com/plan-a-visit/park-hours/",
+      "bytes": 431241,
+      "sha256": "8df66a9420822ae455e28a96bcb569f444006a7c73974b2bd012d2fcce1f094d"
+    },
+    {
+      "id": "3d6e8a51-30c2-4f8a-9a5f-b9433478e2c3",
+      "name": "Elitch Gardens",
+      "url": "https://elitchgardens.com/plan-a-visit/parking-directions/",
+      "retrieved_at": "2026-10-15T01:51:38.360225+00:00",
+      "http_status": 200,
+      "final_url": "https://elitchgardens.com/plan-a-visit/parking-directions/",
+      "bytes": 354422,
+      "sha256": "21271423a828f85e62a39dc2f367daa47c20d9b2caf0d8e45235cd76f4a415e0"
+    },
+    {
+      "id": "57193dd5-6aa9-4857-98bc-60e2097c3af0",
+      "name": "Waikiki Aquarium",
+      "url": "https://www.waikikiaquarium.org/visit/hours/",
+      "retrieved_at": "2026-10-15T01:51:38.711105+00:00",
+      "http_status": 200,
+      "final_url": "https://www.waikikiaquarium.org/visit/hours/",
+      "bytes": 75332,
+      "sha256": "7b9b606504a08d52115475a51ac6d596185bc40ba0cad792d0a96dbda7da3f18"
+    },
+    {
+      "id": "57193dd5-6aa9-4857-98bc-60e2097c3af0",
+      "name": "Waikiki Aquarium",
+      "url": "https://www.waikikiaquarium.org/visit/directions-parking/",
+      "retrieved_at": "2026-10-15T01:51:43.832521+00:00",
+      "http_status": 200,
+      "final_url": "https://www.waikikiaquarium.org/visit/directions-parking/",
+      "bytes": 66025,
+      "sha256": "34dce076ea9cd1d5dcf7882085377506b20cc78dc783d20e5bc757b556ac258d"
+    },
+    {
+      "id": "582405bc-c6e5-4a9b-8370-491fe1e1c7a0",
+      "name": "Lake Katherine Nature Center and Botanic Gardens",
+      "url": "https://www.lakekatherine.org/101/Visit",
+      "retrieved_at": "2026-10-15T01:51:47.150832+00:00",
+      "http_status": 200,
+      "final_url": "https://www.lakekatherine.org/101/Visit",
+      "bytes": 75895,
+      "sha256": "4235f9397d0e6ae20b10c18b49f0d73950ac947705e20cacce2b54206ad238ea"
+    },
+    {
+      "id": "e082091c-fca6-43ec-923a-34c496076962",
+      "name": "SEA LIFE Arizona Aquarium",
+      "url": "https://www.visitsealife.com/arizona/plan-your-day/before-you-visit/directions-parking/",
+      "retrieved_at": "2026-10-15T01:51:47.718175+00:00",
+      "http_status": 200,
+      "final_url": "https://www.visitsealife.com/arizona/plan-your-day/before-you-visit/directions-parking/",
+      "bytes": 130628,
+      "sha256": "dc9b66978da5ef4cf3234a8ae5ad3a6e0495ada14ed885626c4c023185f844b4"
+    },
+    {
+      "id": "e6e4d69f-c144-49f2-90d3-ff1061c39c81",
+      "name": "Downtown Aquarium",
+      "url": "https://www.aquariumrestaurants.com/downtownaquariumdenver/visitorInfo.asp",
+      "retrieved_at": "2026-10-15T01:51:48.222093+00:00",
+      "http_status": 200,
+      "final_url": "https://www.aquariumrestaurants.com/downtownaquariumdenver/visitorInfo.asp",
+      "bytes": 28055,
+      "sha256": "41ed30063415db672e2c94cd99c03e5e655859393faced078c77156a2abb17ba"
+    },
+    {
+      "id": "ec6d0e66-3dd6-4a64-84c8-1642185cab57",
+      "name": "Chihuly Garden and Glass",
+      "url": "https://www.chihulygardenandglass.com/visit/plan-your-visit",
+      "retrieved_at": "2026-10-15T01:51:48.606496+00:00",
+      "http_status": 200,
+      "final_url": "https://www.chihulygardenandglass.com/visit/plan-your-visit",
+      "bytes": 162581,
+      "sha256": "745eb13341ca6fc7a9745c686dd2403040fe441135c617d9c7c7c4578c5b5405"
+    },
+    {
+      "id": "ec6d0e66-3dd6-4a64-84c8-1642185cab57",
+      "name": "Chihuly Garden and Glass",
+      "url": "https://www.chihulygardenandglass.com/closures",
+      "retrieved_at": "2026-10-15T01:51:48.894458+00:00",
+      "http_status": 200,
+      "final_url": "https://www.chihulygardenandglass.com/closures",
+      "bytes": 82680,
+      "sha256": "dda199d1a4d08ebd2a9ddd9db786a184eae2e98710bde00043add048a54ff32a"
+    }
+  ],
+  "driving_destination_checks": [
+    {
+      "source_id": "03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+      "name": "Wing Luke Museum",
+      "checked_at": "2026-10-15T01:55:23.898268+00:00",
+      "source_coordinates": [
+        47.59825849,
+        -122.32289613
+      ],
+      "checked_waypoint": "destination",
+      "origin_basis": "nearby routing probe, not another venue record",
+      "http_status": 200,
+      "response_bytes": 530,
+      "response_sha256": "90c9e14c86d6d267110152b577e1550e411d2b038fd0a2c0030bd66a0418a65c",
+      "code": "Ok",
+      "snap_distance_m": 11.178,
+      "road_name": "South King Street",
+      "route_duration_s": 57.579
+    },
+    {
+      "source_id": "57193dd5-6aa9-4857-98bc-60e2097c3af0",
+      "name": "Waikiki Aquarium",
+      "checked_at": "2026-10-15T01:55:24.316547+00:00",
+      "source_coordinates": [
+        21.26582513,
+        -157.82149954
+      ],
+      "checked_waypoint": "destination",
+      "origin_basis": "nearby routing probe, not another venue record",
+      "http_status": 200,
+      "response_bytes": 502,
+      "response_sha256": "e56df5ca6d67e907dafbf12fed0c1881a97c6e850df757b6aa0a7ec064e98304",
+      "code": "Ok",
+      "snap_distance_m": 4.2,
+      "road_name": "",
+      "route_duration_s": 24.482
+    }
+  ],
+  "idempotent_stage_passed": true,
+  "activation_rollback_passed": true,
+  "returned_to_final": true,
+  "previous_generation": "7c5bc43052ab34703ca890563a1c5a427dcc2ff426b135a9e38e13f4a92302df",
+  "indexed_catalog_bytes": 475136,
+  "database_bytes": 8468159,
+  "archive_bytes": 34346,
+  "archive_sha256": "992b1c022992c471878c35e097eed581d9e20d364acd61972d4e703874d236fe",
+  "source_restore_all_tables_and_pointer_equal": true,
+  "source_table_state": {
+    "places_catalog": {
+      "rows": 142,
+      "content_md5": "9a38a8bd9d39d739e421c4e3e546f459"
+    },
+    "places_catalog_imports": {
+      "rows": 2,
+      "content_md5": "71e705f206da3638187e2a51e996be25"
+    },
+    "places_catalog_active": {
+      "rows": 1,
+      "content_md5": "e4c36766cdabcb22a11e193d3a602e82"
+    },
+    "active_generation": "3d9d99878577fa635fb46390051e64d40d6b1810a9446cd1ef4f5d3125c0e384"
+  },
+  "restored_table_state": {
+    "places_catalog": {
+      "rows": 142,
+      "content_md5": "9a38a8bd9d39d739e421c4e3e546f459"
+    },
+    "places_catalog_imports": {
+      "rows": 2,
+      "content_md5": "71e705f206da3638187e2a51e996be25"
+    },
+    "places_catalog_active": {
+      "rows": 1,
+      "content_md5": "e4c36766cdabcb22a11e193d3a602e82"
+    },
+    "active_generation": "3d9d99878577fa635fb46390051e64d40d6b1810a9446cd1ef4f5d3125c0e384"
+  },
+  "actual_discovery_adapters": {
+    "legacy_provider_id": "overture:57193dd5-6aa9-4857-98bc-60e2097c3af0",
+    "persona_provider_ids": [
+      "overture:57193dd5-6aa9-4857-98bc-60e2097c3af0"
+    ],
+    "evening_provider_ids": [
+      "overture:03f811cd-0401-40ad-b75c-1ae7328cf6b7"
+    ],
+    "http_calls": 0,
+    "tripadvisor_calls": 0
+  },
+  "sample": {
+    "provider_id": "overture:57193dd5-6aa9-4857-98bc-60e2097c3af0",
+    "name": "Waikiki Aquarium",
+    "coordinates": [
+      21.26582513,
+      -157.82149954
+    ],
+    "address": "2777 Kalākaua Ave, Honolulu, HI, 96815",
+    "url": "https://www.waikikiaquarium.org/",
+    "categories": [
+      "animal_attraction",
+      "aquarium",
+      "arts_and_entertainment",
+      "daytime"
+    ],
+    "provider_rank": 0,
+    "source": "overture",
+    "source_release": "2026-09-23.1",
+    "source_attribution": "Overture Maps Foundation; BrightQuery; Foursquare; Microsoft; Overture; Overture-signals; meta; Overture Maps Foundation; BrightQuery; Foursquare; Overture; Overture-signals; meta; Overture Maps Foundation; BrightQuery; Microsoft; Overture; Overture-signals; meta; Overture Maps Foundation; Foursquare; Microsoft; Overture; Overture-signals; meta; Overture Maps Foundation; Overture; Overture-signals; meta",
+    "source_updated_at": "2026-09-17T22:52:12+00:00"
+  },
+  "sample_provenance": [
+    {
+      "dataset": "meta",
+      "license": "CDLA-Permissive-2.0",
+      "version": "2026-09-14",
+      "property": "",
+      "provider": "meta",
+      "resource": "meta",
+      "record_id": "123128128826",
+      "update_time": "2026-09-14T00:00:00.000Z"
+    },
+    {
+      "dataset": "Overture",
+      "license": "CDLA-Permissive-2.0",
+      "version": "2026-09-17",
+      "property": "/properties/confidence",
+      "provider": "overture",
+      "resource": "confidence_calculation",
+      "update_time": "2026-09-17T22:52:12Z"
+    },
+    {
+      "dataset": "Overture-signals",
+      "license": "CDLA-Permissive-2.0",
+      "version": "2026-09-14",
+      "property": "/properties/operating_status",
+      "provider": "overture",
+      "resource": "operating_status_signal",
+      "record_id": "4d0c5706-cd3e-4beb-991f-c2692336a85b",
+      "update_time": "2026-09-14T15:43:16Z"
+    },
+    {
+      "dataset": "Roadtrips current publisher arrival review",
+      "profile": "waikiki-aquarium/1",
+      "record_id": "57193dd5-6aa9-4857-98bc-60e2097c3af0",
+      "checked_at": "2026-10-15T01:55:24.316547+00:00",
+      "limitations": "Entrance parking is very limited and visitor-only; street parking is metered. The aquarium reports remaining open during renovations and publishes dated closures and special hours. Check these before travel; future access and parking availability are unknown.",
+      "arrival_type": "visitor frontage beside published entrance parking",
+      "driving_road": "",
+      "primary_category": "entertainment",
+      "coordinate_source": "licensed Overture point; unchanged",
+      "publisher_evidence": [
+        {
+          "url": "https://www.waikikiaquarium.org/visit/directions-parking/",
+          "sha256": "34dce076ea9cd1d5dcf7882085377506b20cc78dc783d20e5bc757b556ac258d",
+          "retrieved_at": "2026-10-15T01:51:43.832521+00:00"
+        },
+        {
+          "url": "https://www.waikikiaquarium.org/visit/hours/",
+          "sha256": "7b9b606504a08d52115475a51ac6d596185bc40ba0cad792d0a96dbda7da3f18",
+          "retrieved_at": "2026-10-15T01:51:38.711105+00:00"
+        }
+      ],
+      "opening_hours_imported": false,
+      "driving_evidence_sha256": "d42614d0f119351306c14a4bb104d1eb194b25813f3e98307e1082324fa9be55",
+      "driving_snap_distance_m": 4.2
+    },
+    {
+      "dataset": "Roadtrips active catalog",
+      "generation": "3d9d99878577fa635fb46390051e64d40d6b1810a9446cd1ef4f5d3125c0e384",
+      "release": "pilot-2026-10-15.1"
+    }
+  ],
+  "validation": {
+    "backend_passed": 938,
+    "backend_coverage_percent": 87.57,
+    "new_current_arrival_synthetic_cases": 16,
+    "frontend_unchanged_since_1226f19": "314 tests; format/lint/build passed at identical frontend tree"
+  },
+  "production_changed": false,
+  "remaining_gates": [
+    "Category/geographic/corridor expansion; no dedicated eligible landmark batch or food/nightlife coverage",
+    "Current authorized host backup/freshness/isolated-restore proof",
+    "Completed code review; CodeRabbit re-review rate limited",
+    "Exact-main CI, normal release path and authentic production website flows"
+  ],
+  "retained_review_recipe": {
+    "schema_version": "roadtrips-arrival-review/1",
+    "entries": {
+      "03f811cd-0401-40ad-b75c-1ae7328cf6b7": {
+        "profile": "wing-luke/1",
+        "pages": {
+          "https://www.wingluke.org/visit": {
+            "url": "https://www.wingluke.org/visit",
+            "sha256": "74b0b54ca07ea4fc058d41da74e63af30cdec0f8ad4ed9ea866a484e3814c63d",
+            "retrieved_at": "2026-10-15T01:26:53.319601+00:00"
+          }
+        },
+        "driving": {
+          "sha256": "d42614d0f119351306c14a4bb104d1eb194b25813f3e98307e1082324fa9be55",
+          "retrieved_at": "2026-10-15T01:55:24.316547+00:00"
+        }
+      },
+      "57193dd5-6aa9-4857-98bc-60e2097c3af0": {
+        "profile": "waikiki-aquarium/1",
+        "pages": {
+          "https://www.waikikiaquarium.org/visit/directions-parking/": {
+            "url": "https://www.waikikiaquarium.org/visit/directions-parking/",
+            "sha256": "34dce076ea9cd1d5dcf7882085377506b20cc78dc783d20e5bc757b556ac258d",
+            "retrieved_at": "2026-10-15T01:51:43.832521+00:00"
+          },
+          "https://www.waikikiaquarium.org/visit/hours/": {
+            "url": "https://www.waikikiaquarium.org/visit/hours/",
+            "sha256": "7b9b606504a08d52115475a51ac6d596185bc40ba0cad792d0a96dbda7da3f18",
+            "retrieved_at": "2026-10-15T01:51:38.711105+00:00"
+          }
+        },
+        "driving": {
+          "sha256": "d42614d0f119351306c14a4bb104d1eb194b25813f3e98307e1082324fa9be55",
+          "retrieved_at": "2026-10-15T01:55:24.316547+00:00"
+        }
+      }
+    }
+  },
+  "fresh_admission_exactly_matches_stored_rows_and_provenance": 72
+}
