@@ -145,3 +145,27 @@ install Playwright outside the repo, then run
 It expects Vite at `127.0.0.1:5179` with `VITE_BACKEND_SERVER=http://127.0.0.1:18999/`,
 `VITE_COGNITO_ENDPOINT=http://127.0.0.1:18999`, `VITE_LOCAL_JOURNEY=true` and fixture
 pool/client IDs. All API requests are intercepted; no server runs on 18999.
+
+## Exact merge preview
+
+`git merge-tree --write-tree --messages` against implementation commit
+`40d5fd91c2b3f584deb3553d0c5cf2f20bdf3584` and the PR heads above creates only
+scratch Git objects, without checking out, editing or merging those branches.
+PR51 has **no textual conflicts**. PR55 has these **8 conflicted paths**:
+
+| Conflict | Path |
+| --- | --- |
+| content | `frontend/src/components/GlobalHeader.jsx` |
+| modify/delete; keep deleted | `frontend/src/pages/ChatPage/ChatPage.jsx` |
+| modify/delete; keep deleted | `frontend/src/pages/ChatPage/useTripWorkflow.js` |
+| content | `frontend/src/pages/HomePage/HomePage.jsx` |
+| content | `frontend/src/services/session.js` |
+| content | `frontend/src/tests/HomePage.test.jsx` |
+| content | `frontend/src/tests/session.test.js` |
+| modify/delete; replace with setup adapter coverage | `frontend/src/tests/useTripWorkflow.chat.test.jsx` |
+
+`Router.jsx` and `UserDataContext.jsx` merge textually but still need the semantic
+review in the checklist: the former must keep the redirect/new trip list while
+adding standalone setup; the latter must retain setup draft cleanup and avoid
+restoring the removed conversational state. These previews do not establish
+runtime compatibility of an integrated PR55; its adapter work remains required.
