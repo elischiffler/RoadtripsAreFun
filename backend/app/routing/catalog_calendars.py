@@ -1,10 +1,14 @@
 """Refresh active catalog facts before reusing serialized trip calendars."""
 
+from collections.abc import Callable
+
 from app.catalog import repository
 from app.catalog.identity import PREFIXES, catalog_source_id
 from app.routing.base import PlanningError
 from app.routing.runtime import threaded
 from app.routing.visit_calendar import VisitCalendarConflict, calendar_eligible
+
+CatalogLookup = Callable[[list[str]], dict[str, dict]]
 
 
 def _explicit_calendar(record):
@@ -20,8 +24,13 @@ def explicit_calendar_ineligible(record):
     )
 
 
-async def refresh_for_timing(stops):
-    """Refresh one batch in memory; reject held stops and drop held alternatives."""
+async def refresh_for_timing(stops, *, catalog_lookup: CatalogLookup | None = None):
+    """Refresh one batch and enforce holds using the caller's authoritative facts.
+
+    Live callers use the active catalog. Offline reconstruction supplies a
+    validated frozen-fixture lookup through trusted Python code, never HTTP input.
+    Missing identities, changed arrivals and held calendars fail identically.
+    """
     sources = {source for _, source in PREFIXES} | {"overture"}
     for stop in stops:
         if stop.get("type") == "hotel" and "evening_suggestions" in stop:
@@ -78,7 +87,11 @@ async def refresh_for_timing(stops):
     current = {}
     if identifiers:
         try:
-            current = await threaded("catalog", repository.current_records, identifiers)
+            current = await threaded(
+                "catalog",
+                repository.current_records if catalog_lookup is None else catalog_lookup,
+                identifiers,
+            )
         except Exception:
             if any(catalog_source_id(record.get("provider_id")) for record in main):
                 raise PlanningError(
