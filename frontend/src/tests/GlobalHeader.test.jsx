@@ -29,6 +29,11 @@ function TripStateProbe() {
 }
 
 describe('GlobalHeader', () => {
+  it('links setup and research independently', () => {
+    renderWithProviders(<GlobalHeader />);
+    expect(screen.getByRole('link', { name: 'Plan a trip' })).toHaveAttribute('href', '/plan');
+    expect(screen.getByRole('link', { name: 'AI Studio' })).toHaveAttribute('href', '/studio');
+  });
   beforeEach(() => sessionStorage.clear());
   afterEach(() => sessionStorage.clear());
 
@@ -50,7 +55,7 @@ describe('GlobalHeader', () => {
 
   it('shows the avatar when authenticated', () => {
     fixtureSession();
-    renderWithProviders(<GlobalHeader />, { initialPath: '/chat' });
+    renderWithProviders(<GlobalHeader />, { initialPath: '/trips' });
     // The avatar renders a "U" placeholder
     expect(screen.getByText('U')).toBeInTheDocument();
   });
@@ -59,7 +64,7 @@ describe('GlobalHeader', () => {
     fixtureSession();
     const user = userEvent.setup();
 
-    renderWithProviders(<GlobalHeader />, { initialPath: '/chat' });
+    renderWithProviders(<GlobalHeader />, { initialPath: '/trips' });
 
     // Open profile menu
     await user.click(screen.getByText('U'));
@@ -81,7 +86,7 @@ describe('GlobalHeader', () => {
         <GlobalHeader />
         <TripStateProbe />
       </>,
-      { initialPath: '/chat' }
+      { initialPath: '/trips' }
     );
     await user.click(screen.getByText('Seed private trip'));
     expect(screen.getByText('1 chats; 1 trip records')).toBeInTheDocument();

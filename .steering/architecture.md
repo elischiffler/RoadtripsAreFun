@@ -2,12 +2,11 @@
 
 ## Application boundaries
 
-`backend/app/main.py` registers routing, location, car, itinerary, chat, agent,
+`backend/app/main.py` registers routing, location, car, itinerary, saved-trip storage,
 Algorithm Lab and visitor Studio routers, CORS, process health and database
 readiness. HTTP inputs are Pydantic
-models; routers translate errors and reuse capability functions also called by
-agent tools. `frontend/src/main.jsx` mounts the app; `Router.jsx` defines home,
-login/signup, protected chat/map/itinerary/settings pages and visitor `/studio`.
+models; routers translate errors and reuse shared planning capability functions. `frontend/src/main.jsx` mounts the app; `Router.jsx` defines home,
+login/signup, protected trips/map/itinerary/settings pages and visitor `/studio`.
 The old `/algorithm` page redirects to `/studio`; `GlobalHeader.jsx` hides the
 header on Studio, login and signup.
 
@@ -25,49 +24,17 @@ algorithm overrides. `frontend/src/services/routingSettings.js` obtains eligibil
 from the backend, keeps selection in session memory and invalidates it on account
 or token changes. See `docs/owner-routing-settings.md`.
 
-## Agent turn and trip state
+## Shared trip state and AI
 
-The JSON and NDJSON endpoints in `backend/app/routers/agent_api.py` run the same
-turn. `app/agent/agent.py` loads owner/chat memory, calls `extraction.py` for a
-strict JSON patch of the latest supplied details, and passes it through
-`tool_dispatcher.py`'s `record_trip_details`. Invalid fields produce clarifications
-while valid siblings persist. Extraction has one format retry. Outage recovery
-and validated receipts are backend behavior, not evidence that a model always
-extracts all traveler intent correctly.
+`app/agent/` retains its package name for shared consumers. `TripProfile`, persona,
+departure/date validation, extraction, providers, diagnostics and progress are used
+by planning and Studio. The conversational loop, prompts, dispatcher and API are
+retired; see [removal details](../docs/journeygenie-removal.md).
 
-`TripProfile` owns endpoints/coordinates, pending location choices, stop count,
-traveler count and explicit room allocations, per-room nightly budget,
-local departure time, canonical departure datetime/timezone,
-car choice and trip persona overrides. `missing_details()` is shared by prompt
-staging, presentation and completion. `trip_dates.py` rejects invalid, past or
-ambiguous/nonexistent local departure times; `departure.py` shares normalized
-departure handling. `persona.py` owns the 14 canonical weights, equal defaults,
-normalization and account-versus-trip override rules.
-
-`utils/location_resolution.py` yields up to five validated, deduplicated provider
-candidates. `tool_dispatcher.py` keeps newly supplied endpoints pending and asks
-the traveler to confirm the suggested address, including a single provider match.
-`agent/location_confirmation.py` resolves
-only opaque IDs in the authenticated chat's saved pending state; no model tool
-can confirm them. Origin selection clears the old date while retaining local
-time. Endpoint changes invalidate displayed route/itinerary. Failed revisions
-retain prior confirmed endpoints but pending state prevents planning with them.
-
-`prompt.py` supplies a short invariant, stage instructions and complete schema-
-serialized trip state, refreshed after tools. Recent conversation is bounded to
-six 400-character messages and a 600-character summary when full. Mentro gateway
-SSE and its service-account authentication are owned by `providers.py`. Fenced
-tool JSON is parsed by `toolcall_parser.py`; the loop caps tool batches at five.
-Heavy geometry/itineraries stay in artifacts/actions rather than model context.
-Usage totals aggregate extraction and continuation model calls.
-
-`complete_trip` uses stored confirmed endpoints, validates required details and
-passes the same departure to route and itinerary adapters. Route success with
-itinerary failure returns partial status and preserves `route_updated`; saved
-planned routes permit a later itinerary retry when the profile still matches.
-Required nonretryable provider failures stop that turn. `presentation.py` derives
-receipts/questions/outcome notes from persisted state and validated tool outcomes;
-model prose cannot establish whole-trip completion.
+`utils/location_resolution.py` provides validated provider candidates. Planning
+APIs own validated endpoints, occupancy, budgets and local scheduling policy.
+The Mentro gateway's provider protocol is shared infrastructure, independent of
+the removed conversational HTTP endpoints.
 
 ## Route planning and provider boundaries
 
@@ -118,7 +85,7 @@ restart 09:00, default final destination cutoff 21:00, with optional overrides.
 It tries up to six overnight positions around the preferred point and ranks
 usable hotels by per-room budget compliance, utility, price, distance and ID.
 `routing/travel_timing.py` shares actual-leg timing with itinerary construction.
-See `docs/flexible-hotel-evenings.md`, `docs/chat-creation-arrival-timing.md` and
+See `docs/flexible-hotel-evenings.md`, `docs/arrival-timing.md` and
 `docs/travelers-and-hotel-occupancy.md` for integrated scheduling/occupancy rules.
 
 The current objective minimizes spacing and detour seconds (`balanced-route-v3`).
@@ -140,25 +107,15 @@ uses **[lon, lat]**. `models/routing_models/routing_models.py` and
 
 ## Frontend and persistence
 
-`pages/ChatPage/useTripWorkflow.js` is now the agent-driven orchestration hook,
-applying `route_updated`, `itinerary_updated` and `trip_profile_updated` actions to
-the saved `ChatData` view. `ChatPage.jsx`, `DatabaseUtils.jsx` and
-`states/UserDataContext.jsx` own selection, reload and user-session state. Stable
-UUID `agentChatId` identifies backend memory; integer UI chat IDs are a separate
-identity. Browser snapshots/UI hints remain advisory.
-
-`ChatMessage.jsx` renders escaped native detail lists and pending-choice buttons.
-`agentChat.js`/`agentProgress.js` consume the authenticated stream; `TripProgress.jsx`
-renders one transient status line. `agent/progress.py` and `progress_stream.py`
-own request-local events, bounded queues, worker execution and cancellation.
-Progress is excluded from saved chat logs. See `docs/agent-progress.md` for exact
-timeouts and disconnect limitations.
+`pages/SavedTripsPage.jsx` loads account-owned saved trips through
+`services/savedTrips.js`, retaining existing payload names. Choosing a trip records
+its ID for map and itinerary navigation and reload. The retired `/chat` bookmark
+redirects to `/trips`. New planning uses Studio until guided setup is integrated.
 
 `crud/chat_crud.py` owns chats/route segments/steps and the shared thread-safe
 five-connection PostgreSQL pool. `crud/memory_crud.py` reuses it for `chat_memory`:
 cross-chat facts/persona, per-chat summary, trip profile and saved planned route.
-Reads/writes use authenticated owner/chat scope; the frontend owns verbatim
-ChatLog writes. `schemas/chat_schemas.py` accepts optional presentation in JSONB.
+Reads/writes use authenticated owner/chat scope; historical ChatLog content stays in storage. `schemas/chat_schemas.py` accepts optional presentation in JSONB.
 No new table migration is required for these JSON additions. Disposable DDL is
 `tests/postgres/schema.sql`; production readiness confirms expected table presence,
 not complete column/schema compatibility or migration history. Source catalog

@@ -142,7 +142,7 @@ and rejects conflicts. Retain the combined manifest and original manifests.
    No application request performs DDL or downloads source datasets.
 5. Activate the generation atomically; retain the returned previous generation.
    Deploy only after approval and real coverage validation, then test readiness,
-   chat, Studio, route maps, attribution, evening choices and failure behavior.
+   saved trips, Studio, route maps, attribution, evening choices and failure behavior.
    Local fixture tests do not establish those live journeys.
 6. On catalog regression, reactivate the recorded previous generation. For a
    first activation or application regression, roll back to the retained prior

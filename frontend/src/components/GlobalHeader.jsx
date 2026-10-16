@@ -16,7 +16,7 @@ export default function GlobalHeader() {
   const navigate = useNavigate();
   useSessionStatus();
   const authed = isAuthenticated();
-  const { currentStep, clearUserData } = useContext(UserDataContext);
+  const { clearUserData } = useContext(UserDataContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -33,27 +33,29 @@ export default function GlobalHeader() {
 
   if (HIDDEN_ON.includes(location.pathname)) return null;
 
-  const onChatPage = location.pathname === '/chat';
-  const onItineraryPage = location.pathname === '/itinerary';
   const onMapPage = location.pathname === '/map';
-  const chatProgress = Math.min((currentStep - 1) / 4, 1);
-  // Animate from step 1 onwards; stop only when the trip is complete (step 5)
-  const isDriving = onChatPage && currentStep < 5;
-
-  // On the itinerary page the trip is fully planned — show the car at the end
-  const logoProgress = onItineraryPage || onMapPage ? 1 : onChatPage ? chatProgress : 0;
+  const logoProgress = onMapPage || location.pathname === '/itinerary' ? 1 : 0;
 
   return (
     <Box className={`global-header${onMapPage ? ' global-header--transparent' : ''}`}>
-      <LogoButton driving={isDriving} progress={logoProgress} />
+      <LogoButton progress={logoProgress} />
 
       <Box className="global-header-right">
+        <Button component={Link} to="/plan" sx={{ color: 'text.primary', px: 1 }}>
+          Plan a trip
+        </Button>
+        <Button component={Link} to="/trips" sx={{ color: 'text.primary', px: 1 }}>
+          Saved trips
+        </Button>
         <Button component={Link} to="/studio" sx={{ color: 'text.primary', px: 1 }}>
-          Trip Planning Studio
+          AI Studio
         </Button>
         {authed ? (
           <>
             <Box
+              component="button"
+              type="button"
+              aria-label="Account menu"
               className="avatar-placeholder"
               onClick={handleAvatarClick}
               aria-controls={open ? 'profile-menu' : undefined}

@@ -7,7 +7,7 @@
  * Z-index scale
  * ─────────────────────────────────────────────
  *   1    – local decorative overlays (chip fade edges, stops gradient)
- *   100  – in-page floating controls (nav button groups on map/chat/itinerary)
+ *   100  – in-page floating controls (nav button groups on map/trips/itinerary)
  *   200  – global header (fixed, above page controls)
  *   1000 – modal backdrops (TripSearch overlay)
  *   1100 – tooltips / popovers (MUI defaults to ~1500; keep above modals)

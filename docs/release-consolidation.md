@@ -1,5 +1,9 @@
 # Release consolidation — October 5, 2026
 
+This document retains dated planning/validation history. Conversational UI and
+API references below describe the retired feature; current entry points and
+retained compatibility are in [the removal record](journeygenie-removal.md).
+
 The single release branch is `codex/production-release`, targeting `main`.
 It combines the integrated feature/UI tip `b0662ad` with final live preset fix
 `85b207c`. Every pre-cleanup local and remote branch tip is an ancestor of the

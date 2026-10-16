@@ -6,12 +6,7 @@ from types import SimpleNamespace
 import pytest
 from fastapi.testclient import TestClient
 
-from app.agent.agent import run_turn
 from app.agent.persona import AccountPersona
-from app.agent.schemas import AgentChatRequest
-from app.agent.tool_dispatcher import AppToolDispatcher
-from app.agent.tools import ToolCall, ToolContext
-from app.agent.trip_profile import TripProfile
 from app.main import app
 from app.models.routing_models.routing_models import Route_Payload
 from app.routers import routing_api
@@ -19,7 +14,6 @@ from app.routing import registry
 from app.routing.base import PlanningError, PlanResult
 from app.routing.occupancy import HotelRoom
 from app.routing.selection import OWNER_EMAIL
-from tests.agent.conftest import FakeMemory, FakeProvider
 from tests.conftest import CLIENT
 
 
@@ -83,97 +77,6 @@ def test_http_selection_enforced(signed_token, route, alternate_planners, owner,
     else:
         assert response.status_code == 200, response.text
         assert alternate_planners == [requested if owner and requested else "cp_sat"]
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("owner", [False, True])
-@pytest.mark.parametrize("remote", [False, True])
-@pytest.mark.parametrize("source", ["tool", "context", "default"])
-async def test_tool_and_remote_selection(
-    monkeypatch, route, alternate_planners, owner, remote, source
-):
-    from app.agent import routing_remote
-
-    monkeypatch.setattr(
-        routing_remote.settings, "ROUTING_REMOTE_URL", "https://fixture" if remote else None
-    )
-    memory = FakeMemory()
-    memory.save_trip_profile(
-        "user",
-        "chat",
-        TripProfile(
-            car_status="skipped", traveler_count=2, hotel_rooms=[HotelRoom(adults=2, child_ages=[])]
-        ).to_json(),
-    )
-    ctx = ToolContext(
-        user_id="user",
-        chat_id="chat",
-        memory=memory,
-        auth_token="access",
-        identity_token="identity" if owner else None,
-        can_select_algorithm=owner,
-        algorithm="test_alternate" if source == "context" else None,
-    )
-    arguments = {
-        "route_handle": ctx.artifacts.put("initial_route", route),
-        "traveler_count": 2,
-        "hotel_rooms": [{"adults": 2, "child_ages": []}],
-        "num_stops": 1,
-        "budget": 100,
-        "start": "2035-06-01T09:00:00",
-    }
-    if source == "tool":
-        arguments["algorithm"] = "test_alternate"
-
-    async def remote_plan(payload, token, *, identity_token=None):
-        assert token == "access"
-        assert identity_token == ("identity" if owner else None)
-        # The wire payload must already be forced to CP-SAT for non-owners.
-        assert payload.algorithm == (
-            "test_alternate" if owner and source != "default" else "cp_sat"
-        )
-        return await routing_api.plan_final_route(payload, "user", can_select_algorithm=owner)
-
-    monkeypatch.setattr(routing_remote, "plan_final_route_remote", remote_plan)
-    result = await AppToolDispatcher().dispatch(
-        ToolCall(name="generate_final_route", arguments=arguments), ctx
-    )
-    assert result.ok, result.error
-    assert alternate_planners == ["test_alternate" if owner and source != "default" else "cp_sat"]
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("mismatch", [False, True])
-async def test_agent_context_eligibility_from_verified_identity(signed_token, mismatch):
-    contexts = []
-
-    class Tools:
-        def specs(self):
-            return []
-
-        async def dispatch(self, call, ctx):
-            contexts.append(ctx)
-            assert ctx.can_select_algorithm is not mismatch
-            assert ctx.user_id == "cognito-user-123"
-            from app.agent.tools import ToolResult
-
-            return ToolResult(name=call.name, ok=True, result={})
-
-    await run_turn(
-        AgentChatRequest(partitionKey=signed_token(), chatId="chat", message="hello"),
-        FakeProvider(extraction_responses=['{"details":{"budget":100}}']),
-        FakeMemory(),
-        Tools(),
-        identity_token=signed_token(
-            token_use="id",
-            aud=CLIENT,
-            email=OWNER_EMAIL,
-            email_verified=True,
-            sub="other" if mismatch else "cognito-user-123",
-        ),
-    )
-    assert contexts
-    assert all(ctx.can_select_algorithm is not mismatch for ctx in contexts)
 
 
 @pytest.mark.asyncio
@@ -254,6 +157,14 @@ async def test_cp_sat_requires_upcoming_date(route):
 
 @pytest.mark.asyncio
 async def test_final_mapbox_leg_shape_rejected(monkeypatch, route):
+    monkeypatch.setattr(
+        routing_api,
+        "get_location",
+        lambda **kwargs: SimpleNamespace(
+            raw={"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
+        ),
+    )
+
     class Planner:
         async def plan(self, initial, options, services):
             return PlanResult(

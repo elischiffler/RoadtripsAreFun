@@ -1,6 +1,14 @@
 # Current release and acceptance
 
-## Inspected source and delivery
+## Chat retirement on develop
+
+The chat UI and conversational API are removed on a task branch from current
+`develop`. Saved account trips remain at `/trips`; `/chat` redirects there. Studio,
+planning, shared preference extraction and provider modules remain available.
+See [removal and PR55 integration](../docs/journeygenie-removal.md) before merging
+the guided setup branch, which still depends on the retired page.
+
+## Earlier inspected source and delivery
 
 October 16, 2026 (UTC): isolated task checkout based on main
 `e9129a7551ef8c07405a9bf7552f6303765365af`. This update preserves the earlier
@@ -32,7 +40,7 @@ before integration; active release work can advance main.
 | Adaptive section discovery and bounded candidate pools                               | `backend/app/routing/discovery.py`, `sources/persona_candidates.py`; `docs/adaptive-planning.md`                                           |
 | Profile contributions, measured detours, quality bound and actual solver diagnostics | `backend/app/routing/profiles.py`, `cp_sat_selection.py`, `planners/cp_sat.py`; `docs/cp-sat-explained.md`                                 |
 | Separate local scheduling, dated room quotes and final road validation               | `backend/app/routing/cp_sat_scheduler.py`, `travel_timing.py`, `sources/google_hotels.py`; `docs/travelers-and-hotel-occupancy.md`         |
-| Validated trip extraction, endpoint confirmation and completion/retry                | `backend/app/agent/extraction.py`, `trip_profile.py`, `location_confirmation.py`, `tool_dispatcher.py`                                     |
+| Shared preference extraction and validated trip models | `backend/app/agent/extraction.py`, `trip_profile.py`; conversational orchestration retired |
 | Cognito session renewal and bounded verifier-rejection replay                        | `frontend/src/services/session.js`, `protectedRequest.js`; `docs/session-refresh.md`                                                       |
 | Visitor Studio access independent of account authentication                          | `backend/app/routers/studio.py`, `frontend/src/services/studioSession.js`; `docs/studio-access.md`                                         |
 | Live-only presets, streamed progress, stage data, safe failures and attempts         | `backend/app/routers/algorithm_lab.py`, `studio.py`, `backend/app/routing/runtime.py`; `docs/studio-progress.md`, `docs/studio-retries.md` |

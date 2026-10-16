@@ -11,6 +11,9 @@ import RunHistory from './RunHistory';
 import StudioProgress from './StudioProgress';
 import './AlgorithmLab.css';
 
+const defaultPreset = (catalog) =>
+  catalog.presets.find((preset) => preset.id === 'medium-two-day') ?? catalog.presets[0];
+
 function LabWorkspace({ historyOpen }) {
   const [catalog, setCatalog] = useState(null);
   const [presetId, setPresetId] = useState('');
@@ -39,8 +42,9 @@ function LabWorkspace({ historyOpen }) {
       .then((data) => {
         if (controller.signal.aborted) return;
         setCatalog(data);
-        setPresetId(data.presets[0].id);
-        setInputs(structuredClone(data.presets[0].inputs));
+        const preset = defaultPreset(data);
+        setPresetId(preset.id);
+        setInputs(structuredClone(preset.inputs));
       })
       .catch((failure) => {
         if (!controller.signal.aborted) setError(labError(failure));
@@ -175,7 +179,7 @@ function LabWorkspace({ historyOpen }) {
             onClick={() => {
               lastResult.current = null;
               setPrevious(null);
-              choosePreset(presetId);
+              choosePreset(defaultPreset(catalog).id);
             }}
           >
             {busy ? 'Cancel and reset' : 'Reset preset'}
@@ -263,8 +267,8 @@ export default function AlgorithmLab() {
     <main className="algorithm-lab">
       <header className="lab-title">
         <div>
-          <h1>Trip Planning Studio</h1>
-          <p>See why a road trip fits.</p>
+          <h1>AI Studio</h1>
+          <p>Plan, compare and understand your trip.</p>
         </div>
         <div className="lab-header-actions">
           {session && (

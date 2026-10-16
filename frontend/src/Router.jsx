@@ -4,17 +4,26 @@ import RootLayout from './components/RootLayout';
 import HomePage from './pages/HomePage/HomePage';
 import ItineraryPage from './pages/ItineraryPage/ItineraryPage';
 import LoginPage from './pages/AuthPages/LoginPage';
-import ChatPage from './pages/ChatPage/ChatPage';
+import SavedTripsPage from './pages/SavedTripsPage';
 import MapPage from './pages/MapPage/MapPage';
 import SettingsPage from './pages/SettingsPage';
 import AlgorithmLab from './pages/AlgorithmLab/AlgorithmLab';
 import SignUpPage from './pages/AuthPages/SignUpPage';
 import NotFoundPage from './pages/NotFoundPage';
+import TripSetupPage from './pages/TripSetup/TripSetupPage';
 
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
+      {
+        path: 'plan',
+        element: (
+          <AuthWrapper>
+            <TripSetupPage />
+          </AuthWrapper>
+        ),
+      },
       {
         path: '/',
         element: <HomePage />,
@@ -53,13 +62,14 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'chat',
+        path: 'trips',
         element: (
           <AuthWrapper>
-            <ChatPage />
+            <SavedTripsPage />
           </AuthWrapper>
         ),
       },
+      { path: 'chat', element: <Navigate to="/trips" replace /> },
       {
         path: 'signup',
         element: <SignUpPage />,

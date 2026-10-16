@@ -3,10 +3,14 @@ import json
 import threading
 
 import pytest
+from pydantic import BaseModel
 
 from app.agent import progress_stream
 from app.agent.progress import reporting, stage
-from app.agent.schemas import AgentChatResponse
+
+
+class RunResult(BaseModel):
+    reply: str
 
 
 @pytest.mark.asyncio
@@ -17,7 +21,7 @@ async def test_progress_and_heartbeat_arrive_before_blocking_provider_finishes(m
     async def run():
         with stage("route.test"):
             release.wait(2)  # Deliberately blocking: transport must remain responsive.
-        return AgentChatResponse(reply="Done")
+        return RunResult(reply="Done")
 
     stream = progress_stream.stream_turn(run)
     try:
@@ -46,7 +50,7 @@ async def test_concurrent_progress_is_request_scoped_and_errors_are_scrubbed():
         async def run():
             with stage(name):
                 await asyncio.sleep(0.01)
-            return AgentChatResponse(reply=name)
+            return RunResult(reply=name)
 
         return [json.loads(line) async for line in progress_stream.stream_turn(run)]
 

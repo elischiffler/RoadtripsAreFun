@@ -1,6 +1,6 @@
-"""Mandatory structured trip-detail extraction for each user turn.
+"""Reusable structured trip-detail and preference extraction.
 
-The model identifies only what the latest message supplies. Backend tools own
+The model identifies only what the latest message supplies. Callers own
 geocoding, normalization, validation, and the persisted profile.
 """
 

@@ -8,7 +8,12 @@
   padding: 32px clamp(16px, 4vw, 64px) 48px;
   background: var(--lab-paper);
   color: var(--lab-ink);
-  font-family: 'Inter', 'Roboto', sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   font-size: 0.9rem;
   line-height: 1.6;
 }
@@ -23,7 +28,7 @@
 }
 
 .lab-title h1 {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: inherit;
   font-size: clamp(1.8rem, 3vw, 2.4rem);
   letter-spacing: -0.035em;
   margin: 0;
