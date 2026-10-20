@@ -393,3 +393,26 @@ it('inspects histogram shares without echoing visible bar counts and clears the 
   act(() => window.dispatchEvent(new Event('scroll')));
   await vi.waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());
 });
+
+it('labels the trip measure and prints distinct average and median values without a hover', () => {
+  render(
+    <InspectionProvider>
+      <RowChart
+        rows={[
+          { ...base, utility_mean: 0.4 },
+          { ...base, id: 2, utility_mean: 0.5 },
+          { ...base, id: 3, utility_mean: 0.9 },
+        ]}
+        trips={trips}
+        metric="utility_mean"
+      />
+    </InspectionProvider>
+  );
+  expect(screen.getByText('Utility score by trip')).toBeInTheDocument();
+  const chart = screen.getByRole('group', { name: 'Average utility score by trip type' });
+  const row = within(chart).getByText('3 runs measured').closest('.research-trip-row');
+  expect(row).toHaveTextContent('Average 60%');
+  expect(row).toHaveTextContent('Median 50%');
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  expect(within(chart).queryByRole('button')).not.toBeInTheDocument();
+});

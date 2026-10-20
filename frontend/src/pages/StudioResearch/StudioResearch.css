@@ -523,3 +523,49 @@ svg [data-inspection-target] > circle {
     transition: none;
   }
 }
+
+.research-trip-chart {
+  display: grid;
+  gap: 18px;
+}
+.research-trip-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.85fr) minmax(0, 1.5fr);
+  gap: 14px;
+  align-items: center;
+}
+.research-trip-label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+.research-trip-label small,
+.research-trip-values,
+.research-trip-axis {
+  font-size: 0.7rem;
+  color: #705b45;
+}
+.research-trip-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 4px;
+}
+.research-trip-values span {
+  white-space: nowrap;
+}
+.research-trip-values strong {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.research-trip-values span:first-child strong {
+  color: #945d21;
+}
+.research-trip-values span:last-child strong {
+  color: #234a3c;
+}
+.research-trip-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-left: calc((100% - 14px) * 0.85 / 2.35 + 14px);
+}

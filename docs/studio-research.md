@@ -207,11 +207,14 @@ unique attractions or independent samples.
 Data marks support a compact, header-free inspection tooltip: one key value and
 an optional short supporting line. Info icons use brief chart explanations; the
 full measurement definitions remain documented here. Heatmap cells expose
-the difference from the displayed average; trip bars show medians and central
-ranges; histogram bars show their share of plotted scores; settings points show
+the difference from the displayed average; histogram bars show their share of plotted scores; settings points show
 within-batch paired changes when available. Native hover titles are removed from
 those marks to avoid duplicate popups. Hover waits briefly for pointer intent;
 focus and taps open immediately. Tab enters a chart, arrow keys move between its
 marks, and Escape dismisses the tooltip. Scrolling dismisses detached overlays.
 Motion is limited to short opacity/shadow transitions and respects reduced-motion
 preferences; incoming measurements do not replay chart animations.
+
+The trip comparison names the selected measure in its title. Each row shows the
+per-run average as a bar and the median as a green marker, with both values
+printed below the bar. There is no repeated tooltip on these bars.

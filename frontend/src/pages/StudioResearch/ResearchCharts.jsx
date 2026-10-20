@@ -254,67 +254,79 @@ export function RowChart({ rows, trips, metric }) {
       metric
     ),
   }));
-  const low = Math.min(0, ...values.map((row) => row.mean).filter(finite));
-  const high = Math.max(1, ...values.map((row) => row.mean).filter(finite));
-  const x = (value) => 200 + ((value - low) / (high - low)) * 360;
+  const extent = values.flatMap((row) => [row.mean, row.median]).filter(finite);
+  const low = Math.min(0, ...extent);
+  const high = Math.max(1, ...extent);
+  const x = (value) => ((value - low) / (high - low)) * 360;
+  const unit = METRICS[metric].unit;
+  const display = (value) =>
+    finite(value)
+      ? `${format(value, METRICS[metric].digits)}${unit === '%' ? '' : ' '}${unit}`
+      : '—';
   return (
     <figure>
       <ChartHeading
-        title="By trip"
-        unit={METRICS[metric].unit}
-        help={`${metricHelp(metric)} Bars show per-run averages; missing measurements excluded.`}
+        title={
+          metric === 'utility_mean' ? 'Utility score by trip' : `${METRICS[metric].label} by trip`
+        }
+        unit={unit}
+        help={`${metricHelp(metric)} Bar: average. Marker: median. Missing measurements excluded.`}
       />
-      <InspectionGroup
-        viewBox="0 0 640 290"
+      <div
+        className="research-trip-chart"
         role="group"
         aria-label={`${METRICS[metric].label} by trip type`}
       >
-        <line x1={x(0)} x2={x(0)} y1="10" y2="250" stroke="#c8bcae" />
-        {values.map((row, index) => (
-          <g key={row.id}>
-            <text x="190" y={28 + index * 47} textAnchor="end">
-              {row.label}
-            </text>
-            <text x="190" y={43 + index * 47} textAnchor="end" className="research-chart-detail">
-              {runCount(row.n)} measured
-            </text>
-            {finite(row.mean) && (
-              <InspectMark
-                first={row === values.find((value) => value.n)}
-                label={`${row.label}, ${METRICS[metric].label} ${format(row.mean, METRICS[metric].digits)} ${METRICS[metric].unit}`}
-                insight={{
-                  value: `Median ${format(row.median, METRICS[metric].digits)} ${METRICS[metric].unit}`,
-                  detail:
-                    row.n > 1
-                      ? `Middle half: ${format(row.q1, METRICS[metric].digits)}–${format(row.q3, METRICS[metric].digits)} ${METRICS[metric].unit}`
-                      : 'One measured run',
-                }}
-              >
-                <rect
-                  x={Math.min(x(0), x(row.mean))}
-                  y={15 + index * 47}
-                  width={Math.abs(x(row.mean) - x(0))}
-                  height="22"
-                  rx="3"
-                  fill="#a56b28"
-                />
-              </InspectMark>
-            )}
-            <text x={finite(row.mean) ? x(row.mean) + 8 : x(0) + 8} y={28 + index * 47}>
-              {format(row.mean, METRICS[metric].digits)}
-            </text>
-          </g>
+        {values.map((row) => (
+          <div className="research-trip-row" key={row.id}>
+            <div className="research-trip-label">
+              <span>{row.label}</span>
+              <small>{runCount(row.n)} measured</small>
+            </div>
+            <div>
+              <svg viewBox="0 0 360 26" aria-hidden="true">
+                <line x1={x(0)} x2={x(0)} y1="0" y2="26" stroke="#c8bcae" />
+                {finite(row.mean) && (
+                  <>
+                    <rect
+                      x={Math.min(x(0), x(row.mean))}
+                      y="4"
+                      width={Math.abs(x(row.mean) - x(0))}
+                      height="18"
+                      rx="3"
+                      fill="#a56b28"
+                    />
+                    <line
+                      x1={x(row.median)}
+                      x2={x(row.median)}
+                      y1="1"
+                      y2="25"
+                      stroke="#234a3c"
+                      strokeWidth="3"
+                    />
+                  </>
+                )}
+              </svg>
+              <div className="research-trip-values">
+                <span>
+                  Average <strong>{display(row.mean)}</strong>
+                </span>
+                <span>
+                  Median <strong>{display(row.median)}</strong>
+                </span>
+              </div>
+            </div>
+          </div>
         ))}
-        <text x="200" y="278">
-          {format(low)}
-        </text>
-        <text x="560" y="278" textAnchor="end">
-          {format(high)} {METRICS[metric].unit}
-        </text>
-      </InspectionGroup>
+        <div className="research-trip-axis" aria-hidden="true">
+          <span>{display(low)}</span>
+          <span>{display(high)}</span>
+        </div>
+      </div>
     </figure>
   );
 }
+
 RowChart.propTypes = {
   rows: PropTypes.array.isRequired,
   trips: PropTypes.array.isRequired,
