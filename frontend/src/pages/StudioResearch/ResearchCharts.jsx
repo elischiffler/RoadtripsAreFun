@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import { distribution, finite, format, METRICS, sample } from './researchData';
+import { ChartHeading } from './ResearchInfo';
+import { distribution, finite, format, metricHelp, METRICS, sample } from './researchData';
 
 export function Heatmap({ rows, trips, metric }) {
   const range = sample(rows, metric);
@@ -10,63 +11,72 @@ export function Heatmap({ rows, trips, metric }) {
     [1, 2, 3].map((density) => ({ persona, density }))
   );
   return (
-    <div className="research-table-scroll">
-      <table className="research-heatmap">
-        <caption>
-          {METRICS[metric].label} · {METRICS[metric].unit}
-        </caption>
-        <thead>
-          <tr>
-            <th scope="col">Trip</th>
-            {columns.map(({ persona, density }) => (
-              <th scope="col" key={`${persona}-${density}`}>
-                {persona === 'nature' ? 'Nature' : 'Entertainment'}
-                <small>{density} / day</small>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {trips.map((trip) => (
-            <tr key={trip.id}>
-              <th scope="row">{trip.label}</th>
-              {columns.map(({ persona, density }) => {
-                const stats = sample(
-                  rows.filter(
+    <figure>
+      <ChartHeading
+        title={METRICS[metric].label}
+        unit={METRICS[metric].unit}
+        help={`${metricHelp(metric)} Cells show the mean per-run value by trip, persona and stops per target day. n = usable measurements / finished attempts. A dash means missing data. Quality metrics require fully delivered, timing-valid runs; match scores are estimates, not visitor ratings.`}
+      />
+      <div className="research-table-scroll">
+        <table
+          className="research-heatmap"
+          aria-label={`${METRICS[metric].label} · ${METRICS[metric].unit}`}
+        >
+          <thead>
+            <tr>
+              <th scope="col">Trip</th>
+              {columns.map(({ persona, density }) => (
+                <th scope="col" key={`${persona}-${density}`}>
+                  {persona === 'nature' ? 'Nature' : 'Entertainment'}
+                  <small>{density} / day</small>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {trips.map((trip) => (
+              <tr key={trip.id}>
+                <th scope="row">{trip.label}</th>
+                {columns.map(({ persona, density }) => {
+                  const stats = sample(
+                    rows.filter(
+                      (row) =>
+                        row.trip === trip.id &&
+                        row.persona === persona &&
+                        row.stops_per_day === density
+                    ),
+                    metric
+                  );
+                  const all = rows.filter(
                     (row) =>
                       row.trip === trip.id &&
                       row.persona === persona &&
                       row.stops_per_day === density
-                  ),
-                  metric
-                );
-                const all = rows.filter(
-                  (row) =>
-                    row.trip === trip.id && row.persona === persona && row.stops_per_day === density
-                ).length;
-                return (
-                  <td
-                    key={`${persona}-${density}`}
-                    style={
-                      stats.n
-                        ? {
-                            background: `rgba(${stats.mean < 0 ? '165, 107, 40' : '69, 112, 75'}, ${0.06 + Math.min(1, Math.abs(stats.mean / maximum)) * 0.28})`,
-                          }
-                        : undefined
-                    }
-                  >
-                    {format(stats.mean, METRICS[metric].digits)}
-                    <small>
-                      n={stats.n} / {all}
-                    </small>
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                  ).length;
+                  return (
+                    <td
+                      key={`${persona}-${density}`}
+                      style={
+                        stats.n
+                          ? {
+                              background: `rgba(${stats.mean < 0 ? '165, 107, 40' : '69, 112, 75'}, ${0.06 + Math.min(1, Math.abs(stats.mean / maximum)) * 0.28})`,
+                            }
+                          : undefined
+                      }
+                    >
+                      {format(stats.mean, METRICS[metric].digits)}
+                      <small>
+                        n={stats.n} / {all}
+                      </small>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </figure>
   );
 }
 Heatmap.propTypes = {
@@ -91,9 +101,10 @@ export function StatusColumns({ rows, trips }) {
   const max = Math.max(1, ...values.map((row) => row.counts.reduce((a, b) => a + b, 0)));
   return (
     <figure>
-      <figcaption>
-        Run outcomes <small>Every finished attempt</small>
-      </figcaption>
+      <ChartHeading
+        title="Run outcomes"
+        help="Finished attempts under the selected filters, including failures and interruptions. Complete means all requested stops were delivered with valid timing. Partial means a finished run did not meet those requirements. Pending runs are excluded."
+      />
       <div className="research-legend">
         {categories.map(([label, , color]) => (
           <span key={label}>
@@ -156,10 +167,11 @@ export function RowChart({ rows, trips, metric }) {
   const x = (value) => 200 + ((value - low) / (high - low)) * 360;
   return (
     <figure>
-      <figcaption>
-        {METRICS[metric].label}
-        <small>Mean · {METRICS[metric].unit}</small>
-      </figcaption>
+      <ChartHeading
+        title="By trip"
+        unit={METRICS[metric].unit}
+        help={`${metricHelp(metric)} Bars show the mean per-run value for each trip type under the selected filters. n counts assessed runs; missing values are excluded.`}
+      />
       <svg viewBox="0 0 640 240" role="img" aria-label={`${METRICS[metric].label} by trip type`}>
         <line x1={x(0)} x2={x(0)} y1="10" y2="210" stroke="#c8bcae" />
         {values.map((row, index) => (
@@ -215,12 +227,7 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
     })),
   }));
   const values = series.flatMap((row) => row.points.map((p) => p.mean)).filter(finite);
-  if (!values.length)
-    return (
-      <p className="research-empty">
-        The response curve will appear when usable paired trials finish.
-      </p>
-    );
+  if (!values.length) return <p className="research-empty">No results yet.</p>;
   const minX = Math.min(...conditions.map((row) => row.x));
   const maxX = Math.max(...conditions.map((row) => row.x));
   const maxY = metric.startsWith('utility') ? 100 : Math.max(1, ...values) * 1.15;
@@ -231,9 +238,9 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
     <figure>
       <figcaption>
         {METRICS[metric].label}
-        <small>{METRICS[metric].unit} · mean, with each point’s n on hover</small>
+        <small>{METRICS[metric].unit}</small>
       </figcaption>
-      <div className="research-legend">
+      <div className="research-legend research-personas">
         <span>● Nature</span>
         <span>■ Entertainment</span>
       </div>
@@ -252,7 +259,7 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
         ))}
         {conditions.map((row) => (
           <text key={row.id} x={x(row.x)} y="234" textAnchor="middle">
-            {parameter === 'quality_loss' ? `${format(row.x * 100)} pp` : format(row.x)}
+            {parameter === 'quality_loss' ? format(row.x * 100) : format(row.x)}
           </text>
         ))}
         {series.map((series, index) => (
@@ -316,17 +323,26 @@ export function Tradeoff({ rows }) {
   );
   if (!points.length)
     return (
-      <p className="research-empty">
-        The trade-off plot needs completed trips with measured extra driving.
-      </p>
+      <figure>
+        <ChartHeading
+          title="Utility vs added driving"
+          help="Each point is a fully delivered, timing-valid live trip. Higher means better estimated persona match; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
+        />
+        <p className="research-empty">No results yet.</p>
+      </figure>
     );
   const low = Math.min(0, ...points.map((row) => row.extra_seconds / 60));
   const high = Math.max(1, ...points.map((row) => row.extra_seconds / 60));
   return (
     <figure>
-      <figcaption>
-        Utility vs added driving<small>Each point is one completed, fulfilled trip</small>
-      </figcaption>
+      <ChartHeading
+        title="Utility vs added driving"
+        help="Each point is a fully delivered, timing-valid live trip. Higher means better estimated persona match; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
+      />
+      <div className="research-legend research-personas">
+        <span>● Nature</span>
+        <span>● Entertainment</span>
+      </div>
       <svg viewBox="0 0 640 280" role="img" aria-label="Utility versus added driving scatter plot">
         {[0, 25, 50, 75, 100].map((value) => (
           <g key={value}>
@@ -373,19 +389,18 @@ export function UtilitySpread({ rows }) {
     .map((value) => value * 100);
   const stats = distribution(values);
   const summary = [
-    { label: 'Lowest utility', value: stats.min },
-    { label: 'Median utility', value: stats.median },
-    { label: 'Average utility', value: stats.mean },
-    { label: 'Highest utility', value: stats.max },
+    { label: 'Lowest', value: stats.min },
+    { label: 'Median', value: stats.median },
+    { label: 'Average', value: stats.mean },
+    { label: 'Highest', value: stats.max },
   ];
   return (
     <figure>
-      <figcaption>
-        Attraction utility
-        <small>
-          All assessed attractions · repeated selections count once per run · n={stats.n}
-        </small>
-      </figcaption>
+      <ChartHeading
+        title="Attraction utility"
+        unit={`n=${stats.n}`}
+        help="Scores pooled across individual attractions in the filtered, fully delivered, timing-valid runs. A repeated attraction counts once per run, so longer trips contribute more observations. Utility estimates persona match; it is not a visitor rating."
+      />
       <div className="research-stat-row">
         {summary.map((item) => (
           <div key={item.label}>
@@ -413,10 +428,11 @@ export function UtilityBoxes({ rows, trips }) {
   const x = (value) => 190 + value * 3.6;
   return (
     <figure>
-      <figcaption>
-        Repeat variation
-        <small>Average utility per run · box = middle 50% · whiskers = observed min–max</small>
-      </figcaption>
+      <ChartHeading
+        title="Repeat variation"
+        unit="Utility %"
+        help="Distribution of average utility per assessed run. Each box contains the middle 50%; its line marks the median. The ends show the observed minimum and maximum, not confidence intervals. n counts assessed runs. Fixed-data solver repeats measure solver variation, not independent real-world samples."
+      />
       <svg viewBox="0 0 640 270" role="img" aria-label="Utility distributions by trip type">
         {[0, 25, 50, 75, 100].map((value) => (
           <g key={value}>

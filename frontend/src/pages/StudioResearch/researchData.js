@@ -79,3 +79,26 @@ export function paired(rows, variant, metric) {
       })
   );
 }
+
+const METRIC_HELP = {
+  utility_mean: 'Average estimated persona match across the attractions in a run.',
+  utility_min: 'Match score of the lowest-scoring attraction in each run.',
+  utility_median: 'Middle attraction match score within each run.',
+  utility_max: 'Match score of the highest-scoring attraction in each run.',
+  max_gap_seconds:
+    'Longest driving gap between attractions, including the origin and destination. Solver trials use simulated baseline progress; live trips use actual route legs, excluding overnight downtime.',
+  extra_meters: 'Road distance added compared with the direct origin-to-destination route.',
+  extra_seconds: 'Driving time added compared with the direct route; visit time is excluded.',
+  budget_utilization:
+    'Quoted hotel cost divided by the room-night target. 100% is on target; above 100% is over. This covers hotels only. Missing quotes are unassessed.',
+  budget_excess_usd:
+    'Total quoted hotel dollars above the room-night targets; zero means none above target. This is not total-trip spending.',
+  runtime_seconds:
+    'Core planning time, or model-and-solve time for controlled trials. Failed attempts retain measured time until failure.',
+  solver_seconds: 'Time inside the CP-SAT solver, shown in milliseconds.',
+  fulfillment:
+    'Delivered stops divided by requested stops. 100% means every requested stop was delivered. Assessed partial and failed attempts remain included.',
+  actual_days:
+    'Number of calendar days in the resulting itinerary, which can differ from the target trip length.',
+};
+export const metricHelp = (metric) => METRIC_HELP[metric];

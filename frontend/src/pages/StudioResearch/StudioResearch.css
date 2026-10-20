@@ -321,3 +321,102 @@
     flex-wrap: wrap;
   }
 }
+.research-launch > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.research-launch-body {
+  padding-top: 16px;
+}
+.research-launch-body > div:first-of-type {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.research-chart-heading,
+.research-track-meta,
+.research-finding {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.research-track-meta {
+  font-size: 0.8rem;
+  color: #705b45;
+  margin-bottom: 16px;
+}
+.research-info {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-self: center;
+}
+.studio-research .research-info-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #705b45;
+}
+.research-info-button > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font:
+    600 12px Georgia,
+    serif;
+}
+.studio-research .research-info-button:hover {
+  background: #e9e3d8;
+}
+.research-tooltip {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 50;
+  width: min(320px, calc(100vw - 80px));
+  padding-top: 8px;
+  white-space: normal;
+  text-align: left;
+}
+.research-tooltip > span {
+  display: block;
+  padding: 14px 16px;
+  border: 1px solid #d7cdbf;
+  border-radius: 10px;
+  background: #fffdf8;
+  box-shadow: 0 8px 24px #35291c1f;
+  color: #493d30;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.55;
+  max-height: min(340px, calc(50vh - 32px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.research-info[data-side='above'] .research-tooltip {
+  top: auto;
+  bottom: 100%;
+  padding-top: 0;
+  padding-bottom: 8px;
+}
+
+.research-personas span:first-child {
+  color: #234a3c;
+}
+.research-personas span:last-child {
+  color: #a56b28;
+}

@@ -11,6 +11,7 @@ import {
   Tradeoff,
   UtilitySpread,
 } from '../pages/StudioResearch/ResearchCharts';
+import ResearchInfo from '../pages/StudioResearch/ResearchInfo';
 import { distribution, paired, sample } from '../pages/StudioResearch/researchData';
 import {
   createStudy,
@@ -126,9 +127,7 @@ it('starts once, remembers the durable study and does not cancel it on unmount',
   await userEvent.dblClick(await screen.findByRole('button', { name: 'Start 6,600 runs' }));
   expect(createStudy).toHaveBeenCalledTimes(1);
   expect(studyRequest).toHaveBeenCalledWith(study, 'start', 'post');
-  expect(
-    await screen.findByRole('button', { name: 'Pause after current runs' })
-  ).toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: 'Pause' })).toBeInTheDocument();
   view.unmount();
   expect(studyRequest.mock.calls.some(([, action]) => action === 'pause')).toBe(false);
 });
@@ -163,7 +162,13 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   expect(
     screen.getByRole('img', { name: 'Average utility response to quality_loss' })
   ).toBeInTheDocument();
-  expect(screen.getByText(/Controlled synthetic experiment/)).toBeInTheDocument();
+  expect(screen.getByText('100 synthetic candidates · 30 repeats')).toBeInTheDocument();
+  expect(screen.getByText('New study').parentElement).not.toHaveAttribute('open');
+  expect(screen.queryByText(/Same candidates, persona/)).not.toBeInTheDocument();
+  await userEvent.hover(screen.getByRole('button', { name: 'About Parameter response' }));
+  expect(screen.getByRole('tooltip')).toHaveTextContent('Trip and stops per day stay fixed');
+  await userEvent.unhover(screen.getByRole('button', { name: 'About Parameter response' }));
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   expect(screen.queryByRole('option', { name: 'Added distance' })).not.toBeInTheDocument();
   expect(screen.getByText('FEASIBLE')).toBeInTheDocument();
 });
@@ -231,4 +236,30 @@ it('renders charts with labeled units, measured sample sizes and negative drivin
   expect(container.innerHTML).not.toMatch(/NaN|Infinity/);
   expect(screen.getByText('40%')).toBeInTheDocument();
   expect(screen.getByText('80%')).toBeInTheDocument();
+});
+
+it('opens chart help on hover, focus or tap and dismisses it with Escape or an outside tap', async () => {
+  render(
+    <>
+      <ResearchInfo label="Repeat variation">The box contains the middle 50% of runs.</ResearchInfo>
+      <button>Outside</button>
+    </>
+  );
+  const info = screen.getByRole('button', { name: 'About Repeat variation' });
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  await userEvent.hover(info);
+  expect(screen.getByRole('tooltip')).toHaveTextContent('middle 50%');
+  await userEvent.keyboard('{Escape}');
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  await userEvent.unhover(info);
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  await userEvent.tab();
+  expect(info).toHaveFocus();
+  expect(info).toHaveAccessibleDescription('The box contains the middle 50% of runs.');
+  await userEvent.keyboard('{Escape}');
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  await userEvent.click(info);
+  expect(screen.getByRole('tooltip')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Outside' }));
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
 });

@@ -18,6 +18,7 @@ import {
   UtilityBoxes,
 } from './ResearchCharts';
 import { distribution, format, METRICS, paired } from './researchData';
+import ResearchInfo, { ChartHeading } from './ResearchInfo';
 import '../AlgorithmLab/AlgorithmLab.css';
 import './StudioResearch.css';
 
@@ -174,7 +175,6 @@ export default function StudioResearch() {
         <div>
           <span className="research-eyebrow">AI Studio</span>
           <h1>Trip research</h1>
-          <p>Compare trip outcomes and solver settings.</p>
         </div>
         <Link to="/studio">Back to Studio</Link>
       </header>
@@ -188,194 +188,194 @@ export default function StudioResearch() {
           {connectionError}
         </p>
       )}
-      <section className="research-launch" aria-label="Batch setup">
-        {catalog?.execution_enabled === false && (
-          <p role="status">
-            Batch execution is off on this server. Existing results are still available.
-          </p>
-        )}
-        <div>
-          <h2>Run a study</h2>
-          <p>
-            <strong>{format(liveCount + solverCount, 0)}</strong> runs · {format(liveCount, 0)} live
-            trips · {format(solverCount, 0)} solver trials
-          </p>
-          <p className="research-muted">
-            Live trips use paid providers. Solver trials use the same 100 synthetic candidates, with
-            no provider calls.
-          </p>
-        </div>
-        {design && (
-          <>
-            <div className="research-controls">
-              <label>
-                Live repeats
-                <input
-                  type="number"
-                  min="1"
-                  max="10"
-                  step="1"
-                  value={design.repeats}
-                  onChange={(e) => change('repeats', Number(e.target.value))}
-                />
-              </label>
-              <label>
-                Solver repeats
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  step="1"
-                  value={design.solver_repeats}
-                  onChange={(e) => change('solver_repeats', Number(e.target.value))}
-                />
-              </label>
-              <label>
-                Departure
-                <input
-                  type="date"
-                  value={design.departure_date}
-                  onChange={(e) => change('departure_date', e.target.value)}
-                />
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={design.pipeline}
-                  onChange={(e) => change('pipeline', e.target.checked)}
-                />
-                Full pipeline
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={design.solver}
-                  onChange={(e) => change('solver', e.target.checked)}
-                />
-                CP-SAT only
-              </label>
-            </div>
-            <details className="research-settings">
-              <summary>Study settings</summary>
-              <div className="research-setting-grid">
-                <fieldset>
-                  <legend>Trips</legend>
-                  {trips.map((trip) => (
-                    <label key={trip.id}>
-                      <input
-                        type="checkbox"
-                        checked={design.trips.includes(trip.id)}
-                        onChange={() => toggle('trips', trip.id)}
-                      />
-                      {trip.label}
-                    </label>
-                  ))}
-                </fieldset>
-                <fieldset>
-                  <legend>Personas</legend>
-                  {catalog.personas.map((key) => (
-                    <label key={key}>
-                      <input
-                        type="checkbox"
-                        checked={design.personas.includes(key)}
-                        onChange={() => toggle('personas', key)}
-                      />
-                      {key}
-                    </label>
-                  ))}
-                  <legend>Stops per target day</legend>
-                  {[1, 2, 3].map((value) => (
-                    <label key={value}>
-                      <input
-                        type="checkbox"
-                        checked={design.stops_per_day.includes(value)}
-                        onChange={() => toggle('stops_per_day', value)}
-                      />
-                      {value}
-                    </label>
-                  ))}
-                </fieldset>
-                <fieldset>
-                  <legend>Allowed utility loss</legend>
-                  {[0, 0.05, 0.1, 0.15, 0.2].map((value) => (
-                    <label key={value}>
-                      <input
-                        type="checkbox"
-                        checked={design.quality_loss.includes(value)}
-                        onChange={() => toggle('quality_loss', value)}
-                      />
-                      {value * 100} percentage points
-                    </label>
-                  ))}
-                </fieldset>
-                <fieldset>
-                  <legend>Detour weight</legend>
-                  {[0.5, 1, 2].map((value) => (
-                    <label key={value}>
-                      <input
-                        type="checkbox"
-                        checked={design.detour_weight.includes(value)}
-                        onChange={() => toggle('detour_weight', value)}
-                      />
-                      {value}
-                    </label>
-                  ))}
-                  <p className="research-muted">
-                    Baseline always included. One parameter changes at a time.
-                  </p>
-                </fieldset>
-              </div>
-            </details>
-            {session ? (
-              <button
-                className="research-primary"
-                disabled={
-                  busy ||
-                  running ||
-                  catalog?.execution_enabled === false ||
-                  !combinations ||
-                  !Number.isInteger(design.repeats) ||
-                  design.repeats < 1 ||
-                  design.repeats > 10 ||
-                  !Number.isInteger(design.solver_repeats) ||
-                  design.solver_repeats < 1 ||
-                  design.solver_repeats > 100 ||
-                  (!design.pipeline && !design.solver) ||
-                  !design.quality_loss.length ||
-                  !design.detour_weight.length
-                }
-                onClick={launch}
-              >
-                {busy ? 'Starting…' : `Start ${format(liveCount + solverCount, 0)} runs`}
-              </button>
-            ) : (
-              <form
-                className="research-unlock"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  action(async () => {
-                    await unlockStudio(password);
-                    setPassword('');
-                    setSession(getStudioSession());
-                  });
-                }}
-              >
+      <details className="research-launch" aria-label="Batch setup" open={!selected}>
+        <summary>New study</summary>
+        <div className="research-launch-body">
+          {catalog?.execution_enabled === false && (
+            <p role="status">
+              Batch execution is off on this server. Existing results are still available.
+            </p>
+          )}
+          <div>
+            <p>
+              <strong>{format(liveCount + solverCount, 0)}</strong> runs · {format(liveCount, 0)}{' '}
+              live trips · {format(solverCount, 0)} solver trials
+            </p>
+            <ResearchInfo label="Study setup">
+              Live trips use paid providers. CP-SAT trials use the same 100 synthetic candidates
+              without provider calls. The baseline is always included; each other condition changes
+              one parameter at a time. Runs continue after navigation or closing the browser.
+            </ResearchInfo>
+          </div>
+          {design && (
+            <>
+              <div className="research-controls">
                 <label>
-                  Studio password
+                  Live repeats
                   <input
-                    type="password"
-                    autoComplete="off"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    type="number"
+                    min="1"
+                    max="10"
+                    step="1"
+                    value={design.repeats}
+                    onChange={(e) => change('repeats', Number(e.target.value))}
                   />
                 </label>
-                <button disabled={busy}>Unlock batch runs</button>
-              </form>
-            )}
-          </>
-        )}
-      </section>
+                <label>
+                  Solver repeats
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    step="1"
+                    value={design.solver_repeats}
+                    onChange={(e) => change('solver_repeats', Number(e.target.value))}
+                  />
+                </label>
+                <label>
+                  Departure
+                  <input
+                    type="date"
+                    value={design.departure_date}
+                    onChange={(e) => change('departure_date', e.target.value)}
+                  />
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={design.pipeline}
+                    onChange={(e) => change('pipeline', e.target.checked)}
+                  />
+                  Full pipeline
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={design.solver}
+                    onChange={(e) => change('solver', e.target.checked)}
+                  />
+                  CP-SAT only
+                </label>
+              </div>
+              <details className="research-settings">
+                <summary>Study settings</summary>
+                <div className="research-setting-grid">
+                  <fieldset>
+                    <legend>Trips</legend>
+                    {trips.map((trip) => (
+                      <label key={trip.id}>
+                        <input
+                          type="checkbox"
+                          checked={design.trips.includes(trip.id)}
+                          onChange={() => toggle('trips', trip.id)}
+                        />
+                        {trip.label}
+                      </label>
+                    ))}
+                  </fieldset>
+                  <fieldset>
+                    <legend>Personas</legend>
+                    {catalog.personas.map((key) => (
+                      <label key={key}>
+                        <input
+                          type="checkbox"
+                          checked={design.personas.includes(key)}
+                          onChange={() => toggle('personas', key)}
+                        />
+                        {key}
+                      </label>
+                    ))}
+                    <legend>Stops per target day</legend>
+                    {[1, 2, 3].map((value) => (
+                      <label key={value}>
+                        <input
+                          type="checkbox"
+                          checked={design.stops_per_day.includes(value)}
+                          onChange={() => toggle('stops_per_day', value)}
+                        />
+                        {value}
+                      </label>
+                    ))}
+                  </fieldset>
+                  <fieldset>
+                    <legend>Allowed utility loss</legend>
+                    {[0, 0.05, 0.1, 0.15, 0.2].map((value) => (
+                      <label key={value}>
+                        <input
+                          type="checkbox"
+                          checked={design.quality_loss.includes(value)}
+                          onChange={() => toggle('quality_loss', value)}
+                        />
+                        {value * 100} percentage points
+                      </label>
+                    ))}
+                  </fieldset>
+                  <fieldset>
+                    <legend>Detour weight</legend>
+                    {[0.5, 1, 2].map((value) => (
+                      <label key={value}>
+                        <input
+                          type="checkbox"
+                          checked={design.detour_weight.includes(value)}
+                          onChange={() => toggle('detour_weight', value)}
+                        />
+                        {value}
+                      </label>
+                    ))}
+                  </fieldset>
+                </div>
+              </details>
+              {session ? (
+                <button
+                  className="research-primary"
+                  disabled={
+                    busy ||
+                    running ||
+                    catalog?.execution_enabled === false ||
+                    !combinations ||
+                    !Number.isInteger(design.repeats) ||
+                    design.repeats < 1 ||
+                    design.repeats > 10 ||
+                    !Number.isInteger(design.solver_repeats) ||
+                    design.solver_repeats < 1 ||
+                    design.solver_repeats > 100 ||
+                    (!design.pipeline && !design.solver) ||
+                    !design.quality_loss.length ||
+                    !design.detour_weight.length
+                  }
+                  onClick={launch}
+                >
+                  {busy ? 'Starting…' : `Start ${format(liveCount + solverCount, 0)} runs`}
+                </button>
+              ) : (
+                <form
+                  className="research-unlock"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    action(async () => {
+                      await unlockStudio(password);
+                      setPassword('');
+                      setSession(getStudioSession());
+                    });
+                  }}
+                >
+                  <label>
+                    Studio password
+                    <input
+                      type="password"
+                      autoComplete="off"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </label>
+                  <button disabled={busy}>Unlock batch runs</button>
+                </form>
+              )}
+            </>
+          )}
+        </div>
+      </details>
       <div className="research-toolbar">
         <label>
           Study
@@ -401,7 +401,7 @@ export default function StudioResearch() {
                 disabled={busy || data.state === 'pausing'}
                 onClick={() => action(() => studyRequest(selected, 'pause', 'post'))}
               >
-                Pause after current runs
+                Pause
               </button>
             ) : (
               data.state !== 'complete' && (
@@ -409,28 +409,29 @@ export default function StudioResearch() {
                   disabled={busy}
                   onClick={() => action(() => studyRequest(selected, 'start', 'post'))}
                 >
-                  Resume pending runs
+                  Resume
                 </button>
               )
             )}
-            <button onClick={() => action(() => downloadStudy(selected, 'csv'))} disabled={busy}>
-              Export CSV
+            <button
+              aria-label="Export CSV"
+              onClick={() => action(() => downloadStudy(selected, 'csv'))}
+              disabled={busy}
+            >
+              CSV
             </button>
-            <button onClick={() => action(() => downloadStudy(selected, 'json'))} disabled={busy}>
-              Export JSON
+            <button
+              aria-label="Export JSON"
+              onClick={() => action(() => downloadStudy(selected, 'json'))}
+              disabled={busy}
+            >
+              JSON
             </button>
           </>
         )}
       </div>
       {!data ? (
-        <section className="research-empty">
-          <h2>A study starts with 30 combinations</h2>
-          <p>Five trip types × two personas × one, two or three stops per target day.</p>
-          <p>
-            Ten live repeats make 300 trips. Thirty solver repeats across seven conditions add 6,300
-            trials.
-          </p>
-        </section>
+        <p className="research-empty">{selected ? 'Loading…' : 'Select or create a study.'}</p>
       ) : (
         <>
           <progress value={finished} max={data.counts.total} aria-label="Finished study runs" />
@@ -454,18 +455,28 @@ export default function StudioResearch() {
               CP-SAT · {data.counts.solver}
             </button>
           </nav>
-          <p className="research-muted">
-            {track === 'pipeline'
-              ? 'Fresh live trips. Utility describes delivered attractions with complete, fulfilled, timing-valid trips.'
-              : `Controlled synthetic experiment · 100 fixed candidates · ${data.design.solver_repeats} seed repeats. Gap and detour values are model inputs, not measured road trips.`}
-          </p>
+          <div className="research-track-meta">
+            <span>
+              {track === 'pipeline'
+                ? 'Live trips'
+                : `100 synthetic candidates · ${data.design.solver_repeats} repeats`}
+            </span>
+            <ResearchInfo label="Study data">
+              {track === 'pipeline'
+                ? 'Fresh live trips through the complete pipeline. Quality scores require fully delivered, timing-valid itineraries. Hotel metrics cover quoted room-nights only, not the total trip budget. Missing quotes are unassessed.'
+                : 'Controlled trials on one fixed synthetic dataset. Gap and detour inputs are simulated, not measured journeys. Repeats change solver seeds; they are not independent real-world samples. The baseline allows 10 percentage points of utility loss, spacing weight 1, detour weight 1, a five-second limit and one worker.'}{' '}
+              Summary totals cover all settings in this track; charts below follow their filters.
+              Target days set requested stops, not actual trip length. Pausing finishes current
+              runs.
+            </ResearchInfo>
+          </div>
           <div className="research-stat-row research-summary">
             <div>
-              <span>Finished attempts</span>
+              <span>Finished</span>
               <strong>{format(trackRows.length, 0)}</strong>
             </div>
             <div>
-              <span>Fully delivered</span>
+              <span>Complete</span>
               <strong>{format(trackRows.filter((row) => row.completed).length, 0)}</strong>
             </div>
             <div>
@@ -475,7 +486,7 @@ export default function StudioResearch() {
               </strong>
             </div>
             <div>
-              <span>Median runtime</span>
+              <span>Median time</span>
               <strong>
                 {format(runtime.median)}
                 <small> sec</small>
@@ -523,7 +534,9 @@ export default function StudioResearch() {
                     <option value={row.id} key={row.id}>
                       {row.id === 'baseline'
                         ? 'Baseline'
-                        : `${row.parameter === 'quality_loss' ? 'Utility loss' : 'Detour weight'}: ${row.value}`}
+                        : row.parameter === 'quality_loss'
+                          ? `Allowed loss: ${format(row.value * 100)} points`
+                          : `Detour weight: ${row.value}`}
                     </option>
                   ))}
                 </select>
@@ -532,10 +545,6 @@ export default function StudioResearch() {
           </div>
           <section className="research-card">
             <Heatmap rows={filtered} trips={trips} metric={metric} />
-            <p className="research-muted">
-              n = assessed values / finished attempts. A dash means no assessed value. Utility is an
-              estimate, not a visitor rating.
-            </p>
           </section>
           <div className="research-chart-grid">
             <section className="research-card">
@@ -554,14 +563,14 @@ export default function StudioResearch() {
           {track === 'pipeline' ? (
             <section className="research-card">
               <Tradeoff rows={filtered} />
-              <p className="research-muted">
-                Nature ● · Entertainment ●. Hotel metrics refer only to the per-room, per-night
-                target; trips without hotel quotes are unassessed.
-              </p>
             </section>
           ) : (
             <section className="research-card">
-              <h2>Parameter response</h2>
+              <ChartHeading
+                as="h2"
+                title="Parameter response"
+                help="Mean of the selected metric as one solver setting changes. Trip and stops per day stay fixed here; persona and condition filters above do not apply. Points show each persona separately; hover a point for sample size and spread. Allowed loss is the permitted drop from the best available average utility. The same candidates and seed are paired across settings; these are repeated solver trials on one dataset."
+              />
               <div className="research-controls">
                 <label>
                   Trip
@@ -600,23 +609,27 @@ export default function StudioResearch() {
                 metric={metric}
               />
               {delta.n >= 5 && (
-                <p className="research-finding">
-                  At{' '}
-                  {parameter === 'quality_loss'
-                    ? `${format(changeVariants.at(-1).value * 100)} percentage points allowed loss`
-                    : `${changeVariants.at(-1).value} detour weight`}
-                  , average utility changed by {format(delta.mean)} percentage points versus
-                  baseline across {delta.n} paired seed trials.
-                </p>
+                <div className="research-finding">
+                  <span>
+                    Utility change: {format(delta.mean)} points · n={delta.n}
+                  </span>
+                  <ResearchInfo label="Utility change">
+                    {parameter === 'quality_loss'
+                      ? `${format(changeVariants.at(-1).value * 100)} percentage points allowed loss`
+                      : `${changeVariants.at(-1).value} detour weight`}{' '}
+                    versus baseline, matching trip, persona, stop count and seed. Only pairs with
+                    assessed utility on both sides are included. This is not a significance test.
+                  </ResearchInfo>
+                </div>
               )}
-              <p className="research-muted">
-                Same candidates, persona, stop count and seed are paired. These repeats measure
-                solver variation on one dataset; they are not independent real-world samples.
-              </p>
             </section>
           )}
           <section className="research-card">
-            <h2>Solver outcomes</h2>
+            <ChartHeading
+              as="h2"
+              title="Solver outcomes"
+              help="Counts under the selected filters. OPTIMAL proves the best spacing-and-detour objective within the utility bound; it does not mean highest utility. FEASIBLE found a valid solution without proving it best within the time limit. INFEASIBLE means no solution meets the model constraints. UNKNOWN means no solution or proof was returned in time. A zero-loss bound can be unattainable due to score rounding; that does not establish a shortage of attractions."
+            />
             <div className="research-statuses">
               {Object.entries(solverCounts).map(([label, count]) => (
                 <div key={label}>
@@ -624,7 +637,7 @@ export default function StudioResearch() {
                   <strong>{count}</strong>
                 </div>
               ))}
-              {!filtered.length && <p>No finished attempts yet.</p>}
+              {!filtered.length && <p>No results yet.</p>}
             </div>
           </section>
         </>
