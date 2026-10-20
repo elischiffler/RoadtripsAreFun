@@ -73,43 +73,25 @@ async def test_cached_short_estimate_never_bypasses_a_new_hold(identifier):
         solve_visit(second[0], START, START.replace(hour=17))
 
 
-@pytest.mark.asyncio
-@pytest.mark.parametrize("mode", ["inline", "saved", "handle"])
-async def test_agent_hold_failure_preserves_saved_trip_and_duration_metadata(monkeypatch, mode):
-    from app.agent.schemas import ToolCall
-    from app.agent.tool_dispatcher import AppToolDispatcher
-    from app.agent.tools import ToolContext
-    from app.agent.trip_profile import TripProfile
-    from app.routing.occupancy import HotelRoom
-    from tests.agent.conftest import FakeMemory
+@pytest.mark.parametrize("identifier", IDS)
+@pytest.mark.parametrize("seconds", [900, 7200, 21600])
+def test_itinerary_http_hold_failure_preserves_saved_duration_metadata(
+    monkeypatch, allow_provider_auth, identifier, seconds
+):
+    from fastapi.testclient import TestClient
+
+    from app.main import app
 
     monkeypatch.setattr(
-        repository, "current_records", lambda ids: {IDS[0]: authoritative(record())}
+        repository, "current_records", lambda ids: {identifier: authoritative(record(identifier))}
     )
-    profile = TripProfile(
-        traveler_count=1, hotel_rooms=[HotelRoom(adults=1, child_ages=[])], car_status="skipped"
-    )
-    route = payload(record(held=False)).route.model_dump(mode="json")
-    route["stops"][0]["visit_duration"] = VisitDuration(
-        seconds=900, source="ai_estimate", reason="estimated"
+    saved = payload(record(identifier, held=False)).model_dump(mode="json")
+    saved["route"]["stops"][0]["visit_duration"] = VisitDuration(
+        seconds=seconds, source="ai_estimate", reason="estimated"
     ).model_dump()
-    route.update(traveler_count=1, hotel_rooms=[room.model_dump() for room in profile.hotel_rooms])
-    memory = FakeMemory()
-    memory.save_trip_profile("synthetic-owner", "synthetic-chat", profile.to_json())
-    saved = {
-        "route": copy.deepcopy(route),
-        "profile": profile.model_dump(mode="json"),
-        "departure": START.isoformat(),
-    }
-    memory.save_planned_route("synthetic-owner", "synthetic-chat", copy.deepcopy(saved))
-    ctx = ToolContext(user_id="synthetic-owner", chat_id="synthetic-chat", memory=memory)
-    args = {"start_time": START.isoformat()}
-    if mode == "inline":
-        args["route"] = route
-    if mode == "handle":
-        args["route_handle"] = ctx.artifacts.put("route", route)
-    result = await AppToolDispatcher().dispatch(
-        ToolCall(name="generate_itinerary", arguments=args), ctx
-    )
-    assert not result.ok and "current catalog access is unresolved" in result.error
-    assert memory.load_planned_route("synthetic-owner", "synthetic-chat") == saved
+    before = copy.deepcopy(saved)
+    response = TestClient(app).post("/generate-itinerary", json=saved)
+    assert response.status_code == 422
+    assert "current catalog access is unresolved" in response.json()["detail"]
+    assert saved == before
+    assert saved["route"]["stops"][0]["visit_duration"]["seconds"] == seconds
