@@ -143,3 +143,11 @@
   transform-origin: center;
   animation: spinWheel 0.5s linear infinite;
 }
+.logo-btn {
+  background: transparent;
+  color: inherit;
+}
+.logo-btn:focus-visible {
+  outline: 3px solid #286bc4;
+  outline-offset: 3px;
+}

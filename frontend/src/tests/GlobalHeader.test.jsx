@@ -29,6 +29,11 @@ function TripStateProbe() {
 }
 
 describe('GlobalHeader', () => {
+  it('links setup and research independently', () => {
+    renderWithProviders(<GlobalHeader />);
+    expect(screen.getByRole('link', { name: 'Plan a trip' })).toHaveAttribute('href', '/plan');
+    expect(screen.getByRole('link', { name: 'AI Studio' })).toHaveAttribute('href', '/studio');
+  });
   beforeEach(() => sessionStorage.clear());
   afterEach(() => sessionStorage.clear());
 

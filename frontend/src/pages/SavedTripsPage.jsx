@@ -42,8 +42,8 @@ export default function SavedTripsPage() {
       <Typography variant="h1" sx={{ fontSize: '2rem', mb: 3 }}>
         Saved trips
       </Typography>
-      <Button component={Link} to="/studio" variant="contained" sx={{ mb: 3 }}>
-        Plan a trip in Studio
+      <Button component={Link} to="/plan" variant="contained" sx={{ mb: 3 }}>
+        Plan a trip
       </Button>
       {status === 'loading' && <Typography role="status">Loading saved trips…</Typography>}
       {status === 'error' && (

@@ -61,7 +61,12 @@ export default function RunHistory({ revision }) {
             </p>
           )}
           <ComparisonCharts rows={data.runs} />
-          <div className="lab-table-scroll">
+          <div
+            className="lab-table-scroll"
+            tabIndex={0}
+            role="region"
+            aria-label="Saved run measurements"
+          >
             <table>
               <thead>
                 <tr>

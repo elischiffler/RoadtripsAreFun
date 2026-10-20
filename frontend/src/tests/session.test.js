@@ -179,7 +179,7 @@ describe('Cognito session renewal', () => {
     '/trips\\evil',
     'https://evil.example',
     '/login',
-  ])('rejects unsafe return path %s', (path) => expect(safeReturnPath(path)).toBe('/trips'));
+  ])('rejects unsafe return path %s', (path) => expect(safeReturnPath(path)).toBe('/plan'));
   it('allows an application return path with query', () =>
     expect(safeReturnPath('/map?trip=4')).toBe('/map?trip=4'));
 });

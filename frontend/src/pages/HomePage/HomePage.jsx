@@ -1,93 +1,62 @@
-import { Box, Button, Typography } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
-import LogoButton from '../../components/LogoButton';
-import RouteIcon from '@mui/icons-material/Route';
-import SpinningWheelChip from '../../components/SpinningWheelChip';
-import HotelChip from '../../components/HotelChip';
-import ClockChip from '../../components/ClockChip';
-import { isAuthenticated } from '../../services/authService';
+import { Link } from 'react-router-dom';
 import './HomePage.css';
-import { signOut } from '../../services/session';
-import { useSessionStatus } from '../../services/useSessionStatus';
 
 export default function HomePage() {
-  const navigate = useNavigate();
-  useSessionStatus();
-  const authenticated = isAuthenticated();
-
-  const handleGetStartedClick = () => {
-    navigate('/studio');
-  };
-
-  const handleLogout = () => {
-    signOut();
-    navigate('/');
-  };
-
   return (
-    <Box className="home-page">
-      {/* ── Navbar ── */}
-      <Box className="navbar">
-        <LogoButton />
-        <Box className="navbar-actions">
-          {authenticated ? (
-            <>
-              <Button
-                variant="outlined"
-                onClick={() => navigate('/trips')}
-                className="nav-btn nav-btn--outline"
-              >
-                Saved trips
-              </Button>
-              <Button variant="contained" onClick={handleLogout} className="nav-btn nav-btn--solid">
-                Logout
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                variant="outlined"
-                component={Link}
-                to="/login"
-                className="nav-btn nav-btn--outline"
-              >
-                Login
-              </Button>
-              <Button
-                variant="contained"
-                component={Link}
-                to="/signup"
-                className="nav-btn nav-btn--solid"
-              >
-                Sign Up
-              </Button>
-            </>
-          )}
-        </Box>
-      </Box>
-
-      {/* ── Main ── */}
-      <Box className="main-panel">
-        <Typography variant="h1" className="hero-title">
-          RoadtripsAreFun
-        </Typography>
-
-        <Button
-          variant="contained"
-          onClick={handleGetStartedClick}
-          className="hero-cta"
-          size="large"
-        >
-          Start Planning
-        </Button>
-
-        {/* ── Feature chips ── */}
-        <Box className="chip-row">
-          <SpinningWheelChip label="Route generation" icon={<RouteIcon fontSize="small" />} />
-          <HotelChip label="Hotel finder" />
-          <ClockChip label="Itinerary builder" />
-        </Box>
-      </Box>
-    </Box>
+    <main className="home-page">
+      <div className="home-copy">
+        <p className="home-eyebrow">RoadtripsAreFun</p>
+        <h1>The journey is part of the trip.</h1>
+        <p>Find the stops you’ll love. Make a little room for discovery.</p>
+      </div>
+      <nav className="home-destinations" aria-label="Choose your workspace">
+        <Link className="home-destination home-destination--plan" to="/plan">
+          <span className="home-card-number" aria-hidden="true">
+            01
+          </span>
+          <h2>Plan a trip</h2>
+          <p>A few simple steps, your favorite kinds of places, and a route that fits.</p>
+          <span className="home-card-action">
+            Let’s get started{' '}
+            <svg
+              aria-hidden="true"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
+              <path d="M5 15 15 5M5 5h10v10" />
+            </svg>
+          </span>
+        </Link>
+        <Link className="home-destination" to="/studio">
+          <span className="home-card-number" aria-hidden="true">
+            02
+          </span>
+          <h2>AI Studio</h2>
+          <p>Explore trip inputs, compare measured runs, and see how the planner works.</p>
+          <span className="home-card-action">
+            Open the research workspace{' '}
+            <svg
+              aria-hidden="true"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
+              <path d="M5 15 15 5M5 5h10v10" />
+            </svg>
+          </span>
+        </Link>
+      </nav>
+      <p className="home-saved">
+        <Link to="/trips">Open saved trips</Link>
+        <span> · </span> Your saved routes and itineraries stay together.
+      </p>
+    </main>
   );
 }

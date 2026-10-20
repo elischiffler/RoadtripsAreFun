@@ -76,10 +76,7 @@ it('shows the empty state and keeps Studio reachable', async () => {
   initializeUserData.mockResolvedValue({ UserData: new Data(), chats: [] });
   renderTrips();
   expect(await screen.findByText('No saved trips yet.')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Plan a trip in Studio' })).toHaveAttribute(
-    'href',
-    '/studio'
-  );
+  expect(screen.getByRole('link', { name: 'Plan a trip' })).toHaveAttribute('href', '/plan');
 });
 
 it('ignores a late saved-trip response after an account switch', async () => {

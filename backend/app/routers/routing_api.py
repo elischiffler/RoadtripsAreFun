@@ -20,6 +20,7 @@ whatever those names resolve to at call time (including test patches).
 import logging
 import math
 import os
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import requests  # noqa: F401  (re-exported: tests patch app.routers.routing_api.requests.get)
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
@@ -33,6 +34,7 @@ from app.agent.provider_diagnostics import retry_async
 from app.agent.trip_dates import timezone_from_location
 from app.crud.memory_crud import load_account_persona
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
+from app.models.scheduling_policy import local_time
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
 from app.routing import PlanningError, PlanOptions, RoutingServices, get_planner
 from app.routing.catalog_calendars import refresh_for_timing
@@ -215,11 +217,23 @@ async def plan_final_route(
     if algorithm.startswith("cp_sat"):
         if user_id is None:
             raise PlanningError("Authenticated identity is required for CP-SAT", 401)
-        if (
-            "start" not in payload.model_fields_set
-            or start is None
-            or not is_upcoming_departure(start)
-        ):
+        if "start" not in payload.model_fields_set or start is None:
+            raise PlanningError("CP-SAT requires an upcoming trip start date", 422)
+        if start.tzinfo is None:
+            if services.timezone_at is None:
+                raise PlanningError("The starting location timezone could not be verified", 503)
+            timezone = await services.timezone_at([start_lat, start_lon])
+            try:
+                zone = ZoneInfo(timezone)
+            except (ZoneInfoNotFoundError, ValueError, TypeError) as exc:
+                raise PlanningError(
+                    "The starting location timezone could not be verified", 503
+                ) from exc
+            try:
+                start = local_time(start, zone)
+            except ValueError as exc:
+                raise PlanningError(str(exc), 422) from exc
+        if not is_upcoming_departure(start):
             raise PlanningError("CP-SAT requires an upcoming trip start date", 422)
         account = load_account_persona(user_id)
         weights = effective_weights(account.weights, payload.persona_weights)

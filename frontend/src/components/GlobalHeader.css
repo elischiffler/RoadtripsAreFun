@@ -104,3 +104,37 @@
   font-size: 18px;
   color: var(--bark-main);
 }
+
+.global-header-right > a,
+.global-header-right > button {
+  font-family: system-ui, sans-serif;
+}
+.avatar-placeholder:focus-visible {
+  outline: 3px solid #286bc4;
+  outline-offset: 3px;
+}
+@media (max-width: 420px) {
+  .global-header {
+    padding-right: 8px;
+  }
+  .global-header-right > a {
+    font-size: 0.75rem;
+    min-width: 0;
+  }
+  .global-header-right {
+    gap: 0.2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .global-header {
+    height: auto;
+    min-height: var(--header-height);
+    gap: 0.25rem;
+  }
+  .global-header-right {
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}

@@ -132,7 +132,7 @@ assert.ok(
   await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
   "No horizontal overflow",
 );
-await page.getByRole("link", { name: "Plan a trip in Studio" }).click();
+await page.getByRole("link", { name: "AI Studio" }).click();
 await page.getByLabel("Password", { exact: true }).waitFor();
 assert.equal(new URL(page.url()).pathname, "/studio");
 assert.deepEqual(errors, []);
