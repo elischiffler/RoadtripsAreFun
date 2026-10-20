@@ -41,7 +41,7 @@ const result = {
 it('shows measured match and discovery counts without formulas or raw stages', async () => {
   render(<LabResults result={result} />);
   await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
-  const matches = screen.getByRole('group', { name: 'Match estimates' });
+  const matches = screen.getByRole('group', { name: 'Utility scores' });
   expect(matches).toHaveTextContent('80%');
   expect(matches).toHaveTextContent('90%');
   expect(screen.getByText('Usable matches').nextElementSibling).toHaveTextContent('5');
@@ -53,8 +53,8 @@ it('shows measured match and discovery counts without formulas or raw stages', a
 
 it('retains query coverage and measured road exclusions in inspectable stage JSON', async () => {
   render(<StageRunData result={result} />);
-  await userEvent.click(screen.getByText('Verified candidates and scores'));
-  const data = screen.getByLabelText('Raw data: Verified candidates and scores');
+  await userEvent.click(screen.getByText('Verified candidates and utility scores'));
+  const data = screen.getByLabelText('Raw data: Verified candidates and utility scores');
   expect(data).toHaveTextContent('s3-q1');
   expect(data).toHaveTextContent('unsearched_gaps');
   expect(data).toHaveTextContent('detour_raw_seconds');

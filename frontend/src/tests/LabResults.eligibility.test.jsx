@@ -23,5 +23,5 @@ it.each([
   );
   fireEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
   expect(screen.queryByText(label)).not.toBeInTheDocument();
-  expect(screen.getByRole('group', { name: 'Match estimates' })).toHaveTextContent('—');
+  expect(screen.getByRole('group', { name: 'Utility scores' })).toHaveTextContent('—');
 });

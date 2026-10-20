@@ -171,7 +171,7 @@ export default function RunHistory({ revision, onOpenRun, openingRun, disabled =
                               Cost above the proven optimum for identical candidates:{' '}
                               {group.selection_cost_excess_seconds?.mean?.toFixed(2) ??
                                 'unassessed'}{' '}
-                              seconds on average. Average-match loss is measured separately.
+                              seconds on average. Average utility score loss is measured separately.
                             </p>
                           )}
                           <TripEvaluation metrics={metrics} />

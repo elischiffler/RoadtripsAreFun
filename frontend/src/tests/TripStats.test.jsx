@@ -10,9 +10,9 @@ it('keeps delivered and selected measures separate in a compact research summary
   render(<TripStats result={result} />);
   expect(figure('Attractions')).toHaveTextContent('2 / 4');
   expect(figure('Chosen')).toHaveTextContent('3');
-  expect(figure('Match estimate')).toHaveTextContent('80%');
-  expect(screen.getByRole('group', { name: 'Match estimates' })).toHaveTextContent(
-    'Chosen match80%'
+  expect(figure('Utility score')).toHaveTextContent('80%');
+  expect(screen.getByRole('group', { name: 'Utility scores' })).toHaveTextContent(
+    'Chosen utility score80%'
   );
   expect(screen.queryByRole('region', { name: 'Hotel quotes (USD)' })).not.toBeInTheDocument();
   expect(screen.queryByRole('list', { name: 'Place matches' })).not.toBeInTheDocument();
@@ -42,12 +42,12 @@ it('preserves unknowns and measured zeros without inventing research results', (
     />
   );
   expect(figure('Attractions')).toHaveTextContent('— / —');
-  expect(figure('Match estimate')).toHaveTextContent('—');
+  expect(figure('Utility score')).toHaveTextContent('—');
   expect(figure('Extra driving')).toHaveTextContent('0 min');
   expect(figure('Considered')).toHaveTextContent('—');
 });
 
-it('keeps signed detours and does not reinterpret historical objective values as match scores', () => {
+it('keeps signed detours and does not reinterpret historical objective values as utility scores', () => {
   const data = structuredClone(result);
   data.run_record.metrics.trip_evaluation.driving.extra_duration_seconds = -300;
   data.run_record.metrics.trip_evaluation.driving.extra_distance_meters = -1609.344;
@@ -56,7 +56,7 @@ it('keeps signed detours and does not reinterpret historical objective values as
   render(<TripStats result={data} />);
   expect(figure('Extra driving')).toHaveTextContent('−5 min');
   expect(figure('Extra distance')).toHaveTextContent('-1 mi');
-  expect(figure('Match estimate')).toHaveTextContent('—');
-  expect(screen.getByRole('group', { name: 'Match estimates' })).not.toHaveTextContent('60%');
+  expect(figure('Utility score')).toHaveTextContent('—');
+  expect(screen.getByRole('group', { name: 'Utility scores' })).not.toHaveTextContent('60%');
   expect(screen.queryByText(/123,456|OPTIMAL|CP-SAT|JSON/)).not.toBeInTheDocument();
 });

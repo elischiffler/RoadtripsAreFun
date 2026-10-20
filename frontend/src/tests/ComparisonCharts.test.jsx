@@ -38,7 +38,7 @@ describe('page comparison charts', () => {
     render(<ComparisonCharts rows={[row('one'), row('failed', 'failed', 0.99), synthetic]} />);
     expect(screen.getByText(/1 successful fulfilled \/ 2 recorded/)).toBeInTheDocument();
     expect(
-      screen.getByRole('img', { name: 'Delivered attraction utility, 1 assessed outputs' })
+      screen.getByRole('img', { name: 'Delivered attraction utility score, 1 assessed outputs' })
     ).toBeInTheDocument();
     expect(screen.getByText(/UNKNOWN: 1.00 runs/)).toBeInTheDocument();
     expect(screen.getByText(/Catalog generation: unit-generation/)).toBeInTheDocument();
@@ -78,13 +78,13 @@ it('keeps different methods in separate comparison series', () => {
   render(<ComparisonCharts rows={[row('first'), second]} />);
   expect(
     within(screen.getByRole('region', { name: 'cp_sat comparison series' })).getByRole('img', {
-      name: 'Delivered attraction utility, 1 assessed outputs',
+      name: 'Delivered attraction utility score, 1 assessed outputs',
     })
   ).toBeInTheDocument();
   expect(
     within(screen.getByRole('region', { name: 'utility_first comparison series' })).getByRole(
       'img',
-      { name: 'Delivered attraction utility, 1 assessed outputs' }
+      { name: 'Delivered attraction utility score, 1 assessed outputs' }
     )
   ).toBeInTheDocument();
 });

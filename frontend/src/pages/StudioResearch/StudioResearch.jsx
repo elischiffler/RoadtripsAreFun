@@ -261,7 +261,7 @@ export default function StudioResearch() {
             <ResearchInfo label="Study data">
               {track === 'pipeline'
                 ? 'Fresh live trips through the complete pipeline. Quality scores require fully delivered, timing-valid itineraries. Hotel metrics cover quoted room-nights only, not the total trip budget. Missing quotes are unassessed.'
-                : 'CP-SAT stop selection tested on fixed simulated attractions. Driving gaps and extra-driving inputs are simulated, not measured journeys. Saved runs are combined here and may reuse solver seeds; they are not independent real-world samples. Default settings permit a 10-point match drop from the best available average, give equal importance to stop spacing and extra driving, and allow five seconds on one solver worker.'}{' '}
+                : 'CP-SAT stop selection tested on fixed simulated attractions. Driving gaps and extra-driving inputs are simulated, not measured journeys. Saved runs are combined here and may reuse solver seeds; they are not independent real-world samples. Default settings permit a 10-point utility score drop from the best available average, give equal importance to stop spacing and extra driving, and allow five seconds on one solver worker.'}{' '}
               Success requires every requested stop and, for full trips, valid timing. Typical
               planning time is the median; the middle-half range contains the central 50% of
               measured times. Summary totals cover all settings in this track; charts below follow
@@ -351,7 +351,7 @@ export default function StudioResearch() {
                       {row.id === 'baseline'
                         ? 'Default settings'
                         : row.parameter === 'quality_loss'
-                          ? `Allow ${format(row.value * 100)}-point match drop`
+                          ? `Allow ${format(row.value * 100)}-point utility score drop`
                           : `Extra driving penalty: ${row.value}×`}
                     </option>
                   ))}
@@ -385,7 +385,7 @@ export default function StudioResearch() {
               <ChartHeading
                 as="h2"
                 title="Settings comparison"
-                help="Average of the selected measure as one solver setting changes. Trip and stops per day stay fixed here; interest and selection-setting filters above do not apply. Points show each interest profile separately; hover for the number of measured runs and their observed range. Allowed match drop is the permitted decrease from the best available average match score. The same candidates and seed are paired across settings; these are repeated solver trials on one dataset."
+                help="Average of the selected measure as one solver setting changes. Trip and stops per day stay fixed here; interest and selection-setting filters above do not apply. Points show each interest profile separately; hover for the number of measured runs and their observed range. Allowed utility score drop is the permitted decrease from the best available average utility score. The same candidates and seed are paired across settings; these are repeated solver trials on one dataset."
               />
               <div className="research-controls">
                 <label>
@@ -413,7 +413,7 @@ export default function StudioResearch() {
                 <label>
                   Setting
                   <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
-                    <option value="quality_loss">Allowed match drop</option>
+                    <option value="quality_loss">Allowed utility score drop</option>
                     <option value="detour_weight">Extra driving penalty</option>
                   </select>
                 </label>
@@ -427,18 +427,18 @@ export default function StudioResearch() {
               {delta.n >= 5 && (
                 <div className="research-finding">
                   <div>
-                    <strong>Average match change: {format(delta.mean)} points</strong>
+                    <strong>Average utility score change: {format(delta.mean)} points</strong>
                     <small>
                       {delta.n} matched run comparisons · observed change {format(delta.min)} to{' '}
                       {format(delta.max)} points
                     </small>
                   </div>
-                  <ResearchInfo label="Average match change">
+                  <ResearchInfo label="Average utility score change">
                     {parameter === 'quality_loss'
-                      ? `${format(changeVariants.at(-1).value * 100)}-point allowed match drop`
+                      ? `${format(changeVariants.at(-1).value * 100)}-point allowed utility score drop`
                       : `${changeVariants.at(-1).value}× extra driving penalty`}{' '}
                     versus default settings, matching trip, interests, stop count and solver seed.
-                    Only comparisons with usable match scores on both sides are included. This is
+                    Only comparisons with usable utility scores on both sides are included. This is
                     not a significance test.
                   </ResearchInfo>
                 </div>
@@ -449,7 +449,7 @@ export default function StudioResearch() {
             <ChartHeading
               as="h2"
               title="Selection results"
-              help="Counts and shares follow the selected filters. Best solution proven means the solver established the lowest spacing-and-extra-driving cost while meeting the required match score; it does not mean highest match. Valid solution found means the requirements were met without proving the best solution before time ran out. No valid solution means the requirements cannot all be met. A strict zero-drop requirement can fail because of score rounding, which does not establish a shortage of attractions."
+              help="Counts and shares follow the selected filters. Best solution proven means the solver established the lowest spacing-and-extra-driving cost while meeting the required utility score; it does not mean highest utility score. Valid solution found means the requirements were met without proving the best solution before time ran out. No valid solution means the requirements cannot all be met. A strict zero-drop requirement can fail because of score rounding, which does not establish a shortage of attractions."
             />
             <div className="research-statuses">
               {Object.entries(solverCounts).map(([label, count]) => (

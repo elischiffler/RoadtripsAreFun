@@ -147,7 +147,7 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   expect(screen.getByText('1 failed · 0 partial · 0 interrupted')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Stop selection · 1' }));
   expect(
-    screen.getByRole('img', { name: 'Average match score by allowed match drop' })
+    screen.getByRole('img', { name: 'Average utility score by allowed utility score drop' })
   ).toBeInTheDocument();
   expect(screen.getByText('100 simulated attractions')).toBeInTheDocument();
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
@@ -209,7 +209,7 @@ it('renders charts with labeled units, measured sample sizes and negative drivin
       <UtilitySpread rows={rows} />
     </>
   );
-  expect(screen.getByRole('table', { name: 'Average match score · %' })).toHaveTextContent(
+  expect(screen.getByRole('table', { name: 'Average utility score · %' })).toHaveTextContent(
     '1 run scored'
   );
   expect(screen.getByRole('img', { name: 'Run outcomes by trip type' })).toBeInTheDocument();
@@ -217,10 +217,10 @@ it('renders charts with labeled units, measured sample sizes and negative drivin
     'minutes'
   );
   expect(
-    screen.getByRole('img', { name: 'Average match score by allowed match drop' })
+    screen.getByRole('img', { name: 'Average utility score by allowed utility score drop' })
   ).toHaveTextContent('points');
   expect(
-    screen.getByRole('img', { name: 'Match versus added driving scatter plot' })
+    screen.getByRole('img', { name: 'Utility score versus added driving scatter plot' })
   ).toHaveTextContent('-1');
   expect(container.innerHTML).not.toMatch(/NaN|Infinity/);
   expect(
@@ -328,24 +328,24 @@ it('plots attraction score frequencies with exact bin boundaries, excluding fail
     { ...base, id: 3, completed: false, utility_values: [0.5] },
   ];
   const view = render(<UtilitySpread rows={rows} />);
-  const chart = screen.getByRole('img', { name: 'Distribution of attraction match scores' });
-  expect(screen.getByText('5 attraction scores · 2 runs')).toBeInTheDocument();
+  const chart = screen.getByRole('img', { name: 'Distribution of attraction utility scores' });
+  expect(screen.getByText('5 utility scores · 2 runs')).toBeInTheDocument();
   expect(chart).toHaveAccessibleDescription(
-    expect.stringContaining('0% to below 5%: 2 attraction scores (40%)')
+    expect.stringContaining('0% to below 5%: 2 utility scores (40%)')
   );
   expect(chart).toHaveAccessibleDescription(
-    expect.stringContaining('5% to below 10%: 1 attraction score (20%)')
+    expect.stringContaining('5% to below 10%: 1 utility score (20%)')
   );
   expect(chart).toHaveAccessibleDescription(
-    expect.stringContaining('95% to 100%: 2 attraction scores (40%)')
+    expect.stringContaining('95% to 100%: 2 utility scores (40%)')
   );
   expect(chart).toHaveAccessibleDescription(
-    expect.stringContaining('50% to below 55%: 0 attraction scores (0%)')
+    expect.stringContaining('50% to below 55%: 0 utility scores (0%)')
   );
   expect(view.container.innerHTML).not.toMatch(/NaN|Infinity/);
   view.rerender(<UtilitySpread rows={[]} />);
-  expect(screen.getByText('No attraction scores yet.')).toBeInTheDocument();
+  expect(screen.getByText('No utility scores yet.')).toBeInTheDocument();
   expect(
-    screen.queryByRole('img', { name: 'Distribution of attraction match scores' })
+    screen.queryByRole('img', { name: 'Distribution of attraction utility scores' })
   ).not.toBeInTheDocument();
 });

@@ -39,11 +39,11 @@ verified entrances, published opening hours or measured road journeys.
 
 The actual shared `select_attractions` implementation runs on this set. Baseline
 driving inputs are simulated 3 / 12 / 24 / 45 / 12 hours for the five trip types.
-The baseline configuration allows an average utility loss of ten percentage
+The baseline configuration allows an average utility score loss of ten percentage
 points, spacing weight 1 and detour weight 1. The study changes one factor at a
 time:
 
-| Condition | Allowed utility loss | Detour weight |
+| Condition | Allowed utility score loss | Detour weight |
 | --- | --- | --- |
 | Baseline | 10 percentage points | 1 |
 | Quality sweep | 0 / 5 / 15 / 20 percentage points | 1 |
@@ -80,10 +80,10 @@ hours are never bypassed to produce a completed trip.
 
 ## Measurements and plots
 
-- Heatmaps show means of per-run values by trip, persona and stop rate. Utility
+- Heatmaps show means of per-run values by trip, persona and stop rate. Utility score
   mean/minimum/median/maximum are retained per run, with full precision in exports.
-- Utility summaries pool the actual assessed attraction values. Repeat box plots
-  show per-run average utility; the box is the middle 50%, its line the median,
+- Utility score summaries pool the actual assessed attraction values. Repeat box plots
+  show per-run average utility score; the box is the middle 50%, its line the median,
   and whiskers the observed minimum and maximum, not confidence intervals.
 - Outcome columns retain complete, partial, failed and interrupted attempts.
   Raw OPTIMAL, FEASIBLE, INFEASIBLE, UNKNOWN, MODEL_INVALID, EMPTY and NOT_RUN
@@ -92,15 +92,15 @@ hours are never bypassed to produce a completed trip.
   utilization/excess, fulfillment, actual days and runtime. Missing values remain
   missing; hotel-free trips do not receive a fabricated zero budget deviation.
 - Parameter-response lines keep trip and stop rate fixed, with separate persona
-  series and per-point sample sizes. The paired utility comparison matches the
+  series and per-point sample sizes. The paired utility score comparison matches the
   same persona, stop rate, trip and seed. It makes no significance claim.
-- The live scatter plot compares actual added driving with delivered utility.
+- The live scatter plot compares actual added driving with delivered utility scores.
 
 Quality plots assess only complete, fully delivered, timing-valid outputs.
 Over-target hotel quotes and trips exceeding the target days are **not** removed
 from this group. Fulfillment, actual-days and runtime plots retain assessed partial
 or failed attempts as appropriate. Every metric has its own assessed n; pending
-runs are not failures or zeros. Utility values are model estimates, not visitor
+runs are not failures or zeros. Utility scores are model estimates, not visitor
 ratings.
 
 The live longest-gap metric is actual driving between attractions, including
@@ -184,7 +184,7 @@ and are retried without cancelling the detached worker.
 
 ## Dashboard labels and supporting measurements
 
-The dashboard calls utility an **interest match score**, while exported metric
+The dashboard consistently uses **utility score**, while exported metric
 keys retain `utility_mean`, `utility_min`, `utility_median` and `utility_max`.
 Counts say “runs scored” or “runs measured”; missing and excluded measurements
 are identified with an explicit denominator. Heatmap cells show the observed
@@ -195,9 +195,8 @@ planning times. Selection results use plain labels and show each outcome's share
 of filtered runs; raw solver status codes remain in exports. Matched setting
 comparisons show the number of comparisons and observed range of changes.
 
-
-The attraction-score histogram uses the same pooled scores as the four summary
-values, in fixed five-point bins over 0–100%. Internal boundaries belong to the
+The attraction utility score histogram uses the same pooled utility scores as the four
+summary values, in fixed five-point bins over 0–100%. Internal boundaries belong to the
 higher bin; 100% belongs to the final 95–100% bin. Bar heights count scored
 attractions and their hover labels include the share of all plotted scores.
 Reference lines show the average and median, and the middle-half range shows the

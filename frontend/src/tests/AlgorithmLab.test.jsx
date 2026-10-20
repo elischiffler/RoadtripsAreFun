@@ -419,7 +419,7 @@ describe('Trip Planning Studio experiments', () => {
     );
   });
 
-  it('sends edited inputs and the Studio session, displays match estimates, and clears stale output on edits', async () => {
+  it('sends edited inputs and the Studio session, displays utility scores, and clears stale output on edits', async () => {
     await mount();
     fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '3' } });
     fireEvent.change(screen.getByLabelText('Interest nature percentage'), {

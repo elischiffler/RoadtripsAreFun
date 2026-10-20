@@ -89,7 +89,7 @@ export default function TripStats({ result }) {
         primary
         items={[
           ['Attractions', `${number(delivered)} / ${number(requested)}`],
-          ['Match estimate', percent(trip.utility?.delivered?.mean)],
+          ['Utility score', percent(trip.utility?.delivered?.mean)],
           ['Extra driving', time(extraTime)],
           ['Planning time', time(known(total) ? total / 1000 : null)],
         ]}
@@ -129,12 +129,12 @@ export default function TripStats({ result }) {
             ]}
           />
           <Bars
-            title="Match estimates"
+            title="Utility scores"
             maximum={1}
             format={percent}
             rows={[
               [
-                'Chosen match',
+                'Chosen utility score',
                 trip.utility?.selected?.mean ?? (balanced ? solver.average_match : null),
               ],
               ['Best available', balanced ? solver.best_average_match : null],

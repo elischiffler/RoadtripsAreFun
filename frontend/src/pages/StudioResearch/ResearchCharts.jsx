@@ -42,7 +42,7 @@ export function Heatmap({ rows, trips, metric }) {
       <ChartHeading
         title={METRICS[metric].label}
         unit={METRICS[metric].unit}
-        help={`${metricHelp(metric)} Cells show the average per-run value by trip and interests and stops per target day. The count below each score shows how many finished runs contributed. Runs without usable measurements stay out of the score and its observed range. A dash means missing data. Quality metrics require fully delivered, timing-valid runs; match scores are estimates, not visitor ratings. Colors are centered on the equally weighted average of populated cells under these filters: amber below, cream at the average, teal above. The color range spans two standard deviations on either side, with a minimum of five score points for match scores. End labels are color thresholds, not observed extremes. Higher does not mean better for every metric.`}
+        help={`${metricHelp(metric)} Cells show the average per-run value by trip and interests and stops per target day. The count below each score shows how many finished runs contributed. Runs without usable measurements stay out of the score and its observed range. A dash means missing data. Quality metrics require fully delivered, timing-valid runs; utility scores are estimates, not visitor ratings. Colors are centered on the equally weighted average of populated cells under these filters: amber below, cream at the average, teal above. The color range spans two standard deviations on either side, with a minimum of five score points for utility scores. End labels are color thresholds, not observed extremes. Higher does not mean better for every metric.`}
       />
       <div className="research-table-scroll">
         <table
@@ -84,7 +84,7 @@ export function Heatmap({ rows, trips, metric }) {
                       <small className="research-result-range">
                         {cell.min === cell.max
                           ? utility
-                            ? 'Same score'
+                            ? 'Same utility score'
                             : 'Same result'
                           : `Range ${format(cell.min, METRICS[metric].digits)}–${format(cell.max, METRICS[metric].digits)}${METRICS[metric].unit === '%' ? '%' : ` ${METRICS[metric].unit}`}`}
                       </small>
@@ -312,7 +312,7 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
       <svg
         viewBox="0 0 640 280"
         role="img"
-        aria-label={`${METRICS[metric].label} by ${parameter === 'quality_loss' ? 'allowed match drop' : 'extra driving penalty'}`}
+        aria-label={`${METRICS[metric].label} by ${parameter === 'quality_loss' ? 'allowed utility score drop' : 'extra driving penalty'}`}
       >
         {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
           <g key={ratio}>
@@ -375,7 +375,9 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
           </g>
         ))}
         <text x="314" y="268" textAnchor="middle">
-          {parameter === 'quality_loss' ? 'Allowed match drop (points)' : 'Extra driving penalty'}
+          {parameter === 'quality_loss'
+            ? 'Allowed utility score drop (points)'
+            : 'Extra driving penalty'}
         </text>
       </svg>
     </figure>
@@ -396,8 +398,8 @@ export function Tradeoff({ rows, trips = [] }) {
     return (
       <figure>
         <ChartHeading
-          title="Match vs added driving"
-          help="Each point is a fully delivered, timing-valid live trip. Higher means better estimated interest match; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
+          title="Utility score vs added driving"
+          help="Each point is a fully delivered, timing-valid live trip. Higher utility scores mean a closer fit to the selected interests; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
         />
         <p className="research-empty">No results yet.</p>
       </figure>
@@ -407,14 +409,18 @@ export function Tradeoff({ rows, trips = [] }) {
   return (
     <figure>
       <ChartHeading
-        title="Match vs added driving"
-        help="Each point is a fully delivered, timing-valid live trip. Higher means better estimated interest match; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
+        title="Utility score vs added driving"
+        help="Each point is a fully delivered, timing-valid live trip. Higher utility scores mean a closer fit to the selected interests; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
       />
       <div className="research-legend research-personas">
         <span>● Nature</span>
         <span>● Entertainment</span>
       </div>
-      <svg viewBox="0 0 640 280" role="img" aria-label="Match versus added driving scatter plot">
+      <svg
+        viewBox="0 0 640 280"
+        role="img"
+        aria-label="Utility score versus added driving scatter plot"
+      >
         {[0, 25, 50, 75, 100].map((value) => (
           <g key={value}>
             <line x1="64" x2="564" y1={210 - value * 1.6} y2={210 - value * 1.6} stroke="#e8ddd0" />
@@ -479,7 +485,7 @@ export function UtilitySpread({ rows }) {
   const x = (score) => 64 + score * 7.04;
   const y = (count) => 236 - (count / top) * 180;
   const binLabel = (bin) =>
-    `${bin.low}% to ${bin.high === 100 ? '100%' : `below ${bin.high}%`}: ${format(bin.count, 0)} attraction ${bin.count === 1 ? 'score' : 'scores'} (${format((bin.count / stats.n) * 100)}%)`;
+    `${bin.low}% to ${bin.high === 100 ? '100%' : `below ${bin.high}%`}: ${format(bin.count, 0)} utility ${bin.count === 1 ? 'score' : 'scores'} (${format((bin.count / stats.n) * 100)}%)`;
   const summary = [
     { label: 'Lowest', value: stats.min },
     { label: 'Median', value: stats.median },
@@ -489,9 +495,9 @@ export function UtilitySpread({ rows }) {
   return (
     <figure>
       <ChartHeading
-        title="Attraction match scores"
-        unit={`${format(stats.n, 0)} attraction scores · ${runCount(scoredRuns.length)}`}
-        help="Each bar counts attraction scores in a five-point range, from 0% to 100%. The lines mark the average and median. Scores come from the filtered, fully delivered, timing-valid runs. Repeated attractions count once per run, so longer trips contribute more scores. The middle-half range contains the central 50% of scores, not a confidence interval. Match scores are estimates, not visitor ratings."
+        title="Attraction utility scores"
+        unit={`${format(stats.n, 0)} utility scores · ${runCount(scoredRuns.length)}`}
+        help="Each bar counts utility scores in a five-point range, from 0% to 100%. The lines mark the average and median. Scores come from the filtered, fully delivered, timing-valid runs. Repeated attractions count once per run, so longer trips contribute more scores. The middle-half range contains the central 50% of scores, not a confidence interval. Utility scores are estimates, not visitor ratings."
       />
       <div className="research-stat-row">
         {summary.map((item) => (
@@ -506,7 +512,7 @@ export function UtilitySpread({ rows }) {
       </div>
       {stats.n ? (
         <div className="research-score-histogram">
-          <div className="research-legend" aria-label="Score reference lines">
+          <div className="research-legend" aria-label="Utility score reference lines">
             <span>
               <i className="research-average-marker" />
               Average
@@ -519,12 +525,12 @@ export function UtilitySpread({ rows }) {
           <svg
             viewBox="0 0 800 300"
             role="img"
-            aria-label="Distribution of attraction match scores"
+            aria-label="Distribution of attraction utility scores"
             aria-describedby={descriptionId}
           >
             <desc id={descriptionId}>{bins.map(binLabel).join('; ')}</desc>
             <text x="64" y="24">
-              Attraction scores
+              Utility score count
             </text>
             {[0, 1, 2, 3, 4].map((index) => (
               <g key={index}>
@@ -577,15 +583,15 @@ export function UtilitySpread({ rows }) {
               </text>
             ))}
             <text x="416" y="288" textAnchor="middle">
-              Match score
+              Utility score
             </text>
           </svg>
           <p className="research-muted research-score-middle">
-            Middle half of scores: {format(stats.q1)}–{format(stats.q3)}%
+            Middle half of utility scores: {format(stats.q1)}–{format(stats.q3)}%
           </p>
         </div>
       ) : (
-        <p className="research-empty">No attraction scores yet.</p>
+        <p className="research-empty">No utility scores yet.</p>
       )}
     </figure>
   );
@@ -605,10 +611,10 @@ export function UtilityBoxes({ rows, trips }) {
     <figure>
       <ChartHeading
         title="Consistency across runs"
-        unit="Match score %"
-        help="How average match scores vary between runs. Each box contains the middle 50%; its line marks the median. The ends show the observed minimum and maximum, not confidence intervals. The count shows runs with usable match scores. Fixed-data solver repeats measure solver variation, not independent real-world samples."
+        unit="Utility score %"
+        help="How average utility scores vary between runs. Each box contains the middle 50%; its line marks the median. The ends show the observed minimum and maximum, not confidence intervals. The count shows runs with usable utility scores. Fixed-data solver repeats measure solver variation, not independent real-world samples."
       />
-      <svg viewBox="0 0 640 270" role="img" aria-label="Match score distributions by trip type">
+      <svg viewBox="0 0 640 270" role="img" aria-label="Utility score distributions by trip type">
         {[0, 25, 50, 75, 100].map((value) => (
           <g key={value}>
             <line x1={x(value)} x2={x(value)} y1="10" y2="230" stroke="#e8ddd0" />

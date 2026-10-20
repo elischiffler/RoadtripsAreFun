@@ -144,7 +144,7 @@ function MethodCharts({ rows }) {
   return (
     <>
       <BoxPlot
-        title="Delivered attraction utility"
+        title="Delivered attraction utility score"
         unit="%"
         values={values((trip) => trip.utility?.delivered?.mean).map((value) => value * 100)}
       />
