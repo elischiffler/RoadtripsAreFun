@@ -13,7 +13,6 @@ import {
   StatusColumns,
   Tradeoff,
   UtilitySpread,
-  UtilityBoxes,
 } from './ResearchCharts';
 import { combineStudies, distribution, format, METRICS, paired, solverLabel } from './researchData';
 import ResearchInfo, { ChartHeading } from './ResearchInfo';
@@ -378,9 +377,6 @@ export default function StudioResearch() {
             </div>
             <section className="research-card">
               <UtilitySpread rows={filtered} />
-            </section>
-            <section className="research-card">
-              <UtilityBoxes rows={filtered} trips={trips} />
             </section>
             {track === 'pipeline' ? (
               <section className="research-card">

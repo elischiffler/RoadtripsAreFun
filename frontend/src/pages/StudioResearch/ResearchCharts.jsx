@@ -254,9 +254,14 @@ export function RowChart({ rows, trips, metric }) {
       metric
     ),
   }));
-  const extent = values.flatMap((row) => [row.mean, row.median]).filter(finite);
-  const low = Math.min(0, ...extent);
-  const high = Math.max(1, ...extent);
+  const extent = values.flatMap((row) => [row.min, row.max]).filter(finite);
+  const utility = metric.startsWith('utility') && extent.length > 0;
+  const low = utility
+    ? Math.max(0, Math.floor((Math.min(...extent) - 2) / 5) * 5)
+    : Math.min(0, ...extent);
+  const high = utility
+    ? Math.min(100, Math.ceil((Math.max(...extent) + 2) / 5) * 5)
+    : Math.max(1, ...extent);
   const x = (value) => ((value - low) / (high - low)) * 360;
   const unit = METRICS[metric].unit;
   const display = (value) =>
@@ -269,10 +274,11 @@ export function RowChart({ rows, trips, metric }) {
         title={
           metric === 'utility_mean' ? 'Utility score by trip' : `${METRICS[metric].label} by trip`
         }
-        unit={unit}
-        help={`${metricHelp(metric)} Bar: average. Marker: median. Missing measurements excluded.`}
+        unit={`Between runs · ${unit}`}
+        help={`${metricHelp(metric)} Thin line: lowest to highest. Thick line: middle 50%. Tick: median. Dot: average. Descriptive spread, not a confidence interval.`}
       />
-      <div
+      <InspectionGroup
+        as="div"
         className="research-trip-chart"
         role="group"
         aria-label={`${METRICS[metric].label} by trip type`}
@@ -284,29 +290,59 @@ export function RowChart({ rows, trips, metric }) {
               <small>{runCount(row.n)} measured</small>
             </div>
             <div>
-              <svg viewBox="0 0 360 26" aria-hidden="true">
-                <line x1={x(0)} x2={x(0)} y1="0" y2="26" stroke="#c8bcae" />
-                {finite(row.mean) && (
-                  <>
-                    <rect
-                      x={Math.min(x(0), x(row.mean))}
-                      y="4"
-                      width={Math.abs(x(row.mean) - x(0))}
-                      height="18"
-                      rx="3"
-                      fill="#a56b28"
-                    />
-                    <line
-                      x1={x(row.median)}
-                      x2={x(row.median)}
-                      y1="1"
-                      y2="25"
-                      stroke="#234a3c"
-                      strokeWidth="3"
-                    />
-                  </>
-                )}
-              </svg>
+              <InspectMark
+                as="div"
+                disabled={!row.n}
+                first={row === values.find((value) => value.n)}
+                label={`${row.label}, measured range`}
+                insight={{
+                  value: `Range ${display(row.min)}–${display(row.max)}`,
+                  detail: `Middle half ${display(row.q1)}–${display(row.q3)}`,
+                }}
+              >
+                <svg viewBox="-6 0 372 26" aria-hidden="true">
+                  <line x1="0" x2="360" y1="13" y2="13" stroke="#e8ddd0" />
+                  {finite(row.mean) && (
+                    <>
+                      <line
+                        x1={x(row.min)}
+                        x2={x(row.max)}
+                        y1="13"
+                        y2="13"
+                        stroke="#557d6f"
+                        strokeWidth="2"
+                      />
+                      <line x1={x(row.min)} x2={x(row.min)} y1="9" y2="17" stroke="#557d6f" />
+                      <line x1={x(row.max)} x2={x(row.max)} y1="9" y2="17" stroke="#557d6f" />
+                      <line
+                        x1={x(row.q1)}
+                        x2={x(row.q3)}
+                        y1="13"
+                        y2="13"
+                        stroke="#b4cdc3"
+                        strokeWidth="10"
+                        strokeLinecap="round"
+                      />
+                      <line
+                        x1={x(row.median)}
+                        x2={x(row.median)}
+                        y1="4"
+                        y2="22"
+                        stroke="#234a3c"
+                        strokeWidth="2"
+                      />
+                      <circle
+                        cx={x(row.mean)}
+                        cy="13"
+                        r="4"
+                        fill="#a56b28"
+                        stroke="#fffdf8"
+                        strokeWidth="1.5"
+                      />
+                    </>
+                  )}
+                </svg>
+              </InspectMark>
               <div className="research-trip-values">
                 <span>
                   Average <strong>{display(row.mean)}</strong>
@@ -322,7 +358,7 @@ export function RowChart({ rows, trips, metric }) {
           <span>{display(low)}</span>
           <span>{display(high)}</span>
         </div>
-      </div>
+      </InspectionGroup>
     </figure>
   );
 }
@@ -691,80 +727,3 @@ export function UtilitySpread({ rows }) {
   );
 }
 UtilitySpread.propTypes = { rows: PropTypes.array.isRequired };
-
-export function UtilityBoxes({ rows, trips }) {
-  const groups = trips.map((trip) => ({
-    ...trip,
-    ...sample(
-      rows.filter((row) => row.trip === trip.id),
-      'utility_mean'
-    ),
-  }));
-  const x = (value) => 190 + value * 3.6;
-  return (
-    <figure>
-      <ChartHeading
-        title="Consistency across runs"
-        unit="Utility score %"
-        help="Box: middle 50%. Line: median. Ends: lowest and highest. Repeated solver runs are not independent real-world samples."
-      />
-      <InspectionGroup
-        viewBox="0 0 640 270"
-        role="group"
-        aria-label="Utility score distributions by trip type"
-      >
-        {[0, 25, 50, 75, 100].map((value) => (
-          <g key={value}>
-            <line x1={x(value)} x2={x(value)} y1="10" y2="230" stroke="#e8ddd0" />
-            <text x={x(value)} y="256" textAnchor="middle">
-              {value}%
-            </text>
-          </g>
-        ))}
-        {groups.map((group, index) => {
-          const y = 30 + index * 43;
-          return (
-            <g key={group.id}>
-              <text x="180" y={y + 4} textAnchor="end">
-                {group.label}
-              </text>
-              {group.n ? (
-                <InspectMark
-                  stroke="#234a3c"
-                  first={group === groups.find((value) => value.n)}
-                  label={`${group.label}, utility score spread`}
-                  insight={{
-                    value: `Middle half: ${format(group.q1)}–${format(group.q3)}%`,
-                    detail: `Median ${format(group.median)}%`,
-                  }}
-                >
-                  <line x1={x(group.min)} x2={x(group.max)} y1={y} y2={y} />
-                  <rect
-                    x={x(group.q1)}
-                    y={y - 9}
-                    width={Math.max(1, x(group.q3) - x(group.q1))}
-                    height="18"
-                    fill="#cfddcb"
-                  />
-                  <line
-                    x1={x(group.median)}
-                    x2={x(group.median)}
-                    y1={y - 9}
-                    y2={y + 9}
-                    strokeWidth="2"
-                  />
-                  <circle cx={x(group.min)} cy={y} r="2" fill="#234a3c" />
-                  <circle cx={x(group.max)} cy={y} r="2" fill="#234a3c" />
-                </InspectMark>
-              ) : null}
-              <text x="570" y={y + 4}>
-                {runCount(group.n)}
-              </text>
-            </g>
-          );
-        })}
-      </InspectionGroup>
-    </figure>
-  );
-}
-UtilityBoxes.propTypes = { rows: PropTypes.array.isRequired, trips: PropTypes.array.isRequired };

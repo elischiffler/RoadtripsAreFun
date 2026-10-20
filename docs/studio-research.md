@@ -215,6 +215,11 @@ marks, and Escape dismisses the tooltip. Scrolling dismisses detached overlays.
 Motion is limited to short opacity/shadow transitions and respects reduced-motion
 preferences; incoming measurements do not replay chart animations.
 
-The trip comparison names the selected measure in its title. Each row shows the
-per-run average as a bar and the median as a green marker, with both values
-printed below the bar. There is no repeated tooltip on these bars.
+The trip comparison names the selected measure in its title. Each row uses one horizontal
+range: thin line for observed minimum–maximum, thick line for the middle 50%,
+a tick for the median and an amber dot for the average. Average and median values
+are printed below; inspection gives only the range and middle-half values.
+Utility scores use shared observed-range bounds, padded to five-point steps
+and limited to 0–100%; the axis labels show those bounds. Other measures include
+the observed range and zero. The separate consistency box plot is removed to avoid repeating these data.
+These are per-run distributions, distinct from the attraction-level histogram.

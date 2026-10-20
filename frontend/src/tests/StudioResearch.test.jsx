@@ -414,5 +414,8 @@ it('labels the trip measure and prints distinct average and median values withou
   expect(row).toHaveTextContent('Average 60%');
   expect(row).toHaveTextContent('Median 50%');
   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-  expect(within(chart).queryByRole('button')).not.toBeInTheDocument();
+  expect(within(chart).getByRole('button', { name: /measured range/ })).toBeInTheDocument();
+  expect(chart).toHaveTextContent('35%');
+  expect(chart).toHaveTextContent('95%');
+  expect(screen.queryByText('Consistency across runs')).not.toBeInTheDocument();
 });
