@@ -204,8 +204,9 @@ Reference lines show the average and median, and the middle-half range shows the
 contribute. Repeated attractions across runs remain repeated observations, not
 unique attractions or independent samples.
 
-
-Data marks support a single anchored inspection tooltip. Heatmap cells expose
+Data marks support a compact, header-free inspection tooltip: one key value and
+an optional short supporting line. Info icons use brief chart explanations; the
+full measurement definitions remain documented here. Heatmap cells expose
 the difference from the displayed average; trip bars show medians and central
 ranges; histogram bars show their share of plotted scores; settings points show
 within-batch paired changes when available. Native hover titles are removed from

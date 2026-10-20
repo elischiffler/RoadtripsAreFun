@@ -262,13 +262,8 @@ export default function StudioResearch() {
               </span>
               <ResearchInfo label="Study data">
                 {track === 'pipeline'
-                  ? 'Fresh live trips through the complete pipeline. Quality scores require fully delivered, timing-valid itineraries. Hotel metrics cover quoted room-nights only, not the total trip budget. Missing quotes are unassessed.'
-                  : 'CP-SAT stop selection tested on fixed simulated attractions. Driving gaps and extra-driving inputs are simulated, not measured journeys. Saved runs are combined here and may reuse solver seeds; they are not independent real-world samples. Default settings permit a 10-point utility score drop from the best available average, give equal importance to stop spacing and extra driving, and allow five seconds on one solver worker.'}{' '}
-                Success requires every requested stop and, for full trips, valid timing. Typical
-                planning time is the median; the middle-half range contains the central 50% of
-                measured times. Summary totals cover all settings in this track; charts below follow
-                their filters. Target days set requested stops, not actual trip length. Pausing
-                finishes current runs.
+                  ? 'Complete live trips with valid timing. Hotel costs cover room-nights only.'
+                  : 'Fixed simulated attractions and driving inputs. Repeated runs are not independent real-world samples.'}
               </ResearchInfo>
             </div>
             <div className="research-stat-row research-summary">
@@ -302,9 +297,8 @@ export default function StudioResearch() {
                 disabled={!runtime.n}
                 label="Observed planning time range"
                 insight={{
-                  heading: 'Observed planning times',
-                  value: `${format(runtime.min)}–${format(runtime.max)} sec`,
-                  detail: 'Fastest to slowest, including timed failed attempts.',
+                  value: `${format(runtime.min)}–${format(runtime.max)} sec range`,
+                  detail: 'Includes timed failures',
                 }}
               >
                 <span>Typical planning time</span>
@@ -397,7 +391,7 @@ export default function StudioResearch() {
                 <ChartHeading
                   as="h2"
                   title="Settings comparison"
-                  help="Average of the selected measure as one solver setting changes. Trip and stops per day stay fixed here; interest and selection-setting filters above do not apply. Points show each interest profile separately; hover for the number of measured runs and their observed range. Allowed utility score drop is the permitted decrease from the best available average utility score. The same candidates and seed are paired across settings; these are repeated solver trials on one dataset."
+                  help="One setting changes; trip and stop count stay fixed. Interest and setting filters above do not apply."
                 />
                 <div className="research-controls">
                   <label>
@@ -452,9 +446,8 @@ export default function StudioResearch() {
                       {parameter === 'quality_loss'
                         ? `${format(changeVariants.at(-1).value * 100)}-point allowed utility score drop`
                         : `${changeVariants.at(-1).value}× extra driving penalty`}{' '}
-                      versus default settings, matching trip, interests, stop count and solver seed.
-                      Only comparisons with usable utility scores on both sides are included. This
-                      is not a significance test.
+                      vs defaults. Same trip, interests, stop count and seed. Descriptive
+                      comparison.
                     </ResearchInfo>
                   </div>
                 )}
@@ -464,7 +457,7 @@ export default function StudioResearch() {
               <ChartHeading
                 as="h2"
                 title="Selection results"
-                help="Counts and shares follow the selected filters. Best solution proven means the solver established the lowest spacing-and-extra-driving cost while meeting the required utility score; it does not mean highest utility score. Valid solution found means the requirements were met without proving the best solution before time ran out. No valid solution means the requirements cannot all be met. A strict zero-drop requirement can fail because of score rounding, which does not establish a shortage of attractions."
+                help="Best proven: lowest spacing and driving cost within the utility score requirement. Strict zero-drop settings may fail from rounding."
               />
               <div className="research-statuses">
                 {Object.entries(solverCounts).map(([label, count]) => (

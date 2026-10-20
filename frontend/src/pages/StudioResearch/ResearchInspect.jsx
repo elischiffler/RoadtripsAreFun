@@ -106,7 +106,6 @@ export function InspectionProvider({ children }) {
             onPointerEnter={cancel}
             onPointerLeave={() => hide()}
           >
-            <span className="research-inspect-heading">{active.insight.heading}</span>
             <strong>{active.insight.value}</strong>
             {active.insight.detail && (
               <span className="research-inspect-detail">{active.insight.detail}</span>
@@ -209,7 +208,6 @@ export function InspectMark({
 InspectMark.propTypes = {
   as: PropTypes.string,
   insight: PropTypes.shape({
-    heading: PropTypes.string.isRequired,
     value: PropTypes.string.isRequired,
     detail: PropTypes.string,
   }),

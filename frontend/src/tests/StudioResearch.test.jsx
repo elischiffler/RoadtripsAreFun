@@ -154,7 +154,7 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
   expect(screen.queryByText(/Same candidates, persona/)).not.toBeInTheDocument();
   await userEvent.hover(screen.getByRole('button', { name: 'About Settings comparison' }));
-  expect(screen.getByRole('tooltip')).toHaveTextContent('Trip and stops per day stay fixed');
+  expect(screen.getByRole('tooltip')).toHaveTextContent('trip and stop count stay fixed');
   await userEvent.unhover(screen.getByRole('button', { name: 'About Settings comparison' }));
   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   expect(screen.queryByRole('option', { name: 'Added distance' })).not.toBeInTheDocument();
@@ -388,7 +388,7 @@ it('inspects histogram shares without echoing visible bar counts and clears the 
   const chart = screen.getByRole('group', { name: 'Distribution of attraction utility scores' });
   const bar = within(chart).getByRole('button', { name: /60% to below 65%/ });
   await userEvent.click(bar);
-  expect(screen.getByRole('tooltip')).toHaveTextContent('66.7% of scored attractions');
+  expect(screen.getByRole('tooltip')).toHaveTextContent('60–65% · 66.7% of utility scores');
   expect(screen.getByRole('tooltip')).not.toHaveTextContent('2 utility scores');
   act(() => window.dispatchEvent(new Event('scroll')));
   await vi.waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());

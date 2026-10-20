@@ -45,7 +45,7 @@ export function Heatmap({ rows, trips, metric }) {
       <ChartHeading
         title={METRICS[metric].label}
         unit={METRICS[metric].unit}
-        help={`${metricHelp(metric)} Color compares each group with the displayed average. The scale spans two standard deviations, with at least five points for utility scores. Missing measurements are excluded. Utility scores are estimates, not visitor ratings.`}
+        help={`${metricHelp(metric)} Amber: below average. Teal: above average. Missing measurements excluded.`}
       />
       <div className="research-table-scroll">
         <InspectionGroup
@@ -77,14 +77,13 @@ export function Heatmap({ rows, trips, metric }) {
                     style={cell.n ? { background: color(cell.mean) } : undefined}
                     label={`${trip.label}, ${cell.persona}, ${cell.density} stops per day, ${format(cell.mean, METRICS[metric].digits)} ${METRICS[metric].unit}, ${runCount(cell.n)} measured`}
                     insight={{
-                      heading: 'Compared with the displayed average',
                       value:
                         cell.mean === values.mean
-                          ? 'At the average'
-                          : `${format(Math.abs(cell.mean - values.mean), METRICS[metric].digits)} ${METRICS[metric].unit === '%' ? 'points' : METRICS[metric].unit} ${cell.mean > values.mean ? 'above' : 'below'}`,
+                          ? 'At average'
+                          : `${format(Math.abs(cell.mean - values.mean), METRICS[metric].digits)} ${METRICS[metric].unit === '%' ? 'points' : METRICS[metric].unit} ${cell.mean > values.mean ? 'above' : 'below'} average`,
                       detail:
                         cell.attempts > cell.n
-                          ? `${runCount(cell.attempts - cell.n)} excluded because this measurement was unavailable.`
+                          ? `${runCount(cell.attempts - cell.n)} unmeasured`
                           : undefined,
                     }}
                   >
@@ -162,7 +161,7 @@ export function StatusColumns({ rows, trips }) {
     <figure>
       <ChartHeading
         title="Run outcomes"
-        help="Finished attempts under the selected filters, including failures and interruptions. Complete means all requested stops were delivered with valid timing. Partial means a finished run did not meet those requirements. Pending runs are excluded."
+        help="Complete: every requested stop delivered with valid timing. Finished attempts only."
       />
       <div className="research-legend">
         {categories.map(([label, , color]) => (
@@ -205,17 +204,16 @@ export function StatusColumns({ rows, trips }) {
                     }
                     label={`${row.label}, ${categories[c][0]}`}
                     insight={{
-                      heading: `${row.label} · ${categories[c][0]}`,
                       value:
                         c === 0
-                          ? `Typical planning time: ${format(times.median)} sec`
-                          : runCount(count),
+                          ? `Median ${format(times.median)} sec`
+                          : `${runCount(count)} ${categories[c][0].toLowerCase()}`,
                       detail:
                         c === 0
                           ? times.max !== times.median
-                            ? `Slowest completed run: ${format(times.max)} sec`
+                            ? `Slowest ${format(times.max)} sec`
                             : undefined
-                          : `${format((count / row.counts.reduce((a, b) => a + b, 0)) * 100)}% of this trip's finished runs`,
+                          : `${format((count / row.counts.reduce((a, b) => a + b, 0)) * 100)}% of finished runs`,
                     }}
                   >
                     <rect x={x} y={base} width="52" height={height} fill={categories[c][2]} />
@@ -264,7 +262,7 @@ export function RowChart({ rows, trips, metric }) {
       <ChartHeading
         title="By trip"
         unit={METRICS[metric].unit}
-        help={`${metricHelp(metric)} Bars compare per-run averages. Inspect a bar for its median and middle-half range; missing measurements are excluded.`}
+        help={`${metricHelp(metric)} Bars show per-run averages; missing measurements excluded.`}
       />
       <InspectionGroup
         viewBox="0 0 640 290"
@@ -285,12 +283,11 @@ export function RowChart({ rows, trips, metric }) {
                 first={row === values.find((value) => value.n)}
                 label={`${row.label}, ${METRICS[metric].label} ${format(row.mean, METRICS[metric].digits)} ${METRICS[metric].unit}`}
                 insight={{
-                  heading: 'Typical run',
                   value: `Median ${format(row.median, METRICS[metric].digits)} ${METRICS[metric].unit}`,
                   detail:
                     row.n > 1
                       ? `Middle half: ${format(row.q1, METRICS[metric].digits)}–${format(row.q3, METRICS[metric].digits)} ${METRICS[metric].unit}`
-                      : 'One measured run; spread is not established yet.',
+                      : 'One measured run',
                 }}
               >
                 <rect
@@ -413,15 +410,10 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
                       insight={
                         point.change?.n
                           ? {
-                              heading: 'Change from default settings',
-                              value: `${format(point.change.mean)} ${METRICS[metric].unit === '%' ? 'points' : METRICS[metric].unit}`,
-                              detail: `${point.change.n} matched run comparisons`,
+                              value: `${format(point.change.mean)} ${METRICS[metric].unit === '%' ? 'points' : METRICS[metric].unit} vs defaults`,
+                              detail: `${point.change.n} paired runs`,
                             }
                           : {
-                              heading:
-                                point.conditionId === 'baseline'
-                                  ? 'Default setting'
-                                  : 'No matched default runs yet',
                               value: `Median ${format(point.median, METRICS[metric].digits)} ${METRICS[metric].unit}`,
                               detail: `Middle half: ${format(point.q1, METRICS[metric].digits)}–${format(point.q3, METRICS[metric].digits)} ${METRICS[metric].unit}`,
                             }
@@ -472,7 +464,7 @@ export function Tradeoff({ rows, trips = [] }) {
       <figure>
         <ChartHeading
           title="Utility score vs added driving"
-          help="Each point is a fully delivered, timing-valid live trip. Higher utility scores mean a closer fit to the selected interests; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
+          help="Each point is a complete live trip. Farther right means more driving than the direct route."
         />
         <p className="research-empty">No results yet.</p>
       </figure>
@@ -483,7 +475,7 @@ export function Tradeoff({ rows, trips = [] }) {
     <figure>
       <ChartHeading
         title="Utility score vs added driving"
-        help="Each point is a fully delivered, timing-valid live trip. Higher utility scores mean a closer fit to the selected interests; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
+        help="Each point is a complete live trip. Farther right means more driving than the direct route."
       />
       <div className="research-legend research-personas">
         <span>● Nature</span>
@@ -508,7 +500,6 @@ export function Tradeoff({ rows, trips = [] }) {
             first={row === points[0]}
             label={`${trips.find((trip) => trip.id === row.trip)?.label ?? 'Trip'}, ${row.persona}, run ${row.repeat}`}
             insight={{
-              heading: trips.find((trip) => trip.id === row.trip)?.label ?? 'Trip',
               value: `${format(row.utility_mean * 100)}% utility score · ${format(row.extra_seconds / 60)} added min`,
               detail: finite(row.extra_meters)
                 ? `${format(row.extra_meters / 1609.344)} extra miles`
@@ -583,7 +574,7 @@ export function UtilitySpread({ rows }) {
       <ChartHeading
         title="Attraction utility scores"
         unit={`${format(stats.n, 0)} utility scores · ${runCount(scoredRuns.length)}`}
-        help="Each range is five points wide. Repeated attractions count once per run, so longer trips contribute more scores. The middle-half range is descriptive, not a confidence interval. Inspect a bar for its share of all scored attractions."
+        help="Five-point ranges. Attractions count once per run; longer trips contribute more utility scores."
       />
       <div className="research-stat-row">
         {summary.map((item) => (
@@ -633,8 +624,7 @@ export function UtilitySpread({ rows }) {
                 disabled={!bin.count}
                 label={binLabel(bin)}
                 insight={{
-                  heading: `${bin.low}% to ${bin.high === 100 ? '100%' : `below ${bin.high}%`} utility score`,
-                  value: `${format((bin.count / stats.n) * 100)}% of scored attractions`,
+                  value: `${bin.low}–${bin.high}% · ${format((bin.count / stats.n) * 100)}% of utility scores`,
                 }}
               >
                 <rect
@@ -704,7 +694,7 @@ export function UtilityBoxes({ rows, trips }) {
       <ChartHeading
         title="Consistency across runs"
         unit="Utility score %"
-        help="How average utility scores vary between runs. Each box contains the middle 50%; its line marks the median. The ends show the observed minimum and maximum, not confidence intervals. The count shows runs with usable utility scores. Fixed-data solver repeats measure solver variation, not independent real-world samples."
+        help="Box: middle 50%. Line: median. Ends: lowest and highest. Repeated solver runs are not independent real-world samples."
       />
       <InspectionGroup
         viewBox="0 0 640 270"
@@ -732,9 +722,8 @@ export function UtilityBoxes({ rows, trips }) {
                   first={group === groups.find((value) => value.n)}
                   label={`${group.label}, utility score spread`}
                   insight={{
-                    heading: group.label,
                     value: `Middle half: ${format(group.q1)}–${format(group.q3)}%`,
-                    detail: `Median utility score ${format(group.median)}%`,
+                    detail: `Median ${format(group.median)}%`,
                   }}
                 >
                   <line x1={x(group.min)} x2={x(group.max)} y1={y} y2={y} />
