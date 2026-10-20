@@ -94,14 +94,14 @@ def test_complete_capture_validates_receipts_and_never_exceeds_one_request_per_s
         now=lambda: datetime(2026, 10, 20, tzinfo=UTC),
     )
     index = json.loads(path.read_text())
-    assert len(index["routes"]) == len(index["receipts"]) == 8
-    assert starts == list(range(8))
+    assert len(index["routes"]) == len(index["receipts"]) == 10
+    assert starts == list(range(10))
     assert all(call["allow_redirects"] is False and call["stream"] is True for call in calls)
     assert all(call["timeout"] == (5, 30) for call in calls)
     assert all("Authorization" not in call["headers"] for call in calls)
     assert all(response.closed for response in responses)
     loaded, _ = capture.validate_routes(path, output.resolve())
-    assert len(loaded) == 8
+    assert len(loaded) == 10
     for receipt in index["receipts"]:
         body = (output / receipt["path"]).read_bytes()
         assert receipt["sha256"] == hashlib.sha256(body).hexdigest()
@@ -114,7 +114,7 @@ def test_complete_capture_validates_receipts_and_never_exceeds_one_request_per_s
 def test_current_studio_pairs_are_exact_and_optional_routes_can_be_excluded(tmp_path):
     path, _ = acquire(tmp_path, lambda url, **kwargs: Response(url), include_optional=False)
     index = json.loads(path.read_text())
-    assert len(index["routes"]) == 6
+    assert len(index["routes"]) == 8
     expected = {("sf", value[1]) for value in capture.PRESETS.values()} | {
         (value[1], value[2]) for value in capture.BENCHMARKS.values()
     }

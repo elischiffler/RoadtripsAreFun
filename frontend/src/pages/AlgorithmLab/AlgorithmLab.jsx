@@ -389,6 +389,7 @@ export default function AlgorithmLab() {
           <p>Plan, compare and understand your trip.</p>
         </div>
         <div className="lab-header-actions">
+          <Link to="/studio/research">Research</Link>
           {session && (
             <button
               type="button"

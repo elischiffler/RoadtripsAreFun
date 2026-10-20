@@ -18,6 +18,7 @@ from app.routers import (
     location_api,
     routing_api,
     studio,
+    studio_research,
 )
 
 logger = logging.getLogger(__name__)
@@ -120,6 +121,7 @@ async def operational_http_event(request, call_next):
 app.include_router(routing_api.router)
 app.include_router(algorithm_lab.router)
 app.include_router(studio.router)
+app.include_router(studio_research.router)
 app.include_router(location_api.router)
 app.include_router(itinerary_api.router)
 app.include_router(car_api.router)

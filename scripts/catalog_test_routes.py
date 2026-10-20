@@ -44,6 +44,8 @@ CITY_COORDINATES = {
     "seattle": (47.6038321, -122.330062),
     "portland": (45.5202471, -122.674194),
     "phoenix": (33.4484367, -112.074141),
+    "denver": (39.7392, -104.9903),
+    "nyc": (40.7128, -74.0060),
 }
 STUDIO_ROUTES = (
     ("short-day", "la", "san-diego"),
@@ -52,6 +54,8 @@ STUDIO_ROUTES = (
     ("dense-corridor", "sf", "la"),
     ("sparse-corridor", "ely", "reno"),
     ("coastal-nature", "sf", "monterey"),
+    ("long-three-day", "sf", "denver"),
+    ("coast-to-coast", "sf", "nyc"),
 )
 OPTIONAL_ROUTES = (
     ("pacific-northwest", "seattle", "portland"),
@@ -61,6 +65,7 @@ ATTRIBUTION = (
     "Routing: OSRM public routing service; © OpenStreetMap contributors, ODbL. "
     "City endpoint coordinates use explicit current Studio coordinates where available; "
     "other public city coordinates are retained from the earlier source-backed corridor captures. "
+    "Denver and New York research endpoints use approximate city-center coordinates, not entrances. "
     "No live itinerary, provider pricing, opening hours or entrance access is established."
 )
 
@@ -70,9 +75,7 @@ def specifications(include_optional=True):
         (value[1], value[2]) for value in BENCHMARKS.values()
     }
     if expected != {(start, end) for _, start, end in STUDIO_ROUTES}:
-        raise ValueError(
-            "current Studio corridors changed; review the fixed route capture set"
-        )
+        raise ValueError("current Studio corridors changed; review the fixed route capture set")
     selected = STUDIO_ROUTES + (OPTIONAL_ROUTES if include_optional else ())
     result = []
     for key, start, end in selected:
@@ -112,18 +115,14 @@ def specifications(include_optional=True):
 
 def response_body(response, expected_url):
     if response.status_code != 200 or response.url != expected_url:
-        raise ValueError(
-            "OSRM did not return a successful response at the fixed requested URL"
-        )
+        raise ValueError("OSRM did not return a successful response at the fixed requested URL")
     if (
         response.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
         != "application/json"
     ):
         raise ValueError("OSRM response is not JSON")
     length = response.headers.get("Content-Length")
-    if length is not None and (
-        not length.isdigit() or int(length) > MAX_RESPONSE_BYTES
-    ):
+    if length is not None and (not length.isdigit() or int(length) > MAX_RESPONSE_BYTES):
         raise ValueError("OSRM response exceeds the two-MiB ceiling")
     chunks, size = [], 0
     for chunk in response.iter_content(chunk_size=64 * 1024):
@@ -149,20 +148,14 @@ def acquire(
     """Publish one new receipt directory; never overwrite or resume an old capture."""
     output = Path(output).absolute()
     if output.exists() or output.is_symlink():
-        raise ValueError(
-            "route output already exists; choose a new immutable directory"
-        )
+        raise ValueError("route output already exists; choose a new immutable directory")
     specs = specifications(include_optional)
     output.parent.mkdir(parents=True, exist_ok=True)
-    staging = Path(
-        tempfile.mkdtemp(prefix="." + output.name + ".partial-", dir=output.parent)
-    )
+    staging = Path(tempfile.mkdtemp(prefix="." + output.name + ".partial-", dir=output.parent))
     session = None
     if request_get is None:
         session = requests.Session()
-        session.trust_env = (
-            False  # No .netrc credentials, proxies or ambient authentication.
-        )
+        session.trust_env = False  # No .netrc credentials, proxies or ambient authentication.
         session.auth = None
         request_get = session.get
     now = now or (lambda: datetime.now(UTC))
@@ -191,9 +184,7 @@ def acquire(
                 response.close()
             checked = now()
             if checked.tzinfo is None:
-                raise ValueError(
-                    "route acquisition timestamps require an explicit timezone"
-                )
+                raise ValueError("route acquisition timestamps require an explicit timezone")
             relative = "route-" + spec["id"] + ".json"
             (staging / relative).write_bytes(body)
             index["routes"].append(
@@ -214,9 +205,7 @@ def acquire(
         index_path.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
         validate_routes(index_path, staging.resolve())
         if output.exists() or output.is_symlink():
-            raise ValueError(
-                "route output appeared during capture; existing files were preserved"
-            )
+            raise ValueError("route output appeared during capture; existing files were preserved")
         staging.rename(output)
         return output / "index.json"
     finally:

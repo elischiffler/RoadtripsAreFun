@@ -17,6 +17,14 @@ deploy an application.
 
 ## October 19 develop integration
 
+Studio's **Research** page now defines 30 trip/persona/stop-rate combinations,
+prioritizes 6,300 controlled CP-SAT trials and then runs 300 fresh live trips.
+The hundred-candidate solver dataset is explicitly synthetic and remains separate
+from provider-trip results. Durable local campaigns, source identities, per-run
+records, incremental charts and CSV/JSON exports are described in
+[the research protocol](../docs/studio-research.md). Batch execution is an explicit
+backend opt-in; no production mount, schema migration or release is added.
+
 PRs #56 (chat retirement), #55 (standalone guided planning) and #51 (visit
 estimates and arrival/leaving timing) are integrated into develop at their exact
 latest CI-validated heads. Combined local checks pass; this is integration

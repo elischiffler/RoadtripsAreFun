@@ -153,7 +153,7 @@ part of this change.
 
 [The retained coverage comparison](evidence/catalog-automation-coverage-20261019.json)
 uses eight genuine OSRM route receipts, four-mile geometry vertex samples, the
-unchanged five-mile radius and sixty-result bounds. Six corridors correspond to
+unchanged five-mile radius and sixty-result bounds. At capture time, six corridors corresponded to
 unique Studio presets; Seattle–Portland and LA–Phoenix are additional checks.
 
 | Route | Structurally eligible nearby places before → after | Oct 20 published two-hour clock fits before → after |

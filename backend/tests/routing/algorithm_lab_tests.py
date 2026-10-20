@@ -309,7 +309,7 @@ def test_history_is_owner_scoped_paginated_and_private(headers, monkeypatch):
 def test_benchmark_presets_are_validated_and_repeat_count_bounded(headers):
     client = TestClient(app)
     catalog = client.get("/algorithm-lab/presets", headers=headers).json()
-    assert len(catalog["benchmarks"]) == 6
+    assert len(catalog["benchmarks"]) == 8
     all_presets = {preset["id"]: preset["inputs"] for preset in catalog["presets"]}
     profiles = {preset["id"]: preset["inputs"] for preset in catalog["benchmarks"]}
     assert profiles["medium-two-day"]["hotel_rooms"][0]["child_ages"] == [7, 12]

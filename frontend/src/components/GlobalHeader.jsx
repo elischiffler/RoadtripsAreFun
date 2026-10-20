@@ -31,7 +31,8 @@ export default function GlobalHeader() {
     navigate('/');
   };
 
-  if (HIDDEN_ON.includes(location.pathname)) return null;
+  if (HIDDEN_ON.includes(location.pathname) || location.pathname.startsWith('/studio/'))
+    return null;
 
   const onMapPage = location.pathname === '/map';
   const logoProgress = onMapPage || location.pathname === '/itinerary' ? 1 : 0;

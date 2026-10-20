@@ -11,6 +11,7 @@ import AlgorithmLab from './pages/AlgorithmLab/AlgorithmLab';
 import SignUpPage from './pages/AuthPages/SignUpPage';
 import NotFoundPage from './pages/NotFoundPage';
 import TripSetupPage from './pages/TripSetup/TripSetupPage';
+import ResearchRoute from './pages/StudioResearch/ResearchRoute';
 
 const router = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: 'studio',
         element: <AlgorithmLab />,
+      },
+      {
+        path: 'studio/research',
+        element: <ResearchRoute />,
       },
       { path: 'algorithm', element: <Navigate to="/studio" replace /> },
       {

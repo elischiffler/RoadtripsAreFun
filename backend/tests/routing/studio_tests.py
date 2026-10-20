@@ -26,7 +26,7 @@ def unlock(password="cp-sat"):
 def test_case_insensitive_visitor_access(password):
     response = client.get("/studio/presets", headers=unlock(password))
     assert response.status_code == 200
-    assert len(response.json()["presets"]) == 9
+    assert len(response.json()["presets"]) == 11
 
 
 @pytest.mark.parametrize("password", ["wrong", "cp_sat", "", "x" * 129])
