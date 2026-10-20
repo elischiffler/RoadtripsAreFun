@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   downloadStudy,
@@ -6,6 +6,9 @@ import {
   savedStudies,
   studyRequest,
   rerunStudy,
+  studyVersions,
+  savedStudyVersion,
+  rememberStudyVersion,
 } from '../../services/studioResearch';
 import {
   Heatmap,
@@ -31,7 +34,14 @@ import './StudioResearch.css';
 
 export default function StudioResearch() {
   const [catalog, setCatalog] = useState(null);
-  const [studies, setStudies] = useState(savedStudies);
+  const [currentStudies, setCurrentStudies] = useState(savedStudies);
+  const [version, setVersion] = useState(savedStudyVersion);
+  const [versions, setVersions] = useState(null);
+  const historical = version === 'previous';
+  const studies = useMemo(
+    () => (historical ? (versions?.previous ? [versions.previous.study] : []) : currentStudies),
+    [historical, versions, currentStudies]
+  );
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [connectionError, setConnectionError] = useState('');
@@ -45,6 +55,16 @@ export default function StudioResearch() {
   const [parameter, setParameter] = useState('quality_loss');
   const [variant, setVariant] = useState('baseline');
 
+  const selectVersion = (next) => {
+    rememberStudyVersion(next);
+    setData(null);
+    setConnectionError('');
+    setError('');
+    setTrack('solver');
+    setMetric('utility_mean');
+    setVersion(next);
+  };
+
   useEffect(() => {
     const controller = new AbortController();
     researchCatalog(controller.signal)
@@ -54,6 +74,26 @@ export default function StudioResearch() {
       });
     return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    if (!currentStudies.length) return;
+    const controller = new AbortController();
+    studyVersions(currentStudies, controller.signal)
+      .then((next) => {
+        if (controller.signal.aborted) return;
+        setVersions(next);
+        if (!next.previous) {
+          rememberStudyVersion('current');
+          setVersion('current');
+        }
+      })
+      .catch(() => {
+        if (controller.signal.aborted) return;
+        setVersions(null);
+        setVersion('current');
+      });
+    return () => controller.abort();
+  }, [currentStudies]);
 
   useEffect(() => {
     if (!studies.length) return;
@@ -165,6 +205,29 @@ export default function StudioResearch() {
           </div>
           <Link to="/studio">Back to Studio</Link>
         </header>
+        {versions?.previous && (
+          <nav className="research-version-switch" aria-label="Study version">
+            <span>Study version</span>
+            <div>
+              <button
+                type="button"
+                aria-pressed={historical}
+                disabled={busy}
+                onClick={() => selectVersion('previous')}
+              >
+                {versions.previous.label ? `${versions.previous.label} sec` : 'Previous'}
+              </button>
+              <button
+                type="button"
+                aria-pressed={!historical}
+                disabled={busy}
+                onClick={() => selectVersion('current')}
+              >
+                {versions.currentLabel ? `${versions.currentLabel} sec` : 'Current'}
+              </button>
+            </div>
+          </nav>
+        )}
         {error && (
           <p className="lab-warning" role="alert">
             {error}
@@ -179,67 +242,72 @@ export default function StudioResearch() {
           {data && (
             <>
               <span className="research-state" role="status">
-                {data.state === 'complete' ? 'Finished' : data.state} · {format(finished, 0)} /{' '}
-                {format(data.counts.total, 0)}
+                {historical ? 'Archived' : data.state === 'complete' ? 'Finished' : data.state} ·{' '}
+                {format(finished, 0)} / {format(data.counts.total, 0)}
               </span>
-              {running ? (
-                <button
-                  disabled={busy || activeSources.every((source) => source.state === 'pausing')}
-                  onClick={() =>
-                    action(() =>
-                      Promise.all(
-                        activeSources.map((source) =>
-                          studyRequest(
-                            studies.find((study) => study.id === source.id),
-                            'pause',
-                            'post'
-                          )
-                        )
-                      )
-                    )
-                  }
-                >
-                  Pause
-                </button>
-              ) : (
-                nextSource && (
+              {!historical &&
+                (running ? (
                   <button
-                    disabled={busy}
+                    disabled={busy || activeSources.every((source) => source.state === 'pausing')}
                     onClick={() =>
                       action(() =>
-                        studyRequest(
-                          studies.find((study) => study.id === nextSource.id),
-                          'start',
-                          'post'
+                        Promise.all(
+                          activeSources.map((source) =>
+                            studyRequest(
+                              studies.find((study) => study.id === source.id),
+                              'pause',
+                              'post'
+                            )
+                          )
                         )
                       )
                     }
                   >
-                    Resume
+                    Pause
                   </button>
-                )
+                ) : (
+                  nextSource && (
+                    <button
+                      disabled={busy}
+                      onClick={() =>
+                        action(() =>
+                          studyRequest(
+                            studies.find((study) => study.id === nextSource.id),
+                            'start',
+                            'post'
+                          )
+                        )
+                      }
+                    >
+                      Resume
+                    </button>
+                  )
+                ))}
+              {!historical && (
+                <button
+                  disabled={busy || running}
+                  onClick={() =>
+                    action(async () => {
+                      const source = data.sources.reduce((largest, current) =>
+                        current.total > largest.total ? current : largest
+                      );
+                      const replacement = await rerunStudy(
+                        studies.find((study) => study.id === source.id),
+                        studies
+                      );
+                      setTrack('solver');
+                      setMetric('utility_mean');
+                      setData(null);
+                      setVersions(null);
+                      setVersion('current');
+                      setCurrentStudies([replacement]);
+                      await studyRequest(replacement, 'start', 'post');
+                    })
+                  }
+                >
+                  Rerun stop selection
+                </button>
               )}
-              <button
-                disabled={busy || running}
-                onClick={() =>
-                  action(async () => {
-                    const source = data.sources.reduce((largest, current) =>
-                      current.total > largest.total ? current : largest
-                    );
-                    const replacement = await rerunStudy(
-                      studies.find((study) => study.id === source.id),
-                      studies
-                    );
-                    setTrack('solver');
-                    setMetric('utility_mean');
-                    setData(null);
-                    setStudies([replacement]);
-                    await studyRequest(replacement, 'start', 'post');
-                  })
-                }
-              >
-                Rerun stop selection
-              </button>
               <button
                 aria-label="Export CSV"
                 onClick={() => action(() => downloadStudy(studies, 'csv'))}
@@ -258,7 +326,7 @@ export default function StudioResearch() {
           )}
         </div>
         {!data ? (
-          <p className="research-empty">{studies.length ? 'Loading…' : 'No results yet.'}</p>
+          <p className="research-empty">{currentStudies.length ? 'Loading…' : 'No results yet.'}</p>
         ) : (
           <>
             <progress value={finished} max={data.counts.total} aria-label="Finished study runs" />

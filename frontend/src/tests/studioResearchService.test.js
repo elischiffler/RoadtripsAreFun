@@ -1,6 +1,13 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import axios from 'axios';
-import { downloadStudy, savedStudies, rerunStudy } from '../services/studioResearch';
+import {
+  downloadStudy,
+  savedStudies,
+  rerunStudy,
+  studyVersions,
+  savedStudyVersion,
+  rememberStudyVersion,
+} from '../services/studioResearch';
 
 vi.mock('axios', () => ({ default: { get: vi.fn(), post: vi.fn() } }));
 const sources = [
@@ -11,6 +18,7 @@ let exported;
 beforeEach(() => {
   vi.clearAllMocks();
   localStorage.clear();
+  sessionStorage.clear();
   exported = null;
   vi.stubGlobal('URL', {
     createObjectURL: vi.fn((blob) => {
@@ -25,6 +33,7 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
   localStorage.clear();
+  sessionStorage.clear();
 });
 const exportedText = () =>
   new Promise((resolve, reject) => {
@@ -79,4 +88,41 @@ it('archives historical access and replaces the active batch only after a succes
   await expect(rerunStudy(replacement, [replacement])).rejects.toThrow('active batch');
   expect(savedStudies()).toEqual([replacement]);
   expect(JSON.parse(localStorage.getItem('studioResearchArchivedStudies'))).toEqual(sources);
+});
+
+it('finds the previous full matrix and reads version metadata without fetching its run records', async () => {
+  localStorage.setItem('studioResearchStudies', JSON.stringify([sources[0]]));
+  localStorage.setItem(
+    'studioResearchArchivedStudies',
+    JSON.stringify([
+      sources[1],
+      { id: 'previous', key: 'old-key' },
+      { id: 'unavailable', key: 'lost-key' },
+    ])
+  );
+  axios.get.mockImplementation((url) => {
+    if (url.includes('unavailable')) return Promise.reject(new Error('unavailable'));
+    const pilot = url.includes('pilot');
+    return Promise.resolve({
+      data: {
+        counts: { solver: pilot ? 7 : 6300 },
+        dataset_hash: 'fixed',
+        created_at: pilot ? '2030-12-03' : '2030-12-02',
+        variants: [{ config: { time_limit_seconds: url.includes('main') ? 15 : 5 } }],
+      },
+    });
+  });
+  const versions = await studyVersions([sources[0]]);
+  expect(versions).toEqual({
+    currentLabel: '15',
+    previous: { study: { id: 'previous', key: 'old-key' }, label: '5' },
+  });
+  expect(
+    axios.get.mock.calls.every(([, config]) => config.params.after === Number.MAX_SAFE_INTEGER)
+  ).toBe(true);
+  rememberStudyVersion('previous');
+  expect(savedStudyVersion()).toBe('previous');
+  expect(savedStudies()).toEqual([sources[0]]);
+  rememberStudyVersion('current');
+  expect(savedStudyVersion()).toBe('current');
 });

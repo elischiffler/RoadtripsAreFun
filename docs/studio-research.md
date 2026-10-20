@@ -1,7 +1,7 @@
 # Studio research
 
-The **Research** link in Studio opens `/studio/research`. This dashboard combines locally saved results in one view and supports pause,
-resume and exports. It has no study creation form or study selector. Runs continue without an open
+The **Research** link in Studio opens `/studio/research`. This dashboard shows one saved study version at a time and supports pause,
+resume and exports. A compact solve-limit version switch opens the current or previous matching matrix. There is no study creation form. Runs continue without an open
 browser. CSV and JSON exports retain the underlying observations and protocol.
 
 ## Requested design
@@ -259,3 +259,13 @@ new batch before starting it. A failed start leaves Resume available. A failed
 creation leaves the current dashboard intact. The solve limit is shown from the
 saved protocol rather than inferred from today's default. Full trip planning is
 not scheduled by this action, and zero-count modes are hidden.
+
+
+The **Study version** switch shows the saved solve limits (currently 5 sec and
+15 sec). It opens one matching full matrix at a time; the small pilot is excluded
+from the historical version. Charts and exports follow the selected version,
+while the current worker continues independently. Historical views are read-only.
+The tab remembers the selected version across reloads without changing the saved
+current batch or its capability. Switching versions never starts, pauses or
+reruns work. Metadata requests use the incremental cursor to avoid downloading
+all historical run records before the version is opened.

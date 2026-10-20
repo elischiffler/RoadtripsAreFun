@@ -580,3 +580,31 @@ svg [data-inspection-target] > circle {
   justify-content: space-between;
   margin-left: calc((100% - 14px) * 0.85 / 2.35 + 14px);
 }
+
+.research-version-switch {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0;
+  font-size: 0.8rem;
+  color: #705b45;
+}
+.research-version-switch > div {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--lab-line);
+  border-radius: 10px;
+  background: #f3efe6;
+}
+.studio-research .research-version-switch button {
+  padding: 7px 16px;
+  border-color: transparent;
+  background: transparent;
+}
+.studio-research .research-version-switch button[aria-pressed='true'] {
+  background: #fffdf8;
+  border-color: #ded8cd;
+  box-shadow: 0 1px 4px #30271c10;
+  color: #234a3c;
+}

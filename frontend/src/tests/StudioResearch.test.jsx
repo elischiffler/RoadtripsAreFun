@@ -19,6 +19,10 @@ import {
   savedStudies,
   studyRequest,
   rerunStudy,
+  studyVersions,
+  savedStudyVersion,
+  rememberStudyVersion,
+  downloadStudy,
 } from '../services/studioResearch';
 
 vi.mock('../services/studioResearch', () => ({
@@ -27,6 +31,9 @@ vi.mock('../services/studioResearch', () => ({
   savedStudies: vi.fn(),
   studyRequest: vi.fn(),
   rerunStudy: vi.fn(),
+  studyVersions: vi.fn(),
+  savedStudyVersion: vi.fn(),
+  rememberStudyVersion: vi.fn(),
 }));
 const trips = ['short-1d', 'medium-2d', 'long-3d', 'coast-5d', 'tight-2d'].map((id) => ({
   id,
@@ -76,6 +83,8 @@ beforeEach(() => {
   sessionStorage.clear();
   researchCatalog.mockResolvedValue({ trips, personas: defaults.personas, defaults });
   savedStudies.mockReturnValue([]);
+  savedStudyVersion.mockReturnValue('current');
+  studyVersions.mockResolvedValue({ currentLabel: '', previous: null });
 });
 afterEach(() => {
   vi.useRealTimers();
@@ -461,4 +470,51 @@ it('reruns the largest saved matrix without pooling historical results or starti
   expect(screen.queryByRole('table')).toHaveTextContent('—');
   expect(screen.queryByRole('button', { name: /Full trip planning/ })).not.toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Rerun stop selection' })).toBeDisabled();
+});
+
+it('switches versions without mixing results, mutating batches or changing the current worker', async () => {
+  const current = { id: 'current', key: 'current-key' };
+  const previous = { id: 'previous', key: 'previous-key' };
+  savedStudies.mockReturnValue([current]);
+  studyVersions.mockResolvedValue({
+    currentLabel: '15',
+    previous: { study: previous, label: '5' },
+  });
+  studyRequest.mockImplementation((study) =>
+    Promise.resolve({
+      id: study.id,
+      state: study.id === 'current' ? 'running' : 'paused',
+      counts: { total: 1, solver: 1, pipeline: 0 },
+      design: defaults,
+      dataset_hash: 'same',
+      variants: [
+        { ...variants[0], config: { time_limit_seconds: study.id === 'current' ? 15 : 5 } },
+      ],
+      rows: [{ ...base, utility_mean: study.id === 'current' ? 0.8 : 0.6 }],
+    })
+  );
+  mount();
+  const versions = await screen.findByRole('navigation', { name: 'Study version' });
+  expect(within(versions).getByRole('button', { name: '15 sec' })).toHaveAttribute(
+    'aria-pressed',
+    'true'
+  );
+  await screen.findByRole('table');
+  expect(screen.getByRole('table')).toHaveTextContent('80');
+  await userEvent.click(within(versions).getByRole('button', { name: '5 sec' }));
+  await screen.findByText('5 sec solve limit');
+  expect(screen.getByRole('table')).toHaveTextContent('60');
+  expect(screen.getByText('Archived · 1 / 1')).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Resume' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Pause' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Rerun stop selection' })).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
+  expect(downloadStudy).toHaveBeenCalledWith([previous], 'csv');
+  await userEvent.click(within(versions).getByRole('button', { name: '15 sec' }));
+  await screen.findByText('15 sec solve limit');
+  expect(screen.getByRole('table')).toHaveTextContent('80');
+  expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument();
+  expect(studyRequest.mock.calls.every(([, action]) => !action)).toBe(true);
+  expect(rememberStudyVersion).toHaveBeenCalledWith('previous');
+  expect(rememberStudyVersion).toHaveBeenLastCalledWith('current');
 });

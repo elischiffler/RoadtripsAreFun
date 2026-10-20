@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const KEY = 'studioResearchStudies';
 const ARCHIVE_KEY = 'studioResearchArchivedStudies';
-export function savedStudies() {
+function readStudies(key) {
   try {
-    const rows = JSON.parse(localStorage.getItem(KEY) || '[]');
+    const rows = JSON.parse(localStorage.getItem(key) || '[]');
     return Array.isArray(rows)
       ? [
           ...new Map(
@@ -17,6 +17,59 @@ export function savedStudies() {
   } catch {
     return [];
   }
+}
+export const savedStudies = () => readStudies(KEY);
+export const archivedStudies = () => readStudies(ARCHIVE_KEY);
+export function savedStudyVersion() {
+  try {
+    return sessionStorage.getItem('studioResearchVersion') === 'previous' ? 'previous' : 'current';
+  } catch {
+    return 'current';
+  }
+}
+export function rememberStudyVersion(version) {
+  sessionStorage.setItem('studioResearchVersion', version);
+}
+export async function studyVersions(currentStudies, signal) {
+  // The incremental endpoint can return protocol metadata without transferring saved run records.
+  const metadata = async (study) => ({
+    study,
+    snapshot: await studyRequest(study, '', 'get', signal, Number.MAX_SAFE_INTEGER),
+  });
+  const current = await Promise.all(currentStudies.map(metadata));
+  const archived = await Promise.allSettled(
+    archivedStudies()
+      .filter((study) => !currentStudies.some((active) => active.id === study.id))
+      .map(metadata)
+  );
+  const primary = current.reduce(
+    (largest, item) =>
+      item.snapshot.counts.solver > largest.snapshot.counts.solver ? item : largest,
+    current[0]
+  );
+  const previous = archived
+    .filter((item) => item.status === 'fulfilled')
+    .map((item) => item.value)
+    .filter(
+      (item) =>
+        item.snapshot.counts.solver === primary?.snapshot.counts.solver &&
+        item.snapshot.dataset_hash === primary?.snapshot.dataset_hash
+    )
+    .sort((a, b) => (b.snapshot.created_at ?? '').localeCompare(a.snapshot.created_at ?? ''))[0];
+  const label = (items) =>
+    [
+      ...new Set(
+        items
+          .flatMap(({ snapshot }) =>
+            snapshot.variants.map((variant) => variant.config?.time_limit_seconds)
+          )
+          .filter(Number.isFinite)
+      ),
+    ].join(' / ');
+  return {
+    currentLabel: label(current),
+    previous: previous ? { study: previous.study, label: label([previous]) } : null,
+  };
 }
 export async function researchCatalog(signal) {
   return (
@@ -68,7 +121,7 @@ export async function rerunStudy(study, previousStudies) {
   );
   if (typeof data.id !== 'string' || typeof data.key !== 'string')
     throw new Error('Invalid rerun response');
-  const archived = JSON.parse(localStorage.getItem(ARCHIVE_KEY) || '[]');
+  const archived = archivedStudies();
   localStorage.setItem(
     ARCHIVE_KEY,
     JSON.stringify([
@@ -76,5 +129,6 @@ export async function rerunStudy(study, previousStudies) {
     ])
   );
   localStorage.setItem(KEY, JSON.stringify([data]));
+  rememberStudyVersion('current');
   return data;
 }
