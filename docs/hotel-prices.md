@@ -34,11 +34,9 @@ HTML responses are limited to five MiB. One lookup uses at most seven Google
 requests and seven OpenCage requests; repeated overnight stops consume the
 existing geocoding quota.
 
-A required candidate-provider failure is marked nonretryable within the current
-agent turn. The agent returns a clear chat error and keeps validated trip
-details instead of asking the model to retry the same failing planning tool up
-to five times. A subsequent user request can try again. The deadline applies to
-hotel lookup, not to the entire model/route turn.
+A required candidate-provider failure stops the planning request with a clear
+error. A subsequent request can try again. The deadline applies to hotel lookup,
+not the entire planning run.
 
 A rural overnight point may reverse-geocode only to a county. Google can then
 return hotels elsewhere in that county, beyond the 30-mile limit. If every

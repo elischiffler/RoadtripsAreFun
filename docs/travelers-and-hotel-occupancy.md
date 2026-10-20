@@ -6,15 +6,9 @@ integer `adults` count and a required `child_ages` list (empty confirms no
 children). Room occupants must sum to `traveler_count`. Count does not imply
 adult occupancy, room allocation, or companion personalities.
 
-Example collection:
-
-- Assistant: “How many people are going, including you?”
-- Traveler: “Five of us: three adults and two children, ages 5 and 8.”
-- Assistant: “How many hotel rooms do you need, and who is in each room?”
-- Traveler: “Two rooms. Two adults and the 5-year-old in one, one adult and the
-  8-year-old in the other.”
-- Assistant confirms five travelers, the two allocations, and a nightly budget
-  **per room** before planning.
+For five travelers comprising three adults and children aged 5 and 8, an explicit
+two-room allocation can place two adults and the 5-year-old in one room and one
+adult and the 8-year-old in the other. The nightly budget applies per room.
 
 Google Hotels' guest selector was inspected on 2026-10-03: it allows at most
 six guests per search, distinguishes adults from children, and requires child
@@ -40,19 +34,16 @@ is not a combined bookable whole-party offer. There is no automatic booking.
 Nightly budget remains per room; scheduling checks every room quote against
 that budget and discloses any room that exceeds it.
 
-Old saved chats remain readable. Missing occupancy blocks new prices and
-itinerary generation; no two-adult default is substituted. A count correction
-clears the previous room allocation. Room/count changes invalidate the UI's
-route and itinerary, and saved-route retry requires the same validated profile.
-Confirm the replacement allocation and regenerate to obtain new prices/links.
+Old saved trips remain readable. Missing occupancy blocks new prices and
+itinerary generation; no two-adult default is substituted. Confirm the allocation
+before regenerating to obtain new prices and links.
 
 Effective preferences are called **Trip personality**. Only interests explicitly
 supplied by the typing user guide those weights; headcount never changes them.
 Internal `persona_weights` keys, account defaults, trip override precedence and
-owner/chat isolation are preserved. Account tools remain labeled saved
-preferences across trips and require explicit save-for-future-trips intent.
+owner-scoped storage isolation are preserved. Historical account preferences remain in their existing store.
 
-Fixture tests cover collection/readiness, old chats, corrections, independent
+Fixture tests cover shared profile validation, old records, independent
 room quotes, child ages and occupancy-specific links. Browser inspection
 verified the guest controls and child token encoding, but does not establish
 live server-side price acceptance for the scraper, all room combinations,

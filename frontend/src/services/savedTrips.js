@@ -1,6 +1,6 @@
-import axios from '../../services/protectedRequest';
-import { getSession, isCurrentSession, SessionError, tokenOwner } from '../../services/session';
-import { Data, ChatLogs, ChatData } from '../../states/UserDataContext';
+import axios from './protectedRequest';
+import { getSession, isCurrentSession, SessionError, tokenOwner } from './session';
+import { Data, ChatLogs, ChatData } from '../states/UserDataContext';
 
 // A lifecycle belongs to the account's ChatLogs instance, survives panel remounts,
 // and is released when clearUserData replaces that instance. Never key by UI id alone.

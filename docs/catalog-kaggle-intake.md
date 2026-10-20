@@ -196,6 +196,6 @@ was provisioned to work around that gate.
 
 After recovery and broader eligible data are ready, use the existing PR/review,
 exact-main CI and serialized EC2 deployment path. Then capture actual production
-version and authenticated chat/Studio, route/evening/history/attribution results
+version and authenticated saved-trip/Studio, route/evening/history/attribution results
 with source IDs and zero Tripadvisor discovery calls. Current green baseline
 health or local catalog success does not establish any of those final journeys.

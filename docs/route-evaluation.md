@@ -23,7 +23,7 @@ fixed, with origin-local departure at 08:00 on October 17, 2026. Scenario target
 remain evaluation fields, separate from `LabInputs`; the solver does not constrain
 trip days or attractions per day.
 
-`MAX_TRIP_ATTRACTIONS` defaults to 20 and must be an integer in 1–30. Chat,
+`MAX_TRIP_ATTRACTIONS` defaults to 20 and must be an integer in 1–30. Shared trip profiles,
 updates, tool schemas, direct HTTP input, Lab and Studio share it. The UI consumes
 the server-advertised limit. Public normal trips require at least one attraction;
 internal `PlanOptions` tests still exercise zero-stop scheduling. Existing saved

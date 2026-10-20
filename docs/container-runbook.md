@@ -1,60 +1,10 @@
 # Local container preview
 
-The primary preview remains guarded and returns 503 on business routes. A
-separate disposable journey stack below exercises the application against the
-checked-in local DDL, signed test tokens and controlled providers. Neither
-stack uses production keys or data. Hosted connections still require TLS by
-default.
-
-## Disposable full local journey
-
-Start the existing isolated Mentro pilot fixture first (`mentro-server-local_pilot`
-network with healthy `mentro-server` and `fixture` containers). From the root,
-with Docker Desktop and Python packages `cryptography` and `PyJWT` available:
-
-```powershell
-python tests/journey/run.py
-```
-
-The driver creates a unique `roadtrips-journey-<id>` project and fresh source
-and restore PostgreSQL 18.6 volumes using the checked-in
-[`schema.sql`](../tests/postgres/schema.sql). The API is the normal runtime image
-launched with a **mounted test-only** script; the script is absent from that
-image and never changes the production Cognito verifier. It supplies a local
-RS256 signing key, keeps issuer/client/token-use/expiry checks, allows only
-seeded Mapbox coordinates and geocoding, and calls the real local Mentro
-container for streamed responses. Extra memory-tool responses are clearly
-marked fixture-only. The browser Auth fixture at `127.0.0.1:8999` mints the
-same signed tokens. The local web build uses an SVG map from the saved geometry
-so it makes no Mapbox style or tile request.
-
-The runner asserts the location, 160,000-meter / 7,200-second route, three
-geometry points, 09:00 departure / 11:00 arrival itinerary, saved messages,
-agent fact, owner separation, unauthenticated denial and test-owned deletion.
-It reads the saved trip through HTTP after API/database recreation with the
-source volume, stops Mentro and PostgreSQL separately and requires bounded
-503s/recovery, then restores a private custom-format dump into a separate empty
-volume. A second restore must refuse the populated target. Source and restore
-data remain distinct; both volumes and the ignored backup are retained. The
-normal run stops containers and never uses `down -v`.
-
-To inspect the browser after a successful run, set `JOURNEY_KEEP_RUNNING=1`
-before running. Web: <http://127.0.0.1:18082>, API:
-<http://127.0.0.1:18002>. The fixture users are
-`journey-owner@example.test` and `journey-other@example.test`, both with the
-disposable password `local-only`. Sign in as the owner, use Search trips to
-select Santa Barbara, reload chat/map/itinerary, sign out, then sign in as the
-second user and confirm Search trips reports no trips. These fixture sessions
-do **not** satisfy actual isolated Cognito R4. The current run ID, backup and
-volume IDs are printed by the driver. To stop a kept project, use its printed
-project name with `docker compose -f tests/journey/compose.yaml -p <project>
---profile restore stop api web auth postgres restore`, and stop its printed
-one-off restore API container; retain both volumes.
-
-The driver requires a fresh run ID. Never rerun it against a populated source
-or restore volume. Production schema compatibility remains unverified; this
-stack deliberately uses only the checked-in disposable DDL. No live provider,
-hosted database, DNS or production deployment is part of this procedure.
+The primary preview is guarded and returns 503 on business routes. Disposable
+PostgreSQL tests below exercise saved-trip ownership and recovery using local
+DDL. The former conversational journey fixture has been retired; see
+[chat removal](journeygenie-removal.md). Neither test uses production keys or data.
+Hosted connections still require TLS by default.
 
 From repository root, PowerShell:
 
@@ -90,7 +40,7 @@ nonrunning local Cognito endpoint8999. Sign-in is blocked until an isolated
 Cognito service is supplied. No Mapbox token is supplied. Do not add real keys
 to this diagnostic preview.
 
-Protected chat and agent routes require `COGNITO_USER_POOL_ID` and
+Protected saved-trip routes require `COGNITO_USER_POOL_ID` and
 `COGNITO_APP_CLIENT_ID` in the API container. A request with a token returns
 a fail-closed 503 if these are absent; an invalid access token with verifier
 configuration returns 401. GET/DELETE chat calls require an Authorization
@@ -163,27 +113,6 @@ The [local schema proposal](local-schema-proposal.md) records unresolved
 production identifier-scope/migration questions. The primary browser preview
 still deliberately returns 503 for business routes. Actual isolated Cognito,
 route/map/provider fixtures and representative UI/API journeys remain separate.
-
-The Mentro server contract can be tested over its separate internal pilot
-network once that gate passes; do not point at hosted Fly or a production Auth
-project. A partial provider test cannot replace the full route/chat persistence
-journey. Actual Cognito and map/provider evidence remains separate.
-
-After starting the Mentro fixture stack, this PowerShell probe runs the actual
-Roadtrips runtime image against the actual Mentro server image. It injects only
-the disposable token into the provider's existing test seam, not the API auth
-boundary. It verifies the streamed text-tool protocol without executing a
-location/provider lookup. Expected dependency-failure deadline is 15 seconds;
-recovery deadline is 60 seconds.
-
-```powershell
-$probeDir = (Resolve-Path tests).Path
-docker run --rm --network mentro-server-local_pilot -e PYTHONPATH=/app --mount "type=bind,source=$probeDir,target=/checks,readonly" --entrypoint python "roadtrips-api-local:$env:ROADTRIPS_REVISION" /checks/mentro_container_probe.py
-```
-
-For the separate failure exercise stop only `mentro-server-local-mentro-server-1`,
-repeat with `--expect-down`, restart that same container, and repeat the normal
-probe. Leave it healthy; do not delete another stack's volumes or configuration.
 
 Production host, DNS, data migration and cutover are deferred. Existing hosting
 automation is unchanged. A future release needs approved merge, current main

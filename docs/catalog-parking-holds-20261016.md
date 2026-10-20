@@ -1,5 +1,9 @@
 # Selected-arrival parking calendar correction
 
+This document retains dated planning/validation history. Conversational UI and
+API references below describe the retired feature; current entry points and
+retained compatibility are in [the removal record](journeygenie-removal.md).
+
 Seven NPS visitor-facility calendars omitted relevant parking access facts.
 The correction preserves all 603 place identities, coordinates, source fields
 and provenance. It retains 149 companion records, changes exactly seven to an

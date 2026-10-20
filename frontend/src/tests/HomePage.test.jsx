@@ -43,9 +43,9 @@ describe('HomePage (authenticated)', () => {
   });
   afterEach(() => sessionStorage.clear());
 
-  it('renders Open App and Logout buttons instead of Login/Sign Up', () => {
+  it('renders Saved trips and Logout buttons instead of Login/Sign Up', () => {
     renderPage('/', <HomePage />);
-    expect(screen.getByRole('button', { name: /open app/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /saved trips/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /login/i })).not.toBeInTheDocument();
   });

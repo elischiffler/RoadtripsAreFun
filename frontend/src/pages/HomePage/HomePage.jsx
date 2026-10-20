@@ -16,7 +16,7 @@ export default function HomePage() {
   const authenticated = isAuthenticated();
 
   const handleGetStartedClick = () => {
-    navigate(authenticated ? '/chat' : '/login');
+    navigate('/studio');
   };
 
   const handleLogout = () => {
@@ -34,10 +34,10 @@ export default function HomePage() {
             <>
               <Button
                 variant="outlined"
-                onClick={() => navigate('/chat')}
+                onClick={() => navigate('/trips')}
                 className="nav-btn nav-btn--outline"
               >
-                Open App
+                Saved trips
               </Button>
               <Button variant="contained" onClick={handleLogout} className="nav-btn nav-btn--solid">
                 Logout

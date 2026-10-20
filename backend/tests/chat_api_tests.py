@@ -40,7 +40,7 @@ CHAT_DATA = {
 CHAT_LOG = {
     "id": 1,
     "title": "Chat 1",
-    "messages": [{"text": "Hello welcome to Journey Genie", "sender": "bot", "buttons": []}],
+    "messages": [{"text": "Saved trip", "sender": "bot", "buttons": []}],
 }
 
 

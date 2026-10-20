@@ -89,22 +89,12 @@ class Settings:
     # Explicit opt-out only for the dedicated same-host Docker network.
     DATABASE_SSLMODE = _database_sslmode()
 
-    # Chat agent LLM provider — the self-hosted Mentro gateway
-    # (POST {MENTRO_GATEWAY_URL}/api/chat/stream-full, SSE). The backend calls it
-    # server-to-server, authenticating with a Supabase JWT minted from a service
-    # account in the gateway's own Supabase project. See docs/chat-agent-design.md §6.
+    # Shared AI provider for place ratings, preference extraction and duration estimates.
     MENTRO_GATEWAY_URL = os.getenv("MENTRO_GATEWAY_URL", "https://api.mentro.elischiffler.dev")
     SUPABASE_URL = os.getenv("SUPABASE_URL")
     SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
     MENTRO_SERVICE_EMAIL = os.getenv("MENTRO_SERVICE_EMAIL")
     MENTRO_SERVICE_PASSWORD = os.getenv("MENTRO_SERVICE_PASSWORD")
-
-    # When set (local dev), the agent's routing tools proxy the IP-whitelisted
-    # external calls (Mapbox/hotels) through the DEPLOYED roadtrip
-    # backend at this URL, which has the whitelisted IP. Unset on the deployed
-    # backend itself, so the same tools run the routing locally there. See
-    # app/agent/routing_remote.py and docs/chat-agent-design.md.
-    ROUTING_REMOTE_URL = os.getenv("ROUTING_REMOTE_URL")
 
 
 settings = Settings()

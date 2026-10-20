@@ -4,7 +4,7 @@ import RootLayout from './components/RootLayout';
 import HomePage from './pages/HomePage/HomePage';
 import ItineraryPage from './pages/ItineraryPage/ItineraryPage';
 import LoginPage from './pages/AuthPages/LoginPage';
-import ChatPage from './pages/ChatPage/ChatPage';
+import SavedTripsPage from './pages/SavedTripsPage';
 import MapPage from './pages/MapPage/MapPage';
 import SettingsPage from './pages/SettingsPage';
 import AlgorithmLab from './pages/AlgorithmLab/AlgorithmLab';
@@ -53,13 +53,14 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'chat',
+        path: 'trips',
         element: (
           <AuthWrapper>
-            <ChatPage />
+            <SavedTripsPage />
           </AuthWrapper>
         ),
       },
+      { path: 'chat', element: <Navigate to="/trips" replace /> },
       {
         path: 'signup',
         element: <SignUpPage />,
