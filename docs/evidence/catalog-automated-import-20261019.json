@@ -1,0 +1,251 @@
+{
+  "activation": {
+    "activated": true,
+    "active_generation": "e1dac379fb6863d9c5e8415e925a8394cb9b949919ee835defc564984a406ede",
+    "checked_at": "2026-10-20T02:34:59.919060+00:00",
+    "database_write": true,
+    "generation": "e1dac379fb6863d9c5e8415e925a8394cb9b949919ee835defc564984a406ede",
+    "previous_generation": "5e522dd7323ad41cda32cd53c88dfc565348c83947da2e5a06959403fb16ef6c",
+    "recovery_gate": {
+      "basis": "Same-session release-owner confirmation that the recent verified off-host backup is available",
+      "independent_host_inspection": false
+    },
+    "rollback_receipt_sha256": "895befcc955d7f7748593ff0786e2703345e276c9f6217821924b41b1c7b3539",
+    "rows": 608,
+    "scope": "Second additive catalog release: one source-backed NPS arrival; no main release/deployment or user-table writes",
+    "total_calendar_companions": 189
+  },
+  "build": {
+    "additions": 4,
+    "arrival_decisions": {
+      "calendar_update": 35,
+      "held": 6,
+      "selected": 4
+    },
+    "bytes": 41490115,
+    "calendar_updates": 39,
+    "evidence_files": 27,
+    "generation": "5e522dd7323ad41cda32cd53c88dfc565348c83947da2e5a06959403fb16ef6c",
+    "network_or_database_calls": false,
+    "normalized_rows_sha256": "2ddc85ab437d09e15ad9a7fecd79e4bbc84086dce8b9632e131d1ebeb6363490",
+    "parent_generation": "49e0069bd6544ca370b3123bf6ae36f0ef5e324a9bc3ba84cf6c144be69e79fe",
+    "preserved_rows": 603,
+    "retained_evidence_bytes": 61223291,
+    "retained_evidence_files": 570,
+    "rows": 607,
+    "source_scanned_rows": 4751
+  },
+  "checked_at": "2026-10-20T02:24:31.557052+00:00",
+  "hosted_read": {
+    "active_generation": "e1dac379fb6863d9c5e8415e925a8394cb9b949919ee835defc564984a406ede",
+    "checked_at": "2026-10-20T02:35:48.787451+00:00",
+    "checks": [
+      {
+        "arithmetic_zone": "America/Los_Angeles",
+        "eligible_with_current_source_calendar": true,
+        "native_point_query_found": true,
+        "published_oct20_two_hour_clock_fit": true,
+        "source_id": "usfs:facility:1550547010602"
+      },
+      {
+        "arithmetic_zone": "America/Los_Angeles",
+        "eligible_with_current_source_calendar": true,
+        "native_point_query_found": true,
+        "published_oct20_two_hour_clock_fit": true,
+        "source_id": "usfs:facility:1550615010602"
+      },
+      {
+        "arithmetic_zone": "America/Los_Angeles",
+        "eligible_with_current_source_calendar": true,
+        "native_point_query_found": true,
+        "published_oct20_two_hour_clock_fit": true,
+        "source_id": "usfs:facility:5340.004481"
+      },
+      {
+        "arithmetic_zone": "America/Los_Angeles",
+        "eligible_with_current_source_calendar": true,
+        "native_point_query_found": true,
+        "published_oct20_two_hour_clock_fit": true,
+        "source_id": "usfs:facility:5770.004481"
+      },
+      {
+        "arithmetic_zone": "America/Chicago",
+        "eligible_with_current_source_calendar": true,
+        "native_point_query_found": true,
+        "published_oct20_two_hour_clock_fit": true,
+        "source_id": "nps-public:facility:lecl:1242"
+      }
+    ],
+    "database_write": false,
+    "scope": "Read-only actual hosted application repository path after final activation; chosen-zone clock arithmetic, not provider-confirmed actual arrival or a local fixture gate"
+  },
+  "hosted_stage": {
+    "activated": false,
+    "active_generation": "49e0069bd6544ca370b3123bf6ae36f0ef5e324a9bc3ba84cf6c144be69e79fe",
+    "additions": 4,
+    "bytes": 41490115,
+    "calendar_updates": 39,
+    "catalog_bytes": 16515072,
+    "database_bytes": 42385408,
+    "database_write": true,
+    "evidence_files": 27,
+    "existing": false,
+    "generation": "5e522dd7323ad41cda32cd53c88dfc565348c83947da2e5a06959403fb16ef6c",
+    "rollback_receipt_sha256": "e14ec57fec6b191df7c4f4352351238da9475a5d5cc8b7376ef5f04b4266b306",
+    "rows": 607,
+    "scope": "Explicit additive hosted catalog staging only; no user tables or pointer changes",
+    "source_scanned_rows": 4751
+  },
+  "initial_activation": {
+    "activated": true,
+    "active_generation": "5e522dd7323ad41cda32cd53c88dfc565348c83947da2e5a06959403fb16ef6c",
+    "checked_at": "2026-10-20T02:26:18.784233+00:00",
+    "database_write": true,
+    "generation": "5e522dd7323ad41cda32cd53c88dfc565348c83947da2e5a06959403fb16ef6c",
+    "previous_generation": "49e0069bd6544ca370b3123bf6ae36f0ef5e324a9bc3ba84cf6c144be69e79fe",
+    "recovery_gate": {
+      "basis": "Release-owner confirmation in this chat that the recent verified off-host backup is available",
+      "independent_host_inspection": false
+    },
+    "rows": 607,
+    "scope": "Atomic catalog pointer activation only; no main release, application deployment or user-table write",
+    "total_calendar_companions": 188
+  },
+  "initial_hosted_read": {
+    "checked_at": "2026-10-20T02:27:09.736915+00:00",
+    "checks": [
+      {
+        "eligible_with_current_source_calendar": true,
+        "native_point_query_found": true,
+        "published_oct20_two_hour_window_in_pacific_zone": true,
+        "source_id": "usfs:facility:1550547010602"
+      },
+      {
+        "eligible_with_current_source_calendar": true,
+        "native_point_query_found": true,
+        "published_oct20_two_hour_window_in_pacific_zone": true,
+        "source_id": "usfs:facility:1550615010602"
+      },
+      {
+        "eligible_with_current_source_calendar": true,
+        "native_point_query_found": true,
+        "published_oct20_two_hour_window_in_pacific_zone": true,
+        "source_id": "usfs:facility:5340.004481"
+      },
+      {
+        "eligible_with_current_source_calendar": true,
+        "native_point_query_found": true,
+        "published_oct20_two_hour_window_in_pacific_zone": true,
+        "source_id": "usfs:facility:5770.004481"
+      }
+    ],
+    "database_write": false,
+    "scope": "Read-only actual hosted application repository path after activation; not a local fixture gate or complete provider trip"
+  },
+  "latest_private_bundle": ".artifacts/catalog-automation-20261019/lecl-candidate",
+  "one_command_nps_refresh": {
+    "additions": 1,
+    "arrival_decisions": {
+      "held": 9,
+      "selected": 1
+    },
+    "bytes": 27143032,
+    "calendar_updates": 1,
+    "database_write": false,
+    "evidence_files": 15,
+    "generation": "fd94415f8d2979bf31fe4735486c4204f7e97e87bb64d57f39b6be251aac4a19",
+    "network_or_database_calls": true,
+    "normalized_rows_sha256": "b147777c30c2a4f505429f57c033ea58079c419a37b506182be8f81d454a209b",
+    "note": "Real complete NPS acquisition plus explicit native-linked arrival page; one new Omaha facility prepared against607. Independent fresh proof artifact not staged.",
+    "operations": [
+      "read_only_catalog_snapshot",
+      "official_source_acquisition",
+      "offline_replay_and_assembly"
+    ],
+    "parent_generation": "5e522dd7323ad41cda32cd53c88dfc565348c83947da2e5a06959403fb16ef6c",
+    "preserved_rows": 607,
+    "retained_evidence_bytes": 23384231,
+    "retained_evidence_files": 501,
+    "rows": 608,
+    "source_scanned_rows": 4405,
+    "status": "prepared"
+  },
+  "one_command_refresh": {
+    "additions": 4,
+    "arrival_decisions": {
+      "calendar_update": 31,
+      "held": 1,
+      "selected": 4
+    },
+    "bytes": 19151537,
+    "calendar_updates": 35,
+    "database_write": false,
+    "evidence_files": 20,
+    "generation": "be8f62a0c8c15054f9cc2fc86fc7eeda0859565d391ed0599f7f411967cabbc7",
+    "network_or_database_calls": true,
+    "normalized_rows_sha256": "4c595fbb96961045d720e03e1020f3db8b47ab1d3fbb863148df245c6f702c96",
+    "note": "Fresh automatic route capture plus public USFS acquisition/replay; parent snapshot preceded activation. This independent proof artifact was not staged.",
+    "operations": [
+      "read_only_catalog_snapshot",
+      "official_source_acquisition",
+      "offline_replay_and_assembly"
+    ],
+    "parent_generation": "49e0069bd6544ca370b3123bf6ae36f0ef5e324a9bc3ba84cf6c144be69e79fe",
+    "preserved_rows": 603,
+    "retained_evidence_bytes": 36086506,
+    "retained_evidence_files": 65,
+    "rows": 607,
+    "source_scanned_rows": 949,
+    "status": "prepared"
+  },
+  "private_bundle": ".artifacts/catalog-automation-20261019/final-bounded/",
+  "schema_version": "roadtrips-automated-import-release/1",
+  "second_import": {
+    "build": {
+      "additions": 1,
+      "arrival_decisions": {
+        "selected": 1
+      },
+      "bytes": 5306118,
+      "calendar_updates": 1,
+      "evidence_files": 15,
+      "generation": "e1dac379fb6863d9c5e8415e925a8394cb9b949919ee835defc564984a406ede",
+      "network_or_database_calls": false,
+      "normalized_rows_sha256": "119a30010814a1b261f6ee37b0509b1e466e7226c4e1134f5293ff20867c88d8",
+      "parent_generation": "5e522dd7323ad41cda32cd53c88dfc565348c83947da2e5a06959403fb16ef6c",
+      "preserved_rows": 607,
+      "retained_evidence_bytes": 1541846,
+      "retained_evidence_files": 20,
+      "rows": 608,
+      "source_scanned_rows": 611
+    },
+    "hosted_stage": {
+      "additions": 1,
+      "bytes": 5306118,
+      "calendar_updates": 1,
+      "catalog_bytes": 19898368,
+      "database_bytes": 45768704,
+      "evidence_files": 15,
+      "existing": false,
+      "generation": "e1dac379fb6863d9c5e8415e925a8394cb9b949919ee835defc564984a406ede",
+      "rows": 608,
+      "source_scanned_rows": 611
+    },
+    "private_bundle": ".artifacts/catalog-automation-20261019/lecl-candidate"
+  },
+  "validation": {
+    "backend_coverage_percent": 80.0,
+    "backend_minimum_coverage_percent": 63,
+    "backend_skipped": 130,
+    "backend_tests_passed": 1983,
+    "container_smoke_final_source": "passed, two tests after final frozen NPS/PDF source copy",
+    "container_smoke_tests_passed": 2,
+    "crud_backup_restore": "passed; source and restore disposable volumes preserved",
+    "frontend_coverage_percent": 91.85,
+    "frontend_format_lint_build": "passed",
+    "frontend_tests_passed": 262,
+    "local_cors_configuration": "Explicit standard local CORS origins for fixture suite; developer .env permits localhost only and separately causes existing 127.0.0.1 preflight assertion failure",
+    "real_postgres_tests_passed": 63,
+    "test_data": "Synthetic fixtures; hosted snapshot used only for readonly coverage diagnostics and explicit hosted catalog staging"
+  }
+}

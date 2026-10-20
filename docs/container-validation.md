@@ -1,5 +1,21 @@
 # Container migration evidence
 
+## Automated catalog import, October 19, 2026
+
+Develop's automated NPS/USFS importer passes synthetic source and orchestration
+tests, with 1,983 backend tests / 80.00% coverage and 63 separately run real
+PostgreSQL catalog/SQL/recovery tests. Frontend format/lint, 262 tests / 91.85%
+coverage and build pass. The guarded Compose preview passes both smoke tests;
+disposable CRUD, recreation, connection recovery and backup/restore pass with
+source/restore volumes preserved. The source dataset was not used to clear these
+local fixture gates. See [full source and release evidence](catalog-automated-import.md).
+The developer environment's narrower CORS list causes an existing 127.0.0.1
+preflight assertion failure; the passing fixture run supplies the documented
+standard local origins without editing the environment or CORS implementation.
+Hosted catalog staging/activation is recorded separately; the release owner
+confirmed the recent verified off-host backup before activation. Host freshness
+was not independently inspected. Complete live trips remain unverified.
+
 This document retains dated planning/validation history. Conversational UI and
 API references below describe the retired feature; current entry points and
 retained compatibility are in [the removal record](journeygenie-removal.md).

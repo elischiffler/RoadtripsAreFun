@@ -1,5 +1,20 @@
 # Current release and acceptance
 
+## October 19 automated attraction imports
+
+Develop now includes command-driven NPS/USFS acquisition, automatic test-route
+capture, offline replay and conservative native-identity calendar bindings.
+The imports add five source-backed visitor arrivals along SF–Boise and
+SF–Chicago, plus missing hours for 35 existing places nationally: 608 places,
+189 calendar companions. All 603 parent rows and 149 prior companions are
+preserved. Existing calendars, including expired or held records, are not renewed.
+See [commands, source rules, measured coverage and release boundary](../docs/catalog-automated-import.md).
+The final 608-place generation is active after the release owner confirmed the recent
+verified off-host backup in this chat. That recovery confirmation is owner
+attestation, not an independent host inspection. The prior 603/607-place generations
+and frozen rollback receipts are preserved. This work does not release main or
+deploy an application.
+
 ## October 19 develop integration
 
 PRs #56 (chat retirement), #55 (standalone guided planning) and #51 (visit
