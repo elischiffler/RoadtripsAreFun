@@ -3,7 +3,7 @@
 ## Automated catalog import, October 19, 2026
 
 Develop's automated NPS/USFS importer passes synthetic source and orchestration
-tests, with 1,983 backend tests / 80.00% coverage and 63 separately run real
+tests, with 1,984 backend tests / 79.98% coverage and 63 separately run real
 PostgreSQL catalog/SQL/recovery tests. Frontend format/lint, 262 tests / 91.85%
 coverage and build pass. The guarded Compose preview passes both smoke tests;
 disposable CRUD, recreation, connection recovery and backup/restore pass with

@@ -43,6 +43,11 @@ backend/.venv/bin/python scripts/catalog_automated_import.py refresh \
 captures the fixed test routes when no `--routes-index` is supplied, acquires the
 reviewed official sources and prepares an import. It never stages or activates a
 database generation. A run with no usable changes records `status: no_change`.
+Source acquisition counts and `partial_source_acquisition` stay visible even
+when no additions pass. Failed unit downloads remain unknown, never an empty
+successful source or proof that no attractions exist. A completely empty native
+acquisition fails source replay. The final real NPS acquisition retained two
+unsuccessful units explicitly; the admitted Omaha evidence is complete.
 Existing retained routes can be supplied with `--routes-index PATH`.
 `--sources usfs-current` limits acquisition to Forest Service data; the default
 also acquires NPS visitor-facility data. This is a command-driven import process;
@@ -232,8 +237,8 @@ parent. That fresh acquisition/replay proof made no database writes and was not
 substituted for the independently reviewed, frozen source artifact.
 
 Python 3.12 Ruff format/lint pass. The
-frozen backend suite passes 1,983 tests with 130 optional tests skipped and
-80.00% coverage, above the unchanged 63% threshold. A separate synthetic-data
+frozen backend suite passes 1,984 tests with 130 optional tests skipped and
+79.98% coverage, above the unchanged 63% threshold. A separate synthetic-data
 PostgreSQL 18 run passes all 63 selected catalog, binding, SQL and recovery tests.
 Frontend format, lint, 262 tests (91.85% coverage) and production build pass.
 Container smoke and the disposable CRUD/recreation/backup/restore run pass.

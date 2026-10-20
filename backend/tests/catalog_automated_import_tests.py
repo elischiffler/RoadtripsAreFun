@@ -208,3 +208,28 @@ def test_arrival_source_selectors_cannot_cross_agency_boundaries(tmp_path, monke
         MODULE.acquire_source(
             "automated-nps", tmp_path, None, None, parking_publication_urls=["pdf"]
         )
+
+
+def test_partial_source_failure_remains_visible_when_no_usable_changes_pass(tmp_path, monkeypatch):
+    monkeypatch.setattr(MODULE, "configured_snapshot", lambda path: None)
+    monkeypatch.setattr(
+        MODULE,
+        "acquire_source",
+        lambda *args, **kwargs: {
+            "source_path": "synthetic-bundle",
+            "acquired_units": 2,
+            "failed_units": 1,
+        },
+    )
+
+    def unchanged(*args, **kwargs):
+        raise MODULE.NoUsableChanges()
+
+    monkeypatch.setattr(MODULE, "bundle", unchanged)
+    result = MODULE.refresh(tmp_path / "partial", tmp_path / "routes.json", ["automated-nps"])
+    assert result["status"] == "no_change"
+    assert result["partial_source_acquisition"] is True
+    assert result["acquisitions"] == [
+        {"adapter": "automated-nps", "acquired_units": 2, "failed_units": 1}
+    ]
+    assert result["database_write"] is False

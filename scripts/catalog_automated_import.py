@@ -414,6 +414,7 @@ def refresh(
     parent = output / "parent"
     configured_snapshot(parent)
     acquired = []
+    acquisition_summaries = []
     for name in sources:
         report = acquire_source(
             name,
@@ -428,6 +429,27 @@ def refresh(
             else (),
         )
         acquired.append((name, report["source_path"]))
+        acquisition_summaries.append(
+            {
+                "adapter": name,
+                **{
+                    key: report[key]
+                    for key in (
+                        "acquired_units",
+                        "failed_units",
+                        "prequalified_facilities",
+                        "discovered_facilities",
+                        "selected_facilities",
+                        "parent_refresh_candidates",
+                        "driving_receipts",
+                        "acquired_bytes",
+                        "accepted",
+                        "calendar_entries",
+                    )
+                    if key in report
+                },
+            }
+        )
     try:
         report = bundle(parent, acquired, output / "import", routes_index=routes_index)
         result = {
@@ -441,6 +463,10 @@ def refresh(
             "reason": "No new verified arrivals or missing calendars passed source and identity checks.",
         }
     result["database_write"] = False
+    result["acquisitions"] = acquisition_summaries
+    result["partial_source_acquisition"] = any(
+        item.get("failed_units", 0) > 0 for item in acquisition_summaries
+    )
     result["network_or_database_calls"] = True
     result["operations"] = [
         "read_only_catalog_snapshot",

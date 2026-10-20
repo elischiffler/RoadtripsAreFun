@@ -164,6 +164,13 @@
     ],
     "parent_generation": "5e522dd7323ad41cda32cd53c88dfc565348c83947da2e5a06959403fb16ef6c",
     "preserved_rows": 607,
+    "retained_acquisition_summary": {
+      "acquired_units": 472,
+      "basis": "Counts from original retained acquisition index; later CLI visibility change exposes these counts directly",
+      "driving_receipts": 11,
+      "failed_units": 2,
+      "partial_source_acquisition": true
+    },
     "retained_evidence_bytes": 23384231,
     "retained_evidence_files": 501,
     "rows": 608,
@@ -234,10 +241,10 @@
     "private_bundle": ".artifacts/catalog-automation-20261019/lecl-candidate"
   },
   "validation": {
-    "backend_coverage_percent": 80.0,
+    "backend_coverage_percent": 79.98,
     "backend_minimum_coverage_percent": 63,
     "backend_skipped": 130,
-    "backend_tests_passed": 1983,
+    "backend_tests_passed": 1984,
     "container_smoke_final_source": "passed, two tests after final frozen NPS/PDF source copy",
     "container_smoke_tests_passed": 2,
     "crud_backup_restore": "passed; source and restore disposable volumes preserved",
