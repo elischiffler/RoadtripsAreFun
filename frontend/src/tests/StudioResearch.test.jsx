@@ -394,7 +394,7 @@ it('inspects histogram shares without echoing visible bar counts and clears the 
   await vi.waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());
 });
 
-it('labels the trip measure and prints distinct average and median values without a hover', () => {
+it('labels the trip measure and prints distinct mean and median values without a hover', () => {
   render(
     <InspectionProvider>
       <RowChart
@@ -409,9 +409,9 @@ it('labels the trip measure and prints distinct average and median values withou
     </InspectionProvider>
   );
   expect(screen.getByText('Utility score by trip')).toBeInTheDocument();
-  const chart = screen.getByRole('group', { name: 'Average utility score by trip type' });
+  const chart = screen.getByRole('group', { name: 'Mean utility score by trip type' });
   const row = within(chart).getByText('3 runs measured').closest('.research-trip-row');
-  expect(row).toHaveTextContent('Average 60%');
+  expect(row).toHaveTextContent('Mean 60%');
   expect(row).toHaveTextContent('Median 50%');
   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   expect(within(chart).getByRole('button', { name: /measured range/ })).toBeInTheDocument();

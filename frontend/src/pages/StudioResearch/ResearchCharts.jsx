@@ -272,16 +272,18 @@ export function RowChart({ rows, trips, metric }) {
     <figure>
       <ChartHeading
         title={
-          metric === 'utility_mean' ? 'Utility score by trip' : `${METRICS[metric].label} by trip`
+          metric === 'utility_mean'
+            ? 'Utility score by trip'
+            : `${METRICS[metric].label.replace('Average', 'Mean')} by trip`
         }
         unit={`Between runs · ${unit}`}
-        help={`${metricHelp(metric)} Thin line: lowest to highest. Thick line: middle 50%. Tick: median. Dot: average. Descriptive spread, not a confidence interval.`}
+        help={`${metricHelp(metric).replace('Average', 'Mean')} Thin line: lowest to highest. Thick line: middle 50%. Tick: median. Dot: mean. Descriptive spread, not a confidence interval.`}
       />
       <InspectionGroup
         as="div"
         className="research-trip-chart"
         role="group"
-        aria-label={`${METRICS[metric].label} by trip type`}
+        aria-label={`${METRICS[metric].label.replace('Average', 'Mean')} by trip type`}
       >
         {values.map((row) => (
           <div className="research-trip-row" key={row.id}>
@@ -345,7 +347,7 @@ export function RowChart({ rows, trips, metric }) {
               </InspectMark>
               <div className="research-trip-values">
                 <span>
-                  Average <strong>{display(row.mean)}</strong>
+                  Mean <strong>{display(row.mean)}</strong>
                 </span>
                 <span>
                   Median <strong>{display(row.median)}</strong>
