@@ -28,11 +28,11 @@ export function distribution(values) {
   };
 }
 export const METRICS = {
-  utility_mean: { label: 'Average utility score', unit: '%', scale: 100, digits: 1 },
+  utility_mean: { label: 'Mean utility score', unit: '%', scale: 100, digits: 1 },
   utility_min: { label: 'Lowest utility score', unit: '%', scale: 100, digits: 1 },
   utility_median: { label: 'Median utility score', unit: '%', scale: 100, digits: 1 },
   utility_max: { label: 'Highest utility score', unit: '%', scale: 100, digits: 1 },
-  max_gap_seconds: { label: 'Longest gap', unit: 'hours', scale: 1 / 3600, digits: 2 },
+  max_gap_seconds: { label: 'Longest driving gap', unit: 'hours', scale: 1 / 3600, digits: 2 },
   extra_meters: {
     label: 'Added distance',
     unit: 'miles',
@@ -43,7 +43,7 @@ export const METRICS = {
   extra_seconds: { label: 'Added driving', unit: 'minutes', scale: 1 / 60, digits: 1, live: true },
   budget_utilization: { label: 'Hotel target used', unit: '%', scale: 100, digits: 1, live: true },
   budget_excess_usd: { label: 'Above hotel target', unit: 'USD', scale: 1, digits: 2, live: true },
-  runtime_seconds: { label: 'Planning time', unit: 'seconds', scale: 1, digits: 2 },
+  runtime_seconds: { label: 'Planning time', unit: 'sec', scale: 1, digits: 2 },
   solver_seconds: { label: 'Selection time', unit: 'ms', scale: 1000, digits: 1 },
   fulfillment: { label: 'Requested stops delivered', unit: '%', scale: 100, digits: 1 },
   actual_days: { label: 'Actual trip length', unit: 'days', scale: 1, digits: 1, live: true },
@@ -82,12 +82,12 @@ export function paired(rows, variant, metric) {
 }
 
 const METRIC_HELP = {
-  utility_mean: 'Average estimated utility score across the attractions in a run.',
+  utility_mean: 'Mean estimated utility score across the attractions in a run.',
   utility_min: 'Utility score of the lowest-scoring attraction in each run.',
   utility_median: 'Median attraction utility score within each run.',
   utility_max: 'Utility score of the highest-scoring attraction in each run.',
   max_gap_seconds:
-    'Longest driving gap between attractions, including the origin and destination. Solver trials use simulated baseline progress; live trips use actual route legs, excluding overnight downtime.',
+    'Longest driving gap between attractions, including the origin and destination. Stop selection runs use simulated baseline progress; full trip planning runs use actual route legs, excluding overnight downtime.',
   extra_meters: 'Road distance added compared with the direct origin-to-destination route.',
   extra_seconds: 'Driving time added compared with the direct route; visit time is excluded.',
   budget_utilization:
@@ -95,10 +95,10 @@ const METRIC_HELP = {
   budget_excess_usd:
     'Total quoted hotel dollars above the room-night targets; zero means none above target. This is not total-trip spending.',
   runtime_seconds:
-    'Core planning time, or model-and-solve time for controlled trials. Failed attempts retain measured time until failure.',
+    'Full trip planning time, or model-and-solve time for stop selection runs. Failed runs retain measured time until failure.',
   solver_seconds: 'Time inside the CP-SAT solver, shown in milliseconds.',
   fulfillment:
-    'Delivered stops divided by requested stops. 100% means every requested stop was delivered. Assessed partial and failed attempts remain included.',
+    'Delivered stops divided by requested stops. 100% means every requested stop was delivered. Measured partial and failed runs remain included.',
   actual_days:
     'Number of calendar days in the resulting itinerary, which can differ from the target trip length.',
 };
@@ -150,3 +150,12 @@ export const solverLabel = (status) =>
     EMPTY: 'No eligible attractions',
     NOT_RUN: 'Selection not reached',
   })[status] ?? 'Unclassified result';
+
+export const interestLabel = (persona) =>
+  ({ nature: 'Nature', entertainment: 'Entertainment' })[persona] ?? persona;
+export const settingLabel = (setting) =>
+  setting.id === 'baseline'
+    ? 'Default settings'
+    : setting.parameter === 'quality_loss'
+      ? `Allowed utility score drop: ${format(setting.value * 100)} points`
+      : `Added driving penalty: ${format(setting.value)}×`;

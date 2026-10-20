@@ -203,6 +203,7 @@
 }
 .research-heatmap small {
   display: block;
+  white-space: normal;
   font-size: 0.7rem;
   color: #705b45;
   font-weight: 400;
@@ -394,7 +395,7 @@
 .research-score-histogram {
   margin-top: 28px;
 }
-.research-legend i.research-average-marker,
+.research-legend i.research-mean-marker,
 .research-legend i.research-median-marker {
   width: 18px;
   height: 0;

@@ -14,7 +14,15 @@ import {
   Tradeoff,
   UtilitySpread,
 } from './ResearchCharts';
-import { combineStudies, distribution, format, METRICS, paired, solverLabel } from './researchData';
+import {
+  combineStudies,
+  distribution,
+  format,
+  METRICS,
+  paired,
+  solverLabel,
+  settingLabel,
+} from './researchData';
 import ResearchInfo, { ChartHeading } from './ResearchInfo';
 import { InspectionProvider, InspectMark } from './ResearchInspect';
 import '../AlgorithmLab/AlgorithmLab.css';
@@ -170,7 +178,8 @@ export default function StudioResearch() {
           {data && (
             <>
               <span className="research-state" role="status">
-                {data.state} · {format(finished, 0)} / {format(data.counts.total, 0)}
+                {data.state === 'complete' ? 'Finished' : data.state} · {format(finished, 0)} /{' '}
+                {format(data.counts.total, 0)}
               </span>
               {running ? (
                 <button
@@ -267,7 +276,7 @@ export default function StudioResearch() {
             </div>
             <div className="research-stat-row research-summary">
               <div>
-                <span>Runs finished</span>
+                <span>Finished runs</span>
                 <strong>{format(trackRows.length, 0)}</strong>
                 <small>
                   {format(
@@ -279,7 +288,7 @@ export default function StudioResearch() {
                 </small>
               </div>
               <div>
-                <span>Successful runs</span>
+                <span>Complete runs</span>
                 <strong>{format(successful, 0)}</strong>
                 <small>{percentFinished(successful)}</small>
               </div>
@@ -300,14 +309,14 @@ export default function StudioResearch() {
                   detail: 'Includes timed failures',
                 }}
               >
-                <span>Typical planning time</span>
+                <span>Median planning time</span>
                 <strong>
                   {format(runtime.median)}
                   <small> sec</small>
                 </strong>
                 <small>
                   {runtime.n > 1
-                    ? `Middle half: ${format(runtime.q1)}–${format(runtime.q3)} sec`
+                    ? `Middle 50%: ${format(runtime.q1)}–${format(runtime.q3)} sec`
                     : runtime.n === 1
                       ? '1 timed run'
                       : 'No times recorded'}
@@ -337,9 +346,9 @@ export default function StudioResearch() {
                 </select>
               </label>
               <label>
-                Stops / day
+                Stops per day
                 <select value={density} onChange={(e) => setDensity(e.target.value)}>
-                  <option value="all">All rates</option>
+                  <option value="all">All stop counts</option>
                   {[1, 2, 3].map((n) => (
                     <option value={n} key={n}>
                       {n}
@@ -353,11 +362,7 @@ export default function StudioResearch() {
                   <select value={variant} onChange={(e) => setVariant(e.target.value)}>
                     {data.variants.map((row) => (
                       <option value={row.id} key={row.id}>
-                        {row.id === 'baseline'
-                          ? 'Default settings'
-                          : row.parameter === 'quality_loss'
-                            ? `Allow ${format(row.value * 100)}-point utility score drop`
-                            : `Extra driving penalty: ${row.value}×`}
+                        {settingLabel(row)}
                       </option>
                     ))}
                   </select>
@@ -387,7 +392,7 @@ export default function StudioResearch() {
                 <ChartHeading
                   as="h2"
                   title="Settings comparison"
-                  help="One setting changes; trip and stop count stay fixed. Interest and setting filters above do not apply."
+                  help="One setting changes; trip and stops per day stay fixed. Interest and setting filters above do not apply."
                 />
                 <div className="research-controls">
                   <label>
@@ -419,7 +424,7 @@ export default function StudioResearch() {
                     Setting
                     <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
                       <option value="quality_loss">Allowed utility score drop</option>
-                      <option value="detour_weight">Extra driving penalty</option>
+                      <option value="detour_weight">Added driving penalty</option>
                     </select>
                   </label>
                 </div>
@@ -432,18 +437,15 @@ export default function StudioResearch() {
                 {delta.n >= 5 && (
                   <div className="research-finding">
                     <div>
-                      <strong>Average utility score change: {format(delta.mean)} points</strong>
+                      <strong>Mean utility score change: {format(delta.mean)} points</strong>
                       <small>
-                        {delta.n} matched run comparisons · observed change {format(delta.min)} to{' '}
+                        {delta.n} matched comparisons · observed change {format(delta.min)} to{' '}
                         {format(delta.max)} points
                       </small>
                     </div>
-                    <ResearchInfo label="Average utility score change">
-                      {parameter === 'quality_loss'
-                        ? `${format(changeVariants.at(-1).value * 100)}-point allowed utility score drop`
-                        : `${changeVariants.at(-1).value}× extra driving penalty`}{' '}
-                      vs defaults. Same trip, interests, stop count and seed. Descriptive
-                      comparison.
+                    <ResearchInfo label="Mean utility score change">
+                      {settingLabel(changeVariants.at(-1))} vs default settings. Same trip,
+                      interests, stops per day and seed. Descriptive comparison.
                     </ResearchInfo>
                   </div>
                 )}

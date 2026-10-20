@@ -109,7 +109,7 @@ it('combines saved results without selecting a study or cancelling work on unmou
   const view = mount();
   expect(await screen.findByText('running · 2 / 2')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Stop selection · 2' })).toBeInTheDocument();
-  expect(screen.getByRole('table')).toHaveTextContent('2 runs scored');
+  expect(screen.getByRole('table')).toHaveTextContent('2 runs measured');
   expect(screen.queryByLabelText('Study')).not.toBeInTheDocument();
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
   expect(studyRequest.mock.calls.every(([, action]) => !action)).toBe(true);
@@ -140,7 +140,7 @@ it('restores a study without Studio login, separates tracks and keeps failures v
     ],
   });
   mount();
-  await screen.findByText('complete · 2 / 2');
+  await screen.findByText('Finished · 2 / 2');
   expect(screen.getByText('100% of finished runs')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Full trip planning · 1' }));
   expect(screen.getByText('Selection not reached')).toBeInTheDocument();
@@ -148,13 +148,13 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   expect(screen.getByText('1 failed · 0 partial · 0 interrupted')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Stop selection · 1' }));
   expect(
-    screen.getByRole('group', { name: 'Average utility score by allowed utility score drop' })
+    screen.getByRole('group', { name: 'Mean utility score by allowed utility score drop' })
   ).toBeInTheDocument();
   expect(screen.getByText('100 simulated attractions')).toBeInTheDocument();
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
   expect(screen.queryByText(/Same candidates, persona/)).not.toBeInTheDocument();
   await userEvent.hover(screen.getByRole('button', { name: 'About Settings comparison' }));
-  expect(screen.getByRole('tooltip')).toHaveTextContent('trip and stop count stay fixed');
+  expect(screen.getByRole('tooltip')).toHaveTextContent('trip and stops per day stay fixed');
   await userEvent.unhover(screen.getByRole('button', { name: 'About Settings comparison' }));
   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   expect(screen.queryByRole('option', { name: 'Added distance' })).not.toBeInTheDocument();
@@ -210,18 +210,18 @@ it('renders charts with labeled units, measured sample sizes and negative drivin
       <UtilitySpread rows={rows} />
     </>
   );
-  expect(screen.getByRole('table', { name: 'Average utility score · %' })).toHaveTextContent(
-    '1 run scored'
+  expect(screen.getByRole('table', { name: 'Mean utility score · %' })).toHaveTextContent(
+    '1 run measured'
   );
   expect(screen.getByRole('group', { name: 'Run outcomes by trip type' })).toBeInTheDocument();
   expect(screen.getByRole('group', { name: 'Added driving by trip type' })).toHaveTextContent(
     'minutes'
   );
   expect(
-    screen.getByRole('group', { name: 'Average utility score by allowed utility score drop' })
+    screen.getByRole('group', { name: 'Mean utility score by allowed utility score drop' })
   ).toHaveTextContent('points');
   expect(
-    screen.getByRole('group', { name: 'Utility score versus added driving scatter plot' })
+    screen.getByRole('group', { name: 'Mean utility score versus added driving scatter plot' })
   ).toHaveTextContent('-1');
   expect(container.innerHTML).not.toMatch(/NaN|Infinity/);
   expect(
@@ -273,7 +273,7 @@ it('centers heatmap colors on equally weighted populated cells and keeps unknown
     .getAllByRole('row')
     .slice(1)
     .map((row) => within(row).getAllByRole('cell')[0]);
-  expect(screen.getByText('Average 70 %')).toBeInTheDocument();
+  expect(screen.getByText('Mean 70 %')).toBeInTheDocument();
   expect(scores[0]).toHaveStyle({ background: 'rgb(232, 199, 168)' });
   expect(scores[1]).toHaveStyle({ background: 'rgb(247, 244, 237)' });
   expect(scores[2]).toHaveStyle({ background: 'rgb(179, 209, 200)' });
@@ -281,7 +281,7 @@ it('centers heatmap colors on equally weighted populated cells and keeps unknown
   expect(within(unknown).getAllByRole('cell')[1]).toHaveTextContent('—');
   expect(within(unknown).getAllByRole('cell')[1].style.background).toBe('');
   view.rerender(<Heatmap rows={[rows[1]]} trips={groups} metric="utility_mean" />);
-  expect(screen.getByText('Average 70 % · No variation')).toBeInTheDocument();
+  expect(screen.getByText('Mean 70 % · No variation')).toBeInTheDocument();
   expect(view.container.querySelector('.research-heatmap-gradient')).toBeNull();
   view.rerender(<Heatmap rows={[]} trips={groups} metric="utility_mean" />);
   expect(screen.queryByLabelText('Heatmap color scale')).not.toBeInTheDocument();
@@ -317,7 +317,7 @@ it('shows measured run counts and observed ranges without treating a failed run 
   const row = within(screen.getByRole('table')).getAllByRole('row')[2];
   const cell = within(row).getAllByRole('cell')[1];
   expect(cell).toHaveTextContent('70');
-  expect(cell).toHaveTextContent('2 of 3 runs scored');
+  expect(cell).toHaveTextContent('2 of 3 runs measured');
   expect(cell).toHaveTextContent('Range 50–90%');
   expect(container.textContent).not.toMatch(/\bn=|\bSD=/);
 });

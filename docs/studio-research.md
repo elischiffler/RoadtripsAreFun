@@ -223,3 +223,10 @@ Utility scores use shared observed-range bounds, padded to five-point steps
 and limited to 0–100%; the axis labels show those bounds. Other measures include
 the observed range and zero. The separate consistency box plot is removed to avoid repeating these data.
 These are per-run distributions, distinct from the attraction-level histogram.
+
+Dashboard terminology is shared across filters, charts, tooltips and accessible
+labels: mean, median, middle 50%, finished runs, complete runs, stops per day,
+added driving and matched comparisons. Complete runs describe delivered trips;
+finished runs also include partial, failed and interrupted runs. Attraction-level
+utility scores remain distinct from per-run summary measures. Export field names
+and stored measurement definitions are unchanged.
