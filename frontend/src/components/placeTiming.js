@@ -22,9 +22,3 @@ export function localTimestamp(value, timezone) {
   }
   return `${match[1]} ${match[2]} (UTC${match[3] === 'Z' ? '+00:00' : match[3]})`;
 }
-
-export function visitEstimateLabel(duration) {
-  if (duration?.source === 'ai_estimate') return 'AI-estimated visit';
-  if (duration?.source === 'conservative_fallback') return 'Estimated visit (fallback)';
-  return null;
-}

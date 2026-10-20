@@ -104,17 +104,14 @@ it('uses numbered, accessible pins at converted stop coordinates with one safe p
   expect(mapboxgl.Marker.mock.results[0].value.setLngLat).toHaveBeenCalledWith([-122.1, 37.4]);
   const first = screen.getByRole('button', { name: 'Stop 1: Forest walk' });
   await userEvent.click(first);
-  expect(screen.getByRole('dialog')).toHaveTextContent('Forest walkAttractionTrailhead road');
+  expect(screen.getByRole('dialog')).toHaveTextContent('Forest walkTrailhead road');
   expect(screen.getByRole('dialog')).not.toHaveTextContent('Source release: 2026-09-23.1');
-  expect(screen.getByRole('link', { name: 'Sources' })).toHaveAttribute(
-    'href',
-    '/catalog-attribution.html'
-  );
+  expect(screen.queryByRole('link', { name: 'Sources' })).not.toBeInTheDocument();
   expect(screen.getByRole('dialog')).not.toHaveTextContent('Source: Overture Maps Foundation');
   expect(first).toHaveAttribute('aria-expanded', 'true');
   await userEvent.click(screen.getByRole('button', { name: 'Stop 2: Coastal hotel' }));
   expect(screen.getAllByRole('dialog')).toHaveLength(1);
-  expect(screen.getByRole('dialog')).toHaveTextContent('Coastal hotelHotel');
+  expect(screen.getByRole('dialog')).toHaveTextContent('Coastal hotel');
   expect(first).toHaveAttribute('aria-expanded', 'false');
   const hostile = screen.getByRole('button', { name: 'Stop 4: <img src=x onerror=alert(1)>' });
   hostile.focus();
@@ -164,5 +161,5 @@ it('supports clickable and keyboard pins in the local map without opening Mapbox
   fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Stop 2: Coastal hotel' }));
-  expect(screen.getByRole('dialog')).toHaveTextContent('Hotel');
+  expect(screen.getByRole('dialog')).toHaveTextContent('Coastal hotel');
 });

@@ -30,8 +30,12 @@ Tab-scoped inputs/results/selected tabs survive reload and navigation; active
 visitor jobs continue in the single API process and reconnect by UUID without
 repeating provider work. API restarts interrupt active runs. See
 [workspace lifecycle and limits](../docs/studio-access.md#workspace-and-history-popup-october-19-2026).
-Place cards and map popups retain a compact Sources link to attribution instead
-of verbose source release/evidence text; source metadata remains stored.
+Place cards and map popups omit Sources links, visit-estimate tags and repeated
+place-type labels. Numbered route-list dots match the map's attraction/stay colors.
+Generation shows one animated current activity; detailed progress remains recorded.
+Trip stats keeps attraction counts, match estimates, driving comparisons, longest
+driving gap and planning/selection time. Source metadata and research measurements
+remain stored; the public attribution page and map-provider attribution remain.
 
 See [integration heads, compatibility fix and validation](../docs/studio-stats-integration.md)
 and [visit estimates](../docs/visit-duration-estimates.md). Shared AI, source

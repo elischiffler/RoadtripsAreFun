@@ -24,7 +24,7 @@ Run-local single-flight deduplication and adaptive query budgets remain. Routing
 geocoding, model ratings and Google Hotels retain their independent provider
 limits and retry behavior. See the [integration removal audit](tripadvisor-removal.md).
 
-Live progress identifies the active operation and next attempt. Failed/recovered
+Live progress shows only the current activity, including during retries. Failed/recovered
 attempts are recorded in the run envelope, including their operation, attempt
 number, classification and safe cause, including available query/section/rating-batch
 identity. Concurrent event sequence numbers and counters are synchronized.

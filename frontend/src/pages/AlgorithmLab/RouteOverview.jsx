@@ -1,4 +1,3 @@
-import PlaceSource from '../../components/PlaceSource.jsx';
 import PlaceTiming from '../../components/PlaceTiming.jsx';
 import PropTypes from 'prop-types';
 import Map from '../../components/Map';
@@ -25,11 +24,17 @@ export default function RouteOverview({ route }) {
         {route.stops?.length ? (
           <ol className="lab-route-stops">
             {route.stops.map((stop, index) => (
-              <li key={index}>
-                <strong>{stop.name}</strong>
-                <PlaceTiming place={stop} />
-                <PlaceSource place={stop} />
-                {stop.type && <small>{stop.type.replaceAll('_', ' ')}</small>}
+              <li key={index} data-type={stop.type}>
+                <span
+                  className="lab-stop-dot"
+                  aria-label={stop.type === 'hotel' ? 'Overnight stay' : 'Place'}
+                >
+                  {index + 1}
+                </span>
+                <div>
+                  <strong>{stop.name}</strong>
+                  <PlaceTiming place={stop} />
+                </div>
               </li>
             ))}
           </ol>

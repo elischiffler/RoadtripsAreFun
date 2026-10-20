@@ -43,29 +43,12 @@ export default function LabResults({ result, activeTab, onTabChange }) {
   const warnings = [...new Set([...(route?.warnings || []), ...(trip?.warnings || [])])];
   return (
     <div className="lab-results">
-      <div className={`lab-mode-banner ${result.mode === 'replay' ? 'lab-replay' : ''}`}>
-        <strong>
-          {result.mode === 'replay' ? 'Replay · frozen candidate fixture' : 'Live provider run'}
-        </strong>
-        <p>{result.snapshot.label}</p>
-        <p className="lab-note">
-          {result.mode === 'replay'
-            ? 'Selection only · synthetic places · no live route'
-            : 'Fresh discovery · scheduling and road checks follow selection'}
-        </p>
-        <details>
-          <summary>Source and scope</summary>
-          <p>{result.snapshot.source}</p>
-          {result.mode === 'replay' && (
-            <p>
-              Uses the same scoring and selection pipeline on saved inputs. The solver status below
-              shows whether a solve was performed. Only interests and the stop cap affect replay
-              selection; dates, cities, rooms and car details do not change this frozen problem.
-              Road routing, hotel availability and itinerary generation were not run.
-            </p>
-          )}
-        </details>
-      </div>
+      {result.mode === 'replay' && (
+        <div className="lab-mode-banner lab-replay">
+          <strong>Replay · frozen candidate fixture</strong>
+          <p>Selection only · synthetic places · no live route</p>
+        </div>
+      )}
       <RunError error={result.error} attempts={result.attempts} />
       {result.stages
         .filter((stage) => stage.status === 'failed')
@@ -82,33 +65,38 @@ export default function LabResults({ result, activeTab, onTabChange }) {
           {warning}
         </p>
       ))}
-      <dl className="lab-summary" aria-label="Trip summary">
-        <div>
-          <dt>Distance</dt>
-          <dd>{measure(route?.distance, 1609.344, 'miles')}</dd>
-        </div>
-        <div>
-          <dt>Driving time</dt>
-          <dd>{measure(route?.duration, 3600, 'hours')}</dd>
-        </div>
-        <div>
-          <dt>Attractions delivered / requested</dt>
-          <dd>
-            {numeric(delivered, 0)} / {numeric(requested, 0)}
-          </dd>
-        </div>
-        <div>
-          <dt>Quoted hotel total</dt>
-          <dd>
-            {typeof route?.cost === 'number' && Number.isFinite(route.cost)
-              ? `$${numeric(route.cost, 2)}`
-              : 'Not available'}
-          </dd>
-        </div>
-      </dl>
-      <p className="lab-note">
-        Driving time excludes visits and overnight stays. Hotel quotes are not a whole-trip budget.
-      </p>
+      {tab !== 'details' && (
+        <>
+          <dl className="lab-summary" aria-label="Trip summary">
+            <div>
+              <dt>Distance</dt>
+              <dd>{measure(route?.distance, 1609.344, 'miles')}</dd>
+            </div>
+            <div>
+              <dt>Driving time</dt>
+              <dd>{measure(route?.duration, 3600, 'hours')}</dd>
+            </div>
+            <div>
+              <dt>Attractions delivered / requested</dt>
+              <dd>
+                {numeric(delivered, 0)} / {numeric(requested, 0)}
+              </dd>
+            </div>
+            <div>
+              <dt>Quoted hotel total</dt>
+              <dd>
+                {typeof route?.cost === 'number' && Number.isFinite(route.cost)
+                  ? `$${numeric(route.cost, 2)}`
+                  : 'Not available'}
+              </dd>
+            </div>
+          </dl>
+          <p className="lab-note">
+            Driving time excludes visits and overnight stays. Hotel quotes are not a whole-trip
+            budget.
+          </p>
+        </>
+      )}
       <div className="lab-tabs" role="tablist" aria-label="Run results">
         {tabs.map(([key, label], index) => (
           <button

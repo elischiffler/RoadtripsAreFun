@@ -44,7 +44,8 @@ it('shows measured match and discovery counts without formulas or raw stages', a
   const matches = screen.getByRole('group', { name: 'Match estimates' });
   expect(matches).toHaveTextContent('80%');
   expect(matches).toHaveTextContent('90%');
-  expect(screen.getByText('Sections with few places').nextElementSibling).toHaveTextContent('1');
+  expect(screen.getByText('Usable matches').nextElementSibling).toHaveTextContent('5');
+  expect(screen.queryByText('Sections with few places')).not.toBeInTheDocument();
   expect(screen.queryByText('Selection cost (seconds)')).not.toBeInTheDocument();
   expect(screen.queryByText('Run data by stage')).not.toBeInTheDocument();
   expect(screen.queryByText('Constraints and objective formula')).not.toBeInTheDocument();
@@ -59,7 +60,7 @@ it('retains query coverage and measured road exclusions in inspectable stage JSO
   expect(data).toHaveTextContent('detour_raw_seconds');
 });
 
-it('shows adaptive upper bounds, query sections and durable actual call counts', () => {
+it('shows only the current activity while detailed discovery events continue', () => {
   const view = render(
     <StudioProgress
       events={[
@@ -75,7 +76,8 @@ it('shows adaptive upper bounds, query sections and durable actual call counts',
       ]}
     />
   );
-  expect(screen.getByRole('status')).toHaveTextContent('of up to 60, section 4');
+  expect(screen.getByRole('status')).toHaveTextContent('Finding places');
+  expect(screen.getByRole('status')).not.toHaveTextContent('section');
   view.rerender(
     <StudioProgress
       events={[
@@ -92,9 +94,9 @@ it('shows adaptive upper bounds, query sections and durable actual call counts',
       ]}
     />
   );
-  expect(screen.getByLabelText('Provider call counts')).toHaveTextContent(
-    'nearby: 4 active / 8 completed'
-  );
+  expect(screen.getByRole('status')).toHaveTextContent('Finding places');
+  expect(screen.queryByLabelText('Provider call counts')).not.toBeInTheDocument();
+  expect(screen.queryByRole('list')).not.toBeInTheDocument();
 });
 
 it('handles nullable attempts from unfinished and historical saved rows without hiding errors', () => {

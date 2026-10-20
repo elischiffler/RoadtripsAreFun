@@ -20,7 +20,7 @@
 }
 .map-container .map-stop-pin:hover,
 .map-container .map-stop-pin[aria-expanded='true'] {
-  background: #5c3d2e;
+  box-shadow: 0 0 0 3px #3b2a1a55;
 }
 .map-container .map-stop-pin:focus-visible,
 .map-stop-svg-pin:focus-visible {

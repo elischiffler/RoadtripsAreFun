@@ -1,4 +1,3 @@
-import PlaceSource from './PlaceSource.jsx';
 import PlaceTiming from './PlaceTiming.jsx';
 import { Box, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
@@ -37,7 +36,6 @@ export default function ItineraryDays({ itinerary }) {
                     )}
                   </Typography>
                   <PlaceTiming place={activity} />
-                  <PlaceSource place={activity} />
                   {!activity.arrival_time &&
                     !activity.departure_time &&
                     activity.time !== 'Unscheduled' && (

@@ -652,11 +652,15 @@
   font-size: 1rem;
 }
 .lab-route-stops {
-  padding-left: 22px;
+  padding: 0;
+  list-style: none;
   margin: 0;
 }
 .lab-route-stops li {
-  padding: 0 0 12px 4px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 0 0 16px;
 }
 .lab-route-stops small {
   display: block;
@@ -714,48 +718,28 @@
   }
 }
 
-.studio-progress-steps {
-  list-style: none;
-  margin: 24px 0;
-  padding: 0;
-  counter-reset: planning-step;
-}
-.studio-progress-steps li {
-  counter-increment: planning-step;
-  padding: 12px 0;
-  border-top: 1px solid var(--cream-dark);
-}
-.studio-progress-steps summary {
+.studio-progress {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  cursor: pointer;
+  align-items: center;
+  min-height: 96px;
 }
-.studio-progress-steps summary::before {
-  content: counter(planning-step) '.';
-  min-width: 20px;
+.studio-loading-text {
+  animation: studio-loading 1.6s ease-in-out infinite;
+  font-size: 1rem;
 }
-.studio-progress-steps summary span {
-  flex: 1;
+@keyframes studio-loading {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
-.studio-progress-steps summary small {
-  font-size: 0.75rem;
-  white-space: nowrap;
-}
-.studio-progress-steps li[data-state='active'] summary {
-  color: var(--amber-dark, #93621d);
-  font-weight: 600;
-}
-.studio-progress-steps li[data-state='completed'] summary small {
-  color: #3d6748;
-}
-.studio-progress-steps p {
-  font-size: 0.875rem;
-  margin: 10px 0 0 30px;
-  line-height: 1.6;
-}
-.studio-progress-steps .studio-progress-detail {
-  font-weight: 600;
+@media (prefers-reduced-motion: reduce) {
+  .studio-loading-text {
+    animation: none;
+  }
 }
 
 .lab-stage-data summary {
@@ -824,4 +808,19 @@
   .lab-history-dialog .lab-preset-heading {
     top: -16px;
   }
+}
+
+.lab-stop-dot {
+  display: grid;
+  place-items: center;
+  flex: 0 0 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #a56b28;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+}
+.lab-route-stops [data-type='hotel'] .lab-stop-dot {
+  background: #234a3c;
 }

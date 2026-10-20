@@ -33,24 +33,38 @@ are unchanged.
 `LabResults.jsx` now labels its third tab **Trip stats**. `TripStats.jsx` displays
 recorded measurements as compact figures and independent horizontal bars:
 
-- Requested/delivered and chosen attraction counts, estimated matches and per-place scores.
-- Direct versus final road time/distance and signed extra driving.
-- Hotel quotes, nightly targets, schedule, arrival, time cushions and daily active time.
-- Planning wall time, individual stage durations, searches and request counts.
+- Delivered/requested, considered, usable and chosen attraction counts.
+- Delivered and chosen match estimates, compared with the best available match.
+- Direct versus final driving time, signed extra driving/distance and longest driving gap.
+- Total planning time and attraction-selection time.
 
 The section omits raw JSON, solver terminology, objective formulas and repeated
-stage disclosures. Route maps, itinerary views, source attribution, errors, saved
-history and backend measurement collection retain their contracts. The stats
-section links catalog sources; detailed source/release/evidence notices remain on
-route and itinerary places. A previous response is no longer retained solely for
-the removed replay comparison UI.
+stage disclosures. Hotel details, per-place scores, provider counters and individual
+stage timings are omitted from this summary. Route maps, itinerary views, errors,
+saved history and backend measurement collection retain their contracts. Place
+cards and popups omit Sources links and visit-estimate tags; numbered route-list
+dots match the map colors instead of repeating stop/hotel labels. Source metadata,
+the public attribution page and map-provider attribution remain. A previous
+response is no longer retained solely for the removed replay comparison UI.
 
 Missing measurements display a dash; measured zeros remain zeros. Historical
 objective scores and eligibility thresholds are never reinterpreted as match
-percentages. Chosen and delivered measurements remain distinct. Stage durations
-are separate bars, not summed or stacked; nested/parallel timings are not total
-wall time. Money retains cents and nonzero subsecond timings display `<0.1 sec`
-instead of a false zero. No chart dependency or additional provider request is added.
+percentages. Chosen and delivered measurements remain distinct. Total wall time
+and selection time remain separate measurements; nested/parallel timings are not
+summed. Subsecond selection times display milliseconds. No chart dependency or
+additional provider request is added.
+
+### Minimal display verification, October 19
+
+Frontend locked installation, formatting, lint, all **258 tests**, coverage
+(**91.65% lines**, existing thresholds), and production build pass. The existing
+bundle-size warning remains. Browser verification uses an already saved real
+Studio trip: compact stats, colored route places and the shared itinerary retain
+their measured values and times. No new provider trip is required for this UI
+change. A temporary sample-event page verifies the actual loading component in
+the browser and is removed afterward. Loading, retries, cancellation and
+reconnect behavior are covered by controlled component/service tests. Backend
+contracts and saved research data are unchanged.
 
 ## Local verification
 

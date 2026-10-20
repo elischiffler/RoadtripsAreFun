@@ -24,14 +24,13 @@ describe('arrival and leaving display', () => {
       screen.getByText(/Arrival: Nov 3, 2030, 1:30 AM GMT-7 \(America\/Los_Angeles\)/)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        /Leaving: Nov 3, 2030, 1:30 AM GMT-8 \(America\/Los_Angeles\).*AI-estimated visit/
-      )
+      screen.getByText(/Leaving: Nov 3, 2030, 1:30 AM GMT-8 \(America\/Los_Angeles\)/)
     ).toBeInTheDocument();
+    expect(screen.queryByText(/AI-estimated visit|Estimated visit/)).not.toBeInTheDocument();
     expect(screen.getByLabelText('Place timing').children).toHaveLength(2);
   });
 
-  it('shows midnight and hotel leaving on the next date with fallback label', () => {
+  it('shows midnight and hotel leaving on the next date without an estimate tag', () => {
     render(
       <PlaceTiming
         place={{
@@ -44,9 +43,7 @@ describe('arrival and leaving display', () => {
       />
     );
     expect(screen.getByText(/Arrival: Jul 1, 2030, 11:50 PM/)).toBeInTheDocument();
-    expect(
-      screen.getByText(/Leaving: Jul 2, 2030, 9:00 AM.*Estimated visit \(fallback\)/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Leaving: Jul 2, 2030, 9:00 AM/)).toBeInTheDocument();
   });
 
   it('preserves explicit offsets without inventing missing clocks or zones', () => {
@@ -105,8 +102,9 @@ describe('arrival and leaving display', () => {
       .getAllByText(/^(Arrival|Leaving):/)
       .map((node) => node.textContent);
     expect(screen.queryByText(/Source: Fixture attribution/)).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Sources' })).toBeInTheDocument();
-    expect(screen.getByText('stop')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Sources' })).not.toBeInTheDocument();
+    expect(screen.queryByText('stop')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Place')).toHaveClass('lab-stop-dot');
     unmount();
     render(<ItineraryDays itinerary={[{ date: 'November 3, 2030', stops: [place] }]} />);
     expect(

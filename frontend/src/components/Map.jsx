@@ -1,16 +1,9 @@
-import PlaceSource from './PlaceSource.jsx';
-import { placeSourceLines } from './placeSource.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import PropTypes from 'prop-types';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './Map.css';
-
-const stopType = (type) =>
-  type === 'stop' || type === 'attraction'
-    ? 'Attraction'
-    : (type || 'Stop').replaceAll('_', ' ').replace(/^./, (letter) => letter.toUpperCase());
 
 const Map = ({ UserChatData }) => {
   const mapContainerRef = useRef(null);
@@ -154,17 +147,11 @@ const Map = ({ UserChatData }) => {
         const heading = document.createElement('strong');
         heading.textContent = stop.name;
         content.append(heading);
-        for (const text of [stopType(stop.type), stop.address]) {
+        for (const text of [stop.address]) {
           if (!text) continue;
           const line = document.createElement('p');
           line.textContent = text;
           content.append(line);
-        }
-        if (placeSourceLines(stop).length) {
-          const attribution = document.createElement('a');
-          attribution.href = '/catalog-attribution.html';
-          attribution.textContent = 'Sources';
-          content.append(attribution);
         }
         popup.setDOMContent(content).setLngLat([stop.longitude, stop.latitude]).addTo(map);
         const element = popup.getElement();
@@ -299,9 +286,7 @@ const Map = ({ UserChatData }) => {
               ×
             </button>
             <strong>{selectedStop.name}</strong>
-            <p>{stopType(selectedStop.type)}</p>
             {selectedStop.address && <p>{selectedStop.address}</p>}
-            <PlaceSource place={selectedStop} />
           </div>
         )}
       </>

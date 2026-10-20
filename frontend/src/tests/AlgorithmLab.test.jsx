@@ -434,12 +434,13 @@ describe('Trip Planning Studio experiments', () => {
       inputs: { num_stops: 3, persona_weights: { nature: 0.6 } },
     });
     expect(config.headers).toEqual({ 'X-Studio-Session': 'studio-test' });
-    expect(screen.getByText('Live provider run')).toBeInTheDocument();
+    expect(screen.queryByText('Replay · frozen candidate fixture')).not.toBeInTheDocument();
     expect(request).not.toHaveProperty('snapshot_id');
     expect(screen.queryByLabelText('Run mode')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Candidate snapshot')).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
-    expect(screen.getByRole('group', { name: 'Forest walk match' })).toHaveTextContent('76%');
+    expect(screen.getByRole('region', { name: 'Attractions' })).toBeVisible();
+    expect(screen.queryByRole('group', { name: 'Forest walk match' })).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Departure time'), { target: { value: '10:00' } });
     expect(screen.queryByRole('tab', { name: 'Trip stats' })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Reset preset' }));
@@ -460,11 +461,9 @@ describe('Trip Planning Studio experiments', () => {
     expect(axios.post).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('button', { name: 'Running…' })).toBeDisabled();
     expect(screen.getByRole('status', { name: 'Current planning activity' })).toHaveTextContent(
-      'Route sample 1 of 6'
+      'Finding places'
     );
-    expect(screen.getByRole('list', { name: 'Live planning stages' })).toHaveTextContent(
-      'Choose attractions with CP-SAT'
-    );
+    expect(screen.queryByRole('list', { name: 'Live planning stages' })).not.toBeInTheDocument();
     expect(screen.getByLabelText('Interest nature percentage')).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Cancel and reset' }));
     await act(async () => resolveRun({ data: response() }));
@@ -484,7 +483,9 @@ describe('Trip Planning Studio experiments', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
     await userEvent.click(screen.getByRole('button', { name: /Culture trip/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
-    expect(await screen.findByText('Historic market')).toBeInTheDocument();
+    expect(await screen.findByRole('tab', { name: 'Trip stats' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
+    expect(screen.queryByText('Historic market')).not.toBeInTheDocument();
     expect(screen.queryByText('Same snapshot comparison')).not.toBeInTheDocument();
     expect(axios.post.mock.calls.every(([, body]) => body.mode === 'live')).toBe(true);
   });
@@ -516,7 +517,6 @@ describe('Trip Planning Studio experiments', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     expect(await screen.findByRole('tab', { name: 'Trip stats' })).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('No hotel offers available.');
-    expect(screen.getByText('Live provider run')).toBeInTheDocument();
     expect(screen.queryByText('Replay · frozen candidate fixture')).not.toBeInTheDocument();
     expect(axios.post.mock.calls[0][1]).not.toHaveProperty('snapshot_id');
     expect(screen.getByText(/No completed road route is available/)).toBeInTheDocument();
@@ -555,7 +555,7 @@ describe('Trip Planning Studio experiments', () => {
     expect(screen.getByText('Room quote is above target.')).toBeInTheDocument();
   });
 
-  it('renders rejected malformed diagnostics without inventing score contributions', async () => {
+  it('keeps rejected candidate diagnostics out of the compact summary', async () => {
     const data = response();
     data.explanation.candidates = [
       { name: 'Malformed place', provider_id: null, selected: false, reason: 'invalid_candidate' },
@@ -571,8 +571,9 @@ describe('Trip Planning Studio experiments', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     await screen.findByRole('tab', { name: 'Trip stats' });
     await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
-    expect(screen.getByRole('group', { name: 'Malformed place match' })).toHaveTextContent('—');
-    expect(screen.getByText('Duplicate place')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Attractions' })).toBeVisible();
+    expect(screen.queryByText('Malformed place')).not.toBeInTheDocument();
+    expect(screen.queryByText('Duplicate place')).not.toBeInTheDocument();
     expect(screen.queryByText('invalid candidate · slot unassigned')).not.toBeInTheDocument();
   });
 
@@ -765,7 +766,8 @@ it('restores the draft, completed trip and selected tab after a reload or route 
   await mount();
   expect(screen.getByLabelText('Maximum attractions')).toHaveValue(5);
   expect(screen.getByRole('tab', { name: 'Trip stats' })).toHaveAttribute('aria-selected', 'true');
-  expect(screen.getByRole('group', { name: 'Forest walk match' })).toHaveTextContent('76%');
+  expect(screen.getByRole('region', { name: 'Attractions' })).toBeVisible();
+  expect(screen.queryByRole('group', { name: 'Forest walk match' })).not.toBeInTheDocument();
   expect(axios.post).toHaveBeenCalledTimes(1);
 });
 

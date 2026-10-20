@@ -46,8 +46,8 @@ it('reports a retry in the actual active phase instead of marking the whole run 
       ]}
     />
   );
-  expect(screen.getByRole('status')).toHaveTextContent('Rate limited Retrying: attempt 2 of 3.');
-  expect(screen.getByRole('status')).toHaveTextContent('Collect and score nearby places');
+  expect(screen.getByRole('status')).toHaveTextContent('Finding places');
+  expect(screen.getByRole('status')).not.toHaveTextContent('Rate limited');
   expect(screen.queryByText('Failed')).not.toBeInTheDocument();
 });
 
