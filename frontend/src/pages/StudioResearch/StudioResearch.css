@@ -420,3 +420,31 @@
 .research-personas span:last-child {
   color: #a56b28;
 }
+.research-heatmap-scale {
+  max-width: 400px;
+  margin: 18px auto 0;
+  color: #705b45;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.research-heatmap-gradient {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, rgb(216, 153, 98), rgb(247, 244, 237), rgb(111, 174, 163));
+}
+.research-heatmap-ticks {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+.research-heatmap-ticks span:nth-child(2),
+.research-heatmap-flat {
+  text-align: center;
+}
+.research-heatmap-ticks span:last-child {
+  text-align: right;
+}
+.research-heatmap-flat {
+  display: block;
+}

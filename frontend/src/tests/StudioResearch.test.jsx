@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import StudioResearch from '../pages/StudioResearch/StudioResearch';
@@ -262,4 +262,34 @@ it('opens chart help on hover, focus or tap and dismisses it with Escape or an o
   expect(screen.getByRole('tooltip')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Outside' }));
   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+});
+
+it('centers heatmap colors on equally weighted populated cells and keeps unknowns blank', () => {
+  const groups = trips.slice(0, 3);
+  const rows = [
+    { ...base, trip: groups[0].id, stops_per_day: 1, utility_mean: 0.6 },
+    { ...base, trip: groups[1].id, stops_per_day: 1, utility_mean: 0.7 },
+    { ...base, trip: groups[2].id, stops_per_day: 1, utility_mean: 0.8 },
+    { ...base, trip: groups[2].id, stops_per_day: 1, utility_mean: 0.8, repeat: 2 },
+    { ...base, trip: groups[0].id, stops_per_day: 2, utility_mean: 1, completed: false },
+  ];
+  const view = render(<Heatmap rows={rows} trips={groups} metric="utility_mean" />);
+  const table = screen.getByRole('table');
+  const scores = within(table)
+    .getAllByRole('row')
+    .slice(1)
+    .map((row) => within(row).getAllByRole('cell')[0]);
+  expect(screen.getByText('Mean 70 %')).toBeInTheDocument();
+  expect(scores[0]).toHaveStyle({ background: 'rgb(232, 199, 168)' });
+  expect(scores[1]).toHaveStyle({ background: 'rgb(247, 244, 237)' });
+  expect(scores[2]).toHaveStyle({ background: 'rgb(179, 209, 200)' });
+  const unknown = within(table).getAllByRole('row')[1];
+  expect(within(unknown).getAllByRole('cell')[1]).toHaveTextContent('—');
+  expect(within(unknown).getAllByRole('cell')[1].style.background).toBe('');
+  view.rerender(<Heatmap rows={[rows[1]]} trips={groups} metric="utility_mean" />);
+  expect(screen.getByText('Mean 70 % · No variation')).toBeInTheDocument();
+  expect(view.container.querySelector('.research-heatmap-gradient')).toBeNull();
+  view.rerender(<Heatmap rows={[]} trips={groups} metric="utility_mean" />);
+  expect(screen.queryByLabelText('Heatmap color scale')).not.toBeInTheDocument();
+  expect(view.container.innerHTML).not.toMatch(/NaN|Infinity/);
 });

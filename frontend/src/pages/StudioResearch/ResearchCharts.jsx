@@ -3,19 +3,37 @@ import { ChartHeading } from './ResearchInfo';
 import { distribution, finite, format, metricHelp, METRICS, sample } from './researchData';
 
 export function Heatmap({ rows, trips, metric }) {
-  const range = sample(rows, metric);
-  const maximum = metric.startsWith('utility')
-    ? 100
-    : Math.max(1e-6, Math.abs(range.min ?? 0), Math.abs(range.max ?? 0));
   const columns = ['nature', 'entertainment'].flatMap((persona) =>
     [1, 2, 3].map((density) => ({ persona, density }))
   );
+  const cells = trips.map((trip) => ({
+    ...trip,
+    cells: columns.map(({ persona, density }) => {
+      const matching = rows.filter(
+        (row) => row.trip === trip.id && row.persona === persona && row.stops_per_day === density
+      );
+      return { persona, density, ...sample(matching, metric), attempts: matching.length };
+    }),
+  }));
+  const values = distribution(cells.flatMap((trip) => trip.cells.map((cell) => cell.mean)));
+  const utility = metric.startsWith('utility');
+  const span = Math.max(2 * (values.sd ?? 0), utility ? 5 : 10 ** -METRICS[metric].digits);
+  const low = utility ? Math.max(0, (values.mean ?? 0) - span) : (values.mean ?? 0) - span;
+  const high = utility ? Math.min(100, (values.mean ?? 0) + span) : (values.mean ?? 0) + span;
+  const color = (value) => {
+    const below = value < values.mean;
+    const distance = below ? values.mean - low : high - values.mean;
+    const strength = distance ? Math.min(1, Math.abs(value - values.mean) / distance) : 0;
+    const neutral = [247, 244, 237];
+    const end = below ? [216, 153, 98] : [111, 174, 163];
+    return `rgb(${neutral.map((channel, i) => Math.round(channel + (end[i] - channel) * strength)).join(', ')})`;
+  };
   return (
     <figure>
       <ChartHeading
         title={METRICS[metric].label}
         unit={METRICS[metric].unit}
-        help={`${metricHelp(metric)} Cells show the mean per-run value by trip, persona and stops per target day. n = usable measurements / finished attempts. A dash means missing data. Quality metrics require fully delivered, timing-valid runs; match scores are estimates, not visitor ratings.`}
+        help={`${metricHelp(metric)} Cells show the mean per-run value by trip, persona and stops per target day. n = usable measurements / finished attempts. A dash means missing data. Quality metrics require fully delivered, timing-valid runs; match scores are estimates, not visitor ratings. Colors are centered on the equally weighted mean of populated cells under these filters: amber below, cream at the mean, teal above. The color range spans two standard deviations on either side, with a minimum of five percentage points for utility. End labels are color thresholds, not observed extremes. Higher does not mean better for every metric.`}
       />
       <div className="research-table-scroll">
         <table
@@ -34,48 +52,55 @@ export function Heatmap({ rows, trips, metric }) {
             </tr>
           </thead>
           <tbody>
-            {trips.map((trip) => (
+            {cells.map((trip) => (
               <tr key={trip.id}>
                 <th scope="row">{trip.label}</th>
-                {columns.map(({ persona, density }) => {
-                  const stats = sample(
-                    rows.filter(
-                      (row) =>
-                        row.trip === trip.id &&
-                        row.persona === persona &&
-                        row.stops_per_day === density
-                    ),
-                    metric
-                  );
-                  const all = rows.filter(
-                    (row) =>
-                      row.trip === trip.id &&
-                      row.persona === persona &&
-                      row.stops_per_day === density
-                  ).length;
-                  return (
-                    <td
-                      key={`${persona}-${density}`}
-                      style={
-                        stats.n
-                          ? {
-                              background: `rgba(${stats.mean < 0 ? '165, 107, 40' : '69, 112, 75'}, ${0.06 + Math.min(1, Math.abs(stats.mean / maximum)) * 0.28})`,
-                            }
-                          : undefined
-                      }
-                    >
-                      {format(stats.mean, METRICS[metric].digits)}
-                      <small>
-                        n={stats.n} / {all}
-                      </small>
-                    </td>
-                  );
-                })}
+                {trip.cells.map((cell) => (
+                  <td
+                    key={`${cell.persona}-${cell.density}`}
+                    style={cell.n ? { background: color(cell.mean) } : undefined}
+                    title={
+                      cell.n
+                        ? `${format(cell.mean - values.mean, METRICS[metric].digits)} ${utility ? 'percentage points' : METRICS[metric].unit} from mean`
+                        : 'No assessed value'
+                    }
+                  >
+                    {format(cell.mean, METRICS[metric].digits)}
+                    <small>
+                      n={cell.n} / {cell.attempts}
+                    </small>
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      {values.n > 0 && (
+        <div className="research-heatmap-scale" aria-label="Heatmap color scale">
+          {values.min === values.max ? (
+            <span className="research-heatmap-flat">
+              Mean {format(values.mean, METRICS[metric].digits)} {METRICS[metric].unit} · No
+              variation
+            </span>
+          ) : (
+            <>
+              <div className="research-heatmap-gradient" aria-hidden="true" />
+              <div className="research-heatmap-ticks">
+                <span>
+                  ≤ {format(low, METRICS[metric].digits)} {METRICS[metric].unit}
+                </span>
+                <span>
+                  Mean {format(values.mean, METRICS[metric].digits)} {METRICS[metric].unit}
+                </span>
+                <span>
+                  ≥ {format(high, METRICS[metric].digits)} {METRICS[metric].unit}
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </figure>
   );
 }
