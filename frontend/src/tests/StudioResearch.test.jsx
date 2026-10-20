@@ -223,8 +223,12 @@ it('renders charts with labeled units, measured sample sizes and negative drivin
     screen.getByRole('img', { name: 'Match versus added driving scatter plot' })
   ).toHaveTextContent('-1');
   expect(container.innerHTML).not.toMatch(/NaN|Infinity/);
-  expect(screen.getByText('40%')).toBeInTheDocument();
-  expect(screen.getByText('80%')).toBeInTheDocument();
+  expect(
+    within(container.querySelector('.research-stat-row')).getByText('40%')
+  ).toBeInTheDocument();
+  expect(
+    within(container.querySelector('.research-stat-row')).getByText('80%')
+  ).toBeInTheDocument();
 });
 
 it('opens chart help on hover, focus or tap and dismisses it with Escape or an outside tap', async () => {
@@ -315,4 +319,33 @@ it('shows measured run counts and observed ranges without treating a failed run 
   expect(cell).toHaveTextContent('2 of 3 runs scored');
   expect(cell).toHaveTextContent('Range 50–90%');
   expect(container.textContent).not.toMatch(/\bn=|\bSD=/);
+});
+
+it('plots attraction score frequencies with exact bin boundaries, excluding failed and invalid scores', () => {
+  const rows = [
+    { ...base, utility_values: [0, 0.049, 0.05] },
+    { ...base, id: 2, utility_values: [0.999, 1, null, NaN, -0.1, 1.1] },
+    { ...base, id: 3, completed: false, utility_values: [0.5] },
+  ];
+  const view = render(<UtilitySpread rows={rows} />);
+  const chart = screen.getByRole('img', { name: 'Distribution of attraction match scores' });
+  expect(screen.getByText('5 attraction scores · 2 runs')).toBeInTheDocument();
+  expect(chart).toHaveAccessibleDescription(
+    expect.stringContaining('0% to below 5%: 2 attraction scores (40%)')
+  );
+  expect(chart).toHaveAccessibleDescription(
+    expect.stringContaining('5% to below 10%: 1 attraction score (20%)')
+  );
+  expect(chart).toHaveAccessibleDescription(
+    expect.stringContaining('95% to 100%: 2 attraction scores (40%)')
+  );
+  expect(chart).toHaveAccessibleDescription(
+    expect.stringContaining('50% to below 55%: 0 attraction scores (0%)')
+  );
+  expect(view.container.innerHTML).not.toMatch(/NaN|Infinity/);
+  view.rerender(<UtilitySpread rows={[]} />);
+  expect(screen.getByText('No attraction scores yet.')).toBeInTheDocument();
+  expect(
+    screen.queryByRole('img', { name: 'Distribution of attraction match scores' })
+  ).not.toBeInTheDocument();
 });

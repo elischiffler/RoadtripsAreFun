@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useId } from 'react';
 import { ChartHeading } from './ResearchInfo';
 import {
   distribution,
@@ -455,11 +456,30 @@ export function Tradeoff({ rows, trips = [] }) {
 Tradeoff.propTypes = { rows: PropTypes.array.isRequired, trips: PropTypes.array };
 
 export function UtilitySpread({ rows }) {
-  const values = rows
+  const descriptionId = useId();
+  const scoredRuns = rows
     .filter((row) => row.completed)
-    .flatMap((row) => row.utility_values ?? [])
-    .map((value) => value * 100);
+    .map((row) =>
+      (row.utility_values ?? []).filter((value) => finite(value) && value >= 0 && value <= 1)
+    )
+    .filter((values) => values.length);
+  const values = scoredRuns.flat().map((value) => value * 100);
   const stats = distribution(values);
+  const bins = Array.from({ length: 20 }, (_, index) => ({
+    low: index * 5,
+    high: (index + 1) * 5,
+    count: 0,
+  }));
+  values.forEach((value) => {
+    bins[Math.min(19, Math.floor(value / 5))].count += 1;
+  });
+  const peak = Math.max(1, ...bins.map((bin) => bin.count));
+  const step = Math.max(1, Math.ceil(peak / 4));
+  const top = step * 4;
+  const x = (score) => 64 + score * 7.04;
+  const y = (count) => 236 - (count / top) * 180;
+  const binLabel = (bin) =>
+    `${bin.low}% to ${bin.high === 100 ? '100%' : `below ${bin.high}%`}: ${format(bin.count, 0)} attraction ${bin.count === 1 ? 'score' : 'scores'} (${format((bin.count / stats.n) * 100)}%)`;
   const summary = [
     { label: 'Lowest', value: stats.min },
     { label: 'Median', value: stats.median },
@@ -470,8 +490,8 @@ export function UtilitySpread({ rows }) {
     <figure>
       <ChartHeading
         title="Attraction match scores"
-        unit={`${format(stats.n, 0)} attraction scores · ${runCount(rows.filter((row) => row.completed && row.utility_values?.length).length)}`}
-        help="Scores pooled across individual attractions in the filtered, fully delivered, timing-valid runs. A repeated attraction counts once per run, so longer trips contribute more observations. Scores estimate interest match; it is not a visitor rating."
+        unit={`${format(stats.n, 0)} attraction scores · ${runCount(scoredRuns.length)}`}
+        help="Each bar counts attraction scores in a five-point range, from 0% to 100%. The lines mark the average and median. Scores come from the filtered, fully delivered, timing-valid runs. Repeated attractions count once per run, so longer trips contribute more scores. The middle-half range contains the central 50% of scores, not a confidence interval. Match scores are estimates, not visitor ratings."
       />
       <div className="research-stat-row">
         {summary.map((item) => (
@@ -484,6 +504,89 @@ export function UtilitySpread({ rows }) {
           </div>
         ))}
       </div>
+      {stats.n ? (
+        <div className="research-score-histogram">
+          <div className="research-legend" aria-label="Score reference lines">
+            <span>
+              <i className="research-average-marker" />
+              Average
+            </span>
+            <span>
+              <i className="research-median-marker" />
+              Median
+            </span>
+          </div>
+          <svg
+            viewBox="0 0 800 300"
+            role="img"
+            aria-label="Distribution of attraction match scores"
+            aria-describedby={descriptionId}
+          >
+            <desc id={descriptionId}>{bins.map(binLabel).join('; ')}</desc>
+            <text x="64" y="24">
+              Attraction scores
+            </text>
+            {[0, 1, 2, 3, 4].map((index) => (
+              <g key={index}>
+                <line x1="64" x2="768" y1={y(index * step)} y2={y(index * step)} stroke="#e8ddd0" />
+                <text x="54" y={y(index * step) + 4} textAnchor="end">
+                  {format(index * step, 0)}
+                </text>
+              </g>
+            ))}
+            {bins.map((bin) => (
+              <g key={bin.low}>
+                <rect
+                  x={x(bin.low) + 2}
+                  y={y(bin.count)}
+                  width="31.2"
+                  height={236 - y(bin.count)}
+                  fill="#557d6f"
+                  rx="2"
+                  aria-label={binLabel(bin)}
+                >
+                  <title>{binLabel(bin)}</title>
+                </rect>
+                {bin.count > 0 && (
+                  <text x={x(bin.low + 2.5)} y={y(bin.count) - 7} textAnchor="middle">
+                    {format(bin.count, 0)}
+                  </text>
+                )}
+              </g>
+            ))}
+            <line
+              x1={x(stats.mean)}
+              x2={x(stats.mean)}
+              y1="46"
+              y2="236"
+              stroke="#ad7229"
+              strokeWidth="2"
+            />
+            <line
+              x1={x(stats.median)}
+              x2={x(stats.median)}
+              y1="46"
+              y2="236"
+              stroke="#775b87"
+              strokeWidth="2"
+              strokeDasharray="5 4"
+            />
+            {[0, 20, 40, 60, 80, 100].map((score) => (
+              <text key={score} x={x(score)} y="259" textAnchor="middle">
+                {score}%
+              </text>
+            ))}
+            <text x="416" y="288" textAnchor="middle">
+              Match score
+            </text>
+          </svg>
+          <p className="research-muted research-score-middle">
+            Middle half of scores: {format(stats.q1)}–{format(stats.q3)}%
+          </p>
+        </div>
+      ) : (
+        <p className="research-empty">No attraction scores yet.</p>
+      )}
     </figure>
   );
 }

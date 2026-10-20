@@ -194,3 +194,13 @@ runs, success share, incomplete-outcome counts and the middle half of measured
 planning times. Selection results use plain labels and show each outcome's share
 of filtered runs; raw solver status codes remain in exports. Matched setting
 comparisons show the number of comparisons and observed range of changes.
+
+
+The attraction-score histogram uses the same pooled scores as the four summary
+values, in fixed five-point bins over 0–100%. Internal boundaries belong to the
+higher bin; 100% belongs to the final 95–100% bin. Bar heights count scored
+attractions and their hover labels include the share of all plotted scores.
+Reference lines show the average and median, and the middle-half range shows the
+25th–75th percentiles. Failed, missing, non-finite and out-of-range scores do not
+contribute. Repeated attractions across runs remain repeated observations, not
+unique attractions or independent samples.
