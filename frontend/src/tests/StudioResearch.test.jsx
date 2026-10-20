@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import StudioResearch from '../pages/StudioResearch/StudioResearch';
@@ -12,6 +12,7 @@ import {
   UtilitySpread,
 } from '../pages/StudioResearch/ResearchCharts';
 import ResearchInfo from '../pages/StudioResearch/ResearchInfo';
+import { InspectionProvider } from '../pages/StudioResearch/ResearchInspect';
 import { combineStudies, distribution, paired, sample } from '../pages/StudioResearch/researchData';
 import { researchCatalog, savedStudies, studyRequest } from '../services/studioResearch';
 
@@ -147,7 +148,7 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   expect(screen.getByText('1 failed · 0 partial · 0 interrupted')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Stop selection · 1' }));
   expect(
-    screen.getByRole('img', { name: 'Average utility score by allowed utility score drop' })
+    screen.getByRole('group', { name: 'Average utility score by allowed utility score drop' })
   ).toBeInTheDocument();
   expect(screen.getByText('100 simulated attractions')).toBeInTheDocument();
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
@@ -212,15 +213,15 @@ it('renders charts with labeled units, measured sample sizes and negative drivin
   expect(screen.getByRole('table', { name: 'Average utility score · %' })).toHaveTextContent(
     '1 run scored'
   );
-  expect(screen.getByRole('img', { name: 'Run outcomes by trip type' })).toBeInTheDocument();
-  expect(screen.getByRole('img', { name: 'Added driving by trip type' })).toHaveTextContent(
+  expect(screen.getByRole('group', { name: 'Run outcomes by trip type' })).toBeInTheDocument();
+  expect(screen.getByRole('group', { name: 'Added driving by trip type' })).toHaveTextContent(
     'minutes'
   );
   expect(
-    screen.getByRole('img', { name: 'Average utility score by allowed utility score drop' })
+    screen.getByRole('group', { name: 'Average utility score by allowed utility score drop' })
   ).toHaveTextContent('points');
   expect(
-    screen.getByRole('img', { name: 'Utility score versus added driving scatter plot' })
+    screen.getByRole('group', { name: 'Utility score versus added driving scatter plot' })
   ).toHaveTextContent('-1');
   expect(container.innerHTML).not.toMatch(/NaN|Infinity/);
   expect(
@@ -328,7 +329,7 @@ it('plots attraction score frequencies with exact bin boundaries, excluding fail
     { ...base, id: 3, completed: false, utility_values: [0.5] },
   ];
   const view = render(<UtilitySpread rows={rows} />);
-  const chart = screen.getByRole('img', { name: 'Distribution of attraction utility scores' });
+  const chart = screen.getByRole('group', { name: 'Distribution of attraction utility scores' });
   expect(screen.getByText('5 utility scores · 2 runs')).toBeInTheDocument();
   expect(chart).toHaveAccessibleDescription(
     expect.stringContaining('0% to below 5%: 2 utility scores (40%)')
@@ -346,6 +347,49 @@ it('plots attraction score frequencies with exact bin boundaries, excluding fail
   view.rerender(<UtilitySpread rows={[]} />);
   expect(screen.getByText('No utility scores yet.')).toBeInTheDocument();
   expect(
-    screen.queryByRole('img', { name: 'Distribution of attraction utility scores' })
+    screen.queryByRole('group', { name: 'Distribution of attraction utility scores' })
   ).not.toBeInTheDocument();
+});
+
+it('reveals one contextual insight at a time and supports arrow-key chart navigation', async () => {
+  const rows = [base, { ...base, id: 2, persona: 'entertainment', utility_mean: 0.8 }];
+  const view = render(
+    <InspectionProvider>
+      <Heatmap rows={rows} trips={trips} metric="utility_mean" />
+    </InspectionProvider>
+  );
+  const cells = within(screen.getByRole('table'))
+    .getAllByRole('cell')
+    .filter((cell) => cell.hasAttribute('data-inspection-target'));
+  expect(cells[0]).toHaveAttribute('tabindex', '0');
+  expect(cells[1]).toHaveAttribute('tabindex', '-1');
+  expect(cells[0]).not.toHaveAttribute('title');
+  await userEvent.hover(cells[0]);
+  expect(await screen.findByRole('tooltip')).toHaveTextContent('10 points below');
+  expect(screen.getByRole('tooltip')).not.toHaveTextContent('60%');
+  await userEvent.click(cells[0]);
+  await userEvent.keyboard('{ArrowRight}');
+  expect(cells[1]).toHaveFocus();
+  expect(cells[1]).toHaveAttribute('tabindex', '0');
+  expect(cells[0]).toHaveAttribute('tabindex', '-1');
+  expect(screen.getAllByRole('tooltip')).toHaveLength(1);
+  expect(screen.getByRole('tooltip')).toHaveTextContent('10 points above');
+  await userEvent.keyboard('{Escape}');
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  view.unmount();
+});
+
+it('inspects histogram shares without echoing visible bar counts and clears the insight on scroll', async () => {
+  render(
+    <InspectionProvider>
+      <UtilitySpread rows={[{ ...base, utility_values: [0.6, 0.6, 0.8] }]} />
+    </InspectionProvider>
+  );
+  const chart = screen.getByRole('group', { name: 'Distribution of attraction utility scores' });
+  const bar = within(chart).getByRole('button', { name: /60% to below 65%/ });
+  await userEvent.click(bar);
+  expect(screen.getByRole('tooltip')).toHaveTextContent('66.7% of scored attractions');
+  expect(screen.getByRole('tooltip')).not.toHaveTextContent('2 utility scores');
+  act(() => window.dispatchEvent(new Event('scroll')));
+  await vi.waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());
 });

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useId } from 'react';
 import { ChartHeading } from './ResearchInfo';
+import { InspectionGroup, InspectMark } from './ResearchInspect';
 import {
   distribution,
   finite,
@@ -8,6 +9,7 @@ import {
   metricHelp,
   METRICS,
   runCount,
+  paired,
   sample,
 } from './researchData';
 
@@ -25,6 +27,7 @@ export function Heatmap({ rows, trips, metric }) {
     }),
   }));
   const values = distribution(cells.flatMap((trip) => trip.cells.map((cell) => cell.mean)));
+  const firstCell = cells.flatMap((trip) => trip.cells).find((cell) => cell.n);
   const utility = metric.startsWith('utility');
   const span = Math.max(2 * (values.sd ?? 0), utility ? 5 : 10 ** -METRICS[metric].digits);
   const low = utility ? Math.max(0, (values.mean ?? 0) - span) : (values.mean ?? 0) - span;
@@ -42,10 +45,11 @@ export function Heatmap({ rows, trips, metric }) {
       <ChartHeading
         title={METRICS[metric].label}
         unit={METRICS[metric].unit}
-        help={`${metricHelp(metric)} Cells show the average per-run value by trip and interests and stops per target day. The count below each score shows how many finished runs contributed. Runs without usable measurements stay out of the score and its observed range. A dash means missing data. Quality metrics require fully delivered, timing-valid runs; utility scores are estimates, not visitor ratings. Colors are centered on the equally weighted average of populated cells under these filters: amber below, cream at the average, teal above. The color range spans two standard deviations on either side, with a minimum of five score points for utility scores. End labels are color thresholds, not observed extremes. Higher does not mean better for every metric.`}
+        help={`${metricHelp(metric)} Color compares each group with the displayed average. The scale spans two standard deviations, with at least five points for utility scores. Missing measurements are excluded. Utility scores are estimates, not visitor ratings.`}
       />
       <div className="research-table-scroll">
-        <table
+        <InspectionGroup
+          as="table"
           className="research-heatmap"
           aria-label={`${METRICS[metric].label} · ${METRICS[metric].unit}`}
         >
@@ -65,14 +69,24 @@ export function Heatmap({ rows, trips, metric }) {
               <tr key={trip.id}>
                 <th scope="row">{trip.label}</th>
                 {trip.cells.map((cell) => (
-                  <td
+                  <InspectMark
+                    as="td"
                     key={`${cell.persona}-${cell.density}`}
+                    first={cell === firstCell}
+                    disabled={!cell.n}
                     style={cell.n ? { background: color(cell.mean) } : undefined}
-                    title={
-                      cell.n
-                        ? `${format(cell.mean - values.mean, METRICS[metric].digits)} ${utility ? 'points' : METRICS[metric].unit} from the average`
-                        : 'No usable measurements'
-                    }
+                    label={`${trip.label}, ${cell.persona}, ${cell.density} stops per day, ${format(cell.mean, METRICS[metric].digits)} ${METRICS[metric].unit}, ${runCount(cell.n)} measured`}
+                    insight={{
+                      heading: 'Compared with the displayed average',
+                      value:
+                        cell.mean === values.mean
+                          ? 'At the average'
+                          : `${format(Math.abs(cell.mean - values.mean), METRICS[metric].digits)} ${METRICS[metric].unit === '%' ? 'points' : METRICS[metric].unit} ${cell.mean > values.mean ? 'above' : 'below'}`,
+                      detail:
+                        cell.attempts > cell.n
+                          ? `${runCount(cell.attempts - cell.n)} excluded because this measurement was unavailable.`
+                          : undefined,
+                    }}
                   >
                     {format(cell.mean, METRICS[metric].digits)}
                     <small>
@@ -89,12 +103,12 @@ export function Heatmap({ rows, trips, metric }) {
                           : `Range ${format(cell.min, METRICS[metric].digits)}–${format(cell.max, METRICS[metric].digits)}${METRICS[metric].unit === '%' ? '%' : ` ${METRICS[metric].unit}`}`}
                       </small>
                     )}
-                  </td>
+                  </InspectMark>
                 ))}
               </tr>
             ))}
           </tbody>
-        </table>
+        </InspectionGroup>
       </div>
       {values.n > 0 && (
         <div className="research-heatmap-scale" aria-label="Heatmap color scale">
@@ -158,7 +172,7 @@ export function StatusColumns({ rows, trips }) {
           </span>
         ))}
       </div>
-      <svg viewBox="0 0 640 290" role="img" aria-label="Run outcomes by trip type">
+      <InspectionGroup viewBox="0 0 640 290" role="group" aria-label="Run outcomes by trip type">
         <line x1="48" x2="610" y1="210" y2="210" stroke="#c8bcae" />
         {[0, 0.5, 1].map((ratio) => (
           <g key={ratio}>
@@ -176,12 +190,36 @@ export function StatusColumns({ rows, trips }) {
               {row.counts.map((count, c) => {
                 const height = (count / max) * 160;
                 base -= height;
+                const times = distribution(
+                  rows
+                    .filter((item) => item.trip === row.id && categories[c][1](item))
+                    .map((item) => item.runtime_seconds)
+                );
                 return (
-                  <rect key={c} x={x} y={base} width="52" height={height} fill={categories[c][2]}>
-                    <title>
-                      {row.label}: {count} {categories[c][0].toLowerCase()}
-                    </title>
-                  </rect>
+                  <InspectMark
+                    key={c}
+                    disabled={!count || (c === 0 && !times.n)}
+                    first={
+                      row === values.find((item) => item.counts.some(Boolean)) &&
+                      c === row.counts.findIndex(Boolean)
+                    }
+                    label={`${row.label}, ${categories[c][0]}`}
+                    insight={{
+                      heading: `${row.label} · ${categories[c][0]}`,
+                      value:
+                        c === 0
+                          ? `Typical planning time: ${format(times.median)} sec`
+                          : runCount(count),
+                      detail:
+                        c === 0
+                          ? times.max !== times.median
+                            ? `Slowest completed run: ${format(times.max)} sec`
+                            : undefined
+                          : `${format((count / row.counts.reduce((a, b) => a + b, 0)) * 100)}% of this trip's finished runs`,
+                    }}
+                  >
+                    <rect x={x} y={base} width="52" height={height} fill={categories[c][2]} />
+                  </InspectMark>
                 );
               })}
               <text x={x + 26} y="236" textAnchor="middle">
@@ -204,7 +242,7 @@ export function StatusColumns({ rows, trips }) {
             </g>
           );
         })}
-      </svg>
+      </InspectionGroup>
     </figure>
   );
 }
@@ -226,9 +264,13 @@ export function RowChart({ rows, trips, metric }) {
       <ChartHeading
         title="By trip"
         unit={METRICS[metric].unit}
-        help={`${metricHelp(metric)} Bars show the mean per-run value for each trip type under the selected filters. The count shows runs with usable measurements; missing values are excluded. Hover a bar for the observed lowest-to-highest range.`}
+        help={`${metricHelp(metric)} Bars compare per-run averages. Inspect a bar for its median and middle-half range; missing measurements are excluded.`}
       />
-      <svg viewBox="0 0 640 290" role="img" aria-label={`${METRICS[metric].label} by trip type`}>
+      <InspectionGroup
+        viewBox="0 0 640 290"
+        role="group"
+        aria-label={`${METRICS[metric].label} by trip type`}
+      >
         <line x1={x(0)} x2={x(0)} y1="10" y2="250" stroke="#c8bcae" />
         {values.map((row, index) => (
           <g key={row.id}>
@@ -239,20 +281,27 @@ export function RowChart({ rows, trips, metric }) {
               {runCount(row.n)} measured
             </text>
             {finite(row.mean) && (
-              <rect
-                x={Math.min(x(0), x(row.mean))}
-                y={15 + index * 47}
-                width={Math.abs(x(row.mean) - x(0))}
-                height="22"
-                rx="3"
-                fill="#a56b28"
+              <InspectMark
+                first={row === values.find((value) => value.n)}
+                label={`${row.label}, ${METRICS[metric].label} ${format(row.mean, METRICS[metric].digits)} ${METRICS[metric].unit}`}
+                insight={{
+                  heading: 'Typical run',
+                  value: `Median ${format(row.median, METRICS[metric].digits)} ${METRICS[metric].unit}`,
+                  detail:
+                    row.n > 1
+                      ? `Middle half: ${format(row.q1, METRICS[metric].digits)}–${format(row.q3, METRICS[metric].digits)} ${METRICS[metric].unit}`
+                      : 'One measured run; spread is not established yet.',
+                }}
               >
-                <title>
-                  {runCount(row.n)} measured; average {format(row.mean, METRICS[metric].digits)}{' '}
-                  {METRICS[metric].unit}; observed range {format(row.min, METRICS[metric].digits)}–
-                  {format(row.max, METRICS[metric].digits)} {METRICS[metric].unit}
-                </title>
-              </rect>
+                <rect
+                  x={Math.min(x(0), x(row.mean))}
+                  y={15 + index * 47}
+                  width={Math.abs(x(row.mean) - x(0))}
+                  height="22"
+                  rx="3"
+                  fill="#a56b28"
+                />
+              </InspectMark>
             )}
             <text x={finite(row.mean) ? x(row.mean) + 8 : x(0) + 8} y={28 + index * 47}>
               {format(row.mean, METRICS[metric].digits)}
@@ -265,7 +314,7 @@ export function RowChart({ rows, trips, metric }) {
         <text x="560" y="278" textAnchor="end">
           {format(high)} {METRICS[metric].unit}
         </text>
-      </svg>
+      </InspectionGroup>
     </figure>
   );
 }
@@ -289,8 +338,18 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
         metric
       ),
       x: condition.x,
+      conditionId: condition.id,
+      change:
+        condition.id === 'baseline'
+          ? null
+          : paired(
+              rows.filter((row) => row.persona === persona),
+              condition.id,
+              metric
+            ),
     })),
   }));
+  const firstPoint = series.flatMap((row) => row.points).find((point) => point.n);
   const values = series.flatMap((row) => row.points.map((p) => p.mean)).filter(finite);
   if (!values.length) return <p className="research-empty">No results yet.</p>;
   const minX = Math.min(...conditions.map((row) => row.x));
@@ -309,9 +368,9 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
         <span>● Nature</span>
         <span>■ Entertainment</span>
       </div>
-      <svg
+      <InspectionGroup
         viewBox="0 0 640 280"
-        role="img"
+        role="group"
         aria-label={`${METRICS[metric].label} by ${parameter === 'quality_loss' ? 'allowed utility score drop' : 'extra driving penalty'}`}
       >
         {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
@@ -347,27 +406,41 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
                         strokeWidth="2"
                       />
                     )}
-                    {index ? (
-                      <rect x={x(point.x) - 4} y={y(point.mean) - 4} width="8" height="8">
-                        <title>
-                          {series.persona === 'nature' ? 'Nature' : 'Entertainment'}: average{' '}
-                          {format(point.mean, METRICS[metric].digits)} {METRICS[metric].unit};{' '}
-                          {runCount(point.n)} measured; observed range{' '}
-                          {format(point.min, METRICS[metric].digits)}–
-                          {format(point.max, METRICS[metric].digits)} {METRICS[metric].unit}
-                        </title>
-                      </rect>
-                    ) : (
-                      <circle cx={x(point.x)} cy={y(point.mean)} r="4">
-                        <title>
-                          {series.persona === 'nature' ? 'Nature' : 'Entertainment'}: average{' '}
-                          {format(point.mean, METRICS[metric].digits)} {METRICS[metric].unit};{' '}
-                          {runCount(point.n)} measured; observed range{' '}
-                          {format(point.min, METRICS[metric].digits)}–
-                          {format(point.max, METRICS[metric].digits)} {METRICS[metric].unit}
-                        </title>
-                      </circle>
-                    )}
+                    <InspectMark
+                      key={point.x}
+                      first={point === firstPoint}
+                      label={`${series.persona}, ${parameter === 'quality_loss' ? `${format(point.x * 100)}-point utility score drop` : `${point.x} extra driving penalty`}, average ${format(point.mean, METRICS[metric].digits)} ${METRICS[metric].unit}`}
+                      insight={
+                        point.change?.n
+                          ? {
+                              heading: 'Change from default settings',
+                              value: `${format(point.change.mean)} ${METRICS[metric].unit === '%' ? 'points' : METRICS[metric].unit}`,
+                              detail: `${point.change.n} matched run comparisons`,
+                            }
+                          : {
+                              heading:
+                                point.conditionId === 'baseline'
+                                  ? 'Default setting'
+                                  : 'No matched default runs yet',
+                              value: `Median ${format(point.median, METRICS[metric].digits)} ${METRICS[metric].unit}`,
+                              detail: `Middle half: ${format(point.q1, METRICS[metric].digits)}–${format(point.q3, METRICS[metric].digits)} ${METRICS[metric].unit}`,
+                            }
+                      }
+                    >
+                      <circle
+                        className="research-point-hit"
+                        cx={x(point.x)}
+                        cy={y(point.mean)}
+                        r="12"
+                        fill="transparent"
+                        stroke="none"
+                      />
+                      {index ? (
+                        <rect x={x(point.x) - 4} y={y(point.mean) - 4} width="8" height="8"></rect>
+                      ) : (
+                        <circle cx={x(point.x)} cy={y(point.mean)} r="4"></circle>
+                      )}
+                    </InspectMark>
                   </g>
                 )
               );
@@ -379,7 +452,7 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
             ? 'Allowed utility score drop (points)'
             : 'Extra driving penalty'}
         </text>
-      </svg>
+      </InspectionGroup>
     </figure>
   );
 }
@@ -416,9 +489,9 @@ export function Tradeoff({ rows, trips = [] }) {
         <span>● Nature</span>
         <span>● Entertainment</span>
       </div>
-      <svg
+      <InspectionGroup
         viewBox="0 0 640 280"
-        role="img"
+        role="group"
         aria-label="Utility score versus added driving scatter plot"
       >
         {[0, 25, 50, 75, 100].map((value) => (
@@ -430,21 +503,34 @@ export function Tradeoff({ rows, trips = [] }) {
           </g>
         ))}
         {points.map((row) => (
-          <circle
+          <InspectMark
             key={row.id}
-            cx={64 + ((row.extra_seconds / 60 - low) / (high - low)) * 500}
-            cy={210 - row.utility_mean * 160}
-            r="4"
-            opacity="0.55"
-            fill={row.persona === 'nature' ? '#234a3c' : '#a56b28'}
+            first={row === points[0]}
+            label={`${trips.find((trip) => trip.id === row.trip)?.label ?? 'Trip'}, ${row.persona}, run ${row.repeat}`}
+            insight={{
+              heading: trips.find((trip) => trip.id === row.trip)?.label ?? 'Trip',
+              value: `${format(row.utility_mean * 100)}% utility score · ${format(row.extra_seconds / 60)} added min`,
+              detail: finite(row.extra_meters)
+                ? `${format(row.extra_meters / 1609.344)} extra miles`
+                : undefined,
+            }}
           >
-            <title>
-              {trips.find((trip) => trip.id === row.trip)?.label ?? 'Trip'} ·{' '}
-              {row.persona === 'nature' ? 'Nature' : 'Entertainment'} · {row.stops_per_day} stops
-              per day · run {row.repeat}: {format(row.utility_mean * 100)}%,{' '}
-              {format(row.extra_seconds / 60)} min
-            </title>
-          </circle>
+            <circle
+              className="research-point-hit"
+              cx={64 + ((row.extra_seconds / 60 - low) / (high - low)) * 500}
+              cy={210 - row.utility_mean * 160}
+              r="12"
+              fill="transparent"
+              stroke="none"
+            />
+            <circle
+              cx={64 + ((row.extra_seconds / 60 - low) / (high - low)) * 500}
+              cy={210 - row.utility_mean * 160}
+              r="4"
+              opacity="0.55"
+              fill={row.persona === 'nature' ? '#234a3c' : '#a56b28'}
+            />
+          </InspectMark>
         ))}
         <text x="64" y="234">
           {format(low)}
@@ -455,7 +541,7 @@ export function Tradeoff({ rows, trips = [] }) {
         <text x="314" y="268" textAnchor="middle">
           Added driving (minutes)
         </text>
-      </svg>
+      </InspectionGroup>
     </figure>
   );
 }
@@ -497,7 +583,7 @@ export function UtilitySpread({ rows }) {
       <ChartHeading
         title="Attraction utility scores"
         unit={`${format(stats.n, 0)} utility scores · ${runCount(scoredRuns.length)}`}
-        help="Each bar counts utility scores in a five-point range, from 0% to 100%. The lines mark the average and median. Scores come from the filtered, fully delivered, timing-valid runs. Repeated attractions count once per run, so longer trips contribute more scores. The middle-half range contains the central 50% of scores, not a confidence interval. Utility scores are estimates, not visitor ratings."
+        help="Each range is five points wide. Repeated attractions count once per run, so longer trips contribute more scores. The middle-half range is descriptive, not a confidence interval. Inspect a bar for its share of all scored attractions."
       />
       <div className="research-stat-row">
         {summary.map((item) => (
@@ -522,9 +608,9 @@ export function UtilitySpread({ rows }) {
               Median
             </span>
           </div>
-          <svg
+          <InspectionGroup
             viewBox="0 0 800 300"
-            role="img"
+            role="group"
             aria-label="Distribution of attraction utility scores"
             aria-describedby={descriptionId}
           >
@@ -541,7 +627,16 @@ export function UtilitySpread({ rows }) {
               </g>
             ))}
             {bins.map((bin) => (
-              <g key={bin.low}>
+              <InspectMark
+                key={bin.low}
+                first={bin === bins.find((value) => value.count)}
+                disabled={!bin.count}
+                label={binLabel(bin)}
+                insight={{
+                  heading: `${bin.low}% to ${bin.high === 100 ? '100%' : `below ${bin.high}%`} utility score`,
+                  value: `${format((bin.count / stats.n) * 100)}% of scored attractions`,
+                }}
+              >
                 <rect
                   x={x(bin.low) + 2}
                   y={y(bin.count)}
@@ -549,16 +644,13 @@ export function UtilitySpread({ rows }) {
                   height={236 - y(bin.count)}
                   fill="#557d6f"
                   rx="2"
-                  aria-label={binLabel(bin)}
-                >
-                  <title>{binLabel(bin)}</title>
-                </rect>
+                />
                 {bin.count > 0 && (
                   <text x={x(bin.low + 2.5)} y={y(bin.count) - 7} textAnchor="middle">
                     {format(bin.count, 0)}
                   </text>
                 )}
-              </g>
+              </InspectMark>
             ))}
             <line
               x1={x(stats.mean)}
@@ -585,7 +677,7 @@ export function UtilitySpread({ rows }) {
             <text x="416" y="288" textAnchor="middle">
               Utility score
             </text>
-          </svg>
+          </InspectionGroup>
           <p className="research-muted research-score-middle">
             Middle half of utility scores: {format(stats.q1)}–{format(stats.q3)}%
           </p>
@@ -614,7 +706,11 @@ export function UtilityBoxes({ rows, trips }) {
         unit="Utility score %"
         help="How average utility scores vary between runs. Each box contains the middle 50%; its line marks the median. The ends show the observed minimum and maximum, not confidence intervals. The count shows runs with usable utility scores. Fixed-data solver repeats measure solver variation, not independent real-world samples."
       />
-      <svg viewBox="0 0 640 270" role="img" aria-label="Utility score distributions by trip type">
+      <InspectionGroup
+        viewBox="0 0 640 270"
+        role="group"
+        aria-label="Utility score distributions by trip type"
+      >
         {[0, 25, 50, 75, 100].map((value) => (
           <g key={value}>
             <line x1={x(value)} x2={x(value)} y1="10" y2="230" stroke="#e8ddd0" />
@@ -631,7 +727,16 @@ export function UtilityBoxes({ rows, trips }) {
                 {group.label}
               </text>
               {group.n ? (
-                <g stroke="#234a3c">
+                <InspectMark
+                  stroke="#234a3c"
+                  first={group === groups.find((value) => value.n)}
+                  label={`${group.label}, utility score spread`}
+                  insight={{
+                    heading: group.label,
+                    value: `Middle half: ${format(group.q1)}–${format(group.q3)}%`,
+                    detail: `Median utility score ${format(group.median)}%`,
+                  }}
+                >
                   <line x1={x(group.min)} x2={x(group.max)} y1={y} y2={y} />
                   <rect
                     x={x(group.q1)}
@@ -649,11 +754,7 @@ export function UtilityBoxes({ rows, trips }) {
                   />
                   <circle cx={x(group.min)} cy={y} r="2" fill="#234a3c" />
                   <circle cx={x(group.max)} cy={y} r="2" fill="#234a3c" />
-                  <title>
-                    {runCount(group.n)} scored; lowest {format(group.min)}%, median{' '}
-                    {format(group.median)}%, highest {format(group.max)}%
-                  </title>
-                </g>
+                </InspectMark>
               ) : null}
               <text x="570" y={y + 4}>
                 {runCount(group.n)}
@@ -661,7 +762,7 @@ export function UtilityBoxes({ rows, trips }) {
             </g>
           );
         })}
-      </svg>
+      </InspectionGroup>
     </figure>
   );
 }

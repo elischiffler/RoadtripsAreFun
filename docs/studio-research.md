@@ -203,3 +203,14 @@ Reference lines show the average and median, and the middle-half range shows the
 25th–75th percentiles. Failed, missing, non-finite and out-of-range scores do not
 contribute. Repeated attractions across runs remain repeated observations, not
 unique attractions or independent samples.
+
+
+Data marks support a single anchored inspection tooltip. Heatmap cells expose
+the difference from the displayed average; trip bars show medians and central
+ranges; histogram bars show their share of plotted scores; settings points show
+within-batch paired changes when available. Native hover titles are removed from
+those marks to avoid duplicate popups. Hover waits briefly for pointer intent;
+focus and taps open immediately. Tab enters a chart, arrow keys move between its
+marks, and Escape dismisses the tooltip. Scrolling dismisses detached overlays.
+Motion is limited to short opacity/shadow transitions and respects reduced-motion
+preferences; incoming measurements do not replay chart animations.

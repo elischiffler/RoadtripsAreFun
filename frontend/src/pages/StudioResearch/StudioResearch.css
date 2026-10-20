@@ -408,3 +408,119 @@
 .research-score-middle {
   margin: 8px 0 0;
 }
+/* Inspection stays anchored to the data, with no movement during result polling. */
+.research-inspect-tooltip {
+  position: fixed;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: max-content;
+  max-width: min(288px, calc(100vw - 24px));
+  padding: 14px 16px;
+  border: 1px solid #ded8cd;
+  border-radius: 14px;
+  background: rgb(255 253 248 / 96%);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 12px 36px #30271c1c,
+    0 2px 6px #30271c0a;
+  color: #3b2a1a;
+  font-family: system-ui, sans-serif;
+  line-height: 1.4;
+  animation: research-insight-in 160ms ease-out;
+}
+.research-inspect-heading,
+.research-inspect-detail {
+  font-size: 0.75rem;
+  color: #705b45;
+}
+.research-inspect-tooltip strong {
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+[data-inspection-target] {
+  cursor: help;
+  transition:
+    opacity 160ms ease,
+    filter 160ms ease,
+    box-shadow 160ms ease;
+}
+svg[data-inspection-chart]:has([data-inspection-target]:is(:hover, :focus-visible))
+  [data-inspection-target]:not(:hover):not(:focus-visible)
+  > rect,
+svg[data-inspection-chart]:has([data-inspection-target]:is(:hover, :focus-visible))
+  [data-inspection-target]:not(:hover):not(:focus-visible)
+  > circle:not(.research-point-hit) {
+  fill-opacity: 0.45;
+}
+.research-heatmap [data-inspection-target]:is(:hover, :focus-visible) {
+  box-shadow:
+    inset 0 0 0 1.5px #345a4d80,
+    0 3px 10px #30271c14;
+}
+[data-inspection-target]:focus-visible {
+  outline: 2px solid #a56b28;
+  outline-offset: 3px;
+}
+svg [data-inspection-target]:is(:hover, :focus-visible) > rect,
+svg [data-inspection-target]:is(:hover, :focus-visible) > circle:not(.research-point-hit) {
+  filter: brightness(1.1) drop-shadow(0 1px 2px #30271c30);
+  stroke: #315448;
+  stroke-width: 1.5px;
+}
+.research-point-hit {
+  pointer-events: all;
+}
+.research-card,
+.studio-research button,
+.studio-research select {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.research-card:hover {
+  border-color: #d4cbbd;
+  box-shadow: 0 2px 12px #30271c06;
+}
+.studio-research button:not(:disabled):hover,
+.studio-research select:hover {
+  border-color: #b3a38f;
+  box-shadow: 0 2px 6px #30271c0a;
+}
+.research-tooltip > span {
+  animation: research-insight-in 160ms ease-out;
+}
+@keyframes research-insight-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-research *,
+  .research-inspect-tooltip {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+svg [data-inspection-target] > rect,
+svg [data-inspection-target] > circle {
+  transition:
+    fill-opacity 160ms ease,
+    filter 160ms ease,
+    stroke 160ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  svg [data-inspection-target] > rect,
+  svg [data-inspection-target] > circle {
+    transition: none;
+  }
+}

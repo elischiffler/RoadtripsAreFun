@@ -17,6 +17,7 @@ import {
 } from './ResearchCharts';
 import { combineStudies, distribution, format, METRICS, paired, solverLabel } from './researchData';
 import ResearchInfo, { ChartHeading } from './ResearchInfo';
+import { InspectionProvider, InspectMark } from './ResearchInspect';
 import '../AlgorithmLab/AlgorithmLab.css';
 import './StudioResearch.css';
 
@@ -147,323 +148,338 @@ export default function StudioResearch() {
   const nextSource = data?.sources.find((source) => source.state !== 'complete');
 
   return (
-    <main className="algorithm-lab studio-research">
-      <header className="lab-title">
-        <div>
-          <span className="research-eyebrow">AI Studio</span>
-          <h1>Trip research</h1>
-        </div>
-        <Link to="/studio">Back to Studio</Link>
-      </header>
-      {error && (
-        <p className="lab-warning" role="alert">
-          {error}
-        </p>
-      )}
-      {connectionError && (
-        <p className="lab-warning" role="status">
-          {connectionError}
-        </p>
-      )}
-      <div className="research-toolbar">
-        {data && (
-          <>
-            <span className="research-state" role="status">
-              {data.state} · {format(finished, 0)} / {format(data.counts.total, 0)}
-            </span>
-            {running ? (
-              <button
-                disabled={busy || activeSources.every((source) => source.state === 'pausing')}
-                onClick={() =>
-                  action(() =>
-                    Promise.all(
-                      activeSources.map((source) =>
-                        studyRequest(
-                          studies.find((study) => study.id === source.id),
-                          'pause',
-                          'post'
-                        )
-                      )
-                    )
-                  )
-                }
-              >
-                Pause
-              </button>
-            ) : (
-              nextSource && (
+    <InspectionProvider>
+      <main className="algorithm-lab studio-research">
+        <header className="lab-title">
+          <div>
+            <span className="research-eyebrow">AI Studio</span>
+            <h1>Trip research</h1>
+          </div>
+          <Link to="/studio">Back to Studio</Link>
+        </header>
+        {error && (
+          <p className="lab-warning" role="alert">
+            {error}
+          </p>
+        )}
+        {connectionError && (
+          <p className="lab-warning" role="status">
+            {connectionError}
+          </p>
+        )}
+        <div className="research-toolbar">
+          {data && (
+            <>
+              <span className="research-state" role="status">
+                {data.state} · {format(finished, 0)} / {format(data.counts.total, 0)}
+              </span>
+              {running ? (
                 <button
-                  disabled={busy}
+                  disabled={busy || activeSources.every((source) => source.state === 'pausing')}
                   onClick={() =>
                     action(() =>
-                      studyRequest(
-                        studies.find((study) => study.id === nextSource.id),
-                        'start',
-                        'post'
+                      Promise.all(
+                        activeSources.map((source) =>
+                          studyRequest(
+                            studies.find((study) => study.id === source.id),
+                            'pause',
+                            'post'
+                          )
+                        )
                       )
                     )
                   }
                 >
-                  Resume
+                  Pause
                 </button>
-              )
-            )}
-            <button
-              aria-label="Export CSV"
-              onClick={() => action(() => downloadStudy(studies, 'csv'))}
-              disabled={busy}
-            >
-              CSV
-            </button>
-            <button
-              aria-label="Export JSON"
-              onClick={() => action(() => downloadStudy(studies, 'json'))}
-              disabled={busy}
-            >
-              JSON
-            </button>
-          </>
-        )}
-      </div>
-      {!data ? (
-        <p className="research-empty">{studies.length ? 'Loading…' : 'No results yet.'}</p>
-      ) : (
-        <>
-          <progress value={finished} max={data.counts.total} aria-label="Finished study runs" />
-          <nav className="research-tabs" aria-label="Study track">
-            <button
-              aria-pressed={track === 'pipeline'}
-              onClick={() => {
-                setTrack('pipeline');
-                setMetric('utility_mean');
-              }}
-            >
-              Full trip planning · {data.counts.pipeline}
-            </button>
-            <button
-              aria-pressed={track === 'solver'}
-              onClick={() => {
-                setTrack('solver');
-                setMetric('utility_mean');
-              }}
-            >
-              Stop selection · {data.counts.solver}
-            </button>
-          </nav>
-          <div className="research-track-meta">
-            <span>
-              {track === 'pipeline'
-                ? 'Live trips'
-                : data.dataset_hashes.length === 1
-                  ? '100 simulated attractions'
-                  : 'Simulated attractions'}
-            </span>
-            <ResearchInfo label="Study data">
-              {track === 'pipeline'
-                ? 'Fresh live trips through the complete pipeline. Quality scores require fully delivered, timing-valid itineraries. Hotel metrics cover quoted room-nights only, not the total trip budget. Missing quotes are unassessed.'
-                : 'CP-SAT stop selection tested on fixed simulated attractions. Driving gaps and extra-driving inputs are simulated, not measured journeys. Saved runs are combined here and may reuse solver seeds; they are not independent real-world samples. Default settings permit a 10-point utility score drop from the best available average, give equal importance to stop spacing and extra driving, and allow five seconds on one solver worker.'}{' '}
-              Success requires every requested stop and, for full trips, valid timing. Typical
-              planning time is the median; the middle-half range contains the central 50% of
-              measured times. Summary totals cover all settings in this track; charts below follow
-              their filters. Target days set requested stops, not actual trip length. Pausing
-              finishes current runs.
-            </ResearchInfo>
-          </div>
-          <div className="research-stat-row research-summary">
-            <div>
-              <span>Runs finished</span>
-              <strong>{format(trackRows.length, 0)}</strong>
-              <small>
-                {format(
-                  (track === 'solver' ? data.counts.solver : data.counts.pipeline) -
-                    trackRows.length,
-                  0
-                )}{' '}
-                runs remaining
-              </small>
+              ) : (
+                nextSource && (
+                  <button
+                    disabled={busy}
+                    onClick={() =>
+                      action(() =>
+                        studyRequest(
+                          studies.find((study) => study.id === nextSource.id),
+                          'start',
+                          'post'
+                        )
+                      )
+                    }
+                  >
+                    Resume
+                  </button>
+                )
+              )}
+              <button
+                aria-label="Export CSV"
+                onClick={() => action(() => downloadStudy(studies, 'csv'))}
+                disabled={busy}
+              >
+                CSV
+              </button>
+              <button
+                aria-label="Export JSON"
+                onClick={() => action(() => downloadStudy(studies, 'json'))}
+                disabled={busy}
+              >
+                JSON
+              </button>
+            </>
+          )}
+        </div>
+        {!data ? (
+          <p className="research-empty">{studies.length ? 'Loading…' : 'No results yet.'}</p>
+        ) : (
+          <>
+            <progress value={finished} max={data.counts.total} aria-label="Finished study runs" />
+            <nav className="research-tabs" aria-label="Study track">
+              <button
+                aria-pressed={track === 'pipeline'}
+                onClick={() => {
+                  setTrack('pipeline');
+                  setMetric('utility_mean');
+                }}
+              >
+                Full trip planning · {data.counts.pipeline}
+              </button>
+              <button
+                aria-pressed={track === 'solver'}
+                onClick={() => {
+                  setTrack('solver');
+                  setMetric('utility_mean');
+                }}
+              >
+                Stop selection · {data.counts.solver}
+              </button>
+            </nav>
+            <div className="research-track-meta">
+              <span>
+                {track === 'pipeline'
+                  ? 'Live trips'
+                  : data.dataset_hashes.length === 1
+                    ? '100 simulated attractions'
+                    : 'Simulated attractions'}
+              </span>
+              <ResearchInfo label="Study data">
+                {track === 'pipeline'
+                  ? 'Fresh live trips through the complete pipeline. Quality scores require fully delivered, timing-valid itineraries. Hotel metrics cover quoted room-nights only, not the total trip budget. Missing quotes are unassessed.'
+                  : 'CP-SAT stop selection tested on fixed simulated attractions. Driving gaps and extra-driving inputs are simulated, not measured journeys. Saved runs are combined here and may reuse solver seeds; they are not independent real-world samples. Default settings permit a 10-point utility score drop from the best available average, give equal importance to stop spacing and extra driving, and allow five seconds on one solver worker.'}{' '}
+                Success requires every requested stop and, for full trips, valid timing. Typical
+                planning time is the median; the middle-half range contains the central 50% of
+                measured times. Summary totals cover all settings in this track; charts below follow
+                their filters. Target days set requested stops, not actual trip length. Pausing
+                finishes current runs.
+              </ResearchInfo>
             </div>
-            <div>
-              <span>Successful runs</span>
-              <strong>{format(successful, 0)}</strong>
-              <small>{percentFinished(successful)}</small>
+            <div className="research-stat-row research-summary">
+              <div>
+                <span>Runs finished</span>
+                <strong>{format(trackRows.length, 0)}</strong>
+                <small>
+                  {format(
+                    (track === 'solver' ? data.counts.solver : data.counts.pipeline) -
+                      trackRows.length,
+                    0
+                  )}{' '}
+                  runs remaining
+                </small>
+              </div>
+              <div>
+                <span>Successful runs</span>
+                <strong>{format(successful, 0)}</strong>
+                <small>{percentFinished(successful)}</small>
+              </div>
+              <div>
+                <span>Incomplete runs</span>
+                <strong>{format(trackRows.length - successful, 0)}</strong>
+                <small>
+                  {failed} failed · {partial} partial · {interrupted} interrupted
+                </small>
+              </div>
+              <InspectMark
+                as="div"
+                first
+                disabled={!runtime.n}
+                label="Observed planning time range"
+                insight={{
+                  heading: 'Observed planning times',
+                  value: `${format(runtime.min)}–${format(runtime.max)} sec`,
+                  detail: 'Fastest to slowest, including timed failed attempts.',
+                }}
+              >
+                <span>Typical planning time</span>
+                <strong>
+                  {format(runtime.median)}
+                  <small> sec</small>
+                </strong>
+                <small>
+                  {runtime.n > 1
+                    ? `Middle half: ${format(runtime.q1)}–${format(runtime.q3)} sec`
+                    : runtime.n === 1
+                      ? '1 timed run'
+                      : 'No times recorded'}
+                </small>
+              </InspectMark>
             </div>
-            <div>
-              <span>Incomplete runs</span>
-              <strong>{format(trackRows.length - successful, 0)}</strong>
-              <small>
-                {failed} failed · {partial} partial · {interrupted} interrupted
-              </small>
-            </div>
-            <div>
-              <span>Typical planning time</span>
-              <strong>
-                {format(runtime.median)}
-                <small> sec</small>
-              </strong>
-              <small>
-                {runtime.n > 1
-                  ? `Middle half: ${format(runtime.q1)}–${format(runtime.q3)} sec`
-                  : runtime.n === 1
-                    ? '1 timed run'
-                    : 'No times recorded'}
-              </small>
-            </div>
-          </div>
-          <div className="research-controls research-filters">
-            <label>
-              Measure
-              <select value={metric} onChange={(e) => setMetric(e.target.value)}>
-                {Object.entries(METRICS)
-                  .filter(([, value]) => track === 'pipeline' || !value.live)
-                  .map(([key, value]) => (
-                    <option value={key} key={key}>
-                      {value.label}
-                      {key === 'max_gap_seconds' && track === 'solver' ? ' (simulated)' : ''}
-                    </option>
-                  ))}
-              </select>
-            </label>
-            <label>
-              Interests
-              <select value={persona} onChange={(e) => setPersona(e.target.value)}>
-                <option value="all">All interests</option>
-                <option value="nature">Nature</option>
-                <option value="entertainment">Entertainment</option>
-              </select>
-            </label>
-            <label>
-              Stops / day
-              <select value={density} onChange={(e) => setDensity(e.target.value)}>
-                <option value="all">All rates</option>
-                {[1, 2, 3].map((n) => (
-                  <option value={n} key={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {track === 'solver' && (
+            <div className="research-controls research-filters">
               <label>
-                Selection setting
-                <select value={variant} onChange={(e) => setVariant(e.target.value)}>
-                  {data.variants.map((row) => (
-                    <option value={row.id} key={row.id}>
-                      {row.id === 'baseline'
-                        ? 'Default settings'
-                        : row.parameter === 'quality_loss'
-                          ? `Allow ${format(row.value * 100)}-point utility score drop`
-                          : `Extra driving penalty: ${row.value}×`}
+                Measure
+                <select value={metric} onChange={(e) => setMetric(e.target.value)}>
+                  {Object.entries(METRICS)
+                    .filter(([, value]) => track === 'pipeline' || !value.live)
+                    .map(([key, value]) => (
+                      <option value={key} key={key}>
+                        {value.label}
+                        {key === 'max_gap_seconds' && track === 'solver' ? ' (simulated)' : ''}
+                      </option>
+                    ))}
+                </select>
+              </label>
+              <label>
+                Interests
+                <select value={persona} onChange={(e) => setPersona(e.target.value)}>
+                  <option value="all">All interests</option>
+                  <option value="nature">Nature</option>
+                  <option value="entertainment">Entertainment</option>
+                </select>
+              </label>
+              <label>
+                Stops / day
+                <select value={density} onChange={(e) => setDensity(e.target.value)}>
+                  <option value="all">All rates</option>
+                  {[1, 2, 3].map((n) => (
+                    <option value={n} key={n}>
+                      {n}
                     </option>
                   ))}
                 </select>
               </label>
-            )}
-          </div>
-          <section className="research-card">
-            <Heatmap rows={filtered} trips={trips} metric={metric} />
-          </section>
-          <div className="research-chart-grid">
-            <section className="research-card">
-              <StatusColumns rows={filtered} trips={trips} />
-            </section>
-            <section className="research-card">
-              <RowChart rows={filtered} trips={trips} metric={metric} />
-            </section>
-          </div>
-          <section className="research-card">
-            <UtilitySpread rows={filtered} />
-          </section>
-          <section className="research-card">
-            <UtilityBoxes rows={filtered} trips={trips} />
-          </section>
-          {track === 'pipeline' ? (
-            <section className="research-card">
-              <Tradeoff rows={filtered} trips={trips} />
-            </section>
-          ) : (
-            <section className="research-card">
-              <ChartHeading
-                as="h2"
-                title="Settings comparison"
-                help="Average of the selected measure as one solver setting changes. Trip and stops per day stay fixed here; interest and selection-setting filters above do not apply. Points show each interest profile separately; hover for the number of measured runs and their observed range. Allowed utility score drop is the permitted decrease from the best available average utility score. The same candidates and seed are paired across settings; these are repeated solver trials on one dataset."
-              />
-              <div className="research-controls">
+              {track === 'solver' && (
                 <label>
-                  Trip
-                  <select value={responseTrip} onChange={(e) => setCurveTrip(e.target.value)}>
-                    {trips
-                      .filter((trip) => data.design.trips.includes(trip.id))
-                      .map((trip) => (
-                        <option value={trip.id} key={trip.id}>
-                          {trip.label}
-                        </option>
-                      ))}
-                  </select>
-                </label>
-                <label>
-                  Stops per day
-                  <select value={responseDensity} onChange={(e) => setCurveDensity(e.target.value)}>
-                    {[1, 2, 3].map((n) => (
-                      <option value={n} key={n}>
-                        {n}
+                  Selection setting
+                  <select value={variant} onChange={(e) => setVariant(e.target.value)}>
+                    {data.variants.map((row) => (
+                      <option value={row.id} key={row.id}>
+                        {row.id === 'baseline'
+                          ? 'Default settings'
+                          : row.parameter === 'quality_loss'
+                            ? `Allow ${format(row.value * 100)}-point utility score drop`
+                            : `Extra driving penalty: ${row.value}×`}
                       </option>
                     ))}
                   </select>
                 </label>
-                <label>
-                  Setting
-                  <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
-                    <option value="quality_loss">Allowed utility score drop</option>
-                    <option value="detour_weight">Extra driving penalty</option>
-                  </select>
-                </label>
-              </div>
-              <ResponseCurve
-                rows={curves}
-                variants={data.variants}
-                parameter={parameter}
-                metric={metric}
-              />
-              {delta.n >= 5 && (
-                <div className="research-finding">
-                  <div>
-                    <strong>Average utility score change: {format(delta.mean)} points</strong>
-                    <small>
-                      {delta.n} matched run comparisons · observed change {format(delta.min)} to{' '}
-                      {format(delta.max)} points
-                    </small>
-                  </div>
-                  <ResearchInfo label="Average utility score change">
-                    {parameter === 'quality_loss'
-                      ? `${format(changeVariants.at(-1).value * 100)}-point allowed utility score drop`
-                      : `${changeVariants.at(-1).value}× extra driving penalty`}{' '}
-                    versus default settings, matching trip, interests, stop count and solver seed.
-                    Only comparisons with usable utility scores on both sides are included. This is
-                    not a significance test.
-                  </ResearchInfo>
-                </div>
               )}
-            </section>
-          )}
-          <section className="research-card">
-            <ChartHeading
-              as="h2"
-              title="Selection results"
-              help="Counts and shares follow the selected filters. Best solution proven means the solver established the lowest spacing-and-extra-driving cost while meeting the required utility score; it does not mean highest utility score. Valid solution found means the requirements were met without proving the best solution before time ran out. No valid solution means the requirements cannot all be met. A strict zero-drop requirement can fail because of score rounding, which does not establish a shortage of attractions."
-            />
-            <div className="research-statuses">
-              {Object.entries(solverCounts).map(([label, count]) => (
-                <div key={label}>
-                  <span>{solverLabel(label)}</span>
-                  <strong>{format(count, 0)}</strong>
-                  <small>{format((count / filtered.length) * 100)}% of filtered runs</small>
-                </div>
-              ))}
-              {!filtered.length && <p>No results yet.</p>}
             </div>
-          </section>
-        </>
-      )}
-    </main>
+            <section className="research-card">
+              <Heatmap rows={filtered} trips={trips} metric={metric} />
+            </section>
+            <div className="research-chart-grid">
+              <section className="research-card">
+                <StatusColumns rows={filtered} trips={trips} />
+              </section>
+              <section className="research-card">
+                <RowChart rows={filtered} trips={trips} metric={metric} />
+              </section>
+            </div>
+            <section className="research-card">
+              <UtilitySpread rows={filtered} />
+            </section>
+            <section className="research-card">
+              <UtilityBoxes rows={filtered} trips={trips} />
+            </section>
+            {track === 'pipeline' ? (
+              <section className="research-card">
+                <Tradeoff rows={filtered} trips={trips} />
+              </section>
+            ) : (
+              <section className="research-card">
+                <ChartHeading
+                  as="h2"
+                  title="Settings comparison"
+                  help="Average of the selected measure as one solver setting changes. Trip and stops per day stay fixed here; interest and selection-setting filters above do not apply. Points show each interest profile separately; hover for the number of measured runs and their observed range. Allowed utility score drop is the permitted decrease from the best available average utility score. The same candidates and seed are paired across settings; these are repeated solver trials on one dataset."
+                />
+                <div className="research-controls">
+                  <label>
+                    Trip
+                    <select value={responseTrip} onChange={(e) => setCurveTrip(e.target.value)}>
+                      {trips
+                        .filter((trip) => data.design.trips.includes(trip.id))
+                        .map((trip) => (
+                          <option value={trip.id} key={trip.id}>
+                            {trip.label}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                  <label>
+                    Stops per day
+                    <select
+                      value={responseDensity}
+                      onChange={(e) => setCurveDensity(e.target.value)}
+                    >
+                      {[1, 2, 3].map((n) => (
+                        <option value={n} key={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    Setting
+                    <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
+                      <option value="quality_loss">Allowed utility score drop</option>
+                      <option value="detour_weight">Extra driving penalty</option>
+                    </select>
+                  </label>
+                </div>
+                <ResponseCurve
+                  rows={curves}
+                  variants={data.variants}
+                  parameter={parameter}
+                  metric={metric}
+                />
+                {delta.n >= 5 && (
+                  <div className="research-finding">
+                    <div>
+                      <strong>Average utility score change: {format(delta.mean)} points</strong>
+                      <small>
+                        {delta.n} matched run comparisons · observed change {format(delta.min)} to{' '}
+                        {format(delta.max)} points
+                      </small>
+                    </div>
+                    <ResearchInfo label="Average utility score change">
+                      {parameter === 'quality_loss'
+                        ? `${format(changeVariants.at(-1).value * 100)}-point allowed utility score drop`
+                        : `${changeVariants.at(-1).value}× extra driving penalty`}{' '}
+                      versus default settings, matching trip, interests, stop count and solver seed.
+                      Only comparisons with usable utility scores on both sides are included. This
+                      is not a significance test.
+                    </ResearchInfo>
+                  </div>
+                )}
+              </section>
+            )}
+            <section className="research-card">
+              <ChartHeading
+                as="h2"
+                title="Selection results"
+                help="Counts and shares follow the selected filters. Best solution proven means the solver established the lowest spacing-and-extra-driving cost while meeting the required utility score; it does not mean highest utility score. Valid solution found means the requirements were met without proving the best solution before time ran out. No valid solution means the requirements cannot all be met. A strict zero-drop requirement can fail because of score rounding, which does not establish a shortage of attractions."
+              />
+              <div className="research-statuses">
+                {Object.entries(solverCounts).map(([label, count]) => (
+                  <div key={label}>
+                    <span>{solverLabel(label)}</span>
+                    <strong>{format(count, 0)}</strong>
+                    <small>{format((count / filtered.length) * 100)}% of filtered runs</small>
+                  </div>
+                ))}
+                {!filtered.length && <p>No results yet.</p>}
+              </div>
+            </section>
+          </>
+        )}
+      </main>
+    </InspectionProvider>
   );
 }
