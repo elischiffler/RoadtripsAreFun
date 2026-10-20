@@ -6,8 +6,10 @@ browser. CSV and JSON exports retain the underlying observations and protocol.
 
 ## Requested design
 
-The default study prioritizes CP-SAT: **6,300 solver trials**, followed by
-**300 live pipeline runs**, for **6,600 total**.
+The October 20 rerun schedules **6,300 CP-SAT trials only**, with a fixed
+**15-second solve limit** and **no full trip planning runs**. The original October
+19 design scheduled 6,300 solver trials followed by 300 live pipeline runs; its
+results remain historical and separate.
 
 | Trip | Route | Target days | Requested attractions at 1 / 2 / 3 per target day |
 | --- | --- | --- | --- |
@@ -52,9 +54,10 @@ time:
 The baseline is counted once. Each condition uses the same candidate set, stop
 count, persona and repeat seed. Seeds are repeat index minus one. Trial order is
 shuffled within repeat blocks using the declared study seed. Solver trials run
-serially, with one OR-Tools worker and a five-second solve cap. Candidate capacity
-is explicitly 100 for this experiment; interactive production discovery retains
-its existing maximum of 60. No production solver defaults change.
+serially, with one OR-Tools worker. The initial October 19 campaign uses its frozen
+five-second solve cap. From October 20, new plans inherit the shared fifteen-second
+CP-SAT default for every condition. Candidate capacity is explicitly 100 for this
+experiment; interactive discovery retains its existing maximum of 60.
 
 The repeats assess solver variation on **one fixed dataset**, not 30 independent
 real-world candidate samples. Budget is not an input to attraction selection;
@@ -230,3 +233,29 @@ added driving and matched comparisons. Complete runs describe delivered trips;
 finished runs also include partial, failed and interrupted runs. Attraction-level
 utility scores remain distinct from per-run summary measures. Export field names
 and stored measurement definitions are unchanged.
+
+## Standard solve limit (October 20, 2026)
+
+New interactive solves and newly created Studio research plans use one fixed
+15-second CP-SAT limit. An optimal solve can finish earlier; a feasible selection
+is still accepted when the limit is reached. This is a per-solve cap, not a
+whole-trip deadline. Existing studies execute their saved configuration and keep
+their original results and source identity. The initial five-second campaign has
+not been rewritten or selectively retried. A consistent fifteen-second dataset
+requires a fresh complete set of controlled trials; retrying only timeouts would
+create a different protocol. The October 20 replacement reruns stop selection only: 6,300 controlled trials
+and no live pipeline cases. Historical five-second results are retained, not
+overwritten or pooled into the replacement.
+The separate offline evaluation harness retains its explicit historical sweep
+limits and recorded protocol; these are not ordinary application defaults.
+
+**Rerun stop selection** creates the largest saved matrix as a new solver-only
+batch, with the same candidate seed and verified dataset hash, and all original
+trip/persona/stop-count conditions and repeats. The server requires execution
+opt-in and rejects reruns while a batch is active or pausing. Saved configurations
+are immutable; the new batch records the previous ID and current source identity.
+The browser archives historical capabilities locally and switches to only the
+new batch before starting it. A failed start leaves Resume available. A failed
+creation leaves the current dashboard intact. The solve limit is shown from the
+saved protocol rather than inferred from today's default. Full trip planning is
+not scheduled by this action, and zero-count modes are hidden.

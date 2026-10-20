@@ -106,7 +106,7 @@ export const metricHelp = (metric) => METRIC_HELP[metric];
 
 export function combineStudies(snapshots) {
   if (!snapshots.length) return null;
-  const sources = snapshots.map(({ id, state }) => ({ id, state }));
+  const sources = snapshots.map(({ id, state, counts }) => ({ id, state, total: counts.total }));
   const active = sources.find((source) =>
     ['running', 'starting', 'pausing'].includes(source.state)
   );
@@ -126,6 +126,13 @@ export function combineStudies(snapshots) {
       ...new Map(
         snapshots.flatMap((study) => study.variants).map((variant) => [variant.id, variant])
       ).values(),
+    ],
+    solve_limits: [
+      ...new Set(
+        snapshots
+          .flatMap((study) => study.variants.map((variant) => variant.config?.time_limit_seconds))
+          .filter(finite)
+      ),
     ],
     dataset_hashes: [...new Set(snapshots.map((study) => study.dataset_hash))],
     rows: snapshots.flatMap((study) =>

@@ -16,6 +16,7 @@ from app.research import store, worker
 from app.research.design import Design, plan
 from app.research.metrics import observation
 from app.routers import studio_research as api
+from app.routing.cp_sat_selection import SelectionConfig
 
 
 @pytest.fixture(autouse=True)
@@ -53,6 +54,7 @@ def test_matrix_and_one_factor_conditions_are_exact_and_paired():
     assert len(planned["dataset"]) == len({row["provider_id"] for row in planned["dataset"]}) == 100
     assert planned == plan(Design())
     base = planned["variants"][0]["config"]
+    assert base["time_limit_seconds"] == SelectionConfig().time_limit_seconds == 15
     for variant in planned["variants"][1:]:
         assert [key for key in base if base[key] != variant["config"][key]] == [
             variant["parameter"]
@@ -286,6 +288,7 @@ def test_source_change_refuses_mixing_and_real_solver_uses_exactly_100(monkeypat
     assert result["evidence"] == "synthetic_controlled_100"
     assert result["candidate_count"] == 100
     assert result["solver"]["configuration"]["workers"] == 1
+    assert result["solver"]["configuration"]["time_limit_seconds"] == 0.05
     assert result["dataset_hash"] == planned["dataset_hash"]
 
 
@@ -332,3 +335,64 @@ def test_execution_requires_opt_in_but_existing_results_and_pause_remain_availab
     assert client.get(f"/studio/research/batches/{key}", headers=headers).status_code == 200
     assert client.get("/studio/research/catalog").json()["execution_enabled"] is False
     assert client.post(f"/studio/research/batches/{key}/pause", headers=headers).status_code == 200
+
+
+def test_existing_study_keeps_its_frozen_five_second_protocol():
+    study_id = str(uuid4())
+    historical = plan(minimal(pipeline=False))
+    for variant in historical["variants"]:
+        variant["config"]["time_limit_seconds"] = 5.0
+    access = store.create(study_id, "studio:unit-owner", historical, api.identity())
+    current = plan(minimal(pipeline=False))
+    assert current["variants"][0]["config"]["time_limit_seconds"] == 15.0
+    assert store.create(study_id, "studio:unit-owner", current, api.identity()) == access
+    saved = store.study(study_id, access)
+    assert saved["plan"]["variants"][0]["config"]["time_limit_seconds"] == 5.0
+
+
+def test_rerun_preserves_history_and_schedules_only_solver_with_current_limit():
+    historical = plan(minimal())
+    for variant in historical["variants"]:
+        variant["config"]["time_limit_seconds"] = 5.0
+    previous_id = str(uuid4())
+    previous_key = store.create(previous_id, "studio:unit-owner", historical, api.identity())
+    store.state(previous_id, "paused")
+    client = TestClient(app)
+    url = f"/studio/research/batches/{previous_id}/rerun"
+    payload = {"id": str(uuid4())}
+    assert client.post(url, json=payload).status_code == 404
+    access = {"X-Studio-Batch-Key": previous_key}
+    assert client.post(url, json={"id": previous_id}, headers=access).status_code == 422
+    unrelated_id, _ = make_study()
+    assert client.post(url, json={"id": unrelated_id}, headers=access).status_code == 409
+    response = client.post(url, json=payload, headers=access)
+    assert response.status_code == 201
+    assert response.headers["cache-control"] == "no-store"
+    replacement = response.json()
+    assert client.post(url, json=payload, headers=access).json() == replacement
+    fresh = store.study(replacement["id"], replacement["key"])
+    assert fresh["plan"]["supersedes"] == previous_id
+    assert fresh["plan"]["dataset_hash"] == historical["dataset_hash"]
+    assert fresh["plan"]["counts"]["pipeline"] == 0
+    assert fresh["plan"]["counts"]["solver"] == 1
+    assert fresh["plan"]["variants"][0]["config"]["time_limit_seconds"] == 15
+    assert {row["track"] for row in store.rows(fresh["id"])} == {"solver"}
+    previous = store.study(previous_id, previous_key)
+    assert previous["state"] == "paused"
+    assert previous["plan"]["variants"][0]["config"]["time_limit_seconds"] == 5
+    assert previous["plan"]["counts"]["pipeline"] == 1
+
+
+def test_rerun_waits_for_active_work_and_requires_execution_opt_in(monkeypatch):
+    previous_id, key = make_study()
+    client = TestClient(app)
+    url = f"/studio/research/batches/{previous_id}/rerun"
+    access = {"X-Studio-Batch-Key": key}
+    payload = {"id": str(uuid4())}
+    store.state(previous_id, "pausing")
+    assert client.post(url, json=payload, headers=access).status_code == 409
+    store.state(previous_id, "paused")
+    monkeypatch.setenv("STUDIO_RESEARCH_ENABLED", "false")
+    assert client.post(url, json=payload, headers=access).status_code == 503
+    with store.connection() as conn:
+        assert conn.execute("SELECT COUNT(*) FROM studies").fetchone()[0] == 1

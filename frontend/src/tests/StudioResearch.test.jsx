@@ -14,13 +14,19 @@ import {
 import ResearchInfo from '../pages/StudioResearch/ResearchInfo';
 import { InspectionProvider } from '../pages/StudioResearch/ResearchInspect';
 import { combineStudies, distribution, paired, sample } from '../pages/StudioResearch/researchData';
-import { researchCatalog, savedStudies, studyRequest } from '../services/studioResearch';
+import {
+  researchCatalog,
+  savedStudies,
+  studyRequest,
+  rerunStudy,
+} from '../services/studioResearch';
 
 vi.mock('../services/studioResearch', () => ({
   downloadStudy: vi.fn(),
   researchCatalog: vi.fn(),
   savedStudies: vi.fn(),
   studyRequest: vi.fn(),
+  rerunStudy: vi.fn(),
 }));
 const trips = ['short-1d', 'medium-2d', 'long-3d', 'coast-5d', 'tight-2d'].map((id) => ({
   id,
@@ -418,4 +424,41 @@ it('labels the trip measure and prints distinct mean and median values without a
   expect(chart).toHaveTextContent('35%');
   expect(chart).toHaveTextContent('95%');
   expect(screen.queryByText('Consistency across runs')).not.toBeInTheDocument();
+});
+
+it('reruns the largest saved matrix without pooling historical results or starting live trips', async () => {
+  const previous = { id: 'previous', key: 'previous-key' };
+  const replacement = { id: 'replacement', key: 'replacement-key' };
+  savedStudies.mockReturnValue([previous]);
+  const snapshot = {
+    state: 'paused',
+    counts: { total: 2, pipeline: 1, solver: 1 },
+    design: defaults,
+    variants: [{ ...variants[0], config: { time_limit_seconds: 5 } }],
+    dataset_hash: 'fixed',
+    rows: [base],
+  };
+  studyRequest.mockImplementation((study) =>
+    Promise.resolve(
+      study.id === 'previous'
+        ? snapshot
+        : {
+            ...snapshot,
+            state: 'running',
+            counts: { total: 1, pipeline: 0, solver: 1 },
+            variants: [{ ...variants[0], config: { time_limit_seconds: 15 } }],
+            rows: [],
+          }
+    )
+  );
+  rerunStudy.mockResolvedValue(replacement);
+  mount();
+  await screen.findByText('5 sec solve limit');
+  await userEvent.click(screen.getByRole('button', { name: 'Rerun stop selection' }));
+  expect(rerunStudy).toHaveBeenCalledWith(previous, [previous]);
+  await screen.findByText('15 sec solve limit');
+  expect(studyRequest).toHaveBeenCalledWith(replacement, 'start', 'post');
+  expect(screen.queryByRole('table')).toHaveTextContent('—');
+  expect(screen.queryByRole('button', { name: /Full trip planning/ })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Rerun stop selection' })).toBeDisabled();
 });

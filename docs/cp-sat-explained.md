@@ -79,7 +79,7 @@ into seconds. Separate explanatory measurements retain their continuous values;
 small rounding differences are expected. A DAG path model links selected places
 in route order and enforces cardinality and the quality bound.
 
-CP-SAT uses seed zero, one worker and a five-second limit. OPTIMAL proves the best
+CP-SAT uses seed zero, one worker and a fifteen-second limit for new runs. OPTIMAL proves the best
 encoded cost for this bounded, verified candidate set. FEASIBLE is accepted with
 its actual bound and status. Other statuses fail explicitly. Fixed inputs support
 repeatability; fresh live discovery and AI estimates can change each run.

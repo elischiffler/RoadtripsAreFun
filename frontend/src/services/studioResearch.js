@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const KEY = 'studioResearchStudies';
+const ARCHIVE_KEY = 'studioResearchArchivedStudies';
 export function savedStudies() {
   try {
     const rows = JSON.parse(localStorage.getItem(KEY) || '[]');
@@ -57,4 +58,23 @@ export async function downloadStudy(studies, format) {
   link.download = `trip-research.${format}`;
   link.click();
   URL.revokeObjectURL(url);
+}
+
+export async function rerunStudy(study, previousStudies) {
+  const { data } = await axios.post(
+    `${import.meta.env.VITE_BACKEND_SERVER}studio/research/batches/${study.id}/rerun`,
+    { id: crypto.randomUUID() },
+    { headers: { 'X-Studio-Batch-Key': study.key } }
+  );
+  if (typeof data.id !== 'string' || typeof data.key !== 'string')
+    throw new Error('Invalid rerun response');
+  const archived = JSON.parse(localStorage.getItem(ARCHIVE_KEY) || '[]');
+  localStorage.setItem(
+    ARCHIVE_KEY,
+    JSON.stringify([
+      ...new Map([...archived, ...previousStudies].map((source) => [source.id, source])).values(),
+    ])
+  );
+  localStorage.setItem(KEY, JSON.stringify([data]));
+  return data;
 }

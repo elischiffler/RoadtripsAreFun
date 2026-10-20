@@ -5,6 +5,7 @@ import {
   researchCatalog,
   savedStudies,
   studyRequest,
+  rerunStudy,
 } from '../../services/studioResearch';
 import {
   Heatmap,
@@ -30,7 +31,7 @@ import './StudioResearch.css';
 
 export default function StudioResearch() {
   const [catalog, setCatalog] = useState(null);
-  const [studies] = useState(savedStudies);
+  const [studies, setStudies] = useState(savedStudies);
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [connectionError, setConnectionError] = useState('');
@@ -219,6 +220,27 @@ export default function StudioResearch() {
                 )
               )}
               <button
+                disabled={busy || running}
+                onClick={() =>
+                  action(async () => {
+                    const source = data.sources.reduce((largest, current) =>
+                      current.total > largest.total ? current : largest
+                    );
+                    const replacement = await rerunStudy(
+                      studies.find((study) => study.id === source.id),
+                      studies
+                    );
+                    setTrack('solver');
+                    setMetric('utility_mean');
+                    setData(null);
+                    setStudies([replacement]);
+                    await studyRequest(replacement, 'start', 'post');
+                  })
+                }
+              >
+                Rerun stop selection
+              </button>
+              <button
                 aria-label="Export CSV"
                 onClick={() => action(() => downloadStudy(studies, 'csv'))}
                 disabled={busy}
@@ -241,24 +263,28 @@ export default function StudioResearch() {
           <>
             <progress value={finished} max={data.counts.total} aria-label="Finished study runs" />
             <nav className="research-tabs" aria-label="Study track">
-              <button
-                aria-pressed={track === 'pipeline'}
-                onClick={() => {
-                  setTrack('pipeline');
-                  setMetric('utility_mean');
-                }}
-              >
-                Full trip planning · {data.counts.pipeline}
-              </button>
-              <button
-                aria-pressed={track === 'solver'}
-                onClick={() => {
-                  setTrack('solver');
-                  setMetric('utility_mean');
-                }}
-              >
-                Stop selection · {data.counts.solver}
-              </button>
+              {data.counts.pipeline > 0 && (
+                <button
+                  aria-pressed={track === 'pipeline'}
+                  onClick={() => {
+                    setTrack('pipeline');
+                    setMetric('utility_mean');
+                  }}
+                >
+                  Full trip planning · {data.counts.pipeline}
+                </button>
+              )}
+              {data.counts.solver > 0 && (
+                <button
+                  aria-pressed={track === 'solver'}
+                  onClick={() => {
+                    setTrack('solver');
+                    setMetric('utility_mean');
+                  }}
+                >
+                  Stop selection · {data.counts.solver}
+                </button>
+              )}
             </nav>
             <div className="research-track-meta">
               <span>
@@ -268,6 +294,11 @@ export default function StudioResearch() {
                     ? '100 simulated attractions'
                     : 'Simulated attractions'}
               </span>
+              {data.solve_limits.length > 0 && (
+                <span>
+                  {data.solve_limits.map((limit) => format(limit)).join(' / ')} sec solve limit
+                </span>
+              )}
               <ResearchInfo label="Study data">
                 {track === 'pipeline'
                   ? 'Complete live trips with valid timing. Hotel costs cover room-nights only.'

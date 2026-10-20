@@ -9,7 +9,7 @@ from pathlib import Path
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from app.research import store
 from app.research.design import PERSONAS, TRIPS, Design, plan
@@ -68,6 +68,50 @@ def create(payload: CreateStudy, response: Response, user: str = Depends(require
 def authorized(study_id: UUID, x_studio_batch_key: str | None = Header(default=None)):
     reap_workers()
     return store.study(str(study_id), x_studio_batch_key)
+
+
+class RerunStudy(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    id: UUID
+
+
+@router.post("/batches/{study_id}/rerun", status_code=201)
+def rerun(payload: RerunStudy, response: Response, study=Depends(authorized)):
+    require_execution()
+    with store.connection() as conn:
+        active = conn.execute(
+            "SELECT 1 FROM studies WHERE state IN ('starting','running','pausing') LIMIT 1"
+        ).fetchone()
+    if active:
+        raise HTTPException(409, "Pause the current batch and let active runs finish first.")
+    if str(payload.id) == study["id"]:
+        raise HTTPException(422, "A rerun needs a new batch ID.")
+    try:
+        previous_rerun = store.study(str(payload.id), trusted=True)
+    except HTTPException as exc:
+        if exc.status_code != 404:
+            raise
+    else:
+        if (
+            previous_rerun["owner"] != study["owner"]
+            or previous_rerun["plan"].get("supersedes") != study["id"]
+        ):
+            raise HTTPException(409, "This rerun ID is already in use.")
+    try:
+        design = Design.model_validate(
+            study["plan"]["design"] | {"pipeline": False, "solver": True}
+        )
+    except ValidationError:
+        raise HTTPException(422, "The saved stop selection design is no longer valid.") from None
+    planned = plan(design)
+    if planned["dataset_hash"] != study["plan"]["dataset_hash"]:
+        raise HTTPException(
+            409, "The candidate dataset changed; it cannot be treated as the same rerun."
+        )
+    planned["supersedes"] = study["id"]
+    key = store.create(str(payload.id), study["owner"], planned, identity())
+    response.headers["Cache-Control"] = "no-store"
+    return {"id": str(payload.id), "key": key}
 
 
 @router.get("/batches/{study_id}")

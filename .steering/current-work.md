@@ -15,6 +15,15 @@ attestation, not an independent host inspection. The prior 603/607-place generat
 and frozen rollback receipts are preserved. This work does not release main or
 deploy an application.
 
+## October 20 standard solve limit
+
+The shared CP-SAT default is now fifteen seconds for new interactive runs and new
+Studio research plans. Existing studies keep their frozen five-second plans and
+results. The October 20 rerun is a new 6,300-case solver-only batch at fifteen
+seconds, covering the full matrix without repeating live pipeline calls. A local archive
+of the original backend source matches the active campaign's source hash and is
+preserved for recovery. See [research protocol](../docs/studio-research.md#standard-solve-limit-october-20-2026).
+
 ## October 19 develop integration
 
 Studio's **Research** page now defines 30 trip/persona/stop-rate combinations,
