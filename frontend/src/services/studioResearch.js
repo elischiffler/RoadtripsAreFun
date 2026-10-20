@@ -1,30 +1,26 @@
 import axios from 'axios';
-import { studioRequest } from './studioSession';
 
 const KEY = 'studioResearchStudies';
 export function savedStudies() {
   try {
     const rows = JSON.parse(localStorage.getItem(KEY) || '[]');
     return Array.isArray(rows)
-      ? rows.filter((row) => typeof row.id === 'string' && typeof row.key === 'string')
+      ? [
+          ...new Map(
+            rows
+              .filter((row) => row && typeof row.id === 'string' && typeof row.key === 'string')
+              .map((row) => [row.id, row])
+          ).values(),
+        ]
       : [];
   } catch {
     return [];
   }
 }
-export function rememberStudy(study) {
-  const rows = [study, ...savedStudies().filter((row) => row.id !== study.id)];
-  localStorage.setItem(KEY, JSON.stringify(rows));
-}
 export async function researchCatalog(signal) {
   return (
     await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}studio/research/catalog`, { signal })
   ).data;
-}
-export async function createStudy(id, design) {
-  const study = (await studioRequest('post', 'research/batches', { id, design })).data;
-  rememberStudy(study);
-  return study;
 }
 export async function studyRequest(study, action = '', method = 'get', signal, after) {
   const url = `${import.meta.env.VITE_BACKEND_SERVER}studio/research/batches/${study.id}${action ? `/${action}` : ''}`;
@@ -36,15 +32,29 @@ export async function studyRequest(study, action = '', method = 'get', signal, a
   return (method === 'post' ? await axios.post(url, {}, config) : await axios.get(url, config))
     .data;
 }
-export async function downloadStudy(study, format) {
-  const data = await studyRequest(study, `export?format=${format}`);
+export async function downloadStudy(studies, format) {
+  const sources = await Promise.all(
+    studies.map((study) => studyRequest(study, `export?format=${format}`))
+  );
+  let data;
+  if (format === 'json') data = { schema_version: 1, studies: sources };
+  else {
+    const header = sources[0]?.split('\n', 1)[0];
+    if (!header || sources.some((source) => source.split('\n', 1)[0] !== header))
+      throw new Error('Export columns do not match');
+    data =
+      [
+        header,
+        ...sources.map((source) => source.slice(source.indexOf('\n') + 1).replace(/\r?\n$/, '')),
+      ].join('\n') + '\n';
+  }
   const blob = new Blob([typeof data === 'string' ? data : JSON.stringify(data, null, 2)], {
     type: format === 'csv' ? 'text/csv' : 'application/json',
   });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `study-${study.id}.${format}`;
+  link.download = `trip-research.${format}`;
   link.click();
   URL.revokeObjectURL(url);
 }

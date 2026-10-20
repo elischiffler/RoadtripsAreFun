@@ -64,7 +64,8 @@ export function sample(rows, metric) {
   );
 }
 export function paired(rows, variant, metric) {
-  const key = (row) => `${row.trip}:${row.persona}:${row.stops_per_day}:${row.repeat}`;
+  const key = (row) =>
+    `${row.study_id ?? ''}:${row.trip}:${row.persona}:${row.stops_per_day}:${row.repeat}`;
   const base = new Map(
     rows.filter((row) => row.variant === 'baseline' && row.completed).map((row) => [key(row), row])
   );
@@ -102,3 +103,38 @@ const METRIC_HELP = {
     'Number of calendar days in the resulting itinerary, which can differ from the target trip length.',
 };
 export const metricHelp = (metric) => METRIC_HELP[metric];
+
+export function combineStudies(snapshots) {
+  if (!snapshots.length) return null;
+  const sources = snapshots.map(({ id, state }) => ({ id, state }));
+  const active = sources.find((source) =>
+    ['running', 'starting', 'pausing'].includes(source.state)
+  );
+  const incomplete = sources.find((source) => source.state !== 'complete');
+  const union = (key) => [...new Set(snapshots.flatMap((study) => study.design[key]))];
+  return {
+    sources,
+    state: active?.state ?? incomplete?.state ?? 'complete',
+    counts: Object.fromEntries(
+      ['total', 'pipeline', 'solver'].map((key) => [
+        key,
+        snapshots.reduce((sum, study) => sum + study.counts[key], 0),
+      ])
+    ),
+    design: { trips: union('trips'), stops_per_day: union('stops_per_day') },
+    variants: [
+      ...new Map(
+        snapshots.flatMap((study) => study.variants).map((variant) => [variant.id, variant])
+      ).values(),
+    ],
+    dataset_hashes: [...new Set(snapshots.map((study) => study.dataset_hash))],
+    rows: snapshots.flatMap((study) =>
+      study.rows.map((row) => ({
+        ...row,
+        id: `${study.id}:${row.id}`,
+        case_id: row.id,
+        study_id: study.id,
+      }))
+    ),
+  };
+}

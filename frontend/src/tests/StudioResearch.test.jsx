@@ -12,16 +12,10 @@ import {
   UtilitySpread,
 } from '../pages/StudioResearch/ResearchCharts';
 import ResearchInfo from '../pages/StudioResearch/ResearchInfo';
-import { distribution, paired, sample } from '../pages/StudioResearch/researchData';
-import {
-  createStudy,
-  researchCatalog,
-  savedStudies,
-  studyRequest,
-} from '../services/studioResearch';
+import { combineStudies, distribution, paired, sample } from '../pages/StudioResearch/researchData';
+import { researchCatalog, savedStudies, studyRequest } from '../services/studioResearch';
 
 vi.mock('../services/studioResearch', () => ({
-  createStudy: vi.fn(),
   downloadStudy: vi.fn(),
   researchCatalog: vi.fn(),
   savedStudies: vi.fn(),
@@ -87,47 +81,37 @@ const mount = () =>
     </MemoryRouter>
   );
 
-it('counts the full requested design before starting and updates counts on changes', async () => {
+it('shows an empty dashboard without creation controls or background requests', async () => {
   mount();
-  await screen.findByText('6,600');
-  expect(screen.getByText(/runs · 300 live trips · 6,300 solver trials/)).toBeInTheDocument();
-  expect(createStudy).not.toHaveBeenCalled();
-  await userEvent.clear(screen.getByLabelText('Live repeats'));
-  await userEvent.type(screen.getByLabelText('Live repeats'), '2');
-  expect(screen.getByText('6,360')).toBeInTheDocument();
-  await userEvent.click(screen.getByLabelText('CP-SAT only'));
-  expect(screen.getByText('60')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Unlock batch runs' })).toBeInTheDocument();
+  expect(await screen.findByText('No results yet.')).toBeInTheDocument();
+  expect(screen.queryByText('New study')).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Studio password')).not.toBeInTheDocument();
+  expect(studyRequest).not.toHaveBeenCalled();
 });
 
-it('starts once, remembers the durable study and does not cancel it on unmount', async () => {
-  sessionStorage.setItem(
-    'studioSession',
-    JSON.stringify({ token: 'fixture', expires_at: Date.now() / 1000 + 500 })
-  );
-  const study = { id: 'fixture-study', key: 'private-fixture' };
-  createStudy.mockResolvedValue(study);
-  studyRequest.mockImplementation((_study, action) =>
-    Promise.resolve(
-      action
-        ? { state: 'starting' }
-        : {
-            id: study.id,
-            state: 'running',
-            counts: { total: 6600, pipeline: 300, solver: 6300 },
-            rows: [],
-            design: defaults,
-            variants,
-            dataset_hash: 'abc',
-            identity: {},
-          }
-    )
+it('combines saved results without selecting a study or cancelling work on unmount', async () => {
+  const studies = [
+    { id: 'current', key: 'first-key' },
+    { id: 'pilot', key: 'second-key' },
+  ];
+  savedStudies.mockReturnValue(studies);
+  studyRequest.mockImplementation((study) =>
+    Promise.resolve({
+      state: study.id === 'current' ? 'running' : 'complete',
+      counts: { total: 1, pipeline: 0, solver: 1 },
+      design: defaults,
+      variants,
+      dataset_hash: 'same-data',
+      rows: [{ ...base, utility_mean: study.id === 'current' ? 0.6 : 0.8 }],
+    })
   );
   const view = mount();
-  await userEvent.dblClick(await screen.findByRole('button', { name: 'Start 6,600 runs' }));
-  expect(createStudy).toHaveBeenCalledTimes(1);
-  expect(studyRequest).toHaveBeenCalledWith(study, 'start', 'post');
-  expect(await screen.findByRole('button', { name: 'Pause' })).toBeInTheDocument();
+  expect(await screen.findByText('running · 2 / 2')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'CP-SAT · 2' })).toBeInTheDocument();
+  expect(screen.getByRole('table')).toHaveTextContent('n=2 / 2');
+  expect(screen.queryByLabelText('Study')).not.toBeInTheDocument();
+  expect(screen.queryByText('New study')).not.toBeInTheDocument();
+  expect(studyRequest.mock.calls.every(([, action]) => !action)).toBe(true);
   view.unmount();
   expect(studyRequest.mock.calls.some(([, action]) => action === 'pause')).toBe(false);
 });
@@ -162,8 +146,8 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   expect(
     screen.getByRole('img', { name: 'Average utility response to quality_loss' })
   ).toBeInTheDocument();
-  expect(screen.getByText('100 synthetic candidates · 30 repeats')).toBeInTheDocument();
-  expect(screen.getByText('New study').parentElement).not.toHaveAttribute('open');
+  expect(screen.getByText('100 synthetic candidates')).toBeInTheDocument();
+  expect(screen.queryByText('New study')).not.toBeInTheDocument();
   expect(screen.queryByText(/Same candidates, persona/)).not.toBeInTheDocument();
   await userEvent.hover(screen.getByRole('button', { name: 'About Parameter response' }));
   expect(screen.getByRole('tooltip')).toHaveTextContent('Trip and stops per day stay fixed');
@@ -292,4 +276,23 @@ it('centers heatmap colors on equally weighted populated cells and keeps unknown
   view.rerender(<Heatmap rows={[]} trips={groups} metric="utility_mean" />);
   expect(screen.queryByLabelText('Heatmap color scale')).not.toBeInTheDocument();
   expect(view.container.innerHTML).not.toMatch(/NaN|Infinity/);
+});
+
+it('keeps source identities and parameter pairs separate when merging matching case IDs', () => {
+  const snapshot = (id, rows) => ({
+    id,
+    state: 'complete',
+    counts: { total: rows.length, pipeline: 0, solver: rows.length },
+    design: defaults,
+    variants,
+    dataset_hash: 'fixed-data',
+    rows,
+  });
+  const data = combineStudies([
+    snapshot('main', [base, { ...base, id: 2, variant: 'tuned', utility_mean: 0.5 }]),
+    snapshot('pilot', [{ ...base, variant: 'tuned', utility_mean: 0.9 }]),
+  ]);
+  expect(data.counts).toEqual({ total: 3, pipeline: 0, solver: 3 });
+  expect(new Set(data.rows.map((row) => row.id)).size).toBe(3);
+  expect(paired(data.rows, 'tuned', 'utility_mean')).toMatchObject({ n: 1, mean: -10 });
 });

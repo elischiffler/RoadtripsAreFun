@@ -1,7 +1,7 @@
 # Studio research
 
-The **Research** link in Studio opens `/studio/research`. This page creates,
-pauses, resumes and inspects durable studies. Runs continue without an open
+The **Research** link in Studio opens `/studio/research`. This dashboard combines locally saved results in one view and supports pause,
+resume and exports. It has no study creation form or study selector. Runs continue without an open
 browser. CSV and JSON exports retain the underlying observations and protocol.
 
 ## Requested design
@@ -19,8 +19,8 @@ The default study prioritizes CP-SAT: **6,300 solver trials**, followed by
 
 Five trip types × two personas (nature, entertainment) × three stop rates gives
 30 combinations. Live trips repeat each combination ten times. Solver trials
-repeat each combination thirty times under seven conditions. The two repeat
-controls are independent; the solver control supports up to 100 seed repeats.
+repeat each combination thirty times under seven conditions. The backend design stores live and solver repeat counts independently; the
+solver design supports up to 100 seed repeats.
 
 The personas reuse the canonical evaluation weights in
 `backend/app/routing/evaluation/scenarios.py`. Every live case has two adults,
@@ -157,7 +157,8 @@ history, and no production catalog generation is changed.
 A separate seven-trial browser check completed all seven real CP-SAT calls on the
 controlled synthetic dataset, with no provider calls. It verifies the detached
 worker, persistence, incremental result display and seven condition definitions;
-it is excluded from the requested 6,600-run study. Controlled tests cover exact
+it is separate from the requested 6,600-run batch, but its seven observations
+are now included in the combined dashboard. Controlled tests cover exact
 counts, one-factor changes, same-input pairing, key/owner isolation, duplicate
 start rejection, pause/resume, interrupted paid-work reconciliation, source-change
 refusal, storage-failure pausing, missing/partial metrics and late low-ID results.
@@ -168,3 +169,15 @@ Local checks on October 19, 2026 passed: backend Ruff formatting/lint and
 2,005 tests (130 skipped), with 80.28% coverage; frontend formatting/lint,
 264 tests with 90.77% line coverage, and the production build. Existing coverage
 thresholds remain unchanged.
+
+## Combined dashboard
+
+All locally saved study capabilities load automatically into one dashboard.
+Original runs, input protocols, datasets and revision records remain intact;
+CSV retains its study-id column, and JSON includes each original protocol.
+Source case IDs are namespaced before rendering. Parameter comparisons match
+within each original study so shared solver seed numbers never create cross-study
+pairs. The earlier seven-trial verification batch remains identifiable in exports;
+its observations are now included in the combined descriptive charts. Repeated
+seeds across batches are not independent samples. Source failures remain visible
+and are retried without cancelling the detached worker.

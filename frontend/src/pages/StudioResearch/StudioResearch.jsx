@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getStudioSession, unlockStudio } from '../../services/studioSession';
 import {
-  createStudy,
   downloadStudy,
   researchCatalog,
   savedStudies,
@@ -17,22 +15,18 @@ import {
   UtilitySpread,
   UtilityBoxes,
 } from './ResearchCharts';
-import { distribution, format, METRICS, paired } from './researchData';
+import { combineStudies, distribution, format, METRICS, paired } from './researchData';
 import ResearchInfo, { ChartHeading } from './ResearchInfo';
 import '../AlgorithmLab/AlgorithmLab.css';
 import './StudioResearch.css';
 
 export default function StudioResearch() {
   const [catalog, setCatalog] = useState(null);
-  const [design, setDesign] = useState(null);
-  const [studies, setStudies] = useState(savedStudies);
-  const [selected, setSelected] = useState(() => savedStudies()[0] ?? null);
+  const [studies] = useState(savedStudies);
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [connectionError, setConnectionError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [password, setPassword] = useState('');
-  const [session, setSession] = useState(getStudioSession);
   const [track, setTrack] = useState('solver');
   const [metric, setMetric] = useState('utility_mean');
   const [persona, setPersona] = useState('all');
@@ -45,56 +39,57 @@ export default function StudioResearch() {
   useEffect(() => {
     const controller = new AbortController();
     researchCatalog(controller.signal)
-      .then((value) => {
-        setCatalog(value);
-        setDesign(value.defaults);
-      })
+      .then(setCatalog)
       .catch((e) => {
-        if (e.name !== 'CanceledError') setError('Research settings are unavailable.');
+        if (e.name !== 'CanceledError') setError('Chart labels are unavailable.');
       });
-    const refresh = () => setSession(getStudioSession());
-    window.addEventListener('studio-access-changed', refresh);
-    window.addEventListener('focus', refresh);
-    return () => {
-      controller.abort();
-      window.removeEventListener('studio-access-changed', refresh);
-      window.removeEventListener('focus', refresh);
-    };
+    return () => controller.abort();
   }, []);
 
   useEffect(() => {
-    if (!selected) return;
+    if (!studies.length) return;
     const controller = new AbortController();
+    const snapshots = new Map();
+    const observations = new Map(studies.map((study) => [study.id, new Map()]));
     let timer;
-    let cursor = 0;
-    const observations = new Map();
     const poll = async () => {
-      let complete = false;
-      try {
-        const next = await studyRequest(selected, '', 'get', controller.signal, cursor);
-        if (controller.signal.aborted) return;
-        next.rows.forEach((row) => observations.set(row.id, row));
-        cursor = next.cursor ?? 0;
-        setData({ ...next, rows: [...observations.values()] });
-        complete = next.state === 'complete';
-        setConnectionError('');
-      } catch (e) {
-        if (!controller.signal.aborted)
-          setConnectionError(
-            e.response?.status === 404
-              ? 'This study is unavailable on this server or its access key is missing.'
-              : 'Connection lost. The background study continues; reconnecting…'
+      const results = await Promise.allSettled(
+        studies.map(async (study) => {
+          const previous = snapshots.get(study.id);
+          if (previous?.state === 'complete') return;
+          const next = await studyRequest(
+            study,
+            '',
+            'get',
+            controller.signal,
+            previous?.cursor ?? 0
           );
-      }
-      if (!controller.signal.aborted && !complete) timer = setTimeout(poll, 5000);
+          if (controller.signal.aborted) return;
+          const rows = observations.get(study.id);
+          next.rows.forEach((row) => rows.set(row.id, row));
+          snapshots.set(study.id, { ...next, id: study.id, rows: [...rows.values()] });
+        })
+      );
+      if (controller.signal.aborted) return;
+      const available = studies.map((study) => snapshots.get(study.id)).filter(Boolean);
+      setData(combineStudies(available));
+      setConnectionError(
+        results.some((result) => result.status === 'rejected')
+          ? 'Some results are unavailable. Retrying…'
+          : ''
+      );
+      if (
+        available.length !== studies.length ||
+        available.some((value) => value.state !== 'complete')
+      )
+        timer = setTimeout(poll, 5000);
     };
-    setData(null);
     poll();
     return () => {
       controller.abort();
       clearTimeout(timer);
     };
-  }, [selected]);
+  }, [studies]);
 
   const action = async (callback) => {
     setBusy(true);
@@ -111,36 +106,6 @@ export default function StudioResearch() {
       setBusy(false);
     }
   };
-  const launch = () =>
-    action(async () => {
-      if (!getStudioSession()) {
-        setSession(null);
-        return;
-      }
-      const id = crypto.randomUUID();
-      const study = await createStudy(id, design);
-      setStudies(savedStudies());
-      setSelected(study);
-      await studyRequest(study, 'start', 'post');
-    });
-  const change = (key, value) => setDesign({ ...design, [key]: value });
-  const toggle = (key, value) =>
-    change(
-      key,
-      design[key].includes(value)
-        ? design[key].filter((item) => item !== value)
-        : [...design[key], value]
-    );
-  const combinations = design
-    ? design.trips.length * design.personas.length * design.stops_per_day.length
-    : 0;
-  const variantCount = design
-    ? 1 +
-      design.quality_loss.filter((value) => value !== 0.1).length +
-      design.detour_weight.filter((value) => value !== 1).length
-    : 0;
-  const liveCount = design?.pipeline ? combinations * design.repeats : 0;
-  const solverCount = design?.solver ? combinations * design.solver_repeats * variantCount : 0;
   const trackRows = (data?.rows ?? []).filter((row) => row.track === track);
   const filtered = trackRows.filter(
     (row) =>
@@ -167,7 +132,11 @@ export default function StudioResearch() {
     : { n: 0 };
   const trips = catalog?.trips ?? [];
   const finished = data?.rows?.length ?? 0;
-  const running = ['running', 'starting', 'pausing'].includes(data?.state);
+  const activeSources = (data?.sources ?? []).filter((source) =>
+    ['running', 'starting', 'pausing'].includes(source.state)
+  );
+  const running = activeSources.length > 0;
+  const nextSource = data?.sources.find((source) => source.state !== 'complete');
 
   return (
     <main className="algorithm-lab studio-research">
@@ -188,209 +157,7 @@ export default function StudioResearch() {
           {connectionError}
         </p>
       )}
-      <details className="research-launch" aria-label="Batch setup" open={!selected}>
-        <summary>New study</summary>
-        <div className="research-launch-body">
-          {catalog?.execution_enabled === false && (
-            <p role="status">
-              Batch execution is off on this server. Existing results are still available.
-            </p>
-          )}
-          <div>
-            <p>
-              <strong>{format(liveCount + solverCount, 0)}</strong> runs · {format(liveCount, 0)}{' '}
-              live trips · {format(solverCount, 0)} solver trials
-            </p>
-            <ResearchInfo label="Study setup">
-              Live trips use paid providers. CP-SAT trials use the same 100 synthetic candidates
-              without provider calls. The baseline is always included; each other condition changes
-              one parameter at a time. Runs continue after navigation or closing the browser.
-            </ResearchInfo>
-          </div>
-          {design && (
-            <>
-              <div className="research-controls">
-                <label>
-                  Live repeats
-                  <input
-                    type="number"
-                    min="1"
-                    max="10"
-                    step="1"
-                    value={design.repeats}
-                    onChange={(e) => change('repeats', Number(e.target.value))}
-                  />
-                </label>
-                <label>
-                  Solver repeats
-                  <input
-                    type="number"
-                    min="1"
-                    max="100"
-                    step="1"
-                    value={design.solver_repeats}
-                    onChange={(e) => change('solver_repeats', Number(e.target.value))}
-                  />
-                </label>
-                <label>
-                  Departure
-                  <input
-                    type="date"
-                    value={design.departure_date}
-                    onChange={(e) => change('departure_date', e.target.value)}
-                  />
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={design.pipeline}
-                    onChange={(e) => change('pipeline', e.target.checked)}
-                  />
-                  Full pipeline
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={design.solver}
-                    onChange={(e) => change('solver', e.target.checked)}
-                  />
-                  CP-SAT only
-                </label>
-              </div>
-              <details className="research-settings">
-                <summary>Study settings</summary>
-                <div className="research-setting-grid">
-                  <fieldset>
-                    <legend>Trips</legend>
-                    {trips.map((trip) => (
-                      <label key={trip.id}>
-                        <input
-                          type="checkbox"
-                          checked={design.trips.includes(trip.id)}
-                          onChange={() => toggle('trips', trip.id)}
-                        />
-                        {trip.label}
-                      </label>
-                    ))}
-                  </fieldset>
-                  <fieldset>
-                    <legend>Personas</legend>
-                    {catalog.personas.map((key) => (
-                      <label key={key}>
-                        <input
-                          type="checkbox"
-                          checked={design.personas.includes(key)}
-                          onChange={() => toggle('personas', key)}
-                        />
-                        {key}
-                      </label>
-                    ))}
-                    <legend>Stops per target day</legend>
-                    {[1, 2, 3].map((value) => (
-                      <label key={value}>
-                        <input
-                          type="checkbox"
-                          checked={design.stops_per_day.includes(value)}
-                          onChange={() => toggle('stops_per_day', value)}
-                        />
-                        {value}
-                      </label>
-                    ))}
-                  </fieldset>
-                  <fieldset>
-                    <legend>Allowed utility loss</legend>
-                    {[0, 0.05, 0.1, 0.15, 0.2].map((value) => (
-                      <label key={value}>
-                        <input
-                          type="checkbox"
-                          checked={design.quality_loss.includes(value)}
-                          onChange={() => toggle('quality_loss', value)}
-                        />
-                        {value * 100} percentage points
-                      </label>
-                    ))}
-                  </fieldset>
-                  <fieldset>
-                    <legend>Detour weight</legend>
-                    {[0.5, 1, 2].map((value) => (
-                      <label key={value}>
-                        <input
-                          type="checkbox"
-                          checked={design.detour_weight.includes(value)}
-                          onChange={() => toggle('detour_weight', value)}
-                        />
-                        {value}
-                      </label>
-                    ))}
-                  </fieldset>
-                </div>
-              </details>
-              {session ? (
-                <button
-                  className="research-primary"
-                  disabled={
-                    busy ||
-                    running ||
-                    catalog?.execution_enabled === false ||
-                    !combinations ||
-                    !Number.isInteger(design.repeats) ||
-                    design.repeats < 1 ||
-                    design.repeats > 10 ||
-                    !Number.isInteger(design.solver_repeats) ||
-                    design.solver_repeats < 1 ||
-                    design.solver_repeats > 100 ||
-                    (!design.pipeline && !design.solver) ||
-                    !design.quality_loss.length ||
-                    !design.detour_weight.length
-                  }
-                  onClick={launch}
-                >
-                  {busy ? 'Starting…' : `Start ${format(liveCount + solverCount, 0)} runs`}
-                </button>
-              ) : (
-                <form
-                  className="research-unlock"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    action(async () => {
-                      await unlockStudio(password);
-                      setPassword('');
-                      setSession(getStudioSession());
-                    });
-                  }}
-                >
-                  <label>
-                    Studio password
-                    <input
-                      type="password"
-                      autoComplete="off"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </label>
-                  <button disabled={busy}>Unlock batch runs</button>
-                </form>
-              )}
-            </>
-          )}
-        </div>
-      </details>
       <div className="research-toolbar">
-        <label>
-          Study
-          <select
-            value={selected?.id ?? ''}
-            onChange={(e) => setSelected(studies.find((row) => row.id === e.target.value) ?? null)}
-          >
-            <option value="">Choose a study</option>
-            {studies.map((row, index) => (
-              <option key={row.id} value={row.id}>
-                Study {studies.length - index} · {row.id.slice(0, 8)}
-              </option>
-            ))}
-          </select>
-        </label>
         {data && (
           <>
             <span className="research-state" role="status">
@@ -398,16 +165,36 @@ export default function StudioResearch() {
             </span>
             {running ? (
               <button
-                disabled={busy || data.state === 'pausing'}
-                onClick={() => action(() => studyRequest(selected, 'pause', 'post'))}
+                disabled={busy || activeSources.every((source) => source.state === 'pausing')}
+                onClick={() =>
+                  action(() =>
+                    Promise.all(
+                      activeSources.map((source) =>
+                        studyRequest(
+                          studies.find((study) => study.id === source.id),
+                          'pause',
+                          'post'
+                        )
+                      )
+                    )
+                  )
+                }
               >
                 Pause
               </button>
             ) : (
-              data.state !== 'complete' && (
+              nextSource && (
                 <button
                   disabled={busy}
-                  onClick={() => action(() => studyRequest(selected, 'start', 'post'))}
+                  onClick={() =>
+                    action(() =>
+                      studyRequest(
+                        studies.find((study) => study.id === nextSource.id),
+                        'start',
+                        'post'
+                      )
+                    )
+                  }
                 >
                   Resume
                 </button>
@@ -415,14 +202,14 @@ export default function StudioResearch() {
             )}
             <button
               aria-label="Export CSV"
-              onClick={() => action(() => downloadStudy(selected, 'csv'))}
+              onClick={() => action(() => downloadStudy(studies, 'csv'))}
               disabled={busy}
             >
               CSV
             </button>
             <button
               aria-label="Export JSON"
-              onClick={() => action(() => downloadStudy(selected, 'json'))}
+              onClick={() => action(() => downloadStudy(studies, 'json'))}
               disabled={busy}
             >
               JSON
@@ -431,7 +218,7 @@ export default function StudioResearch() {
         )}
       </div>
       {!data ? (
-        <p className="research-empty">{selected ? 'Loading…' : 'Select or create a study.'}</p>
+        <p className="research-empty">{studies.length ? 'Loading…' : 'No results yet.'}</p>
       ) : (
         <>
           <progress value={finished} max={data.counts.total} aria-label="Finished study runs" />
@@ -459,12 +246,14 @@ export default function StudioResearch() {
             <span>
               {track === 'pipeline'
                 ? 'Live trips'
-                : `100 synthetic candidates · ${data.design.solver_repeats} repeats`}
+                : data.dataset_hashes.length === 1
+                  ? '100 synthetic candidates'
+                  : 'Synthetic candidates'}
             </span>
             <ResearchInfo label="Study data">
               {track === 'pipeline'
                 ? 'Fresh live trips through the complete pipeline. Quality scores require fully delivered, timing-valid itineraries. Hotel metrics cover quoted room-nights only, not the total trip budget. Missing quotes are unassessed.'
-                : 'Controlled trials on one fixed synthetic dataset. Gap and detour inputs are simulated, not measured journeys. Repeats change solver seeds; they are not independent real-world samples. The baseline allows 10 percentage points of utility loss, spacing weight 1, detour weight 1, a five-second limit and one worker.'}{' '}
+                : 'Controlled trials on fixed synthetic candidates. Gap and detour inputs are simulated, not measured journeys. Saved runs are combined here and may reuse solver seeds; they are not independent real-world samples. The baseline allows 10 percentage points of utility loss, spacing weight 1, detour weight 1, a five-second limit and one worker.'}{' '}
               Summary totals cover all settings in this track; charts below follow their filters.
               Target days set requested stops, not actual trip length. Pausing finishes current
               runs.
