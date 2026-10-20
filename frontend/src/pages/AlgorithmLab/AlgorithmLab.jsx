@@ -22,8 +22,6 @@ function LabWorkspace({ historyOpen }) {
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState([]);
   const [result, setResult] = useState(null);
-  const [previous, setPrevious] = useState(null);
-  const lastResult = useRef(null);
   const request = useRef(null);
   const output = useRef(null);
   const [reload, setReload] = useState(0);
@@ -101,9 +99,7 @@ function LabWorkspace({ historyOpen }) {
         }
       );
       if (controller.signal.aborted || request.current !== controller) return;
-      setPrevious(lastResult.current);
       setResult(data);
-      lastResult.current = data;
       setHistoryRevision((value) => value + 1);
     } catch (failure) {
       if (controller.signal.aborted || request.current !== controller) return;
@@ -177,8 +173,6 @@ function LabWorkspace({ historyOpen }) {
           <button
             type="button"
             onClick={() => {
-              lastResult.current = null;
-              setPrevious(null);
               choosePreset(defaultPreset(catalog).id);
             }}
           >
@@ -216,7 +210,7 @@ function LabWorkspace({ historyOpen }) {
             {result.run_record.saved ? 'Run saved to history.' : result.run_record.warning}
           </p>
         )}
-        {result && <LabResults key={result.snapshot.id} result={result} previous={previous} />}
+        {result && <LabResults key={result.snapshot.id} result={result} />}
       </div>
       <div id="lab-history-panel" className="lab-history-panel" hidden={!historyOpen}>
         {historyOpen && <RunHistory revision={historyRevision} />}

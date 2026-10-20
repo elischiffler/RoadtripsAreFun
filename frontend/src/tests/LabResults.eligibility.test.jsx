@@ -7,7 +7,7 @@ vi.mock('../components/Map', () => ({ default: () => <div>Map</div> }));
 it.each([
   [{ utility_threshold: 0, utility_threshold_inclusive: false }, '> 0'],
   [{ utility_threshold: 0.6 }, '≥ 0.6'],
-])('distinguishes positive eligibility from historical inclusive thresholds', (policy, label) => {
+])('does not reinterpret saved eligibility thresholds as match percentages', (policy, label) => {
   render(
     <LabResults
       result={{
@@ -21,6 +21,7 @@ it.each([
       }}
     />
   );
-  fireEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
-  expect(screen.getByText(label)).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
+  expect(screen.queryByText(label)).not.toBeInTheDocument();
+  expect(screen.getByRole('group', { name: 'Match estimates' })).toHaveTextContent('—');
 });

@@ -52,17 +52,19 @@ it('preserves source context for route stops and evening itinerary suggestions',
   );
   expect(screen.getByLabelText('Place source and freshness')).toBeInTheDocument();
 });
-it('renders catalog evidence alongside candidate scoring without changing saved provenance', async () => {
+it('keeps source attribution on the route while stats show match estimates', async () => {
   render(
     <LabResults
       result={{
         mode: 'live',
         snapshot: { label: 'Catalog', source: 'Overture' },
         stages: [],
+        route: { stops: [{ name: 'Museum', ...source }] },
         explanation: {
           candidates: [
             {
               name: 'Museum',
+              utility: 0.75,
               provider_id: 'overture:1',
               ...source,
               provenance: { ratings: 'AI estimate' },
@@ -72,7 +74,8 @@ it('renders catalog evidence alongside candidate scoring without changing saved 
       }}
     />
   );
-  await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
   expect(screen.getByText('Source release: 2026-09-23.1')).toBeInTheDocument();
-  expect(screen.getByText(/"ratings": "AI estimate"/)).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
+  expect(screen.getByRole('group', { name: 'Museum match' })).toHaveTextContent('75%');
+  expect(screen.queryByText(/"ratings": "AI estimate"/)).not.toBeInTheDocument();
 });

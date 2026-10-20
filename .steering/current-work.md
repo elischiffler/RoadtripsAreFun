@@ -1,12 +1,20 @@
 # Current release and acceptance
 
-## Chat retirement on develop
+## October 19 develop integration
 
-The chat UI and conversational API are removed on a task branch from current
-`develop`. Saved account trips remain at `/trips`; `/chat` redirects there. Studio,
-planning, shared preference extraction and provider modules remain available.
-See [removal and PR55 integration](../docs/journeygenie-removal.md) before merging
-the guided setup branch, which still depends on the retired page.
+PRs #56 (chat retirement), #55 (standalone guided planning) and #51 (visit
+estimates and arrival/leaving timing) are integrated into develop at their exact
+latest CI-validated heads. Combined local checks pass; this is integration
+verification, not an independent production release approval. Saved trips remain
+at `/trips`; `/chat` redirects there. `/plan` uses retained structured APIs rather
+than the removed chat dispatcher. Studio's third results tab is **Trip stats**:
+compact measurements and bars replace raw stage JSON and solver explanations.
+
+See [integration heads, compatibility fix and validation](../docs/studio-stats-integration.md)
+and [visit estimates](../docs/visit-duration-estimates.md). Shared AI, source
+calendar holds, frozen offline itinerary facts and historical metric meanings
+remain. Current measurements use `balanced-route-v5`; live provider/estimate
+quality and production acceptance remain separate.
 
 ## Earlier inspected source and delivery
 
@@ -43,7 +51,7 @@ before integration; active release work can advance main.
 | Shared preference extraction and validated trip models | `backend/app/agent/extraction.py`, `trip_profile.py`; conversational orchestration retired |
 | Cognito session renewal and bounded verifier-rejection replay                        | `frontend/src/services/session.js`, `protectedRequest.js`; `docs/session-refresh.md`                                                       |
 | Visitor Studio access independent of account authentication                          | `backend/app/routers/studio.py`, `frontend/src/services/studioSession.js`; `docs/studio-access.md`                                         |
-| Live-only presets, streamed progress, stage data, safe failures and attempts         | `backend/app/routers/algorithm_lab.py`, `studio.py`, `backend/app/routing/runtime.py`; `docs/studio-progress.md`, `docs/studio-retries.md` |
+| Live-only presets, streamed progress, trip statistics, safe failures and attempts         | `backend/app/routers/algorithm_lab.py`, `studio.py`, `backend/app/routing/runtime.py`; `docs/studio-progress.md`, `docs/studio-retries.md` |
 | Scoped experiment history and saved route/itinerary results                          | `backend/app/crud/lab_runs.py`, `backend/sql/algorithm_lab_runs.sql`; `docs/algorithm-run-history.md`                                      |
 | Checked main deployment, stale-run rejection and verified health response            | `.github/workflows/deploy-ec2.yml`, `scripts/check_deployment.py`, `scripts/request_deployment.py`; `docs/ec2-deployment.md`               |
 

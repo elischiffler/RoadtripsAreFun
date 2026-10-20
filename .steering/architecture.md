@@ -73,13 +73,13 @@ all baseline gap deviations plus measured solo detour time. Candidate capacity i
 eligibility keeps finite positive utilities. Source-calendar feasibility filters
 records before discovery quotas, road checks and the bounded shortlist.
 `trip_calendar.py` owns that necessary-condition test; `visit_calendar.py` owns
-hard visit windows and full two-hour dwell. Unknown or expired timed calendars
+hard visit windows and each validated visit duration. Unknown or expired timed calendars
 fail closed. Final-road conflicts trigger bounded reselection with cached road
 checks; neither guessed opening hours nor an objective penalty can permit a
 closed visit.
 See `docs/adaptive-planning.md` and `docs/cp-sat-explained.md`.
 
-`cp_sat_scheduler.py` schedules two-hour visits and
+`cp_sat_scheduler.py` schedules bounded estimated visits (two-hour fallback) and
 uses `models/scheduling_policy.py`: preferred hotel 18:00, hotel cutoff 20:00,
 restart 09:00, default final destination cutoff 21:00, with optional overrides.
 It tries up to six overnight positions around the preferred point and ranks

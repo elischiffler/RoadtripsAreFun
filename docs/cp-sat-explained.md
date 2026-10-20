@@ -12,9 +12,11 @@ model-estimated interest ratings remain separate dependencies. See
 Historical provider descriptions and measurements below retain their original
 meaning; they are not instructions for the current discovery implementation.
 
-Current contract: October 5, 2026, `codex/production-release`. Studio (`/studio`)
-and direct route requests use the same live planner. Historical surplus objectives remain
-historical; the current metric version is `balanced-route-v3`.
+Current develop contract: October 19, 2026. Studio (`/studio`) and direct route
+requests use the same live planner. Historical surplus objectives remain
+historical; the current metric version is `balanced-route-v5`. See
+[visit-duration estimates](visit-duration-estimates.md) for the shared bounded
+visit lengths and frozen offline capture contract.
 
 Provider records establish place identities and coordinates. AI estimates the
 14 canonical interest ratings, and the backend computes each place's match as
@@ -85,7 +87,9 @@ repeatability; fresh live discovery and AI estimates can change each run.
 ## Scheduling and final validation
 
 The scheduler consumes measured progress and initially splits each estimated solo
-detour half before and half after its two-hour visit. Days and nights remain
+detour half before and half after its validated visit estimate. Missing duration
+metadata keeps the historical two-hour policy; invalid explicit metadata fails
+validation. Optional AI estimates fall back to two hours on provider/format failure. Days and nights remain
 sequential. Existing local daily windows, IANA timezones/DST, destination deadlines,
 optional evenings, room occupancy and verified dated hotel quotes remain in force.
 Hotel search/ranking and advisory per-room budgets are separate from the solve.
@@ -107,7 +111,8 @@ road-check barriers; `cp_sat_selection.py` owns the exact model;
 run-local clients and cancellation. `routing_api.py` owns final live verification.
 
 Studio retains all nine complete-form presets, real streamed progress, safe
-errors/attempts, stage JSON, saved history and map/itinerary viewing. It reports
-average match, quality loss, spacing deviation, estimated detour and actual final
-extra driving separately. Historical objective scores are never relabeled as
-current minimized costs. See [run history](algorithm-run-history.md).
+errors/attempts, saved history and map/itinerary viewing. Its **Trip stats** tab
+shows compact figures and bars for estimated matches, counts, actual extra
+driving, quotes, scheduling and planning times. Raw explanations and measurements
+remain stored; the tab omits stage JSON and solver formulas. Historical objective
+scores are never relabeled as current minimized costs. See [run history](algorithm-run-history.md).

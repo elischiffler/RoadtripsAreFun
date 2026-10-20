@@ -309,7 +309,7 @@ describe('Trip Planning Studio access and lifecycle', () => {
       await act(async () => resolveRun({ data: response() }));
       expect(signal.aborted).toBe(true);
       expect(screen.getByRole('heading', { name: 'Enter Studio password' })).toBeInTheDocument();
-      expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
+      expect(screen.queryByRole('tab', { name: 'Trip stats' })).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Run live route' })).not.toBeInTheDocument();
     }
   );
@@ -382,7 +382,7 @@ describe('Trip Planning Studio experiments', () => {
     expect(screen.getByLabelText('Car model')).toHaveValue('RAV4');
     expect(screen.getByLabelText('latest hotel arrival')).toHaveValue('19:00');
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
-    await screen.findByText('OPTIMAL');
+    await screen.findByRole('tab', { name: 'Trip stats' });
     expect(axios.post.mock.calls[0][1]).toEqual({
       mode: 'live',
       preset_id: 'family',
@@ -390,7 +390,7 @@ describe('Trip Planning Studio experiments', () => {
     });
     await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
     await userEvent.click(screen.getByRole('button', { name: /Tight hotel budget/ }));
-    expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'Trip stats' })).not.toBeInTheDocument();
     expect(screen.getByLabelText('Start')).toHaveValue('monterey');
     expect(screen.getByLabelText('Destination')).toHaveValue('sf');
     expect(screen.getByLabelText('Hotel target / room / night (USD)')).toHaveValue(60);
@@ -398,7 +398,7 @@ describe('Trip Planning Studio experiments', () => {
     expect(screen.queryByLabelText('Room 1 child 2 age')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Car model')).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
-    await screen.findByText('OPTIMAL');
+    await screen.findByRole('tab', { name: 'Trip stats' });
     expect(axios.post.mock.calls[1][1].inputs).toEqual(quickTrips[1].inputs);
     await userEvent.click(screen.getByRole('button', { name: 'Trip presets' }));
     await userEvent.click(screen.getByRole('button', { name: /Medium two-day/ }));
@@ -413,14 +413,14 @@ describe('Trip Planning Studio experiments', () => {
     );
   });
 
-  it('sends edited inputs and the Studio session, displays actual contributions, and clears stale success on edits', async () => {
+  it('sends edited inputs and the Studio session, displays match estimates, and clears stale output on edits', async () => {
     await mount();
     fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '3' } });
     fireEvent.change(screen.getByLabelText('Interest nature percentage'), {
       target: { value: '60' },
     });
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
-    expect(await screen.findByText('OPTIMAL')).toBeInTheDocument();
+    expect(await screen.findByRole('tab', { name: 'Trip stats' })).toBeInTheDocument();
     const [, request, config] = axios.post.mock.calls[0];
     expect(request).toMatchObject({
       mode: 'live',
@@ -432,13 +432,10 @@ describe('Trip Planning Studio experiments', () => {
     expect(request).not.toHaveProperty('snapshot_id');
     expect(screen.queryByLabelText('Run mode')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Candidate snapshot')).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
-    await userEvent.click(screen.getByText('Forest walk'));
-    expect(
-      screen.getByRole('table', { name: 'Score contributions for Forest walk' })
-    ).toHaveTextContent('0.72');
+    await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
+    expect(screen.getByRole('group', { name: 'Forest walk match' })).toHaveTextContent('76%');
     fireEvent.change(screen.getByLabelText('Departure time'), { target: { value: '10:00' } });
-    expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'Trip stats' })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Reset preset' }));
     expect(screen.getByLabelText('Maximum attractions')).toHaveValue(2);
     expect(screen.getByLabelText('Interest nature percentage')).toHaveValue(80);
@@ -465,14 +462,14 @@ describe('Trip Planning Studio experiments', () => {
     expect(screen.getByLabelText('Interest nature percentage')).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Cancel and reset' }));
     await act(async () => resolveRun({ data: response() }));
-    expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'Trip stats' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Run live route' })).toBeEnabled();
   });
 
   it('does not claim same-snapshot comparisons for fresh live discoveries', async () => {
     await mount();
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
-    await screen.findByText('OPTIMAL');
+    await screen.findByRole('tab', { name: 'Trip stats' });
     const next = response();
     next.snapshot.id = 'live-2';
     next.explanation.weights = { nature: 0.2, history: 0.8 };
@@ -486,7 +483,7 @@ describe('Trip Planning Studio experiments', () => {
     expect(axios.post.mock.calls.every(([, body]) => body.mode === 'live')).toBe(true);
   });
 
-  it('reveals short explanations by keyboard or tap and keeps the long formula in a disclosure', async () => {
+  it('keeps input help accessible and results free of formulas and raw data', async () => {
     await mount();
     const help = screen.getByRole('button', { name: 'About trip weights' });
     fireEvent.focus(help);
@@ -495,16 +492,12 @@ describe('Trip Planning Studio experiments', () => {
     fireEvent.blur(help);
     await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
-    await screen.findByText('OPTIMAL');
+    await screen.findByRole('tab', { name: 'Trip stats' });
     expect(screen.getByLabelText('Experiment output')).toHaveFocus();
-    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
-    await userEvent.click(screen.getByRole('button', { name: 'About integer objective' }));
-    expect(await screen.findByRole('tooltip')).toHaveTextContent('not a percentage');
-    const formula = screen.getByText('Constraints and objective formula').closest('details');
-    expect(formula).not.toHaveAttribute('open');
-    await userEvent.click(screen.getByText('Constraints and objective formula'));
-    expect(formula).toHaveAttribute('open');
-    expect(formula).toHaveTextContent('maximize sum(c[i] × x[i])');
+    await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
+    expect(screen.getByRole('region', { name: 'Attractions' })).toBeVisible();
+    expect(screen.queryByText('Constraints and objective formula')).not.toBeInTheDocument();
+    expect(screen.queryByText('Validated input snapshot')).not.toBeInTheDocument();
   });
 
   it('keeps a live provider failure distinct from replay and preserves selection diagnostics', async () => {
@@ -515,7 +508,7 @@ describe('Trip Planning Studio experiments', () => {
     axios.post.mockResolvedValue({ data });
     await mount();
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
-    expect(await screen.findByText('OPTIMAL')).toBeInTheDocument();
+    expect(await screen.findByRole('tab', { name: 'Trip stats' })).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('No hotel offers available.');
     expect(screen.getByText('Live provider run')).toBeInTheDocument();
     expect(screen.queryByText('Replay · frozen candidate fixture')).not.toBeInTheDocument();
@@ -552,7 +545,7 @@ describe('Trip Planning Studio experiments', () => {
     expect(await screen.findByText('Live route map')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('tab', { name: 'Itinerary' }));
     expect(screen.getByText('Forest visit')).toBeInTheDocument();
-    expect(screen.getByText(/Optimality was not proved/)).toBeInTheDocument();
+    expect(screen.queryByText(/Optimality was not proved/)).not.toBeInTheDocument();
     expect(screen.getByText('Room quote is above target.')).toBeInTheDocument();
   });
 
@@ -570,22 +563,17 @@ describe('Trip Planning Studio experiments', () => {
     axios.post.mockResolvedValue({ data });
     await mount();
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
-    await screen.findByRole('tab', { name: 'Algorithm details' });
-    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
-    await userEvent.click(screen.getByText('Malformed place'));
-    expect(
-      screen
-        .getByRole('table', { name: 'Score contributions for Malformed place' })
-        .querySelectorAll('tbody tr')
-    ).toHaveLength(0);
+    await screen.findByRole('tab', { name: 'Trip stats' });
+    await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
+    expect(screen.getByRole('group', { name: 'Malformed place match' })).toHaveTextContent('—');
     expect(screen.getByText('Duplicate place')).toBeInTheDocument();
-    expect(screen.getByText('invalid candidate · slot unassigned')).toBeInTheDocument();
+    expect(screen.queryByText('invalid candidate · slot unassigned')).not.toBeInTheDocument();
   });
 
   it.each([422, 503, 401])('handles HTTP %s without showing old output', async (status) => {
     await mount();
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
-    await screen.findByText('OPTIMAL');
+    await screen.findByRole('tab', { name: 'Trip stats' });
     axios.post.mockRejectedValue({
       response: {
         status,
@@ -606,7 +594,7 @@ describe('Trip Planning Studio experiments', () => {
       expect(await screen.findByRole('alert')).toHaveTextContent(
         status === 422 ? 'Room occupants do not match.' : 'Check your connection'
       );
-    expect(screen.queryByText('OPTIMAL')).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'Trip stats' })).not.toBeInTheDocument();
   });
 
   it('edits room occupancy, car and scheduling values without modifying saved chats', async () => {
@@ -623,7 +611,7 @@ describe('Trip Planning Studio experiments', () => {
     await userEvent.click(screen.getByLabelText('Allow late driving'));
     await userEvent.click(screen.getByLabelText('food'));
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
-    await screen.findByText('OPTIMAL');
+    await screen.findByRole('tab', { name: 'Trip stats' });
     expect(axios.post.mock.calls[0][1].inputs).toMatchObject({
       traveler_count: 3,
       hotel_rooms: [{ adults: 2, child_ages: [9] }],
@@ -723,7 +711,7 @@ describe('Trip Planning Studio calm workspace', () => {
     const routeTab = await screen.findByRole('tab', { name: 'Route' });
     expect(routeTab).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByText('Live route map')).toBeVisible();
-    expect(screen.getByText('OPTIMAL')).not.toBeVisible();
+    expect(screen.getByRole('region', { name: 'Attractions', hidden: true })).not.toBeVisible();
     routeTab.focus();
     await userEvent.keyboard('{ArrowRight}');
     expect(screen.getByRole('tab', { name: 'Itinerary' })).toHaveFocus();
@@ -731,13 +719,13 @@ describe('Trip Planning Studio calm workspace', () => {
     expect(screen.queryByText('Live route map')).not.toBeInTheDocument();
     expect(screen.getByText('Room quote is above target.')).toBeVisible();
     await userEvent.keyboard('{End}');
-    expect(screen.getByRole('tab', { name: 'Algorithm details' })).toHaveFocus();
-    expect(screen.getByText('OPTIMAL')).toBeVisible();
+    expect(screen.getByRole('tab', { name: 'Trip stats' })).toHaveFocus();
+    expect(screen.getByRole('region', { name: 'Attractions' })).toBeVisible();
     await userEvent.keyboard('{Home}');
     expect(routeTab).toHaveFocus();
     expect(screen.getByText('Live route map')).toBeVisible();
     await userEvent.keyboard('{ArrowLeft}');
-    expect(screen.getByRole('tab', { name: 'Algorithm details' })).toHaveFocus();
+    expect(screen.getByRole('tab', { name: 'Trip stats' })).toHaveFocus();
     await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
     expect(await screen.findByRole('tab', { name: 'Route' })).toHaveAttribute(
       'aria-selected',
@@ -754,8 +742,8 @@ describe('Trip Planning Studio calm workspace', () => {
     await screen.findByRole('tab', { name: 'Route' });
     expect(screen.getByLabelText('Trip summary')).toHaveTextContent('Not available');
     expect(screen.getByText('Route available; itinerary generation is incomplete.')).toBeVisible();
-    await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
     expect(screen.getByText('Route available; itinerary generation is incomplete.')).toBeVisible();
-    expect(screen.getByText('OPTIMAL')).toBeVisible();
+    expect(screen.getByRole('region', { name: 'Attractions' })).toBeVisible();
   });
 });

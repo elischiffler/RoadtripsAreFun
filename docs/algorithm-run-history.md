@@ -79,15 +79,15 @@ snapshotted. Stable SHA-256 hashes ignore provider timestamps and run UUIDs.
 The input cohort groups matching inputs/mode/scoring version/revision, so changing
 live discovery still contributes to observed spread. The narrower comparison key
 also requires the same candidate model/query points. An `OPTIMAL` reference must use the identical candidate model and scoring version.
-For `balanced-route-v3`, report extra selection cost over that reference in seconds
+For `balanced-route-v3/v4/v5`, report extra selection cost over that reference in seconds
 (including a zero optimum); percentage excess is assessed only for a positive
 reference. Do not use `100 × score/reference` as match quality for minimized costs.
 Historical surplus versions retain their maximized-score ratios. Match quality
 and the ten-point loss bound are separate selection measurements. Means, population
 standard deviations, assessed denominators and repeat counts are backend-owned.
 
-New metrics use `balanced-route-v3`; historical `selection-surplus-v1/v2` keep
-their original meanings. Provider measurements separate wall elapsed time,
+New metrics use `balanced-route-v5`; v3/v4 measurements remain versioned, and
+historical `selection-surplus-v1/v2` retain their original meanings. Provider measurements separate wall elapsed time,
 accumulated call duration, queue wait, active/peak calls, actual API attempts and
 within-run distinct requests. Parallel/nested durations must not be summed as wall
 time. Discovery and road-check explanations persist in existing result JSONB;

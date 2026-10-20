@@ -38,18 +38,16 @@ const result = {
   },
 };
 
-it('explains the minimized cost, bounded quality and sparse discovery without historical surplus', async () => {
+it('shows measured match and discovery counts without formulas or raw stages', async () => {
   render(<LabResults result={result} />);
-  await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
-  expect(screen.getByText('Selection cost (seconds)')).toBeInTheDocument();
-  expect(screen.getByText(/A valid attraction selection was found/)).toBeInTheDocument();
-  expect(screen.getByText(/Sparse sections: 4/)).toBeInTheDocument();
-  await userEvent.click(screen.getByText('Constraints and objective formula'));
-  expect(
-    screen.getByText(/Gaps include origin-to-first and last-to-destination/)
-  ).toBeInTheDocument();
-  expect(screen.queryByText(/maximize sum/)).not.toBeInTheDocument();
-  expect(screen.getByText('10 percentage points')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
+  const matches = screen.getByRole('group', { name: 'Match estimates' });
+  expect(matches).toHaveTextContent('80%');
+  expect(matches).toHaveTextContent('90%');
+  expect(screen.getByText('Sections with few places').nextElementSibling).toHaveTextContent('1');
+  expect(screen.queryByText('Selection cost (seconds)')).not.toBeInTheDocument();
+  expect(screen.queryByText('Run data by stage')).not.toBeInTheDocument();
+  expect(screen.queryByText('Constraints and objective formula')).not.toBeInTheDocument();
 });
 
 it('retains query coverage and measured road exclusions in inspectable stage JSON', async () => {
