@@ -17,7 +17,7 @@ import {
   UtilitySpread,
   UtilityBoxes,
 } from './ResearchCharts';
-import { distribution, format, METRICS, metricValue, paired } from './researchData';
+import { distribution, format, METRICS, paired } from './researchData';
 import '../AlgorithmLab/AlgorithmLab.css';
 import './StudioResearch.css';
 
@@ -40,7 +40,6 @@ export default function StudioResearch() {
   const [curveDensity, setCurveDensity] = useState('2');
   const [parameter, setParameter] = useState('quality_loss');
   const [variant, setVariant] = useState('baseline');
-  const [recordsOpen, setRecordsOpen] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -628,83 +627,6 @@ export default function StudioResearch() {
               {!filtered.length && <p>No finished attempts yet.</p>}
             </div>
           </section>
-          <details
-            className="research-card"
-            onToggle={(event) => setRecordsOpen(event.currentTarget.open)}
-          >
-            <summary>Measurements and run records</summary>
-            {recordsOpen && (
-              <>
-                <p>
-                  Quality charts include fully delivered, timing-valid runs. Outcome charts include
-                  failures, partial trips and interruptions. Metric sample sizes exclude missing
-                  values. Target days determine requested stop count; actual trip length remains a
-                  measured outcome. All participants use two adults, one room, the same departure
-                  clock and no optional evening suggestions.
-                </p>
-                <p>
-                  Solver baseline: at most 10 percentage points below the best available average
-                  utility; spacing weight 1; detour weight 1; 5-second solve limit; one solver
-                  worker. One factor changes at a time. Objective values are retained for
-                  within-condition diagnosis, not pooled as a trip-quality score.
-                </p>
-                <p>
-                  Revision {data.identity.revision} ·{' '}
-                  {data.identity.dirty ? 'working changes recorded' : 'clean checkout'} · dataset{' '}
-                  {data.dataset_hash.slice(0, 12)} · {data.identity.metric_version}
-                </p>
-                <div className="research-table-scroll">
-                  <table>
-                    <caption>Finished attempts</caption>
-                    <thead>
-                      <tr>
-                        {[
-                          'Trip',
-                          'Persona',
-                          'Stops/day',
-                          'Repeat',
-                          'Condition',
-                          'Result',
-                          'Utility %',
-                          'Days',
-                          'Delivered',
-                          'Objective',
-                          `${METRICS[metric].label} (${METRICS[metric].unit})`,
-                        ].map((label) => (
-                          <th key={label}>{label}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filtered.map((row) => (
-                        <tr key={row.id}>
-                          <td>{row.trip}</td>
-                          <td>{row.persona}</td>
-                          <td>{row.stops_per_day}</td>
-                          <td>{row.repeat}</td>
-                          <td>{row.variant}</td>
-                          <td title={row.error?.message}>
-                            {row.solver_status} · {row.outcome}
-                          </td>
-                          <td>
-                            {format(row.utility_mean == null ? null : row.utility_mean * 100)}
-                          </td>
-                          <td>
-                            {format(row.actual_days, 0)} / {row.target_days}
-                          </td>
-                          <td>
-                            {format(row.delivered, 0)} / {format(row.requested, 0)}
-                          </td>
-                          <td>{format(row.objective)}</td>
-                          <td>{format(metricValue(row, metric), METRICS[metric].digits)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            )}
-          </details>
         </>
       )}
     </main>
