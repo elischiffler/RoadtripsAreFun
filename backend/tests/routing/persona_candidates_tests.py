@@ -100,7 +100,9 @@ async def test_attractions_reject_distant_malformed_and_cap_output():
     places = IndexedPlaces()
     result = await discover(None, [[40, -74]] * 30, default_weights(), ai=ai, places=places)
     assert len(result) == 3
-    assert ai.calls == 3 and places.calls == 3
+    # Each rating batch also requests an optional duration estimate. This fake
+    # returns only ratings, so duration validation falls back to two hours.
+    assert ai.calls == 6 and places.calls == 3
 
     distant = FakePlaces(
         attractions=[

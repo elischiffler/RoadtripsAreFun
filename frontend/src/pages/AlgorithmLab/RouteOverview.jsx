@@ -1,4 +1,5 @@
 import PlaceSource from '../../components/PlaceSource.jsx';
+import PlaceTiming from '../../components/PlaceTiming.jsx';
 import PropTypes from 'prop-types';
 import Map from '../../components/Map';
 
@@ -26,6 +27,7 @@ export default function RouteOverview({ route }) {
             {route.stops.map((stop, index) => (
               <li key={index}>
                 <strong>{stop.name}</strong>
+                <PlaceTiming place={stop} />
                 <PlaceSource place={stop} />
                 {stop.type && <small>{stop.type.replaceAll('_', ' ')}</small>}
               </li>
