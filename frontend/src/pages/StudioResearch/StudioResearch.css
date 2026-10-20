@@ -358,3 +358,35 @@
 .research-heatmap-flat {
   display: block;
 }
+.research-heatmap .research-result-range {
+  white-space: normal;
+  max-width: 150px;
+  margin: 3px auto 0;
+  font-size: 0.66rem;
+}
+.research-card svg text.research-chart-detail {
+  font-size: 10px;
+}
+.research-finding > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.research-finding small,
+.research-statuses small {
+  font-size: 0.75rem;
+  color: #705b45;
+}
+.research-statuses > div {
+  flex-direction: column;
+  align-items: start;
+  gap: 4px;
+}
+.research-statuses strong {
+  font-size: 1.4rem;
+}
+
+.research-heatmap thead th:not(:first-child) {
+  text-align: center;
+  font-size: 0.75rem;
+}

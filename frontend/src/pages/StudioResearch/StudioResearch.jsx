@@ -15,7 +15,7 @@ import {
   UtilitySpread,
   UtilityBoxes,
 } from './ResearchCharts';
-import { combineStudies, distribution, format, METRICS, paired } from './researchData';
+import { combineStudies, distribution, format, METRICS, paired, solverLabel } from './researchData';
 import ResearchInfo, { ChartHeading } from './ResearchInfo';
 import '../AlgorithmLab/AlgorithmLab.css';
 import './StudioResearch.css';
@@ -114,6 +114,14 @@ export default function StudioResearch() {
       (track !== 'solver' || row.variant === variant)
   );
   const runtime = distribution(trackRows.map((row) => row.runtime_seconds));
+  const successful = trackRows.filter((row) => row.completed).length;
+  const failed = trackRows.filter((row) => row.outcome === 'failed').length;
+  const partial = trackRows.filter((row) => row.outcome === 'completed' && !row.completed).length;
+  const interrupted = trackRows.filter((row) => row.outcome === 'interrupted').length;
+  const percentFinished = (count) =>
+    trackRows.length
+      ? `${format((count / trackRows.length) * 100)}% of finished runs`
+      : 'No finished runs yet';
   const solverCounts = {};
   filtered.forEach((row) => {
     const key = row.solver_status || 'NOT_RUN';
@@ -230,7 +238,7 @@ export default function StudioResearch() {
                 setMetric('utility_mean');
               }}
             >
-              Full pipeline · {data.counts.pipeline}
+              Full trip planning · {data.counts.pipeline}
             </button>
             <button
               aria-pressed={track === 'solver'}
@@ -239,7 +247,7 @@ export default function StudioResearch() {
                 setMetric('utility_mean');
               }}
             >
-              CP-SAT · {data.counts.solver}
+              Stop selection · {data.counts.solver}
             </button>
           </nav>
           <div className="research-track-meta">
@@ -247,59 +255,78 @@ export default function StudioResearch() {
               {track === 'pipeline'
                 ? 'Live trips'
                 : data.dataset_hashes.length === 1
-                  ? '100 synthetic candidates'
-                  : 'Synthetic candidates'}
+                  ? '100 simulated attractions'
+                  : 'Simulated attractions'}
             </span>
             <ResearchInfo label="Study data">
               {track === 'pipeline'
                 ? 'Fresh live trips through the complete pipeline. Quality scores require fully delivered, timing-valid itineraries. Hotel metrics cover quoted room-nights only, not the total trip budget. Missing quotes are unassessed.'
-                : 'Controlled trials on fixed synthetic candidates. Gap and detour inputs are simulated, not measured journeys. Saved runs are combined here and may reuse solver seeds; they are not independent real-world samples. The baseline allows 10 percentage points of utility loss, spacing weight 1, detour weight 1, a five-second limit and one worker.'}{' '}
-              Summary totals cover all settings in this track; charts below follow their filters.
-              Target days set requested stops, not actual trip length. Pausing finishes current
-              runs.
+                : 'CP-SAT stop selection tested on fixed simulated attractions. Driving gaps and extra-driving inputs are simulated, not measured journeys. Saved runs are combined here and may reuse solver seeds; they are not independent real-world samples. Default settings permit a 10-point match drop from the best available average, give equal importance to stop spacing and extra driving, and allow five seconds on one solver worker.'}{' '}
+              Success requires every requested stop and, for full trips, valid timing. Typical
+              planning time is the median; the middle-half range contains the central 50% of
+              measured times. Summary totals cover all settings in this track; charts below follow
+              their filters. Target days set requested stops, not actual trip length. Pausing
+              finishes current runs.
             </ResearchInfo>
           </div>
           <div className="research-stat-row research-summary">
             <div>
-              <span>Finished</span>
+              <span>Runs finished</span>
               <strong>{format(trackRows.length, 0)}</strong>
+              <small>
+                {format(
+                  (track === 'solver' ? data.counts.solver : data.counts.pipeline) -
+                    trackRows.length,
+                  0
+                )}{' '}
+                runs remaining
+              </small>
             </div>
             <div>
-              <span>Complete</span>
-              <strong>{format(trackRows.filter((row) => row.completed).length, 0)}</strong>
+              <span>Successful runs</span>
+              <strong>{format(successful, 0)}</strong>
+              <small>{percentFinished(successful)}</small>
             </div>
             <div>
-              <span>Failed / interrupted</span>
-              <strong>
-                {format(trackRows.filter((row) => row.outcome !== 'completed').length, 0)}
-              </strong>
+              <span>Incomplete runs</span>
+              <strong>{format(trackRows.length - successful, 0)}</strong>
+              <small>
+                {failed} failed · {partial} partial · {interrupted} interrupted
+              </small>
             </div>
             <div>
-              <span>Median time</span>
+              <span>Typical planning time</span>
               <strong>
                 {format(runtime.median)}
                 <small> sec</small>
               </strong>
+              <small>
+                {runtime.n > 1
+                  ? `Middle half: ${format(runtime.q1)}–${format(runtime.q3)} sec`
+                  : runtime.n === 1
+                    ? '1 timed run'
+                    : 'No times recorded'}
+              </small>
             </div>
           </div>
           <div className="research-controls research-filters">
             <label>
-              Metric
+              Measure
               <select value={metric} onChange={(e) => setMetric(e.target.value)}>
                 {Object.entries(METRICS)
                   .filter(([, value]) => track === 'pipeline' || !value.live)
                   .map(([key, value]) => (
                     <option value={key} key={key}>
                       {value.label}
-                      {key === 'max_gap_seconds' && track === 'solver' ? ' (baseline)' : ''}
+                      {key === 'max_gap_seconds' && track === 'solver' ? ' (simulated)' : ''}
                     </option>
                   ))}
               </select>
             </label>
             <label>
-              Persona
+              Interests
               <select value={persona} onChange={(e) => setPersona(e.target.value)}>
-                <option value="all">Both personas</option>
+                <option value="all">All interests</option>
                 <option value="nature">Nature</option>
                 <option value="entertainment">Entertainment</option>
               </select>
@@ -317,15 +344,15 @@ export default function StudioResearch() {
             </label>
             {track === 'solver' && (
               <label>
-                Condition
+                Selection setting
                 <select value={variant} onChange={(e) => setVariant(e.target.value)}>
                   {data.variants.map((row) => (
                     <option value={row.id} key={row.id}>
                       {row.id === 'baseline'
-                        ? 'Baseline'
+                        ? 'Default settings'
                         : row.parameter === 'quality_loss'
-                          ? `Allowed loss: ${format(row.value * 100)} points`
-                          : `Detour weight: ${row.value}`}
+                          ? `Allow ${format(row.value * 100)}-point match drop`
+                          : `Extra driving penalty: ${row.value}×`}
                     </option>
                   ))}
                 </select>
@@ -351,14 +378,14 @@ export default function StudioResearch() {
           </section>
           {track === 'pipeline' ? (
             <section className="research-card">
-              <Tradeoff rows={filtered} />
+              <Tradeoff rows={filtered} trips={trips} />
             </section>
           ) : (
             <section className="research-card">
               <ChartHeading
                 as="h2"
-                title="Parameter response"
-                help="Mean of the selected metric as one solver setting changes. Trip and stops per day stay fixed here; persona and condition filters above do not apply. Points show each persona separately; hover a point for sample size and spread. Allowed loss is the permitted drop from the best available average utility. The same candidates and seed are paired across settings; these are repeated solver trials on one dataset."
+                title="Settings comparison"
+                help="Average of the selected measure as one solver setting changes. Trip and stops per day stay fixed here; interest and selection-setting filters above do not apply. Points show each interest profile separately; hover for the number of measured runs and their observed range. Allowed match drop is the permitted decrease from the best available average match score. The same candidates and seed are paired across settings; these are repeated solver trials on one dataset."
               />
               <div className="research-controls">
                 <label>
@@ -384,10 +411,10 @@ export default function StudioResearch() {
                   </select>
                 </label>
                 <label>
-                  Parameter
+                  Setting
                   <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
-                    <option value="quality_loss">Allowed utility loss</option>
-                    <option value="detour_weight">Detour weight</option>
+                    <option value="quality_loss">Allowed match drop</option>
+                    <option value="detour_weight">Extra driving penalty</option>
                   </select>
                 </label>
               </div>
@@ -399,15 +426,20 @@ export default function StudioResearch() {
               />
               {delta.n >= 5 && (
                 <div className="research-finding">
-                  <span>
-                    Utility change: {format(delta.mean)} points · n={delta.n}
-                  </span>
-                  <ResearchInfo label="Utility change">
+                  <div>
+                    <strong>Average match change: {format(delta.mean)} points</strong>
+                    <small>
+                      {delta.n} matched run comparisons · observed change {format(delta.min)} to{' '}
+                      {format(delta.max)} points
+                    </small>
+                  </div>
+                  <ResearchInfo label="Average match change">
                     {parameter === 'quality_loss'
-                      ? `${format(changeVariants.at(-1).value * 100)} percentage points allowed loss`
-                      : `${changeVariants.at(-1).value} detour weight`}{' '}
-                    versus baseline, matching trip, persona, stop count and seed. Only pairs with
-                    assessed utility on both sides are included. This is not a significance test.
+                      ? `${format(changeVariants.at(-1).value * 100)}-point allowed match drop`
+                      : `${changeVariants.at(-1).value}× extra driving penalty`}{' '}
+                    versus default settings, matching trip, interests, stop count and solver seed.
+                    Only comparisons with usable match scores on both sides are included. This is
+                    not a significance test.
                   </ResearchInfo>
                 </div>
               )}
@@ -416,14 +448,15 @@ export default function StudioResearch() {
           <section className="research-card">
             <ChartHeading
               as="h2"
-              title="Solver outcomes"
-              help="Counts under the selected filters. OPTIMAL proves the best spacing-and-detour objective within the utility bound; it does not mean highest utility. FEASIBLE found a valid solution without proving it best within the time limit. INFEASIBLE means no solution meets the model constraints. UNKNOWN means no solution or proof was returned in time. A zero-loss bound can be unattainable due to score rounding; that does not establish a shortage of attractions."
+              title="Selection results"
+              help="Counts and shares follow the selected filters. Best solution proven means the solver established the lowest spacing-and-extra-driving cost while meeting the required match score; it does not mean highest match. Valid solution found means the requirements were met without proving the best solution before time ran out. No valid solution means the requirements cannot all be met. A strict zero-drop requirement can fail because of score rounding, which does not establish a shortage of attractions."
             />
             <div className="research-statuses">
               {Object.entries(solverCounts).map(([label, count]) => (
                 <div key={label}>
-                  <span>{label.replaceAll('_', ' ')}</span>
-                  <strong>{count}</strong>
+                  <span>{solverLabel(label)}</span>
+                  <strong>{format(count, 0)}</strong>
+                  <small>{format((count / filtered.length) * 100)}% of filtered runs</small>
                 </div>
               ))}
               {!filtered.length && <p>No results yet.</p>}

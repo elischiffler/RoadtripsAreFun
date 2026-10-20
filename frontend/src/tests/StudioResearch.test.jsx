@@ -107,8 +107,8 @@ it('combines saved results without selecting a study or cancelling work on unmou
   );
   const view = mount();
   expect(await screen.findByText('running · 2 / 2')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'CP-SAT · 2' })).toBeInTheDocument();
-  expect(screen.getByRole('table')).toHaveTextContent('n=2 / 2');
+  expect(screen.getByRole('button', { name: 'Stop selection · 2' })).toBeInTheDocument();
+  expect(screen.getByRole('table')).toHaveTextContent('2 runs scored');
   expect(screen.queryByLabelText('Study')).not.toBeInTheDocument();
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
   expect(studyRequest.mock.calls.every(([, action]) => !action)).toBe(true);
@@ -140,21 +140,24 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   });
   mount();
   await screen.findByText('complete · 2 / 2');
-  await userEvent.click(screen.getByRole('button', { name: 'Full pipeline · 1' }));
-  expect(screen.getByText('NOT RUN')).toBeInTheDocument();
-  await userEvent.click(screen.getByRole('button', { name: 'CP-SAT · 1' }));
+  expect(screen.getByText('100% of finished runs')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Full trip planning · 1' }));
+  expect(screen.getByText('Selection not reached')).toBeInTheDocument();
+  expect(screen.getByText('0% of finished runs')).toBeInTheDocument();
+  expect(screen.getByText('1 failed · 0 partial · 0 interrupted')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Stop selection · 1' }));
   expect(
-    screen.getByRole('img', { name: 'Average utility response to quality_loss' })
+    screen.getByRole('img', { name: 'Average match score by allowed match drop' })
   ).toBeInTheDocument();
-  expect(screen.getByText('100 synthetic candidates')).toBeInTheDocument();
+  expect(screen.getByText('100 simulated attractions')).toBeInTheDocument();
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
   expect(screen.queryByText(/Same candidates, persona/)).not.toBeInTheDocument();
-  await userEvent.hover(screen.getByRole('button', { name: 'About Parameter response' }));
+  await userEvent.hover(screen.getByRole('button', { name: 'About Settings comparison' }));
   expect(screen.getByRole('tooltip')).toHaveTextContent('Trip and stops per day stay fixed');
-  await userEvent.unhover(screen.getByRole('button', { name: 'About Parameter response' }));
+  await userEvent.unhover(screen.getByRole('button', { name: 'About Settings comparison' }));
   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   expect(screen.queryByRole('option', { name: 'Added distance' })).not.toBeInTheDocument();
-  expect(screen.getByText('FEASIBLE')).toBeInTheDocument();
+  expect(screen.getByText('Valid solution found')).toBeInTheDocument();
 });
 
 it('does not confuse zeroes, missing measurements, failed trials or unmatched pairs', () => {
@@ -206,16 +209,18 @@ it('renders charts with labeled units, measured sample sizes and negative drivin
       <UtilitySpread rows={rows} />
     </>
   );
-  expect(screen.getByRole('table', { name: 'Average utility · %' })).toHaveTextContent('n=1 / 1');
+  expect(screen.getByRole('table', { name: 'Average match score · %' })).toHaveTextContent(
+    '1 run scored'
+  );
   expect(screen.getByRole('img', { name: 'Run outcomes by trip type' })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: 'Added driving by trip type' })).toHaveTextContent(
     'minutes'
   );
   expect(
-    screen.getByRole('img', { name: 'Average utility response to quality_loss' })
-  ).toHaveTextContent('percentage points');
+    screen.getByRole('img', { name: 'Average match score by allowed match drop' })
+  ).toHaveTextContent('points');
   expect(
-    screen.getByRole('img', { name: 'Utility versus added driving scatter plot' })
+    screen.getByRole('img', { name: 'Match versus added driving scatter plot' })
   ).toHaveTextContent('-1');
   expect(container.innerHTML).not.toMatch(/NaN|Infinity/);
   expect(screen.getByText('40%')).toBeInTheDocument();
@@ -263,7 +268,7 @@ it('centers heatmap colors on equally weighted populated cells and keeps unknown
     .getAllByRole('row')
     .slice(1)
     .map((row) => within(row).getAllByRole('cell')[0]);
-  expect(screen.getByText('Mean 70 %')).toBeInTheDocument();
+  expect(screen.getByText('Average 70 %')).toBeInTheDocument();
   expect(scores[0]).toHaveStyle({ background: 'rgb(232, 199, 168)' });
   expect(scores[1]).toHaveStyle({ background: 'rgb(247, 244, 237)' });
   expect(scores[2]).toHaveStyle({ background: 'rgb(179, 209, 200)' });
@@ -271,7 +276,7 @@ it('centers heatmap colors on equally weighted populated cells and keeps unknown
   expect(within(unknown).getAllByRole('cell')[1]).toHaveTextContent('—');
   expect(within(unknown).getAllByRole('cell')[1].style.background).toBe('');
   view.rerender(<Heatmap rows={[rows[1]]} trips={groups} metric="utility_mean" />);
-  expect(screen.getByText('Mean 70 % · No variation')).toBeInTheDocument();
+  expect(screen.getByText('Average 70 % · No variation')).toBeInTheDocument();
   expect(view.container.querySelector('.research-heatmap-gradient')).toBeNull();
   view.rerender(<Heatmap rows={[]} trips={groups} metric="utility_mean" />);
   expect(screen.queryByLabelText('Heatmap color scale')).not.toBeInTheDocument();
@@ -295,4 +300,19 @@ it('keeps source identities and parameter pairs separate when merging matching c
   expect(data.counts).toEqual({ total: 3, pipeline: 0, solver: 3 });
   expect(new Set(data.rows.map((row) => row.id)).size).toBe(3);
   expect(paired(data.rows, 'tuned', 'utility_mean')).toMatchObject({ n: 1, mean: -10 });
+});
+
+it('shows measured run counts and observed ranges without treating a failed run as a zero score', () => {
+  const rows = [
+    { ...base, utility_mean: 0.5 },
+    { ...base, id: 2, utility_mean: 0.9 },
+    { ...base, id: 3, completed: false, outcome: 'failed', utility_mean: 0 },
+  ];
+  const { container } = render(<Heatmap rows={rows} trips={trips} metric="utility_mean" />);
+  const row = within(screen.getByRole('table')).getAllByRole('row')[2];
+  const cell = within(row).getAllByRole('cell')[1];
+  expect(cell).toHaveTextContent('70');
+  expect(cell).toHaveTextContent('2 of 3 runs scored');
+  expect(cell).toHaveTextContent('Range 50–90%');
+  expect(container.textContent).not.toMatch(/\bn=|\bSD=/);
 });

@@ -28,10 +28,10 @@ export function distribution(values) {
   };
 }
 export const METRICS = {
-  utility_mean: { label: 'Average utility', unit: '%', scale: 100, digits: 1 },
-  utility_min: { label: 'Lowest utility', unit: '%', scale: 100, digits: 1 },
-  utility_median: { label: 'Median utility', unit: '%', scale: 100, digits: 1 },
-  utility_max: { label: 'Highest utility', unit: '%', scale: 100, digits: 1 },
+  utility_mean: { label: 'Average match score', unit: '%', scale: 100, digits: 1 },
+  utility_min: { label: 'Lowest match score', unit: '%', scale: 100, digits: 1 },
+  utility_median: { label: 'Median match score', unit: '%', scale: 100, digits: 1 },
+  utility_max: { label: 'Highest match score', unit: '%', scale: 100, digits: 1 },
   max_gap_seconds: { label: 'Longest gap', unit: 'hours', scale: 1 / 3600, digits: 2 },
   extra_meters: {
     label: 'Added distance',
@@ -82,10 +82,10 @@ export function paired(rows, variant, metric) {
 }
 
 const METRIC_HELP = {
-  utility_mean: 'Average estimated persona match across the attractions in a run.',
-  utility_min: 'Match score of the lowest-scoring attraction in each run.',
-  utility_median: 'Middle attraction match score within each run.',
-  utility_max: 'Match score of the highest-scoring attraction in each run.',
+  utility_mean: 'Average estimated interest match across the attractions in a run.',
+  utility_min: 'Interest match score of the lowest-scoring attraction in each run.',
+  utility_median: 'Middle attraction interest score within each run.',
+  utility_max: 'Interest match score of the highest-scoring attraction in each run.',
   max_gap_seconds:
     'Longest driving gap between attractions, including the origin and destination. Solver trials use simulated baseline progress; live trips use actual route legs, excluding overnight downtime.',
   extra_meters: 'Road distance added compared with the direct origin-to-destination route.',
@@ -138,3 +138,15 @@ export function combineStudies(snapshots) {
     ),
   };
 }
+
+export const runCount = (count) => `${format(count, 0)} ${count === 1 ? 'run' : 'runs'}`;
+export const solverLabel = (status) =>
+  ({
+    OPTIMAL: 'Best solution proven',
+    FEASIBLE: 'Valid solution found',
+    INFEASIBLE: 'No valid solution',
+    UNKNOWN: 'No solution before timeout',
+    MODEL_INVALID: 'Invalid solver setup',
+    EMPTY: 'No eligible attractions',
+    NOT_RUN: 'Selection not reached',
+  })[status] ?? 'Unclassified result';

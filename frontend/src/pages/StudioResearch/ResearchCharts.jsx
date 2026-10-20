@@ -1,6 +1,14 @@
 import PropTypes from 'prop-types';
 import { ChartHeading } from './ResearchInfo';
-import { distribution, finite, format, metricHelp, METRICS, sample } from './researchData';
+import {
+  distribution,
+  finite,
+  format,
+  metricHelp,
+  METRICS,
+  runCount,
+  sample,
+} from './researchData';
 
 export function Heatmap({ rows, trips, metric }) {
   const columns = ['nature', 'entertainment'].flatMap((persona) =>
@@ -33,7 +41,7 @@ export function Heatmap({ rows, trips, metric }) {
       <ChartHeading
         title={METRICS[metric].label}
         unit={METRICS[metric].unit}
-        help={`${metricHelp(metric)} Cells show the mean per-run value by trip, persona and stops per target day. n = usable measurements / finished attempts. A dash means missing data. Quality metrics require fully delivered, timing-valid runs; match scores are estimates, not visitor ratings. Colors are centered on the equally weighted mean of populated cells under these filters: amber below, cream at the mean, teal above. The color range spans two standard deviations on either side, with a minimum of five percentage points for utility. End labels are color thresholds, not observed extremes. Higher does not mean better for every metric.`}
+        help={`${metricHelp(metric)} Cells show the average per-run value by trip and interests and stops per target day. The count below each score shows how many finished runs contributed. Runs without usable measurements stay out of the score and its observed range. A dash means missing data. Quality metrics require fully delivered, timing-valid runs; match scores are estimates, not visitor ratings. Colors are centered on the equally weighted average of populated cells under these filters: amber below, cream at the average, teal above. The color range spans two standard deviations on either side, with a minimum of five score points for match scores. End labels are color thresholds, not observed extremes. Higher does not mean better for every metric.`}
       />
       <div className="research-table-scroll">
         <table
@@ -61,14 +69,25 @@ export function Heatmap({ rows, trips, metric }) {
                     style={cell.n ? { background: color(cell.mean) } : undefined}
                     title={
                       cell.n
-                        ? `${format(cell.mean - values.mean, METRICS[metric].digits)} ${utility ? 'percentage points' : METRICS[metric].unit} from mean`
-                        : 'No assessed value'
+                        ? `${format(cell.mean - values.mean, METRICS[metric].digits)} ${utility ? 'points' : METRICS[metric].unit} from the average`
+                        : 'No usable measurements'
                     }
                   >
                     {format(cell.mean, METRICS[metric].digits)}
                     <small>
-                      n={cell.n} / {cell.attempts}
+                      {cell.n === cell.attempts
+                        ? `${runCount(cell.n)} ${utility ? 'scored' : 'measured'}`
+                        : `${cell.n} of ${runCount(cell.attempts)} ${utility ? 'scored' : 'measured'}`}
                     </small>
+                    {cell.n > 1 && (
+                      <small className="research-result-range">
+                        {cell.min === cell.max
+                          ? utility
+                            ? 'Same score'
+                            : 'Same result'
+                          : `Range ${format(cell.min, METRICS[metric].digits)}–${format(cell.max, METRICS[metric].digits)}${METRICS[metric].unit === '%' ? '%' : ` ${METRICS[metric].unit}`}`}
+                      </small>
+                    )}
                   </td>
                 ))}
               </tr>
@@ -80,7 +99,7 @@ export function Heatmap({ rows, trips, metric }) {
         <div className="research-heatmap-scale" aria-label="Heatmap color scale">
           {values.min === values.max ? (
             <span className="research-heatmap-flat">
-              Mean {format(values.mean, METRICS[metric].digits)} {METRICS[metric].unit} · No
+              Average {format(values.mean, METRICS[metric].digits)} {METRICS[metric].unit} · No
               variation
             </span>
           ) : (
@@ -91,7 +110,7 @@ export function Heatmap({ rows, trips, metric }) {
                   ≤ {format(low, METRICS[metric].digits)} {METRICS[metric].unit}
                 </span>
                 <span>
-                  Mean {format(values.mean, METRICS[metric].digits)} {METRICS[metric].unit}
+                  Average {format(values.mean, METRICS[metric].digits)} {METRICS[metric].unit}
                 </span>
                 <span>
                   ≥ {format(high, METRICS[metric].digits)} {METRICS[metric].unit}
@@ -138,7 +157,7 @@ export function StatusColumns({ rows, trips }) {
           </span>
         ))}
       </div>
-      <svg viewBox="0 0 640 260" role="img" aria-label="Run outcomes by trip type">
+      <svg viewBox="0 0 640 290" role="img" aria-label="Run outcomes by trip type">
         <line x1="48" x2="610" y1="210" y2="210" stroke="#c8bcae" />
         {[0, 0.5, 1].map((ratio) => (
           <g key={ratio}>
@@ -165,10 +184,21 @@ export function StatusColumns({ rows, trips }) {
                 );
               })}
               <text x={x + 26} y="236" textAnchor="middle">
-                {row.id.replace('-1d', '').replace('-2d', '').replace('-3d', '').replace('-5d', '')}
+                {{
+                  'short-1d': 'Short day',
+                  'medium-2d': 'Two days',
+                  'long-3d': 'Three days',
+                  'coast-5d': 'Coast to coast',
+                  'tight-2d': 'Tight budget',
+                }[row.id] ?? row.label}
               </text>
               <text x={x + 26} y="252" textAnchor="middle">
-                n={row.counts.reduce((a, b) => a + b, 0)}
+                {runCount(row.counts.reduce((a, b) => a + b, 0))}
+              </text>
+              <text x={x + 26} y="270" textAnchor="middle">
+                {row.counts.some(Boolean)
+                  ? `${format((row.counts[0] / row.counts.reduce((a, b) => a + b, 0)) * 100)}% complete`
+                  : 'Not tested yet'}
               </text>
             </g>
           );
@@ -195,34 +225,43 @@ export function RowChart({ rows, trips, metric }) {
       <ChartHeading
         title="By trip"
         unit={METRICS[metric].unit}
-        help={`${metricHelp(metric)} Bars show the mean per-run value for each trip type under the selected filters. n counts assessed runs; missing values are excluded.`}
+        help={`${metricHelp(metric)} Bars show the mean per-run value for each trip type under the selected filters. The count shows runs with usable measurements; missing values are excluded. Hover a bar for the observed lowest-to-highest range.`}
       />
-      <svg viewBox="0 0 640 240" role="img" aria-label={`${METRICS[metric].label} by trip type`}>
-        <line x1={x(0)} x2={x(0)} y1="10" y2="210" stroke="#c8bcae" />
+      <svg viewBox="0 0 640 290" role="img" aria-label={`${METRICS[metric].label} by trip type`}>
+        <line x1={x(0)} x2={x(0)} y1="10" y2="250" stroke="#c8bcae" />
         {values.map((row, index) => (
           <g key={row.id}>
-            <text x="190" y={32 + index * 39} textAnchor="end">
+            <text x="190" y={28 + index * 47} textAnchor="end">
               {row.label}
+            </text>
+            <text x="190" y={43 + index * 47} textAnchor="end" className="research-chart-detail">
+              {runCount(row.n)} measured
             </text>
             {finite(row.mean) && (
               <rect
                 x={Math.min(x(0), x(row.mean))}
-                y={17 + index * 39}
+                y={15 + index * 47}
                 width={Math.abs(x(row.mean) - x(0))}
                 height="22"
                 rx="3"
                 fill="#a56b28"
-              />
+              >
+                <title>
+                  {runCount(row.n)} measured; average {format(row.mean, METRICS[metric].digits)}{' '}
+                  {METRICS[metric].unit}; observed range {format(row.min, METRICS[metric].digits)}–
+                  {format(row.max, METRICS[metric].digits)} {METRICS[metric].unit}
+                </title>
+              </rect>
             )}
-            <text x={finite(row.mean) ? x(row.mean) + 8 : x(0) + 8} y={32 + index * 39}>
-              {format(row.mean, METRICS[metric].digits)} <tspan fill="#776553">n={row.n}</tspan>
+            <text x={finite(row.mean) ? x(row.mean) + 8 : x(0) + 8} y={28 + index * 47}>
+              {format(row.mean, METRICS[metric].digits)}
             </text>
           </g>
         ))}
-        <text x="200" y="230">
+        <text x="200" y="278">
           {format(low)}
         </text>
-        <text x="560" y="230" textAnchor="end">
+        <text x="560" y="278" textAnchor="end">
           {format(high)} {METRICS[metric].unit}
         </text>
       </svg>
@@ -272,7 +311,7 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
       <svg
         viewBox="0 0 640 280"
         role="img"
-        aria-label={`${METRICS[metric].label} response to ${parameter}`}
+        aria-label={`${METRICS[metric].label} by ${parameter === 'quality_loss' ? 'allowed match drop' : 'extra driving penalty'}`}
       >
         {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
           <g key={ratio}>
@@ -310,13 +349,21 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
                     {index ? (
                       <rect x={x(point.x) - 4} y={y(point.mean) - 4} width="8" height="8">
                         <title>
-                          {series.persona}: {format(point.mean)}; n={point.n}; SD={format(point.sd)}
+                          {series.persona === 'nature' ? 'Nature' : 'Entertainment'}: average{' '}
+                          {format(point.mean, METRICS[metric].digits)} {METRICS[metric].unit};{' '}
+                          {runCount(point.n)} measured; observed range{' '}
+                          {format(point.min, METRICS[metric].digits)}–
+                          {format(point.max, METRICS[metric].digits)} {METRICS[metric].unit}
                         </title>
                       </rect>
                     ) : (
                       <circle cx={x(point.x)} cy={y(point.mean)} r="4">
                         <title>
-                          {series.persona}: {format(point.mean)}; n={point.n}; SD={format(point.sd)}
+                          {series.persona === 'nature' ? 'Nature' : 'Entertainment'}: average{' '}
+                          {format(point.mean, METRICS[metric].digits)} {METRICS[metric].unit};{' '}
+                          {runCount(point.n)} measured; observed range{' '}
+                          {format(point.min, METRICS[metric].digits)}–
+                          {format(point.max, METRICS[metric].digits)} {METRICS[metric].unit}
                         </title>
                       </circle>
                     )}
@@ -327,9 +374,7 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
           </g>
         ))}
         <text x="314" y="268" textAnchor="middle">
-          {parameter === 'quality_loss'
-            ? 'Allowed utility loss (percentage points)'
-            : 'Detour weight'}
+          {parameter === 'quality_loss' ? 'Allowed match drop (points)' : 'Extra driving penalty'}
         </text>
       </svg>
     </figure>
@@ -342,7 +387,7 @@ ResponseCurve.propTypes = {
   metric: PropTypes.string.isRequired,
 };
 
-export function Tradeoff({ rows }) {
+export function Tradeoff({ rows, trips = [] }) {
   const points = rows.filter(
     (row) => row.completed && finite(row.extra_seconds) && finite(row.utility_mean)
   );
@@ -350,8 +395,8 @@ export function Tradeoff({ rows }) {
     return (
       <figure>
         <ChartHeading
-          title="Utility vs added driving"
-          help="Each point is a fully delivered, timing-valid live trip. Higher means better estimated persona match; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
+          title="Match vs added driving"
+          help="Each point is a fully delivered, timing-valid live trip. Higher means better estimated interest match; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
         />
         <p className="research-empty">No results yet.</p>
       </figure>
@@ -361,14 +406,14 @@ export function Tradeoff({ rows }) {
   return (
     <figure>
       <ChartHeading
-        title="Utility vs added driving"
-        help="Each point is a fully delivered, timing-valid live trip. Higher means better estimated persona match; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
+        title="Match vs added driving"
+        help="Each point is a fully delivered, timing-valid live trip. Higher means better estimated interest match; farther right means more driving than the direct route. Nature is green; entertainment is amber. Only measured extra driving is plotted."
       />
       <div className="research-legend research-personas">
         <span>● Nature</span>
         <span>● Entertainment</span>
       </div>
-      <svg viewBox="0 0 640 280" role="img" aria-label="Utility versus added driving scatter plot">
+      <svg viewBox="0 0 640 280" role="img" aria-label="Match versus added driving scatter plot">
         {[0, 25, 50, 75, 100].map((value) => (
           <g key={value}>
             <line x1="64" x2="564" y1={210 - value * 1.6} y2={210 - value * 1.6} stroke="#e8ddd0" />
@@ -387,8 +432,10 @@ export function Tradeoff({ rows }) {
             fill={row.persona === 'nature' ? '#234a3c' : '#a56b28'}
           >
             <title>
-              {row.trip} · {row.persona} · {row.stops_per_day}/day · repeat {row.repeat}:{' '}
-              {format(row.utility_mean * 100)}%, {format(row.extra_seconds / 60)} min
+              {trips.find((trip) => trip.id === row.trip)?.label ?? 'Trip'} ·{' '}
+              {row.persona === 'nature' ? 'Nature' : 'Entertainment'} · {row.stops_per_day} stops
+              per day · run {row.repeat}: {format(row.utility_mean * 100)}%,{' '}
+              {format(row.extra_seconds / 60)} min
             </title>
           </circle>
         ))}
@@ -405,7 +452,7 @@ export function Tradeoff({ rows }) {
     </figure>
   );
 }
-Tradeoff.propTypes = { rows: PropTypes.array.isRequired };
+Tradeoff.propTypes = { rows: PropTypes.array.isRequired, trips: PropTypes.array };
 
 export function UtilitySpread({ rows }) {
   const values = rows
@@ -422,9 +469,9 @@ export function UtilitySpread({ rows }) {
   return (
     <figure>
       <ChartHeading
-        title="Attraction utility"
-        unit={`n=${stats.n}`}
-        help="Scores pooled across individual attractions in the filtered, fully delivered, timing-valid runs. A repeated attraction counts once per run, so longer trips contribute more observations. Utility estimates persona match; it is not a visitor rating."
+        title="Attraction match scores"
+        unit={`${format(stats.n, 0)} attraction scores · ${runCount(rows.filter((row) => row.completed && row.utility_values?.length).length)}`}
+        help="Scores pooled across individual attractions in the filtered, fully delivered, timing-valid runs. A repeated attraction counts once per run, so longer trips contribute more observations. Scores estimate interest match; it is not a visitor rating."
       />
       <div className="research-stat-row">
         {summary.map((item) => (
@@ -454,11 +501,11 @@ export function UtilityBoxes({ rows, trips }) {
   return (
     <figure>
       <ChartHeading
-        title="Repeat variation"
-        unit="Utility %"
-        help="Distribution of average utility per assessed run. Each box contains the middle 50%; its line marks the median. The ends show the observed minimum and maximum, not confidence intervals. n counts assessed runs. Fixed-data solver repeats measure solver variation, not independent real-world samples."
+        title="Consistency across runs"
+        unit="Match score %"
+        help="How average match scores vary between runs. Each box contains the middle 50%; its line marks the median. The ends show the observed minimum and maximum, not confidence intervals. The count shows runs with usable match scores. Fixed-data solver repeats measure solver variation, not independent real-world samples."
       />
-      <svg viewBox="0 0 640 270" role="img" aria-label="Utility distributions by trip type">
+      <svg viewBox="0 0 640 270" role="img" aria-label="Match score distributions by trip type">
         {[0, 25, 50, 75, 100].map((value) => (
           <g key={value}>
             <line x1={x(value)} x2={x(value)} y1="10" y2="230" stroke="#e8ddd0" />
@@ -494,13 +541,13 @@ export function UtilityBoxes({ rows, trips }) {
                   <circle cx={x(group.min)} cy={y} r="2" fill="#234a3c" />
                   <circle cx={x(group.max)} cy={y} r="2" fill="#234a3c" />
                   <title>
-                    n={group.n}; min {format(group.min)}, median {format(group.median)}, max{' '}
-                    {format(group.max)}%
+                    {runCount(group.n)} scored; lowest {format(group.min)}%, median{' '}
+                    {format(group.median)}%, highest {format(group.max)}%
                   </title>
                 </g>
               ) : null}
               <text x="570" y={y + 4}>
-                n={group.n}
+                {runCount(group.n)}
               </text>
             </g>
           );

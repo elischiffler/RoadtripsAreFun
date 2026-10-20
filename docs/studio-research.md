@@ -181,3 +181,16 @@ pairs. The earlier seven-trial verification batch remains identifiable in export
 its observations are now included in the combined descriptive charts. Repeated
 seeds across batches are not independent samples. Source failures remain visible
 and are retried without cancelling the detached worker.
+
+## Dashboard labels and supporting measurements
+
+The dashboard calls utility an **interest match score**, while exported metric
+keys retain `utility_mean`, `utility_min`, `utility_median` and `utility_max`.
+Counts say “runs scored” or “runs measured”; missing and excluded measurements
+are identified with an explicit denominator. Heatmap cells show the observed
+run-to-run range, or indicate when all scored results are identical. These ranges
+are descriptive extrema, not confidence intervals. Summary cards show remaining
+runs, success share, incomplete-outcome counts and the middle half of measured
+planning times. Selection results use plain labels and show each outcome's share
+of filtered runs; raw solver status codes remain in exports. Matched setting
+comparisons show the number of comparisons and observed range of changes.
