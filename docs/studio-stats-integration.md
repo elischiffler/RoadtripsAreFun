@@ -66,6 +66,16 @@ the browser and is removed afterward. Loading, retries, cancellation and
 reconnect behavior are covered by controlled component/service tests. Backend
 contracts and saved research data are unchanged.
 
+The follow-up timing display uses compact Arrival/Leaving columns in both route
+and itinerary cards. A shared short date/time zone appears once for same-day
+visits; overnight dates and changed offsets appear beside their respective clocks.
+Full dates, years, zones and offsets remain in accessible time labels and hover
+text. Missing/invalid clocks remain unknown; historical explicit offsets do not
+use the browser's local zone. Final destinations show only arrival. Saved times
+and scheduling are unchanged. All **259 frontend tests**, coverage (**91.72%
+lines**), formatting, lint and build pass. A temporary browser preview with sample
+daytime, overnight and destination times is inspected and removed afterward.
+
 ## Local verification
 
 - Node 24.12.0 / Python 3.12.14; locked `npm ci` and pinned backend requirements installed.

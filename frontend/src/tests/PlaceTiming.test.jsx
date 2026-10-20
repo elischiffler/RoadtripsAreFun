@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import PlaceTiming from '../components/PlaceTiming';
 import ItineraryDays from '../components/ItineraryDays';
 import RouteOverview from '../pages/AlgorithmLab/RouteOverview';
-import { localTimestamp } from '../components/placeTiming';
+import { compactTimestamp, localTimestamp } from '../components/placeTiming';
 
 vi.mock('../components/Map', () => ({ default: () => <div>Map</div> }));
 
@@ -18,16 +18,17 @@ const stop = {
 };
 
 describe('arrival and leaving display', () => {
-  it('shows local dates, zone and distinct offsets through DST rollover', () => {
+  it('keeps repeated DST clocks distinguishable without long visible timestamps', () => {
     render(<PlaceTiming place={stop} />);
-    expect(
-      screen.getByText(/Arrival: Nov 3, 2030, 1:30 AM GMT-7 \(America\/Los_Angeles\)/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Leaving: Nov 3, 2030, 1:30 AM GMT-8 \(America\/Los_Angeles\)/)
-    ).toBeInTheDocument();
+    const arrival = screen.getByLabelText('Nov 3, 2030, 1:30 AM GMT-7 (America/Los_Angeles)');
+    const leaving = screen.getByLabelText('Nov 3, 2030, 1:30 AM GMT-8 (America/Los_Angeles)');
+    expect(arrival).toHaveTextContent('1:30 AM');
+    expect(arrival).toHaveAttribute('datetime', stop.arrival_time);
+    expect(leaving).toHaveAttribute('datetime', stop.departure_time);
+    expect(screen.getByText('Nov 3 · PDT')).toBeInTheDocument();
+    expect(screen.getByText('Nov 3 · PST')).toBeInTheDocument();
+    expect(screen.queryByText(/America\/Los_Angeles|GMT-7|GMT-8/)).not.toBeInTheDocument();
     expect(screen.queryByText(/AI-estimated visit|Estimated visit/)).not.toBeInTheDocument();
-    expect(screen.getByLabelText('Place timing').children).toHaveLength(2);
   });
 
   it('shows midnight and hotel leaving on the next date without an estimate tag', () => {
@@ -42,8 +43,28 @@ describe('arrival and leaving display', () => {
         }}
       />
     );
-    expect(screen.getByText(/Arrival: Jul 1, 2030, 11:50 PM/)).toBeInTheDocument();
-    expect(screen.getByText(/Leaving: Jul 2, 2030, 9:00 AM/)).toBeInTheDocument();
+    expect(screen.getByText('11:50 PM')).toBeInTheDocument();
+    expect(screen.getByText('9:00 AM')).toBeInTheDocument();
+    expect(screen.getByText('Jul 1 · PDT')).toBeInTheDocument();
+    expect(screen.getByText('Jul 2 · PDT')).toBeInTheDocument();
+  });
+
+  it('shares the date and zone for an ordinary visit and shows missing clocks as unknown', () => {
+    const view = render(
+      <PlaceTiming
+        place={{
+          ...stop,
+          arrival_time: '2030-07-01T14:00:00-07:00',
+          departure_time: '2030-07-01T15:00:00-07:00',
+        }}
+      />
+    );
+    expect(screen.getAllByText('Jul 1 · PDT')).toHaveLength(1);
+    expect(screen.getByText('2:00 PM')).toBeInTheDocument();
+    expect(screen.getByText('3:00 PM')).toBeInTheDocument();
+    view.rerender(<PlaceTiming place={{ ...stop, departure_time: null }} />);
+    expect(screen.getByLabelText('Unavailable')).toHaveTextContent('—');
+    expect(screen.getAllByText('1:30 AM')).toHaveLength(1);
   });
 
   it('preserves explicit offsets without inventing missing clocks or zones', () => {
@@ -53,14 +74,23 @@ describe('arrival and leaving display', () => {
     );
     expect(localTimestamp('2030-07-02T00:15')).toBeNull();
     expect(localTimestamp('invalid')).toBeNull();
+    expect(compactTimestamp('2030-07-02T00:15:00+05:30')).toMatchObject({
+      date: 'Jul 2',
+      time: '12:15 AM',
+      zone: 'UTC+05:30',
+    });
+    expect(compactTimestamp('2030-07-02T00:15:00Z', 'invalid/zone')).toMatchObject({
+      time: '12:15 AM',
+      zone: 'UTC',
+    });
     const { container } = render(<PlaceTiming place={{ name: 'Old saved stop' }} />);
     expect(container).toBeEmptyDOMElement();
   });
 
   it('shows final arrival without suggesting a visit or leaving the destination', () => {
     render(<PlaceTiming place={{ ...stop, type: 'end' }} />);
-    expect(screen.getByText(/^Arrival:/)).toBeInTheDocument();
-    expect(screen.queryByText(/^Leaving:/)).not.toBeInTheDocument();
+    expect(screen.getByText('Arrival')).toBeInTheDocument();
+    expect(screen.queryByText('Leaving')).not.toBeInTheDocument();
   });
 
   it('hides only departure rows already paired with a place and keeps saved legacy rows', () => {
@@ -99,8 +129,8 @@ describe('arrival and leaving display', () => {
     };
     const { unmount } = render(<RouteOverview route={{ stops: [place] }} />);
     const times = within(screen.getByLabelText('Place timing'))
-      .getAllByText(/^(Arrival|Leaving):/)
-      .map((node) => node.textContent);
+      .getAllByText(/^1:30 AM$/)
+      .map((node) => node.getAttribute('aria-label'));
     expect(screen.queryByText(/Source: Fixture attribution/)).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Sources' })).not.toBeInTheDocument();
     expect(screen.queryByText('stop')).not.toBeInTheDocument();
@@ -109,8 +139,8 @@ describe('arrival and leaving display', () => {
     render(<ItineraryDays itinerary={[{ date: 'November 3, 2030', stops: [place] }]} />);
     expect(
       within(screen.getByLabelText('Place timing'))
-        .getAllByText(/^(Arrival|Leaving):/)
-        .map((node) => node.textContent)
+        .getAllByText(/^1:30 AM$/)
+        .map((node) => node.getAttribute('aria-label'))
     ).toEqual(times);
     expect(screen.getByRole('link', { name: place.name })).toHaveAttribute('href', place.url);
     for (const content of ['Address: 123 Fixture Road', 'Price: $50', 'Reservation required'])

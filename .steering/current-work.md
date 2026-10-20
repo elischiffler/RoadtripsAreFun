@@ -32,6 +32,9 @@ repeating provider work. API restarts interrupt active runs. See
 [workspace lifecycle and limits](../docs/studio-access.md#workspace-and-history-popup-october-19-2026).
 Place cards and map popups omit Sources links, visit-estimate tags and repeated
 place-type labels. Numbered route-list dots match the map's attraction/stay colors.
+Arrival/leaving use two compact clock columns with short dates and time zones;
+overnight dates and DST offsets remain distinguishable, with full timestamps
+available to assistive technology and on hover.
 Generation shows one animated current activity; detailed progress remains recorded.
 Trip stats keeps attraction counts, match estimates, driving comparisons, longest
 driving gap and planning/selection time. Source metadata and research measurements
