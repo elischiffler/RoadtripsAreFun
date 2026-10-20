@@ -216,5 +216,5 @@ Motion is limited to short opacity/shadow transitions and respects reduced-motio
 preferences; incoming measurements do not replay chart animations.
 
 The trip comparison names the selected measure in its title. Each row shows the
-per-run average as a bar and the median as a green marker, with both values
+per-run average as an amber bar and the median as a separate green bar, with both values
 printed below the bar. There is no repeated tooltip on these bars.

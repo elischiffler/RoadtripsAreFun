@@ -270,7 +270,7 @@ export function RowChart({ rows, trips, metric }) {
           metric === 'utility_mean' ? 'Utility score by trip' : `${METRICS[metric].label} by trip`
         }
         unit={unit}
-        help={`${metricHelp(metric)} Bar: average. Marker: median. Missing measurements excluded.`}
+        help={`${metricHelp(metric)} Amber: average. Green: median. Missing measurements excluded.`}
       />
       <div
         className="research-trip-chart"
@@ -284,25 +284,25 @@ export function RowChart({ rows, trips, metric }) {
               <small>{runCount(row.n)} measured</small>
             </div>
             <div>
-              <svg viewBox="0 0 360 26" aria-hidden="true">
-                <line x1={x(0)} x2={x(0)} y1="0" y2="26" stroke="#c8bcae" />
+              <svg viewBox="0 0 360 30" aria-hidden="true">
+                <line x1={x(0)} x2={x(0)} y1="0" y2="30" stroke="#c8bcae" />
                 {finite(row.mean) && (
                   <>
                     <rect
                       x={Math.min(x(0), x(row.mean))}
-                      y="4"
+                      y="2"
                       width={Math.abs(x(row.mean) - x(0))}
-                      height="18"
+                      height="11"
                       rx="3"
                       fill="#a56b28"
                     />
-                    <line
-                      x1={x(row.median)}
-                      x2={x(row.median)}
-                      y1="1"
-                      y2="25"
-                      stroke="#234a3c"
-                      strokeWidth="3"
+                    <rect
+                      x={Math.min(x(0), x(row.median))}
+                      y="17"
+                      width={Math.abs(x(row.median) - x(0))}
+                      height="11"
+                      rx="3"
+                      fill="#234a3c"
                     />
                   </>
                 )}
