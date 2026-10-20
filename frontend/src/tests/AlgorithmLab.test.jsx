@@ -8,12 +8,14 @@ import GlobalHeader from '../components/GlobalHeader';
 import { invalidateRoutingSettings } from '../services/routingSettings';
 import { renderWithProviders } from './testUtils';
 
-vi.mock('axios', () => ({ default: { get: vi.fn(), post: vi.fn() } }));
+const runMode = vi.hoisted(() => ({ jobs: false }));
+
+vi.mock('axios', () => ({ default: { get: vi.fn(), post: vi.fn(), delete: vi.fn() } }));
 vi.mock('../services/algorithmLab', async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...actual,
-    runLab: (request, signal, onProgress) => {
+    runLab: (request, signal, onProgress, id) => {
       onProgress?.({
         type: 'progress',
         stage: 'attractions.provider',
@@ -21,7 +23,9 @@ vi.mock('../services/algorithmLab', async (importOriginal) => {
         query: 1,
         queries: 6,
       });
-      return actual.runLab(request, signal);
+      return runMode.jobs
+        ? actual.runLab(request, signal, onProgress, id)
+        : actual.runLab(request, signal);
     },
   };
 });
@@ -181,6 +185,7 @@ async function mount() {
 }
 
 beforeEach(() => {
+  runMode.jobs = false;
   vi.resetAllMocks();
   HTMLDialogElement.prototype.showModal = function () {
     this.setAttribute('open', '');
@@ -206,6 +211,7 @@ beforeEach(() => {
     )
   );
   axios.post.mockResolvedValue({ data: response() });
+  axios.delete.mockResolvedValue({ data: { state: 'cancelled' } });
 });
 afterEach(() => {
   vi.useRealTimers();
@@ -673,7 +679,8 @@ describe('Trip Planning Studio calm workspace', () => {
     const toggle = screen.getByRole('button', { name: 'History' });
     await userEvent.click(toggle);
     await screen.findByRole('region', { name: 'Saved run history' });
-    await userEvent.click(toggle);
+    await userEvent.click(screen.getByRole('button', { name: 'Close history' }));
+    expect(screen.queryByRole('dialog', { name: 'Studio history' })).not.toBeInTheDocument();
     expect(screen.queryByRole('region', { name: 'Saved run history' })).not.toBeInTheDocument();
     expect(screen.getByLabelText('Maximum attractions')).toHaveValue(3);
     await userEvent.click(toggle);
@@ -746,4 +753,79 @@ describe('Trip Planning Studio calm workspace', () => {
     expect(screen.getByText('Route available; itinerary generation is incomplete.')).toBeVisible();
     expect(screen.getByRole('region', { name: 'Attractions' })).toBeVisible();
   });
+});
+
+it('restores the draft, completed trip and selected tab after a reload or route remount', async () => {
+  const first = await mount();
+  fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '5' } });
+  await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+  await screen.findByRole('tab', { name: 'Trip stats' });
+  await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
+  first.unmount();
+  await mount();
+  expect(screen.getByLabelText('Maximum attractions')).toHaveValue(5);
+  expect(screen.getByRole('tab', { name: 'Trip stats' })).toHaveAttribute('aria-selected', 'true');
+  expect(screen.getByRole('group', { name: 'Forest walk match' })).toHaveTextContent('76%');
+  expect(axios.post).toHaveBeenCalledTimes(1);
+});
+
+it('reconnects to the same running job after navigation and never sends cancellation on unmount', async () => {
+  runMode.jobs = true;
+  let finished = false;
+  const fallback = axios.get.getMockImplementation();
+  axios.get.mockImplementation((url, ...args) =>
+    url.includes('/studio/jobs/')
+      ? Promise.resolve({
+          data: finished ? { state: 'complete', result: response() } : { state: 'running' },
+        })
+      : fallback(url, ...args)
+  );
+  axios.post.mockImplementation((url) =>
+    Promise.resolve({
+      data: url.endsWith('/studio/jobs') ? { state: 'running', progress: [] } : response(),
+    })
+  );
+  const first = await mount();
+  fireEvent.change(screen.getByLabelText('Maximum attractions'), { target: { value: '5' } });
+  await userEvent.click(screen.getByRole('button', { name: 'Run live route' }));
+  await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
+  const started = axios.post.mock.calls[0][1];
+  expect(started).toHaveProperty('id');
+  first.unmount();
+  expect(axios.delete).not.toHaveBeenCalled();
+  await renderWithProviders(<AlgorithmLab />, { initialPath: '/studio' });
+  await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(2));
+  expect(axios.post.mock.calls[1][1]).toEqual(started);
+  finished = true;
+  await screen.findByRole('tab', { name: 'Trip stats' }, { timeout: 4000 });
+  expect(screen.getByLabelText('Maximum attractions')).toHaveValue(5);
+  expect(axios.post).toHaveBeenCalledTimes(2);
+});
+
+it('opens History as a dismissible popup and reopens a saved trip in the persistent workspace', async () => {
+  const id = '00000000-0000-4000-8000-000000000001';
+  const fallback = axios.get.getMockImplementation();
+  axios.get.mockImplementation((url, ...args) =>
+    url.endsWith('/studio/runs')
+      ? Promise.resolve({
+          data: {
+            runs: [{ id, preset_id: 'coast', has_result: true, mode: 'live' }],
+            groups: [],
+            next_offset: null,
+          },
+        })
+      : url.endsWith(`/studio/jobs/${id}`)
+        ? Promise.resolve({ data: { state: 'complete', result: response() } })
+        : fallback(url, ...args)
+  );
+  await mount();
+  await userEvent.click(screen.getByRole('button', { name: 'History' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Studio history' });
+  fireEvent(dialog, new Event('cancel', { cancelable: true }));
+  expect(screen.queryByRole('dialog', { name: 'Studio history' })).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'History' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Open trip' }));
+  expect(await screen.findByRole('tab', { name: 'Trip stats' })).toBeInTheDocument();
+  expect(screen.queryByRole('dialog', { name: 'Studio history' })).not.toBeInTheDocument();
+  expect(axios.post).not.toHaveBeenCalled();
 });

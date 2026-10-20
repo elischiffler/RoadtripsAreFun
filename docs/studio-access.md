@@ -47,3 +47,36 @@ completed in 60.74 seconds with 21 API attempts, 2/2 attractions, and a saved
 This is one actual live acceptance run through the new visitor boundary; the
 nine earlier owner preset runs remain separate evidence. No production release
 or main merge occurred.
+
+## Workspace and History popup (October 19, 2026)
+
+History opens a modal with saved runs. **Open trip** restores a saved route into
+Studio without calling planning providers. Escape and **Close history** dismiss
+it and return focus to the trigger.
+
+The current inputs, selected result tab, result and active job UUID are kept in
+sessionStorage, scoped to the exact visitor token and backend. Reloading or
+navigating away and back in the same tab restores them. If a large route exceeds
+the browser quota, the job reference is retained and the saved result is fetched.
+Starting a trip requires storing that reference first.
+
+`POST /studio/jobs` accepts `{id: <UUID>, run: <LabRun>}`. Reconnecting uses the
+same UUID; it does not repeat provider work. `GET /studio/jobs/{id}` returns the
+latest progress or result. `DELETE /studio/jobs/{id}` explicitly cancels work.
+These routes retain signed visitor ownership and private no-store responses.
+Leaving Studio only stops polling; the server continues running the trip.
+
+Workers live in one API process, with one active trip per visitor and four total.
+Use one API worker for these endpoints; a distributed queue is not implemented.
+The latest progress is bounded, and completed in-memory jobs expire after an hour
+or beyond 16 retained jobs. Completed results remain available from run storage.
+An API restart interrupts active work; reconnect reports the interruption rather
+than automatically repeating paid calls. Stable `STUDIO_SESSION_SECRET` remains
+necessary to keep visitor tokens valid across API restarts. Tab closure, session
+expiry or a new unlock ends access to the previous private workspace.
+
+Browser acceptance used `tests/studio-persistence/fixture.py`, an isolated fake
+planner and in-memory storage on port 8004 with a separate Vite server. Reload
+and home/Studio navigation during a run produced exactly one execution; completed
+results and the selected tab survived reload, and History reopened the saved trip.
+No paid providers or production database were used for this check.

@@ -105,8 +105,12 @@ it('uses numbered, accessible pins at converted stop coordinates with one safe p
   const first = screen.getByRole('button', { name: 'Stop 1: Forest walk' });
   await userEvent.click(first);
   expect(screen.getByRole('dialog')).toHaveTextContent('Forest walkAttractionTrailhead road');
-  expect(screen.getByRole('dialog')).toHaveTextContent('Source release: 2026-09-23.1');
-  expect(screen.getByRole('dialog')).toHaveTextContent('Source: Overture Maps Foundation');
+  expect(screen.getByRole('dialog')).not.toHaveTextContent('Source release: 2026-09-23.1');
+  expect(screen.getByRole('link', { name: 'Sources' })).toHaveAttribute(
+    'href',
+    '/catalog-attribution.html'
+  );
+  expect(screen.getByRole('dialog')).not.toHaveTextContent('Source: Overture Maps Foundation');
   expect(first).toHaveAttribute('aria-expanded', 'true');
   await userEvent.click(screen.getByRole('button', { name: 'Stop 2: Coastal hotel' }));
   expect(screen.getAllByRole('dialog')).toHaveLength(1);

@@ -201,6 +201,10 @@ def _departure(inputs, zone):
 
 @router.post("/run")
 async def run(payload: LabRun, response: Response, user_id: str = Depends(require_lab_owner)):
+    return await recorded_run(payload, response, user_id)
+
+
+async def recorded_run(payload, response, user_id, *, job_id=None):
     response.headers["Cache-Control"] = "no-store"
     try:
         departure = _departure(
@@ -217,18 +221,31 @@ async def run(payload: LabRun, response: Response, user_id: str = Depends(requir
         budget=payload.inputs.budget,
         attributes=len(ATTRIBUTE_KEYS),
     )
+    begin_args = (user_id, payload.model_dump(mode="json"))
+    if job_id is not None:
+        begin_args += (str(job_id),)
+    begin_task = asyncio.create_task(asyncio.to_thread(lab_runs.begin, *begin_args))
     try:
         with stage("studio.storage_begin"):
-            run_id = await asyncio.to_thread(
-                lab_runs.begin, user_id, payload.model_dump(mode="json")
-            )
+            run_id = await asyncio.shield(begin_task)
+    except asyncio.CancelledError:
+        # The DB thread may still be inserting. Wait for it before marking cancellation.
+        try:
+            run_id = await begin_task
+            await asyncio.to_thread(lab_runs.cancel, user_id, run_id)
+        finally:
+            raise
     except Exception as exc:
         storage_failure("begin", exc)
         raise HTTPException(503, "Run storage is unavailable. No experiment was started.") from exc
     started = perf_counter()
-    with measuring() as telemetry:
-        envelope = await execute_run(payload, user_id, departure)
-        metrics = compile_metrics(envelope, telemetry, (perf_counter() - started) * 1000)
+    try:
+        with measuring() as telemetry:
+            envelope = await execute_run(payload, user_id, departure)
+            metrics = compile_metrics(envelope, telemetry, (perf_counter() - started) * 1000)
+    except asyncio.CancelledError:
+        await asyncio.to_thread(lab_runs.cancel, user_id, run_id)
+        raise
     envelope["run_record"] = {"id": run_id, "saved": False, "metrics": metrics}
     try:
         with stage("studio.storage_finish"):

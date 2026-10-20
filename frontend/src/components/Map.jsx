@@ -154,7 +154,7 @@ const Map = ({ UserChatData }) => {
         const heading = document.createElement('strong');
         heading.textContent = stop.name;
         content.append(heading);
-        for (const text of [stopType(stop.type), stop.address, ...placeSourceLines(stop)]) {
+        for (const text of [stopType(stop.type), stop.address]) {
           if (!text) continue;
           const line = document.createElement('p');
           line.textContent = text;
@@ -163,7 +163,7 @@ const Map = ({ UserChatData }) => {
         if (placeSourceLines(stop).length) {
           const attribution = document.createElement('a');
           attribution.href = '/catalog-attribution.html';
-          attribution.textContent = 'Data licenses and attribution';
+          attribution.textContent = 'Sources';
           content.append(attribution);
         }
         popup.setDOMContent(content).setLngLat([stop.longitude, stop.latitude]).addTo(map);

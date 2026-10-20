@@ -6,6 +6,7 @@ second phase also checks that no module-level cache or pool hides lost data.
 
 import os
 import sys
+from uuid import uuid4
 
 import psycopg2
 from pydantic import BaseModel
@@ -159,6 +160,23 @@ def seed():
         raise AssertionError("Foreign run was updated")
     except ValueError:
         pass
+
+    # Browser reconnection uses a fixed job UUID and owner-scoped status reads.
+    job_id = str(uuid4())
+    assert (
+        lab_runs.begin(OWNER_A, {"mode": "live", "preset_id": "job-probe", "inputs": {}}, job_id)
+        == job_id
+    )
+    assert lab_runs.record(OWNER_A, job_id)["status"] == "running"
+    assert lab_runs.record(OWNER_B, job_id) is None
+    lab_runs.cancel(OWNER_B, job_id)
+    assert lab_runs.record(OWNER_A, job_id)["status"] == "running"
+    lab_runs.cancel(OWNER_A, job_id)
+    cancelled = lab_runs.record(OWNER_A, job_id)
+    assert cancelled["status"] == "failed"
+    assert cancelled["result"]["error"]["code"] == "cancelled"
+    lab_runs.cancel(OWNER_A, run_id)
+    assert lab_runs.record(OWNER_A, run_id)["status"] == "completed"
 
     for owner in (OWNER_A, OWNER_B):
         chat_crud.create_chat(owner, CHAT_ID, {"owner": owner}, {"messages": []})
@@ -320,10 +338,12 @@ def verify():
     assert recovered_explanation["discovery"]["queries"] == [{"id": "s2-q1"}]
     assert recovered_explanation["road_checks"][0]["detour_raw_seconds"] == -4
     assert recovered_explanation["solver"]["quality_loss"] == 0.05
-    assert len(records) == 2
-    assert records[0]["metrics"]["objective_score"] == 123
-    assert records[0]["input"] == {"budget": 60}
-    failed = next(row for row in records if row["status"] == "failed")
+    assert len(records) == 3
+    cancelled = next(row for row in records if row["error_code"] == "cancelled")
+    assert lab_runs.record(OWNER_A, cancelled["id"])["status"] == "failed"
+    failed = next(row for row in records if row["error_code"] == "provider_or_planning_failure")
+    assert failed["metrics"]["objective_score"] == 123
+    assert failed["input"] == {"budget": 60}
     assert failed["error"]["http_status"] == 503
     assert failed["stages"][0]["status"] == "failed"
     assert failed["attempts"][0]["attempt"] == 3

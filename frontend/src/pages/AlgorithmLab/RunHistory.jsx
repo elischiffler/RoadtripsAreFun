@@ -7,7 +7,7 @@ import HelpTip from './HelpTip';
 import TripEvaluation from './TripEvaluation';
 import SavedTripDialog from './SavedTripDialog';
 
-export default function RunHistory({ revision }) {
+export default function RunHistory({ revision, onOpenRun, openingRun, disabled = false }) {
   const [data, setData] = useState(null);
   const [selectedRun, setSelectedRun] = useState(null);
   const [error, setError] = useState('');
@@ -43,6 +43,7 @@ export default function RunHistory({ revision }) {
         </HelpTip>
       </div>
       {error && <p role="alert">{error}</p>}
+      {data?.runs.length === 0 && <p>No saved trips yet.</p>}
       {!data && !error && <p role="status">Loading history…</p>}
       {data && (
         <>
@@ -105,9 +106,11 @@ export default function RunHistory({ revision }) {
                       </td>
                       <td>
                         {metrics
-                          ? metrics.latency_ms.total < 1000
-                            ? `${metrics.latency_ms.total.toFixed(1)} ms`
-                            : `${(metrics.latency_ms.total / 1000).toFixed(2)} s`
+                          ? metrics.latency_ms?.total == null
+                            ? '—'
+                            : metrics.latency_ms.total < 1000
+                              ? `${metrics.latency_ms.total.toFixed(1)} ms`
+                              : `${(metrics.latency_ms.total / 1000).toFixed(2)} s`
                           : '—'}
                       </td>
                       <td>
@@ -120,8 +123,16 @@ export default function RunHistory({ revision }) {
                       </td>
                       <td>
                         {run.has_result && (
-                          <button type="button" onClick={() => setSelectedRun(run)}>
-                            View map and itinerary
+                          <button
+                            type="button"
+                            disabled={disabled || Boolean(openingRun)}
+                            onClick={() => (onOpenRun ? onOpenRun(run) : setSelectedRun(run))}
+                          >
+                            {openingRun === run.id
+                              ? 'Opening…'
+                              : onOpenRun
+                                ? 'Open trip'
+                                : 'View map and itinerary'}
                           </button>
                         )}
                         <details>
@@ -217,4 +228,9 @@ export default function RunHistory({ revision }) {
   );
 }
 
-RunHistory.propTypes = { revision: PropTypes.number.isRequired };
+RunHistory.propTypes = {
+  revision: PropTypes.number.isRequired,
+  onOpenRun: PropTypes.func,
+  openingRun: PropTypes.string,
+  disabled: PropTypes.bool,
+};

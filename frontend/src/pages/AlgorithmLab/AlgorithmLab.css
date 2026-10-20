@@ -791,3 +791,37 @@
   outline: 2px solid var(--amber-main);
   outline-offset: 2px;
 }
+
+.lab-history-dialog {
+  width: min(1180px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
+  padding: 24px;
+  border: 1px solid var(--lab-line);
+  border-radius: 16px;
+  background: var(--lab-paper);
+  color: var(--lab-ink);
+}
+.lab-history-dialog::backdrop {
+  background: rgb(30 24 16 / 45%);
+}
+.lab-history-dialog .lab-preset-heading {
+  position: sticky;
+  top: -24px;
+  padding: 12px 0;
+  background: var(--lab-paper);
+  z-index: 1;
+}
+.lab-history-dialog .lab-history {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+@media (max-width: 600px) {
+  .lab-history-dialog {
+    padding: 16px;
+  }
+  .lab-history-dialog .lab-preset-heading {
+    top: -16px;
+  }
+}

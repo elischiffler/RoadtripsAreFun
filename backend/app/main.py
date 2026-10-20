@@ -57,6 +57,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"DB warm-up failed (non-fatal): {e}")
     yield
+    await studio.jobs.shutdown()
     from app.crud import chat_crud
 
     if chat_crud._pool is not None and not chat_crud._pool.closed:

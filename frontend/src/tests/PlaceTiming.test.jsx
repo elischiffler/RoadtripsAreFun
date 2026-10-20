@@ -104,8 +104,8 @@ describe('arrival and leaving display', () => {
     const times = within(screen.getByLabelText('Place timing'))
       .getAllByText(/^(Arrival|Leaving):/)
       .map((node) => node.textContent);
-    expect(screen.getByText(/Source: Fixture attribution/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Data licenses/i })).toBeInTheDocument();
+    expect(screen.queryByText(/Source: Fixture attribution/)).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Sources' })).toBeInTheDocument();
     expect(screen.getByText('stop')).toBeInTheDocument();
     unmount();
     render(<ItineraryDays itinerary={[{ date: 'November 3, 2030', stops: [place] }]} />);

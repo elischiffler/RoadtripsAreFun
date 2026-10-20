@@ -16,14 +16,14 @@ const source = {
 };
 it('shows source attribution, release and evidence date without claiming live availability', () => {
   render(<PlaceSource place={source} />);
-  expect(screen.getByText(/Source: Overture Maps Foundation/)).toBeInTheDocument();
-  expect(screen.getByText('Source release: 2026-09-23.1')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Data licenses and attribution' })).toHaveAttribute(
+  expect(screen.queryByText(/Source: Overture Maps Foundation/)).not.toBeInTheDocument();
+  expect(screen.queryByText('Source release: 2026-09-23.1')).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Sources' })).toHaveAttribute(
     'href',
     '/catalog-attribution.html'
   );
-  expect(screen.getByText('Source evidence updated: 2026-09-21 (UTC)')).toBeInTheDocument();
-  expect(screen.getByText(/current availability are unverified/)).toBeInTheDocument();
+  expect(screen.queryByText('Source evidence updated: 2026-09-21 (UTC)')).not.toBeInTheDocument();
+  expect(screen.queryByText(/current availability are unverified/)).not.toBeInTheDocument();
 });
 it('does not invent catalog provenance for historical records or invalid dates', () => {
   const { container } = render(<PlaceSource place={{ name: 'Old stop', source: 'terra' }} />);
@@ -37,12 +37,12 @@ it('does not invent catalog provenance for historical records or invalid dates',
 });
 it('escapes source text instead of executing source markup', () => {
   render(<PlaceSource place={{ source_attribution: '<img src=x onerror=alert(1)>' }} />);
-  expect(screen.getByText('Source: <img src=x onerror=alert(1)>')).toBeInTheDocument();
+  expect(screen.queryByText('Source: <img src=x onerror=alert(1)>')).not.toBeInTheDocument();
   expect(screen.queryByRole('img')).not.toBeInTheDocument();
 });
 it('preserves source context for route stops and evening itinerary suggestions', () => {
   const { rerender } = render(<RouteOverview route={{ stops: [{ name: 'Museum', ...source }] }} />);
-  expect(screen.getByLabelText('Place source and freshness')).toBeInTheDocument();
+  expect(screen.getByLabelText('Place sources')).toBeInTheDocument();
   rerender(
     <ItineraryDays
       itinerary={[
@@ -50,7 +50,7 @@ it('preserves source context for route stops and evening itinerary suggestions',
       ]}
     />
   );
-  expect(screen.getByLabelText('Place source and freshness')).toBeInTheDocument();
+  expect(screen.getByLabelText('Place sources')).toBeInTheDocument();
 });
 it('keeps source attribution on the route while stats show match estimates', async () => {
   render(
@@ -74,7 +74,7 @@ it('keeps source attribution on the route while stats show match estimates', asy
       }}
     />
   );
-  expect(screen.getByText('Source release: 2026-09-23.1')).toBeInTheDocument();
+  expect(screen.queryByText('Source release: 2026-09-23.1')).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
   expect(screen.getByRole('group', { name: 'Museum match' })).toHaveTextContent('75%');
   expect(screen.queryByText(/"ratings": "AI estimate"/)).not.toBeInTheDocument();

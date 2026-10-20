@@ -229,3 +229,26 @@ supersede the stopped-daemon blockers for the live-only Lab/preset change.
 This uses only the checked-in local test DDL and isolated test data. It does not
 verify production schema/migration history, configure a production deployment,
 or complete the outstanding live Cognito/provider/browser acceptance gates.
+
+## Studio workspace and History popup (October 19)
+
+Develop working tree after `48e3e48`, tested locally before commit:
+
+- Frontend format/lint, 262 tests across 39 files (91.85% line coverage), and
+  production build passed. Existing Vite bundle-size warning remains.
+- Backend Ruff format/lint, 1,794 tests and 128 skips passed (79.11% coverage;
+  unchanged 63% gate). Test configuration used isolated unavailable local DB and
+  gateway endpoints, plus the documented CORS allowlist.
+- Development launcher: five tests passed. Rebuilt guarded preview containers
+  were healthy; both container smoke tests passed.
+- Disposable PostgreSQL project `roadtrips-crud-c36e45e82d` passed fixed-UUID job
+  insertion, owner-scoped record reads/cancellation, completed-row protection,
+  existing CRUD/ownership, API/DB recreation, readiness/recovery, backup/restore
+  and populated-target refusal. Containers stopped; both named volumes and the
+  ignored private backup remain. No schema changes or production DB were used.
+- Isolated browser fixture on ports 5174/8004 kept exactly one execution through
+  reload and home/Studio navigation. Completed result and selected Itinerary tab
+  survived reload. History opened as a modal, Escape restored trigger focus, and
+  Open trip returned the saved result without another execution. Cards showed
+  Sources links without the removed verbose source block. This synthetic check
+  does not establish live provider or production acceptance.

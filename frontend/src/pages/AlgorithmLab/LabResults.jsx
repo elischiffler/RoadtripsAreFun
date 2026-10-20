@@ -11,10 +11,15 @@ const numeric = (value, digits = 3) =>
     : 'Not available';
 const words = (value) => value?.replaceAll('_', ' ');
 
-export default function LabResults({ result }) {
+export default function LabResults({ result, activeTab, onTabChange }) {
   const { explanation, route, itinerary } = result;
   const solver = explanation?.solver;
-  const [tab, setTab] = useState('route');
+  const [localTab, setLocalTab] = useState('route');
+  const tab = activeTab ?? localTab;
+  const setTab = (next) => {
+    setLocalTab(next);
+    onTabChange?.(next);
+  };
   const tabId = useId();
   const tabs = [
     ['route', 'Route'],
@@ -184,4 +189,8 @@ export default function LabResults({ result }) {
   );
 }
 
-LabResults.propTypes = { result: PropTypes.object.isRequired };
+LabResults.propTypes = {
+  result: PropTypes.object.isRequired,
+  activeTab: PropTypes.string,
+  onTabChange: PropTypes.func,
+};

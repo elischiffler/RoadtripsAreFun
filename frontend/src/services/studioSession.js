@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { clearStudioWorkspace } from './studioWorkspace';
 
 const KEY = 'studioSession';
 export function getStudioSession() {
@@ -11,6 +12,7 @@ export function getStudioSession() {
 }
 export function clearStudioSession() {
   sessionStorage.removeItem(KEY);
+  clearStudioWorkspace();
   window.dispatchEvent(new Event('studio-access-changed'));
 }
 export async function unlockStudio(password) {
@@ -26,14 +28,18 @@ export function studioConfig(signal) {
   return { signal, headers: { 'X-Studio-Session': getStudioSession()?.token || '' } };
 }
 export async function studioRequest(method, path, payload, signal, params) {
+  const config = { ...studioConfig(signal), params };
   try {
-    const config = { ...studioConfig(signal), params };
     const url = `${import.meta.env.VITE_BACKEND_SERVER}studio/${path}`;
-    return method === 'post'
-      ? await axios.post(url, payload, config)
-      : await axios.get(url, config);
+    if (method === 'post') return await axios.post(url, payload, config);
+    if (method === 'delete') return await axios.delete(url, config);
+    return await axios.get(url, config);
   } catch (error) {
-    if (error.response?.status === 401) clearStudioSession();
+    if (
+      error.response?.status === 401 &&
+      getStudioSession()?.token === config.headers['X-Studio-Session']
+    )
+      clearStudioSession();
     throw error;
   }
 }
