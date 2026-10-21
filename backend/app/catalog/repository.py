@@ -1,10 +1,12 @@
 """Bounded indexed catalog discovery through the application's existing pool."""
 
 import math
+import time
 from dataclasses import dataclass
 
 from psycopg2.extras import RealDictCursor
 
+from app.catalog import admission
 from app.catalog.attribution import combine
 from app.catalog.calendar_enrichment import project
 from app.catalog.identity import identity
@@ -43,10 +45,36 @@ class CatalogPage:
     next_cursor: CatalogCursor | None
 
 
-def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calendar=False):
+def nearby(
+    point,
+    categories,
+    radius_miles=5,
+    limit=60,
+    *,
+    require_visit_calendar=False,
+    browse_mode=False,
+    legacy_only=False,
+):
     return nearby_page(
-        point, categories, radius_miles, limit, require_visit_calendar=require_visit_calendar
+        point,
+        categories,
+        radius_miles,
+        limit,
+        require_visit_calendar=require_visit_calendar,
+        browse_mode=browse_mode,
+        legacy_only=legacy_only,
     ).records
+
+
+def browse_nearby(point, categories=None, radius_miles=5, limit=60):
+    """Read explicitly admitted T2/T3 for browsing, never for automatic routing."""
+    return nearby(
+        point,
+        ["catalog_browse"] if categories is None else categories,
+        radius_miles,
+        limit,
+        browse_mode=True,
+    )
 
 
 def current_records(source_ids):
@@ -110,9 +138,17 @@ def current_records(source_ids):
 
 
 def nearby_page(
-    point, categories, radius_miles=5, limit=60, *, require_visit_calendar=False, cursor=None
+    point,
+    categories,
+    radius_miles=5,
+    limit=60,
+    *,
+    require_visit_calendar=False,
+    cursor=None,
+    browse_mode=False,
+    legacy_only=False,
 ):
-    """Read bounded source facts, optionally prefiltering automatic visit candidates.
+    """Read routing-safe facts, or explicitly admitted browse records.
 
     Pages are at most sixty rows, ordered by distance and stable source ID.
     A cursor pins the immutable generation, so activation between pages cannot
@@ -135,6 +171,10 @@ def nearby_page(
         raise ValueError("radius must be within five miles")
     if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 60:
         raise ValueError("limit must be 1..60")
+    if not isinstance(legacy_only, bool) or (legacy_only and browse_mode):
+        raise ValueError("legacy_only requires a boolean and cannot enable browse_mode")
+    if not isinstance(browse_mode, bool):
+        raise ValueError("browse_mode must be a boolean")
     if not isinstance(require_visit_calendar, bool):
         raise ValueError("require_visit_calendar must be a boolean")
     if cursor is not None and not isinstance(cursor, CatalogCursor):
@@ -142,7 +182,12 @@ def nearby_page(
     if (
         not categories
         or len(categories) > 4
-        or set(categories) - {"daytime", "food", "culture", "nightlife"}
+        or set(categories)
+        - (
+            {"daytime", "food", "culture", "nightlife", "catalog_browse"}
+            if browse_mode
+            else {"daytime", "food", "culture", "nightlife"}
+        )
     ):
         raise ValueError("invalid catalog categories")
     lat_delta = math.degrees(radius_miles / 3958.7613)
@@ -160,8 +205,9 @@ def nearby_page(
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SET LOCAL statement_timeout='2000ms'")
+            now_epoch = int(time.time())
             cur.execute(
-                """
+                f"""
                 WITH candidates AS (
                     SELECT p.*, e.entry AS calendar_enrichment,
                     i.release, i.row_count AS generation_row_count,
@@ -179,14 +225,18 @@ def nearby_page(
                       SELECT CASE WHEN e.entry IS NULL THEN p.provenance
                         ELSE jsonb_build_array(e.entry) END AS calendar_provenance
                     ) facts
+                    {admission.SQL_JOINS}
                     WHERE p.generation=COALESCE(%s, (SELECT generation FROM places_catalog_active))
                       AND p.latitude BETWEEN %s AND %s
                       AND ((%s >= -180 AND %s <= 180 AND p.longitude BETWEEN %s AND %s)
                         OR (%s < -180 AND (p.longitude >= %s+360 OR p.longitude <= %s))
                         OR (%s > 180 AND (p.longitude >= %s OR p.longitude <= %s-360)))
                       AND p.categories && %s::text[]
-                      AND (NOT %s OR (
-                        (NOT p.categories && ARRAY['food','culture','nightlife']::text[]
+                      AND {admission.sql_predicate(browse_mode=browse_mode)}
+                      AND {"NOT admission_review.required" if legacy_only else "true"}
+                      AND ((NOT %s AND (NOT admission_review.required OR {"true" if browse_mode else "false"})) OR (
+                        (NOT admission_review.required
+                          AND NOT p.categories && ARRAY['food','culture','nightlife']::text[]
                           AND split_part(p.source_id, ':', 1) NOT IN ('usda-market','wikidata-park')
                           AND NOT jsonb_path_exists(facts.calendar_provenance, '$[*].source_visit_calendar'))
                         OR (
@@ -217,6 +267,8 @@ def nearby_page(
                     low,
                     high,
                     categories,
+                    now_epoch,
+                    now_epoch,
                     require_visit_calendar,
                     radius_miles,
                     cursor.source_id if cursor else None,

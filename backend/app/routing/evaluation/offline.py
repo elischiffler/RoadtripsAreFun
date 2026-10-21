@@ -7,6 +7,7 @@ from types import SimpleNamespace
 
 from geopy.distance import geodesic
 
+from app.catalog import admission
 from app.catalog.identity import catalog_source_id
 from app.models.itinerary_models import Itinerary_Payload
 from app.models.routing_models.routing_models import Route
@@ -77,9 +78,13 @@ class FrozenProviders(LivePlaceProvider):
             if geodesic(point, item["coordinates"]).miles > 5:
                 continue
             usable = (
-                await trip_calendar.eligible(item, dwell=MIN_VISIT_SECONDS)
-                if trip_calendar is not None
-                else not require_visit_calendar or calendar_eligible(item)
+                admission.routing_eligible(item)
+                and (not admission.requires_admission(item) or calendar_eligible(item))
+                and (
+                    await trip_calendar.eligible(item, dwell=MIN_VISIT_SECONDS)
+                    if trip_calendar is not None
+                    else not require_visit_calendar or calendar_eligible(item)
+                )
             )
             if not usable:
                 excluded.append(item["provider_id"])

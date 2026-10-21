@@ -10,7 +10,7 @@ from geopy.distance import geodesic
 from pydantic import BaseModel, ConfigDict, model_validator
 
 from app.agent.progress import emit
-from app.catalog import repository
+from app.catalog import admission, repository
 from app.models.scheduling_policy import advance, seconds_until
 from app.routing import config
 from app.routing.catalog_calendars import explicit_calendar_ineligible
@@ -18,6 +18,8 @@ from app.routing.run_metrics import increment
 from app.routing.runtime import threaded
 from app.routing.sources.persona_candidates import VerifiedPlace
 
+# New pilot records are withheld here until this optional path can verify the
+# proposed full visit in the venue IANA zone. Legacy tentative policy is unchanged.
 MAX_DISTANCE_KM = 2
 MAX_TRAVEL_SECONDS = 15 * 60  # Each direction, verified by driving directions.
 REST_SECONDS = 30 * 60
@@ -61,13 +63,14 @@ class LiveEveningProvider:
                 categories,
                 radius_miles=MAX_DISTANCE_KM / 1.609344,
                 limit=20,
+                legacy_only=True,
             )
         except Exception:
             raise RuntimeError("Places catalog lookup unavailable") from None
         records = []
-        for row in rows[:20]:
+        for row in rows:
             try:
-                if explicit_calendar_ineligible(row):
+                if admission.requires_admission(row) or explicit_calendar_ineligible(row):
                     continue
                 place = VerifiedPlace.model_validate(row)
                 kind = next((kind for kind in categories if kind in place.categories), None)
@@ -76,6 +79,8 @@ class LiveEveningProvider:
                 records.append(
                     EveningPlace(**place.model_dump(), category=kind, opening_intervals=None)
                 )
+                if len(records) == 20:
+                    break
             except (ValueError, TypeError):
                 continue
         return records
@@ -114,7 +119,7 @@ def current_suggestions(hotel):
     arrival = datetime.fromisoformat(hotel["arrival_time"])
     deadline = datetime.fromisoformat(hotel["deadline"])
     for suggestion in hotel.get("evening_suggestions", []):
-        if explicit_calendar_ineligible(suggestion):
+        if admission.requires_admission(suggestion) or explicit_calendar_ineligible(suggestion):
             continue
         try:
             outward, inward = suggestion["travel_seconds"]
@@ -168,11 +173,15 @@ async def enrich_evenings(
 async def _hotel_suggestions(hotel, arrival, deadline, interests, provider):
     records = await provider.nearby(hotel["coordinates"], interests, arrival)
     places = []
-    for record in records[:20]:
+    for record in records:
         try:
             place = EveningPlace.model_validate(record)
-            if not explicit_calendar_ineligible(place.model_dump()):
+            if not admission.requires_admission(
+                place.model_dump()
+            ) and not explicit_calendar_ineligible(place.model_dump()):
                 places.append(place)
+                if len(places) == 20:
+                    break
         except (ValueError, TypeError):
             continue
     places.sort(
