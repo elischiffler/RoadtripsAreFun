@@ -75,7 +75,9 @@ def specifications(include_optional=True):
         (value[1], value[2]) for value in BENCHMARKS.values()
     }
     if expected != {(start, end) for _, start, end in STUDIO_ROUTES}:
-        raise ValueError("current Studio corridors changed; review the fixed route capture set")
+        raise ValueError(
+            "current Studio corridors changed; review the fixed route capture set"
+        )
     selected = STUDIO_ROUTES + (OPTIONAL_ROUTES if include_optional else ())
     result = []
     for key, start, end in selected:
@@ -115,14 +117,18 @@ def specifications(include_optional=True):
 
 def response_body(response, expected_url):
     if response.status_code != 200 or response.url != expected_url:
-        raise ValueError("OSRM did not return a successful response at the fixed requested URL")
+        raise ValueError(
+            "OSRM did not return a successful response at the fixed requested URL"
+        )
     if (
         response.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
         != "application/json"
     ):
         raise ValueError("OSRM response is not JSON")
     length = response.headers.get("Content-Length")
-    if length is not None and (not length.isdigit() or int(length) > MAX_RESPONSE_BYTES):
+    if length is not None and (
+        not length.isdigit() or int(length) > MAX_RESPONSE_BYTES
+    ):
         raise ValueError("OSRM response exceeds the two-MiB ceiling")
     chunks, size = [], 0
     for chunk in response.iter_content(chunk_size=64 * 1024):
@@ -144,18 +150,67 @@ def acquire(
     sleep=time.sleep,
     monotonic=time.monotonic,
     now=None,
+    route_specs=None,
 ):
     """Publish one new receipt directory; never overwrite or resume an old capture."""
     output = Path(output).absolute()
     if output.exists() or output.is_symlink():
-        raise ValueError("route output already exists; choose a new immutable directory")
-    specs = specifications(include_optional)
+        raise ValueError(
+            "route output already exists; choose a new immutable directory"
+        )
+    specs = specifications(include_optional) if route_specs is None else route_specs
+    if not isinstance(specs, list) or not 1 <= len(specs) <= 16:
+        raise ValueError("capture requires one to sixteen bounded road specifications")
+    identities = set()
+    for spec in specs:
+        ident = spec.get("id", "")
+        points = spec.get("endpoint_coordinates_lat_lon", [])
+        if (
+            not isinstance(ident, str)
+            or not ident
+            or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789-" for c in ident)
+            or ident in identities
+            or not isinstance(points, list)
+            or len(points) != 2
+            or any(
+                not isinstance(point, list)
+                or len(point) != 2
+                or any(type(v) not in {int, float} for v in point)
+                or not (-90 <= point[0] <= 90 and -180 <= point[1] <= 180)
+                for point in points
+            )
+        ):
+            raise ValueError("invalid or duplicate route specification")
+        identities.add(ident)
+        coordinates = ";".join(f"{lon},{lat}" for lat, lon in points)
+        expected = (
+            SERVER
+            + "/route/v1/driving/"
+            + coordinates
+            + "?"
+            + urlencode(
+                {
+                    "overview": "full",
+                    "geometries": "geojson",
+                    "steps": "false",
+                    "alternatives": "false",
+                }
+            )
+        )
+        if spec.get("url") != expected:
+            raise ValueError(
+                "route URL differs from fixed public service and endpoints"
+            )
     output.parent.mkdir(parents=True, exist_ok=True)
-    staging = Path(tempfile.mkdtemp(prefix="." + output.name + ".partial-", dir=output.parent))
+    staging = Path(
+        tempfile.mkdtemp(prefix="." + output.name + ".partial-", dir=output.parent)
+    )
     session = None
     if request_get is None:
         session = requests.Session()
-        session.trust_env = False  # No .netrc credentials, proxies or ambient authentication.
+        session.trust_env = (
+            False  # No .netrc credentials, proxies or ambient authentication.
+        )
         session.auth = None
         request_get = session.get
     now = now or (lambda: datetime.now(UTC))
@@ -184,7 +239,9 @@ def acquire(
                 response.close()
             checked = now()
             if checked.tzinfo is None:
-                raise ValueError("route acquisition timestamps require an explicit timezone")
+                raise ValueError(
+                    "route acquisition timestamps require an explicit timezone"
+                )
             relative = "route-" + spec["id"] + ".json"
             (staging / relative).write_bytes(body)
             index["routes"].append(
@@ -205,7 +262,9 @@ def acquire(
         index_path.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
         validate_routes(index_path, staging.resolve())
         if output.exists() or output.is_symlink():
-            raise ValueError("route output appeared during capture; existing files were preserved")
+            raise ValueError(
+                "route output appeared during capture; existing files were preserved"
+            )
         staging.rename(output)
         return output / "index.json"
     finally:

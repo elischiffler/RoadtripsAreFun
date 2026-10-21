@@ -8,6 +8,7 @@ from psycopg2.extras import RealDictCursor
 from app.catalog.attribution import combine
 from app.catalog.calendar_enrichment import project
 from app.catalog.identity import identity
+from app.catalog.personas import facts as persona_facts
 from app.core.config import settings
 from app.crud import chat_crud
 
@@ -244,6 +245,7 @@ def nearby_page(
                 "address": r["address"],
                 "url": r["url"],
                 "categories": r["categories"],
+                **persona_facts(r["provenance"]),
                 "provider_rank": (cursor.scanned if cursor else 0) + rank,
                 "source": identity(r["source_id"])[1],
                 "source_release": (r.get("calendar_enrichment") or {}).get("source_release")

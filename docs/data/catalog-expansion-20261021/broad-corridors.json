@@ -1,0 +1,40 @@
+{
+  "after": {
+    "asheville-roanoke": 1,
+    "atlanta-asheville": 2,
+    "boise-portland": 5,
+    "boston-burlington": 1,
+    "denver-salt-lake": 0,
+    "houston-new-orleans": 0,
+    "little-rock-memphis": 1,
+    "medford-bend": 0,
+    "minneapolis-duluth": 0,
+    "nashville-knoxville": 0,
+    "phoenix-albuquerque": 7,
+    "portland-me-wilmington": 6,
+    "rapid-city-billings": 0,
+    "reno-lakeview": 1,
+    "sacramento-eureka": 2,
+    "salt-lake-boise": 0
+  },
+  "before": {
+    "asheville-roanoke": 1,
+    "atlanta-asheville": 2,
+    "boise-portland": 5,
+    "boston-burlington": 1,
+    "denver-salt-lake": 0,
+    "houston-new-orleans": 0,
+    "little-rock-memphis": 1,
+    "medford-bend": 0,
+    "minneapolis-duluth": 0,
+    "nashville-knoxville": 0,
+    "phoenix-albuquerque": 7,
+    "portland-me-wilmington": 6,
+    "rapid-city-billings": 0,
+    "reno-lakeview": 1,
+    "sacramento-eureka": 2,
+    "salt-lake-boise": 0
+  },
+  "definition": "Continuous five-mile genuine road-geometry buffer; spatial diagnostic only",
+  "route_index_sha256": "f9321456ba7b30923d4c0dc2d19bed43a66bcab1e5dbc5cfcbffac045c534d36"
+}

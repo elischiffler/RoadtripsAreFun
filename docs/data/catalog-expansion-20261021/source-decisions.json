@@ -1,0 +1,181 @@
+{
+  "schema_version": "roadtrips-source-research/1",
+  "checked_at": "2026-10-21T01:33:56.037651+00:00",
+  "scope": "Read-only bounded source research; no actual attraction admissions, bulk datasets, external writes, database access, live AI calls, accounts or credentials changes.",
+  "baseline": "Parent confirmed develop 3e7010c contains 608 candidate places and 189 companions; initial 603 baseline is superseded.",
+  "accepted_places": 0,
+  "sources": [
+    {
+      "id": "hf-wikimedia-linked",
+      "platform": "Hugging Face",
+      "url": "https://huggingface.co/datasets/wikimedia/linked-openstreetmap-wikidata-wikipedia-wikivoyage",
+      "primary_rights_url": "https://www.wikidata.org/wiki/Wikidata:Copyright",
+      "revision": "52211cd980c87e42273913627f92d080f54d492f",
+      "metadata_modified": "2026-10-06T04:36:30.000Z",
+      "data_as_of": "2026-09-15",
+      "coverage": "Global; 13m Wikidata entities; potential US museum/landmark/public-art/roadside leads, including CT/DE/VT",
+      "license": "CC0-1.0 for links.parquet, wikidata.parquet and wikidata_locations.parquet ONLY; ODbL for openstreetmap.parquet; CC-BY-SA-4.0 for wikipedia.parquet and wikivoyage.parquet",
+      "commercial_and_redistribution": "CC0 structured subset permits commercial reuse and redistribution. Isolate it from ODbL and CC-BY-SA portions; preserve original provenance as a quality measure. OSM requires attribution and applicable derivative database sharing; article-text reuse requires attribution and share alike.",
+      "decision": "eligible_for_bounded_lead_extraction_only",
+      "reason": "Official Wikimedia publisher and upstream CC0 policy support structured data reuse. No actual place extraction or current visitor access, parking or calendar verification performed. Tree API confirms large global files: a full download is inappropriate; use bounded range reads or direct Wikidata API for a limited shortlist.",
+      "evidence_ids": [
+        "hf-wikimedia-card",
+        "hf-wikimedia-metadata",
+        "wikidata-copyright",
+        "hf-wikimedia-tree"
+      ],
+      "file_bytes": {
+        ".gitattributes": 2504,
+        "README.md": 13993,
+        "links.parquet": 173746346,
+        "openstreetmap.parquet": 35814227585,
+        "wikidata.parquet": 435496681,
+        "wikidata_locations.parquet": 956794947,
+        "wikipedia.parquet": 21547417336,
+        "wikivoyage.parquet": 514718334
+      }
+    },
+    {
+      "id": "hf-overture-usa-embeddings",
+      "platform": "Hugging Face",
+      "url": "https://huggingface.co/datasets/pvv5385/overture-usa-places-embeddings",
+      "primary_rights_url": "https://docs.overturemaps.org/attribution/",
+      "data_as_of": "2026-08-19.0",
+      "coverage": "1,619,134 claimed places in 13 cities: top ten US cities plus San Francisco, Oakland, Berkeley; weak match for CT/DE/VT gaps",
+      "license": "Uploader card CDLA-Permissive-2.0; card acknowledges upstream Apache-2.0 as well",
+      "commercial_and_redistribution": "CDLA-Permissive-2.0 and Apache-2.0 allow commercial redistribution subject to original license and Apache notice obligations. Per-record upstream provenance and required notice must be recoverable.",
+      "decision": "hold_use_primary_overture_instead",
+      "reason": "Published schema collapses source_dataset to overture; unclear whether required upstream source and Foursquare NOTICE survive. Older and geographically less useful than existing primary Overture pipeline. Snapshot confidence score is not current opening verification.",
+      "evidence_ids": [
+        "hf-overture-card"
+      ]
+    },
+    {
+      "id": "hf-itinerai-us-places",
+      "platform": "Hugging Face",
+      "url": "https://huggingface.co/datasets/itinerai/us_places",
+      "primary_rights_url": null,
+      "data_as_of": null,
+      "coverage": "Nine destinations per public indexed card; attractions, reviews, photos and descriptions",
+      "license": "Unverified",
+      "commercial_and_redistribution": "No reuse clearance established for original Tripadvisor-derived text, reviews and photographs.",
+      "decision": "exclude_unverified_rights",
+      "reason": "Public indexed card shows Tripadvisor attraction/review URLs and dynamic-media-cdn images; original metadata API returned 401. Did not authenticate, create account or bypass access controls.",
+      "evidence_ids": [
+        "hf-itinerai-metadata"
+      ]
+    },
+    {
+      "id": "kaggle-us-road-trip",
+      "platform": "Kaggle",
+      "url": "https://www.kaggle.com/datasets/meetnagadia/road-trip-dataset",
+      "version": 1,
+      "metadata_modified": "2021-10-13T06:53:49.343Z",
+      "archive_bytes": 141574,
+      "coverage": "1,225 origin/destination pairs, four columns; including some CT/DE/VT named waypoints; not 1,225 distinct attractions",
+      "license": "Database: Open Database, Contents: Copyright Original Authors (platform label)",
+      "commercial_and_redistribution": "No original content grant or identifiable source contract established.",
+      "decision": "exclude_unclear_provenance",
+      "reason": "Publisher gives only vague open-data provenance. Pairwise travel distances/times do not establish native source identities, coordinates, present visitor access, or current hours. No archive downloaded.",
+      "evidence_ids": [
+        "kaggle-roadtrip-metadata"
+      ]
+    },
+    {
+      "id": "kaggle-us-breweries",
+      "platform": "Kaggle",
+      "url": "https://www.kaggle.com/datasets/brkurzawa/us-breweries",
+      "version": 1,
+      "metadata_modified": "2019-10-02T03:15:27.660Z",
+      "archive_bytes": 373262,
+      "coverage": "National brewery leads from BeerMonthClub as of October 1, 2019; no current operation or current coordinate proof",
+      "license": "GPL-2.0 platform label",
+      "commercial_and_redistribution": "Uploader license label and stated permission to scrape do not independently establish downstream rights in source compilation or source-site content.",
+      "decision": "hold_rights_and_staleness",
+      "reason": "Older scraped dataset offers no advantage over already researched Open Brewery DB primary data. No archive downloaded. Do not assume GPL label clears upstream facts or text.",
+      "evidence_ids": [
+        "kaggle-breweries-metadata"
+      ]
+    },
+    {
+      "id": "open-brewery-db-primary",
+      "platform": "Original publisher / GitHub",
+      "url": "https://github.com/openbrewerydb/openbrewerydb",
+      "primary_rights_url": "https://github.com/openbrewerydb/openbrewerydb/blob/master/LICENSE",
+      "data_as_of": null,
+      "coverage": "Global brewery directory, filter US; prior Oct16 repo research found 4,826 strict US candidates",
+      "license": "MIT in primary repository; copyright 2025 Open Brewery DB",
+      "commercial_and_redistribution": "Retain copyright and permission notice with substantial copies. Audit original data and contribution provenance at a pinned commit.",
+      "decision": "eligible_for_leads_existing_admission_holds_remain",
+      "reason": "Primary MIT notice fetched directly. Prior repo already reconciled Kaggle mirror; avoid duplicating bulk acquisition. No new operator calendars, public arrivals or identity conflict resolution supplied by this review.",
+      "evidence_ids": [
+        "brewery-mit"
+      ]
+    },
+    {
+      "id": "ct-public-historic-districts",
+      "platform": "Connecticut GIS / Data.gov",
+      "url": "https://geodata.ct.gov/maps/ctmaps::ct-public-historic-districts",
+      "primary_rights_url": "https://www.arcgis.com/sharing/rest/content/items/9f5bfcd61b164418ae471031f8826599?f=json",
+      "metadata_modified": "2026-09-23 (catalog reported)",
+      "coverage": "Connecticut historic district polygons; neither museum entry points nor permission to enter all parcels",
+      "license": "CC-BY-NC-ND (ArcGIS original metadata); Data.gov specifies CC-BY-NC-ND-4.0",
+      "commercial_and_redistribution": "Noncommercial and no derivatives restrictions make this unsuitable as an automatic commercial app data input without separate rights clearance.",
+      "decision": "exclude_incompatible_rights",
+      "reason": "Original publisher licenseInfo explicitly contains NC and ND restrictions. Public government hosting does not remove them. Area boundaries do not establish visitor facilities.",
+      "evidence_ids": [
+        "ct-historic-metadata"
+      ]
+    },
+    {
+      "id": "vt-anr-recreation-sites",
+      "platform": "Vermont ANR / Open Geodata",
+      "url": "https://anrmaps.vermont.gov/arcgis/rest/services/Open_Data/OPENDATA_ANR_TOURISM_SP_NOCACHE_v2/MapServer",
+      "primary_rights_url": "https://files.vcgi.vermont.gov/other/policies/vermont-open-geodata-policy.html",
+      "metadata_modified": "Policy v1.1 December 10, 2025",
+      "coverage": "Vermont state parks, recreation sites and parking point layers; potential gaps in VT nature coverage",
+      "license": "Dataset-level terms need reconciliation: Data.gov legacy RECSITES resource says Creative Commons Attribution Share-Alike; current portal policy includes a resale restriction",
+      "commercial_and_redistribution": "Current portal policy allows access, sharing and integration but prohibits direct non-value-added reproduction for sale. This is not blanket CC0. Confirm exact layer terms and applicable policy before distributing normalized derivatives.",
+      "decision": "hold_layer_rights_and_seasonal_access",
+      "reason": "Policy fetched directly; no layer records imported. State park general seasons often end by second Monday October, so future operating windows and gate/calendar rules need explicit per-park review.",
+      "evidence_ids": [
+        "vt-open-policy"
+      ]
+    },
+    {
+      "id": "delaware-open-data",
+      "platform": "Delaware state open data",
+      "url": "https://data.delaware.gov/",
+      "primary_rights_url": "https://opendatacouncil.delaware.gov/open-data-portal-terms-of-service/",
+      "data_as_of": null,
+      "coverage": "State portal; this review did not identify an attraction-specific source with a confirmed reuse grant",
+      "license": "No explicit commercial redistribution grant established in portal terms read",
+      "commercial_and_redistribution": "Public accessibility and warranty disclaimer alone do not establish data reuse rights; inspect exact dataset metadata and any originating agency restrictions.",
+      "decision": "hold_no_vetted_dataset",
+      "reason": "Portal terms fetched. No dataset rows downloaded or admitted.",
+      "evidence_ids": [
+        "de-portal-terms"
+      ]
+    },
+    {
+      "id": "lecl-museums-visitor-centers",
+      "platform": "Data.gov / NPS original GIS",
+      "url": "https://catalog.data.gov/dataset/lecl-lewis-and-clark-trail-visitor-centers-and-museums",
+      "data_as_of": "Catalog says last updated 2017-06-02; description refers to 2019 contents; catalog checked 2026-09-10",
+      "coverage": "Lewis and Clark trail museums and visitor centers across 16 states from PA to OR; could improve museum and central/northern US corridor variety",
+      "license": "Catalog declares US public-domain label; original layer metadata still requires inspection",
+      "commercial_and_redistribution": "Government-origin factual fields may be reused after original source and rights are confirmed. Partner museum content/photos are not automatically covered.",
+      "decision": "hold_original_layer_and_current_access",
+      "reason": "Specific additional federal dataset discovered through search; current original metadata endpoint and actual rows not yet verified. Old source updates cannot stand for current operation. Parent already has Omaha NPS visitor center; deduplicate it.",
+      "evidence_ids": [
+        "lecl-catalog-metadata"
+      ]
+    }
+  ],
+  "limitations": [
+    "Source rights clearance is separate from record-level identity/access/calendar validation.",
+    "Source card counts and as-of dates are publisher claims unless an original receipt verifies them.",
+    "No total national data-file download took place.",
+    "The original API receipt list records failed fetches independently; do not report failures as successful provenance."
+  ]
+}

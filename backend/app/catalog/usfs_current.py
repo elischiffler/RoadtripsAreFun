@@ -67,6 +67,9 @@ _AMBIGUOUS = re.compile(
     r"weather (?:dependent|permitting)|inaccessible|snow|winter|seasonal|"
     r"reservations? (?:are |is )?(?:required|only)|permits? (?:are |is )?(?:required|only)|"
     r"requires? (?:an? )?(?:reservation|permit)|"
+    r"\bmust (?:have|obtain|purchase|carry)\b[^.]{0,80}\b(?:permit|reservation|ticket)\b|"
+    r"\b(?:shuttle|ferry|walk[- ]in|hike[- ]in|foot[- ]access[- ]only|pedestrian[- ]only)\b|"
+    r"\bGPS\b|\b(?:latitude|longitude)\s*[:=]|"
     r"\bclos(?:e[sd]?|ures?)\b|not (?:accessible|open)|gates? (?:shut|lock)|"
     r"no (?:car |vehicle |public )parking|parking (?:is not available|prohibited)|"
     r"(?:check|call)[^.]{0,70}(?:open|access|restriction)|"
@@ -310,6 +313,9 @@ def prepare(path, manifest=None, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
         or not re.fullmatch(r"usfs-current-\d{4}-\d{2}-\d{2}", manifest.get("release", ""))
     ):
         raise ValueError("USFS source manifest checksum/identity mismatch")
+    persona_version = manifest.get("persona_enrichment")
+    if persona_version is not None and persona_version != "roadtrips-source-persona/1":
+        raise ValueError("unsupported deterministic source persona version")
     bundle = json.loads(raw)
     if bundle.get("schema_version") != SCHEMA:
         raise ValueError("unsupported USFS current bundle schema")
@@ -329,6 +335,30 @@ def prepare(path, manifest=None, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
     ):
         raise ValueError("USFS selection must contain bounded distinct native facility IDs")
     root, seen = path.parent, {path.resolve(): len(raw)}
+    reviewed = None
+    review = manifest.get("arrival_review")
+    if review is not None:
+        reader = calendar_enrichment.Reader(root, min(max_bytes, 256 * 1024))
+        body = reader.read(review.get("path"), review.get("sha256"))
+        ledger = json.loads(body)
+        if (
+            ledger.get("schema_version") != "roadtrips-usfs-arrival-review/1"
+            or ledger.get("source_bundle_sha256") != manifest["sha256"]
+        ):
+            raise ValueError("independent arrival review differs from original source bundle")
+        reviewed = {}
+        for item in ledger.get("records", []):
+            sid = item.get("source_id")
+            if (
+                not isinstance(sid, str)
+                or sid in reviewed
+                or item.get("decision") not in {"hold", "reviewed_no_additional_conflict_observed"}
+            ):
+                raise ValueError("invalid or conflicting independent arrival review")
+            reviewed[sid] = item
+        if not 1 <= len(reviewed) <= 250:
+            raise ValueError("independent arrival review exceeds bounded scope")
+        seen[(root / review["path"]).resolve()] = len(body)
     if set(manifest.get("licenses", {})) != set(LICENSE_PINS):
         raise ValueError("USFS requires exact factual-data and ODbL reuse notices")
     for key, expected in LICENSE_PINS.items():
@@ -490,6 +520,14 @@ def prepare(path, manifest=None, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
                     usfs.driving(root, check, row)
                 except ValueError:
                     reason = "native_arrival_not_within_75m_of_driving_destination"
+        if reason is None and reviewed is not None:
+            review_item = reviewed.get(row["source_id"])
+            if review_item is None:
+                reason = "independent_arrival_review_missing"
+            elif review_item["decision"] == "hold":
+                reason = "independent_arrival_review_hold: " + str(
+                    review_item.get("reason", "unresolved arrival")
+                )
         ledger.append(
             {
                 "site_cn": ident,
@@ -639,6 +677,11 @@ def prepare(path, manifest=None, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
                 "source_release": release,
                 "source_attribution": ATTRIBUTION,
                 "limitations": "Dated published access only; parking capacity, ticket availability, admission price and future road/weather access are not established. Native facility point is not a surveyed parking entrance; walking may be required.",
+                **(
+                    {"independent_arrival_review_sha256": review["sha256"]}
+                    if review is not None
+                    else {}
+                ),
             }
         ]
         if parking_fact:
@@ -646,6 +689,12 @@ def prepare(path, manifest=None, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
                 **parking_fact,
                 "receipt": _source_receipt(parking_fact["receipt"]),
             }
+        if persona_version is not None:
+            from app.catalog.personas import build, stored
+
+            row["provenance"].append(
+                stored(build(row, entry, release=release, attribution=ATTRIBUTION))
+            )
         rows.append(row)
         entries.append(entry)
     return rows, {
@@ -738,15 +787,36 @@ def nearby_corridors(lat, lon, grid, *, radius_m=8046.72):
     return sorted(found)
 
 
-def acquire(output, *, parent_rows, routes_index, route_root, parking_publication_urls=()):
+def acquire(
+    output,
+    *,
+    parent_rows,
+    routes_index,
+    route_root,
+    parking_publication_urls=(),
+    site_ids=None,
+):
     """Acquire reproducible official inputs and arrival checks; no database writes.
 
     Parent rows seed refreshes; new candidate facilities must fall within a
-    continuous five-mile buffer of verified road geometry. Every remote body and
+    continuous five-mile buffer of verified road geometry. An explicit shortlist
+    of up to 250 native identities permits bounded regional gap filling instead;
+    it changes selection only, never source admission or arrival checks.
+    Every remote body and
     discovery decision is retained. OSRM requests are serialized at <=1/second.
     """
     import requests
 
+    if site_ids is not None and (
+        not isinstance(site_ids, list)
+        or not 1 <= len(site_ids) <= 250
+        or any(
+            not isinstance(item, str) or not re.fullmatch(r"[0-9]+(?:\.[0-9]+)?", item)
+            for item in site_ids
+        )
+        or len(set(site_ids)) != len(site_ids)
+    ):
+        raise ValueError("explicit USFS shortlist requires 1..250 distinct native IDs")
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
     if isinstance(parent_rows, (str, Path)):
@@ -890,6 +960,8 @@ def acquire(output, *, parent_rows, routes_index, route_root, parking_publicatio
     else:
         raise ValueError("USFS discovery exceeded bounded page count")
     selected, corridor_matches = set(), {}
+    if site_ids is not None and set(site_ids) - discovered.keys():
+        raise ValueError("explicit USFS shortlist identities missing from current discovery")
     for ident, a in discovered.items():
         if a.get("site_type") not in usfs.TYPES:
             continue
@@ -897,7 +969,7 @@ def acquire(output, *, parent_rows, routes_index, route_root, parking_publicatio
         if type(lat) not in {float, int} or type(lon) not in {float, int}:
             continue
         matches = nearby_corridors(lat, lon, grid)
-        if ident in parent_ids or matches:
+        if ident in parent_ids or (ident in site_ids if site_ids is not None else matches):
             selected.add(ident)
             corridor_matches[ident] = matches
     if not selected:
@@ -1022,6 +1094,9 @@ def acquire(output, *, parent_rows, routes_index, route_root, parking_publicatio
         "discovered_facilities": len(discovered),
         "selected_facilities": len(selected),
         "parent_refresh_candidates": len(selected & parent_ids),
+        "selection_scope": "explicit_bounded_native_identity_shortlist"
+        if site_ids is not None
+        else "parent_and_continuous_five_mile_corridors",
         "continuous_five_mile_corridors": corridor_matches,
         "discovery_receipts": discovery,
         "preliminary_holds": preliminary_holds,
