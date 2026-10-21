@@ -5,7 +5,6 @@ import { MemoryRouter } from 'react-router-dom';
 import StudioResearch from '../pages/StudioResearch/StudioResearch';
 import {
   Heatmap,
-  ResponseCurve,
   RowChart,
   StatusColumns,
   SolverOutcomes,
@@ -195,16 +194,10 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   expect(screen.getByText('0% of finished runs')).toBeInTheDocument();
   expect(screen.getByText('1 failed · 0 partial · 0 interrupted')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Stop selection · 1' }));
-  expect(
-    screen.getByRole('group', { name: 'Mean utility score by allowed utility score drop' })
-  ).toBeInTheDocument();
+  expect(screen.queryByText('Settings comparison')).not.toBeInTheDocument();
   expect(screen.getByText('100 simulated attractions')).toBeInTheDocument();
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
   expect(screen.queryByText(/Same candidates, persona/)).not.toBeInTheDocument();
-  await userEvent.hover(screen.getByRole('button', { name: 'About Settings comparison' }));
-  expect(screen.getByRole('tooltip')).toHaveTextContent('trip and stops per day stay fixed');
-  await userEvent.unhover(screen.getByRole('button', { name: 'About Settings comparison' }));
-  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   expect(screen.queryByRole('option', { name: 'Added distance' })).not.toBeInTheDocument();
   expect(screen.getByText('Feasible')).toBeInTheDocument();
 });
@@ -248,12 +241,6 @@ it('renders charts with labeled units, measured sample sizes and negative drivin
       <Heatmap rows={rows} trips={trips} metric="utility_mean" />
       <StatusColumns rows={rows} trips={trips} />
       <RowChart rows={rows} trips={trips} metric="extra_seconds" />
-      <ResponseCurve
-        rows={rows}
-        variants={variants}
-        parameter="quality_loss"
-        metric="utility_mean"
-      />
       <Tradeoff rows={rows} />
       <UtilitySpread rows={rows} />
     </>
@@ -265,9 +252,6 @@ it('renders charts with labeled units, measured sample sizes and negative drivin
   expect(screen.getByRole('group', { name: 'Added driving by trip type' })).toHaveTextContent(
     'minutes'
   );
-  expect(
-    screen.getByRole('group', { name: 'Mean utility score by allowed utility score drop' })
-  ).toHaveTextContent('points');
   expect(
     screen.getByRole('group', { name: 'Mean utility score versus added driving scatter plot' })
   ).toHaveTextContent('-1');
@@ -569,7 +553,7 @@ it('formats selection milliseconds without changing stored seconds or losing zer
   expect(formatSelectionTime(NaN)).toBe('—');
 });
 
-it('uses adaptive units in selection-time cells, ranges, chart values and paired tooltips', async () => {
+it('uses adaptive units in selection-time cells, ranges and chart values', () => {
   const rows = [
     { ...base, solver_seconds: 2.5 },
     { ...base, id: 2, solver_seconds: 0.5, repeat: 2 },
@@ -587,12 +571,6 @@ it('uses adaptive units in selection-time cells, ranges, chart values and paired
         trips={trips}
         metric="solver_seconds"
       />
-      <ResponseCurve
-        rows={rows}
-        variants={variants}
-        parameter="quality_loss"
-        metric="solver_seconds"
-      />
     </InspectionProvider>
   );
   const table = screen.getByRole('table', { name: 'Selection time' });
@@ -601,11 +579,6 @@ it('uses adaptive units in selection-time cells, ranges, chart values and paired
   const chart = screen.getByRole('group', { name: 'Selection time by trip type' });
   expect(chart).toHaveTextContent('Mean 1.5 s');
   expect(chart).toHaveTextContent('Median 1.5 s');
-  const curve = screen.getByRole('group', { name: 'Selection time by allowed utility score drop' });
-  await userEvent.click(
-    within(curve).getByRole('button', { name: /Allowed utility score drop: 0 points/ })
-  );
-  expect(screen.getByRole('tooltip')).toHaveTextContent('-1.5 s vs default settings');
   expect(table).not.toHaveTextContent('1,500');
   expect(rows[0].solver_seconds).toBe(2.5);
 });

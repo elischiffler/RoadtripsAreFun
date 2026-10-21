@@ -13,21 +13,13 @@ import {
 } from '../../services/studioResearch';
 import {
   Heatmap,
-  ResponseCurve,
   RowChart,
   StatusColumns,
   SolverOutcomes,
   Tradeoff,
   UtilitySpread,
 } from './ResearchCharts';
-import {
-  combineStudies,
-  distribution,
-  format,
-  METRICS,
-  paired,
-  settingLabel,
-} from './researchData';
+import { combineStudies, distribution, format, METRICS, settingLabel } from './researchData';
 import { getStudioSession, unlockStudio } from '../../services/studioSession';
 import ResearchInfo, { ChartHeading } from './ResearchInfo';
 import { InspectionProvider, InspectMark } from './ResearchInspect';
@@ -57,9 +49,6 @@ export default function StudioResearch() {
   const [metric, setMetric] = useState('utility_mean');
   const [persona, setPersona] = useState('all');
   const [density, setDensity] = useState('all');
-  const [curveTrip, setCurveTrip] = useState('medium-2d');
-  const [curveDensity, setCurveDensity] = useState('2');
-  const [parameter, setParameter] = useState('quality_loss');
   const [variant, setVariant] = useState('baseline');
 
   useEffect(() => {
@@ -226,17 +215,6 @@ export default function StudioResearch() {
     const key = row.solver_status || 'NOT_RUN';
     solverCounts[key] = (solverCounts[key] ?? 0) + 1;
   });
-  const responseTrip = data?.design.trips.includes(curveTrip) ? curveTrip : data?.design.trips[0];
-  const responseDensity = data?.design.stops_per_day.includes(Number(curveDensity))
-    ? curveDensity
-    : String(data?.design.stops_per_day[0]);
-  const curves = trackRows.filter(
-    (row) => row.trip === responseTrip && row.stops_per_day === Number(responseDensity)
-  );
-  const changeVariants = (data?.variants ?? []).filter((row) => row.parameter === parameter);
-  const delta = changeVariants.length
-    ? paired(curves, changeVariants.at(-1).id, 'utility_mean')
-    : { n: 0 };
   const trips = catalog?.trips ?? [];
   const finished = data?.rows?.length ?? 0;
   const activeSources = (data?.sources ?? []).filter((source) =>
@@ -562,72 +540,9 @@ export default function StudioResearch() {
             <section className="research-card">
               <UtilitySpread rows={filtered} />
             </section>
-            {track === 'pipeline' ? (
+            {track === 'pipeline' && (
               <section className="research-card">
                 <Tradeoff rows={filtered} trips={trips} />
-              </section>
-            ) : (
-              <section className="research-card">
-                <ChartHeading
-                  as="h2"
-                  title="Settings comparison"
-                  help="One setting changes; trip and stops per day stay fixed. Interest and setting filters above do not apply."
-                />
-                <div className="research-controls">
-                  <label>
-                    Trip
-                    <select value={responseTrip} onChange={(e) => setCurveTrip(e.target.value)}>
-                      {trips
-                        .filter((trip) => data.design.trips.includes(trip.id))
-                        .map((trip) => (
-                          <option value={trip.id} key={trip.id}>
-                            {trip.label}
-                          </option>
-                        ))}
-                    </select>
-                  </label>
-                  <label>
-                    Stops per day
-                    <select
-                      value={responseDensity}
-                      onChange={(e) => setCurveDensity(e.target.value)}
-                    >
-                      {[1, 2, 3].map((n) => (
-                        <option value={n} key={n}>
-                          {n}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label>
-                    Setting
-                    <select value={parameter} onChange={(e) => setParameter(e.target.value)}>
-                      <option value="quality_loss">Allowed utility score drop</option>
-                      <option value="detour_weight">Added driving penalty</option>
-                    </select>
-                  </label>
-                </div>
-                <ResponseCurve
-                  rows={curves}
-                  variants={data.variants}
-                  parameter={parameter}
-                  metric={metric}
-                />
-                {delta.n >= 5 && (
-                  <div className="research-finding">
-                    <div>
-                      <strong>Mean utility score change: {format(delta.mean)} points</strong>
-                      <small>
-                        {delta.n} matched comparisons · observed change {format(delta.min)} to{' '}
-                        {format(delta.max)} points
-                      </small>
-                    </div>
-                    <ResearchInfo label="Mean utility score change">
-                      {settingLabel(changeVariants.at(-1))} vs default settings. Same trip,
-                      interests, stops per day and seed. Descriptive comparison.
-                    </ResearchInfo>
-                  </div>
-                )}
               </section>
             )}
           </>

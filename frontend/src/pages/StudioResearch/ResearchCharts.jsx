@@ -9,10 +9,8 @@ import {
   metricHelp,
   METRICS,
   runCount,
-  paired,
   sample,
   interestLabel,
-  settingLabel,
   metricText,
   metricRange,
   metricUnit,
@@ -416,140 +414,6 @@ export function RowChart({ rows, trips, metric }) {
 RowChart.propTypes = {
   rows: PropTypes.array.isRequired,
   trips: PropTypes.array.isRequired,
-  metric: PropTypes.string.isRequired,
-};
-
-export function ResponseCurve({ rows, variants, parameter, metric }) {
-  const baseValue = parameter === 'quality_loss' ? 0.1 : 1;
-  const conditions = variants
-    .filter((row) => row.parameter === parameter || row.id === 'baseline')
-    .map((row) => ({ ...row, x: row.id === 'baseline' ? baseValue : row.value }))
-    .sort((a, b) => a.x - b.x);
-  const series = ['nature', 'entertainment'].map((persona) => ({
-    persona,
-    points: conditions.map((condition) => ({
-      ...sample(
-        rows.filter((row) => row.persona === persona && row.variant === condition.id),
-        metric
-      ),
-      x: condition.x,
-      conditionId: condition.id,
-      change:
-        condition.id === 'baseline'
-          ? null
-          : paired(
-              rows.filter((row) => row.persona === persona),
-              condition.id,
-              metric
-            ),
-    })),
-  }));
-  const firstPoint = series.flatMap((row) => row.points).find((point) => point.n);
-  const values = series.flatMap((row) => row.points.map((p) => p.mean)).filter(finite);
-  if (!values.length) return <p className="research-empty">No results yet.</p>;
-  const minX = Math.min(...conditions.map((row) => row.x));
-  const maxX = Math.max(...conditions.map((row) => row.x));
-  const maxY = metric.startsWith('utility') ? 100 : Math.max(1, ...values) * 1.15;
-  const minY = Math.min(0, ...values);
-  const x = (v) => 64 + ((v - minX) / (maxX - minX || 1)) * 500;
-  const y = (v) => 210 - ((v - minY) / (maxY - minY || 1)) * 160;
-  return (
-    <figure>
-      <figcaption>
-        {METRICS[metric].label}
-        {metricUnit(metric) && <small>{metricUnit(metric)}</small>}
-      </figcaption>
-      <div className="research-legend research-personas">
-        <span>● Nature</span>
-        <span>■ Entertainment</span>
-      </div>
-      <InspectionGroup
-        viewBox="0 0 640 280"
-        role="group"
-        aria-label={`${METRICS[metric].label} by ${parameter === 'quality_loss' ? 'allowed utility score drop' : 'added driving penalty'}`}
-      >
-        {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
-          <g key={ratio}>
-            <line x1="64" x2="564" y1={210 - ratio * 160} y2={210 - ratio * 160} stroke="#e8ddd0" />
-            <text x="54" y={214 - ratio * 160} textAnchor="end">
-              {metricText(minY + ratio * (maxY - minY), metric)}
-            </text>
-          </g>
-        ))}
-        {conditions.map((row) => (
-          <text key={row.id} x={x(row.x)} y="234" textAnchor="middle">
-            {parameter === 'quality_loss' ? format(row.x * 100) : format(row.x)}
-          </text>
-        ))}
-        {series.map((series, index) => (
-          <g
-            key={series.persona}
-            fill={index ? '#a56b28' : '#234a3c'}
-            stroke={index ? '#a56b28' : '#234a3c'}
-          >
-            {series.points.map((point, i) => {
-              const previous = series.points[i - 1];
-              return (
-                finite(point.mean) && (
-                  <g key={point.x}>
-                    {previous && finite(previous.mean) && (
-                      <line
-                        x1={x(previous.x)}
-                        x2={x(point.x)}
-                        y1={y(previous.mean)}
-                        y2={y(point.mean)}
-                        strokeWidth="2"
-                      />
-                    )}
-                    <InspectMark
-                      key={point.x}
-                      first={point === firstPoint}
-                      label={`${interestLabel(series.persona)}, ${settingLabel({ id: point.conditionId, parameter, value: point.x })}, mean ${metricText(point.mean, metric, true)}`}
-                      insight={
-                        point.change?.n
-                          ? {
-                              value: `${metricDifference(point.change.mean, metric)} vs default settings`,
-                              detail: `${point.change.n} matched comparisons`,
-                            }
-                          : {
-                              value: `Median ${metricText(point.median, metric, true)}`,
-                              detail: `Middle 50%: ${metricRange(point.q1, point.q3, metric)}`,
-                            }
-                      }
-                    >
-                      <circle
-                        className="research-point-hit"
-                        cx={x(point.x)}
-                        cy={y(point.mean)}
-                        r="12"
-                        fill="transparent"
-                        stroke="none"
-                      />
-                      {index ? (
-                        <rect x={x(point.x) - 4} y={y(point.mean) - 4} width="8" height="8"></rect>
-                      ) : (
-                        <circle cx={x(point.x)} cy={y(point.mean)} r="4"></circle>
-                      )}
-                    </InspectMark>
-                  </g>
-                )
-              );
-            })}
-          </g>
-        ))}
-        <text x="314" y="268" textAnchor="middle">
-          {parameter === 'quality_loss'
-            ? 'Allowed utility score drop (points)'
-            : 'Added driving penalty'}
-        </text>
-      </InspectionGroup>
-    </figure>
-  );
-}
-ResponseCurve.propTypes = {
-  rows: PropTypes.array.isRequired,
-  variants: PropTypes.array.isRequired,
-  parameter: PropTypes.string.isRequired,
   metric: PropTypes.string.isRequired,
 };
 

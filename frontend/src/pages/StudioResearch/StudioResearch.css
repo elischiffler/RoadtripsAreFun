@@ -263,11 +263,6 @@
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
 }
-.research-finding {
-  padding: 14px 18px;
-  background: #eaf0e3;
-  border-radius: 8px;
-}
 @media (max-width: 900px) {
   .research-chart-grid {
     grid-template-columns: 1fr;
@@ -287,8 +282,7 @@
   }
 }
 .research-chart-heading,
-.research-track-meta,
-.research-finding {
+.research-track-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -408,15 +402,6 @@
 }
 .research-card svg text.research-chart-detail {
   font-size: 10px;
-}
-.research-finding > div {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.research-finding small {
-  font-size: 0.75rem;
-  color: #705b45;
 }
 
 .research-heatmap thead th:not(:first-child) {
