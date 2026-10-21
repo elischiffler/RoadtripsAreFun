@@ -692,7 +692,12 @@ def prepare(path, manifest, *, max_rows=50_000, max_bytes=MAX_BYTES):
                 raise ValueError("unresolved local identity/name/250m duplicate or co-location")
             if not admission.browse_eligible(row) or admission.routing_eligible(row):
                 raise ValueError("pilot browse/routing tier contract differs")
-            profile = pilot_personas.build(row, category, marker)
+            profile = pilot_personas.build(
+                row,
+                category,
+                marker,
+                release=manifest.get("release", "catalog-pilot-600-20261021"),
+            )
             row["provenance"].append(pilot_personas.stored(profile))
             rows.append(row)
             profiles.append(profile)

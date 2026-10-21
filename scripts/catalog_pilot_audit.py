@@ -27,9 +27,54 @@ def export(source, proof, output):
         raise ValueError("choose a new immutable audit directory")
     reviewed = read(source / "reviewed.json")
     additions = read(source / "replay/additions.preview.json")
+    report = read(source / "replay/report.json")
     baseline = read(source / "local-baseline.json")
     decisions = read(source / "replay/decisions.json")
-    if len(decisions) != 600 or len(additions) != 129 or len(baseline) != 696:
+    proof_report = read(proof / "proof.json")
+    recovery = read(proof / "recovery-receipt.json")
+    manifest_sha = hashlib.sha256((source / "reviewed.json").read_bytes()).hexdigest()
+    additions_sha = hashlib.sha256(
+        "".join(
+            json.dumps(row, sort_keys=True, allow_nan=False) + "\n" for row in additions
+        ).encode()
+    ).hexdigest()
+    proved_rows = read(proof / "portable-import/catalog.preview.json")
+    proved_rows_sha = hashlib.sha256(
+        "".join(
+            json.dumps(row, sort_keys=True, allow_nan=False) + "\n"
+            for row in proved_rows
+        ).encode()
+    ).hexdigest()
+    proof_sha = proof_report.get("source_manifest_sha256")
+    if proof_sha is None:
+        # Original129-place proof predates explicit source fingerprints. Its
+        # retained typed build config still pins the exact reviewed payload.
+        config = read(proof / "config.json")
+        inputs = config.get("addition_inputs", [])
+        if len(inputs) != 1 or inputs[0].get("adapter") != "reviewed-browse-pilot":
+            raise ValueError("legacy proof lacks its exact typed source configuration")
+        proof_sha = inputs[0]["manifest"]["sha256"]
+    if (
+        proof_sha != manifest_sha
+        or read(source / "reviewed.manifest.json")["sha256"] != manifest_sha
+        or report["normalized_rows_sha256"] != additions_sha
+        or proof_report.get("source_additions_sha256", additions_sha) != additions_sha
+        or proof_report["source_admitted_browse"] != len(additions)
+        or proof_report["actual_repository_queries"] != len(additions)
+        or proof_report["assembled"]["additions"] != len(additions)
+        or proof_report["generation"] != recovery["candidate"]["generation"]
+        or recovery["candidate"]["row_count"] != len(additions) + 1
+        or proved_rows_sha != proof_report["assembled"]["normalized_rows_sha256"]
+        or proved_rows[1:] != additions
+        or len(proved_rows) != len(additions) + 1
+    ):
+        raise ValueError("database proof does not match this source/additions artifact")
+    if (
+        len(decisions) != 600
+        or not 1 <= len(additions) <= 600
+        or len(additions) != report["accepted"]
+        or len(baseline) != 696
+    ):
         raise ValueError("unexpected frozen pilot counts; review before exporting")
     receipts = []
     for receipt in reviewed["evidence"]:
@@ -49,8 +94,8 @@ def export(source, proof, output):
     ):
         write(output / name, read(source / "replay" / name))
     write(output / "receipts.json", receipts)
-    write(output / "local-proof.json", read(proof / "proof.json"))
-    write(output / "recovery-receipt.json", read(proof / "recovery-receipt.json"))
+    write(output / "local-proof.json", proof_report)
+    write(output / "recovery-receipt.json", recovery)
 
     def coverage(rows):
         return {

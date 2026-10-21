@@ -25,7 +25,7 @@ def write(path, value):
     )
 
 
-def prove(source, output):
+def prove(source, output, *, port=55433):
     from scripts.run_offline_tests import install
 
     install(loopback=True)
@@ -37,6 +37,10 @@ def prove(source, output):
     from scripts.catalog_incremental_bundle import build
 
     source, output = Path(source).resolve(), Path(output).absolute()
+    if port not in {55433, 55434}:
+        raise ValueError(
+            "only the two explicit disposable loopback fixture ports are allowed"
+        )
     if output.exists():
         raise ValueError("choose a new immutable proof output directory")
     expected = json.loads((source / "replay/additions.preview.json").read_bytes())
@@ -45,7 +49,8 @@ def prove(source, output):
     # Explicit local fixture credentials and target, no ambient DATABASE_URL.
     connection = psycopg2.connect(
         host="127.0.0.1",
-        port=55433,
+        hostaddr="127.0.0.1",
+        port=port,
         dbname="catalog_pilot_600_20261021",
         user="catalog_test",
         password="local_catalog_pilot_only",
@@ -249,6 +254,8 @@ def prove(source, output):
         report = {
             "scope": "Disposable synthetic-parent development proof; not production/live-parent reconciliation",
             "source_admitted_browse": len(expected),
+            "source_manifest_sha256": manifest["sha256"],
+            "source_additions_sha256": enrich.rows_digest(expected),
             "actual_repository_queries": queried,
             "itinerary_ready": 0,
             "live_net_new": None,
@@ -265,6 +272,7 @@ def prove(source, output):
             "calendar_relation_bytes": companions,
             "external_network_and_ai": "blocked; fixed disposable loopback database only",
             "production_writes": False,
+            "disposable_loopback_port": port,
         }
         write(output / "proof.json", report)
         return report
@@ -276,8 +284,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--port", type=int, choices=(55433, 55434), default=55433)
     args = parser.parse_args()
-    print(json.dumps(prove(args.source, args.output), indent=2))
+    print(json.dumps(prove(args.source, args.output, port=args.port), indent=2))
 
 
 if __name__ == "__main__":

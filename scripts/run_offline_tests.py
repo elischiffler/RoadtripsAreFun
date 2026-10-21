@@ -20,7 +20,7 @@ from urllib.parse import urlparse
 def install(*, loopback=False):
     for key in list(os.environ):
         if key.startswith(
-            ("MENTRO_", "OPENAI_", "ANTHROPIC_", "GOOGLE_", "AWS_")
+            ("MENTRO_", "OPENAI_", "ANTHROPIC_", "GOOGLE_", "AWS_", "PG")
         ) or key in {
             "DATABASE_URL",
             "SUPABASE_URL",

@@ -24,7 +24,7 @@ RULES = {
 }
 
 
-def build(row, category, admission):
+def build(row, category, admission, *, release="catalog-pilot-600-20261021"):
     """Retain unknown practical facts; a category is not an activity inventory."""
     from app.routing.sources.persona_candidates import LocationProfile
 
@@ -45,7 +45,7 @@ def build(row, category, admission):
         activities=[],
         description=description,
         source="catalog-pilot",
-        source_release="catalog-pilot-600-20261021",
+        source_release=release,
         source_attribution="See retained field-level source credits; no agency endorsement.",
         source_updated_at=row["source_updated_at"],
         source_provenance=row["provenance"],

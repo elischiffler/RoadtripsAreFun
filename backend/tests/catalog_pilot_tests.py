@@ -145,11 +145,12 @@ def artifact(tmp_path):
     return payload
 
 
-def replay(tmp_path, payload):
+def replay(tmp_path, payload, *, release="catalog-pilot-600-20261021"):
     path = tmp_path / "reviewed.json"
     path.write_text(json.dumps(payload, allow_nan=False))
     manifest = {
         "schema_version": pilot.SCHEMA,
+        "release": release,
         "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
     }
     return pilot.prepare(path, manifest)
@@ -178,6 +179,11 @@ def test_replay_is_deterministic_browse_only_with_unknowns_and_fourteen_attribut
     )
     assert "location_profile" not in pilot_personas.stored(profile)
     assert report["live_net_new"] is None
+    _, followup = replay(tmp_path, payload, release="synthetic-followup-release")
+    assert (
+        followup["profiles"][0]["location_profile"]["source_release"]
+        == "synthetic-followup-release"
+    )
 
 
 @pytest.mark.parametrize(
