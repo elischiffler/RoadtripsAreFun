@@ -14,6 +14,12 @@ CLIENT = "fixture-client"
 ISSUER = f"https://cognito-idp.us-west-1.amazonaws.com/{POOL}"
 
 
+@pytest.fixture(autouse=True)
+def isolate_research_replication(monkeypatch):
+    # Local developer opt-in must never start hosted synchronization from unit tests.
+    monkeypatch.setenv("STUDIO_RESEARCH_DATABASE", "false")
+
+
 @pytest.fixture
 def allow_provider_auth():
     app.dependency_overrides[require_authenticated_user] = lambda: "fixture-user"

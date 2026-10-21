@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import axios from 'axios';
 import {
+  loadStudyLibrary,
+  studyRequest,
   downloadStudy,
   savedStudies,
   rerunStudy,
@@ -125,4 +127,30 @@ it('finds the previous full matrix and reads version metadata without fetching i
   expect(savedStudies()).toEqual([sources[0]]);
   rememberStudyVersion('current');
   expect(savedStudyVersion()).toBe('current');
+});
+
+it('discovers database studies without browser keys and uses session-scoped read-only requests', async () => {
+  sessionStorage.setItem(
+    'studioSession',
+    JSON.stringify({ token: 'fixture-session', expires_at: Date.now() / 1000 + 3600 })
+  );
+  axios.get.mockResolvedValueOnce({
+    data: {
+      studies: [
+        { id: 'current', database: true },
+        { id: 'previous', database: true },
+      ],
+    },
+  });
+  const library = await loadStudyLibrary();
+  expect(library.current).toEqual([{ id: 'current', database: true }]);
+  expect(library.archived).toEqual([{ id: 'previous', database: true }]);
+  expect(axios.get.mock.calls[0][1].headers).toEqual({ 'X-Studio-Session': 'fixture-session' });
+  axios.get.mockResolvedValueOnce({ data: { rows: [] } });
+  await studyRequest(library.current[0], '', 'get', undefined, 123);
+  expect(axios.get.mock.calls[1][0]).toContain('research/saved/current');
+  expect(axios.get.mock.calls[1][1].params).toEqual({ after: 123 });
+  await expect(studyRequest(library.current[0], 'pause', 'post')).rejects.toThrow('read-only');
+  expect(axios.post).not.toHaveBeenCalled();
+  expect(localStorage.length).toBe(0);
 });

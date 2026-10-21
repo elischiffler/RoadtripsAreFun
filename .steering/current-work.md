@@ -15,6 +15,17 @@ attestation, not an independent host inspection. The prior 603/607-place generat
 and frozen rollback receipts are preserved. This work does not release main or
 deploy an application.
 
+## October 20 research database persistence
+
+Research studies now mirror from the private local SQLite execution queue into
+additive PostgreSQL study/run tables. The local configured Neon database has the
+explicit migration and backfill; API startup sync is a separate opt-in, default
+off for deployments. Fresh browsers can open saved results after Studio access,
+without private per-study keys. Shared reads grant no run controls. CP-SAT outcomes
+show Optimal, Feasible, Infeasible and Unknown. The running worker and frozen
+protocols remain intact; SQLite and exact source archives are retained for
+recovery. See [persistence and access](../docs/studio-research.md#postgresql-results-and-cross-browser-access-october-20-2026).
+
 ## October 20 standard solve limit
 
 The shared CP-SAT default is now fifteen seconds for new interactive runs and new

@@ -11,7 +11,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-from app.research import store
+from app.research import database, store
 from app.research.design import PERSONAS, TRIPS, Design, plan
 from app.routers.studio import require_studio_session
 from app.routing.evaluation.runner import identity
@@ -49,6 +49,30 @@ def catalog(response: Response):
         "defaults": Design().model_dump(mode="json"),
         "execution_enabled": os.getenv("STUDIO_RESEARCH_ENABLED", "false").lower() == "true",
     }
+
+
+def require_database(user: str = Depends(require_studio_session)):
+    if not database.enabled():
+        raise HTTPException(503, "Saved research is not enabled on this server.")
+
+
+@router.get("/saved", dependencies=[Depends(require_database)])
+def saved_library(response: Response):
+    response.headers["Cache-Control"] = "no-store"
+    return {"studies": database.library()}
+
+
+@router.get("/saved/{study_id}", dependencies=[Depends(require_database)])
+def saved_snapshot(study_id: UUID, response: Response, after: int = Query(default=0, ge=0)):
+    response.headers["Cache-Control"] = "no-store"
+    return database.read(study_id, after)[0]
+
+
+@router.get("/saved/{study_id}/export", dependencies=[Depends(require_database)])
+def saved_export(study_id: UUID, format: str = "json"):
+    data, protocol, rows = database.read(study_id, export=True)
+    study = {"id": str(study_id), "plan": protocol, "identity": data["identity"]}
+    return render_export(study, data, rows, format)
 
 
 @router.post("/plan")
@@ -184,9 +208,13 @@ def pause(study=Depends(authorized)):
 @router.get("/batches/{study_id}/export")
 def export(study=Depends(authorized), format: str = "json"):
     data = snapshot(Response(), study, 0)
+    return render_export(study, data, store.rows(study["id"]), format)
+
+
+def render_export(study, data, rows, format):
     if format == "json":
         return Response(
-            store.dumps(data | {"protocol": study["plan"] | {"cases": store.rows(study["id"])}}),
+            store.dumps(data | {"protocol": study["plan"] | {"cases": rows}}),
             media_type="application/json",
             headers={
                 "Content-Disposition": f'attachment; filename="study-{study["id"]}.json"',
@@ -245,7 +273,7 @@ def export(study=Depends(authorized), format: str = "json"):
     writer = csv.DictWriter(output, fields, extrasaction="ignore")
     writer.writeheader()
     variants = {row["id"]: row for row in study["plan"]["variants"]}
-    for row in store.rows(study["id"]):
+    for row in rows:
         condition = variants.get(row["variant"], {})
         writer.writerow(
             row

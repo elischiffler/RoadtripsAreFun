@@ -43,7 +43,7 @@ export const METRICS = {
   extra_seconds: { label: 'Added driving', unit: 'minutes', scale: 1 / 60, digits: 1, live: true },
   budget_utilization: { label: 'Hotel target used', unit: '%', scale: 100, digits: 1, live: true },
   budget_excess_usd: { label: 'Above hotel target', unit: 'USD', scale: 1, digits: 2, live: true },
-  runtime_seconds: { label: 'Planning time', unit: 'sec', scale: 1, digits: 2 },
+  runtime_seconds: { label: 'Planning time', unit: 's', scale: 1, digits: 2 },
   solver_seconds: { label: 'Selection time', unit: 'ms', scale: 1000, digits: 1 },
   fulfillment: { label: 'Requested stops delivered', unit: '%', scale: 100, digits: 1 },
   actual_days: { label: 'Actual trip length', unit: 'days', scale: 1, digits: 1, live: true },
@@ -52,6 +52,36 @@ export const metricValue = (row, metric) =>
   finite(row[metric]) ? row[metric] * METRICS[metric].scale : null;
 export const format = (value, digits = 1) =>
   finite(value) ? value.toLocaleString(undefined, { maximumFractionDigits: digits }) : '—';
+// Selection values are scaled to milliseconds by metricValue; persisted fields stay in seconds.
+export function formatSelectionTime(milliseconds) {
+  if (!finite(milliseconds)) return '—';
+  const magnitude = Math.abs(milliseconds);
+  if (magnitude > 0 && magnitude < 0.01) return milliseconds < 0 ? '>−0.01 ms' : '<0.01 ms';
+  const [divisor, unit] =
+    magnitude >= 3600000
+      ? [3600000, 'h']
+      : magnitude >= 60000
+        ? [60000, 'min']
+        : magnitude >= 1000
+          ? [1000, 's']
+          : [1, 'ms'];
+  return `${format(milliseconds / divisor, 2)} ${unit}`;
+}
+export const metricUnit = (metric) => (metric === 'solver_seconds' ? '' : METRICS[metric].unit);
+export function metricText(value, metric, includeUnit = false) {
+  if (!finite(value)) return '—';
+  if (metric === 'solver_seconds') return formatSelectionTime(value);
+  return `${format(value, METRICS[metric].digits)}${includeUnit ? `${METRICS[metric].unit === '%' ? '' : ' '}${METRICS[metric].unit}` : ''}`;
+}
+export const metricDifference = (value, metric) =>
+  METRICS[metric].unit === '%'
+    ? `${metricText(value, metric)} points`
+    : metricText(value, metric, true);
+export function metricRange(low, high, metric) {
+  if (metric === 'solver_seconds')
+    return `${formatSelectionTime(low)}–${formatSelectionTime(high)}`;
+  return `${metricText(low, metric)}–${metricText(high, metric)}${METRICS[metric].unit === '%' ? '' : ' '}${METRICS[metric].unit}`;
+}
 export function sample(rows, metric) {
   return distribution(
     rows
@@ -96,7 +126,8 @@ const METRIC_HELP = {
     'Total quoted hotel dollars above the room-night targets; zero means none above target. This is not total-trip spending.',
   runtime_seconds:
     'Full trip planning time, or model-and-solve time for stop selection runs. Failed runs retain measured time until failure.',
-  solver_seconds: 'Time inside the CP-SAT solver, shown in milliseconds.',
+  solver_seconds:
+    'Time inside the CP-SAT solver. Units adjust automatically; preparation time is excluded.',
   fulfillment:
     'Delivered stops divided by requested stops. 100% means every requested stop was delivered. Measured partial and failed runs remain included.',
   actual_days:
@@ -149,13 +180,13 @@ export function combineStudies(snapshots) {
 export const runCount = (count) => `${format(count, 0)} ${count === 1 ? 'run' : 'runs'}`;
 export const solverLabel = (status) =>
   ({
-    OPTIMAL: 'Best solution proven',
-    FEASIBLE: 'Valid solution found',
-    INFEASIBLE: 'No valid solution',
-    UNKNOWN: 'No solution before timeout',
-    MODEL_INVALID: 'Invalid solver setup',
-    EMPTY: 'No eligible attractions',
-    NOT_RUN: 'Selection not reached',
+    OPTIMAL: 'Optimal',
+    FEASIBLE: 'Feasible',
+    INFEASIBLE: 'Infeasible',
+    UNKNOWN: 'Unknown',
+    MODEL_INVALID: 'Model invalid',
+    EMPTY: 'Empty candidate set',
+    NOT_RUN: 'Not run',
   })[status] ?? 'Unclassified result';
 
 export const interestLabel = (persona) =>

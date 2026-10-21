@@ -1,7 +1,8 @@
+import asyncio
 import logging
 import os
 import time
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 
 import psycopg2
 from fastapi import FastAPI
@@ -57,7 +58,16 @@ async def lifespan(app: FastAPI):
         logger.info("Database connection pool warmed up.")
     except Exception as e:
         logger.warning(f"DB warm-up failed (non-fatal): {e}")
+    from app.research import database as research_database
+
+    replication = (
+        asyncio.create_task(research_database.replicate()) if research_database.enabled() else None
+    )
     yield
+    if replication:
+        replication.cancel()
+        with suppress(asyncio.CancelledError):
+            await replication
     await studio.jobs.shutdown()
     from app.crud import chat_crud
 

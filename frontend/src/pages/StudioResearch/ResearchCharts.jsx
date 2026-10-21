@@ -13,6 +13,10 @@ import {
   sample,
   interestLabel,
   settingLabel,
+  metricText,
+  metricRange,
+  metricUnit,
+  metricDifference,
 } from './researchData';
 
 export function Heatmap({ rows, trips, metric }) {
@@ -46,14 +50,14 @@ export function Heatmap({ rows, trips, metric }) {
     <figure>
       <ChartHeading
         title={METRICS[metric].label}
-        unit={METRICS[metric].unit}
+        unit={metricUnit(metric)}
         help={`${metricHelp(metric)} Amber: below mean. Teal: above mean. Missing measurements excluded.`}
       />
       <div className="research-table-scroll">
         <InspectionGroup
           as="table"
           className="research-heatmap"
-          aria-label={`${METRICS[metric].label} · ${METRICS[metric].unit}`}
+          aria-label={[METRICS[metric].label, metricUnit(metric)].filter(Boolean).join(' · ')}
         >
           <thead>
             <tr>
@@ -79,19 +83,19 @@ export function Heatmap({ rows, trips, metric }) {
                     first={cell === firstCell}
                     disabled={!cell.n}
                     style={cell.n ? { background: color(cell.mean) } : undefined}
-                    label={`${trip.label}, ${interestLabel(cell.persona)}, ${cell.density} stops per day, ${format(cell.mean, METRICS[metric].digits)} ${METRICS[metric].unit}, ${runCount(cell.n)} measured`}
+                    label={`${trip.label}, ${interestLabel(cell.persona)}, ${cell.density} stops per day, ${metricText(cell.mean, metric, true)}, ${runCount(cell.n)} measured`}
                     insight={{
                       value:
                         cell.mean === values.mean
                           ? 'At mean'
-                          : `${format(Math.abs(cell.mean - values.mean), METRICS[metric].digits)} ${METRICS[metric].unit === '%' ? 'points' : METRICS[metric].unit} ${cell.mean > values.mean ? 'above' : 'below'} mean`,
+                          : `${metricDifference(Math.abs(cell.mean - values.mean), metric)} ${cell.mean > values.mean ? 'above' : 'below'} mean`,
                       detail:
                         cell.attempts > cell.n
                           ? `${runCount(cell.attempts - cell.n)} unmeasured`
                           : undefined,
                     }}
                   >
-                    {format(cell.mean, METRICS[metric].digits)}
+                    {metricText(cell.mean, metric)}
                     <small>
                       {cell.n === cell.attempts
                         ? `${runCount(cell.n)} measured`
@@ -103,7 +107,7 @@ export function Heatmap({ rows, trips, metric }) {
                           ? utility
                             ? 'Same utility score'
                             : 'Same result'
-                          : `Range ${format(cell.min, METRICS[metric].digits)}–${format(cell.max, METRICS[metric].digits)}${METRICS[metric].unit === '%' ? '%' : ` ${METRICS[metric].unit}`}`}
+                          : `Range ${metricRange(cell.min, cell.max, metric)}`}
                       </small>
                     )}
                   </InspectMark>
@@ -117,22 +121,15 @@ export function Heatmap({ rows, trips, metric }) {
         <div className="research-heatmap-scale" aria-label="Heatmap color scale">
           {values.min === values.max ? (
             <span className="research-heatmap-flat">
-              Mean {format(values.mean, METRICS[metric].digits)} {METRICS[metric].unit} · No
-              variation
+              Mean {metricText(values.mean, metric, true)} · No variation
             </span>
           ) : (
             <>
               <div className="research-heatmap-gradient" aria-hidden="true" />
               <div className="research-heatmap-ticks">
-                <span>
-                  ≤ {format(low, METRICS[metric].digits)} {METRICS[metric].unit}
-                </span>
-                <span>
-                  Mean {format(values.mean, METRICS[metric].digits)} {METRICS[metric].unit}
-                </span>
-                <span>
-                  ≥ {format(high, METRICS[metric].digits)} {METRICS[metric].unit}
-                </span>
+                <span>≤ {metricText(low, metric, true)}</span>
+                <span>Mean {metricText(values.mean, metric, true)}</span>
+                <span>≥ {metricText(high, metric, true)}</span>
               </div>
             </>
           )}
@@ -210,12 +207,12 @@ export function StatusColumns({ rows, trips }) {
                     insight={{
                       value:
                         c === 0
-                          ? `Median ${format(times.median)} sec`
+                          ? `Median ${format(times.median)} s`
                           : `${runCount(count)} ${categories[c][0].toLowerCase()}`,
                       detail:
                         c === 0
                           ? times.max !== times.median
-                            ? `Slowest ${format(times.max)} sec`
+                            ? `Slowest ${format(times.max)} s`
                             : undefined
                           : `${format((count / row.counts.reduce((a, b) => a + b, 0)) * 100)}% of finished runs`,
                     }}
@@ -261,18 +258,15 @@ export function RowChart({ rows, trips, metric }) {
     ? Math.min(100, Math.ceil((Math.max(...extent) + 2) / 5) * 5)
     : Math.max(1, ...extent);
   const x = (value) => ((value - low) / (high - low)) * 360;
-  const unit = METRICS[metric].unit;
-  const display = (value) =>
-    finite(value)
-      ? `${format(value, METRICS[metric].digits)}${unit === '%' ? '' : ' '}${unit}`
-      : '—';
+  const unit = metricUnit(metric);
+  const display = (value) => metricText(value, metric, true);
   return (
     <figure>
       <ChartHeading
         title={
           metric === 'utility_mean' ? 'Utility score by trip' : `${METRICS[metric].label} by trip`
         }
-        unit={`Between runs · ${unit}`}
+        unit={`Between runs${unit ? ` · ${unit}` : ''}`}
         help={`${metricHelp(metric)} Thin line: lowest to highest. Thick line: middle 50%. Tick: median. Dot: mean. Descriptive spread, not a confidence interval.`}
       />
       <InspectionGroup
@@ -294,8 +288,8 @@ export function RowChart({ rows, trips, metric }) {
                 first={row === values.find((value) => value.n)}
                 label={`${row.label}, measured range`}
                 insight={{
-                  value: `Range ${display(row.min)}–${display(row.max)}`,
-                  detail: `Middle 50%: ${display(row.q1)}–${display(row.q3)}`,
+                  value: `Range ${metricRange(row.min, row.max, metric)}`,
+                  detail: `Middle 50%: ${metricRange(row.q1, row.q3, metric)}`,
                 }}
               >
                 <svg viewBox="-6 0 372 26" aria-hidden="true">
@@ -405,7 +399,7 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
     <figure>
       <figcaption>
         {METRICS[metric].label}
-        <small>{METRICS[metric].unit}</small>
+        {metricUnit(metric) && <small>{metricUnit(metric)}</small>}
       </figcaption>
       <div className="research-legend research-personas">
         <span>● Nature</span>
@@ -420,7 +414,7 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
           <g key={ratio}>
             <line x1="64" x2="564" y1={210 - ratio * 160} y2={210 - ratio * 160} stroke="#e8ddd0" />
             <text x="54" y={214 - ratio * 160} textAnchor="end">
-              {format(minY + ratio * (maxY - minY), METRICS[metric].digits)}
+              {metricText(minY + ratio * (maxY - minY), metric)}
             </text>
           </g>
         ))}
@@ -452,16 +446,16 @@ export function ResponseCurve({ rows, variants, parameter, metric }) {
                     <InspectMark
                       key={point.x}
                       first={point === firstPoint}
-                      label={`${interestLabel(series.persona)}, ${settingLabel({ id: point.conditionId, parameter, value: point.x })}, mean ${format(point.mean, METRICS[metric].digits)} ${METRICS[metric].unit}`}
+                      label={`${interestLabel(series.persona)}, ${settingLabel({ id: point.conditionId, parameter, value: point.x })}, mean ${metricText(point.mean, metric, true)}`}
                       insight={
                         point.change?.n
                           ? {
-                              value: `${format(point.change.mean)} ${METRICS[metric].unit === '%' ? 'points' : METRICS[metric].unit} vs default settings`,
+                              value: `${metricDifference(point.change.mean, metric)} vs default settings`,
                               detail: `${point.change.n} matched comparisons`,
                             }
                           : {
-                              value: `Median ${format(point.median, METRICS[metric].digits)} ${METRICS[metric].unit}`,
-                              detail: `Middle 50%: ${format(point.q1, METRICS[metric].digits)}–${format(point.q3, METRICS[metric].digits)} ${METRICS[metric].unit}`,
+                              value: `Median ${metricText(point.median, metric, true)}`,
+                              detail: `Middle 50%: ${metricRange(point.q1, point.q3, metric)}`,
                             }
                       }
                     >

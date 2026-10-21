@@ -13,8 +13,16 @@ import {
 } from '../pages/StudioResearch/ResearchCharts';
 import ResearchInfo from '../pages/StudioResearch/ResearchInfo';
 import { InspectionProvider } from '../pages/StudioResearch/ResearchInspect';
-import { combineStudies, distribution, paired, sample } from '../pages/StudioResearch/researchData';
 import {
+  combineStudies,
+  distribution,
+  paired,
+  sample,
+  formatSelectionTime,
+  metricValue,
+} from '../pages/StudioResearch/researchData';
+import {
+  loadStudyLibrary,
   researchCatalog,
   savedStudies,
   studyRequest,
@@ -27,6 +35,7 @@ import {
 
 vi.mock('../services/studioResearch', () => ({
   downloadStudy: vi.fn(),
+  loadStudyLibrary: vi.fn(),
   researchCatalog: vi.fn(),
   savedStudies: vi.fn(),
   studyRequest: vi.fn(),
@@ -97,9 +106,9 @@ const mount = () =>
     </MemoryRouter>
   );
 
-it('shows an empty dashboard without creation controls or background requests', async () => {
+it('offers Studio access in a browser without saved study keys', async () => {
   mount();
-  expect(await screen.findByText('No results yet.')).toBeInTheDocument();
+  expect(await screen.findByText('Enter Studio password')).toBeInTheDocument();
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
   expect(screen.queryByLabelText('Studio password')).not.toBeInTheDocument();
   expect(studyRequest).not.toHaveBeenCalled();
@@ -158,7 +167,7 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   await screen.findByText('Finished · 2 / 2');
   expect(screen.getByText('100% of finished runs')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Full trip planning · 1' }));
-  expect(screen.getByText('Selection not reached')).toBeInTheDocument();
+  expect(screen.getByText('Not run')).toBeInTheDocument();
   expect(screen.getByText('0% of finished runs')).toBeInTheDocument();
   expect(screen.getByText('1 failed · 0 partial · 0 interrupted')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Stop selection · 1' }));
@@ -173,7 +182,7 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   await userEvent.unhover(screen.getByRole('button', { name: 'About Settings comparison' }));
   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   expect(screen.queryByRole('option', { name: 'Added distance' })).not.toBeInTheDocument();
-  expect(screen.getByText('Valid solution found')).toBeInTheDocument();
+  expect(screen.getByText('Feasible')).toBeInTheDocument();
 });
 
 it('does not confuse zeroes, missing measurements, failed trials or unmatched pairs', () => {
@@ -288,7 +297,7 @@ it('centers heatmap colors on equally weighted populated cells and keeps unknown
     .getAllByRole('row')
     .slice(1)
     .map((row) => within(row).getAllByRole('cell')[0]);
-  expect(screen.getByText('Mean 70 %')).toBeInTheDocument();
+  expect(screen.getByText('Mean 70%')).toBeInTheDocument();
   expect(scores[0]).toHaveStyle({ background: 'rgb(232, 199, 168)' });
   expect(scores[1]).toHaveStyle({ background: 'rgb(247, 244, 237)' });
   expect(scores[2]).toHaveStyle({ background: 'rgb(179, 209, 200)' });
@@ -296,7 +305,7 @@ it('centers heatmap colors on equally weighted populated cells and keeps unknown
   expect(within(unknown).getAllByRole('cell')[1]).toHaveTextContent('—');
   expect(within(unknown).getAllByRole('cell')[1].style.background).toBe('');
   view.rerender(<Heatmap rows={[rows[1]]} trips={groups} metric="utility_mean" />);
-  expect(screen.getByText('Mean 70 % · No variation')).toBeInTheDocument();
+  expect(screen.getByText('Mean 70% · No variation')).toBeInTheDocument();
   expect(view.container.querySelector('.research-heatmap-gradient')).toBeNull();
   view.rerender(<Heatmap rows={[]} trips={groups} metric="utility_mean" />);
   expect(screen.queryByLabelText('Heatmap color scale')).not.toBeInTheDocument();
@@ -462,11 +471,12 @@ it('reruns the largest saved matrix without pooling historical results or starti
   );
   rerunStudy.mockResolvedValue(replacement);
   mount();
-  await screen.findByText('5 sec solve limit');
+  await screen.findByText('5 s solve limit');
   await userEvent.click(screen.getByRole('button', { name: 'Rerun stop selection' }));
   expect(rerunStudy).toHaveBeenCalledWith(previous, [previous]);
-  await screen.findByText('15 sec solve limit');
+  await screen.findByText('15 s solve limit');
   expect(studyRequest).toHaveBeenCalledWith(replacement, 'start', 'post');
+  expect(studyVersions).toHaveBeenCalledWith([replacement], expect.anything(), [previous]);
   expect(screen.queryByRole('table')).toHaveTextContent('—');
   expect(screen.queryByRole('button', { name: /Full trip planning/ })).not.toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Rerun stop selection' })).toBeDisabled();
@@ -495,14 +505,14 @@ it('switches versions without mixing results, mutating batches or changing the c
   );
   mount();
   const versions = await screen.findByRole('navigation', { name: 'Study version' });
-  expect(within(versions).getByRole('button', { name: '15 sec' })).toHaveAttribute(
+  expect(within(versions).getByRole('button', { name: '15 s' })).toHaveAttribute(
     'aria-pressed',
     'true'
   );
   await screen.findByRole('table');
   expect(screen.getByRole('table')).toHaveTextContent('80');
-  await userEvent.click(within(versions).getByRole('button', { name: '5 sec' }));
-  await screen.findByText('5 sec solve limit');
+  await userEvent.click(within(versions).getByRole('button', { name: '5 s' }));
+  await screen.findByText('5 s solve limit');
   expect(screen.getByRole('table')).toHaveTextContent('60');
   expect(screen.getByText('Archived · 1 / 1')).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Resume' })).not.toBeInTheDocument();
@@ -510,11 +520,105 @@ it('switches versions without mixing results, mutating batches or changing the c
   expect(screen.queryByRole('button', { name: 'Rerun stop selection' })).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
   expect(downloadStudy).toHaveBeenCalledWith([previous], 'csv');
-  await userEvent.click(within(versions).getByRole('button', { name: '15 sec' }));
-  await screen.findByText('15 sec solve limit');
+  await userEvent.click(within(versions).getByRole('button', { name: '15 s' }));
+  await screen.findByText('15 s solve limit');
   expect(screen.getByRole('table')).toHaveTextContent('80');
   expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument();
   expect(studyRequest.mock.calls.every(([, action]) => !action)).toBe(true);
   expect(rememberStudyVersion).toHaveBeenCalledWith('previous');
   expect(rememberStudyVersion).toHaveBeenLastCalledWith('current');
+});
+
+it('formats selection milliseconds without changing stored seconds or losing zero and missing values', () => {
+  expect(formatSelectionTime(metricValue({ solver_seconds: 0.125 }, 'solver_seconds'))).toBe(
+    '125 ms'
+  );
+  expect(formatSelectionTime(metricValue({ solver_seconds: 2.5 }, 'solver_seconds'))).toBe('2.5 s');
+  expect(formatSelectionTime(0)).toBe('0 ms');
+  expect(formatSelectionTime(0.001)).toBe('<0.01 ms');
+  expect(formatSelectionTime(999)).toBe('999 ms');
+  expect(formatSelectionTime(1000)).toBe('1 s');
+  expect(formatSelectionTime(60000)).toBe('1 min');
+  expect(formatSelectionTime(3600000)).toBe('1 h');
+  expect(formatSelectionTime(-1500)).toBe('-1.5 s');
+  expect(formatSelectionTime(null)).toBe('—');
+  expect(formatSelectionTime(NaN)).toBe('—');
+});
+
+it('uses adaptive units in selection-time cells, ranges, chart values and paired tooltips', async () => {
+  const rows = [
+    { ...base, solver_seconds: 2.5 },
+    { ...base, id: 2, solver_seconds: 0.5, repeat: 2 },
+    { ...base, id: 3, solver_seconds: 1, variant: 'loss-0' },
+  ];
+  render(
+    <InspectionProvider>
+      <Heatmap
+        rows={rows.filter((row) => row.variant === 'baseline')}
+        trips={trips}
+        metric="solver_seconds"
+      />
+      <RowChart
+        rows={rows.filter((row) => row.variant === 'baseline')}
+        trips={trips}
+        metric="solver_seconds"
+      />
+      <ResponseCurve
+        rows={rows}
+        variants={variants}
+        parameter="quality_loss"
+        metric="solver_seconds"
+      />
+    </InspectionProvider>
+  );
+  const table = screen.getByRole('table', { name: 'Selection time' });
+  expect(table).toHaveTextContent('1.5 s');
+  expect(table).toHaveTextContent('Range 500 ms–2.5 s');
+  const chart = screen.getByRole('group', { name: 'Selection time by trip type' });
+  expect(chart).toHaveTextContent('Mean 1.5 s');
+  expect(chart).toHaveTextContent('Median 1.5 s');
+  const curve = screen.getByRole('group', { name: 'Selection time by allowed utility score drop' });
+  await userEvent.click(
+    within(curve).getByRole('button', { name: /Allowed utility score drop: 0 points/ })
+  );
+  expect(screen.getByRole('tooltip')).toHaveTextContent('-1.5 s vs default settings');
+  expect(table).not.toHaveTextContent('1,500');
+  expect(rows[0].solver_seconds).toBe(2.5);
+});
+
+it('loads database studies in a fresh browser and keeps shared results read-only', async () => {
+  sessionStorage.setItem(
+    'studioSession',
+    JSON.stringify({ token: 'fixture-session', expires_at: Date.now() / 1000 + 3600 })
+  );
+  loadStudyLibrary.mockResolvedValue({
+    current: [{ id: 'database-study', database: true }],
+    archived: [],
+  });
+  studyRequest.mockResolvedValue({
+    state: 'running',
+    counts: { total: 7, solver: 7, pipeline: 0 },
+    design: defaults,
+    variants,
+    dataset_hash: 'same-data',
+    rows: [
+      base,
+      { ...base, id: 2, solver_status: 'OPTIMAL' },
+      { ...base, id: 3, completed: false, outcome: 'failed', solver_status: 'UNKNOWN' },
+    ],
+  });
+  mount();
+  expect(await screen.findByText('running · 3 / 7')).toBeInTheDocument();
+  expect(loadStudyLibrary).toHaveBeenCalled();
+  expect(screen.getByText('CP-SAT outcomes')).toBeInTheDocument();
+  expect(screen.getByText('Optimal')).toBeInTheDocument();
+  expect(screen.getByText('Feasible')).toBeInTheDocument();
+  expect(screen.getByText('Unknown')).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Pause' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Rerun stop selection' })).not.toBeInTheDocument();
+  act(() => {
+    sessionStorage.removeItem('studioSession');
+    window.dispatchEvent(new Event('studio-access-changed'));
+  });
+  expect(await screen.findByText('Enter Studio password')).toBeInTheDocument();
 });

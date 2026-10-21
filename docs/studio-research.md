@@ -11,13 +11,13 @@ The October 20 rerun schedules **6,300 CP-SAT trials only**, with a fixed
 19 design scheduled 6,300 solver trials followed by 300 live pipeline runs; its
 results remain historical and separate.
 
-| Trip | Route | Target days | Requested attractions at 1 / 2 / 3 per target day |
-| --- | --- | --- | --- |
-| Short single day | Los Angeles–San Diego | 1 | 1 / 2 / 3 |
-| Medium two-day | San Francisco–Boise | 2 | 2 / 4 / 6 |
-| Long three-day | San Francisco–Denver | 3 | 3 / 6 / 9 |
-| Coast to coast | San Francisco–New York | 5 | 5 / 10 / 15 |
-| Tight budget two-day | San Francisco–Boise | 2 | 2 / 4 / 6 |
+| Trip                 | Route                  | Target days | Requested attractions at 1 / 2 / 3 per target day |
+| -------------------- | ---------------------- | ----------- | ------------------------------------------------- |
+| Short single day     | Los Angeles–San Diego  | 1           | 1 / 2 / 3                                         |
+| Medium two-day       | San Francisco–Boise    | 2           | 2 / 4 / 6                                         |
+| Long three-day       | San Francisco–Denver   | 3           | 3 / 6 / 9                                         |
+| Coast to coast       | San Francisco–New York | 5           | 5 / 10 / 15                                       |
+| Tight budget two-day | San Francisco–Boise    | 2           | 2 / 4 / 6                                         |
 
 Five trip types × two personas (nature, entertainment) × three stop rates gives
 30 combinations. Live trips repeat each combination ten times. Solver trials
@@ -45,11 +45,11 @@ The baseline configuration allows an average utility score loss of ten percentag
 points, spacing weight 1 and detour weight 1. The study changes one factor at a
 time:
 
-| Condition | Allowed utility score loss | Detour weight |
-| --- | --- | --- |
-| Baseline | 10 percentage points | 1 |
-| Quality sweep | 0 / 5 / 15 / 20 percentage points | 1 |
-| Detour sweep | 10 percentage points | 0.5 / 2 |
+| Condition     | Allowed utility score loss        | Detour weight |
+| ------------- | --------------------------------- | ------------- |
+| Baseline      | 10 percentage points              | 1             |
+| Quality sweep | 0 / 5 / 15 / 20 percentage points | 1             |
+| Detour sweep  | 10 percentage points              | 0.5 / 2       |
 
 The baseline is counted once. Each condition uses the same candidate set, stop
 count, persona and repeat seed. Seeds are repeat index minus one. Trial order is
@@ -113,8 +113,9 @@ room-nights only, not food, fuel, total-trip cost or booking guarantees. Objecti
 and bound values remain in records/exports for diagnosis within an unchanged
 condition; they are not pooled as a trip-quality score.
 
-Selection time is displayed in milliseconds; raw exported fields ending in
-`_seconds` retain seconds. Distances ending in `_meters` retain meters. Planning
+Selection time uses adaptive display units: ms below one second, s below one
+minute, then min or h. Values, ranges, axes and tooltips carry their units.
+Raw exported fields ending in `_seconds` retain seconds. Distances ending in `_meters` retain meters. Planning
 time uses the existing core pipeline timer or controlled model-and-solve timer;
 failed pre-pipeline attempts retain measured time until failure. Attempt-start
 and result-recording timestamps are UTC.
@@ -194,7 +195,7 @@ are identified with an explicit denominator. Heatmap cells show the observed
 run-to-run range, or indicate when all scored results are identical. These ranges
 are descriptive extrema, not confidence intervals. Summary cards show remaining
 runs, success share, incomplete-outcome counts and the middle half of measured
-planning times. Selection results use plain labels and show each outcome's share
+planning times. CP-SAT outcomes use Optimal, Feasible, Infeasible and Unknown and show each outcome's share
 of filtered runs; raw solver status codes remain in exports. Matched setting
 comparisons show the number of comparisons and observed range of changes.
 
@@ -260,12 +261,85 @@ creation leaves the current dashboard intact. The solve limit is shown from the
 saved protocol rather than inferred from today's default. Full trip planning is
 not scheduled by this action, and zero-count modes are hidden.
 
-
-The **Study version** switch shows the saved solve limits (currently 5 sec and
-15 sec). It opens one matching full matrix at a time; the small pilot is excluded
+The **Study version** switch shows the saved solve limits (currently 5 s and
+15 s). It opens one matching full matrix at a time; the small pilot is excluded
 from the historical version. Charts and exports follow the selected version,
 while the current worker continues independently. Historical views are read-only.
 The tab remembers the selected version across reloads without changing the saved
 current batch or its capability. Switching versions never starts, pauses or
 reruns work. Metadata requests use the incremental cursor to avoid downloading
 all historical run records before the version is opened.
+
+Dashboard time labels use **s** for seconds, including version switches and solve
+limits. Selection-time display conversion leaves stored observations, chart
+positions, statistics and CSV/JSON measurements unchanged.
+
+## PostgreSQL results and cross-browser access (October 20, 2026)
+
+Research results now have an additive PostgreSQL mirror using the application's
+existing database connection and write gate. Explicitly apply
+`backend/sql/studio_research.sql` before setting backend-only
+`STUDIO_RESEARCH_DATABASE=true`. Startup never creates database tables. The local
+development database migration and backfill were performed under the owner's
+request; this does not deploy main or enable any production application setting.
+
+The API lifespan synchronizes the private SQLite queue every five seconds. It
+backfills every declared case, then transfers newly finished cases through the
+existing monotonic event cursor. Each study update and its result rows commit in
+one PostgreSQL transaction. Repeated syncs do not duplicate observations; late
+low-ID cases are retained. Frozen inputs, candidate data, source identities,
+protocols, measurements and raw CP-SAT outcomes remain unchanged. Different source
+identities, protocols or a cursor moving backward fail closed instead of replacing
+the saved results. No existing catalog or account tables are changed.
+
+SQLite remains the execution queue for the already-running worker. If the API or
+database is unavailable, the worker continues saving locally; synchronization
+catches up when the API and database return. Keep the private SQLite directory
+and original source archives for pause/resume and recovery. PostgreSQL results
+are independently readable after backfill, without a browser's local study keys.
+The pre-change queue backup and exact backend source are retained locally as
+`before-database-sync.sqlite3` and `source-before-database-sync.tar` inside the
+ignored research artifacts directory. Source-change guards still apply to worker
+restarts; ongoing loaded workers continue their frozen protocol.
+
+With database access explicitly enabled, `/studio/research/saved` and its
+per-study snapshot/export endpoints require a valid Studio session. Research
+results in these tables are shared read-only with holders of the existing Studio
+password, independently of the random visitor identity. This sharing covers only
+research studies; account trips and visitor trip history retain their ownership
+rules. Visitor identities and study control capabilities are never copied to
+PostgreSQL or returned through the saved-results endpoints. The database view
+cannot start, pause or rerun work. Browsers that already hold a private control
+capability retain their existing controls.
+
+A fresh browser asks for Studio access and discovers saved study versions from
+PostgreSQL. The current full matrix opens first; the matching historical version
+remains available through the solve-limit switch. CSV and JSON exports use the
+selected saved version. Without database opt-in, existing private capability
+access continues to work. Authentication expiry returns database viewers to the
+Studio password form.
+
+The **CP-SAT outcomes** card shows each recorded status and its share of filtered
+finished runs. Optimal means the lowest objective was proven; Feasible means a
+valid selection was found without proving it best. Infeasible means the encoded
+constraints cannot be met. Unknown means the solver stopped without a selection
+or an infeasibility proof. These are distinct from complete/failed trip outcomes,
+and pending cases are excluded from the outcome percentages.
+
+Verification includes disposable real PostgreSQL migration reapplication,
+backfill, idempotent sync, late-case cursors, preserved measurements, conflicting
+source rollback, write gates, session-required reads, exports and denied controls.
+The disposable PostgreSQL runner exercises these checks before its backup and
+restore stages. Unit tests disable background hosted synchronization regardless
+of a developer's local opt-in.
+
+October 20 validation: backend Ruff formatting/lint, 2,011 tests passed (130
+skipped) with 80.34% coverage, using the disposable research-test database;
+frontend formatting/lint, 282 tests with 92.44% line coverage, and production
+build passed. The disposable PostgreSQL CRUD/recreation/backup/restore workflow
+passed, including the three new real research-persistence checks. Arc was tested
+with no study capabilities: Studio password access, reload, both study versions
+and live CP-SAT counts all worked. All 12,907 declared cases across three studies
+were backfilled, and copied observations/protocols were compared with their
+original records. The fifteen-second worker remained running. These checks do
+not claim that its 6,300 trials have finished or that main was deployed.

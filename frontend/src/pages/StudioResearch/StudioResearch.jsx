@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  loadStudyLibrary,
   downloadStudy,
   researchCatalog,
   savedStudies,
@@ -27,12 +28,18 @@ import {
   solverLabel,
   settingLabel,
 } from './researchData';
+import { getStudioSession, unlockStudio } from '../../services/studioSession';
 import ResearchInfo, { ChartHeading } from './ResearchInfo';
 import { InspectionProvider, InspectMark } from './ResearchInspect';
 import '../AlgorithmLab/AlgorithmLab.css';
 import './StudioResearch.css';
 
 export default function StudioResearch() {
+  const [session, setSession] = useState(getStudioSession);
+  const [password, setPassword] = useState('');
+  const [unlocking, setUnlocking] = useState(false);
+  const [libraryLoading, setLibraryLoading] = useState(Boolean(session));
+  const [archive, setArchive] = useState(undefined);
   const [catalog, setCatalog] = useState(null);
   const [currentStudies, setCurrentStudies] = useState(savedStudies);
   const [version, setVersion] = useState(savedStudyVersion);
@@ -54,6 +61,47 @@ export default function StudioResearch() {
   const [curveDensity, setCurveDensity] = useState('2');
   const [parameter, setParameter] = useState('quality_loss');
   const [variant, setVariant] = useState('baseline');
+
+  useEffect(() => {
+    const refresh = () => setSession(getStudioSession());
+    window.addEventListener('studio-access-changed', refresh);
+    return () => window.removeEventListener('studio-access-changed', refresh);
+  }, []);
+
+  useEffect(() => {
+    if (!session) return;
+    const controller = new AbortController();
+    setLibraryLoading(true);
+    loadStudyLibrary(controller.signal)
+      .then((library) => {
+        if (controller.signal.aborted) return;
+        setCurrentStudies(library.current);
+        setArchive(library.archived);
+        setError('');
+      })
+      .catch(() => {
+        if (!controller.signal.aborted)
+          setError('Saved database results are unavailable. Try reloading.');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLibraryLoading(false);
+      });
+    return () => controller.abort();
+  }, [session]);
+
+  const unlock = async (event) => {
+    event.preventDefault();
+    setUnlocking(true);
+    setError('');
+    try {
+      await unlockStudio(password);
+      setPassword('');
+    } catch {
+      setError('Could not open research. Check the Studio password and try again.');
+    } finally {
+      setUnlocking(false);
+    }
+  };
 
   const selectVersion = (next) => {
     rememberStudyVersion(next);
@@ -78,7 +126,7 @@ export default function StudioResearch() {
   useEffect(() => {
     if (!currentStudies.length) return;
     const controller = new AbortController();
-    studyVersions(currentStudies, controller.signal)
+    studyVersions(currentStudies, controller.signal, archive)
       .then((next) => {
         if (controller.signal.aborted) return;
         setVersions(next);
@@ -93,7 +141,7 @@ export default function StudioResearch() {
         setVersion('current');
       });
     return () => controller.abort();
-  }, [currentStudies]);
+  }, [currentStudies, archive]);
 
   useEffect(() => {
     if (!studies.length) return;
@@ -171,7 +219,9 @@ export default function StudioResearch() {
     trackRows.length
       ? `${format((count / trackRows.length) * 100)}% of finished runs`
       : 'No finished runs yet';
-  const solverCounts = {};
+  const solverCounts = filtered.length
+    ? { OPTIMAL: 0, FEASIBLE: 0, INFEASIBLE: 0, UNKNOWN: 0 }
+    : {};
   filtered.forEach((row) => {
     const key = row.solver_status || 'NOT_RUN';
     solverCounts[key] = (solverCounts[key] ?? 0) + 1;
@@ -193,6 +243,7 @@ export default function StudioResearch() {
     ['running', 'starting', 'pausing'].includes(source.state)
   );
   const running = activeSources.length > 0;
+  const canControl = !historical && studies.every((study) => !study.database);
   const nextSource = data?.sources.find((source) => source.state !== 'complete');
 
   return (
@@ -215,7 +266,7 @@ export default function StudioResearch() {
                 disabled={busy}
                 onClick={() => selectVersion('previous')}
               >
-                {versions.previous.label ? `${versions.previous.label} sec` : 'Previous'}
+                {versions.previous.label ? `${versions.previous.label} s` : 'Previous'}
               </button>
               <button
                 type="button"
@@ -223,7 +274,7 @@ export default function StudioResearch() {
                 disabled={busy}
                 onClick={() => selectVersion('current')}
               >
-                {versions.currentLabel ? `${versions.currentLabel} sec` : 'Current'}
+                {versions.currentLabel ? `${versions.currentLabel} s` : 'Current'}
               </button>
             </div>
           </nav>
@@ -245,7 +296,7 @@ export default function StudioResearch() {
                 {historical ? 'Archived' : data.state === 'complete' ? 'Finished' : data.state} ·{' '}
                 {format(finished, 0)} / {format(data.counts.total, 0)}
               </span>
-              {!historical &&
+              {canControl &&
                 (running ? (
                   <button
                     disabled={busy || activeSources.every((source) => source.state === 'pausing')}
@@ -283,7 +334,7 @@ export default function StudioResearch() {
                     </button>
                   )
                 ))}
-              {!historical && (
+              {canControl && (
                 <button
                   disabled={busy || running}
                   onClick={() =>
@@ -299,6 +350,7 @@ export default function StudioResearch() {
                       setMetric('utility_mean');
                       setData(null);
                       setVersions(null);
+                      setArchive((previous = []) => [...previous, ...studies]);
                       setVersion('current');
                       setCurrentStudies([replacement]);
                       await studyRequest(replacement, 'start', 'post');
@@ -325,8 +377,28 @@ export default function StudioResearch() {
             </>
           )}
         </div>
-        {!data ? (
-          <p className="research-empty">{currentStudies.length ? 'Loading…' : 'No results yet.'}</p>
+        {!session && (!currentStudies.length || currentStudies.every((study) => study.database)) ? (
+          <form className="lab-access" onSubmit={unlock}>
+            <h2>Enter Studio password</h2>
+            <label htmlFor="research-password">Password</label>
+            <input
+              id="research-password"
+              type="password"
+              autoComplete="off"
+              required
+              maxLength={128}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              disabled={unlocking}
+            />
+            <button type="submit" disabled={unlocking}>
+              {unlocking ? 'Checking…' : 'Open research'}
+            </button>
+          </form>
+        ) : !data ? (
+          <p className="research-empty">
+            {libraryLoading || currentStudies.length ? 'Loading…' : 'No results yet.'}
+          </p>
         ) : (
           <>
             <progress value={finished} max={data.counts.total} aria-label="Finished study runs" />
@@ -364,7 +436,7 @@ export default function StudioResearch() {
               </span>
               {data.solve_limits.length > 0 && (
                 <span>
-                  {data.solve_limits.map((limit) => format(limit)).join(' / ')} sec solve limit
+                  {data.solve_limits.map((limit) => format(limit)).join(' / ')} s solve limit
                 </span>
               )}
               <ResearchInfo label="Study data">
@@ -404,18 +476,18 @@ export default function StudioResearch() {
                 disabled={!runtime.n}
                 label="Observed planning time range"
                 insight={{
-                  value: `${format(runtime.min)}–${format(runtime.max)} sec range`,
+                  value: `${format(runtime.min)}–${format(runtime.max)} s range`,
                   detail: 'Includes timed failures',
                 }}
               >
                 <span>Median planning time</span>
                 <strong>
                   {format(runtime.median)}
-                  <small> sec</small>
+                  <small> s</small>
                 </strong>
                 <small>
                   {runtime.n > 1
-                    ? `Middle 50%: ${format(runtime.q1)}–${format(runtime.q3)} sec`
+                    ? `Middle 50%: ${format(runtime.q1)}–${format(runtime.q3)} s`
                     : runtime.n === 1
                       ? '1 timed run'
                       : 'No times recorded'}
@@ -468,6 +540,23 @@ export default function StudioResearch() {
                 </label>
               )}
             </div>
+            <section className="research-card">
+              <ChartHeading
+                as="h2"
+                title="CP-SAT outcomes"
+                help="Optimal: best objective proven. Feasible: valid selection, best not proven. Infeasible: constraints cannot be met. Unknown: no selection or infeasibility proof before the limit. Strict zero-drop settings may fail from rounding."
+              />
+              <div className="research-statuses">
+                {Object.entries(solverCounts).map(([label, count]) => (
+                  <div key={label}>
+                    <span>{solverLabel(label)}</span>
+                    <strong>{format(count, 0)}</strong>
+                    <small>{format((count / filtered.length) * 100)}% of filtered runs</small>
+                  </div>
+                ))}
+                {!filtered.length && <p>No results yet.</p>}
+              </div>
+            </section>
             <section className="research-card">
               <Heatmap rows={filtered} trips={trips} metric={metric} />
             </section>
@@ -550,23 +639,6 @@ export default function StudioResearch() {
                 )}
               </section>
             )}
-            <section className="research-card">
-              <ChartHeading
-                as="h2"
-                title="Selection results"
-                help="Best proven: lowest spacing and driving cost within the utility score requirement. Strict zero-drop settings may fail from rounding."
-              />
-              <div className="research-statuses">
-                {Object.entries(solverCounts).map(([label, count]) => (
-                  <div key={label}>
-                    <span>{solverLabel(label)}</span>
-                    <strong>{format(count, 0)}</strong>
-                    <small>{format((count / filtered.length) * 100)}% of filtered runs</small>
-                  </div>
-                ))}
-                {!filtered.length && <p>No results yet.</p>}
-              </div>
-            </section>
           </>
         )}
       </main>

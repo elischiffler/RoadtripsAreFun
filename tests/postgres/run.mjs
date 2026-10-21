@@ -73,6 +73,15 @@ function probe(phase, service = "postgres") {
   );
 }
 
+function probeResearchDatabase() {
+  console.log("Real research backfill, incremental sync and Studio read authorization");
+  docker([
+    "run", "--rm", "--no-deps", "-e",
+    "RESEARCH_TEST_DATABASE_URL=postgresql://postgres:disposable-local-only@postgres/roadtrips",
+    "test", "python", "-m", "pytest", "tests/routing/research_database_tests.py", "-q",
+  ], { stdio: "inherit", timeout: 120_000 });
+}
+
 function assertApiReady() {
   const result = docker([
     "exec",
@@ -182,6 +191,7 @@ try {
     input: readFileSync(join(directory, "schema.sql")),
   });
   probe("seed");
+  probeResearchDatabase();
   docker(["exec", "-T", "postgres", "psql", "-U", "postgres", "-d", "roadtrips", "-v", "ON_ERROR_STOP=1"], {
     input: readFileSync(join(directory, "catalog-fixture.sql"), "utf8"),
   });

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { studioRequest } from './studioSession';
 
 const KEY = 'studioResearchStudies';
 const ARCHIVE_KEY = 'studioResearchArchivedStudies';
@@ -30,7 +31,7 @@ export function savedStudyVersion() {
 export function rememberStudyVersion(version) {
   sessionStorage.setItem('studioResearchVersion', version);
 }
-export async function studyVersions(currentStudies, signal) {
+export async function studyVersions(currentStudies, signal, archive = archivedStudies()) {
   // The incremental endpoint can return protocol metadata without transferring saved run records.
   const metadata = async (study) => ({
     study,
@@ -38,7 +39,7 @@ export async function studyVersions(currentStudies, signal) {
   });
   const current = await Promise.all(currentStudies.map(metadata));
   const archived = await Promise.allSettled(
-    archivedStudies()
+    archive
       .filter((study) => !currentStudies.some((active) => active.id === study.id))
       .map(metadata)
   );
@@ -71,12 +72,33 @@ export async function studyVersions(currentStudies, signal) {
     previous: previous ? { study: previous.study, label: label([previous]) } : null,
   };
 }
+// Database references grant read access through Studio; control capabilities stay browser-local.
+export async function loadStudyLibrary(signal) {
+  const { data } = await studioRequest('get', 'research/saved', undefined, signal);
+  const local = new Map(
+    [...archivedStudies(), ...savedStudies()].map((study) => [study.id, study])
+  );
+  const studies = data.studies.map((study) => local.get(study.id) || study);
+  return { current: studies.slice(0, 1), archived: studies.slice(1) };
+}
 export async function researchCatalog(signal) {
   return (
     await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}studio/research/catalog`, { signal })
   ).data;
 }
 export async function studyRequest(study, action = '', method = 'get', signal, after) {
+  if (study.database) {
+    if (method !== 'get') throw new Error('Saved database results are read-only.');
+    return (
+      await studioRequest(
+        'get',
+        `research/saved/${study.id}${action ? `/${action}` : ''}`,
+        undefined,
+        signal,
+        after == null ? undefined : { after }
+      )
+    ).data;
+  }
   const url = `${import.meta.env.VITE_BACKEND_SERVER}studio/research/batches/${study.id}${action ? `/${action}` : ''}`;
   const config = {
     signal,
