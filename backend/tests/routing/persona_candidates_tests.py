@@ -395,3 +395,171 @@ async def test_catalog_error_does_not_leak_database_credentials(monkeypatch):
         await source.LivePlaceProvider().attractions_near([40, -74])
     assert raised.value.__suppress_context__
     assert "password" not in str(raised.value)
+
+
+class MemoryTraitStore:
+    def __init__(self):
+        self.entries = {}
+        self.saved = []
+
+    def get_many(self, places):
+        return {
+            p.provider_id: self.entries[source.trait_cache.key(p)]
+            for p in places
+            if source.trait_cache.key(p) in self.entries
+        }
+
+    def put_many(self, entries, provider):
+        self.saved.extend(p.provider_id for p, _ in entries)
+        for place, ratings in entries:
+            self.entries.setdefault(
+                source.trait_cache.key(place),
+                {
+                    "attribute_ratings": ratings,
+                    "provider": provider,
+                    "rating_version": source.trait_cache.VERSION,
+                    "rated_at": "2026-10-20T00:00:00+00:00",
+                },
+            )
+        return self.get_many([p for p, _ in entries])
+
+
+async def unchanged_duration(candidates, weights, ai):
+    return candidates
+
+
+@pytest.mark.asyncio
+async def test_place_traits_are_reused_across_runs_but_utility_follows_each_persona():
+    place = source.VerifiedPlace(provider_id="overture:cached", name="Park", coordinates=[40, -74])
+    traits = _ratings(0.3) | {"nature": 0.9, "nightlife": 0.1}
+    ai = FakeAI([{"name": "Park", "attribute_ratings": traits}])
+    cache = MemoryTraitStore()
+    nature = dict.fromkeys(ATTRIBUTE_KEYS, 0.0) | {"nature": 1.0}
+    nightlife = dict.fromkeys(ATTRIBUTE_KEYS, 0.0) | {"nightlife": 1.0}
+    first = await discover(
+        object(),
+        [[40, -74]],
+        nature,
+        ai=ai,
+        places=FakePlaces([place]),
+        trait_store=cache,
+        duration_estimator=unchanged_duration,
+    )
+    second = await discover(
+        object(),
+        [[40, -74]],
+        nightlife,
+        ai=ai,
+        places=FakePlaces([place]),
+        trait_store=cache,
+        duration_estimator=unchanged_duration,
+    )
+    assert ai.calls == 1 and cache.saved == [place.provider_id]
+    assert first[0]["attribute_ratings"] == second[0]["attribute_ratings"] == traits
+    assert first[0]["utility"] == 0.9 and second[0]["utility"] == 0.1
+    assert second[0]["provenance"]["ratings_cache"] == "hit"
+    assert second[0]["provenance"]["ratings_created_at"] == "2026-10-20T00:00:00+00:00"
+    assert not any("utility" in entry for entry in cache.entries.values())
+
+
+@pytest.mark.asyncio
+async def test_only_missing_place_traits_are_sent_to_ai_and_source_facts_are_supplied():
+    cached = source.VerifiedPlace(
+        provider_id="overture:cached", name="Cached Park", coordinates=[40, -74]
+    )
+    missing = source.VerifiedPlace(
+        provider_id="overture:new", name="New Park", coordinates=[40, -74]
+    )
+    cache = MemoryTraitStore()
+    cache.put_many([(cached, _ratings(0.4))], "earlier")
+
+    class MissAI(FakeAI):
+        def complete(self, messages, tools):
+            prompt = messages[-1].content
+            assert json.loads(prompt.split("exactly: ")[1]) == ["New Park"]
+            assert (
+                "overture:new" in prompt and "independently of any traveler's preferences" in prompt
+            )
+            assert "Cached Park" not in prompt
+            return super().complete(messages, tools)
+
+    ai = MissAI([{"name": "New Park", "attribute_ratings": _ratings(0.8)}])
+    result = await discover(
+        object(),
+        [[40, -74]],
+        default_weights(),
+        ai=ai,
+        places=FakePlaces([cached, missing]),
+        trait_store=cache,
+        duration_estimator=unchanged_duration,
+    )
+    assert ai.calls == 1 and len(result) == 2
+    assert {p["provider_id"] for p in result} == {cached.provider_id, missing.provider_id}
+
+
+@pytest.mark.asyncio
+async def test_same_name_places_are_rated_separately_and_bad_ai_data_is_not_cached():
+    places = [
+        source.VerifiedPlace(provider_id=f"overture:{i}", name="Park", coordinates=[40, -74])
+        for i in range(2)
+    ]
+    cache = MemoryTraitStore()
+
+    class SeparateAI(FakeAI):
+        def complete(self, messages, tools):
+            assert len(json.loads(messages[-1].content.split("exactly: ")[1])) == 1
+            self.proposals = [
+                {"name": "Park", "attribute_ratings": _ratings(0.2 if self.calls == 0 else 0.8)}
+            ]
+            return super().complete(messages, tools)
+
+    ai = SeparateAI([])
+    result = await discover(
+        object(),
+        [[40, -74]],
+        default_weights(),
+        ai=ai,
+        places=FakePlaces(places),
+        trait_store=cache,
+        duration_estimator=unchanged_duration,
+    )
+    assert ai.calls == 2
+    assert {p["provider_id"]: p["attribute_ratings"]["nature"] for p in result} == {
+        "overture:0": 0.2,
+        "overture:1": 0.8,
+    }
+    cache = MemoryTraitStore()
+    with pytest.raises(source.CandidateRatingError):
+        await discover(
+            object(),
+            [[40, -74]],
+            default_weights(),
+            ai=FakeAI([{"name": "Invented Park", "attribute_ratings": _ratings()}]),
+            places=FakePlaces(places[:1]),
+            trait_store=cache,
+            duration_estimator=unchanged_duration,
+        )
+    assert not cache.saved
+
+
+@pytest.mark.asyncio
+async def test_enabled_live_provider_automatically_uses_database_trait_store(monkeypatch):
+    place = source.VerifiedPlace(
+        provider_id="overture:auto", name="Saved Park", coordinates=[40, -74]
+    )
+    memory = MemoryTraitStore()
+    memory.put_many([(place, _ratings(0.6))], "fixture:earlier")
+
+    class LocalLive(source.LivePlaceProvider):
+        async def attractions_near(self, point, **kwargs):
+            return [place]
+
+    monkeypatch.setattr(source, "LivePlaceProvider", LocalLive)
+    monkeypatch.setenv("PLACE_TRAITS_CACHE_ENABLED", "true")
+    monkeypatch.setattr(source.trait_cache, "get_many", memory.get_many)
+    monkeypatch.setattr(source.trait_cache, "put_many", memory.put_many)
+    ai = FakeAI([])
+    result = await discover(
+        object(), [[40, -74]], default_weights(), ai=ai, duration_estimator=unchanged_duration
+    )
+    assert ai.calls == 0 and result[0]["provenance"]["ratings_cache"] == "hit"

@@ -15,6 +15,15 @@ attestation, not an independent host inspection. The prior 603/607-place generat
 and frozen rollback receipts are preserved. This work does not release main or
 deploy an application.
 
+## October 20 reusable attraction traits
+
+Live attraction discovery can reuse per-place estimated attribute JSON from
+PostgreSQL across trips and restarts. It rates only misses and recalculates
+utility for the current persona. Context/version changes invalidate entries;
+estimates expire after 90 days. Source facts and live eligibility remain
+separate. The additive local migration and opt-in are enabled; deployments stay
+disabled by default. See [trait persistence](../docs/place-trait-cache.md).
+
 ## October 20 research database persistence
 
 Research studies now mirror from the private local SQLite execution queue into

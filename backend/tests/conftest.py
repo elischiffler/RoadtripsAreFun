@@ -18,6 +18,7 @@ ISSUER = f"https://cognito-idp.us-west-1.amazonaws.com/{POOL}"
 def isolate_research_replication(monkeypatch):
     # Local developer opt-in must never start hosted synchronization from unit tests.
     monkeypatch.setenv("STUDIO_RESEARCH_DATABASE", "false")
+    monkeypatch.setenv("PLACE_TRAITS_CACHE_ENABLED", "false")
 
 
 @pytest.fixture

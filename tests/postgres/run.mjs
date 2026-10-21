@@ -78,7 +78,7 @@ function probeResearchDatabase() {
   docker([
     "run", "--rm", "--no-deps", "-e",
     "RESEARCH_TEST_DATABASE_URL=postgresql://postgres:disposable-local-only@postgres/roadtrips",
-    "test", "python", "-m", "pytest", "tests/routing/research_database_tests.py", "-q",
+    "test", "python", "-m", "pytest", "tests/routing/research_database_tests.py", "tests/routing/trait_cache_tests.py", "-q",
   ], { stdio: "inherit", timeout: 120_000 });
 }
 
