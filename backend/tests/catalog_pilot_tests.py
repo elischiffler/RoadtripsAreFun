@@ -187,6 +187,109 @@ def test_replay_is_deterministic_browse_only_with_unknowns_and_fourteen_attribut
 
 
 @pytest.mark.parametrize(
+    "category, interest", [("lighthouse", "scenery"), ("heritage_rail", "history")]
+)
+def test_niche_categories_keep_activity_and_arrival_unknown(tmp_path, category, interest):
+    payload = artifact(tmp_path)
+    payload["records"][0]["category"] = category
+    rows, report = replay(tmp_path, payload)
+    assert len(rows) == 1 and "culture" in rows[0]["categories"]
+    profile = report["profiles"][0]
+    assert profile["activities"] == []
+    assert profile["attribute_ratings"][interest] == 0.8
+    assert profile["practical_context"]["arrival_verified"] is False
+    assert not admission.routing_eligible(rows[0])
+
+
+def baltimore_artifact(tmp_path, monkeypatch):
+    payload = artifact(tmp_path)
+    native = payload["evidence"][0]
+    body = json.dumps(
+        {
+            "id": 392,
+            "title": "Synthetic test museum",
+            "latitude": 43,
+            "longitude": -72,
+            "creator": ["Explore Baltimore Heritage"],
+            "description": "PRIVATE_ARTICLE_NOT_FOR_PROFILE",
+            "files": {"photo": "PRIVATE_PHOTO"},
+        }
+    ).encode()
+    (tmp_path / native["path"]).write_bytes(body)
+    native.update(
+        url="https://explore.baltimoreheritage.org/items/show/392?output=mobile-json",
+        sha256=hashlib.sha256(body).hexdigest(),
+    )
+    rights = payload["evidence"][2]
+    notice = b"Synthetic facts licensed under CC BY4.0."
+    (tmp_path / rights["path"]).write_bytes(notice)
+    rights.update(
+        url="https://explore.baltimoreheritage.org/", sha256=hashlib.sha256(notice).hexdigest()
+    )
+    monkeypatch.setitem(pilot.RIGHTS_PINS, "baltimore-heritage", {rights["sha256"]})
+    row = payload["records"][0]
+    row.update(
+        source_family="baltimore-heritage",
+        rights_proofs=[{"evidence_id": "rights", "literal": "licensed under CC BY4.0"}],
+    )
+    row["review"]["license"] = "CC-BY-4.0"
+
+    def field(key):
+        return {"evidence_id": "native", "pointer": "/" + key}
+
+    row["bindings"] = {
+        "native_id": field("id"),
+        "name": field("title"),
+        "coordinates": {
+            "encoding": "latlon",
+            "latitude": field("latitude"),
+            "longitude": field("longitude"),
+        },
+    }
+    return payload
+
+
+def test_baltimore_fields_keep_creator_credit_without_article_or_photos(tmp_path, monkeypatch):
+    rows, report = replay(tmp_path, baltimore_artifact(tmp_path, monkeypatch))
+    assert len(rows) == 1 and report["native_source_rows"] == 1
+    assert rows[0]["source_id"] == "catalog-pilot:baltimore-heritage:392"
+    assert "Explore Baltimore Heritage" in rows[0]["provenance"][0]["source_attribution"]
+    assert rows[0]["provenance"][0]["native_creator"] == ["Explore Baltimore Heritage"]
+    assert "PRIVATE_ARTICLE" not in json.dumps(rows) and "PRIVATE_PHOTO" not in json.dumps(rows)
+    assert not admission.routing_eligible(rows[0])
+
+
+@pytest.mark.parametrize(
+    "change,reason",
+    [
+        ("endpoint", "identifier differs"),
+        ("creator", "creator/rights"),
+        ("nc_photo", "license differs"),
+        ("html", "approved primary source"),
+    ],
+)
+def test_baltimore_cannot_mix_item_author_or_photo_rights(tmp_path, monkeypatch, change, reason):
+    payload = baltimore_artifact(tmp_path, monkeypatch)
+    if change == "endpoint":
+        payload["evidence"][0]["url"] = (
+            "https://explore.baltimoreheritage.org/items/show/396?output=mobile-json"
+        )
+    elif change == "creator":
+        receipt = payload["evidence"][0]
+        document = json.loads((tmp_path / receipt["path"]).read_bytes())
+        document["creator"] = ["Unreviewed contributor"]
+        raw = json.dumps(document).encode()
+        (tmp_path / receipt["path"]).write_bytes(raw)
+        receipt["sha256"] = hashlib.sha256(raw).hexdigest()
+    elif change == "nc_photo":
+        payload["records"][0]["review"]["license"] = "CC-BY-NC-2.0"
+    else:
+        payload["evidence"][0]["url"] = "https://explore.baltimoreheritage.org/items/show/392"
+    rows, report = replay(tmp_path, payload)
+    assert not rows and reason in report["decisions"][0]["reason"]
+
+
+@pytest.mark.parametrize(
     "mutation,reason",
     [
         (lambda r: r.update(state="CT"), "Census state"),

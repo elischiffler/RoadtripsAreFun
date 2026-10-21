@@ -38,7 +38,15 @@ def rebase(value, mapping):
     return value
 
 
-def assemble(inputs, states, output):
+def assemble(
+    inputs,
+    states,
+    output,
+    *,
+    expected_prospects=600,
+    comparison=None,
+    release="catalog-pilot-600-20261021",
+):
     from app.catalog import pilot
 
     from scripts.catalog_expansion_campaign import baseline
@@ -82,9 +90,9 @@ def assemble(inputs, states, output):
                 raise ValueError("same prospect included in more than one pilot cohort")
             seen_ids.add(record["pilot_id"])
             records.append(rebase(copy.deepcopy(record), mapping))
-    if len(records) != 600:
+    if not 1 <= expected_prospects <= 600 or len(records) != expected_prospects:
         raise ValueError(
-            "pilot assembly requires exactly600 reviewed-or-held prospects"
+            "assembly differs from its explicit bounded prospect denominator"
         )
     old, known = baseline()
     prior = json.loads(
@@ -95,6 +103,15 @@ def assemble(inputs, states, output):
     if len(prior) != 93:
         raise ValueError("prior93-source-admitted baseline changed")
     old.extend(prior)
+    if comparison is not None:
+        comparison = Path(comparison).resolve()
+        compared, _ = pilot.prepare(
+            comparison / "reviewed.json",
+            json.loads((comparison / "reviewed.manifest.json").read_bytes()),
+        )
+        if {row["source_id"] for row in old} & {row["source_id"] for row in compared}:
+            raise ValueError("additional comparison repeats baseline identities")
+        old.extend(compared)
     state_path = Path(states).resolve()
     if (
         not state_path.is_file()
@@ -145,7 +162,7 @@ def assemble(inputs, states, output):
     manifest = {
         "schema_version": pilot.SCHEMA,
         "sha256": hashlib.sha256((output / "reviewed.json").read_bytes()).hexdigest(),
-        "release": "catalog-pilot-600-20261021",
+        "release": release,
         "attribution": "Original source facts separately credited in place provenance; Codex-assisted review, no agency endorsement. No photos or operator descriptions redistributed.",
     }
     write(output / "reviewed.manifest.json", manifest)
@@ -196,13 +213,23 @@ def main():
     build.add_argument("--input", action="append", required=True, type=Path)
     build.add_argument("--states", required=True, type=Path)
     build.add_argument("--output", required=True, type=Path)
+    build.add_argument("--expected-prospects", type=int, default=600)
+    build.add_argument("--comparison", type=Path)
+    build.add_argument("--release", default="catalog-pilot-600-20261021")
     run = sub.add_parser("replay")
     run.add_argument("--source", required=True, type=Path)
     run.add_argument("--manifest", required=True, type=Path)
     run.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     result = (
-        assemble(args.input, args.states, args.output)
+        assemble(
+            args.input,
+            args.states,
+            args.output,
+            expected_prospects=args.expected_prospects,
+            comparison=args.comparison,
+            release=args.release,
+        )
         if args.action == "assemble"
         else replay(args.source, args.manifest, args.output)
     )

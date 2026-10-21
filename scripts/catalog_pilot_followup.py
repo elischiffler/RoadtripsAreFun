@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Merge bounded review updates into a NEW pilot artifact, without network/DB.
 
-Native source facts and rights bindings are immutable. Only the prepared museum
+Native source facts and rights bindings are immutable. Only the prepared bounded
 queue may receive operator-review updates. Arrival/calendar research is separate
 and never promotes a place merely because a review was attempted.
 """
@@ -48,9 +48,25 @@ def merge(base, updates, queue, output):
         raise ValueError("frozen pilot manifest differs")
     payload = json.loads((base / "reviewed.json").read_bytes())
     records = {r["pilot_id"]: r for r in payload["records"]}
-    allowed = set(json.loads(Path(queue).read_bytes())["unreviewed_operator_review"])
-    if len(allowed) != 50 or not allowed <= set(records):
-        raise ValueError("expected exact prepared50-prospect operator queue")
+    queue_doc = json.loads(Path(queue).read_bytes())
+    queue_ids = queue_doc["unreviewed_operator_review"]
+    if (
+        not isinstance(queue_ids, list)
+        or not 1 <= len(queue_ids) <= 100
+        or any(
+            not isinstance(x, str) or not x.startswith(("culture:wd:", "diversity:wd:"))
+            for x in queue_ids
+        )
+        or len(set(queue_ids)) != len(queue_ids)
+        or not set(queue_ids) <= set(records)
+    ):
+        raise ValueError(
+            "expected a unique prepared operator queue of at most100 records"
+        )
+    allowed = set(queue_ids)
+    pinned_native = queue_doc.get("frozen_native_sha256", {})
+    if pinned_native and set(pinned_native) != allowed:
+        raise ValueError("every queued native snapshot must be explicitly pinned")
     files, total, identities = {}, 0, set()
 
     def retain(root, receipt):
@@ -70,6 +86,7 @@ def merge(base, updates, queue, output):
         return {**receipt, "path": relative}
 
     payload["evidence"] = [retain(base, r) for r in payload["evidence"]]
+    frozen = {r["id"]: (r, files[r["path"]].read_bytes()) for r in payload["evidence"]}
     old_ids = {r["id"] for r in payload["evidence"]}
     for number, path in enumerate(updates):
         path = Path(path).resolve()
@@ -77,13 +94,18 @@ def merge(base, updates, queue, output):
             raise ValueError("review update exceeds4MiB ceiling")
         value = json.loads(path.read_bytes())
         mapping = {ident: ident for ident in old_ids}
+        additional_evidence = {}
         for receipt in value["evidence"]:
             ident = receipt["id"]
             if ident in mapping or ident in old_ids or receipt.get("status") != 200:
                 raise ValueError("new review evidence identity collides or failed")
-            mapping[ident] = f"followup-{number}:{ident}"
+            mapping[ident] = f"followup-{digest(path)[:12]}-{number}:{ident}"
             payload["evidence"].append(
                 retain(path.parent, receipt) | {"id": mapping[ident]}
+            )
+            additional_evidence[ident] = (
+                receipt,
+                (path.parent / receipt["path"]).read_bytes(),
             )
         for update in value["records"]:
             ident = update["pilot_id"]
@@ -108,20 +130,25 @@ def merge(base, updates, queue, output):
                 from app.catalog import pilot
 
                 anchor = pilot._same_native_entity(update["bindings"], "wikidata")
-                frozen = {
-                    r["id"]: (r, (base / r["path"]).read_bytes())
-                    for r in json.loads((base / "reviewed.json").read_bytes())[
-                        "evidence"
-                    ]
-                }
-                if update.get("source_family") != "wikidata" or anchor[0] not in frozen:
+                evidence = frozen | additional_evidence
+                if (
+                    update.get("source_family") != "wikidata"
+                    or anchor[0] not in evidence
+                ):
                     raise ValueError(
                         "new native binding lacks frozen discovery evidence"
                     )
+                native_sha = evidence[anchor[0]][0]["sha256"]
+                if (anchor[0] not in frozen and not pinned_native) or (
+                    pinned_native and native_sha != pinned_native[ident]
+                ):
+                    raise ValueError(
+                        "native source snapshot differs from its queued hash"
+                    )
                 native = pilot._value(
-                    update["bindings"]["native_id"], frozen, family="wikidata"
+                    update["bindings"]["native_id"], evidence, family="wikidata"
                 )
-                if ident != "culture:wd:" + native:
+                if ident.rsplit(":", 1)[-1] != native:
                     raise ValueError(
                         "new binding does not identify the queued Wikidata entity"
                     )
@@ -157,7 +184,7 @@ def merge(base, updates, queue, output):
         manifest
         | {
             "sha256": hashlib.sha256(body).hexdigest(),
-            "release": "catalog-pilot-followup-20261021",
+            "release": queue_doc.get("release", "catalog-pilot-followup-20261021"),
         },
     )
     result = replay(

@@ -129,6 +129,50 @@ def test_changed_original_or_new_receipt_fails_without_output(tmp_path):
     assert not (tmp_path / "out").exists()
 
 
+def test_bounded_diverse_queue_rejects_changed_discovery_snapshot(tmp_path):
+    base, queue, updates = setup(tmp_path)
+    payload = json.loads((base / "reviewed.json").read_bytes())
+    payload["records"][0]["pilot_id"] = "diversity:wd:Q1"
+    followup.write(base / "reviewed.json", payload)
+    followup.write(
+        base / "reviewed.manifest.json", {"sha256": followup.digest(base / "reviewed.json")}
+    )
+    followup.write(
+        queue,
+        {
+            "unreviewed_operator_review": ["diversity:wd:Q1"],
+            "frozen_native_sha256": {"diversity:wd:Q1": "0" * 64},
+        },
+    )
+
+    def binding(leaf):
+        return {"evidence_id": "native", "pointer": "/results/bindings/0/" + leaf}
+
+    row = payload["records"][0] | {
+        "source_family": "wikidata",
+        "review": {"decision": "T2"},
+        "bindings": {
+            "native_id": binding("item/value") | {"transform": "url_tail"},
+            "name": binding("itemLabel/value"),
+            "coordinates": {"encoding": "wkt", "value": binding("coord/value")},
+        },
+    }
+    followup.write(updates, {"records": [row], "evidence": []})
+    with pytest.raises(ValueError, match="queued hash"):
+        followup.merge(base, [updates], queue, tmp_path / "out")
+
+
+@pytest.mark.parametrize(
+    "queue_ids", [[], ["culture:wd:Q1"] * 2, ["unknown:Q1"], ["culture:wd:Q1"] * 101]
+)
+def test_queue_is_unique_bounded_and_explicit(tmp_path, queue_ids):
+    base, queue, updates = setup(tmp_path)
+    followup.write(queue, {"unreviewed_operator_review": queue_ids})
+    followup.write(updates, {"records": [], "evidence": []})
+    with pytest.raises(ValueError, match="prepared operator queue"):
+        followup.merge(base, [updates], queue, tmp_path / "out")
+
+
 def audit_fixture(tmp_path):
     source, proof = tmp_path / "source", tmp_path / "proof"
     (source / "replay").mkdir(parents=True)
@@ -153,7 +197,8 @@ def audit_fixture(tmp_path):
         source / "replay/decisions.json", [{"pilot_id": "p", "tier": "T1", "reason": "hold"}] * 600
     )
     followup.write(
-        source / "replay/report.json", {"accepted": 1, "normalized_rows_sha256": rows_sha([row])}
+        source / "replay/report.json",
+        {"accepted": 1, "prospects": 600, "normalized_rows_sha256": rows_sha([row])},
     )
     followup.write(
         proof / "portable-import/catalog.preview.json", [{"source_id": "synthetic-parent"}, row]

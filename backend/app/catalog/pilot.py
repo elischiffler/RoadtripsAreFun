@@ -28,6 +28,7 @@ SCHEMA = "roadtrips-reviewed-browse-pilot/1"
 MAX_RECORDS = 600
 MAX_BYTES = 64 * 1024 * 1024
 SOURCE_LICENSES = {
+    "baltimore-heritage": "CC-BY-4.0",
     "wikidata": "CC0-1.0",
     "nps-nhl": "LicenseRef-US-Agency-Factual-Data",
     "nys-historic": "LicenseRef-NY-Open-Data",
@@ -37,6 +38,7 @@ SOURCE_LICENSES = {
     "blm": "LicenseRef-US-Agency-Factual-Data",
 }
 SOURCE_HOSTS = {
+    "baltimore-heritage": {"explore.baltimoreheritage.org"},
     "wikidata": {"query.wikidata.org", "www.wikidata.org"},
     "nps-nhl": {"mapservices.nps.gov"},
     "nys-historic": {"data.ny.gov"},
@@ -46,6 +48,7 @@ SOURCE_HOSTS = {
     "blm": {"gis.blm.gov"},
 }
 NATIVE_PATHS = {
+    "baltimore-heritage": {f"/items/show/{n}" for n in (82, 200, 392, 396)},
     "wikidata": {"/sparql"},
     "nps-nhl": {
         f"/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/{n}/query"
@@ -65,6 +68,7 @@ NATIVE_PATHS = {
 }
 NY_TERMS_PATH = "/api/views/77gx-ii52/files/ef0c1840-ad54-4240-92fd-6397c49fde46"
 RIGHTS_TARGETS = {
+    "baltimore-heritage": {("explore.baltimoreheritage.org", "/")},
     "wikidata": {("www.wikidata.org", "/wiki/Wikidata:Copyright")},
     "nps-nhl": {("www.nps.gov", "/aboutus/disclaimer.htm"), ("www.doi.gov", "/copyright")},
     "fws": {("www.fws.gov", "/disclaimer"), ("www.doi.gov", "/copyright")},
@@ -80,6 +84,7 @@ RIGHTS_TARGETS = {
 # rights review; neither a caller-supplied label nor a convenient excerpt grants
 # commercial rights. Source records/operators remain separately reviewed.
 RIGHTS_PINS = {
+    "baltimore-heritage": {"534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7"},
     "wikidata": {
         "3e5d1bc82606c2ca57c41baaaa254a6b2de948fea61b8ef6ae1fe050d4c9416d",
         "e0744a22fe6ed5e46fa537e41625f26f560c9eb1a34cb28db4ef52b03a2f618e",
@@ -136,6 +141,10 @@ def source_host(family, url):
         target.scheme == "https"
         and target.hostname in SOURCE_HOSTS[family]
         and target.path in NATIVE_PATHS[family]
+        and (
+            family != "baltimore-heritage"
+            or parse_qs(target.query).get("output") == ["mobile-json"]
+        )
     )
 
 
@@ -164,6 +173,11 @@ def _native_source_rows(evidence):
             continue
         seen.add(receipt["sha256"])
         document = json.loads(body)
+        if receipt["url"].startswith("https://explore.baltimoreheritage.org/items/show/"):
+            if not isinstance(document, dict) or type(document.get("id")) is not int:
+                raise ValueError("Baltimore source is not one native item")
+            count += 1
+            continue
         rows = (
             document
             if isinstance(document, list)
@@ -301,6 +315,15 @@ def _same_native_entity(bindings, family):
                 walk(child)
 
     walk(bindings)
+    if family == "baltimore-heritage":
+        if (
+            len(leaves) != 4
+            or len({leaf["evidence_id"] for leaf in leaves}) != 1
+            or {leaf.get("pointer") for leaf in leaves}
+            != {"/id", "/title", "/latitude", "/longitude"}
+        ):
+            raise ValueError("Baltimore native facts must belong to one complete original item")
+        return leaves[0]["evidence_id"], ""
     pattern = (
         r"^(/results/bindings/\d+)/"
         if family == "wikidata"
@@ -324,6 +347,7 @@ def _source_contract(record, family, evidence, anchor):
     bindings = record["bindings"]
     native, name = bindings["native_id"], bindings["name"]
     id_fields = {
+        "baltimore-heritage": "/id",
         "wikidata": "/item/value",
         "nps-nhl": "/attributes/NRIS_Refnum",
         "fws": "/attributes/OrgCode",
@@ -333,6 +357,7 @@ def _source_contract(record, family, evidence, anchor):
         "sf-civic-art": "/accession_number",
     }
     name_fields = {
+        "baltimore-heritage": "/title",
         "wikidata": "/itemLabel/value",
         "nps-nhl": "/attributes/RESNAME",
         "fws": "/attributes/OrgName",
@@ -405,6 +430,34 @@ def _source_contract(record, family, evidence, anchor):
             for key, suffix in zip(("latitude", "longitude"), expected, strict=True)
         ):
             raise ValueError("Socrata point is not the reviewed native latitude/longitude fields")
+    if family == "baltimore-heritage":
+        document = json.loads(evidence[anchor[0]][1])
+        receipt = evidence[anchor[0]][0]
+        if type(document.get("id")) is not int or any(
+            urlparse(url).path != f"/items/show/{document['id']}"
+            for url in (receipt["url"], receipt.get("final_url", receipt["url"]))
+        ):
+            raise ValueError("Baltimore item identifier differs from original endpoint")
+        coordinates = bindings["coordinates"]
+        if coordinates.get("encoding") != "latlon" or any(
+            coordinates.get(key, {}).get("pointer") != "/" + key
+            for key in ("latitude", "longitude")
+        ):
+            raise ValueError("Baltimore point differs from original item coordinate fields")
+        if document.get("creator") == ["Theresa Donnelly"] and document["id"] == 82:
+            # The named contributor's item page independently repeats the
+            # publisher's CC BY4.0 grant. Do not generalize it to other authors,
+            # item text versions or separately licensed photographs.
+            if not any(
+                r["sha256"] == "12b8c9a9c365c1f7556b1b6fb6e25e3dc3e3f0d73b5665ca62ba8b0f53f2c22a"
+                and r["url"] == "https://explore.baltimoreheritage.org/items/show/82"
+                and "Creative Commons Attribution 4.0 International License" in evidence_text(body)
+                and "Theresa Donnelly" in evidence_text(body)
+                for r, body in evidence.values()
+            ):
+                raise ValueError("Baltimore contributor item lacks its reviewed attribution/grant")
+        elif document.get("creator") != ["Explore Baltimore Heritage"]:
+            raise ValueError("Baltimore factual item has unreviewed creator/rights scope")
     for proof in record["rights_proofs"]:
         receipt = evidence[proof["evidence_id"]][0]
         if receipt["sha256"] not in RIGHTS_PINS[family]:
@@ -581,6 +634,8 @@ def prepare(path, manifest, *, max_rows=50_000, max_bytes=MAX_BYTES):
                 raise ValueError("FWS native identity is not an organization code")
             if family == "nps-nhl" and not re.fullmatch(r"[0-9]{6,10}", native_id):
                 raise ValueError("NPS native identity is not a reviewed register reference")
+            if family == "baltimore-heritage" and not re.fullmatch(r"[1-9][0-9]{0,7}", native_id):
+                raise ValueError("Baltimore item identifier is invalid")
             aliases = record.get("aliases", [])
             if (
                 not isinstance(aliases, list)
@@ -632,6 +687,8 @@ def prepare(path, manifest, *, max_rows=50_000, max_bytes=MAX_BYTES):
                         "historic_site",
                         "public_art",
                         "industrial_heritage",
+                        "lighthouse",
+                        "heritage_rail",
                     }
                     else {category, "catalog_browse"}
                 ),
@@ -682,6 +739,17 @@ def prepare(path, manifest, *, max_rows=50_000, max_bytes=MAX_BYTES):
                 ],
             }
             aliases = _native_aliases(row) | set(record.get("aliases", []))
+            if family == "baltimore-heritage":
+                native_document = json.loads(evidence[anchor[0]][1])
+                row["provenance"][0]["source_attribution"] = (
+                    f"{', '.join(native_document['creator'])}; Explore Baltimore Heritage / Baltimore Heritage, Inc., {name.strip()}, "
+                    f"https://explore.baltimoreheritage.org/items/show/{native_id}, "
+                    "CC BY4.0 https://creativecommons.org/licenses/by/4.0/. "
+                    "Factual fields extracted; category and traveler-fit inferences added. "
+                    "Photos and article prose excluded; no endorsement."
+                )
+                row["provenance"][0]["native_creator"] = native_document["creator"]
+                row["provenance"][0]["native_modified"] = native_document.get("modified")
             if aliases & baseline_aliases or any(
                 aliases & _native_aliases(other)
                 or row["region"] == other["region"]

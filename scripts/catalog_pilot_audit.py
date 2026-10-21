@@ -70,10 +70,11 @@ def export(source, proof, output):
     ):
         raise ValueError("database proof does not match this source/additions artifact")
     if (
-        len(decisions) != 600
+        not 1 <= len(decisions) <= 600
+        or len(decisions) != report["prospects"]
         or not 1 <= len(additions) <= 600
         or len(additions) != report["accepted"]
-        or len(baseline) != 696
+        or not 696 <= len(baseline) <= 50_000
     ):
         raise ValueError("unexpected frozen pilot counts; review before exporting")
     receipts = []

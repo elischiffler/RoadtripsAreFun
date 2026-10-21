@@ -21,6 +21,8 @@ RULES = {
     "food_experience": ("Visitor food experience", {"food": 0.8}),
     "industrial_heritage": ("Industrial heritage visit", {"history": 0.8}),
     "roadside_attraction": ("Roadside visitor stop", {"unique_local_experiences": 0.7}),
+    "lighthouse": ("Lighthouse visitor stop", {"scenery": 0.8}),
+    "heritage_rail": ("Heritage railway visit", {"history": 0.8}),
 }
 
 

@@ -143,6 +143,11 @@ def prove(source, output, *, port=55433):
                 }
                 for ident, name, url in [
                     (
+                        "CC-BY-4.0",
+                        "CC-BY-4.0.txt",
+                        "https://creativecommons.org/licenses/by/4.0/",
+                    ),
+                    (
                         "CC0-1.0",
                         "CC0-1.0.txt",
                         "https://www.wikidata.org/wiki/Wikidata:Copyright",
