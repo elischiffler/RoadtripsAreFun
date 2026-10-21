@@ -208,19 +208,60 @@
   color: #705b45;
   font-weight: 400;
 }
-.research-statuses {
+.research-outcome-bar {
+  display: flex;
+  height: 36px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 18px 0 12px;
+}
+.research-outcome-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  color: #fff;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.research-outcome-segment:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+.research-outcome-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 4px 12px;
+  padding: 0;
+  margin: 0 -8px;
+  list-style: none;
 }
-.research-statuses > div {
+.research-outcome-legend li {
   display: flex;
-  gap: 8px;
   align-items: center;
-}
-.research-statuses span {
+  gap: 7px;
+  padding: 6px 8px;
+  border-radius: 6px;
   font-size: 0.8rem;
   color: #705b45;
+  transition: background-color 140ms ease;
+}
+.research-outcome-legend li.is-highlighted {
+  background: #e9e4da;
+}
+.research-outcome-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+.research-outcome-legend strong {
+  color: var(--lab-ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.research-outcome-legend small {
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
 }
 .research-finding {
   padding: 14px 18px;
@@ -373,18 +414,9 @@
   flex-direction: column;
   gap: 4px;
 }
-.research-finding small,
-.research-statuses small {
+.research-finding small {
   font-size: 0.75rem;
   color: #705b45;
-}
-.research-statuses > div {
-  flex-direction: column;
-  align-items: start;
-  gap: 4px;
-}
-.research-statuses strong {
-  font-size: 1.4rem;
 }
 
 .research-heatmap thead th:not(:first-child) {

@@ -16,6 +16,7 @@ import {
   ResponseCurve,
   RowChart,
   StatusColumns,
+  SolverOutcomes,
   Tradeoff,
   UtilitySpread,
 } from './ResearchCharts';
@@ -25,7 +26,6 @@ import {
   format,
   METRICS,
   paired,
-  solverLabel,
   settingLabel,
 } from './researchData';
 import { getStudioSession, unlockStudio } from '../../services/studioSession';
@@ -546,16 +546,7 @@ export default function StudioResearch() {
                 title="CP-SAT outcomes"
                 help="Optimal: best objective proven. Feasible: valid selection, best not proven. Infeasible: constraints cannot be met. Unknown: no selection or infeasibility proof before the limit. Strict zero-drop settings may fail from rounding."
               />
-              <div className="research-statuses">
-                {Object.entries(solverCounts).map(([label, count]) => (
-                  <div key={label}>
-                    <span>{solverLabel(label)}</span>
-                    <strong>{format(count, 0)}</strong>
-                    <small>{format((count / filtered.length) * 100)}% of filtered runs</small>
-                  </div>
-                ))}
-                {!filtered.length && <p>No results yet.</p>}
-              </div>
+              <SolverOutcomes counts={solverCounts} />
             </section>
             <section className="research-card">
               <Heatmap rows={filtered} trips={trips} metric={metric} />

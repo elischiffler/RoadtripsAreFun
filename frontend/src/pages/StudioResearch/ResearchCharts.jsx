@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { ChartHeading } from './ResearchInfo';
 import { InspectionGroup, InspectMark } from './ResearchInspect';
 import {
@@ -17,7 +17,65 @@ import {
   metricRange,
   metricUnit,
   metricDifference,
+  solverLabel,
 } from './researchData';
+
+export function SolverOutcomes({ counts }) {
+  const [hovered, setHovered] = useState(null);
+  const [focused, setFocused] = useState(null);
+  const outcomes = Object.entries(counts);
+  const total = outcomes.reduce((sum, [, count]) => sum + count, 0);
+  const colors = {
+    OPTIMAL: '#234a3c',
+    FEASIBLE: '#477560',
+    INFEASIBLE: '#ac4c43',
+    UNKNOWN: '#a56b28',
+    MODEL_INVALID: '#806381',
+    EMPTY: '#706b62',
+    NOT_RUN: '#756f66',
+  };
+  if (!total) return <p>No results yet.</p>;
+  return (
+    <div className="research-solver-outcomes">
+      <div className="research-outcome-bar" role="group" aria-label="CP-SAT outcome percentages">
+        {outcomes.map(([status, count]) => {
+          if (!count) return null;
+          const percent = (count / total) * 100;
+          return (
+            <div
+              key={status}
+              role="img"
+              tabIndex={0}
+              className="research-outcome-segment"
+              aria-label={`${solverLabel(status)}: ${format(percent)}%, ${runCount(count)}`}
+              style={{ width: `${percent}%`, background: colors[status] ?? '#756f66' }}
+              onPointerEnter={() => setHovered(status)}
+              onPointerLeave={() => setHovered(null)}
+              onFocus={() => setFocused(status)}
+              onBlur={() => setFocused(null)}
+            >
+              {percent >= 5 && <span aria-hidden="true">{format(percent)}%</span>}
+            </div>
+          );
+        })}
+      </div>
+      <ul className="research-outcome-legend" aria-label="CP-SAT outcome counts">
+        {outcomes.map(([status, count]) => (
+          <li
+            key={status}
+            className={(hovered ?? focused) === status ? 'is-highlighted' : undefined}
+          >
+            <i style={{ background: colors[status] ?? '#756f66' }} aria-hidden="true" />
+            <span>{solverLabel(status)}</span>
+            <strong>{format(count, 0)}</strong>
+            <small>{format((count / total) * 100)}%</small>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+SolverOutcomes.propTypes = { counts: PropTypes.objectOf(PropTypes.number).isRequired };
 
 export function Heatmap({ rows, trips, metric }) {
   const columns = ['nature', 'entertainment'].flatMap((persona) =>

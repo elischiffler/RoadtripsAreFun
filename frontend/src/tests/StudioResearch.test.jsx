@@ -8,6 +8,7 @@ import {
   ResponseCurve,
   RowChart,
   StatusColumns,
+  SolverOutcomes,
   Tradeoff,
   UtilitySpread,
 } from '../pages/StudioResearch/ResearchCharts';
@@ -105,6 +106,29 @@ const mount = () =>
       <StudioResearch />
     </MemoryRouter>
   );
+
+it('normalizes solver outcomes and connects segment hover and focus to legend counts', async () => {
+  const user = userEvent.setup();
+  render(<SolverOutcomes counts={{ OPTIMAL: 3, FEASIBLE: 1, INFEASIBLE: 0, UNKNOWN: 0 }} />);
+  const bar = screen.getByRole('group', { name: 'CP-SAT outcome percentages' });
+  const optimal = within(bar).getByRole('img', { name: 'Optimal: 75%, 3 runs' });
+  expect(optimal).toHaveStyle({ width: '75%' });
+  expect(within(bar).getByRole('img', { name: 'Feasible: 25%, 1 run' })).toHaveStyle({
+    width: '25%',
+  });
+  expect(within(bar).getAllByRole('img')).toHaveLength(2);
+  const legend = screen.getByRole('list', { name: 'CP-SAT outcome counts' });
+  const optimalLegend = within(legend).getByText('Optimal').closest('li');
+  expect(within(optimalLegend).getByText('3')).toBeInTheDocument();
+  expect(within(legend).getByText('Infeasible').closest('li')).toHaveTextContent('0');
+  await user.hover(optimal);
+  expect(optimalLegend).toHaveClass('is-highlighted');
+  expect(within(legend).getByText('Feasible').closest('li')).not.toHaveClass('is-highlighted');
+  await user.unhover(optimal);
+  expect(optimalLegend).not.toHaveClass('is-highlighted');
+  await user.tab();
+  expect(optimalLegend).toHaveClass('is-highlighted');
+});
 
 it('offers Studio access in a browser without saved study keys', async () => {
   mount();
