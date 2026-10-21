@@ -94,9 +94,9 @@ hours are never bypassed to produce a completed trip.
 - Row comparisons cover extra distance/driving, longest driving gap, room-target
   utilization/excess, fulfillment, actual days and runtime. Missing values remain
   missing; hotel-free trips do not receive a fabricated zero budget deviation.
-- Parameter-response lines keep trip and stop rate fixed, with separate persona
-  series and per-point sample sizes. The paired utility score comparison matches the
-  same persona, stop rate, trip and seed. It makes no significance claim.
+- The selection-setting filter selects the condition shown in the remaining charts.
+  The settings comparison section and parameter-response lines are removed;
+  recorded conditions and their measurements remain available in exports.
 - The live scatter plot compares actual added driving with delivered utility scores.
 
 Quality plots assess only complete, fully delivered, timing-valid outputs.
@@ -195,9 +195,10 @@ are identified with an explicit denominator. Heatmap cells show the observed
 run-to-run range, or indicate when all scored results are identical. These ranges
 are descriptive extrema, not confidence intervals. Summary cards show remaining
 runs, success share, incomplete-outcome counts and the middle half of measured
-planning times. CP-SAT outcomes use Optimal, Feasible, Infeasible and Unknown and show each outcome's share
-of filtered runs; raw solver status codes remain in exports. Matched setting
-comparisons show the number of comparisons and observed range of changes.
+planning times. CP-SAT outcomes use one 100% stacked bar for filtered runs,
+with percentage labels and counts in the color-matched legend. Hovering or focusing
+a segment subtly highlights its legend item. Raw solver status codes remain in
+exports. The settings comparison chart and paired-change summary are removed.
 
 The attraction utility score histogram uses the same pooled utility scores as the four
 summary values, in fixed five-point bins over 0–100%. Internal boundaries belong to the
@@ -211,8 +212,7 @@ unique attractions or independent samples.
 Data marks support a compact, header-free inspection tooltip: one key value and
 an optional short supporting line. Info icons use brief chart explanations; the
 full measurement definitions remain documented here. Heatmap cells expose
-the difference from the displayed average; histogram bars show their share of plotted scores; settings points show
-within-batch paired changes when available. Native hover titles are removed from
+the difference from the displayed average; histogram bars show their share of plotted scores. Native hover titles are removed from
 those marks to avoid duplicate popups. Hover waits briefly for pointer intent;
 focus and taps open immediately. Tab enters a chart, arrow keys move between its
 marks, and Escape dismisses the tooltip. Scrolling dismisses detached overlays.
@@ -230,7 +230,7 @@ These are per-run distributions, distinct from the attraction-level histogram.
 
 Dashboard terminology is shared across filters, charts, tooltips and accessible
 labels: mean, median, middle 50%, finished runs, complete runs, stops per day,
-added driving and matched comparisons. Complete runs describe delivered trips;
+and added driving. Complete runs describe delivered trips;
 finished runs also include partial, failed and interrupted runs. Attraction-level
 utility scores remain distinct from per-run summary measures. Export field names
 and stored measurement definitions are unchanged.
