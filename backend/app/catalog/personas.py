@@ -6,6 +6,7 @@ prior, not a factual claim or a measured review score.
 """
 
 from app.agent.persona import ATTRIBUTE_KEYS
+from app.catalog import pilot_personas
 from app.catalog.identity import identity
 
 VERSION = "roadtrips-source-persona/1"
@@ -154,7 +155,10 @@ def stored(profile):
 def facts(provenance):
     """Project factual description/activities; recommendations remain labeled."""
     matches = [
-        p for p in provenance if p.get("dataset") == DATASET and p.get("schema_version") == VERSION
+        p
+        for p in provenance
+        if (p.get("dataset"), p.get("schema_version"))
+        in {(DATASET, VERSION), (pilot_personas.DATASET, pilot_personas.VERSION)}
     ]
     if len(matches) != 1:
         return {}

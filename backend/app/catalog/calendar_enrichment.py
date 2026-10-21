@@ -209,6 +209,7 @@ def _additions(payload, reader, *, max_rows, baseline=()):
         kaggle_cultural,
         kaggle_ny_markets,
         kaggle_ny_markets_more,
+        pilot,
         usfs_current,
     )
 
@@ -220,6 +221,7 @@ def _additions(payload, reader, *, max_rows, baseline=()):
         "kaggle-ca-markets": kaggle_ca_markets.prepare,
         "kaggle-coastal": kaggle_coastal.prepare,
         "kaggle-ny-markets-more": kaggle_ny_markets_more.prepare,
+        "reviewed-browse-pilot": pilot.prepare,
     }
     rows, entries, reports, scanned, size = [], [], [], 0, 0
     for item in inputs:
@@ -383,7 +385,20 @@ def prepare(path, *, max_rows=ingest.MAX_ROWS, max_bytes=ingest.MAX_BYTES):
             "incremental additions duplicate preserved identities or exceed row ceiling"
         )
     _cross_source_arrivals(baseline, additions)
-    entries = validate_entries([*payload.get("entries", []), *new_calendars], reader)
+    proposed_entries = [*payload.get("entries", []), *new_calendars]
+    if not proposed_entries and additions:
+        from app.catalog import admission
+
+        # Browse-only imports deliberately have no invented calendar. This
+        # exception is confined to replayed T2 rows in the dedicated adapter;
+        # legacy calendar enrichments and routing-ready imports keep their gate.
+        browse_only = all(
+            item.get("adapter") == "reviewed-browse-pilot"
+            for item in payload.get("addition_inputs", [])
+        ) and all((admission.admission_details(row) or {}).get("tier") == "T2" for row in additions)
+        entries = [] if browse_only else validate_entries(proposed_entries, reader)
+    else:
+        entries = validate_entries(proposed_entries, reader)
     prior_ids = {row["source_id"] for row in baseline}
     if any(entry.get("source_release") and entry["source_id"] in prior_ids for entry in entries):
         raise ValueError("supplementary calendars cannot replace preserved place source credits")

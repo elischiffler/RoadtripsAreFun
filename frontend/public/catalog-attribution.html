@@ -13,8 +13,9 @@
         Foundation, reviewed City of Boulder trailheads mirrored on Kaggle, and National Park
         Service park identities and visitor arrival data. Each result identifies its source release
         and, when available, the upstream evidence date. Dataset identity is not a live confirmation
-        of access, opening hours or availability. Attribute ratings are model estimates, not source
-        reviews.
+        of access, opening hours or availability. Attribute ratings are labeled model estimates or
+        deterministic category inferences, with unknown attributes retained as uninformative priors;
+        they are not source reviews.
       </p>
       <p>
         RoadtripsAreFun filters United States records, maps road-trip categories, normalizes
@@ -23,6 +24,22 @@
         import; it is not exhaustive.
       </p>
       <ul>
+        <li>
+          Reviewed development pilot places retain original
+          <a href="https://www.wikidata.org/wiki/Wikidata:Copyright">Wikidata structured facts</a>
+          under <a href="/licenses/CC0-1.0.txt">CC0 1.0</a>, and separately credited original
+          factual GIS fields from the U.S. Fish and Wildlife Service and Bureau of Land Management.
+          See the
+          <a href="/licenses/LicenseRef-US-Agency-Factual-Data.txt">agency factual-data notice</a>
+          and the <a href="https://www.fws.gov/disclaimer">FWS exceptions</a> and
+          <a href="https://www.blm.gov/info/notices/drctp-policy">BLM policy</a>. New York market
+          identity and location fields use the
+          <a href="/licenses/LicenseRef-NY-Open-Data.txt">OPEN-NY terms notice</a>. No photographs,
+          operator descriptions, logos or reviews are redistributed. Browse-only places have
+          source-reviewed public visitor identity and feature locations; arrivals and visit timing
+          remain unverified and automatic routing excludes them. Review is Codex-assisted and
+          evidence-backed, not independent human approval or a field survey.
+        </li>
         <li>
           USDA Forest Service public recreation facility facts and U.S. Census Bureau ACS 2025
           cartographic state boundaries: see the
@@ -110,13 +127,14 @@
           or parking access. New York records independently use current
           <a href="https://data.ny.gov/resource/qq4h-8p86.json">state agriculture market facts</a>
           under the <a href="/licenses/LicenseRef-NY-Open-Data.txt">OPEN-NY terms notice</a>. Agency
-          point comparisons preserve the Kaggle points and do not verify parking.
-          Independently attributed seasonal and visitor-location facts also come from the
+          point comparisons preserve the Kaggle points and do not verify parking. Independently
+          attributed seasonal and visitor-location facts also come from the
           <a href="https://www.cdfa.ca.gov/is/docs/CurrentMrktsCounty.pdf"
             >California Department of Food and Agriculture certified-market roster</a
-          > and the
-          <a href="https://agriculture.ny.gov/farmersmarkets">New York agriculture department's
-            regional consumer market schedules</a
+          >
+          and the
+          <a href="https://agriculture.ny.gov/farmersmarkets"
+            >New York agriculture department's regional consumer market schedules</a
           >. These additional sources corroborate factual public market locations and dated
           schedules; their prose and artwork are omitted. OPEN-NY terms apply to the OPEN-NY
           registry facts, without extending that grant to the regional PDF publications. Native
@@ -135,12 +153,12 @@
           schedules and restrictions. Shore access does not establish permission to swim; ended
           swimming seasons and facility-specific restrictions remain separate. Public-road arrival
           evidence uses OSRM and
-          <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>.
-          The selected coastal network evidence and derived access assessments are available
-          under <a href="/licenses/ODbL-1.0.txt">ODbL 1.0</a> in the
-          <a href="/catalog-osm-coastal-arrivals.json">coastal arrival evidence file</a>.
-          Original facility points are preserved; a driving snap does not establish parking
-          availability. No agency endorsement is implied.
+          <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>. The
+          selected coastal network evidence and derived access assessments are available under
+          <a href="/licenses/ODbL-1.0.txt">ODbL 1.0</a> in the
+          <a href="/catalog-osm-coastal-arrivals.json">coastal arrival evidence file</a>. Original
+          facility points are preserved; a driving snap does not establish parking availability. No
+          agency endorsement is implied.
         </li>
         <li>
           City of Los Angeles cultural venues:
