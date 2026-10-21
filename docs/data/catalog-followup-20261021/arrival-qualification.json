@@ -1,0 +1,2809 @@
+{
+  "evidence": [
+    {
+      "bytes": 1298,
+      "checked_at": "2026-10-21T15:32:07.614512+00:00",
+      "content_type": "text/plain",
+      "final_url": "https://marktwainhouse.org/robots.txt",
+      "id": "robots-marktwainhouse-org",
+      "last_modified": "Fri, 10 Jul 2026 19:53:06 GMT",
+      "path": "robots-marktwainhouse-org.body",
+      "sha256": "047b22ce2d16b07fd24cbf16b4e3517a2998c30ed47ce2dbc9ab72994c0f6e84",
+      "status": 200,
+      "url": "https://marktwainhouse.org/robots.txt"
+    },
+    {
+      "bytes": 67246,
+      "checked_at": "2026-10-21T15:32:08.614633+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://marktwainhouse.org/visit/directions-parking/",
+      "id": "marktwain-parking",
+      "last_modified": null,
+      "path": "marktwain-parking.body",
+      "sha256": "91e8516d5bc9e87c3470767b678fcfec5c0fa59bf2ff332cb0bf68d74f015c26",
+      "status": 200,
+      "url": "https://marktwainhouse.org/visit/directions-parking/"
+    },
+    {
+      "checked_at": "2026-10-21T15:32:09.970455+00:00",
+      "error": "HTTPError",
+      "id": "marktwain-hours",
+      "reason": "HTTP Error 404: Not Found",
+      "status": 404,
+      "url": "https://marktwainhouse.org/visit/hours-admission/"
+    },
+    {
+      "bytes": 2027,
+      "checked_at": "2026-10-21T15:32:11.872601+00:00",
+      "content_type": "text/plain",
+      "final_url": "https://ctsciencecenter.org/robots.txt",
+      "id": "robots-ctsciencecenter-org",
+      "last_modified": "Wed, 22 Jul 2026 13:59:19 GMT",
+      "path": "robots-ctsciencecenter-org.body",
+      "sha256": "773fb8d35bb9a39d35335ee6db8dc5c912d2aacbfb823152d9c61cd647dd902d",
+      "status": 200,
+      "url": "https://ctsciencecenter.org/robots.txt"
+    },
+    {
+      "bytes": 204813,
+      "checked_at": "2026-10-21T15:32:12.872737+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://ctsciencecenter.org/getting-here",
+      "id": "ctscience-arrival",
+      "last_modified": "Wed, 21 Oct 2026 15:32:13 GMT",
+      "path": "ctscience-arrival.body",
+      "sha256": "8b464fa506c69d0a512b2c72104a3b0a9703e380c57304beeaaa89d53d0bd397",
+      "status": 200,
+      "url": "https://ctsciencecenter.org/getting-here"
+    },
+    {
+      "bytes": 172525,
+      "checked_at": "2026-10-21T15:32:14.366442+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://ctsciencecenter.org/hours-pricing",
+      "id": "ctscience-hours",
+      "last_modified": "Wed, 21 Oct 2026 15:32:14 GMT",
+      "path": "ctscience-hours.body",
+      "sha256": "1d44fd0e7b5dad440010c087aa3c24752e03815a0dcf168f821165f873235f08",
+      "status": 200,
+      "url": "https://ctsciencecenter.org/hours-pricing"
+    },
+    {
+      "bytes": 191,
+      "checked_at": "2026-10-21T15:32:16.312444+00:00",
+      "content_type": "text/plain; charset=utf-8",
+      "final_url": "https://mysticseaport.org/robots.txt",
+      "id": "robots-mysticseaport-org",
+      "last_modified": "Wed, 21 Oct 2026 14:34:44 GMT",
+      "path": "robots-mysticseaport-org.body",
+      "sha256": "dbcef93ddd4316f35921224f9639881a92d0d17acecc3aa50cb3330eb832effe",
+      "status": 200,
+      "url": "https://mysticseaport.org/robots.txt"
+    },
+    {
+      "bytes": 121616,
+      "checked_at": "2026-10-21T15:32:17.312566+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://mysticseaport.org/visit/directions/",
+      "id": "mystic-directions",
+      "last_modified": "Wed, 21 Oct 2026 15:32:18 GMT",
+      "path": "mystic-directions.body",
+      "sha256": "6717d7689ac9d2e9e603f62c77be85b51cdd363e215abefb73130e084e2c729e",
+      "status": 200,
+      "url": "https://mysticseaport.org/visit/plan-your-visit/directions/"
+    },
+    {
+      "bytes": 158102,
+      "checked_at": "2026-10-21T15:32:18.312670+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://mysticseaport.org/visit/hours-tickets/",
+      "id": "mystic-hours",
+      "last_modified": "Wed, 21 Oct 2026 15:32:19 GMT",
+      "path": "mystic-hours.body",
+      "sha256": "c3bb88752da06c748aa0901e32b30bc5cde3081e9da8a2a120894b41fedb4af5",
+      "status": 200,
+      "url": "https://mysticseaport.org/visit/hours-tickets/"
+    },
+    {
+      "bytes": 129,
+      "checked_at": "2026-10-21T15:32:19.102077+00:00",
+      "content_type": "text/plain",
+      "final_url": "https://www.amcmuseum.org/robots.txt",
+      "id": "robots-amcmuseum-org",
+      "last_modified": "Wed, 11 Sep 2024 17:40:00 GMT",
+      "path": "robots-amcmuseum-org.body",
+      "sha256": "08dfbd60e827d5542d6eb2db5df11b2bf16dd170f5c18b4d262c3304730ba90f",
+      "status": 200,
+      "url": "https://amcmuseum.org/robots.txt"
+    },
+    {
+      "bytes": 100554,
+      "checked_at": "2026-10-21T15:32:20.102251+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://www.amcmuseum.org/faq/",
+      "id": "amc-faq",
+      "last_modified": null,
+      "path": "amc-faq.body",
+      "sha256": "86622e68d03ba0d4e719ebc852f520f4cae566435b3ad46e53bec702203f8fa9",
+      "status": 200,
+      "url": "https://amcmuseum.org/faq/"
+    },
+    {
+      "bytes": 223,
+      "checked_at": "2026-10-21T15:32:22.118799+00:00",
+      "content_type": "text/plain; charset=utf-8",
+      "final_url": "https://www.winterthur.org/robots.txt",
+      "id": "robots-www-winterthur-org",
+      "last_modified": null,
+      "path": "robots-www-winterthur-org.body",
+      "sha256": "935756bfcf75e24e812e49a8d4a3d84bdfe55c76c68234631a08554252bc398e",
+      "status": 200,
+      "url": "https://www.winterthur.org/robots.txt"
+    },
+    {
+      "bytes": 85334,
+      "checked_at": "2026-10-21T15:32:23.515713+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://www.winterthur.org/get-directions/",
+      "id": "winterthur-directions",
+      "last_modified": null,
+      "path": "winterthur-directions.body",
+      "sha256": "d18a20dc487c9e43e698cfd2a0a12b32f3e91519ed86b7eb61bd528d426415c1",
+      "status": 200,
+      "url": "https://www.winterthur.org/get-directions/"
+    },
+    {
+      "bytes": 85198,
+      "checked_at": "2026-10-21T15:32:24.515846+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://www.winterthur.org/view-hours/",
+      "id": "winterthur-hours",
+      "last_modified": null,
+      "path": "winterthur-hours.body",
+      "sha256": "55affe90e074ee212166624429681ec3dc325850d45357821192ac5e3e994f86",
+      "status": 200,
+      "url": "https://www.winterthur.org/view-hours/"
+    },
+    {
+      "bytes": 129923,
+      "checked_at": "2026-10-21T15:32:25.515925+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://www.winterthur.org/visit/faq/",
+      "id": "winterthur-faq",
+      "last_modified": null,
+      "path": "winterthur-faq.body",
+      "sha256": "1259bebc49ce517b7a7b584e9f73716bfb62f40e9dd8af4e815d8f1c516a473d",
+      "status": 200,
+      "url": "https://www.winterthur.org/visit/faq/"
+    },
+    {
+      "bytes": 900,
+      "checked_at": "2026-10-21T15:32:25.955383+00:00",
+      "content_type": "text/plain",
+      "final_url": "https://durhammuseum.org/robots.txt",
+      "id": "robots-durhammuseum-org",
+      "last_modified": "Wed, 27 Mar 2019 14:45:52 GMT",
+      "path": "robots-durhammuseum-org.body",
+      "sha256": "cfb6ce2a95620cf07f4969941ad02281ea871dc180f2b76ddb6d13081017f5a9",
+      "status": 200,
+      "url": "https://durhammuseum.org/robots.txt"
+    },
+    {
+      "bytes": 74047,
+      "checked_at": "2026-10-21T15:32:27.008835+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://durhammuseum.org/visit/directions-and-parking/",
+      "id": "durham-parking",
+      "last_modified": null,
+      "path": "durham-parking.body",
+      "sha256": "3d20aeed7ba2c9b0bee40d04d19dd182966758971ecb6c793ef9f76622af11b5",
+      "status": 200,
+      "url": "https://durhammuseum.org/visit/directions-and-parking/"
+    },
+    {
+      "bytes": 2189,
+      "checked_at": "2026-10-21T15:32:28.059634+00:00",
+      "content_type": "text/plain; charset=UTF-8",
+      "final_url": "https://my.lwv.org/robots.txt",
+      "id": "robots-my-lwv-org",
+      "last_modified": "Mon, 29 Sep 2025 13:08:47 GMT",
+      "path": "robots-my-lwv-org.body",
+      "sha256": "278e83bcf567badfebcdea4d5d20ca9898e4449fe4eb2e3b5a08227b4ca9b762",
+      "status": 200,
+      "url": "https://my.lwv.org/robots.txt"
+    },
+    {
+      "bytes": 60521,
+      "checked_at": "2026-10-21T15:32:29.068926+00:00",
+      "content_type": "text/html; charset=utf-8",
+      "final_url": "https://my.lwv.org/connecticut/tour-information/directions-and-guidelines",
+      "id": "capitol-directions",
+      "last_modified": null,
+      "path": "capitol-directions.body",
+      "sha256": "016a0e07dbd8ed57dced5a94f47ef53aa75d05396ce3a712e81f63fb7c8c9327",
+      "status": 200,
+      "url": "https://my.lwv.org/connecticut/tour-information/directions-and-guidelines"
+    },
+    {
+      "bytes": 52718,
+      "checked_at": "2026-10-21T15:32:30.069054+00:00",
+      "content_type": "text/html; charset=utf-8",
+      "final_url": "https://my.lwv.org/connecticut/tour-information/faqs",
+      "id": "capitol-faq",
+      "last_modified": null,
+      "path": "capitol-faq.body",
+      "sha256": "158fe1b0a00f1db04fc60a69f787bb57d625fcb1f1c0f476aa7e3ad6d76162fe",
+      "status": 200,
+      "url": "https://my.lwv.org/connecticut/tour-information/faqs"
+    },
+    {
+      "bytes": 4074,
+      "checked_at": "2026-10-21T15:32:31.311299+00:00",
+      "content_type": "text/plain; charset=utf-8",
+      "final_url": "https://ncbg.unc.edu/robots.txt",
+      "id": "robots-ncbg-unc-edu",
+      "last_modified": null,
+      "path": "robots-ncbg-unc-edu.body",
+      "sha256": "ddbc609293e6ea8ed90d078f7f50fa0ebafef374c44648b4e0d74e5a41a22d16",
+      "status": 200,
+      "url": "https://ncbg.unc.edu/robots.txt"
+    },
+    {
+      "bytes": 168472,
+      "checked_at": "2026-10-21T15:32:32.311393+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://ncbg.unc.edu/venue/botanical-garden/",
+      "id": "ncbg-arrival",
+      "last_modified": null,
+      "path": "ncbg-arrival.body",
+      "sha256": "d6f0f67b965c9135c080a8ed74d25d8d5653e0bc34110129e86bb7e4e1bd48d4",
+      "status": 200,
+      "url": "https://ncbg.unc.edu/venue/botanical-garden/"
+    },
+    {
+      "bytes": 167,
+      "checked_at": "2026-10-21T15:32:33.087804+00:00",
+      "content_type": "text/plain; charset=utf-8",
+      "final_url": "https://myriadgardens.org/robots.txt",
+      "id": "robots-myriadgardens-org",
+      "last_modified": null,
+      "path": "robots-myriadgardens-org.body",
+      "sha256": "81cd5e1017a88090f3d9f328474d64ae4b068af2eb06f2cdb6a09a849eafb22b",
+      "status": 200,
+      "url": "https://myriadgardens.org/robots.txt"
+    },
+    {
+      "checked_at": "2026-10-21T15:32:34.667608+00:00",
+      "error": "HTTPError",
+      "id": "myriad-plan",
+      "reason": "HTTP Error 404: Not Found",
+      "status": 404,
+      "url": "https://myriadgardens.org/plan-your-visit/"
+    },
+    {
+      "bytes": 176,
+      "checked_at": "2026-10-21T15:32:36.220291+00:00",
+      "content_type": "text/plain",
+      "final_url": "https://tulsabotanic.org/robots.txt",
+      "id": "robots-www-tulsabotanic-org",
+      "last_modified": "Fri, 13 Feb 2026 15:11:46 GMT",
+      "path": "robots-www-tulsabotanic-org.body",
+      "sha256": "1fab33faffec21aeb4249ffc52b8335b5db72ba3c26aac7c71261c4a5e94a4f1",
+      "status": 200,
+      "url": "https://www.tulsabotanic.org/robots.txt"
+    },
+    {
+      "checked_at": "2026-10-21T15:32:38.389504+00:00",
+      "error": "HTTPError",
+      "id": "tulsa-plan",
+      "reason": "HTTP Error 404: Not Found",
+      "status": 404,
+      "url": "https://www.tulsabotanic.org/plan-your-visit/"
+    },
+    {
+      "bytes": 134,
+      "checked_at": "2026-10-21T15:32:40.539653+00:00",
+      "content_type": "text/plain; charset=utf-8",
+      "final_url": "https://bellingrath.org/robots.txt",
+      "id": "robots-bellingrath-org",
+      "last_modified": "Wed, 21 Oct 2026 15:32:41 GMT",
+      "path": "robots-bellingrath-org.body",
+      "sha256": "069d04ab228f2fec5db2219efdd248a929eebfc419c0b79212e15f7183a03d5f",
+      "status": 200,
+      "url": "https://bellingrath.org/robots.txt"
+    },
+    {
+      "bytes": 131273,
+      "checked_at": "2026-10-21T15:32:41.539757+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://bellingrath.org/visit/directions-parking/",
+      "id": "bellingrath-parking",
+      "last_modified": null,
+      "path": "bellingrath-parking.body",
+      "sha256": "d114bc06949ea19d9e230b54e1b2a2f21516855764710b87b3ad6d815f6629b6",
+      "status": 200,
+      "url": "https://bellingrath.org/visit/directions-parking/"
+    },
+    {
+      "bytes": 126269,
+      "checked_at": "2026-10-21T15:32:42.539846+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://bellingrath.org/visit/plan-your-visit/",
+      "id": "bellingrath-hours",
+      "last_modified": null,
+      "path": "bellingrath-hours.body",
+      "sha256": "9650d9f898dd1ae48abd6f8f69b71ec255a497af45fca13d65beafcd601c8971",
+      "status": 200,
+      "url": "https://bellingrath.org/visit/plan-your-visit/"
+    },
+    {
+      "bytes": 124470,
+      "checked_at": "2026-10-21T15:32:43.539950+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://bellingrath.org/visit/visitor-tips-policies/",
+      "id": "bellingrath-faq",
+      "last_modified": null,
+      "path": "bellingrath-faq.body",
+      "sha256": "34e32a6b2502668d761aaaed8b93fc90db342bab2b85136323c97a3858eb9fa5",
+      "status": 200,
+      "url": "https://bellingrath.org/visit/visitor-tips-policies/"
+    },
+    {
+      "bytes": 171,
+      "checked_at": "2026-10-21T15:32:45.048782+00:00",
+      "content_type": "text/plain; charset=utf-8",
+      "final_url": "https://bbgardens.org/robots.txt",
+      "id": "robots-bbgardens-org",
+      "last_modified": null,
+      "path": "robots-bbgardens-org.body",
+      "sha256": "5c99028e49ede1c1d1018a6deac292d3980aa07eb226e0847ceb80ca34e7e149",
+      "status": 200,
+      "url": "https://bbgardens.org/robots.txt"
+    },
+    {
+      "bytes": 151557,
+      "checked_at": "2026-10-21T15:32:46.049214+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://bbgardens.org/directions-to-the-gardens/",
+      "id": "birmingham-directions",
+      "last_modified": null,
+      "path": "birmingham-directions.body",
+      "sha256": "59480399d1b876461653ee380d69c6cd476f5c5b03e7426cec33bbfb03622d76",
+      "status": 200,
+      "url": "https://bbgardens.org/directions-to-the-gardens/"
+    },
+    {
+      "bytes": 23,
+      "checked_at": "2026-10-21T15:32:47.591432+00:00",
+      "content_type": "text/plain",
+      "final_url": "https://crosbyarboretum.msstate.edu/robots.txt",
+      "id": "robots-crosbyarboretum-msstate-edu",
+      "last_modified": "Fri, 05 May 2023 21:14:01 GMT",
+      "path": "robots-crosbyarboretum-msstate-edu.body",
+      "sha256": "eaeaa8d3511d1622227d89707d995b8b1f0902f5b86fdbe58882d1cef260d4d7",
+      "status": 200,
+      "url": "https://crosbyarboretum.msstate.edu/robots.txt"
+    },
+    {
+      "bytes": 26255,
+      "checked_at": "2026-10-21T15:32:49.646544+00:00",
+      "content_type": "text/html; charset=utf-8",
+      "final_url": "https://crosbyarboretum.msstate.edu/directions",
+      "id": "crosby-directions",
+      "last_modified": null,
+      "path": "crosby-directions.body",
+      "sha256": "a58a449b066132141660d0767bf0dd00a4e0f56b33fc8b5d1cd959cfe36c446b",
+      "status": 200,
+      "url": "https://crosbyarboretum.msstate.edu/directions"
+    },
+    {
+      "bytes": 2112,
+      "checked_at": "2026-10-21T15:32:50.126924+00:00",
+      "content_type": "text/plain",
+      "final_url": "https://www.transportation.gov/robots.txt",
+      "id": "robots-www-transportation-gov",
+      "last_modified": "Thu, 15 Oct 2026 19:17:23 GMT",
+      "path": "robots-www-transportation-gov.body",
+      "sha256": "2f03b9a5dbfd11e2384c792b63f8540ef293f717eca8dae88526c1a98d0cea86",
+      "status": 200,
+      "url": "https://www.transportation.gov/robots.txt"
+    },
+    {
+      "bytes": 65904,
+      "checked_at": "2026-10-21T15:32:51.127038+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://www.transportation.gov/regulations/time-act",
+      "id": "dot-timezones",
+      "last_modified": "Wed, 21 Oct 2026 14:55:39 GMT",
+      "path": "dot-timezones.body",
+      "sha256": "16cbcfca1d7c1c8d518e6adcd7762319175d0d0b7e42a092caa0368142bcedb6",
+      "status": 200,
+      "url": "https://www.transportation.gov/regulations/time-act"
+    },
+    {
+      "bytes": 79004,
+      "checked_at": "2026-10-21T15:36:06.210492+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://marktwainhouse.org/admission/",
+      "id": "marktwain-admission",
+      "last_modified": null,
+      "path": "marktwain-admission.body",
+      "sha256": "f39f2829562932bdf1782fe3ba3f784020cb27cbb7032b4826e8ce2895b1fe4f",
+      "status": 200,
+      "url": "https://marktwainhouse.org/admission/"
+    },
+    {
+      "checked_at": "2026-10-21T15:36:08.028243+00:00",
+      "error": "HTTPError",
+      "id": "robots-delartwebimages-s3-us-east-2-amazonaws-com",
+      "reason": "HTTP Error 403: Forbidden",
+      "status": 403,
+      "url": "https://delartwebimages.s3.us-east-2.amazonaws.com/robots.txt"
+    },
+    {
+      "checked_at": "2026-10-21T15:36:08.780755+00:00",
+      "id": "delart-parking-map",
+      "not_requested": "robots_disallow_or_unavailable",
+      "url": "https://delartwebimages.s3.us-east-2.amazonaws.com/PDF/Parking-Map.pdf"
+    },
+    {
+      "bytes": 192,
+      "checked_at": "2026-10-21T15:36:08.781602+00:00",
+      "content_type": "text/plain; charset=utf-8",
+      "final_url": "https://geodata.bts.gov/robots.txt",
+      "id": "robots-geodata-bts-gov",
+      "last_modified": null,
+      "path": "robots-geodata-bts-gov.body",
+      "sha256": "19d25f23af8678792f872a55348ae6413151343e82565770171c8da5dba4eaa7",
+      "status": 200,
+      "url": "https://geodata.bts.gov/robots.txt"
+    },
+    {
+      "bytes": 51545,
+      "checked_at": "2026-10-21T15:36:09.781741+00:00",
+      "content_type": "text/html; charset=utf-8",
+      "final_url": "https://geodata.bts.gov/datasets/usdot::time-zones/about",
+      "id": "dot-map-index",
+      "last_modified": null,
+      "path": "dot-map-index.body",
+      "sha256": "d236543622c76a8821d7e40080c26fae51d068da7ec82518fa63fff56f143b15",
+      "status": 200,
+      "url": "https://geodata.bts.gov/datasets/usdot::time-zones/about"
+    },
+    {
+      "bytes": 112596,
+      "checked_at": "2026-10-21T15:43:21.617241+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://ncbg.unc.edu/visit/visitor-information/",
+      "id": "ncbg-current-visitor",
+      "last_modified": null,
+      "path": "ncbg-current-visitor.body",
+      "sha256": "7de8531f533ad917e1277c869070366f3d52674752daa37f3b9b74fbb65078b5",
+      "status": 200,
+      "url": "https://ncbg.unc.edu/visit/visitor-information/"
+    },
+    {
+      "bytes": 111935,
+      "checked_at": "2026-10-21T15:43:22.909940+00:00",
+      "content_type": "text/html; charset=UTF-8",
+      "final_url": "https://ncbg.unc.edu/2025/07/08/storm-recovery-updates/",
+      "id": "ncbg-storm",
+      "last_modified": null,
+      "path": "ncbg-storm.body",
+      "sha256": "713dabba30988ae1a497a2dedf45ad3a80e01bc0c6817b1ea5cc9a95ddfcd5e3",
+      "status": 200,
+      "url": "https://ncbg.unc.edu/2025/07/08/storm-recovery-updates/"
+    },
+    {
+      "bytes": 904268,
+      "checked_at": "2026-10-21T15:43:24.238826+00:00",
+      "content_type": "application/pdf",
+      "final_url": "https://ncbg.unc.edu/wp-content/uploads/sites/963/2025/04/NCBG-Master-Map-2025_web.pdf",
+      "id": "ncbg-map-2025",
+      "last_modified": "Fri, 25 Apr 2025 16:34:51 GMT",
+      "path": "ncbg-map-2025.body",
+      "sha256": "43c53455e9e69bf6c77c40d7ec5178149f920f63709a3c75705fac25f8ee2b64",
+      "status": 200,
+      "url": "https://ncbg.unc.edu/wp-content/uploads/sites/963/2025/04/NCBG-Master-Map-2025_web.pdf"
+    },
+    {
+      "bytes": 66716,
+      "checked_at": "2026-10-21T14:34:59.832829+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q4165331",
+      "path": "retained/0abdd54771c92ab13aba9d8700cd044b1c9f68f27c595327276ffaaa302a1bbb.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "0abdd54771c92ab13aba9d8700cd044b1c9f68f27c595327276ffaaa302a1bbb",
+      "status": 200,
+      "url": "https://marktwainhouse.org/visit/"
+    },
+    {
+      "bytes": 216706,
+      "checked_at": "2026-10-21T14:34:48.532310+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q5161605",
+      "path": "retained/0272a42de40b28e4b28cc9c0ad5c25398933419d2fb2cffbb6674f4e27e5c5df.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "0272a42de40b28e4b28cc9c0ad5c25398933419d2fb2cffbb6674f4e27e5c5df",
+      "status": 200,
+      "url": "https://ctsciencecenter.org/visit/"
+    },
+    {
+      "bytes": 57817,
+      "checked_at": "2026-10-21T14:34:22.448271+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q7005718",
+      "path": "retained/6af65dff3a39e00307dc8985ab12500df509f6223df77d43f3992267c25f77df.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "6af65dff3a39e00307dc8985ab12500df509f6223df77d43f3992267c25f77df",
+      "status": 200,
+      "url": "https://www.nbmaa.org/visit"
+    },
+    {
+      "bytes": 138246,
+      "checked_at": "2026-10-21T14:34:45.595911+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q1890082",
+      "path": "retained/319025379a65797eb57278f13459902dc8ce72859b30b8cf5f8027f7c4b6a978.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "319025379a65797eb57278f13459902dc8ce72859b30b8cf5f8027f7c4b6a978",
+      "status": 200,
+      "url": "https://mysticseaport.org/visit/"
+    },
+    {
+      "bytes": 99004,
+      "checked_at": "2026-10-21T14:34:40.486786+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q21028346",
+      "path": "retained/ccb63fa16a9a8969e4e69d200ad467f9e9bbce519ce84b72e57fe108aeec1a65.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "ccb63fa16a9a8969e4e69d200ad467f9e9bbce519ce84b72e57fe108aeec1a65",
+      "status": 200,
+      "url": "https://amcmuseum.org/visit/"
+    },
+    {
+      "bytes": 116492,
+      "checked_at": "2026-10-21T14:35:12.272594+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q8075609",
+      "path": "retained/5b9e3907050da34d1311c83dcbd0201b022617315aad175973944e9d388d9ee1.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "5b9e3907050da34d1311c83dcbd0201b022617315aad175973944e9d388d9ee1",
+      "status": 200,
+      "url": "https://history.delaware.gov/zwaanendael-museum/"
+    },
+    {
+      "bytes": 40767,
+      "checked_at": "2026-10-21T14:34:26.602529+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q1183941",
+      "path": "retained/51e972411611d24af175d3b426bc16254c93feed32b5a485a365eb45db599504.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "51e972411611d24af175d3b426bc16254c93feed32b5a485a365eb45db599504",
+      "status": 200,
+      "url": "https://delart.org/visit/"
+    },
+    {
+      "bytes": 88616,
+      "checked_at": "2026-10-21T14:34:34.042292+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q2585168",
+      "path": "retained/bb3810703f44112a69a565655dc38acd9ab9ce86239667e4a0d6b50ac3f21b7b.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "bb3810703f44112a69a565655dc38acd9ab9ce86239667e4a0d6b50ac3f21b7b",
+      "status": 200,
+      "url": "https://www.winterthur.org/visit/"
+    },
+    {
+      "bytes": 216573,
+      "checked_at": "2026-10-21T14:34:29.984396+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q4785686",
+      "path": "retained/06ac619d1c9a79659c6b19f033495e66b03ecb209cd0c44c4804b95f1d8b8024.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "06ac619d1c9a79659c6b19f033495e66b03ecb209cd0c44c4804b95f1d8b8024",
+      "status": 200,
+      "url": "https://www.hagley.org/hours-tickets"
+    },
+    {
+      "bytes": 239604,
+      "checked_at": "2026-10-21T14:35:28.562863+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q847637",
+      "path": "retained/440b7aec12bbd0bf81dc8e9d49e03961f513e620556937cdd8e891d85f50062a.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "440b7aec12bbd0bf81dc8e9d49e03961f513e620556937cdd8e891d85f50062a",
+      "status": 200,
+      "url": "https://cosmo.org/visit/"
+    },
+    {
+      "bytes": 396023,
+      "checked_at": "2026-10-21T14:39:40.691163+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q131340500",
+      "path": "retained/21712260c52ea3f19407dd985a9f60e57752d6a57074c7be47d064426b156c50.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "21712260c52ea3f19407dd985a9f60e57752d6a57074c7be47d064426b156c50",
+      "status": 200,
+      "url": "https://history.nebraska.gov/museum/"
+    },
+    {
+      "bytes": 79668,
+      "checked_at": "2026-10-21T14:39:38.974318+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q5316537",
+      "path": "retained/973bfc7d776fbe23181506c1b4bb8eef1a320cbefd1ca1f8bcab74db8f70d9ef.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "973bfc7d776fbe23181506c1b4bb8eef1a320cbefd1ca1f8bcab74db8f70d9ef",
+      "status": 200,
+      "url": "https://durhammuseum.org/visit/hours-and-admission/"
+    },
+    {
+      "bytes": 58209,
+      "checked_at": "2026-10-21T14:41:33.472791+00:00",
+      "content_type": "text/html",
+      "id": "retained-70000834",
+      "path": "retained/0512152eccea2b967b50a2c8347731b29413c93ddbe3fc0b3e6dabf5a7e21a17.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "0512152eccea2b967b50a2c8347731b29413c93ddbe3fc0b3e6dabf5a7e21a17",
+      "status": 200,
+      "url": "https://my.lwv.org/connecticut/capitol-information-and-tours"
+    },
+    {
+      "bytes": 111473,
+      "checked_at": "2026-10-21T14:37:10.044322+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q1099139",
+      "path": "retained/7170a7169a0690efb58d99e1b6d03ccaf5eb9b81f80015485b3a771c13b92d95.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "7170a7169a0690efb58d99e1b6d03ccaf5eb9b81f80015485b3a771c13b92d95",
+      "status": 200,
+      "url": "https://ncbg.unc.edu/visit/"
+    },
+    {
+      "bytes": 156875,
+      "checked_at": "2026-10-21T14:37:14.356860+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q14708625",
+      "path": "retained/635ed9534f377188a04ac31ca5bda42e4808a73e673fd2335505127f1d193c66.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "635ed9534f377188a04ac31ca5bda42e4808a73e673fd2335505127f1d193c66",
+      "status": 200,
+      "url": "https://myriadgardens.org/"
+    },
+    {
+      "bytes": 123518,
+      "checked_at": "2026-10-21T14:37:17.627210+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q16902084",
+      "path": "retained/8c155fe05253395b8583d09ed9bc4c2ab0b3e72e537ea11292beaf2e5497821a.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "8c155fe05253395b8583d09ed9bc4c2ab0b3e72e537ea11292beaf2e5497821a",
+      "status": 200,
+      "url": "https://www.tulsabotanic.org/"
+    },
+    {
+      "bytes": 140563,
+      "checked_at": "2026-10-21T14:37:24.413374+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q4884044",
+      "path": "retained/3b7ffebb4dd0ea6ca9fad7c7777c6e45a2007b7402264c802e49fbbbf20c6e6c.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "3b7ffebb4dd0ea6ca9fad7c7777c6e45a2007b7402264c802e49fbbbf20c6e6c",
+      "status": 200,
+      "url": "https://bellingrath.org/"
+    },
+    {
+      "bytes": 160849,
+      "checked_at": "2026-10-21T14:37:25.864671+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q4894262",
+      "path": "retained/38fc34e24a49ae70ccb5c4ce382bc4838bd0f2e55c381d636a568bfa89ddb82c.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "38fc34e24a49ae70ccb5c4ce382bc4838bd0f2e55c381d636a568bfa89ddb82c",
+      "status": 200,
+      "url": "https://bernheim.org/plan-your-visit/"
+    },
+    {
+      "bytes": 199401,
+      "checked_at": "2026-10-21T14:37:27.973815+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q4916622",
+      "path": "retained/68f789f25d60b99e598623238bfe22f5fc611b2fd7df2b142b57c224d4c2be54.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "68f789f25d60b99e598623238bfe22f5fc611b2fd7df2b142b57c224d4c2be54",
+      "status": 200,
+      "url": "https://bbgardens.org/visit/"
+    },
+    {
+      "bytes": 25628,
+      "checked_at": "2026-10-21T14:37:29.857407+00:00",
+      "content_type": "text/html",
+      "id": "retained-Q5188024",
+      "path": "retained/c1332a06161aadb4a137785e4e6a09b51c9b2eaf22d8124762902274e288b681.bin",
+      "private_original": true,
+      "receipt_origin": "inherited SHA-verified original operator evidence; not refetched",
+      "sha256": "c1332a06161aadb4a137785e4e6a09b51c9b2eaf22d8124762902274e288b681",
+      "status": 200,
+      "url": "https://crosbyarboretum.msstate.edu/visit"
+    }
+  ],
+  "generated_at": "2026-10-21T15:47:20.229521+00:00",
+  "records": [
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Main visitor parking uses 385 Farmington Avenue, not house mailing address 351 Farmington Avenue; smaller lot at 65 Forest Street. No authoritative entrance coordinate or driving-leg proof.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "House requires a timed guided tour; museum-center galleries have a distinct self-guided admission. Final house start16:15, normal public hours09:30\u201317:30. January\u2013March Tuesday closure is outside review horizon. Component/ticket-specific calendar needs selection.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "House entry requires timed guided-tour ticket; galleries differ."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "ac576a66d4563e600314a2ce6e731725e9826fd88baf2399e05f60bfb177dbc0",
+          "receipt_id": "marktwain-parking",
+          "url": "https://marktwainhouse.org/visit/directions-parking/"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "ac576a66d4563e600314a2ce6e731725e9826fd88baf2399e05f60bfb177dbc0",
+          "receipt_id": "marktwain-admission",
+          "url": "https://marktwainhouse.org/admission/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Mark Twain House",
+      "native_feature_coordinate": [
+        41.767139,
+        -72.7005
+      ],
+      "planning_duration_policy": "Source house tour55minutes; living-history~70minutes. Existing120minute planning estimate is not a promise of house availability.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T15:32:08.614633+00:00",
+            "receipt_id": "marktwain-parking",
+            "sha256": "91e8516d5bc9e87c3470767b678fcfec5c0fa59bf2ff332cb0bf68d74f015c26",
+            "url": "https://marktwainhouse.org/visit/directions-parking/"
+          },
+          {
+            "checked_at": "2026-10-21T15:36:06.210492+00:00",
+            "receipt_id": "marktwain-admission",
+            "sha256": "f39f2829562932bdf1782fe3ba3f784020cb27cbb7032b4826e8ce2895b1fe4f",
+            "url": "https://marktwainhouse.org/admission/"
+          }
+        ],
+        "unknown_reasons": [
+          "House timed-ticket availability/fixed starts not verified; choose museum-center-only scope before using regular hours."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "17:30",
+            "opens": "09:30",
+            "weekdays": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/New_York",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.155649+00:00",
+      "source_id": "catalog-pilot:wikidata:Q4165331",
+      "state": "CT",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_lead": {
+        "coordinate": [
+          41.7643333,
+          -72.6688056
+        ],
+        "coordinate_origin": "operator-authored HTML directions link; destination provider NOT contacted",
+        "qualified": false,
+        "role": "operator-linked Science Center public garage entrance lead",
+        "source_precision": "decimal link7places / DMS0.1arcsec; accuracy not specified"
+      },
+      "arrival_qualified": false,
+      "arrival_reason": "Operator getting-here page explicitly links Science Center Garage at Grove Street/70 Grove Street to coordinate [41.7643333,-72.6688056]. Separate Convention Center Garage point [41.7636389,-72.6684722] must not be conflated. Parking entrance role is supported; coordinate provenance/precision, road approach and driving leg remain unverified.",
+      "arrival_status": "operator_coordinate_lead_only",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Regular September\u2013late-June schedule Wednesday\u2013Sunday10\u201316. Summer, select Toddler Tuesdays, school vacation and holiday ticket-calendar exceptions require additional date-specific review.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "Paid garage possible; no current price copied."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "beb9636948403589453a5cef95cbdc57d41a1883c13c7ee410fa844b40752ab5",
+          "receipt_id": "ctscience-arrival",
+          "url": "https://ctsciencecenter.org/getting-here"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "25574c16a287b822fa43be6449c0d387bc1426a056ab342d51eb71be208015cf",
+          "receipt_id": "ctscience-hours",
+          "url": "https://ctsciencecenter.org/hours-pricing"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Connecticut Science Center",
+      "native_feature_coordinate": [
+        41.7644,
+        -72.6697
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T15:32:12.872737+00:00",
+            "receipt_id": "ctscience-arrival",
+            "sha256": "8b464fa506c69d0a512b2c72104a3b0a9703e380c57304beeaaa89d53d0bd397",
+            "url": "https://ctsciencecenter.org/getting-here"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:14.366442+00:00",
+            "receipt_id": "ctscience-hours",
+            "sha256": "1d44fd0e7b5dad440010c087aa3c24752e03815a0dcf168f821165f873235f08",
+            "url": "https://ctsciencecenter.org/hours-pricing"
+          }
+        ],
+        "unknown_reasons": [
+          "Select Tuesday, school-vacation and special-event exceptions not enumerated; seasonal late-June boundary unspecified."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "16:00",
+            "opens": "10:00",
+            "weekdays": [
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/New_York",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.161339+00:00",
+      "source_id": "catalog-pilot:wikidata:Q5161605",
+      "state": "CT",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Operator identifies Lexington Street museum driveway, right branch for accessible parking and left branch for regular parking. Venue feature coordinate does not identify driveway. Medical building33LexingtonStreet is forbidden parking; towing warning.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Museum Tuesday\u2013Thursday/Saturday/Sunday10\u201317, Friday10\u201320, Monday closed. Published2026 exception list inspected; Oct16/17 exceptions already past. Calendar proposal limited to Oct21\u2013Nov19; no holiday falls in this horizon in operator list. Cafe/store/events not included.",
+      "calendar_status": "bounded_schedule_supported",
+      "current_access_constraints": [
+        "Groups8+ require reservation; under16 accompanied by adult; first Friday after17:00 special admission; no parking at33LexingtonStreet."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "8d002524d1e7a3be55abda0159ff44d5c3b566cf3988f15336e679d28b6fdb75",
+          "receipt_id": "retained-Q7005718",
+          "url": "https://www.nbmaa.org/visit"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding"
+      ],
+      "name": "New Britain Museum of American Art",
+      "native_feature_coordinate": [
+        41.664317,
+        -72.791603
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:34:22.448271+00:00",
+            "receipt_id": "retained-Q7005718",
+            "sha256": "6af65dff3a39e00307dc8985ab12500df509f6223df77d43f3992267c25f77df",
+            "url": "https://www.nbmaa.org/visit"
+          }
+        ],
+        "unknown_reasons": [],
+        "weekly_windows": [
+          {
+            "closes": "17:00",
+            "opens": "10:00",
+            "weekdays": [
+              1,
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          {
+            "closes": "20:00",
+            "opens": "10:00",
+            "weekdays": [
+              4
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/New_York",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.162349+00:00",
+      "source_id": "catalog-pilot:wikidata:Q7005718",
+      "state": "CT",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "North Entrance/Thompson Exhibition Building is year-round at105GreenmanvilleAvenue. South/Sanger Reception at50GreenmanvilleAvenue is seasonal, closed in winter. Free parking across street has different bus/car arrangements. No authoritative entrance coordinate/driving leg.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Current banner daily10\u201317, but seasonal campus/component access and contradictory December closure statements make a universal venue calendar unsafe. North/South entrance season must be tied to date.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "South entrance seasonal; use year-round North only after exact arrival qualification."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "786999ccfc3ecf7c96c08cde62e9eaaa63b160538a73b3a83326edade4497ad8",
+          "receipt_id": "mystic-directions",
+          "url": "https://mysticseaport.org/visit/plan-your-visit/directions/"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "786999ccfc3ecf7c96c08cde62e9eaaa63b160538a73b3a83326edade4497ad8",
+          "receipt_id": "mystic-hours",
+          "url": "https://mysticseaport.org/visit/hours-tickets/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Mystic Seaport",
+      "native_feature_coordinate": [
+        41.3625,
+        -71.965277777
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T15:32:17.312566+00:00",
+            "receipt_id": "mystic-directions",
+            "sha256": "6717d7689ac9d2e9e603f62c77be85b51cdd363e215abefb73130e084e2c729e",
+            "url": "https://mysticseaport.org/visit/plan-your-visit/directions/"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:18.312670+00:00",
+            "receipt_id": "mystic-hours",
+            "sha256": "c3bb88752da06c748aa0901e32b30bc5cde3081e9da8a2a120894b41fedb4af5",
+            "url": "https://mysticseaport.org/visit/hours-tickets/"
+          }
+        ],
+        "unknown_reasons": [
+          "Component/season boundaries and conflicting December closure intervals unresolved."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "17:00",
+            "opens": "10:00",
+            "weekdays": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/New_York",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.166749+00:00",
+      "source_id": "catalog-pilot:wikidata:Q1890082",
+      "state": "CT",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Official museum directions require own museum gate on Route9 from US113/DE1 exit91, then about half-mile and left into museum. Visiting through Dover AFB is explicitly prohibited. No exact public gate/parking coordinate published in inspected operator pages; native museum feature point is not arrival.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Wednesday\u2013Sunday09\u201316; Mondays/Tuesdays and federal holidays closed except Veterans Day. Weekly proposal stays partial until authoritative dated holiday enumeration is retained.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "Only own Route9 public gate; never route through Dover AFB. Aircraft tours weather/guide/temperature dependent and not guaranteed."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "c4adab2b2756e70bd529b00ab8aaceb024b3f1554c6836e27603861285d8dfc9",
+          "receipt_id": "retained-Q21028346",
+          "url": "https://amcmuseum.org/visit/"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "6847b22792e96d600462378c7a3beed7b02bf321860502823fb7981582a36363",
+          "receipt_id": "amc-faq",
+          "url": "https://amcmuseum.org/faq/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Air Mobility Command Museum",
+      "native_feature_coordinate": [
+        39.118692,
+        -75.456643
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:34:40.486786+00:00",
+            "receipt_id": "retained-Q21028346",
+            "sha256": "ccb63fa16a9a8969e4e69d200ad467f9e9bbce519ce84b72e57fe108aeec1a65",
+            "url": "https://amcmuseum.org/visit/"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:20.102251+00:00",
+            "receipt_id": "amc-faq",
+            "sha256": "86622e68d03ba0d4e719ebc852f520f4cae566435b3ad46e53bec702203f8fa9",
+            "url": "https://amcmuseum.org/faq/"
+          }
+        ],
+        "unknown_reasons": [
+          "Retain authoritative dated federal-holiday enumeration, including Veterans Day exception, before complete calendar approval."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "16:00",
+            "opens": "09:00",
+            "weekdays": [
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/New_York",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.167565+00:00",
+      "source_id": "catalog-pilot:wikidata:Q21028346",
+      "state": "DE",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Official Delaware history operator identifies museum at102KingsHighway and public visitation, but no coordinate bound to legal vehicle parking or walking arrival; native point remains venue identity.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Wednesday\u2013Saturday10\u201316:15. Holiday/exception coverage not established from inspected page.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "No parking/current operational amenity claims beyond retained source."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "c887f134c26ea8310e1fb4bd6fbab7b640393bd1b556e62691c7a442be92ec2a",
+          "receipt_id": "retained-Q8075609",
+          "url": "https://history.delaware.gov/zwaanendael-museum/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Zwaanendael Museum",
+      "native_feature_coordinate": [
+        38.7747,
+        -75.1391
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:35:12.272594+00:00",
+            "receipt_id": "retained-Q8075609",
+            "sha256": "5b9e3907050da34d1311c83dcbd0201b022617315aad175973944e9d388d9ee1",
+            "url": "https://history.delaware.gov/zwaanendael-museum/"
+          }
+        ],
+        "unknown_reasons": [
+          "State holiday/special closure dates not established."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "16:15",
+            "opens": "10:00",
+            "weekdays": [
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/New_York",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.168937+00:00",
+      "source_id": "catalog-pilot:wikidata:Q8075609",
+      "state": "DE",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Operator describes museum location/public parking but parking-map original withheld: S3 robots request returned403, so PDF itself was not requested. Generic venue feature point is not an entrance.",
+      "arrival_status": "held_no_qualified_point",
+      "blocked": [
+        "delart-parking-map"
+      ],
+      "calendar_is_deployed": false,
+      "calendar_reason": "Museum Wednesday/Friday/Saturday/Sunday10\u201316, Thursday April\u2013December10\u201320, Monday/Tuesday closed. Museum scope only; normal source holidays listed, no listed closure in Oct21\u2013Nov19 bounded proposal.",
+      "calendar_status": "bounded_schedule_supported",
+      "current_access_constraints": [
+        "Do not imply parking geometry verified; blocked parking PDF not read."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "013c6364e954a2f584db16465d2079007538ae90f4b357897fe79381786daf07",
+          "receipt_id": "retained-Q1183941",
+          "url": "https://delart.org/visit/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding"
+      ],
+      "name": "Delaware Art Museum",
+      "native_feature_coordinate": [
+        39.765365,
+        -75.564696
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:34:26.602529+00:00",
+            "receipt_id": "retained-Q1183941",
+            "sha256": "51e972411611d24af175d3b426bc16254c93feed32b5a485a365eb45db599504",
+            "url": "https://delart.org/visit/"
+          }
+        ],
+        "unknown_reasons": [],
+        "weekly_windows": [
+          {
+            "closes": "16:00",
+            "opens": "10:00",
+            "weekdays": [
+              2,
+              4,
+              5,
+              6
+            ]
+          },
+          {
+            "closes": "20:00",
+            "opens": "10:00",
+            "weekdays": [
+              3
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/New_York",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.169437+00:00",
+      "source_id": "catalog-pilot:wikidata:Q1183941",
+      "state": "DE",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Operator says GPS use5105KennettPike rather than mailing address; campus parking/tram/shuttle choices are not a verified entrance coordinate.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Estate/gardens, house and tram have distinct hours; Yuletide hours and select late evenings vary by date. No single component-independent schedule approved.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "Arrival point and accessible/shuttle approach not qualified."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "f0cd79eb19c16acf6bc8c984046c23d4497f674780b1c52a390530d6b1d6449a",
+          "receipt_id": "winterthur-directions",
+          "url": "https://www.winterthur.org/get-directions/"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "f0cd79eb19c16acf6bc8c984046c23d4497f674780b1c52a390530d6b1d6449a",
+          "receipt_id": "winterthur-hours",
+          "url": "https://www.winterthur.org/view-hours/"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "f0cd79eb19c16acf6bc8c984046c23d4497f674780b1c52a390530d6b1d6449a",
+          "receipt_id": "winterthur-faq",
+          "url": "https://www.winterthur.org/visit/faq/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Winterthur Museum, Garden and Library",
+      "native_feature_coordinate": [
+        39.805833,
+        -75.600833
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T15:32:23.515713+00:00",
+            "receipt_id": "winterthur-directions",
+            "sha256": "d18a20dc487c9e43e698cfd2a0a12b32f3e91519ed86b7eb61bd528d426415c1",
+            "url": "https://www.winterthur.org/get-directions/"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:24.515846+00:00",
+            "receipt_id": "winterthur-hours",
+            "sha256": "55affe90e074ee212166624429681ec3dc325850d45357821192ac5e3e994f86",
+            "url": "https://www.winterthur.org/view-hours/"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:25.515925+00:00",
+            "receipt_id": "winterthur-faq",
+            "sha256": "1259bebc49ce517b7a7b584e9f73716bfb62f40e9dd8af4e815d8f1c516a473d",
+            "url": "https://www.winterthur.org/visit/faq/"
+          }
+        ],
+        "unknown_reasons": [
+          "Resolve component, Yuletide effective dates and select evening exceptions; house closes earlier than estate."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "17:00",
+            "opens": "10:00",
+            "weekdays": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/New_York",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.174305+00:00",
+      "source_id": "catalog-pilot:wikidata:Q2585168",
+      "state": "DE",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Operator links visitor directions at200HagleyCreekRoad; estate/native point differs from visitor-center role. Map viewport coordinates are not a parking entrance.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Six days10\u201317, closed Wednesday, last admission16:00; source recommends arriving before15:00. Residence closures Nov17\u201319 affect component within horizon. Calendar schema has no separate last-admission field.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "Do not promise residence access during Nov17\u201319; arrival before15:00 recommended, last admission16:00."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "9116d3091e528902779b05fa248210b7157f70699b097b3a829fdbcb2bde4efd",
+          "receipt_id": "retained-Q4785686",
+          "url": "https://www.hagley.org/hours-tickets"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Hagley Museum and Library",
+      "native_feature_coordinate": [
+        39.780556,
+        -75.575
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:34:29.984396+00:00",
+            "receipt_id": "retained-Q4785686",
+            "sha256": "06ac619d1c9a79659c6b19f033495e66b03ecb209cd0c44c4804b95f1d8b8024",
+            "url": "https://www.hagley.org/hours-tickets"
+          }
+        ],
+        "unknown_reasons": [
+          "Separate last-entry16:00 constraint and component closure Nov17\u201319 require reviewed handling."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "17:00",
+            "opens": "10:00",
+            "weekdays": [
+              0,
+              1,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/New_York",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.178930+00:00",
+      "source_id": "catalog-pilot:wikidata:Q4785686",
+      "state": "DE",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Operator provides1100NPlumStreet address and visit details; no exact visitor entrance/parking point or public vehicle approach qualified.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Museum Sunday/Wednesday/Thursday09\u201317; Friday/Saturday09\u201319; Monday/Tuesday closed. Shows and simulator have separate times; holiday exceptions not established.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "All-Access pass is day-of-purchase only; no ticket/film availability promise."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "ffac6ca8d3bf65f2e9893f8d8743d014a08f28f89508c314f92228b3a33b65a0",
+          "receipt_id": "retained-Q847637",
+          "url": "https://cosmo.org/visit/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Kansas Cosmosphere and Space Center",
+      "native_feature_coordinate": [
+        38.0653,
+        -97.9213
+      ],
+      "planning_duration_policy": "Operator recommends at least4hours for All-Access. Use reviewed4hour planning estimate for that scope;120minute fallback must be labeled museum-only estimate, not complete All-Access.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:35:28.562863+00:00",
+            "receipt_id": "retained-Q847637",
+            "sha256": "440b7aec12bbd0bf81dc8e9d49e03961f513e620556937cdd8e891d85f50062a",
+            "url": "https://cosmo.org/visit/"
+          }
+        ],
+        "unknown_reasons": [
+          "Holiday exceptions and show-specific starts unresolved; Hall of Space-only scope required."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "17:00",
+            "opens": "09:00",
+            "weekdays": [
+              2,
+              3,
+              6
+            ]
+          },
+          {
+            "closes": "19:00",
+            "opens": "09:00",
+            "weekdays": [
+              4,
+              5
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/Chicago",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.181649+00:00",
+      "source_id": "catalog-pilot:wikidata:Q847637",
+      "state": "KS",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Operator museum address is not an entrance/parking coordinate; native point remains identity only.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Tuesday\u2013Saturday09\u201316, Sunday/Monday closed; state-observed holiday closures need authoritative date enumeration.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "No invented parking/hours exception facts."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "96a2b320ec3de6a6f97c840dcdebd78bf5b8c6e4c0b824225d67a8c3ed3f753c",
+          "receipt_id": "retained-Q131340500",
+          "url": "https://history.nebraska.gov/museum/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Nebraska History Museum",
+      "native_feature_coordinate": [
+        40.813888888,
+        -96.699722222
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:39:40.691163+00:00",
+            "receipt_id": "retained-Q131340500",
+            "sha256": "21712260c52ea3f19407dd985a9f60e57752d6a57074c7be47d064426b156c50",
+            "url": "https://history.nebraska.gov/museum/"
+          }
+        ],
+        "unknown_reasons": [
+          "Nebraska observed-state-holiday dates not verified for bounded horizon."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "16:00",
+            "opens": "09:00",
+            "weekdays": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/Chicago",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.186445+00:00",
+      "source_id": "catalog-pilot:wikidata:Q131340500",
+      "state": "NE",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Official parking page identifies10thStreet upper level for main accessible entrance and7.5ftheight limit. Lower Leavenworth level for taller vehicles requires stairs. Exact driveway coordinate and legal road approach unresolved.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Fall Tuesday\u2013Saturday10\u201316, Sunday12\u201316, Monday closed. Summer schedule separate. Source says most major holidays; exhaustive holiday exceptions/effective fall boundary unresolved.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "Upper deck7.5ftclearance; lower-level stairs; no after-hours parking/towing risk."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "efa239d76c89003364896533a62330ca2f742a96714b7f8d4765ad258accf5fe",
+          "receipt_id": "retained-Q5316537",
+          "url": "https://durhammuseum.org/visit/hours-and-admission/"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "efa239d76c89003364896533a62330ca2f742a96714b7f8d4765ad258accf5fe",
+          "receipt_id": "durham-parking",
+          "url": "https://durhammuseum.org/visit/directions-and-parking/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Durham Museum",
+      "native_feature_coordinate": [
+        41.251462,
+        -95.928379
+      ],
+      "planning_duration_policy": "Operator average visit2hours and featured-exhibit45\u201360minutes. Reviewed120minute planning estimate fits museum scope, not guarantee.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:39:38.974318+00:00",
+            "receipt_id": "retained-Q5316537",
+            "sha256": "973bfc7d776fbe23181506c1b4bb8eef1a320cbefd1ca1f8bcab74db8f70d9ef",
+            "url": "https://durhammuseum.org/visit/hours-and-admission/"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:27.008835+00:00",
+            "receipt_id": "durham-parking",
+            "sha256": "3d20aeed7ba2c9b0bee40d04d19dd182966758971ecb6c793ef9f76622af11b5",
+            "url": "https://durhammuseum.org/visit/directions-and-parking/"
+          }
+        ],
+        "unknown_reasons": [
+          "Season bounds and non-exhaustive major-holiday closure policy require dated review."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "16:00",
+            "opens": "10:00",
+            "weekdays": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          {
+            "closes": "16:00",
+            "opens": "12:00",
+            "weekdays": [
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/Chicago",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.188826+00:00",
+      "source_id": "catalog-pilot:wikidata:Q5316537",
+      "state": "NE",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Guided Capitol tours start at WEST entrance of Legislative Office Building300CapitolAvenue, not historic Capitol210CapitolAvenue/native point. Garage/frontgrounds options require separate exact entrance qualification.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Self-guided weekdays08\u201317, weekends/state and federal holidays closed. Guided tour fixed departures09:15/10:15/11:15/12:15/13:15 require reservations and approximately1hour. Cannot represent all as walk-in historic-building calendar.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "Security screening, guided reservation; tour origin different building; no weekend access."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "c887f134c26ea8310e1fb4bd6fbab7b640393bd1b556e62691c7a442be92ec2a",
+          "receipt_id": "capitol-directions",
+          "url": "https://my.lwv.org/connecticut/tour-information/directions-and-guidelines"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "c887f134c26ea8310e1fb4bd6fbab7b640393bd1b556e62691c7a442be92ec2a",
+          "receipt_id": "capitol-faq",
+          "url": "https://my.lwv.org/connecticut/tour-information/faqs"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "c887f134c26ea8310e1fb4bd6fbab7b640393bd1b556e62691c7a442be92ec2a",
+          "receipt_id": "retained-70000834",
+          "url": "https://my.lwv.org/connecticut/capitol-information-and-tours"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Connecticut State Capitol",
+      "native_feature_coordinate": [
+        41.76417351100008,
+        -72.68227767699995
+      ],
+      "planning_duration_policy": "Operator guided tour approximately1hour; existing120minute default only a planning fallback for chosen self-guided scope.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T15:32:29.068926+00:00",
+            "receipt_id": "capitol-directions",
+            "sha256": "016a0e07dbd8ed57dced5a94f47ef53aa75d05396ce3a712e81f63fb7c8c9327",
+            "url": "https://my.lwv.org/connecticut/tour-information/directions-and-guidelines"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:30.069054+00:00",
+            "receipt_id": "capitol-faq",
+            "sha256": "158fe1b0a00f1db04fc60a69f787bb57d625fcb1f1c0f476aa7e3ad6d76162fe",
+            "url": "https://my.lwv.org/connecticut/tour-information/faqs"
+          },
+          {
+            "checked_at": "2026-10-21T14:41:33.472791+00:00",
+            "receipt_id": "retained-70000834",
+            "sha256": "0512152eccea2b967b50a2c8347731b29413c93ddbe3fc0b3e6dabf5a7e21a17",
+            "url": "https://my.lwv.org/connecticut/capitol-information-and-tours"
+          }
+        ],
+        "unknown_reasons": [
+          "State/federal holiday dates and component-specific self-guided versus reserved guided access unresolved."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "17:00",
+            "opens": "08:00",
+            "weekdays": [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/New_York",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.191627+00:00",
+      "source_id": "catalog-pilot:nps-nhl:70000834",
+      "state": "CT",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Current operator visitor information confirms FRONT lot off Old Mason Farm Road open, gates locked17:00; after-hours overflow outside gates. Laurel Hill back entrance CLOSED to visitor vehicles; service/emergency/staff only per storm update. Official2025 schematic maps front parking/drop-off but has no georegistered arrival coordinate. Venue JSON-LD[35.901081,-79.031939] is not arrival; native[35.8994,-79.0339] also not qualified.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Main display garden Tuesday\u2013Sunday09\u201317; Monday/university holidays closed. Gate17:00 imposes real departure constraint. University holiday dates and storm/repair constraints need retained dated resolution. Trails/natural areas are separate components.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "No visitor vehicle approach via Laurel Hill; front parking locks17:00; overflow outside gate for hiking beyond hours. Stale venue page incorrectly advertises Laurel Hill parking; current visitor-information plus dated storm update override it. Main Mason Farm ford remains closed; do not conflate main display garden and reserve."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "d22cff911c8fc8821ce2ee4fcc64aa629ce92ee3b5177b7c173d53cfd34d2eda",
+          "receipt_id": "ncbg-current-visitor",
+          "url": "https://ncbg.unc.edu/visit/visitor-information/"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "92cb5ea05a1ae48a477c22ae9aa3d742f09d59065aef791e9178e7f16e560536",
+          "receipt_id": "ncbg-storm",
+          "url": "https://ncbg.unc.edu/2025/07/08/storm-recovery-updates/"
+        },
+        {
+          "literal_encoding": "pdf-extracted-text",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "ae5d47e1ddd331e38fa51ba8f3a56eb9f0a494192aecd4a96baa34e4a0f47023",
+          "receipt_id": "ncbg-map-2025",
+          "url": "https://ncbg.unc.edu/wp-content/uploads/sites/963/2025/04/NCBG-Master-Map-2025_web.pdf"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "43d37303367a61631105d46ec3523cd369ab9c66c369c1be3c4aeba51a234e95",
+          "receipt_id": "ncbg-arrival",
+          "url": "https://ncbg.unc.edu/venue/botanical-garden/"
+        }
+      ],
+      "forbidden_point": {
+        "coordinate": [
+          35.8979179,
+          -79.0335157
+        ],
+        "qualified": false,
+        "role": "stale operator-linked Laurel Hill route destination; closed to visitor vehicles"
+      },
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "North Carolina Botanical Garden",
+      "native_feature_coordinate": [
+        35.8994,
+        -79.0339
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T15:43:21.617241+00:00",
+            "receipt_id": "ncbg-current-visitor",
+            "sha256": "7de8531f533ad917e1277c869070366f3d52674752daa37f3b9b74fbb65078b5",
+            "url": "https://ncbg.unc.edu/visit/visitor-information/"
+          },
+          {
+            "checked_at": "2026-10-21T15:43:22.909940+00:00",
+            "receipt_id": "ncbg-storm",
+            "sha256": "713dabba30988ae1a497a2dedf45ad3a80e01bc0c6817b1ea5cc9a95ddfcd5e3",
+            "url": "https://ncbg.unc.edu/2025/07/08/storm-recovery-updates/"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:32.311393+00:00",
+            "receipt_id": "ncbg-arrival",
+            "sha256": "d6f0f67b965c9135c080a8ed74d25d8d5653e0bc34110129e86bb7e4e1bd48d4",
+            "url": "https://ncbg.unc.edu/venue/botanical-garden/"
+          }
+        ],
+        "unknown_reasons": [
+          "University holiday dates not established; resolve current repair/closure constraints for intended garden component."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "17:00",
+            "opens": "09:00",
+            "weekdays": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/New_York",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.212858+00:00",
+      "source_id": "catalog-pilot:wikidata:Q1099139",
+      "state": "NC",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified",
+      "venue_lead": {
+        "coordinate": [
+          35.901081,
+          -79.031939
+        ],
+        "qualified": false,
+        "role": "operator venue GeoCoordinates, not visitor arrival",
+        "source_precision": "6decimalplaces; accuracy unspecified"
+      }
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Downtown gardens comprise large grounds with multiple access points. Native garden coordinate not a verified public vehicle arrival/parking entrance.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Outdoor grounds daily06\u201323. Conservatory separate Monday\u2013Saturday09\u201317, Sunday11\u201317, excluded from outdoor calendar. Bounded proposal is outdoor grounds only; no indoor/event availability promise.",
+      "calendar_status": "bounded_schedule_supported",
+      "current_access_constraints": [
+        "Outdoor grounds-only proposal; conservatory and events require separate component tickets/hours."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "8c8bc9f9197327801cd7c1b35f5625b2ebfe81fcb77f5c8ae8dcd36bf5cb870c",
+          "receipt_id": "retained-Q14708625",
+          "url": "https://myriadgardens.org/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding"
+      ],
+      "name": "Myriad Botanical Gardens",
+      "native_feature_coordinate": [
+        35.465027,
+        -97.517932
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:37:14.356860+00:00",
+            "receipt_id": "retained-Q14708625",
+            "sha256": "635ed9534f377188a04ac31ca5bda42e4808a73e673fd2335505127f1d193c66",
+            "url": "https://myriadgardens.org/"
+          }
+        ],
+        "unknown_reasons": [],
+        "weekly_windows": [
+          {
+            "closes": "23:00",
+            "opens": "06:00",
+            "weekdays": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/Chicago",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.214633+00:00",
+      "source_id": "catalog-pilot:wikidata:Q14708625",
+      "state": "OK",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Generic operator-linked garden location[36.2068298,-96.0621449] differs from native point but has no verified entrance/parking role or approach proof. Do not replace native point with generic map pin.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Dated BOOtanical2026Sep19\u2013Oct31 Tuesday\u2013Sunday10\u201317; Monday closed. Special Thursday evenings and later holiday lights are ticketed/event-specific. Proposal bounded to Oct21\u201331 only.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "Do not infer daily evening access from timed-ticket holiday lights nights."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "ec46110aaa0d6212ba361ab3eb46e981d7c3c37a896385c33ffcf576043b03f3",
+          "receipt_id": "retained-Q16902084",
+          "url": "https://www.tulsabotanic.org/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Tulsa Botanic Garden",
+      "native_feature_coordinate": [
+        36.2091,
+        -96.06
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-10-31",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:37:17.627210+00:00",
+            "receipt_id": "retained-Q16902084",
+            "sha256": "8c155fe05253395b8583d09ed9bc4c2ab0b3e72e537ea11292beaf2e5497821a",
+            "url": "https://www.tulsabotanic.org/"
+          }
+        ],
+        "unknown_reasons": [
+          "Special-event ticket/entry exceptions unresolved; no November regular-calendar projection."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "17:00",
+            "opens": "10:00",
+            "weekdays": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/Chicago",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.216189+00:00",
+      "source_id": "catalog-pilot:wikidata:Q16902084",
+      "state": "OK",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Operator directions distinguish main public parking, accessible spaces and RV parking but no georegistered entrance point; map embed viewport is not arrival.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Regular gardens08\u201316;2026Oct24 regular admission08\u201314, grounds close15 before separately ticketed evening event. Home tour last15:30. Later lights have dated/event schedule; cannot flatten components.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "Oct24 regular admission ends14:00/grounds close15:00; evening separate event; home tours have own starts."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "c887f134c26ea8310e1fb4bd6fbab7b640393bd1b556e62691c7a442be92ec2a",
+          "receipt_id": "bellingrath-parking",
+          "url": "https://bellingrath.org/visit/directions-parking/"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "bc17eea1c496be8a06adbef0ba2de4468f678240509e3be8960bd290f6a839a4",
+          "receipt_id": "bellingrath-hours",
+          "url": "https://bellingrath.org/visit/plan-your-visit/"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "c887f134c26ea8310e1fb4bd6fbab7b640393bd1b556e62691c7a442be92ec2a",
+          "receipt_id": "bellingrath-faq",
+          "url": "https://bellingrath.org/visit/visitor-tips-policies/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Bellingrath Gardens and Home",
+      "native_feature_coordinate": [
+        30.43041,
+        -88.142735
+      ],
+      "planning_duration_policy": "Operator suggests gardens1.5\u20132hours plus home30minutes. Reviewed planning estimate2hours gardens or2.5hours combo; tour inventory unknown.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [
+          {
+            "date": "2026-10-24",
+            "windows": [
+              {
+                "closes": "15:00",
+                "opens": "08:00"
+              }
+            ]
+          }
+        ],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T15:32:41.539757+00:00",
+            "receipt_id": "bellingrath-parking",
+            "sha256": "d114bc06949ea19d9e230b54e1b2a2f21516855764710b87b3ad6d815f6629b6",
+            "url": "https://bellingrath.org/visit/directions-parking/"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:42.539846+00:00",
+            "receipt_id": "bellingrath-hours",
+            "sha256": "9650d9f898dd1ae48abd6f8f69b71ec255a497af45fca13d65beafcd601c8971",
+            "url": "https://bellingrath.org/visit/plan-your-visit/"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:43.539950+00:00",
+            "receipt_id": "bellingrath-faq",
+            "sha256": "34e32a6b2502668d761aaaed8b93fc90db342bab2b85136323c97a3858eb9fa5",
+            "url": "https://bellingrath.org/visit/visitor-tips-policies/"
+          }
+        ],
+        "unknown_reasons": [
+          "Last-entry/component constraint and Oct24 ticketed closure/reopening require explicit representation before complete approval."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "16:00",
+            "opens": "08:00",
+            "weekdays": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/Chicago",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.221645+00:00",
+      "source_id": "catalog-pilot:wikidata:Q4884044",
+      "state": "AL",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Forest property contains several visitor destinations/roads; native point not a verified visitor-center or parking arrival. No road/entrance qualification.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Operator currently advertises07\u201319 but seasonal transition boundary not established; do not project this all year.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "No assumption all forest trails/facilities share gate hours."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "b4d48da7d970a2968bc6c99d959d4b813f9ecd87a6d92217c6d3a955dfc1637b",
+          "receipt_id": "retained-Q4894262",
+          "url": "https://bernheim.org/plan-your-visit/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Bernheim Forest and  Arboretum",
+      "native_feature_coordinate": [
+        37.917033,
+        -85.667491
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:37:25.864671+00:00",
+            "receipt_id": "retained-Q4894262",
+            "sha256": "38fc34e24a49ae70ccb5c4ce382bc4838bd0f2e55c381d636a568bfa89ddb82c",
+            "url": "https://bernheim.org/plan-your-visit/"
+          }
+        ],
+        "unknown_reasons": [
+          "Seasonal closing transition date and event exceptions unresolved."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "19:00",
+            "opens": "07:00",
+            "weekdays": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/Kentucky/Louisville",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.223598+00:00",
+      "source_id": "catalog-pilot:wikidata:Q4894262",
+      "state": "KY",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "Official directions use Lane Park Road garden entrance; no exact authoritative driveway coordinate. Whole-garden place pin is not entrance.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Gardens open every day. Published dated schedule Mar8\u2013Nov1,2026 07\u201319; Nov1,2026\u2013Mar7,2027 07\u201317. Overlap on Nov1 resolved conservatively using shorter explicit winter window; indoor library/shop/cafe excluded.",
+      "calendar_status": "bounded_schedule_supported",
+      "current_access_constraints": [
+        "Nov1 overlap uses07\u201317; gardens-only, no indoor amenity or event guarantee."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "ceecb7ce0a6c7893b59dc1db1ead295aaad1cf8329e05b869b50e7abd8d69208",
+          "receipt_id": "retained-Q4916622",
+          "url": "https://bbgardens.org/visit/"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "7a0e3c0c6c26734ba111b95893ab0fa36fbf093b80f4f1f269ef8523c816527a",
+          "receipt_id": "birmingham-directions",
+          "url": "https://bbgardens.org/directions-to-the-gardens/"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding"
+      ],
+      "name": "Birmingham Botanical Gardens",
+      "native_feature_coordinate": [
+        33.4917,
+        -86.7745
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [
+          {
+            "date": "2026-11-01",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-02",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-03",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-04",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-05",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-06",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-07",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-08",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-09",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-10",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-11",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-12",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-13",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-14",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-15",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-16",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-17",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-18",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          },
+          {
+            "date": "2026-11-19",
+            "windows": [
+              {
+                "closes": "17:00",
+                "opens": "07:00"
+              }
+            ]
+          }
+        ],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:37:27.973815+00:00",
+            "receipt_id": "retained-Q4916622",
+            "sha256": "68f789f25d60b99e598623238bfe22f5fc611b2fd7df2b142b57c224d4c2be54",
+            "url": "https://bbgardens.org/visit/"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:46.049214+00:00",
+            "receipt_id": "birmingham-directions",
+            "sha256": "59480399d1b876461653ee380d69c6cd476f5c5b03e7426cec33bbfb03622d76",
+            "url": "https://bbgardens.org/directions-to-the-gardens/"
+          }
+        ],
+        "unknown_reasons": [],
+        "weekly_windows": [
+          {
+            "closes": "19:00",
+            "opens": "07:00",
+            "weekdays": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/Chicago",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.228454+00:00",
+      "source_id": "catalog-pilot:wikidata:Q4916622",
+      "state": "AL",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    },
+    {
+      "arrival_qualified": false,
+      "arrival_reason": "RidgeRoad370 public address and generic venue map point do not bind visitor parking entrance. No verified arrival coordinate/road approach.",
+      "arrival_status": "held_no_qualified_point",
+      "calendar_is_deployed": false,
+      "calendar_reason": "Tuesday\u2013Saturday09\u201317, last admission16:00, gate closes17:00. Calendar lacks separate last-entry property; holiday/emergency exception coverage missing.",
+      "calendar_status": "published_schedule_partial",
+      "current_access_constraints": [
+        "Must enter by16:00 and leave gate17:00; do not schedule latest entry at closing."
+      ],
+      "decision": "retain existing T2; no admission mutation",
+      "evidence_refs": [
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "c887f134c26ea8310e1fb4bd6fbab7b640393bd1b556e62691c7a442be92ec2a",
+          "receipt_id": "retained-Q5188024",
+          "url": "https://crosbyarboretum.msstate.edu/visit"
+        },
+        {
+          "literal_encoding": "raw-utf8",
+          "proof_excerpt_retained_privately": true,
+          "proof_excerpt_sha256": "c887f134c26ea8310e1fb4bd6fbab7b640393bd1b556e62691c7a442be92ec2a",
+          "receipt_id": "crosby-directions",
+          "url": "https://crosbyarboretum.msstate.edu/directions"
+        }
+      ],
+      "missing_t3_gates": [
+        "exact legal public arrival coordinate with provenance and accuracy",
+        "public road approach/driving-leg proof",
+        "verified IANA timezone binding",
+        "complete component-specific calendar without unresolved restrictions"
+      ],
+      "name": "Crosby Arboretum",
+      "native_feature_coordinate": [
+        30.5036,
+        -89.6662
+      ],
+      "planning_duration_policy": "Existing legacy120minute planning fallback, bounded by app15minute\u20136hour policy; reviewed as estimate only, never a source-published fact.",
+      "proposed_calendar": {
+        "annual_closures": [],
+        "date_overrides": [],
+        "fixed_starts": [],
+        "schema_version": "roadtrips-source-visit-calendar/1",
+        "seasons": [
+          {
+            "end": "2026-11-19",
+            "kind": "dated",
+            "start": "2026-10-21"
+          }
+        ],
+        "source_receipts": [
+          {
+            "checked_at": "2026-10-21T14:37:29.857407+00:00",
+            "receipt_id": "retained-Q5188024",
+            "sha256": "c1332a06161aadb4a137785e4e6a09b51c9b2eaf22d8124762902274e288b681",
+            "url": "https://crosbyarboretum.msstate.edu/visit"
+          },
+          {
+            "checked_at": "2026-10-21T15:32:49.646544+00:00",
+            "receipt_id": "crosby-directions",
+            "sha256": "a58a449b066132141660d0767bf0dd00a4e0f56b33fc8b5d1cd959cfe36c446b",
+            "url": "https://crosbyarboretum.msstate.edu/directions"
+          }
+        ],
+        "unknown_reasons": [
+          "Last-entry16:00 not representable separately by existing calendar schema; holiday/emergency exceptions unresolved."
+        ],
+        "weekly_windows": [
+          {
+            "closes": "17:00",
+            "opens": "09:00",
+            "weekdays": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        ]
+      },
+      "proposed_iana_timezone_inference": "America/Chicago",
+      "review_status": "Codex-assisted source qualification; not independent human approval",
+      "reviewed_at": "2026-10-21T15:47:20.229510+00:00",
+      "source_id": "catalog-pilot:wikidata:Q5188024",
+      "state": "MS",
+      "t3_qualified": false,
+      "timezone_basis": "Geographic planning inference only. USDOT legal timezone boundary catalog located but no authoritative point-in-zone operation performed. No paid geocoding/timezone provider called.",
+      "timezone_status": "held_iana_binding_unverified"
+    }
+  ],
+  "review_period": [
+    "2026-10-21",
+    "2026-11-19"
+  ],
+  "rights": "Original operator bodies retained privately for audit, not licensed text for app redistribution; facts paraphrased. Existing source admission rights not redefined.",
+  "schema_version": "roadtrips-arrival-calendar-qualification/1",
+  "scope": "20-place bounded cloud-local qualification; no catalog/db/admission mutations",
+  "summary": {
+    "admission_changes": 0,
+    "all_operator_originals_fully_read": 20,
+    "blocked": [
+      {
+        "id": "marktwain-hours",
+        "reason": "HTTP Error 404: Not Found",
+        "status": 404,
+        "url": "https://marktwainhouse.org/visit/hours-admission/"
+      },
+      {
+        "id": "myriad-plan",
+        "reason": "HTTP Error 404: Not Found",
+        "status": 404,
+        "url": "https://myriadgardens.org/plan-your-visit/"
+      },
+      {
+        "id": "tulsa-plan",
+        "reason": "HTTP Error 404: Not Found",
+        "status": 404,
+        "url": "https://www.tulsabotanic.org/plan-your-visit/"
+      },
+      {
+        "id": "robots-delartwebimages-s3-us-east-2-amazonaws-com",
+        "reason": "HTTP Error 403: Forbidden",
+        "status": 403,
+        "url": "https://delartwebimages.s3.us-east-2.amazonaws.com/robots.txt"
+      },
+      {
+        "id": "delart-parking-map",
+        "not_requested": "robots_disallow_or_unavailable",
+        "url": "https://delartwebimages.s3.us-east-2.amazonaws.com/PDF/Parking-Map.pdf"
+      }
+    ],
+    "bounded_schedule_supported": 4,
+    "fresh_attempt_receipts": 44,
+    "fresh_body_bytes": 3380151,
+    "fresh_successful_operator_pages": 22,
+    "inherited_operator_originals_sha_verified": 20,
+    "operator_specific_garage_coordinate_leads": 1,
+    "original_body_bytes": 2732748,
+    "published_schedule_reviewed": 20,
+    "qualified_arrivals": 0,
+    "qualified_t3": 0,
+    "records_reviewed": 20
+  }
+}

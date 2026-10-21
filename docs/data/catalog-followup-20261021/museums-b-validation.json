@@ -1,0 +1,13 @@
+{
+  "checks_passed": 10,
+  "queue_denominator": 25,
+  "T2_source_contract_passes": 14,
+  "T1_holds": 11,
+  "T3": 0,
+  "source_receipt_hashes_checked": 57,
+  "idempotent_replay": true,
+  "preserved_frozen_bindings": true,
+  "new_positive_bytes": 1786018,
+  "updates_sha256": "32aa9dc7420db89f2b8c76ed7342cb605c571467f960f2ef13015b58aa8e9b4c",
+  "scope": "Offline evidence/field contract replay and source-review audit. Not independent factual/human verification, unified cross-group admission or live-catalog reconciliation."
+}
