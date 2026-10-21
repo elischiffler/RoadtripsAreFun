@@ -1,0 +1,812 @@
+[
+  {
+    "activities": [],
+    "attribute_ratings": {
+      "adventure": 0.5,
+      "beaches_water": 0.5,
+      "crowd_avoidance": 0.5,
+      "culture_arts": 0.5,
+      "family_friendliness": 0.5,
+      "food": 0.8,
+      "hiking_outdoors": 0.5,
+      "history": 0.5,
+      "nature": 0.5,
+      "nightlife": 0.5,
+      "relaxation": 0.5,
+      "scenery": 0.5,
+      "shopping": 0.5,
+      "unique_local_experiences": 0.5
+    },
+    "dataset": "Roadtrips reviewed pilot persona",
+    "description": "Peabody Heights Brewery is review-classified as a food experience in MD. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+    "inferred_traveler_fit": {
+      "basis": "Reviewed source category; recommendations are not measured visitor facts.",
+      "character": "Visitor food experience",
+      "confidence": "limited category inference",
+      "estimated_attribute_keys": [
+        "food"
+      ],
+      "interests": [
+        "food"
+      ],
+      "uninformative_prior_keys": [
+        "scenery",
+        "nature",
+        "hiking_outdoors",
+        "history",
+        "culture_arts",
+        "nightlife",
+        "shopping",
+        "beaches_water",
+        "adventure",
+        "relaxation",
+        "unique_local_experiences",
+        "family_friendliness",
+        "crowd_avoidance"
+      ]
+    },
+    "location_profile": {
+      "activities": [],
+      "address": null,
+      "attribute_ratings": {
+        "adventure": 0.5,
+        "beaches_water": 0.5,
+        "crowd_avoidance": 0.5,
+        "culture_arts": 0.5,
+        "family_friendliness": 0.5,
+        "food": 0.8,
+        "hiking_outdoors": 0.5,
+        "history": 0.5,
+        "nature": 0.5,
+        "nightlife": 0.5,
+        "relaxation": 0.5,
+        "scenery": 0.5,
+        "shopping": 0.5,
+        "unique_local_experiences": 0.5
+      },
+      "categories": [
+        "catalog_browse",
+        "food_experience"
+      ],
+      "coordinates": [
+        39.324338,
+        -76.61042199999997
+      ],
+      "description": "Peabody Heights Brewery is review-classified as a food experience in MD. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+      "name": "Peabody Heights Brewery",
+      "provenance": {
+        "identity_source": "Retained native source fields and operator public-visit review",
+        "ratings_source": "roadtrips-pilot-persona/1: category inferences; unknown attributes use 0.5 priors"
+      },
+      "provider_id": "catalog-pilot:baltimore-heritage:392",
+      "provider_rank": 0,
+      "source": "catalog-pilot",
+      "source_attribution": "See retained field-level source credits; no agency endorsement.",
+      "source_provenance": [
+        {
+          "agency_stewardship_evidence": [],
+          "aliases": [],
+          "classification_basis": "Codex-assisted classification of native facility and operator context; not a publisher taxonomy or a verified activity inventory",
+          "dataset": "Roadtrips reviewed pilot native feature facts",
+          "license": "CC-BY-4.0",
+          "limitations": "Source-reviewed identity/location/public visitor purpose; not field verification, current availability or routing readiness.",
+          "live_parent_reconciled": false,
+          "native_creator": [
+            "Explore Baltimore Heritage"
+          ],
+          "native_id": "392",
+          "native_id_kind": "publisher_identifier",
+          "native_modified": "2026-04-17 19:53:26",
+          "native_source_evidence": [
+            {
+              "checked_at": "2026-10-21T17:49:33.911991+00:00",
+              "evidence_path": "evidence/c506e1bc77d48e2dea82b8922b860e02d460217e1f0fcbda1b378242ab3416ee.bin",
+              "snapshot_sha256": "c506e1bc77d48e2dea82b8922b860e02d460217e1f0fcbda1b378242ab3416ee",
+              "source_url": "https://explore.baltimoreheritage.org/items/show/392?output=mobile-json"
+            }
+          ],
+          "operator_identity_location_evidence": [
+            {
+              "checked_at": "2026-10-21T17:49:34.581255+00:00",
+              "evidence_path": "evidence/6aad30c6d0cea358ae140462fe3ed5b450a7cd07418415de0ce2225f79e2ca3d.bin",
+              "snapshot_sha256": "6aad30c6d0cea358ae140462fe3ed5b450a7cd07418415de0ce2225f79e2ca3d",
+              "source_url": "https://www.peabodyheightsbrewery.com/"
+            },
+            {
+              "checked_at": "2026-10-21T17:49:34.581255+00:00",
+              "evidence_path": "evidence/6aad30c6d0cea358ae140462fe3ed5b450a7cd07418415de0ce2225f79e2ca3d.bin",
+              "snapshot_sha256": "6aad30c6d0cea358ae140462fe3ed5b450a7cd07418415de0ce2225f79e2ca3d",
+              "source_url": "https://www.peabodyheightsbrewery.com/"
+            }
+          ],
+          "point_role": "physical_feature_not_verified_arrival",
+          "public_access_status": "public_visitor_purpose_confirmed; operating_status_unknown",
+          "public_visit_evidence": [
+            {
+              "checked_at": "2026-10-21T17:49:34.581255+00:00",
+              "evidence_path": "evidence/6aad30c6d0cea358ae140462fe3ed5b450a7cd07418415de0ce2225f79e2ca3d.bin",
+              "snapshot_sha256": "6aad30c6d0cea358ae140462fe3ed5b450a7cd07418415de0ce2225f79e2ca3d",
+              "source_url": "https://www.peabodyheightsbrewery.com/"
+            }
+          ],
+          "review_method": "Codex-assisted source reading and deterministic replay; no independent human signoff or field survey",
+          "review_reason": "Retained primary operator body affirms public visits and physical street address; source identity/name/point are same original JSON entity. T2 recommendation requires remaining typed-source/Census/dedup gates; arrival/calendar unresolved.",
+          "reviewed_constraints": {
+            "article_prose_excluded": true,
+            "attribution": {
+              "author": [
+                "Explore Baltimore Heritage"
+              ],
+              "item_url": "https://explore.baltimoreheritage.org/items/show/392",
+              "license": "CC-BY-4.0",
+              "license_url": "https://creativecommons.org/licenses/by/4.0/",
+              "publisher": "Baltimore Heritage",
+              "title": "Peabody Heights Brewery"
+            },
+            "changes_notice": "Native identity/name/point selected; category assigned by review; no article prose or photographs imported.",
+            "media_excluded": true,
+            "native_address": "401 E. 30th Street, Baltimore, MD 21218",
+            "native_modified": "2026-04-17 19:53:26",
+            "native_operator_link_html": "<a href=\"http://www.peabodyheightsbrewery.com/\">Peabody Heights Brewery</a>",
+            "source_coordinate_role": "feature point; driving arrival not established",
+            "unknown_fields": [
+              "current_hours",
+              "cost",
+              "availability",
+              "accessibility",
+              "arrival_coordinate"
+            ]
+          },
+          "reviewer": "source_review agent / retained primary-source review",
+          "rights_evidence": [
+            {
+              "checked_at": "2026-10-21T17:46:34.207136+00:00",
+              "evidence_path": "evidence/534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7.bin",
+              "snapshot_sha256": "534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7",
+              "source_url": "https://explore.baltimoreheritage.org/"
+            }
+          ],
+          "source_attribution": "Explore Baltimore Heritage; Explore Baltimore Heritage / Baltimore Heritage, Inc., Peabody Heights Brewery, https://explore.baltimoreheritage.org/items/show/392, CC BY4.0 https://creativecommons.org/licenses/by/4.0/. Factual fields extracted; category and traveler-fit inferences added. Photos and article prose excluded; no endorsement.",
+          "source_bindings": {
+            "coordinates": {
+              "encoding": "latlon",
+              "latitude": {
+                "evidence_id": "group-0:baltimore-pass-baltimore-392-native",
+                "pointer": "/latitude"
+              },
+              "longitude": {
+                "evidence_id": "group-0:baltimore-pass-baltimore-392-native",
+                "pointer": "/longitude"
+              }
+            },
+            "name": {
+              "evidence_id": "group-0:baltimore-pass-baltimore-392-native",
+              "pointer": "/title"
+            },
+            "native_id": {
+              "evidence_id": "group-0:baltimore-pass-baltimore-392-native",
+              "pointer": "/id"
+            }
+          },
+          "source_family": "baltimore-heritage",
+          "state_classification": {
+            "method": "Census2025 polygon containment; not a surveyed arrival",
+            "snapshot_sha256": "46404936ed8ca141ffd24779235c3250e047869655ec99bdc2211ba38a36dbd1",
+            "source_url": "https://tigerweb.geo.census.gov/arcgis/rest/services/Generalized_ACS2025/State_County/MapServer/7/query"
+          }
+        },
+        {
+          "catalog_admission": {
+            "expires_at_epoch": 1795197225,
+            "gates": {
+              "arrival": false,
+              "calendar": false,
+              "identity": true,
+              "local_duplicate_review": true,
+              "location": true,
+              "public_access": true,
+              "rights": true
+            },
+            "review_status": "approved",
+            "reviewed_at_epoch": 1792605225,
+            "schema_version": "roadtrips-catalog-admission/1",
+            "source_id": "catalog-pilot:baltimore-heritage:392",
+            "tier": "T2"
+          },
+          "dataset": "Roadtrips catalog admission"
+        }
+      ],
+      "source_release": "catalog-baltimore-20261021",
+      "source_updated_at": null,
+      "url": "https://www.peabodyheightsbrewery.com/"
+    },
+    "practical_context": {
+      "accessibility": null,
+      "amenities": null,
+      "arrival_verified": false,
+      "cost": null,
+      "hours": null,
+      "live_operating_status": null,
+      "parking_capacity": null,
+      "reservation_availability": null,
+      "source_constraints": {
+        "article_prose_excluded": true,
+        "attribution": {
+          "author": [
+            "Explore Baltimore Heritage"
+          ],
+          "item_url": "https://explore.baltimoreheritage.org/items/show/392",
+          "license": "CC-BY-4.0",
+          "license_url": "https://creativecommons.org/licenses/by/4.0/",
+          "publisher": "Baltimore Heritage",
+          "title": "Peabody Heights Brewery"
+        },
+        "changes_notice": "Native identity/name/point selected; category assigned by review; no article prose or photographs imported.",
+        "media_excluded": true,
+        "native_address": "401 E. 30th Street, Baltimore, MD 21218",
+        "native_modified": "2026-04-17 19:53:26",
+        "native_operator_link_html": "<a href=\"http://www.peabodyheightsbrewery.com/\">Peabody Heights Brewery</a>",
+        "source_coordinate_role": "feature point; driving arrival not established",
+        "unknown_fields": [
+          "current_hours",
+          "cost",
+          "availability",
+          "accessibility",
+          "arrival_coordinate"
+        ]
+      }
+    },
+    "schema_version": "roadtrips-pilot-persona/1",
+    "source_id": "catalog-pilot:baltimore-heritage:392",
+    "validation_scope": {
+      "expires_at_epoch": 1795197225,
+      "identity_location": "Source-corroborated physical feature; not a surveyed arrival",
+      "live_parent_reconciled": false,
+      "public_access": "Dated operator/source claim review; not real-time availability",
+      "reviewed_at_epoch": 1792605225,
+      "schema_validation_is_factual_verification": false
+    }
+  },
+  {
+    "activities": [],
+    "attribute_ratings": {
+      "adventure": 0.5,
+      "beaches_water": 0.5,
+      "crowd_avoidance": 0.5,
+      "culture_arts": 0.8,
+      "family_friendliness": 0.5,
+      "food": 0.5,
+      "hiking_outdoors": 0.5,
+      "history": 0.5,
+      "nature": 0.5,
+      "nightlife": 0.5,
+      "relaxation": 0.5,
+      "scenery": 0.5,
+      "shopping": 0.5,
+      "unique_local_experiences": 0.5
+    },
+    "dataset": "Roadtrips reviewed pilot persona",
+    "description": "Baltimore Streetcar Museum is review-classified as a museum in MD. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+    "inferred_traveler_fit": {
+      "basis": "Reviewed source category; recommendations are not measured visitor facts.",
+      "character": "Museum visit",
+      "confidence": "limited category inference",
+      "estimated_attribute_keys": [
+        "culture_arts"
+      ],
+      "interests": [
+        "culture_arts"
+      ],
+      "uninformative_prior_keys": [
+        "scenery",
+        "nature",
+        "hiking_outdoors",
+        "food",
+        "history",
+        "nightlife",
+        "shopping",
+        "beaches_water",
+        "adventure",
+        "relaxation",
+        "unique_local_experiences",
+        "family_friendliness",
+        "crowd_avoidance"
+      ]
+    },
+    "location_profile": {
+      "activities": [],
+      "address": null,
+      "attribute_ratings": {
+        "adventure": 0.5,
+        "beaches_water": 0.5,
+        "crowd_avoidance": 0.5,
+        "culture_arts": 0.8,
+        "family_friendliness": 0.5,
+        "food": 0.5,
+        "hiking_outdoors": 0.5,
+        "history": 0.5,
+        "nature": 0.5,
+        "nightlife": 0.5,
+        "relaxation": 0.5,
+        "scenery": 0.5,
+        "shopping": 0.5,
+        "unique_local_experiences": 0.5
+      },
+      "categories": [
+        "catalog_browse",
+        "culture",
+        "museum"
+      ],
+      "coordinates": [
+        39.3117426,
+        -76.62032440000002
+      ],
+      "description": "Baltimore Streetcar Museum is review-classified as a museum in MD. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+      "name": "Baltimore Streetcar Museum",
+      "provenance": {
+        "identity_source": "Retained native source fields and operator public-visit review",
+        "ratings_source": "roadtrips-pilot-persona/1: category inferences; unknown attributes use 0.5 priors"
+      },
+      "provider_id": "catalog-pilot:baltimore-heritage:396",
+      "provider_rank": 0,
+      "source": "catalog-pilot",
+      "source_attribution": "See retained field-level source credits; no agency endorsement.",
+      "source_provenance": [
+        {
+          "agency_stewardship_evidence": [],
+          "aliases": [],
+          "classification_basis": "Codex-assisted classification of native facility and operator context; not a publisher taxonomy or a verified activity inventory",
+          "dataset": "Roadtrips reviewed pilot native feature facts",
+          "license": "CC-BY-4.0",
+          "limitations": "Source-reviewed identity/location/public visitor purpose; not field verification, current availability or routing readiness.",
+          "live_parent_reconciled": false,
+          "native_creator": [
+            "Explore Baltimore Heritage"
+          ],
+          "native_id": "396",
+          "native_id_kind": "publisher_identifier",
+          "native_modified": "2026-04-17 19:53:26",
+          "native_source_evidence": [
+            {
+              "checked_at": "2026-10-21T17:49:33.912898+00:00",
+              "evidence_path": "evidence/42996259c6c33e346eb5226fee5477ad752ac20f3925a7c3411c3b4f08e15d7c.bin",
+              "snapshot_sha256": "42996259c6c33e346eb5226fee5477ad752ac20f3925a7c3411c3b4f08e15d7c",
+              "source_url": "https://explore.baltimoreheritage.org/items/show/396?output=mobile-json"
+            }
+          ],
+          "operator_identity_location_evidence": [
+            {
+              "checked_at": "2026-10-21T17:49:34.766939+00:00",
+              "evidence_path": "evidence/696e9f87b54fed7736317e2de8e8ba6713097a94d7617150d546084814e08f7f.bin",
+              "snapshot_sha256": "696e9f87b54fed7736317e2de8e8ba6713097a94d7617150d546084814e08f7f",
+              "source_url": "https://www.baltimorestreetcarmuseum.org/"
+            },
+            {
+              "checked_at": "2026-10-21T17:49:34.766939+00:00",
+              "evidence_path": "evidence/696e9f87b54fed7736317e2de8e8ba6713097a94d7617150d546084814e08f7f.bin",
+              "snapshot_sha256": "696e9f87b54fed7736317e2de8e8ba6713097a94d7617150d546084814e08f7f",
+              "source_url": "https://www.baltimorestreetcarmuseum.org/"
+            }
+          ],
+          "point_role": "physical_feature_not_verified_arrival",
+          "public_access_status": "public_visitor_purpose_confirmed; operating_status_unknown",
+          "public_visit_evidence": [
+            {
+              "checked_at": "2026-10-21T17:49:34.766939+00:00",
+              "evidence_path": "evidence/696e9f87b54fed7736317e2de8e8ba6713097a94d7617150d546084814e08f7f.bin",
+              "snapshot_sha256": "696e9f87b54fed7736317e2de8e8ba6713097a94d7617150d546084814e08f7f",
+              "source_url": "https://www.baltimorestreetcarmuseum.org/"
+            }
+          ],
+          "review_method": "Codex-assisted source reading and deterministic replay; no independent human signoff or field survey",
+          "review_reason": "Retained primary operator body affirms public visits and physical street address; source identity/name/point are same original JSON entity. T2 recommendation requires remaining typed-source/Census/dedup gates; arrival/calendar unresolved.",
+          "reviewed_constraints": {
+            "access_notes": "Current operator public visit evidence takes precedence over historical-story schedules; no schedule normalized.",
+            "article_prose_excluded": true,
+            "attribution": {
+              "author": [
+                "Explore Baltimore Heritage"
+              ],
+              "item_url": "https://explore.baltimoreheritage.org/items/show/396",
+              "license": "CC-BY-4.0",
+              "license_url": "https://creativecommons.org/licenses/by/4.0/",
+              "publisher": "Baltimore Heritage",
+              "title": "Baltimore Streetcar Museum"
+            },
+            "changes_notice": "Native identity/name/point selected; category assigned by review; no article prose or photographs imported.",
+            "media_excluded": true,
+            "native_address": "1901 Falls Road, Baltimore, MD 21211",
+            "native_modified": "2026-04-17 19:53:26",
+            "native_operator_link_html": "<a href=\"https://www.baltimorestreetcarmuseum.org/\">Baltimore Streetcar Museum</a>",
+            "source_coordinate_role": "feature point; driving arrival not established",
+            "unknown_fields": [
+              "current_hours",
+              "cost",
+              "availability",
+              "accessibility",
+              "arrival_coordinate"
+            ]
+          },
+          "reviewer": "source_review agent / retained primary-source review",
+          "rights_evidence": [
+            {
+              "checked_at": "2026-10-21T17:46:34.207136+00:00",
+              "evidence_path": "evidence/534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7.bin",
+              "snapshot_sha256": "534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7",
+              "source_url": "https://explore.baltimoreheritage.org/"
+            }
+          ],
+          "source_attribution": "Explore Baltimore Heritage; Explore Baltimore Heritage / Baltimore Heritage, Inc., Baltimore Streetcar Museum, https://explore.baltimoreheritage.org/items/show/396, CC BY4.0 https://creativecommons.org/licenses/by/4.0/. Factual fields extracted; category and traveler-fit inferences added. Photos and article prose excluded; no endorsement.",
+          "source_bindings": {
+            "coordinates": {
+              "encoding": "latlon",
+              "latitude": {
+                "evidence_id": "group-0:baltimore-pass-baltimore-396-native",
+                "pointer": "/latitude"
+              },
+              "longitude": {
+                "evidence_id": "group-0:baltimore-pass-baltimore-396-native",
+                "pointer": "/longitude"
+              }
+            },
+            "name": {
+              "evidence_id": "group-0:baltimore-pass-baltimore-396-native",
+              "pointer": "/title"
+            },
+            "native_id": {
+              "evidence_id": "group-0:baltimore-pass-baltimore-396-native",
+              "pointer": "/id"
+            }
+          },
+          "source_family": "baltimore-heritage",
+          "state_classification": {
+            "method": "Census2025 polygon containment; not a surveyed arrival",
+            "snapshot_sha256": "46404936ed8ca141ffd24779235c3250e047869655ec99bdc2211ba38a36dbd1",
+            "source_url": "https://tigerweb.geo.census.gov/arcgis/rest/services/Generalized_ACS2025/State_County/MapServer/7/query"
+          }
+        },
+        {
+          "catalog_admission": {
+            "expires_at_epoch": 1795197225,
+            "gates": {
+              "arrival": false,
+              "calendar": false,
+              "identity": true,
+              "local_duplicate_review": true,
+              "location": true,
+              "public_access": true,
+              "rights": true
+            },
+            "review_status": "approved",
+            "reviewed_at_epoch": 1792605225,
+            "schema_version": "roadtrips-catalog-admission/1",
+            "source_id": "catalog-pilot:baltimore-heritage:396",
+            "tier": "T2"
+          },
+          "dataset": "Roadtrips catalog admission"
+        }
+      ],
+      "source_release": "catalog-baltimore-20261021",
+      "source_updated_at": null,
+      "url": "https://www.baltimorestreetcarmuseum.org/"
+    },
+    "practical_context": {
+      "accessibility": null,
+      "amenities": null,
+      "arrival_verified": false,
+      "cost": null,
+      "hours": null,
+      "live_operating_status": null,
+      "parking_capacity": null,
+      "reservation_availability": null,
+      "source_constraints": {
+        "access_notes": "Current operator public visit evidence takes precedence over historical-story schedules; no schedule normalized.",
+        "article_prose_excluded": true,
+        "attribution": {
+          "author": [
+            "Explore Baltimore Heritage"
+          ],
+          "item_url": "https://explore.baltimoreheritage.org/items/show/396",
+          "license": "CC-BY-4.0",
+          "license_url": "https://creativecommons.org/licenses/by/4.0/",
+          "publisher": "Baltimore Heritage",
+          "title": "Baltimore Streetcar Museum"
+        },
+        "changes_notice": "Native identity/name/point selected; category assigned by review; no article prose or photographs imported.",
+        "media_excluded": true,
+        "native_address": "1901 Falls Road, Baltimore, MD 21211",
+        "native_modified": "2026-04-17 19:53:26",
+        "native_operator_link_html": "<a href=\"https://www.baltimorestreetcarmuseum.org/\">Baltimore Streetcar Museum</a>",
+        "source_coordinate_role": "feature point; driving arrival not established",
+        "unknown_fields": [
+          "current_hours",
+          "cost",
+          "availability",
+          "accessibility",
+          "arrival_coordinate"
+        ]
+      }
+    },
+    "schema_version": "roadtrips-pilot-persona/1",
+    "source_id": "catalog-pilot:baltimore-heritage:396",
+    "validation_scope": {
+      "expires_at_epoch": 1795197225,
+      "identity_location": "Source-corroborated physical feature; not a surveyed arrival",
+      "live_parent_reconciled": false,
+      "public_access": "Dated operator/source claim review; not real-time availability",
+      "reviewed_at_epoch": 1792605225,
+      "schema_validation_is_factual_verification": false
+    }
+  },
+  {
+    "activities": [],
+    "attribute_ratings": {
+      "adventure": 0.5,
+      "beaches_water": 0.5,
+      "crowd_avoidance": 0.5,
+      "culture_arts": 0.5,
+      "family_friendliness": 0.5,
+      "food": 0.5,
+      "hiking_outdoors": 0.5,
+      "history": 0.8,
+      "nature": 0.5,
+      "nightlife": 0.5,
+      "relaxation": 0.5,
+      "scenery": 0.5,
+      "shopping": 0.5,
+      "unique_local_experiences": 0.5
+    },
+    "dataset": "Roadtrips reviewed pilot persona",
+    "description": "Bromo Seltzer Tower is review-classified as a historic site in MD. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+    "inferred_traveler_fit": {
+      "basis": "Reviewed source category; recommendations are not measured visitor facts.",
+      "character": "Public heritage visit",
+      "confidence": "limited category inference",
+      "estimated_attribute_keys": [
+        "history"
+      ],
+      "interests": [
+        "history"
+      ],
+      "uninformative_prior_keys": [
+        "scenery",
+        "nature",
+        "hiking_outdoors",
+        "food",
+        "culture_arts",
+        "nightlife",
+        "shopping",
+        "beaches_water",
+        "adventure",
+        "relaxation",
+        "unique_local_experiences",
+        "family_friendliness",
+        "crowd_avoidance"
+      ]
+    },
+    "location_profile": {
+      "activities": [],
+      "address": null,
+      "attribute_ratings": {
+        "adventure": 0.5,
+        "beaches_water": 0.5,
+        "crowd_avoidance": 0.5,
+        "culture_arts": 0.5,
+        "family_friendliness": 0.5,
+        "food": 0.5,
+        "hiking_outdoors": 0.5,
+        "history": 0.8,
+        "nature": 0.5,
+        "nightlife": 0.5,
+        "relaxation": 0.5,
+        "scenery": 0.5,
+        "shopping": 0.5,
+        "unique_local_experiences": 0.5
+      },
+      "categories": [
+        "catalog_browse",
+        "culture",
+        "historic_site"
+      ],
+      "coordinates": [
+        39.2876495,
+        -76.62061089999997
+      ],
+      "description": "Bromo Seltzer Tower is review-classified as a historic site in MD. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+      "name": "Bromo Seltzer Tower",
+      "provenance": {
+        "identity_source": "Retained native source fields and operator public-visit review",
+        "ratings_source": "roadtrips-pilot-persona/1: category inferences; unknown attributes use 0.5 priors"
+      },
+      "provider_id": "catalog-pilot:baltimore-heritage:82",
+      "provider_rank": 0,
+      "source": "catalog-pilot",
+      "source_attribution": "See retained field-level source credits; no agency endorsement.",
+      "source_provenance": [
+        {
+          "agency_stewardship_evidence": [],
+          "aliases": [],
+          "classification_basis": "Codex-assisted classification of native facility and operator context; not a publisher taxonomy or a verified activity inventory",
+          "dataset": "Roadtrips reviewed pilot native feature facts",
+          "license": "CC-BY-4.0",
+          "limitations": "Source-reviewed identity/location/public visitor purpose; not field verification, current availability or routing readiness.",
+          "live_parent_reconciled": false,
+          "native_creator": [
+            "Theresa Donnelly"
+          ],
+          "native_id": "82",
+          "native_id_kind": "publisher_identifier",
+          "native_modified": "2026-04-17 19:53:24",
+          "native_source_evidence": [
+            {
+              "checked_at": "2026-10-21T17:49:33.914128+00:00",
+              "evidence_path": "evidence/851359184e64ca8742477ce47ad8dd4dc4bef477a14a052168e9b829f55d8889.bin",
+              "snapshot_sha256": "851359184e64ca8742477ce47ad8dd4dc4bef477a14a052168e9b829f55d8889",
+              "source_url": "https://explore.baltimoreheritage.org/items/show/82?output=mobile-json"
+            }
+          ],
+          "operator_identity_location_evidence": [
+            {
+              "checked_at": "2026-10-21T17:49:35.187530+00:00",
+              "evidence_path": "evidence/44da5dbfbf69de9d897d79853408ad8c657750dc3f263603fedcdbf6cc59f5cc.bin",
+              "snapshot_sha256": "44da5dbfbf69de9d897d79853408ad8c657750dc3f263603fedcdbf6cc59f5cc",
+              "source_url": "https://www.bromoseltzertower.com/"
+            },
+            {
+              "checked_at": "2026-10-21T17:49:35.187530+00:00",
+              "evidence_path": "evidence/44da5dbfbf69de9d897d79853408ad8c657750dc3f263603fedcdbf6cc59f5cc.bin",
+              "snapshot_sha256": "44da5dbfbf69de9d897d79853408ad8c657750dc3f263603fedcdbf6cc59f5cc",
+              "source_url": "https://www.bromoseltzertower.com/"
+            }
+          ],
+          "point_role": "physical_feature_not_verified_arrival",
+          "public_access_status": "public_visitor_purpose_confirmed; operating_status_unknown",
+          "public_visit_evidence": [
+            {
+              "checked_at": "2026-10-21T17:49:35.187530+00:00",
+              "evidence_path": "evidence/44da5dbfbf69de9d897d79853408ad8c657750dc3f263603fedcdbf6cc59f5cc.bin",
+              "snapshot_sha256": "44da5dbfbf69de9d897d79853408ad8c657750dc3f263603fedcdbf6cc59f5cc",
+              "source_url": "https://www.bromoseltzertower.com/"
+            }
+          ],
+          "review_method": "Codex-assisted source reading and deterministic replay; no independent human signoff or field survey",
+          "review_reason": "Retained primary operator body affirms public visits and physical street address; source identity/name/point are same original JSON entity. T2 recommendation requires remaining typed-source/Census/dedup gates; arrival/calendar unresolved.",
+          "reviewed_constraints": {
+            "access_notes": "Public building visits are Saturday only per operator; specific clock-room tours have separately scheduled starts. No calendar/arrival qualification supplied.",
+            "article_prose_excluded": true,
+            "attribution": {
+              "author": [
+                "Theresa Donnelly"
+              ],
+              "item_url": "https://explore.baltimoreheritage.org/items/show/82",
+              "license": "CC-BY-4.0",
+              "license_url": "https://creativecommons.org/licenses/by/4.0/",
+              "publisher": "Baltimore Heritage",
+              "title": "Bromo Seltzer Tower"
+            },
+            "changes_notice": "Native identity/name/point selected; category assigned by review; no article prose or photographs imported.",
+            "media_excluded": true,
+            "native_address": "21 S. Eutaw Street, Baltimore, MD 21201",
+            "native_modified": "2026-04-17 19:53:24",
+            "native_operator_link_html": "<a href=\"http://www.bromoseltzertower.com/\">Bromo Seltzer Arts Tower</a>",
+            "source_coordinate_role": "feature point; driving arrival not established",
+            "unknown_fields": [
+              "current_hours",
+              "cost",
+              "availability",
+              "accessibility",
+              "arrival_coordinate"
+            ]
+          },
+          "reviewer": "source_review agent / retained primary-source review",
+          "rights_evidence": [
+            {
+              "checked_at": "2026-10-21T17:46:34.207136+00:00",
+              "evidence_path": "evidence/534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7.bin",
+              "snapshot_sha256": "534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7",
+              "source_url": "https://explore.baltimoreheritage.org/"
+            }
+          ],
+          "source_attribution": "Theresa Donnelly; Explore Baltimore Heritage / Baltimore Heritage, Inc., Bromo Seltzer Tower, https://explore.baltimoreheritage.org/items/show/82, CC BY4.0 https://creativecommons.org/licenses/by/4.0/. Factual fields extracted; category and traveler-fit inferences added. Photos and article prose excluded; no endorsement.",
+          "source_bindings": {
+            "coordinates": {
+              "encoding": "latlon",
+              "latitude": {
+                "evidence_id": "group-0:baltimore-pass-baltimore-82-native",
+                "pointer": "/latitude"
+              },
+              "longitude": {
+                "evidence_id": "group-0:baltimore-pass-baltimore-82-native",
+                "pointer": "/longitude"
+              }
+            },
+            "name": {
+              "evidence_id": "group-0:baltimore-pass-baltimore-82-native",
+              "pointer": "/title"
+            },
+            "native_id": {
+              "evidence_id": "group-0:baltimore-pass-baltimore-82-native",
+              "pointer": "/id"
+            }
+          },
+          "source_family": "baltimore-heritage",
+          "state_classification": {
+            "method": "Census2025 polygon containment; not a surveyed arrival",
+            "snapshot_sha256": "46404936ed8ca141ffd24779235c3250e047869655ec99bdc2211ba38a36dbd1",
+            "source_url": "https://tigerweb.geo.census.gov/arcgis/rest/services/Generalized_ACS2025/State_County/MapServer/7/query"
+          }
+        },
+        {
+          "catalog_admission": {
+            "expires_at_epoch": 1795197225,
+            "gates": {
+              "arrival": false,
+              "calendar": false,
+              "identity": true,
+              "local_duplicate_review": true,
+              "location": true,
+              "public_access": true,
+              "rights": true
+            },
+            "review_status": "approved",
+            "reviewed_at_epoch": 1792605225,
+            "schema_version": "roadtrips-catalog-admission/1",
+            "source_id": "catalog-pilot:baltimore-heritage:82",
+            "tier": "T2"
+          },
+          "dataset": "Roadtrips catalog admission"
+        }
+      ],
+      "source_release": "catalog-baltimore-20261021",
+      "source_updated_at": null,
+      "url": "https://www.bromoseltzertower.com/"
+    },
+    "practical_context": {
+      "accessibility": null,
+      "amenities": null,
+      "arrival_verified": false,
+      "cost": null,
+      "hours": null,
+      "live_operating_status": null,
+      "parking_capacity": null,
+      "reservation_availability": null,
+      "source_constraints": {
+        "access_notes": "Public building visits are Saturday only per operator; specific clock-room tours have separately scheduled starts. No calendar/arrival qualification supplied.",
+        "article_prose_excluded": true,
+        "attribution": {
+          "author": [
+            "Theresa Donnelly"
+          ],
+          "item_url": "https://explore.baltimoreheritage.org/items/show/82",
+          "license": "CC-BY-4.0",
+          "license_url": "https://creativecommons.org/licenses/by/4.0/",
+          "publisher": "Baltimore Heritage",
+          "title": "Bromo Seltzer Tower"
+        },
+        "changes_notice": "Native identity/name/point selected; category assigned by review; no article prose or photographs imported.",
+        "media_excluded": true,
+        "native_address": "21 S. Eutaw Street, Baltimore, MD 21201",
+        "native_modified": "2026-04-17 19:53:24",
+        "native_operator_link_html": "<a href=\"http://www.bromoseltzertower.com/\">Bromo Seltzer Arts Tower</a>",
+        "source_coordinate_role": "feature point; driving arrival not established",
+        "unknown_fields": [
+          "current_hours",
+          "cost",
+          "availability",
+          "accessibility",
+          "arrival_coordinate"
+        ]
+      }
+    },
+    "schema_version": "roadtrips-pilot-persona/1",
+    "source_id": "catalog-pilot:baltimore-heritage:82",
+    "validation_scope": {
+      "expires_at_epoch": 1795197225,
+      "identity_location": "Source-corroborated physical feature; not a surveyed arrival",
+      "live_parent_reconciled": false,
+      "public_access": "Dated operator/source claim review; not real-time availability",
+      "reviewed_at_epoch": 1792605225,
+      "schema_validation_is_factual_verification": false
+    }
+  }
+]

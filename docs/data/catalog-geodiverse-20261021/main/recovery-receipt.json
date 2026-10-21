@@ -1,0 +1,19 @@
+{
+  "candidate": {
+    "calendar_count": 0,
+    "calendars_md5": "d751713988987e9331980363e24189ce",
+    "generation": "95ab8e1217d0f1b52e35f6851e34453e1feddec4a50cf35163d96add59b71a6b",
+    "metadata_md5": "6482f555d71bb327e6591fa9fbf1e22c",
+    "row_count": 192,
+    "rows_md5": "9da91528005d194fd8f236a31c616b5d"
+  },
+  "parent": {
+    "calendar_count": 0,
+    "calendars_md5": "d751713988987e9331980363e24189ce",
+    "generation": "273873454998fbb1ec36d4b92fcc49f876c2d9dd68847647771e5c8387bf3d00",
+    "metadata_md5": "31543541869e22939afff4239923cf15",
+    "row_count": 1,
+    "rows_md5": "374ebdb0f5f3be830745baac1cca135e"
+  },
+  "schema_version": "roadtrips-catalog-calendar-recovery/1"
+}

@@ -1,0 +1,34 @@
+{
+  "accepted": 3,
+  "bytes": 19160719,
+  "calendar_entries": [],
+  "categories": {
+    "catalog_browse": 3,
+    "culture": 2,
+    "food_experience": 1,
+    "historic_site": 1,
+    "museum": 1
+  },
+  "discovery_or_held": 1,
+  "external_ai_requests": 0,
+  "external_writes": false,
+  "held_reasons": {
+    "operator_explicitly_temporarily_closed; operator redirects to separate Carroll Mansion page; never substitute its address/hours": 1
+  },
+  "itinerary_ready": 0,
+  "live_net_new": null,
+  "live_parent_reconciled": false,
+  "native_source_rows": 4,
+  "normalized_rows_sha256": "504edf7fbe5d0b48682b60b254ad7d214e29fd4f691a86c194ec7c19b842134d",
+  "prospects": 4,
+  "review_method": "Codex-assisted source review; deterministic byte/field replay; no independent human approval",
+  "scanned": 951,
+  "scope": "Field-evidence replay plus dated Codex-assisted source review; not independent human verification, factual survey or live-parent reconciliation.",
+  "source_families": {
+    "baltimore-heritage": 3
+  },
+  "source_reviewed_browse": 3,
+  "states": {
+    "MD": 3
+  }
+}
