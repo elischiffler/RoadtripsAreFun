@@ -1,0 +1,1129 @@
+{
+  "research_date": "2026-10-21",
+  "scope": "Bounded read-only culture/history/public-art/science/garden source research for US5000-net-new plan. No repository edits, database access, live AI, accounts, paid services, imports or external writes.",
+  "tier_definitions": {
+    "T1": "Discovery only: identity/source evidence may exist, rights or public entry/location/current facts unresolved. Not exposed as verified or routed.",
+    "T2": "Verified identity/location/public visitor eligibility with cleared fact redistribution, stable source ID, evidence timestamps and field confidence. Unknown hours/cost/accessibility remain unknown. May be exposed with precise status; no route commitment.",
+    "T3": "T2 plus operator-current visit/access status, acceptable arrival point and safe route approach, scoped schedule/time zone where required by routing, realistic visit duration and routing constraints. Same entities as T2 subset, never additive."
+  },
+  "measured_new_accepted": 0,
+  "bankable_live_catalog_net_additions": 0,
+  "receipts_count": 84,
+  "receipts_bytes": 5690933,
+  "research_sample_warning": "First-N convenience samples diagnose failure modes only; do not estimate national acceptance probabilities from them. Counts do not validate access, closures, commercial rights, entrances or facts.",
+  "portfolio_assessment": "Culture can plausibly contribute roughly1000–2000 T2 net entities after rights and operator-led pilots, of which roughly500–1200 might becomeT3. This is conditional engineering planning, not measured yield; do not sum source ranges or use to promise5000 route-ready. Only reconciled distinct destination counts support milestones. Texas/ASTC direct reuse zero; NYC/Chicago/APGA/Seattle rights unresolved.",
+  "sources": [
+    {
+      "id": "nps-nhl-nrhp",
+      "name": "NPS National Historic Landmarks / National Register GIS",
+      "priority": 1,
+      "steward": "National Park Service Cultural Resources",
+      "geographic_category_coverage": "US national; historic houses, industrial heritage, battlefields, ships, gardens, scientific sites. Not every designation is a visitor attraction.",
+      "candidate_counts": {
+        "measured_points_all_NRHP": 74636,
+        "measured_polygons_all_NRHP": 22905,
+        "measured_NHL_geometries": 2909,
+        "measured_unique_NHL_NRIDs": 2482,
+        "measured_unique_NHL_NRIDs_listed_50_states_DC": 2449,
+        "meaning": "Geometry rows are not destinations; NHL is a subset of NRHP. Polygon boundary additions and repeated points are not additive entities."
+      },
+      "sample_inspection": {
+        "sample_rows": 20,
+        "sample_design": "First10 point and first10 polygon records, convenience sample, not random. Full NHL identifier census separately retrieved without geometry.",
+        "observations": "All20 extant fields Unknown; first10 points only9 distinctNRIDs. No public access, visitor hours or entrance certification. Geometry is designation/reference location."
+      },
+      "rights": {
+        "status": "Potentially admissible original federal factual GIS only after rights/provenance gate",
+        "license_urls": [
+          "https://www.nps.gov/aboutus/disclaimer.htm",
+          "https://www.nps.gov/subjects/gisandmapping/data-disclaimers.htm"
+        ],
+        "obligations": "Credit NPS and source/version; retain constraints and third-party exceptions; do not copy nomination prose, photos or copyrighted partner content. Only unrestricted public data, no sensitive cultural sites. Public designation does not grant access."
+      },
+      "conditional_net_T2_range": [600, 1100],
+      "conditional_net_T3_subset_range": [300, 700],
+      "range_basis": "Engineering planning assumptions; not a measured yield, statistical confidence interval, commitment or sum-safe allocation. Assumes deduplication against a live catalog, independent visitor-access verification and approved location/tier gates.",
+      "measured_newly_accepted": 0,
+      "bankable_net_additions": 0,
+      "effort": "Pilot100 stratified states/categories first; roughly50–100 staff-hours for operator/access/location review at1–3min per~2,000 leads plus adapter work.",
+      "monetary_cost": "No per-request charge encountered on public probes; no paid API/account used. Staff time and any permission costs not priced.",
+      "urls": {
+        "service": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer",
+        "metadata_points": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0?f=pjson",
+        "metadata_polygons": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1?f=pjson",
+        "count_points": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=1%3D1&returnCountOnly=true",
+        "NHL_complete_ID_queries": [
+          "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=Is_NHL%3D%27X%27&outFields=NRIS_Refnum%2CRESNAME%2CState%2CSTATUS&resultRecordCount=2000&returnGeometry=false",
+          "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1/query?f=json&where=Is_NHL%3D%27X%27&outFields=NRIS_Refnum%2CRESNAME%2CState%2CSTATUS&resultRecordCount=2000&returnGeometry=false"
+        ],
+        "data_notes": "https://www.nps.gov/subjects/nationalregister/data-downloads.htm",
+        "public_access_note": "https://www.nps.gov/subjects/nationalhistoriclandmarks/travel.htm"
+      },
+      "evidence": [
+        {
+          "id": "nrhp-0-count",
+          "url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=1%3D1&returnCountOnly=true",
+          "final_url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=1%3D1&returnCountOnly=true",
+          "status": 200,
+          "checked_at": "2026-10-21T04:59:52.969569+00:00",
+          "path": "nrhp-0-count.body",
+          "bytes": 15,
+          "sha256": "8e8b0dbb235411d94c768915a890d203293908c20eb05989f66bea3a43faf14b"
+        },
+        {
+          "id": "nrhp-1-count",
+          "url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1/query?f=json&where=1%3D1&returnCountOnly=true",
+          "final_url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1/query?f=json&where=1%3D1&returnCountOnly=true",
+          "status": 200,
+          "checked_at": "2026-10-21T04:59:56.505860+00:00",
+          "path": "nrhp-1-count.body",
+          "bytes": 15,
+          "sha256": "cbf7b08812986f71a7fac9a8d6972241f1aebf017c0685ed822a86dc0ac274ae"
+        },
+        {
+          "id": "nrhp-0-nhl-count",
+          "url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=Is_NHL%3D%27X%27&returnCountOnly=true",
+          "final_url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=Is_NHL%3D%27X%27&returnCountOnly=true",
+          "status": 200,
+          "checked_at": "2026-10-21T04:59:53.853779+00:00",
+          "path": "nrhp-0-nhl-count.body",
+          "bytes": 14,
+          "sha256": "00464a8d78e17f8a9b2b3425c4b5d22c09b87cc13bad861cf35eef37937f3dd7"
+        },
+        {
+          "id": "nrhp-1-nhl-count",
+          "url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1/query?f=json&where=Is_NHL%3D%27X%27&returnCountOnly=true",
+          "final_url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1/query?f=json&where=Is_NHL%3D%27X%27&returnCountOnly=true",
+          "status": 200,
+          "checked_at": "2026-10-21T04:59:57.307331+00:00",
+          "path": "nrhp-1-nhl-count.body",
+          "bytes": 14,
+          "sha256": "36301e6a6977ff7b6e28e328ad455ce2938a5d4c35d3c20595d7e7a800760562"
+        },
+        {
+          "id": "nhl-0-ids",
+          "url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=Is_NHL%3D%27X%27&outFields=NRIS_Refnum%2CRESNAME%2CState%2CSTATUS&resultRecordCount=2000&returnGeometry=false",
+          "final_url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=Is_NHL%3D%27X%27&outFields=NRIS_Refnum%2CRESNAME%2CState%2CSTATUS&resultRecordCount=2000&returnGeometry=false",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:15.976352+00:00",
+          "path": "nhl-0-ids.body",
+          "bytes": 143232,
+          "sha256": "70a804375347e5b22e3685cccd4130d7273bac0cc282357ec032717e8f4861ba"
+        },
+        {
+          "id": "nhl-1-ids",
+          "url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1/query?f=json&where=Is_NHL%3D%27X%27&outFields=NRIS_Refnum%2CRESNAME%2CState%2CSTATUS&resultRecordCount=2000&returnGeometry=false",
+          "final_url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1/query?f=json&where=Is_NHL%3D%27X%27&outFields=NRIS_Refnum%2CRESNAME%2CState%2CSTATUS&resultRecordCount=2000&returnGeometry=false",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:17.314015+00:00",
+          "path": "nhl-1-ids.body",
+          "bytes": 200899,
+          "sha256": "535e26977812f0214a9d3256d7f4f5a839837ca2e98bf01a22aeba4510970556"
+        },
+        {
+          "id": "nrhp-0-sample",
+          "url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=10&returnGeometry=true&outSR=4326&orderByFields=OBJECTID",
+          "final_url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=10&returnGeometry=true&outSR=4326&orderByFields=OBJECTID",
+          "status": 200,
+          "checked_at": "2026-10-21T04:59:54.955741+00:00",
+          "path": "nrhp-0-sample.body",
+          "bytes": 23164,
+          "sha256": "97fdee0a049a327eef9ef3ed69701b200c9d31d76e39c8956718b503cc52d3ed"
+        },
+        {
+          "id": "nrhp-1-sample",
+          "url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=10&returnGeometry=true&outSR=4326&orderByFields=OBJECTID",
+          "final_url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/1/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=10&returnGeometry=true&outSR=4326&orderByFields=OBJECTID",
+          "status": 200,
+          "checked_at": "2026-10-21T04:59:58.057140+00:00",
+          "path": "nrhp-1-sample.body",
+          "bytes": 28662,
+          "sha256": "8f396a758559cdba7e204773a1b1c742ea75731ff4474eb1f53c444ba3683ea9"
+        },
+        {
+          "id": "nrhp-policy",
+          "url": "https://www.nps.gov/subjects/nationalregister/data-downloads.htm",
+          "final_url": "https://www.nps.gov/subjects/nationalregister/data-downloads.htm",
+          "status": 200,
+          "checked_at": "2026-10-21T04:59:58.859835+00:00",
+          "path": "nrhp-policy.body",
+          "bytes": 44955,
+          "sha256": "1fc3df4d6e683884ff9c55affd5b99df96462d07ac3f7dff8eb8dca960d55abb"
+        },
+        {
+          "id": "nps-rights",
+          "url": "https://www.nps.gov/aboutus/disclaimer.htm",
+          "final_url": "https://www.nps.gov/aboutus/disclaimer.htm",
+          "status": 200,
+          "checked_at": "2026-10-21T05:00:00.297924+00:00",
+          "path": "nps-rights.body",
+          "bytes": 38448,
+          "sha256": "1b3b523964301d1c30ec8d6243cc551e99cac340b187c8883b356d93bea5e363"
+        },
+        {
+          "id": "nps-geospatial-policy",
+          "url": "https://www.nps.gov/subjects/gisandmapping/data-disclaimers.htm",
+          "final_url": "https://www.nps.gov/subjects/gisandmapping/data-disclaimers.htm",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:20.092812+00:00",
+          "path": "nps-geospatial-policy.body",
+          "bytes": 49800,
+          "sha256": "ad50b082470c737016d4f9afb0064264ec42585bf20e37124f7aee7c5b80f508"
+        },
+        {
+          "id": "nps-nhl-travel",
+          "url": "https://www.nps.gov/subjects/nationalhistoriclandmarks/travel.htm",
+          "final_url": "https://www.nps.gov/subjects/nationalhistoriclandmarks/travel.htm",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:22.043992+00:00",
+          "path": "nps-nhl-travel.body",
+          "bytes": 41815,
+          "sha256": "9d6c83087d1d626a79d9e191a5c9bdf22866ec4b81cec0481c1e43bdc34fbebb"
+        }
+      ],
+      "blockers": [
+        "No live catalog deduplication; many private sites; points/polygons require correction per NPS; no arrival points; mixed third-party content must remain separate."
+      ],
+      "overlap": "High with existing famous landmarks, NPS units, Heritage Travel and Wikidata/Overture. Allocate one union quota, not separate NRHP+NHL totals.",
+      "freshness": "NPS data-download notes updated2026-06-04; no record-level current operations guarantee."
+    },
+    {
+      "id": "nps-heritage-travel",
+      "name": "NPS Discover Our Shared Heritage travel itineraries",
+      "priority": 2,
+      "steward": "NPS plus state/local/NCSHPO partners",
+      "geographic_category_coverage": "National cultural heritage; civil rights, women’s history, ethnic history, industrial places and historic towns.",
+      "candidate_counts": {
+        "publisher_claim_places_over": 3000,
+        "publisher_claim_itineraries_over": 60,
+        "measured_current_featured_collection_links": 2,
+        "meaning": "2022 publisher claim, not a current distinct eligible catalog count; featured landing index is incomplete."
+      },
+      "sample_inspection": {
+        "sample_rows": 0,
+        "sample_design": "Two index pages; individual place inventory not enumerated.",
+        "observations": "Current landing points to Omaha and women’s-history collections. Guessed complete-itinerary URL404. Partner production means mixed rights; registration listings overlap NHL."
+      },
+      "rights": {
+        "status": "Discovery / factual source leads; per-page rights and independent operator checks required",
+        "license_urls": ["https://www.nps.gov/aboutus/disclaimer.htm"],
+        "obligations": "Do not assume partner itinerary text/photos are public domain; extract independently corroborated facts and native identifiers rather than copy narrative."
+      },
+      "conditional_net_T2_range": [200, 500],
+      "conditional_net_T3_subset_range": [100, 300],
+      "range_basis": "Engineering planning assumptions; not a measured yield, statistical confidence interval, commitment or sum-safe allocation. Assumes deduplication against a live catalog, independent visitor-access verification and approved location/tier gates.",
+      "measured_newly_accepted": 0,
+      "bankable_net_additions": 0,
+      "effort": "2–4 days bounded sitemap/collection pilot; operator review dominates. Optional incremental contribution only after NHL union deduplication.",
+      "monetary_cost": "No per-request charge encountered on public probes; no paid API/account used. Staff time and any permission costs not priced.",
+      "urls": {
+        "publisher_claim": "https://www.nps.gov/history/heritage-travel.htm",
+        "current_index": "https://www.nps.gov/subjects/heritagetravel/discover-our-shared-heritage.htm",
+        "featured_examples": [
+          "https://www.nps.gov/subjects/travelwomenshistory/index.htm",
+          "https://www.nps.gov/subjects/travelomaha/index.htm"
+        ]
+      },
+      "evidence": [
+        {
+          "id": "heritage-travel-3000",
+          "url": "https://www.nps.gov/history/heritage-travel.htm",
+          "final_url": "https://www.nps.gov/history/heritage-travel.htm",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:22.377366+00:00",
+          "path": "heritage-travel-3000.body",
+          "bytes": 47450,
+          "sha256": "a0f9b3fc9fbcaea78dd8c665b0c34891b962046e0368bde85cd032f7497a4fa1"
+        },
+        {
+          "id": "heritage-travel-index",
+          "url": "https://www.nps.gov/subjects/heritagetravel/discover-our-shared-heritage.htm",
+          "final_url": "https://www.nps.gov/subjects/heritagetravel/discover-our-shared-heritage.htm",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:24.136522+00:00",
+          "path": "heritage-travel-index.body",
+          "bytes": 73555,
+          "sha256": "13711a789985919df66b2ff209baa6a2e3602f550c9f95f833f22a6e8f53b62b"
+        },
+        {
+          "id": "heritage-all-itineraries",
+          "url": "https://www.nps.gov/subjects/heritagetravel/travel-itineraries.htm",
+          "final_url": "https://www.nps.gov/subjects/heritagetravel/travel-itineraries.htm",
+          "status": 404,
+          "checked_at": "2026-10-21T05:05:25.615008+00:00",
+          "path": "heritage-all-itineraries.body",
+          "bytes": 18909,
+          "sha256": "84558944d36a4e9fb35822f1caa66561e9a96e2289598f5980cb966df4c25d06"
+        }
+      ],
+      "blockers": [
+        "No complete current inventory measured; partner rights; access/closure/current operator checks required."
+      ],
+      "overlap": "High with NHL/NRHP; this200–500 is conditional incremental opportunity only, not proven independent yield.",
+      "freshness": "Publisher count page updated2022-09-20; current index2024-05-29."
+    },
+    {
+      "id": "sf-civic-art",
+      "name": "San Francisco Civic Art Collection",
+      "priority": 3,
+      "steward": "San Francisco Arts Commission",
+      "geographic_category_coverage": "SF urban art stops, outdoor sculptures and installations; also airport/interior objects.",
+      "candidate_counts": {
+        "measured_all_rows": 1038,
+        "measured_Public_Display_rows_with_coordinates": 689,
+        "measured_exact_coordinate_groups_in_filter": 222,
+        "diagnostic_250m_connected_components": 126,
+        "meaning": "Rows can be components, artworks and shared building locations; neither689 nor222 is a destination count.126 is spatial diagnostic, not entity resolution."
+      },
+      "sample_inspection": {
+        "sample_rows": 10,
+        "sample_design": "First10 records, convenience sample.",
+        "observations": "Only3/10 have coordinates;6 airport terminal locations,3 city-agency displays,1 Public Display. Administrative offices/hospital/subway locations need public-access assessment. Source warns approximate building/intersection coordinates and multipart works."
+      },
+      "rights": {
+        "status": "PDDL on native metadata; factual database eligible after field/access/location validation",
+        "license_urls": [
+          "https://data.sf.gov/api/views/r7bn-7v9c.json",
+          "https://opendatacommons.org/licenses/pddl/1-0/"
+        ],
+        "obligations": "PDDL database dedication does not license artwork photographs, creative descriptions, artist biographies or inscriptions. Retain source credit/version for traceability."
+      },
+      "conditional_net_T2_range": [60, 120],
+      "conditional_net_T3_subset_range": [30, 80],
+      "range_basis": "Engineering planning assumptions; not a measured yield, statistical confidence interval, commitment or sum-safe allocation. Assumes deduplication against a live catalog, independent visitor-access verification and approved location/tier gates.",
+      "measured_newly_accepted": 0,
+      "bankable_net_additions": 0,
+      "effort": "1–3 staff-days for site grouping, rights notice and short-visit arrival review.",
+      "monetary_cost": "No per-request charge encountered on public probes; no paid API/account used. Staff time and any permission costs not priced.",
+      "urls": {
+        "metadata": "https://data.sf.gov/api/views/r7bn-7v9c.json",
+        "count": "https://data.sf.gov/resource/r7bn-7v9c.json?%24select=count%28%2A%29",
+        "sample": "https://data.sf.gov/resource/r7bn-7v9c.json?%24limit=10"
+      },
+      "evidence": [
+        {
+          "id": "sf-art-meta",
+          "url": "https://data.sf.gov/api/views/r7bn-7v9c.json",
+          "final_url": "https://data.sf.gov/api/views/r7bn-7v9c.json",
+          "status": 200,
+          "checked_at": "2026-10-21T05:00:01.984663+00:00",
+          "path": "sf-art-meta.body",
+          "bytes": 50145,
+          "sha256": "0a9e40dd77327e569826f90a7fa47d12366b8cc2d027d4a031d01ddb993181de"
+        },
+        {
+          "id": "sf-art-count",
+          "url": "https://data.sf.gov/resource/r7bn-7v9c.json?%24select=count%28%2A%29",
+          "final_url": "https://data.sf.gov/resource/r7bn-7v9c.json?%24select=count%28%2A%29",
+          "status": 200,
+          "checked_at": "2026-10-21T05:00:04.661358+00:00",
+          "path": "sf-art-count.body",
+          "bytes": 19,
+          "sha256": "25b18c8b70da7a4a422dbf9c7c5edb741f596b0800ca5dcd574d29a599a774ce"
+        },
+        {
+          "id": "sf-art-public-count",
+          "url": "https://data.sf.gov/resource/r7bn-7v9c.json?%24select=count%28%2A%29&%24where=current_location%3D%27Public+Display%27+AND+latitude+IS+NOT+NULL+AND+longitude+IS+NOT+NULL",
+          "final_url": "https://data.sf.gov/resource/r7bn-7v9c.json?%24select=count%28%2A%29&%24where=current_location%3D%27Public+Display%27+AND+latitude+IS+NOT+NULL+AND+longitude+IS+NOT+NULL",
+          "status": 200,
+          "checked_at": "2026-10-21T05:00:24.358805+00:00",
+          "path": "sf-art-public-count.body",
+          "bytes": 18,
+          "sha256": "b191ce6cef23f3ac5c8f658922cc625c0b4045c689b92668b6f1b3507662b9f6"
+        },
+        {
+          "id": "sf-art-public-points",
+          "url": "https://data.sf.gov/resource/r7bn-7v9c.json?%24select=latitude%2Clongitude%2Ccount%28%2A%29&%24where=current_location%3D%27Public+Display%27+AND+latitude+IS+NOT+NULL+AND+longitude+IS+NOT+NULL&%24group=latitude%2Clongitude&%24limit=1000",
+          "final_url": "https://data.sf.gov/resource/r7bn-7v9c.json?%24select=latitude%2Clongitude%2Ccount%28%2A%29&%24where=current_location%3D%27Public+Display%27+AND+latitude+IS+NOT+NULL+AND+longitude+IS+NOT+NULL&%24group=latitude%2Clongitude&%24limit=1000",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:12.197155+00:00",
+          "path": "sf-art-public-points.body",
+          "bytes": 17713,
+          "sha256": "59e92f7d56790b6ad08e392233137dc7321a948f1154d0a182cc841c70058ced"
+        },
+        {
+          "id": "sf-art-sample",
+          "url": "https://data.sf.gov/resource/r7bn-7v9c.json?%24limit=10",
+          "final_url": "https://data.sf.gov/resource/r7bn-7v9c.json?%24limit=10",
+          "status": 200,
+          "checked_at": "2026-10-21T05:00:07.359981+00:00",
+          "path": "sf-art-sample.body",
+          "bytes": 5954,
+          "sha256": "c6da8936493d51e0492cb1fa26199777182383f71255afb93cab15dd2d36577a"
+        }
+      ],
+      "blockers": [
+        "Coordinate approximation; indoor/airport security; current visibility; correct arrival model for urban walk-in stops."
+      ],
+      "overlap": "Some overlap with parks, civic centers, existing SF landmarks and Overture/Wikidata; group art walks and campus collections.",
+      "freshness": "Dataset last rows update2024-04-25; data_as_of2024-04-17; as-needed/manual."
+    },
+    {
+      "id": "nyc-parks-monuments",
+      "name": "NYC Parks Monuments",
+      "priority": 4,
+      "steward": "NYC Department of Parks and Recreation",
+      "geographic_category_coverage": "NYC parks monuments, sculpture, plaques, historic structures and fountains.",
+      "candidate_counts": {
+        "measured_rows": 839,
+        "meaning": "Objects, not necessarily independent stops; may be inside facilities or grouped within one park."
+      },
+      "sample_inspection": {
+        "sample_rows": 10,
+        "sample_design": "First10 convenience sample.",
+        "observations": "10/10 Point geometry and extantY/Active fields;2 explicit interiors (Arsenal office, Fort Greene visitor center),7 explicit exterior locations and1 insufficient location. Active inventory is not fresh public opening certification."
+      },
+      "rights": {
+        "status": "Commercial reuse/attribution not yet conclusively captured; admission hold",
+        "license_urls": [
+          "https://data.cityofnewyork.us/stories/s/Terms-of-Use/k9k7-3cje/"
+        ],
+        "obligations": "Native licenseId absent. Terms page is dynamic; historical manual PDF URL now redirects to NYC Open Data landing HTML. Do not cite HTTP200 as a captured grant. No artwork photos/inscriptions or creative descriptions copied."
+      },
+      "conditional_net_T2_range": [180, 350],
+      "conditional_net_T3_subset_range": [100, 220],
+      "range_basis": "Engineering planning assumptions; not a measured yield, statistical confidence interval, commitment or sum-safe allocation. Assumes deduplication against a live catalog, independent visitor-access verification and approved location/tier gates.",
+      "measured_newly_accepted": 0,
+      "bankable_net_additions": 0,
+      "effort": "1–3 staff-days plus explicit rights capture; join parks/operator records with indoor/outdoor scope.",
+      "monetary_cost": "No per-request charge encountered on public probes; no paid API/account used. Staff time and any permission costs not priced.",
+      "urls": {
+        "metadata": "https://data.cityofnewyork.us/api/views/6rrm-vxj9.json",
+        "count": "https://data.cityofnewyork.us/resource/6rrm-vxj9.json?%24select=count%28%2A%29",
+        "sample": "https://data.cityofnewyork.us/resource/6rrm-vxj9.json?%24limit=10"
+      },
+      "evidence": [
+        {
+          "id": "nyc-monuments-correct-meta",
+          "url": "https://data.cityofnewyork.us/api/views/6rrm-vxj9.json",
+          "final_url": "https://data.cityofnewyork.us/api/views/6rrm-vxj9.json",
+          "status": 200,
+          "checked_at": "2026-10-21T05:01:49.442131+00:00",
+          "path": "nyc-monuments-correct-meta.body",
+          "bytes": 78594,
+          "sha256": "5244f72203ee0390ee21aab2e00fb4e9faf463ce74dc9bc5c07981261d97fa9b"
+        },
+        {
+          "id": "nyc-monuments-correct-count",
+          "url": "https://data.cityofnewyork.us/resource/6rrm-vxj9.json?%24select=count%28%2A%29",
+          "final_url": "https://data.cityofnewyork.us/resource/6rrm-vxj9.json?%24select=count%28%2A%29",
+          "status": 200,
+          "checked_at": "2026-10-21T05:01:50.961623+00:00",
+          "path": "nyc-monuments-correct-count.body",
+          "bytes": 18,
+          "sha256": "439cb659f45d9112bb557bff8341a0887655332c76a41df6af43a38ce311451b"
+        },
+        {
+          "id": "nyc-monuments-correct-sample",
+          "url": "https://data.cityofnewyork.us/resource/6rrm-vxj9.json?%24limit=10",
+          "final_url": "https://data.cityofnewyork.us/resource/6rrm-vxj9.json?%24limit=10",
+          "status": 200,
+          "checked_at": "2026-10-21T05:01:52.170617+00:00",
+          "path": "nyc-monuments-correct-sample.body",
+          "bytes": 9403,
+          "sha256": "440b2ee4f94a2c5bee6a2223f624ff32e008876242dddc0bb111fde0f3e7ced0"
+        },
+        {
+          "id": "nyc-terms-actual",
+          "url": "https://data.cityofnewyork.us/stories/s/Terms-of-Use/k9k7-3cje/",
+          "final_url": "https://data.cityofnewyork.us/stories/s/Terms-of-Use/k9k7-3cje/",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:14.373878+00:00",
+          "path": "nyc-terms-actual.body",
+          "bytes": 287658,
+          "sha256": "3994e008cd493d97fe49bb0fc87a910ff6d91717e23e37d5848fe2907c966471"
+        },
+        {
+          "id": "nyc-technical-manual",
+          "url": "https://opendata.cityofnewyork.us/wp-content/uploads/NYC_OpenData_TechnicalStandardsManual.pdf",
+          "final_url": "https://www.nyc.gov/opendata",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:17.840787+00:00",
+          "path": "nyc-technical-manual.body",
+          "bytes": 502246,
+          "sha256": "c0e9c7b5d15c5c23e6f83f2f48ad7aa750f709ca202a49cfc5281e42ebfe1192"
+        }
+      ],
+      "blockers": [
+        "Capture authoritative current terms before ingestion; object grouping; interior hours/access; pedestrian arrival policy."
+      ],
+      "overlap": "High within same park and with other city art inventories; coordinate alone cannot decide entity identity.",
+      "freshness": "Native rowsUpdatedAt2026-10-13; no record-level public entry timestamp."
+    },
+    {
+      "id": "chicago-cpd-art",
+      "name": "Chicago Park District Artworks current inventory",
+      "priority": 5,
+      "steward": "Chicago Park District / City of Chicago",
+      "geographic_category_coverage": "Chicago park sculptures, monuments and installations.",
+      "candidate_counts": {
+        "measured_current_underlying_rows": 346,
+        "measured_legacy_rows_not_additive": 194,
+        "meaning": "Current public mape9ef-hrzb references underlying datasetpxyq-qhyd; map is not itself a rows API. Legacy inventory overlaps and includes removed art."
+      },
+      "sample_inspection": {
+        "sample_rows_current": 0,
+        "sample_rows_legacy": 10,
+        "observations": "Current underlying count200; current metadata and sample503. Legacy10 sample is not representative of current346. Legacy includes Christopher Columbus, demonstrating staleness."
+      },
+      "rights": {
+        "status": "Map metadata PUBLIC_DOMAIN; underlying dataset grant and Chicago terms need reconciliation",
+        "license_urls": [
+          "https://data.cityofchicago.org/api/views/e9ef-hrzb.json",
+          "https://www.chicago.gov/city/en/narr/foia/data_disclaimer.html"
+        ],
+        "obligations": "Keep City modified-data/as-is disclaimer if required by final captured terms. Native map PUBLIC_DOMAIN cannot substitute for inspecting inaccessible underlying source metadata and any agency exceptions. Copyright in artwork/images separate."
+      },
+      "conditional_net_T2_range": [50, 120],
+      "conditional_net_T3_subset_range": [30, 80],
+      "range_basis": "Engineering planning assumptions; not a measured yield, statistical confidence interval, commitment or sum-safe allocation. Assumes deduplication against a live catalog, independent visitor-access verification and approved location/tier gates.",
+      "measured_newly_accepted": 0,
+      "bankable_net_additions": 0,
+      "effort": "1–2 staff-days after source503/terms resolved; group by park/site.",
+      "monetary_cost": "No per-request charge encountered on public probes; no paid API/account used. Staff time and any permission costs not priced.",
+      "urls": {
+        "metadata": "https://data.cityofchicago.org/api/views/pxyq-qhyd.json",
+        "count": "https://data.cityofchicago.org/resource/pxyq-qhyd.json?%24select=count%28%2A%29",
+        "sample": "https://data.cityofchicago.org/resource/pxyq-qhyd.json?%24limit=10",
+        "public_map_metadata": "https://data.cityofchicago.org/api/views/e9ef-hrzb.json"
+      },
+      "evidence": [
+        {
+          "id": "chicago-art-current-meta",
+          "url": "https://data.cityofchicago.org/api/views/e9ef-hrzb.json",
+          "final_url": "https://data.cityofchicago.org/api/views/e9ef-hrzb.json",
+          "status": 200,
+          "checked_at": "2026-10-21T05:01:54.199019+00:00",
+          "path": "chicago-art-current-meta.body",
+          "bytes": 5576,
+          "sha256": "710ce9634920d7abd1b0de05a55b845b1ca6fa7bcbf1a87e7a2c764adb0a9f06"
+        },
+        {
+          "id": "chicago-art-source-count",
+          "url": "https://data.cityofchicago.org/resource/pxyq-qhyd.json?%24select=count%28%2A%29",
+          "final_url": "https://data.cityofchicago.org/resource/pxyq-qhyd.json?%24select=count%28%2A%29",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:04.756137+00:00",
+          "path": "chicago-art-source-count.body",
+          "bytes": 18,
+          "sha256": "25dee70491f6b858ce186199c3fe3248b3236c8af3650e9958abdbb3d48cfad6"
+        },
+        {
+          "id": "chicago-art-source-meta",
+          "url": "https://data.cityofchicago.org/api/views/pxyq-qhyd.json",
+          "final_url": "https://data.cityofchicago.org/api/views/pxyq-qhyd.json",
+          "status": 503,
+          "checked_at": "2026-10-21T05:04:58.551649+00:00",
+          "path": "chicago-art-source-meta.body",
+          "bytes": 91,
+          "sha256": "2f85832e31ca57711e6107af6b142363351ae516adb71c69afc643fac26be7f6"
+        },
+        {
+          "id": "chicago-art-source-sample",
+          "url": "https://data.cityofchicago.org/resource/pxyq-qhyd.json?%24limit=10",
+          "final_url": "https://data.cityofchicago.org/resource/pxyq-qhyd.json?%24limit=10",
+          "status": 503,
+          "checked_at": "2026-10-21T05:05:06.416603+00:00",
+          "path": "chicago-art-source-sample.body",
+          "bytes": 91,
+          "sha256": "2f85832e31ca57711e6107af6b142363351ae516adb71c69afc643fac26be7f6"
+        },
+        {
+          "id": "chicago-art-legacy-count",
+          "url": "https://data.cityofchicago.org/resource/sj6t-9cju.json?%24select=count%28%2A%29",
+          "final_url": "https://data.cityofchicago.org/resource/sj6t-9cju.json?%24select=count%28%2A%29",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:08.884005+00:00",
+          "path": "chicago-art-legacy-count.body",
+          "bytes": 18,
+          "sha256": "5671483d54b60d5554ff7f2e1c74ea0390df3d7d9f607a8a38e7116a8a2f54d9"
+        },
+        {
+          "id": "chicago-art-legacy-sample",
+          "url": "https://data.cityofchicago.org/resource/sj6t-9cju.json?%24limit=10",
+          "final_url": "https://data.cityofchicago.org/resource/sj6t-9cju.json?%24limit=10",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:10.575522+00:00",
+          "path": "chicago-art-legacy-sample.body",
+          "bytes": 5342,
+          "sha256": "c92b61f3edcf4345b9e2ef34cdd839f089b55f64f40ebd4af93e91424c4c82ae"
+        },
+        {
+          "id": "chicago-data-terms",
+          "url": "https://www.chicago.gov/city/en/narr/foia/data_disclaimer.html",
+          "final_url": "https://www.chicago.gov/city/en/narr/foia/data_disclaimer.html",
+          "status": 403,
+          "checked_at": "2026-10-21T05:02:26.768987+00:00",
+          "path": "chicago-data-terms.body",
+          "bytes": 431,
+          "sha256": "7f925263fc6a30941c3903d45d1b6f29b5a07e95a9a2bef1c25286ffe4845a89"
+        }
+      ],
+      "blockers": [
+        "Current metadata/sample503; terms403 not bypassed; old inventory dates; removed monuments; not production-admissible now."
+      ],
+      "overlap": "Overlap with CPD parks/monuments, murals and Wikidata; legacy194 not additive.",
+      "freshness": "Map rows updated2022-05-18; description inventoryasof2016-11-04."
+    },
+    {
+      "id": "chicago-murals",
+      "name": "Chicago Mural Registry",
+      "priority": 6,
+      "steward": "Chicago Department of Cultural Affairs and Special Events",
+      "geographic_category_coverage": "Chicago street murals; neighborhood art and food/culture corridor opportunities.",
+      "candidate_counts": {
+        "measured_rows": 490,
+        "meaning": "Registry entries, not guaranteed extant publicly visible destinations or unique walls."
+      },
+      "sample_inspection": {
+        "sample_rows": 10,
+        "sample_design": "First10 convenience sample.",
+        "observations": "10/10 finite lat/lon values; street/alley addresses and artist credits. Painted-over/replaced work, access to private walls and cluster grouping remain unverified."
+      },
+      "rights": {
+        "status": "SEE_TERMS_OF_USE; commercial ingestion hold",
+        "license_urls": [
+          "https://data.cityofchicago.org/api/views/we8h-apcf.json",
+          "https://www.chicago.gov/city/en/narr/foia/data_disclaimer.html"
+        ],
+        "obligations": "Terms original returned403; do not bypass or infer permission. Text descriptions/photographs/art copyright separate; store own factual summary only after source grant."
+      },
+      "conditional_net_T2_range": [100, 220],
+      "conditional_net_T3_subset_range": [40, 140],
+      "range_basis": "Engineering planning assumptions; not a measured yield, statistical confidence interval, commitment or sum-safe allocation. Assumes deduplication against a live catalog, independent visitor-access verification and approved location/tier gates.",
+      "measured_newly_accepted": 0,
+      "bankable_net_additions": 0,
+      "effort": "2–4 staff-days including current operator/community-art corroboration and group identification.",
+      "monetary_cost": "No per-request charge encountered on public probes; no paid API/account used. Staff time and any permission costs not priced.",
+      "urls": {
+        "metadata": "https://data.cityofchicago.org/api/views/we8h-apcf.json",
+        "count": "https://data.cityofchicago.org/resource/we8h-apcf.json?%24select=count%28%2A%29",
+        "sample": "https://data.cityofchicago.org/resource/we8h-apcf.json?%24limit=10"
+      },
+      "evidence": [
+        {
+          "id": "chicago-murals-meta",
+          "url": "https://data.cityofchicago.org/api/views/we8h-apcf.json",
+          "final_url": "https://data.cityofchicago.org/api/views/we8h-apcf.json",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:12.029188+00:00",
+          "path": "chicago-murals-meta.body",
+          "bytes": 42202,
+          "sha256": "639db54bd71b6174bd8e6cd125cbe68ef880d4ad2915bd27be9fdb4aac55faa2"
+        },
+        {
+          "id": "chicago-murals-count",
+          "url": "https://data.cityofchicago.org/resource/we8h-apcf.json?%24select=count%28%2A%29",
+          "final_url": "https://data.cityofchicago.org/resource/we8h-apcf.json?%24select=count%28%2A%29",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:13.433459+00:00",
+          "path": "chicago-murals-count.body",
+          "bytes": 18,
+          "sha256": "9305c27c7dfb92fe0f412f663bebcf2e0fddd90d00c2426739f3c12e24104c88"
+        },
+        {
+          "id": "chicago-murals-sample",
+          "url": "https://data.cityofchicago.org/resource/we8h-apcf.json?%24limit=10",
+          "final_url": "https://data.cityofchicago.org/resource/we8h-apcf.json?%24limit=10",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:14.908179+00:00",
+          "path": "chicago-murals-sample.body",
+          "bytes": 6436,
+          "sha256": "7d5062baa8165e552aa5e58e14c46cc003e8a42c4d048e491afde0d1873061b0"
+        },
+        {
+          "id": "chicago-data-terms",
+          "url": "https://www.chicago.gov/city/en/narr/foia/data_disclaimer.html",
+          "final_url": "https://www.chicago.gov/city/en/narr/foia/data_disclaimer.html",
+          "status": 403,
+          "checked_at": "2026-10-21T05:02:26.768987+00:00",
+          "path": "chicago-data-terms.body",
+          "bytes": 431,
+          "sha256": "7f925263fc6a30941c3903d45d1b6f29b5a07e95a9a2bef1c25286ffe4845a89"
+        }
+      ],
+      "blockers": [
+        "License terms retrieval403; current extant/access; ephemeral mural revalidation; no guarantees from coordinates."
+      ],
+      "overlap": "Artworks may overlap CPD and several registry rows form one mural alley/site.",
+      "freshness": "Native rows updated2026-09-16; per-mural installed year is not current existence proof."
+    },
+    {
+      "id": "ny-state-historic",
+      "name": "New York State Historic Sites",
+      "priority": 7,
+      "steward": "New York State Office of Parks, Recreation and Historic Preservation",
+      "geographic_category_coverage": "State-operated historic sites statewide; forts, homes, battlefields, historic landscapes.",
+      "candidate_counts": {
+        "measured_rows": 41,
+        "meaning": "Facility-level places; already partly represented in prior expansion and national sources."
+      },
+      "sample_inspection": {
+        "sample_rows": 10,
+        "sample_design": "First10 convenience sample.",
+        "observations": "10/10 named facilities with coordinates and website fields. No public arrival or current visitor-hours certification. Boundary/centroid point scope unknown."
+      },
+      "rights": {
+        "status": "Prior retained OPEN NY terms exist in repository; current licenseId absent; bind exact source to retained terms before adapter use",
+        "license_urls": [
+          "https://data.ny.gov/dataset/OPEN-NY-Terms-Of-Use/77gx-ii52"
+        ],
+        "obligations": "Retain revocable lawful public/private use terms and third-party restrictions. Attribution may not be required legally but retain provenance. Kaggle mirror CC0 cannot license upstream creative works. Existing notice: frontend/public/licenses/LicenseRef-NY-Open-Data.txt; recorded prior terms PDF SHA2569437c849705d58df008f01fc23f404444becce6b86676adc3974f9160a4cb650."
+      },
+      "conditional_net_T2_range": [15, 30],
+      "conditional_net_T3_subset_range": [10, 20],
+      "range_basis": "Engineering planning assumptions; not a measured yield, statistical confidence interval, commitment or sum-safe allocation. Assumes deduplication against a live catalog, independent visitor-access verification and approved location/tier gates.",
+      "measured_newly_accepted": 0,
+      "bankable_net_additions": 0,
+      "effort": "Under1 staff-day pilot; reuse existing parser/rights work only after current metadata binding.",
+      "monetary_cost": "No per-request charge encountered on public probes; no paid API/account used. Staff time and any permission costs not priced.",
+      "urls": {
+        "metadata": "https://data.ny.gov/api/views/m384-u5q6.json",
+        "count": "https://data.ny.gov/resource/m384-u5q6.json?%24select=count%28%2A%29",
+        "sample": "https://data.ny.gov/resource/m384-u5q6.json?%24limit=10"
+      },
+      "evidence": [
+        {
+          "id": "nys-historic-correct-meta",
+          "url": "https://data.ny.gov/api/views/m384-u5q6.json",
+          "final_url": "https://data.ny.gov/api/views/m384-u5q6.json",
+          "status": 200,
+          "checked_at": "2026-10-21T05:01:44.072262+00:00",
+          "path": "nys-historic-correct-meta.body",
+          "bytes": 20051,
+          "sha256": "eb944fcefe09938ab670f69c5d683c4e2e3a77008634f99706534349d1e826ea"
+        },
+        {
+          "id": "nys-historic-correct-count",
+          "url": "https://data.ny.gov/resource/m384-u5q6.json?%24select=count%28%2A%29",
+          "final_url": "https://data.ny.gov/resource/m384-u5q6.json?%24select=count%28%2A%29",
+          "status": 200,
+          "checked_at": "2026-10-21T05:01:45.560598+00:00",
+          "path": "nys-historic-correct-count.body",
+          "bytes": 17,
+          "sha256": "7f647123f7fcc2b0f8bb4be45de7813eda89f80e98e7f6a79f1532f7f69b5eb3"
+        },
+        {
+          "id": "nys-historic-correct-sample",
+          "url": "https://data.ny.gov/resource/m384-u5q6.json?%24limit=10",
+          "final_url": "https://data.ny.gov/resource/m384-u5q6.json?%24limit=10",
+          "status": 200,
+          "checked_at": "2026-10-21T05:01:47.397937+00:00",
+          "path": "nys-historic-correct-sample.body",
+          "bytes": 4467,
+          "sha256": "83f2536f91ff79c7890a71b70463179298f11d95dbfaddd5f220fa85fe7fed1f"
+        },
+        {
+          "id": "ny-terms-actual",
+          "url": "https://data.ny.gov/dataset/OPEN-NY-Terms-Of-Use/77gx-ii52",
+          "final_url": "https://data.ny.gov/dataset/OPEN-NY-Terms-Of-Use/77gx-ii52",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:20.544333+00:00",
+          "path": "ny-terms-actual.body",
+          "bytes": 541615,
+          "sha256": "1fef00d86f292f6e566e055bc26e048b2579eff05730da6e7df697d578dcc400"
+        }
+      ],
+      "blockers": [
+        "Live deduplication; operator schedules/closures; exact visitable entrance; dynamic terms HTML not full retained PDF."
+      ],
+      "overlap": "Existing Philpise Hall admission plus NHL/NPS/NRHP overlap.",
+      "freshness": "Native rows updated2024-12-17; asneeded."
+    },
+    {
+      "id": "texas-historical",
+      "name": "Texas Historical Commission museums / markers / managed sites",
+      "priority": 99,
+      "steward": "Texas Historical Commission",
+      "geographic_category_coverage": "Texas statewide museums, industrial/rail heritage, historic sites, roadside markers.",
+      "candidate_counts": {
+        "measured_museum_points": 649,
+        "measured_marker_points": 16151,
+        "measured_historic_site_polygons": 43,
+        "meaning": "Markers are not automatic attractions; polygons may be components, and native GIS page still claims21managed sites."
+      },
+      "sample_inspection": {
+        "sample_rows": 15,
+        "sample_design": "First5 each of3layers;5museum operator leads followed with public reads.",
+        "observations": "Museum point geocode score/status is not operational status; some source update dates2001 despite later edit stamps. Operator sample exposed Elisabet Ney closed for renovation until expectedSpring2027, French Legation parking at900East9th versus building802SanMarcos, AQHA name alias, and Carver1163/1165Angelina conflict. Brazoria official contact403; no bypass."
+      },
+      "rights": {
+        "status": "NONCOMMERCIAL ONLY under live THC policies: zero bankable commercial yield",
+        "license_urls": ["https://thc.texas.gov/policies"],
+        "obligations": "THC reserves copyright; published permission is for noncommercial copying/distribution/use with credit and third-party exceptions. Blank servicecopyrightText is not commercial grant. Obtain permission or independently source operator facts and cleared geometry; do not copy restricted compilation at scale."
+      },
+      "conditional_net_T2_range": [0, 0],
+      "conditional_net_T3_subset_range": [0, 0],
+      "range_basis": "Engineering planning assumptions; not a measured yield, statistical confidence interval, commitment or sum-safe allocation. Assumes deduplication against a live catalog, independent visitor-access verification and approved location/tier gates.",
+      "measured_newly_accepted": 0,
+      "bankable_net_additions": 0,
+      "effort": "Permission contingency only: if specific commercial grant obtained, museum pilot50 before any allocation; independent operator research can start without copying this compilation.",
+      "monetary_cost": "No per-request charge encountered on public probes; no paid API/account used. Staff time and any permission costs not priced.",
+      "urls": {
+        "service": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer",
+        "museums": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/1",
+        "markers": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/2",
+        "historic_site_polygons": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/24",
+        "museum_count": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/1/query?f=json&where=1%3D1&returnCountOnly=true",
+        "GIS_download_page": "https://atlas.thc.texas.gov/Data/GISData",
+        "policies": "https://thc.texas.gov/policies"
+      },
+      "evidence": [
+        {
+          "id": "texas-museum-count",
+          "url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/1/query?f=json&where=1%3D1&returnCountOnly=true",
+          "final_url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/1/query?f=json&where=1%3D1&returnCountOnly=true",
+          "status": 200,
+          "checked_at": "2026-10-21T05:00:34.103277+00:00",
+          "path": "texas-museum-count.body",
+          "bytes": 13,
+          "sha256": "7151abb24727bdb30045a05da708d57eff3fa36dbea6b62249154b5443f38967"
+        },
+        {
+          "id": "texas-marker-count",
+          "url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/2/query?f=json&where=1%3D1&returnCountOnly=true",
+          "final_url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/2/query?f=json&where=1%3D1&returnCountOnly=true",
+          "status": 200,
+          "checked_at": "2026-10-21T05:00:49.350256+00:00",
+          "path": "texas-marker-count.body",
+          "bytes": 15,
+          "sha256": "991af94a0e7500c6fb2c33fe8bc1f7c11095bb63d5a77345216fafdb833e1794"
+        },
+        {
+          "id": "texas-historic-site-count",
+          "url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/24/query?f=json&where=1%3D1&returnCountOnly=true",
+          "final_url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/24/query?f=json&where=1%3D1&returnCountOnly=true",
+          "status": 200,
+          "checked_at": "2026-10-21T05:01:04.365975+00:00",
+          "path": "texas-historic-site-count.body",
+          "bytes": 12,
+          "sha256": "f72ead787aa237120c8b5149fa33647c46d3297f90daab36bcce8e91bc796571"
+        },
+        {
+          "id": "texas-museum-sample",
+          "url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/1/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=5&returnGeometry=true&outSR=4326",
+          "final_url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/1/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=5&returnGeometry=true&outSR=4326",
+          "status": 200,
+          "checked_at": "2026-10-21T05:00:39.943048+00:00",
+          "path": "texas-museum-sample.body",
+          "bytes": 4827,
+          "sha256": "b795062511c802d21c34d3d74c497d7dc8d8a9cec58a3a71218cb4d3142a28ec"
+        },
+        {
+          "id": "texas-marker-sample",
+          "url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/2/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=5&returnGeometry=true&outSR=4326",
+          "final_url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/2/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=5&returnGeometry=true&outSR=4326",
+          "status": 200,
+          "checked_at": "2026-10-21T05:00:50.161058+00:00",
+          "path": "texas-marker-sample.body",
+          "bytes": 3605,
+          "sha256": "288736d781b0cf2a218e0020ee798d9520f99f9280c82288a44344ffc00fbbc8"
+        },
+        {
+          "id": "texas-historic-site-sample",
+          "url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/24/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=5&returnGeometry=true&outSR=4326",
+          "final_url": "https://gis.thc.texas.gov/arcgis/rest/services/Historical/FeatureServer/24/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=5&returnGeometry=true&outSR=4326",
+          "status": 200,
+          "checked_at": "2026-10-21T05:01:05.187141+00:00",
+          "path": "texas-historic-site-sample.body",
+          "bytes": 10144,
+          "sha256": "c5d74e43383aa608e800b3f282b429d66638cf2f626f05e40c99e09858912df8"
+        },
+        {
+          "id": "texas-data-policies",
+          "url": "https://thc.texas.gov/policies",
+          "final_url": "https://thc.texas.gov/policies",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:25.242597+00:00",
+          "path": "texas-data-policies.body",
+          "bytes": 109178,
+          "sha256": "776a07a84fee0288340f2b2ee10f68beca6ac1a7ac36c6313d68ff1b4ac33158"
+        },
+        {
+          "id": "texas-gis-page",
+          "url": "https://atlas.thc.texas.gov/Data/GISData",
+          "final_url": "https://atlas.thc.texas.gov/Data/GISData",
+          "status": 200,
+          "checked_at": "2026-10-21T05:00:29.553125+00:00",
+          "path": "texas-gis-page.body",
+          "bytes": 17018,
+          "sha256": "08082930727c048b52c9dd31665a33cd9a5ca38dbc476e14611a85afe6edafb4"
+        },
+        {
+          "id": "operator-ney",
+          "url": "https://www.austintexas.gov/ney",
+          "final_url": "https://www.austintexas.gov/ney",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:27.555069+00:00",
+          "path": "operator-ney.body",
+          "bytes": 118805,
+          "sha256": "0ab037c14d4613d4e19b0bd4f77e6ee0fdcb8327e6e22ed6f9ff3d4057bb8d23"
+        },
+        {
+          "id": "operator-aqha",
+          "url": "https://www.aqha.com/plan-your-visit",
+          "final_url": "https://www.aqha.com/plan-your-visit",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:29.328046+00:00",
+          "path": "operator-aqha.body",
+          "bytes": 284860,
+          "sha256": "c88636b6381767e42ad6eccb00a1d09a7bdd22b27161e72141cdef8b0bc0d88d"
+        },
+        {
+          "id": "operator-brazoria",
+          "url": "https://www.brazoriacountytx.gov/departments/museum/contact-us",
+          "final_url": "https://www.brazoriacountytx.gov/departments/museum/contact-us",
+          "status": 403,
+          "checked_at": "2026-10-21T05:05:31.459627+00:00",
+          "path": "operator-brazoria.body",
+          "bytes": 419,
+          "sha256": "fba0e2300f8eb1ce60b3414511bb280f7db0766f1330103262f32dadb0f80d90"
+        },
+        {
+          "id": "operator-french-visit",
+          "url": "https://thc.texas.gov/state-historic-sites/french-legation/plan-your-visit-french-legation",
+          "final_url": "https://thc.texas.gov/state-historic-sites/french-legation/plan-your-visit-french-legation",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:35.515316+00:00",
+          "path": "operator-french-visit.body",
+          "bytes": 60206,
+          "sha256": "6c5f13695a4fa28918d7fab2b5fc3a15abde6e47d729e7bf2b75042b10ee27ec"
+        },
+        {
+          "id": "operator-carver",
+          "url": "https://www.austintexas.gov/carver",
+          "final_url": "https://www.austintexas.gov/carver",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:37.135570+00:00",
+          "path": "operator-carver.body",
+          "bytes": 113544,
+          "sha256": "0f4e71eee88d962f0e7b5183c2ae6d0070970daf80d113d39976f82f192e9f11"
+        },
+        {
+          "id": "operator-carver-contact",
+          "url": "https://www.austintexas.gov/carver/contact-carver",
+          "final_url": "https://www.austintexas.gov/carver/contact-carver",
+          "status": 200,
+          "checked_at": "2026-10-21T05:05:38.785004+00:00",
+          "path": "operator-carver-contact.body",
+          "bytes": 90361,
+          "sha256": "241f4505c062510d49af6110a5c89181d72997b706397cd483c182eb5036cd6e"
+        }
+      ],
+      "blockers": [
+        "Commercial reuse disallowed by published permission; no grant requested. Marker eligibility, obsolete geocodes, closures and arrival conflicts."
+      ],
+      "overlap": "Museum points, markers and historic polygons often describe the same complex; markers among16k are not volume quota.",
+      "freshness": "Live policies read2026-10-21; record original freshness mixed, some2001; edit date cannot stand for operational verification."
+    },
+    {
+      "id": "apga-gardens",
+      "name": "American Public Gardens Association Garden Finder",
+      "priority": 8,
+      "steward": "American Public Gardens Association",
+      "geographic_category_coverage": "Botanical gardens, arboreta, conservatories, sculpture gardens; North America and international.",
+      "candidate_counts": {
+        "publisher_claim_member_organizations_nearly": 600,
+        "measured_current_US_physical_places": null,
+        "meaning": "Member organizations are not US physical gardens; global scope and multi-campus entities require filtering."
+      },
+      "sample_inspection": {
+        "sample_rows": 0,
+        "observations": "Directory and organization-count primary pages inspected; dynamic map no stable public bulk API established. No rights grant in terms inspected."
+      },
+      "rights": {
+        "status": "Discovery only; no bulk commercial redistribution grant established",
+        "license_urls": ["https://www.publicgardens.org/terms-service/"],
+        "obligations": "Terms reserve copyright; do not copy descriptions/photos/directory compilation. Source factual profiles and cleared coordinates independently from individual garden operators or permissive geographic sources."
+      },
+      "conditional_net_T2_range": [200, 350],
+      "conditional_net_T3_subset_range": [120, 250],
+      "range_basis": "Engineering planning assumptions; not a measured yield, statistical confidence interval, commitment or sum-safe allocation. Assumes deduplication against a live catalog, independent visitor-access verification and approved location/tier gates.",
+      "measured_newly_accepted": 0,
+      "bankable_net_additions": 0,
+      "effort": "3–5 staff-days initial regional operator-led pilot; full national coverage1–2 staff-weeks depending operator structure.",
+      "monetary_cost": "No per-request charge encountered on public probes; no paid API/account used. Staff time and any permission costs not priced.",
+      "urls": {
+        "directory": "https://www.publicgardens.org/garden-finder/",
+        "publisher_count": "https://www.publicgardens.org/go-public-gardens/"
+      },
+      "evidence": [
+        {
+          "id": "apga-garden-finder",
+          "url": "https://www.publicgardens.org/garden-finder/",
+          "final_url": "https://www.publicgardens.org/garden-finder/",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:37.437134+00:00",
+          "path": "apga-garden-finder.body",
+          "bytes": 117531,
+          "sha256": "5a5a2cf305702a97fe933f5d0c426c7b6a4b5daa50a0200913d256796cfd4018"
+        },
+        {
+          "id": "apga-primary-count",
+          "url": "https://www.publicgardens.org/go-public-gardens/",
+          "final_url": "https://www.publicgardens.org/go-public-gardens/",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:40.044502+00:00",
+          "path": "apga-primary-count.body",
+          "bytes": 175506,
+          "sha256": "855063dc90522c26bd4282eca5c62d630188cf090b842ad97fa8dfdce99b1912"
+        },
+        {
+          "id": "apga-terms",
+          "url": "https://www.publicgardens.org/terms-service/",
+          "final_url": "https://www.publicgardens.org/terms-service/",
+          "status": 200,
+          "checked_at": "2026-10-21T05:10:17.840320+00:00",
+          "path": "apga-terms.body",
+          "bytes": 129622,
+          "sha256": "ccc9d3286bfaff7bddef589e078aa431fb975c3d739584e2199284003b5c668e"
+        }
+      ],
+      "blockers": [
+        "No complete US venue count or commercial grant; dynamic directory; public/private and seasonal schedules; no established entrance coordinates."
+      ],
+      "overlap": "High with Wikidata/Overture, universities and municipal parks; one garden campus may have many names.",
+      "freshness": "Count page current retrieval2026-10-21, published membercount not dataset timestamp."
+    },
+    {
+      "id": "astc-science",
+      "name": "ASTC Passport science museum / center directory",
+      "priority": 9,
+      "steward": "Association of Science and Technology Centers",
+      "geographic_category_coverage": "Science centers, aviation/industrial museums, planetariums and natural-history museums; international.",
+      "candidate_counts": {
+        "measured_PDF_pages": 33,
+        "measured_unique_website_strings_global": 366,
+        "measured_current_US_physical_places": null,
+        "meaning": "Website strings are not facility counts; global reciprocal-membership list not all public museums."
+      },
+      "sample_inspection": {
+        "sample_rows": 0,
+        "sample_design": "33-page PDF text extracted; initial US named/address entries inspected, no uniform acceptance sample.",
+        "observations": "Physical addresses and websites useful discovery; recurring membership eligibility/reservation rules are not ordinary admission or free access. List effective2026-05-01through2026-10-31."
+      },
+      "rights": {
+        "status": "Explicitly restricted; zero bankable direct commercial reuse",
+        "license_urls": ["https://www.astc.org/terms-of-use/"],
+        "obligations": "Materials reserved to ASTC/owners; downloads limited to nonprofit personal/science-center/museum authorized uses; digital dissemination requires express permission. Do not distribute original PDF/text as app data; no further bulk acquisition. Independently source operator facts and licensed geometry, or obtain express permission."
+      },
+      "conditional_net_T2_range": [0, 0],
+      "conditional_net_T3_subset_range": [0, 0],
+      "range_basis": "Engineering planning assumptions; not a measured yield, statistical confidence interval, commitment or sum-safe allocation. Assumes deduplication against a live catalog, independent visitor-access verification and approved location/tier gates.",
+      "measured_newly_accepted": 0,
+      "bankable_net_additions": 0,
+      "effort": "Potential independently sourced operator-led science portfolio180–280T2 /100–200T3, not direct ASTC reuse quota; source pilot50 and rights review first.",
+      "monetary_cost": "No per-request charge encountered on public probes; no paid API/account used. Staff time and any permission costs not priced.",
+      "urls": {
+        "directory": "https://www.astc.org/membership/find-an-astc-member/passport/",
+        "PDF": "https://www.astc.org/wp-content/uploads/2026/04/Compact-List-6pt-Font.pdf"
+      },
+      "evidence": [
+        {
+          "id": "astc-passport-directory",
+          "url": "https://www.astc.org/membership/find-an-astc-member/passport/",
+          "final_url": "https://www.astc.org/membership/find-an-astc-member/passport/",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:42.569029+00:00",
+          "path": "astc-passport-directory.body",
+          "bytes": 246556,
+          "sha256": "166c6b75964a1d9a82fe79d7f283c4c54d6a293ce027da09a0c8a58a3ed3c5e5"
+        },
+        {
+          "id": "astc-compact-list",
+          "url": "https://www.astc.org/wp-content/uploads/2026/04/Compact-List-6pt-Font.pdf",
+          "final_url": "https://www.astc.org/wp-content/uploads/2026/04/Compact-List-6pt-Font.pdf",
+          "status": 200,
+          "checked_at": "2026-10-21T05:02:46.372672+00:00",
+          "path": "astc-compact-list.body",
+          "bytes": 745396,
+          "sha256": "7890d52a5c5d535de6834b2ea00f45d63e5f12548de16a3b691cb77f1acd3967"
+        },
+        {
+          "id": "astc-terms",
+          "url": "https://www.astc.org/terms-of-use/",
+          "final_url": "https://www.astc.org/terms-of-use/",
+          "status": 200,
+          "checked_at": "2026-10-21T05:10:20.792239+00:00",
+          "path": "astc-terms.body",
+          "bytes": 243552,
+          "sha256": "39d1af67d0e22e16b3df0b8e32e0692593a686c286529d0ef7f6dced2b5360f0"
+        }
+      ],
+      "blockers": [
+        "Direct commercial redistribution not permitted by published terms; no US inventory count; record websites lack cleared coordinates; membership benefits differ from visitor facts."
+      ],
+      "overlap": "High with museum datasets and Wikidata/Overture. Could seed category targets but not duplicate membercampuses as distinct entities.",
+      "freshness": "PDF specificallyMay–October2026; upcomingNovember replacement expected but not fetched."
+    },
+    {
+      "id": "seattle-public-art",
+      "name": "Seattle publicly sited art collection",
+      "priority": 10,
+      "steward": "Seattle Office of Arts and Culture",
+      "geographic_category_coverage": "Seattle outdoor/site-integrated art; separate portable collection must be excluded.",
+      "candidate_counts": {
+        "publisher_claim_publicly_sited_works_over": 400,
+        "publisher_claim_portable_works_nearly": 3600,
+        "measured_accessible_API_rows": null,
+        "meaning": "Portable art is not fixed visitor destinations; publicly sited artwork count must collapse complexes."
+      },
+      "sample_inspection": {
+        "sample_rows": 0,
+        "observations": "Primary source discoverable in search; direct page returned403. No bypass or established accessible API/license."
+      },
+      "rights": {
+        "status": "Discovery contingency; zero bankable current yield",
+        "license_urls": ["https://www.seattle.gov/arts/programs/public-art"],
+        "obligations": "Native collection redistribution terms not established; artwork copyright separate."
+      },
+      "conditional_net_T2_range": [80, 180],
+      "conditional_net_T3_subset_range": [40, 100],
+      "range_basis": "Engineering planning assumptions; not a measured yield, statistical confidence interval, commitment or sum-safe allocation. Assumes deduplication against a live catalog, independent visitor-access verification and approved location/tier gates.",
+      "measured_newly_accepted": 0,
+      "bankable_net_additions": 0,
+      "effort": "1–3 days once agency open-data endpoint/terms identified.",
+      "monetary_cost": "No per-request charge encountered on public probes; no paid API/account used. Staff time and any permission costs not priced.",
+      "urls": {
+        "primary": "https://www.seattle.gov/arts/programs/public-art"
+      },
+      "evidence": [
+        {
+          "id": "seattle-art-primary",
+          "url": "https://www.seattle.gov/arts/programs/public-art",
+          "final_url": "https://www.seattle.gov/arts/programs/public-art",
+          "status": 403,
+          "checked_at": "2026-10-21T05:02:47.966556+00:00",
+          "path": "seattle-art-primary.body",
+          "bytes": 919,
+          "sha256": "a17c33d3fc0970df015d81f8b1cd80096dfe5506b59ca7dc0c924e58025e338e"
+        }
+      ],
+      "blockers": [
+        "Primary fetch403; exact public API/rights/current object sample unverified."
+      ],
+      "overlap": "Parks/campus clusters and Wikidata overlap; portable works excluded.",
+      "freshness": "Publisher claims from indexed primary page, not a current measured inventory."
+    }
+  ],
+  "operator_counterexamples": {
+    "temporarily_closed": "https://www.austintexas.gov/ney",
+    "parking_different_from_building": "https://thc.texas.gov/state-historic-sites/french-legation/plan-your-visit-french-legation",
+    "name_alias": "https://www.aqha.com/plan-your-visit",
+    "primary_address_conflict": [
+      "https://www.austintexas.gov/carver",
+      "https://www.austintexas.gov/carver/contact-carver"
+    ],
+    "blocked_original": "https://www.brazoriacountytx.gov/departments/museum/contact-us"
+  },
+  "next_pilot": "100NHLstratified by region/public-private/category,30SFsiteclusters,20NYSsites. Separate operator-led science/garden inventory25each. Current terms gates first for NYC/Chicago. Count only distinct netT2/T3 after live snapshot reconciliation.",
+  "rejected_volume_shortcuts": [
+    "NRHP geometry rows as public attractions",
+    "NHL+NRHP+Heritage claims summed",
+    "16kTexasmarkers imported without commercial permission or visitor eligibility",
+    "ASTC/APGAmemberorganizations treated as licensed USvenues",
+    "SF/Chicago/NYCartobjects with samecampus counted as independent roadtripstops",
+    "IMLS2014orKagglemuseum coordinates assumed modern/originallylicensed; earlier source study flagscommercialgeocodeprovenance",
+    "Museum object APIs (Met/Smithsonian) treated as attraction inventories"
+  ]
+}

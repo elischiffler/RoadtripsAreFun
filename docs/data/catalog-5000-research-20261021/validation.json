@@ -1,0 +1,36 @@
+{
+  "checked_at": "2026-10-21T05:29:33.553054+00:00",
+  "scope": "Docs/research evidence only; no application code changed and no live services/tests invoked.",
+  "preserved_implementation_commit": "f3c561b",
+  "checks": {
+    "strict_json_files_before_validation_manifest": 10,
+    "source_family_assessments": 42,
+    "direct_request_receipts": 256,
+    "saved_original_sha256_matches": 249,
+    "saved_original_bytes": 16112182,
+    "source_original_hash_failures": 0,
+    "coverage_division_totals": {
+      "before": 603,
+      "after": 696
+    },
+    "queue_math": 14100,
+    "net_work_objective_math": 5600,
+    "downside_math": 2850,
+    "upper_math": 7350,
+    "pilot_denominator_math": 600,
+    "local_markdown_links_passed": 10,
+    "reddit_operator_leads": 10,
+    "reddit_threads": 4,
+    "markdown_json_format": "Prettier passed",
+    "application_code_diff_from_f3c561b": "empty"
+  },
+  "independent_review": {
+    "culture": "Counts/rights/quota math/gating reviewed. Clarify pilot denominator and exact OPEN-NY binding.",
+    "nature_food": "Counts/access/capacity/routing reviewed. Correct building Pub_Use vs gate Public_Use.",
+    "copyedit": "All preexisting76linktargets and numeric values preserved; corrected FWS filter naming, OPEN-NY binding and600prospect denominator."
+  },
+  "new_admissions": 0,
+  "live_net_new": null,
+  "full_app_tests": "Not rerun for documentation/evidence-only changes; previous implementation results remain dated evidence.",
+  "public_artifact_url": null
+}

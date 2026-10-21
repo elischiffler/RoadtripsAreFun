@@ -1,0 +1,9 @@
+{
+  "receipt_hash_checks_passed": 84,
+  "NHL_geometry_rows": 2909,
+  "NHL_unique_all": 2482,
+  "NHL_unique_listed_50_states_DC": 2449,
+  "SF_exact_public_coordinate_groups": 222,
+  "SF_public_coordinate_rows": 689,
+  "SF_250m_components_diagnostic_only": 126
+}
