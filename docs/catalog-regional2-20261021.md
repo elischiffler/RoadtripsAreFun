@@ -88,6 +88,11 @@ reviewed implementation; run originals from the private working directory with
 their raw receipts, not from the documentation tree. No remedial request or new
 operator contact was made. Future permitted research must use the corrected policy;
 an actual denial still requires the existing materially-new-evidence rule.
+This audit covers the new acquisition only. The defect was found in reused
+fetcher patterns, so earlier batches need a retrospective timing-policy audit
+before a combined release. Their 194 staged admissions were preserved, not newly
+certified by this checkpoint. That audit can use existing receipts without making
+new source requests and should precede the next acquisition batch.
 
 ## Rights, factual checks and profiles
 
