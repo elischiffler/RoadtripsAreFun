@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { clearStudioWorkspace } from './studioWorkspace';
+import { clearResearchCache } from './studioResearchCache';
 
 const KEY = 'studioSession';
 export function getStudioSession() {
@@ -13,6 +14,7 @@ export function getStudioSession() {
 export function clearStudioSession() {
   sessionStorage.removeItem(KEY);
   clearStudioWorkspace();
+  clearResearchCache();
   window.dispatchEvent(new Event('studio-access-changed'));
 }
 export async function unlockStudio(password) {

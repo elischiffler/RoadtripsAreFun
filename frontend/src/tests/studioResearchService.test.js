@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import axios from 'axios';
+import { Blob as NativeBlob } from 'node:buffer';
 import {
   loadStudyLibrary,
   studyRequest,
@@ -9,7 +10,14 @@ import {
   studyVersions,
   savedStudyVersion,
   rememberStudyVersion,
+  researchCatalog,
 } from '../services/studioResearch';
+import {
+  clearResearchCache,
+  readResearchCache,
+  saveResearchCache,
+} from '../services/studioResearchCache';
+import { clearStudioSession } from '../services/studioSession';
 
 vi.mock('axios', () => ({ default: { get: vi.fn(), post: vi.fn() } }));
 const sources = [
@@ -21,6 +29,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   localStorage.clear();
   sessionStorage.clear();
+  clearResearchCache();
   exported = null;
   vi.stubGlobal('URL', {
     createObjectURL: vi.fn((blob) => {
@@ -36,6 +45,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
   localStorage.clear();
   sessionStorage.clear();
+  clearResearchCache();
 });
 const exportedText = () =>
   new Promise((resolve, reject) => {
@@ -153,4 +163,123 @@ it('discovers database studies without browser keys and uses session-scoped read
   await expect(studyRequest(library.current[0], 'pause', 'post')).rejects.toThrow('read-only');
   expect(axios.post).not.toHaveBeenCalled();
   expect(localStorage.length).toBe(0);
+});
+
+const snapshot = (changes = {}) => ({
+  state: 'complete',
+  cursor: 1,
+  counts: { solver: 1, pipeline: 0, total: 1 },
+  design: { trips: ['medium-2d'], stops_per_day: [2] },
+  variants: [{ id: 'baseline', config: { time_limit_seconds: 15 } }],
+  dataset_hash: 'fixed',
+  rows: [{ id: 1, solver_status: 'OPTIMAL' }],
+  ...changes,
+});
+
+it('reuses completed study results and metadata without another request', async () => {
+  const data = snapshot();
+  axios.get.mockResolvedValueOnce({ data });
+  expect(await studyRequest(sources[0], '', 'get', undefined, 0)).toEqual(data);
+  expect(await studyRequest(sources[0], '', 'get', undefined, 0)).toEqual(data);
+  expect(await studyVersions([sources[0]], undefined, [])).toEqual({
+    currentLabel: '15',
+    previous: null,
+  });
+  expect(axios.get).toHaveBeenCalledTimes(1);
+});
+
+it('resumes an active study from its cached cursor and retains earlier rows and corrections', async () => {
+  axios.get.mockResolvedValueOnce({ data: snapshot({ state: 'running' }) });
+  await studyRequest(sources[0], '', 'get', undefined, 0);
+  axios.get.mockResolvedValueOnce({
+    data: snapshot({
+      cursor: 3,
+      rows: [
+        { id: 1, solver_status: 'FEASIBLE' },
+        { id: 2, solver_status: 'OPTIMAL' },
+      ],
+    }),
+  });
+  const restored = await studyRequest(sources[0], '', 'get', undefined, 0);
+  expect(axios.get.mock.calls[1][1].params).toEqual({ after: 1 });
+  expect(restored.rows).toEqual([
+    { id: 1, solver_status: 'FEASIBLE' },
+    { id: 2, solver_status: 'OPTIMAL' },
+  ]);
+  expect(await studyRequest(sources[0], '', 'get', undefined, 0)).toEqual(restored);
+  expect(axios.get).toHaveBeenCalledTimes(2);
+});
+
+it('does not treat metadata-only responses as a cached full study', async () => {
+  axios.get.mockResolvedValueOnce({ data: snapshot({ rows: [] }) });
+  await studyRequest(sources[0], '', 'get', undefined, Number.MAX_SAFE_INTEGER);
+  axios.get.mockResolvedValueOnce({ data: snapshot() });
+  expect((await studyRequest(sources[0], '', 'get', undefined, 0)).rows).toHaveLength(1);
+  expect(axios.get.mock.calls[1][1].params).toEqual({ after: 0 });
+});
+
+it('keeps cached results private to a capability and the current Studio session', async () => {
+  axios.get.mockResolvedValue({ data: snapshot() });
+  await studyRequest(sources[0]);
+  await studyRequest({ ...sources[0], key: 'different-key' });
+  sessionStorage.setItem(
+    'studioSession',
+    JSON.stringify({ token: 'visitor', expires_at: Date.now() / 1000 + 60 })
+  );
+  await studyRequest(sources[0]);
+  expect(axios.get).toHaveBeenCalledTimes(3);
+  clearStudioSession();
+  expect(
+    Object.keys(sessionStorage).filter((key) => key.startsWith('roadtrips.studio.research.'))
+  ).toEqual([]);
+  await studyRequest(sources[0]);
+  expect(axios.get).toHaveBeenCalledTimes(4);
+});
+
+it('reuses the library and catalog, and honors cancellation even for cached responses', async () => {
+  sessionStorage.setItem(
+    'studioSession',
+    JSON.stringify({ token: 'visitor', expires_at: Date.now() / 1000 + 60 })
+  );
+  axios.get.mockResolvedValueOnce({ data: { studies: [{ id: 'current', database: true }] } });
+  expect(await loadStudyLibrary()).toEqual(await loadStudyLibrary());
+  axios.get.mockResolvedValueOnce({ data: { trips: [], personas: [] } });
+  expect(await researchCatalog()).toEqual(await researchCatalog());
+  expect(axios.get).toHaveBeenCalledTimes(2);
+  const controller = new AbortController();
+  controller.abort();
+  await expect(loadStudyLibrary(controller.signal)).rejects.toMatchObject({ name: 'AbortError' });
+  await expect(researchCatalog(controller.signal)).rejects.toMatchObject({ name: 'AbortError' });
+  expect(axios.get).toHaveBeenCalledTimes(2);
+});
+
+it('falls back to same-tab memory when session storage is unavailable', async () => {
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    throw new Error('quota');
+  });
+  await saveResearchCache('large', 'visitor', { rows: [1, 2] });
+  expect(await readResearchCache('large', 'visitor')).toEqual({ rows: [1, 2] });
+  expect(await readResearchCache('large', 'someone-else')).toBeNull();
+});
+
+it('compresses large results and restores them in a fresh page session module', async () => {
+  vi.stubGlobal('Blob', NativeBlob);
+  const value = { rows: Array.from({ length: 1000 }, (_, id) => ({ id, status: 'OPTIMAL' })) };
+  await saveResearchCache('large', 'visitor', value);
+  const stored = JSON.parse(sessionStorage.getItem('roadtrips.studio.research.v1.large'));
+  expect(stored.encoding).toBe('gzip');
+  expect(stored.data.length).toBeLessThan(JSON.stringify(value).length / 2);
+  vi.resetModules();
+  const reloaded = await import('../services/studioResearchCache');
+  expect(await reloaded.readResearchCache('large', 'visitor')).toEqual(value);
+  reloaded.clearResearchCache();
+});
+
+it('invalidates saved snapshots after a successful control action', async () => {
+  axios.get.mockResolvedValue({ data: snapshot() });
+  await studyRequest(sources[0]);
+  axios.post.mockResolvedValueOnce({ data: { state: 'paused' } });
+  await studyRequest(sources[0], 'pause', 'post');
+  await studyRequest(sources[0]);
+  expect(axios.get).toHaveBeenCalledTimes(2);
 });

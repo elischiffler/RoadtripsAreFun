@@ -30,6 +30,7 @@ import {
   studyVersions,
   savedStudyVersion,
   rememberStudyVersion,
+  readStudySnapshot,
   downloadStudy,
 } from '../services/studioResearch';
 
@@ -43,6 +44,7 @@ vi.mock('../services/studioResearch', () => ({
   studyVersions: vi.fn(),
   savedStudyVersion: vi.fn(),
   rememberStudyVersion: vi.fn(),
+  readStudySnapshot: vi.fn(),
 }));
 const trips = ['short-1d', 'medium-2d', 'long-3d', 'coast-5d', 'tight-2d'].map((id) => ({
   id,
@@ -94,6 +96,7 @@ beforeEach(() => {
   savedStudies.mockReturnValue([]);
   savedStudyVersion.mockReturnValue('current');
   studyVersions.mockResolvedValue({ currentLabel: '', previous: null });
+  readStudySnapshot.mockResolvedValue(null);
 });
 afterEach(() => {
   vi.useRealTimers();
@@ -162,6 +165,48 @@ it('combines saved results without selecting a study or cancelling work on unmou
   expect(studyRequest.mock.calls.every(([, action]) => !action)).toBe(true);
   view.unmount();
   expect(studyRequest.mock.calls.some(([, action]) => action === 'pause')).toBe(false);
+});
+
+it('restores completed cached results without requesting study rows again', async () => {
+  savedStudies.mockReturnValue([{ id: 'saved', key: 'private-fixture' }]);
+  readStudySnapshot.mockResolvedValue({
+    id: 'saved',
+    state: 'complete',
+    cursor: 1,
+    counts: { total: 1, pipeline: 0, solver: 1 },
+    design: defaults,
+    variants,
+    dataset_hash: 'cached',
+    rows: [base],
+  });
+  mount();
+  expect(await screen.findByText('Finished · 1 / 1')).toBeInTheDocument();
+  expect(screen.getByRole('table')).toHaveTextContent('1 run measured');
+  expect(studyRequest).not.toHaveBeenCalled();
+});
+
+it('shows cached active results while fetching only newer observations', async () => {
+  savedStudies.mockReturnValue([{ id: 'saved', key: 'private-fixture' }]);
+  readStudySnapshot.mockResolvedValue({
+    id: 'saved',
+    state: 'running',
+    cursor: 7,
+    counts: { total: 2, pipeline: 0, solver: 2 },
+    design: defaults,
+    variants,
+    dataset_hash: 'cached',
+    rows: [base],
+  });
+  studyRequest.mockImplementation(() => new Promise(() => {}));
+  mount();
+  expect(await screen.findByText('running · 1 / 2')).toBeInTheDocument();
+  expect(studyRequest).toHaveBeenCalledWith(
+    { id: 'saved', key: 'private-fixture' },
+    '',
+    'get',
+    expect.any(AbortSignal),
+    7
+  );
 });
 
 it('restores a study without Studio login, separates tracks and keeps failures visible', async () => {

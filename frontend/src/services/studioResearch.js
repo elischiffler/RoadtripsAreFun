@@ -1,5 +1,29 @@
 import axios from 'axios';
-import { studioRequest } from './studioSession';
+import { getStudioSession, studioRequest } from './studioSession';
+import { clearResearchCache, readResearchCache, saveResearchCache } from './studioResearchCache';
+
+const scope = (study) =>
+  JSON.stringify([
+    import.meta.env.VITE_BACKEND_SERVER,
+    getStudioSession()?.token ?? null,
+    study?.database ? 'database' : (study?.key ?? 'public'),
+  ]);
+const checkAborted = (signal) => {
+  if (signal?.aborted) throw new DOMException('Request aborted', 'AbortError');
+};
+export async function readStudySnapshot(study) {
+  const value = await readResearchCache(`study:${study.id}`, scope(study));
+  return Array.isArray(value?.rows) &&
+    Array.isArray(value.variants) &&
+    value.counts &&
+    value.design &&
+    typeof value.dataset_hash === 'string' &&
+    typeof value.state === 'string' &&
+    Number.isSafeInteger(value.cursor) &&
+    value.cursor >= 0
+    ? value
+    : null;
+}
 
 const KEY = 'studioResearchStudies';
 const ARCHIVE_KEY = 'studioResearchArchivedStudies';
@@ -74,19 +98,76 @@ export async function studyVersions(currentStudies, signal, archive = archivedSt
 }
 // Database references grant read access through Studio; control capabilities stay browser-local.
 export async function loadStudyLibrary(signal) {
+  const owner = scope();
+  const cached = await readResearchCache('library', owner);
+  checkAborted(signal);
+  if (Array.isArray(cached?.current) && Array.isArray(cached?.archived)) return cached;
   const { data } = await studioRequest('get', 'research/saved', undefined, signal);
   const local = new Map(
     [...archivedStudies(), ...savedStudies()].map((study) => [study.id, study])
   );
   const studies = data.studies.map((study) => local.get(study.id) || study);
-  return { current: studies.slice(0, 1), archived: studies.slice(1) };
+  const library = { current: studies.slice(0, 1), archived: studies.slice(1) };
+  checkAborted(signal);
+  await saveResearchCache('library', owner, library);
+  return library;
 }
 export async function researchCatalog(signal) {
-  return (
+  const owner = scope();
+  const cached = await readResearchCache('catalog', owner);
+  checkAborted(signal);
+  if (Array.isArray(cached?.trips) && Array.isArray(cached?.personas)) return cached;
+  const data = (
     await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}studio/research/catalog`, { signal })
   ).data;
+  checkAborted(signal);
+  await saveResearchCache('catalog', owner, data);
+  return data;
 }
 export async function studyRequest(study, action = '', method = 'get', signal, after) {
+  const owner = scope(study);
+  const cacheKey = `study:${study.id}`;
+  const metadataKey = `metadata:${study.id}`;
+  const metadataOnly = after === Number.MAX_SAFE_INTEGER;
+  const cacheable = method === 'get' && !action;
+  const cached = cacheable ? await readStudySnapshot(study) : null;
+  checkAborted(signal);
+  if (cached?.state === 'complete' && Array.isArray(cached.rows))
+    return metadataOnly ? { ...cached, rows: [] } : cached;
+  if (cacheable && metadataOnly) {
+    const metadata = await readResearchCache(metadataKey, owner);
+    checkAborted(signal);
+    if (metadata?.variants && metadata?.counts) return metadata;
+  }
+  // Restoring an active study needs only changes after the cached full snapshot.
+  const cursor =
+    cacheable && !metadataOnly && cached && Number.isSafeInteger(cached.cursor)
+      ? cached.cursor
+      : after;
+  const data = await requestStudy(study, action, method, signal, cursor);
+  checkAborted(signal);
+  if (!cacheable) {
+    if (method !== 'get') {
+      clearResearchCache(cacheKey);
+      clearResearchCache(metadataKey);
+    }
+    return data;
+  }
+  if (metadataOnly) {
+    await saveResearchCache(metadataKey, owner, data);
+    return data;
+  }
+  if (Array.isArray(data.rows) && (cached || cursor == null || cursor === 0)) {
+    const rows = new Map((cached?.rows ?? []).map((row) => [row.id, row]));
+    data.rows.forEach((row) => rows.set(row.id, row));
+    const snapshot = { ...data, rows: [...rows.values()] };
+    await saveResearchCache(cacheKey, owner, snapshot);
+    return snapshot;
+  }
+  return data;
+}
+
+async function requestStudy(study, action, method, signal, after) {
   if (study.database) {
     if (method !== 'get') throw new Error('Saved database results are read-only.');
     return (
@@ -152,5 +233,6 @@ export async function rerunStudy(study, previousStudies) {
   );
   localStorage.setItem(KEY, JSON.stringify([data]));
   rememberStudyVersion('current');
+  clearResearchCache();
   return data;
 }

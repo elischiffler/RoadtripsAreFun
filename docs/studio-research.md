@@ -319,6 +319,17 @@ selected saved version. Without database opt-in, existing private capability
 access continues to work. Authentication expiry returns database viewers to the
 Studio password form.
 
+Loaded research libraries, chart labels and study snapshots are cached in the
+browser tab's session, scoped to the backend, Studio session and study capability.
+Returning to Research or reloading the page restores the previously loaded rows.
+Completed studies need no repeat download; active studies display cached rows
+immediately and request changes after their saved cursor. Switching study versions
+keeps each snapshot separate. Session clearing and successful study control/rerun
+actions invalidate the relevant cache. Large snapshots use gzip when supported;
+if browser storage is unavailable or full, an in-memory fallback still avoids
+repeat downloads during navigation. This cache creates no local database and
+does not persist across a closed browser tab.
+
 The **CP-SAT outcomes** card shows each recorded status and its share of filtered
 finished runs. Optimal means the lowest objective was proven; Feasible means a
 valid selection was found without proving it best. Infeasible means the encoded

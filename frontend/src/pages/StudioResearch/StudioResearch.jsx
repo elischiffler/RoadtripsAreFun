@@ -10,6 +10,7 @@ import {
   studyVersions,
   savedStudyVersion,
   rememberStudyVersion,
+  readStudySnapshot,
 } from '../../services/studioResearch';
 import {
   Heatmap,
@@ -107,7 +108,8 @@ export default function StudioResearch() {
     researchCatalog(controller.signal)
       .then(setCatalog)
       .catch((e) => {
-        if (e.name !== 'CanceledError') setError('Chart labels are unavailable.');
+        if (!controller.signal.aborted && e.name !== 'CanceledError')
+          setError('Chart labels are unavailable.');
       });
     return () => controller.abort();
   }, []);
@@ -170,7 +172,21 @@ export default function StudioResearch() {
       )
         timer = setTimeout(poll, 5000);
     };
-    poll();
+    const restore = async () => {
+      await Promise.all(
+        studies.map(async (study) => {
+          const cached = await readStudySnapshot(study);
+          if (controller.signal.aborted || !Array.isArray(cached?.rows)) return;
+          snapshots.set(study.id, cached);
+          observations.set(study.id, new Map(cached.rows.map((row) => [row.id, row])));
+        })
+      );
+      if (controller.signal.aborted) return;
+      const available = studies.map((study) => snapshots.get(study.id)).filter(Boolean);
+      if (available.length) setData(combineStudies(available));
+      poll();
+    };
+    restore();
     return () => {
       controller.abort();
       clearTimeout(timer);
