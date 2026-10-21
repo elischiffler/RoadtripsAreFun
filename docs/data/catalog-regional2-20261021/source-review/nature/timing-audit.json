@@ -1,0 +1,159 @@
+{
+  "affected_positive_holds": [
+    "diversity:wd:Q4929903",
+    "diversity:wd:Q49490187",
+    "diversity:wd:Q12062222"
+  ],
+  "already_held_403": "diversity:wd:Q14716128",
+  "audit_type": "retrospective original request-start timestamps; response completion was not recorded",
+  "fix": "timing_policy.py enforces maximum declared delay including orphan directives; acquire.py records completion timestamps and follows robots redirects before content.",
+  "no_remedy_network_requests": true,
+  "offline_tests": "python test_timing.py: passed",
+  "requests": [
+    {
+      "below_required_delay": false,
+      "declared_delay_seconds": 60,
+      "id": "robots-f036a5a6ad68",
+      "previous_same_host_id": null,
+      "request_started_at": "2026-10-21T18:20:30.116667+00:00",
+      "response_completed_at": null,
+      "source_sha256": "6288dde2996947fa48d1dd7de610bc66852ec0e288a275a3f8b44c6883d5b7f2",
+      "start_to_start_seconds": null,
+      "status": 200,
+      "url": "https://www.bluespringheritage.com/robots.txt"
+    },
+    {
+      "below_required_delay": true,
+      "declared_delay_seconds": 60,
+      "id": "nature-blue-spring",
+      "previous_same_host_id": "robots-f036a5a6ad68",
+      "request_started_at": "2026-10-21T18:20:32.084453+00:00",
+      "response_completed_at": null,
+      "source_sha256": "7f84df9f4c85a1693198dbdca81c2a10d9515a0699d48852e9bcfe1efee96104",
+      "start_to_start_seconds": 1.967786,
+      "status": 200,
+      "url": "https://www.bluespringheritage.com/"
+    },
+    {
+      "below_required_delay": false,
+      "declared_delay_seconds": 10,
+      "id": "robots-9d382a8ffe04",
+      "previous_same_host_id": null,
+      "request_started_at": "2026-10-21T18:20:43.404925+00:00",
+      "response_completed_at": null,
+      "source_sha256": "1af0dd2bc856a243048c6740ff26549c287e709df4034e9c19713fe36686c260",
+      "start_to_start_seconds": null,
+      "status": 200,
+      "url": "https://geneseecountyparks.org/robots.txt"
+    },
+    {
+      "below_required_delay": true,
+      "declared_delay_seconds": 10,
+      "id": "nature-formar",
+      "previous_same_host_id": "robots-9d382a8ffe04",
+      "request_started_at": "2026-10-21T18:20:44.526266+00:00",
+      "response_completed_at": null,
+      "source_sha256": "9d459ca33f3ca95a9889232bfbe21b3c720baa72e9bce30de6d3890f72f34b92",
+      "start_to_start_seconds": 1.121341,
+      "status": 200,
+      "url": "https://geneseecountyparks.org/for-mar-nature-preserve-arboretum-2/"
+    },
+    {
+      "below_required_delay": false,
+      "declared_delay_seconds": 5,
+      "id": "robots-36173cd4299a",
+      "previous_same_host_id": null,
+      "request_started_at": "2026-10-21T18:20:45.569907+00:00",
+      "response_completed_at": null,
+      "source_sha256": "024d653679641a3aed282bacbe82c161b3262bc109ed683e3f15e67f9c816d6d",
+      "start_to_start_seconds": null,
+      "status": 200,
+      "url": "https://www.lincolnparkpublicschools.com/robots.txt"
+    },
+    {
+      "below_required_delay": true,
+      "declared_delay_seconds": 5,
+      "id": "nature-hector",
+      "previous_same_host_id": "robots-36173cd4299a",
+      "request_started_at": "2026-10-21T18:20:47.329648+00:00",
+      "response_completed_at": null,
+      "source_sha256": "58bf2215b395dcac74c009aa98701854e43cbe54a1cd3a95fee6a647ca9910d4",
+      "start_to_start_seconds": 1.759741,
+      "status": 403,
+      "url": "https://www.lincolnparkpublicschools.com/web/index.php?page=home&iduser=326"
+    },
+    {
+      "below_required_delay": false,
+      "declared_delay_seconds": 10,
+      "id": "robots-c21f68fe7c91",
+      "previous_same_host_id": null,
+      "request_started_at": "2026-10-21T18:21:00.319257+00:00",
+      "response_completed_at": null,
+      "source_sha256": "c4474a789a167486e4c43129ced1be93a2cfd250a752132e25946988322944c7",
+      "start_to_start_seconds": null,
+      "status": 200,
+      "url": "https://www.greensboroscience.org/robots.txt"
+    },
+    {
+      "below_required_delay": true,
+      "declared_delay_seconds": 10,
+      "id": "nature-greensboro",
+      "previous_same_host_id": "robots-c21f68fe7c91",
+      "request_started_at": "2026-10-21T18:21:01.328074+00:00",
+      "response_completed_at": null,
+      "source_sha256": "c959ce0f4f07becb3276d21e5862aba704cae4b67d6f99e745d9a5156f8ead47",
+      "start_to_start_seconds": 1.008817,
+      "status": 404,
+      "url": "https://www.greensboroscience.org/visit/"
+    },
+    {
+      "below_required_delay": false,
+      "declared_delay_seconds": 10,
+      "id": "robots-3175b86c9e8e",
+      "previous_same_host_id": null,
+      "request_started_at": "2026-10-21T18:21:02.621192+00:00",
+      "response_completed_at": null,
+      "source_sha256": "d51d63934229398570383a4acbb5b46ca06276fbb80a5c7c385eb34b54a6b345",
+      "start_to_start_seconds": null,
+      "status": 200,
+      "url": "https://www.lifeandscience.org/robots.txt"
+    },
+    {
+      "below_required_delay": true,
+      "declared_delay_seconds": 10,
+      "id": "nature-life-science",
+      "previous_same_host_id": "robots-3175b86c9e8e",
+      "request_started_at": "2026-10-21T18:21:04.667776+00:00",
+      "response_completed_at": null,
+      "source_sha256": "7246ddb7e14c7b979ee1bd14e92d4eccd78ed38b59be5006110d8d1cc3a83526",
+      "start_to_start_seconds": 2.046584,
+      "status": 404,
+      "url": "https://www.lifeandscience.org/plan-your-visit/"
+    },
+    {
+      "below_required_delay": false,
+      "declared_delay_seconds": 10,
+      "id": "nature-greensboro-hours",
+      "previous_same_host_id": "nature-greensboro",
+      "request_started_at": "2026-10-21T18:21:47.522718+00:00",
+      "response_completed_at": null,
+      "source_sha256": "185c6283f8260d857fea9349076f87c97b57acb716d2d4d299cfa4caf8a979b0",
+      "start_to_start_seconds": 46.194644,
+      "status": 200,
+      "url": "https://www.greensboroscience.org/hours-prices/"
+    },
+    {
+      "below_required_delay": false,
+      "declared_delay_seconds": 10,
+      "id": "nature-life-visit",
+      "previous_same_host_id": "nature-life-science",
+      "request_started_at": "2026-10-21T18:21:48.525081+00:00",
+      "response_completed_at": null,
+      "source_sha256": "4af3b8155186958ab1123deb5098b23f9850570c8a1d12f601b259ddbee867c1",
+      "start_to_start_seconds": 43.857305,
+      "status": 200,
+      "url": "https://www.lifeandscience.org/visit/"
+    }
+  ],
+  "retained_corrected_positive": "nature-greensboro-hours:46.194644 seconds after prior404 start; greater than35second request timeout plus10second delay. Initial failed body is not accepted proof."
+}

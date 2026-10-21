@@ -1,0 +1,702 @@
+[
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [],
+    "pilot_id": "culture:wd:Q4769571",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Current Brown Library primary robots returned HTTP 503; no visitor page fetched. A separate 2023 Brown news discovery lead reported renovation closure, but reopening/current admission was not established. Do not claim permanent closure or bypass the policy failure.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [],
+    "pilot_id": "culture:wd:Q6146278",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Windmill operator is Jamestown Historical Society, whose host had a prior HTTP 202 non-policy/challenge robots response. No retry or alternate-host bypass; current property-specific physical access remains unresolved.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T2_source_review",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:19:16.021653+00:00",
+        "id": "operator-Q2650982-0",
+        "path": "raw/operator-Q2650982-0.body",
+        "sha256": "a70811b3ca0e3342fad85ce40270f94be508028f2dc9f32919d6d6390227d06d",
+        "status": 200,
+        "url": "https://www.newportmansions.org/mansions-and-gardens/marble-house/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q2650982",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Property-specific Preservation Society page affirms tours and October 21 admission at Marble House. Last-entry and partial-access limits are not normalized into practical fields. Shared site navigation and generic special-event overlays are not attributed to this house.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:19:19.272493+00:00",
+        "id": "operator-Q18154824-0",
+        "path": "raw/operator-Q18154824-0.body",
+        "sha256": "24757ccb1a730e311cd30d6ca36da8be9456698924d1bb112336624182f8d65a",
+        "status": 200,
+        "url": "https://www.museepata.org/"
+      },
+      {
+        "checked_at": "2026-10-21T18:20:57.457807+00:00",
+        "id": "followup0-Q18154824-0",
+        "path": "raw/followup0-Q18154824-0.body",
+        "sha256": "16a6d5665845956611bcfe3d472bd8494c8b08cf84f9ef6e23985cc9e4c63cab",
+        "status": 200,
+        "url": "https://www.museepata.org/tours"
+      },
+      {
+        "checked_at": "2026-10-21T18:20:59.716456+00:00",
+        "id": "followup1-Q18154824-0",
+        "path": "raw/followup1-Q18154824-0.body",
+        "sha256": "80e7c00bed85c3f623ba04f92cfa7a2ae679b10072117c23ed33ab641fa96696",
+        "status": 200,
+        "url": "https://www.museepata.org/copy-of-map"
+      }
+    ],
+    "pilot_id": "culture:wd:Q18154824",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Primary operator offers appointment-only seasonal tours but publishes no corroborated street-level visitor location in retained pages; its exhibition map is internal and fantastical. Do not equate playful promotional text with location verification or change the frozen feature point. Hold precise destination/meeting-place corroboration.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:19:25.889330+00:00",
+        "id": "operator-Q6974447-0",
+        "path": "raw/operator-Q6974447-0.body",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": 301,
+        "url": "https://www.americanillustration.org/"
+      },
+      {
+        "checked_at": "2026-10-21T18:19:27.825895+00:00",
+        "id": "operator-Q6974447-1",
+        "path": "raw/operator-Q6974447-1.body",
+        "sha256": "566374270d0de07896afb57783fb99a0efd5389b92e9581075671856303b5093",
+        "status": 200,
+        "url": "https://americanillustration.org/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q6974447",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Primary operator explicitly says the National Museum of American Illustration is currently closed for renovations; virtual exhibitions and an app do not establish physical public admission. An older COVID closure sentence also remains on the page, so no reopening date is inferred.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T2_source_review",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:19:29.845396+00:00",
+        "id": "operator-Q2166814-0",
+        "path": "raw/operator-Q2166814-0.body",
+        "sha256": "67f79b13e35b95070ff9f159a1371b7093fc609a0660ead20705526ba6730fd2",
+        "status": 200,
+        "url": "https://www.newportmansions.org/mansions-and-gardens/rosecliff/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q2166814",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Property-specific operator page affirms current seasonal Rosecliff visits through November 1. Exhibition, last-entry and future-season limits remain uncompiled. This is a distinct mansion, not the Preservation Society office or another house.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T2_source_review",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:19:31.147786+00:00",
+        "id": "operator-Q1786400-0",
+        "path": "raw/operator-Q1786400-0.body",
+        "sha256": "b56f56c4b606861c2934d9c086dac6c8f43dc5009c63c70cc770a230e081265a",
+        "status": 200,
+        "url": "https://www.newportmansions.org/mansions-and-gardens/the-breakers/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q1786400",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Operator affirms public Breakers house tours at its Newport visitor address. Nearby stable/carriage-house closures belong to a different component; tickets, premium tours and special events are not interchangeable. Source point remains a feature point.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:19:34.367103+00:00",
+        "id": "operator-Q7974817-0",
+        "path": "raw/operator-Q7974817-0.body",
+        "sha256": "efe8fc7cbb3a99aaa602f07011dc607334cd63965bd294240f8aec3a3b8f335a",
+        "status": 200,
+        "url": "https://www.historicnewengland.org/property/watson-farm/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q7974817",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Operator limits self-guided walking tours to June through mid-October, outside October 21 review date, and forbids walking outside tour hours. The farmhouse is a private farm-manager residence, not a public house museum. Hold current seasonal admission; no interior visit inferred.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:19:38.426808+00:00",
+        "id": "operator-Q119585283-0",
+        "path": "raw/operator-Q119585283-0.body",
+        "sha256": "9d452d7353e8390291084b33595a767648b32248cc4efed926884f64914325d4",
+        "status": 200,
+        "url": "https://www.gloucestercountynj.gov/671/Red-Bank-Battlefield"
+      },
+      {
+        "checked_at": "2026-10-21T18:21:02.081563+00:00",
+        "id": "followup2-Q119585283-0",
+        "path": "raw/followup2-Q119585283-0.body",
+        "sha256": "c4f27dd2e7fc1a78dc333deb949e3d61002becd945c9e645ee1622d7a3455036",
+        "status": 200,
+        "url": "https://www.gloucestercountynj.gov/facilities/facility/details/James-and-Ann-Whitall-House-15"
+      },
+      {
+        "checked_at": "2026-10-21T18:21:04.301042+00:00",
+        "id": "followup3-Q119585283-0",
+        "path": "raw/followup3-Q119585283-0.body",
+        "sha256": "253ba94a24627c6fb0611836b43e81e4b7df0ae12cd935b77e7c0c5a1ccc3d5b",
+        "status": 200,
+        "url": "https://www.gloucestercountynj.gov/copyright"
+      }
+    ],
+    "pilot_id": "culture:wd:Q119585283",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "County main page gives April-through-October house tours, while its facility page specifically ends tours October 18 and notes late-October-to-mid-April closure. Current October 21 house admission is conflicted/unaffirmed. Public park access does not establish this house's interior admission. Acquisition audit also found first content 1.83 seconds after robots and a later copyright request 2.22 seconds after the facility page, both below the applicable 10-second crawl-delay. All operator evidence remains held; no timing-remedy retry.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [],
+    "pilot_id": "culture:wd:Q14705803",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "No current primary operator visitor evidence was established at the frozen New Jersey farmstead point. Discovery leads describe relocation to Pennsylvania; do not silently move the source coordinates or claim the new site is the same admissible record. Hold physical identity/location and current access.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T2_source_review",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:19:42.048482+00:00",
+        "id": "operator-Q4554796-0",
+        "path": "raw/operator-Q4554796-0.body",
+        "sha256": "0494dfa532853ec727744d8cd5b20ce52ca88954684e19374ab1152ca0d33298",
+        "status": 200,
+        "url": "https://louisianastatemuseum.org/museum/1850-house"
+      }
+    ],
+    "pilot_id": "culture:wd:Q4554796",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "State museum operator corroborates physical house-museum admission. Regular admission closes at 2 pm October 23 and all day October 24 2026 for a special event, and selected state holidays also differ. No current-cost, hours or accessibility field is populated.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T2_source_review",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:19:49.293861+00:00",
+        "id": "operator-Q931081-0",
+        "path": "raw/operator-Q931081-0.body",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": 301,
+        "url": "https://www.themuseum.org/"
+      },
+      {
+        "checked_at": "2026-10-21T18:19:51.696504+00:00",
+        "id": "operator-Q931081-1",
+        "path": "raw/operator-Q931081-1.body",
+        "sha256": "760f317734058881acc15faf0cfe90902a9125b6ff40a7a12a3e559a7a9fdbfc",
+        "status": 200,
+        "url": "https://themuseum.org/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q931081",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Operator corroborates public art-museum visits at its Alexandria address. Footer restrictions concern images/texts associated with collection objects; none of those materials, testimonials or exhibit descriptions are reused. Native facts remain CC0, and visitor evidence is retained privately for audit.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:19:55.624082+00:00",
+        "id": "operator-Q49519614-0",
+        "path": "raw/operator-Q49519614-0.body",
+        "sha256": "9138c6f1c65b6789f278bfe7afeb6114ef2d45178045528ed78ce1a7edd03a34",
+        "status": 200,
+        "url": "https://audubonnatureinstitute.org/nature-center"
+      }
+    ],
+    "pilot_id": "culture:wd:Q49519614",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Primary physical visitor identity and general location were corroborated, but its operator content was requested 1.53 seconds after robots despite an applicable 30-second crawl-delay. Evidence is excluded from positive admission; held pending separately authorized compliant review. No new request was made to remedy the miss. Native feature point is unchanged; arrival remains unknown.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:19:59.041590+00:00",
+        "id": "operator-Q4839767-0",
+        "path": "raw/operator-Q4839767-0.body",
+        "sha256": "9c64dab0d549798dcfa0042aa7182be38a1c7cd5cc6e7fd6639003540dee275e",
+        "status": 200,
+        "url": "https://www.backstreetmuseum.org/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q4839767",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Current operator affirms museum visits at 1531 St. Philip Street, but retained page metadata contains conflicting physical map locations and an older 1116 Henriette Delille address. A property map marker is close to the frozen point while global location metadata differs by hundreds of metres. Hold unresolved location-field conflict rather than choosing a convenient point or silently relocating it.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [],
+    "pilot_id": "culture:wd:Q4942613",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "No current primary operator visitor page was found in the bounded discovery pass. Historical news, social profiles and commercial listings do not establish current public physical admission. Do not infer permanent closure from third-party flags.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:20:02.431616+00:00",
+        "id": "operator-Q134581303-0",
+        "path": "raw/operator-Q134581303-0.body",
+        "sha256": "c4ed752c451f1277d14fc3d9baf2abd7e6baa6efa52921df92e5c2e2ed41844e",
+        "status": 200,
+        "url": "https://jamnola.com/"
+      },
+      {
+        "checked_at": "2026-10-21T18:21:09.096935+00:00",
+        "id": "followup6-Q134581303-0",
+        "path": "raw/followup6-Q134581303-0.body",
+        "sha256": "ed681c4ff8fe1de1c33c29b688cb2b2f5c4b0715b073d202e72cfefa125e7f28",
+        "status": 200,
+        "url": "https://jamnola.com/policies/terms-of-service"
+      }
+    ],
+    "pilot_id": "culture:wd:Q134581303",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Operator visitor identity/location is corroborated, but its terms prohibit copying/exploiting any portion of the service without express written permission. Native facts are CC0, but scope for retained operator evidence/redistribution is unresolved. Quarantine terms eligibility; no agreement accepted, owner contacted or alternate-source bypass attempted.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T2_source_review",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:20:05.588500+00:00",
+        "id": "operator-Q3485438-0",
+        "path": "raw/operator-Q3485438-0.body",
+        "sha256": "14c09daf93c5e0caf248e8bab3770e9d4f0e448d0369990f5798c3c8c03fb4ab",
+        "status": 200,
+        "url": "https://www.lastateparks.com/historic-sites/longfellow-evangeline-state-historic-site"
+      }
+    ],
+    "pilot_id": "culture:wd:Q3485438",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "State Parks corroborates physical heritage-site admission and visitor address. Thanksgiving, Christmas and New Year's Day closure and separately dated living-history demonstrations remain source constraints. No guaranteed house interior, activity inventory or live status is inferred.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T2_source_review",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:20:10.286657+00:00",
+        "id": "operator-Q6689220-0",
+        "path": "raw/operator-Q6689220-0.body",
+        "sha256": "8f427fa38e5f092bd0617c234a361c1910ea4982a99839f2281bec2cc7c77b9c",
+        "status": 200,
+        "url": "https://www.louisianahistorymuseum.org/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q6689220",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Museum operator corroborates physical Alexandria history-museum visits. Guided tours require a separate request; their availability is not inferred from general admission. Source point is unchanged, and no practical calendar or arrival is compiled.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:20:12.908173+00:00",
+        "id": "operator-Q6689293-0",
+        "path": "raw/operator-Q6689293-0.body",
+        "sha256": "77ea10548167d24522b5944e504f572c1ff4a6d3a2925ecf61b69bc43dc9fe87",
+        "status": 200,
+        "url": "https://louisianastatemuseum.org/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q6689293",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Primary page describes the statewide multi-property Louisiana State Museums institution. Public access to its member buildings does not establish one distinct attraction at the frozen institutional point. Hold entity scope; do not substitute the Cabildo or duplicate its separately catalogued properties.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T1_hold",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:20:14.929716+00:00",
+        "id": "operator-Q1573286-0",
+        "path": "raw/operator-Q1573286-0.body",
+        "sha256": "27b88679466768d0c054fea441ee6f0cc98cc1c0402f537861bcc1a139fede45",
+        "status": 200,
+        "url": "https://louisianastatemuseum.org/museum/madame-johns-legacy"
+      }
+    ],
+    "pilot_id": "culture:wd:Q1573286",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "State museum operator explicitly reports Madame John's Legacy currently closed for historic restoration. Generic free-admission and historical accessibility copy does not override the closure. No reopening date or exterior-visit eligibility is invented.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T2_source_review",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:20:18.408380+00:00",
+        "id": "operator-Q30591923-0",
+        "path": "raw/operator-Q30591923-0.body",
+        "sha256": "533295bc07a0bf46080c1f9634004330d39f80960e27357b686f17e3ff71d929",
+        "status": 200,
+        "url": "https://liberalarts.tulane.edu/mari"
+      },
+      {
+        "checked_at": "2026-10-21T18:21:06.064647+00:00",
+        "id": "followup4-Q30591923-0",
+        "path": "raw/followup4-Q30591923-0.body",
+        "sha256": "3b012563bf93d147e6b9f654e5c8331bede31dc96846921ff1084a24ecac7f74",
+        "status": 200,
+        "url": "https://liberalarts.tulane.edu/mari/visit-us"
+      },
+      {
+        "checked_at": "2026-10-21T18:21:07.636303+00:00",
+        "id": "followup5-Q30591923-0",
+        "path": "raw/followup5-Q30591923-0.body",
+        "sha256": "bc6d84de282a1894ea8f198bc703c7bda7db73d6084336d027d6a120cfd737e9",
+        "status": 200,
+        "url": "https://liberalarts.tulane.edu/mari/contact-us/policies-permissions"
+      }
+    ],
+    "pilot_id": "culture:wd:Q30591923",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Tulane explicitly affirms public physical gallery visits at the institute, distinct from research-only collection access. Guided tours require two weeks' advance request and group limits. Its image/archival-material and filming permissions do not authorize reuse of those materials; none are imported. Campus feature point is not a verified gallery entrance.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T2_source_review",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:20:23.897734+00:00",
+        "id": "operator-Q6033435-0",
+        "path": "raw/operator-Q6033435-0.body",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": 301,
+        "url": "https://www.voodoomuseum.com/"
+      },
+      {
+        "checked_at": "2026-10-21T18:20:28.389272+00:00",
+        "id": "operator-Q6033435-1",
+        "path": "raw/operator-Q6033435-1.body",
+        "sha256": "68f86dfbb9ede1c641c7c1d9b584580a727a961bccc066a6fe4e17a5cd44fd17",
+        "status": 200,
+        "url": "https://voodoomuseum.com/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q6033435",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Operator confirms physical museum visits, distinct from its longer walking tour and free gift-shop entry. Christmas and Mardi Gras closures, differing quoted museum/tour hours and daylight-dependent late closing remain unresolved timing constraints, so no itinerary qualification is claimed.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T2_source_review",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:20:33.511020+00:00",
+        "id": "operator-Q2063082-0",
+        "path": "raw/operator-Q2063082-0.body",
+        "sha256": "aa1c106b40f2982d163597e0fb970f4d6c0d53685ad3e2251a152505309b3648",
+        "status": 301,
+        "url": "https://www.noma.org/"
+      },
+      {
+        "checked_at": "2026-10-21T18:20:35.186623+00:00",
+        "id": "operator-Q2063082-1",
+        "path": "raw/operator-Q2063082-1.body",
+        "sha256": "db81133d6fa5bb6c1cefad1051256c8cdbdf02eb670d8574251cf33aa6188006",
+        "status": 200,
+        "url": "https://noma.org/"
+      },
+      {
+        "checked_at": "2026-10-21T18:21:39.093380+00:00",
+        "id": "final2-Q2063082-0",
+        "path": "raw/final2-Q2063082-0.body",
+        "sha256": "ed3626ac27080377df544b62a16f43af69385debad3ca6634001091c78808d66",
+        "status": 200,
+        "url": "https://noma.org/noma-collection/rights-reproductions/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q2063082",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Operator corroborates public museum admission at its City Park address. The separately scheduled sculpture garden is not an extra record under this native identity. Image reproduction fees/permission terms were reviewed; no collection image or catalogue prose is imported. Resident offers are not a maintained price field.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  },
+  {
+    "disposition": "T2_source_review",
+    "operator_content_reuse": "No broad reuse grant inferred. Private audit excerpts only; no collection images, creative descriptions or testimonials imported.",
+    "operator_receipts": [
+      {
+        "checked_at": "2026-10-21T18:20:39.940888+00:00",
+        "id": "operator-Q16974720-0",
+        "path": "raw/operator-Q16974720-0.body",
+        "sha256": "b1089289c624aa90685c1689e89c7651ff648910ff3b9789e83dc439f9c3f48c",
+        "status": 200,
+        "url": "https://newcombartmuseum.tulane.edu/"
+      },
+      {
+        "checked_at": "2026-10-21T18:21:34.122699+00:00",
+        "id": "final0-Q16974720-0",
+        "path": "raw/final0-Q16974720-0.body",
+        "sha256": "199b5ca556cf1645098bf3aedd1a0c9864c5884d51a0301e74fbf94c9b2ac341",
+        "status": 200,
+        "url": "https://newcombartmuseum.tulane.edu/visit/"
+      },
+      {
+        "checked_at": "2026-10-21T18:21:36.629398+00:00",
+        "id": "final1-Q16974720-0",
+        "path": "raw/final1-Q16974720-0.body",
+        "sha256": "7c4d7dcf981580dec1d8b31e4c4f29adfbf2502f9ac2ffbf18e6e0e9cbd2ba07",
+        "status": 200,
+        "url": "https://newcombartmuseum.tulane.edu/image-use/"
+      }
+    ],
+    "pilot_id": "culture:wd:Q16974720",
+    "reviewer": "culture_sources_5000 (agent-assisted source review)",
+    "scope_and_access_review": "Current university museum visitor page locates physical gallery visits in Woldenberg Art Center. The older native Gallery label is retained. University address, delivery/rideshare and parking instructions are not a verified arrival; image reproduction requires a separate request and no images are imported.",
+    "structured_fact_rights": "Wikidata CC0-1.0, exact retained grant",
+    "unknowns": [
+      "surveyed_coordinate_accuracy",
+      "visitor_arrival",
+      "compiled_calendar",
+      "live_operating_status",
+      "maintained_cost",
+      "amenities"
+    ]
+  }
+]

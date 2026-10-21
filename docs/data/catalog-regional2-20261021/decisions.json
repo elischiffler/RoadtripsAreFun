@@ -1,0 +1,329 @@
+[
+  {
+    "pilot_id": "culture:wd:Q4769571",
+    "reason": "Current Brown Library primary robots returned HTTP 503; no visitor page fetched. A separate 2023 Brown news discovery lead reported renovation closure, but reopening/current admission was not established. Do not claim permanent closure or bypass the policy failure.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6146278",
+    "reason": "Windmill operator is Jamestown Historical Society, whose host had a prior HTTP 202 non-policy/challenge robots response. No retry or alternate-host bypass; current property-specific physical access remains unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q2650982",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q2650982",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q18154824",
+    "reason": "Primary operator offers appointment-only seasonal tours but publishes no corroborated street-level visitor location in retained pages; its exhibition map is internal and fantastical. Do not equate playful promotional text with location verification or change the frozen feature point. Hold precise destination/meeting-place corroboration.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6974447",
+    "reason": "Primary operator explicitly says the National Museum of American Illustration is currently closed for renovations; virtual exhibitions and an app do not establish physical public admission. An older COVID closure sentence also remains on the page, so no reopening date is inferred.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q2166814",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q2166814",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q1786400",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1786400",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7974817",
+    "reason": "Operator limits self-guided walking tours to June through mid-October, outside October 21 review date, and forbids walking outside tour hours. The farmhouse is a private farm-manager residence, not a public house museum. Hold current seasonal admission; no interior visit inferred.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q119585283",
+    "reason": "County main page gives April-through-October house tours, while its facility page specifically ends tours October 18 and notes late-October-to-mid-April closure. Current October 21 house admission is conflicted/unaffirmed. Public park access does not establish this house's interior admission. Acquisition audit also found first content 1.83 seconds after robots and a later copyright request 2.22 seconds after the facility page, both below the applicable 10-second crawl-delay. All operator evidence remains held; no timing-remedy retry.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q14705803",
+    "reason": "No current primary operator visitor evidence was established at the frozen New Jersey farmstead point. Discovery leads describe relocation to Pennsylvania; do not silently move the source coordinates or claim the new site is the same admissible record. Hold physical identity/location and current access.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4554796",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4554796",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q931081",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q931081",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q49519614",
+    "reason": "Primary physical visitor identity and general location were corroborated, but its operator content was requested 1.53 seconds after robots despite an applicable 30-second crawl-delay. Evidence is excluded from positive admission; held pending separately authorized compliant review. No new request was made to remedy the miss. Native feature point is unchanged; arrival remains unknown.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4839767",
+    "reason": "Current operator affirms museum visits at 1531 St. Philip Street, but retained page metadata contains conflicting physical map locations and an older 1116 Henriette Delille address. A property map marker is close to the frozen point while global location metadata differs by hundreds of metres. Hold unresolved location-field conflict rather than choosing a convenient point or silently relocating it.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4942613",
+    "reason": "No current primary operator visitor page was found in the bounded discovery pass. Historical news, social profiles and commercial listings do not establish current public physical admission. Do not infer permanent closure from third-party flags.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q134581303",
+    "reason": "Operator visitor identity/location is corroborated, but its terms prohibit copying/exploiting any portion of the service without express written permission. Native facts are CC0, but scope for retained operator evidence/redistribution is unresolved. Quarantine terms eligibility; no agreement accepted, owner contacted or alternate-source bypass attempted.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q3485438",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q3485438",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6689220",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q6689220",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6689293",
+    "reason": "Primary page describes the statewide multi-property Louisiana State Museums institution. Public access to its member buildings does not establish one distinct attraction at the frozen institutional point. Hold entity scope; do not substitute the Cabildo or duplicate its separately catalogued properties.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q1573286",
+    "reason": "State museum operator explicitly reports Madame John's Legacy currently closed for historic restoration. Generic free-admission and historical accessibility copy does not override the closure. No reopening date or exterior-visit eligibility is invented.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q30591923",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q30591923",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6033435",
+    "reason": "unresolved local identity/name/250m duplicate or co-location",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q2063082",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q2063082",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q16974720",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q16974720",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4929903",
+    "reason": "Timing-policy hold: robots Crawl-delay60 but first positive content began1.967786seconds after robots start. Prior fetcher did not enforce delay. No fresh acquisition.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q16895579",
+    "reason": "Historical closure conflict: discovery sources report closed since 2021/2024 and official domain is under construction; current direct robots request failed URLError. No current primary reopening or public visit evidence. Closed/unresolved hold; no current opening claim.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4883646",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4883646",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q458588",
+    "reason": "Campus/component counting hold: Belle Isle Park is the parent island containing the separately reviewed conservatory and other facilities. Original botanical_garden classification is overbroad. No category substitution to fit persona rules; separate park scope and counting require review.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14716077",
+    "reason": "Operator returned HTTP202 tiny non-content response (robots also202). No usable current primary identity/public visit evidence retained. Do not treat successful transport as verification. Nature center scope likely differs from botanical garden; classification unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5302612",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5302612",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q49490187",
+    "reason": "Timing-policy hold: robots Crawl-delay10 but first positive content began1.121341seconds after robots start. Prior fetcher did not enforce delay. No fresh acquisition.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14716128",
+    "reason": "Current original school host returned403. Stop host; no alternate-host bypass. Public campus/school property does not affirm current public observatory entry.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q3303709",
+    "reason": "Original operator robots and page returned503; no usable current public visitor/location evidence, possible closure/access conflict requires primary resolution. Do not assert permanent closure from third-party discovery.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14707954",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q14707954",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q12062222",
+    "reason": "Timing-policy hold: orphan/global Crawl-delay10; initial404 began2.046584seconds after robots start. Later positive43.857305seconds after404 start lacks response-completion timestamp, insufficient for conservative35second-timeout+10second proof. No fresh acquisition.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q136031996",
+    "reason": "Prior ncaquariums.com robots.txt nonretryable denial applies. No request to host, robots or alternate hostname. Current operator public visit/location evidence remains unavailable.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q136032261",
+    "reason": "Prior ncaquariums.com robots.txt nonretryable denial applies. No request to host, robots or alternate hostname. Current operator public visit/location evidence remains unavailable.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q2539422",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q2539422",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5200329",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5200329",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q11684456",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q11684456",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q15207803",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q15207803",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q2066407",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q2066407",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q112283746",
+    "reason": "Operator states all visits reservation-only, 2026 regular season filled and 2027 reservation request period closed. Possible future classes do not establish currently obtainable visit. Current precise location not corroborated; no request or operator contact.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q12061368",
+    "reason": "Texas operator robots explicitly disallows requested state-park page. Content GET not attempted; no concessionaire/alternate host bypass. Public purpose, arrival/calendar and current constraints not independently corroborated for admission.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q15210824",
+    "reason": "Current primary operator explicitly says Closed for the season, with next reopening Memorial Day Weekend 2027. Preserve as seasonal, not permanent closure. Future reopening is not current physical admission; no invented availability for rides, bears or museums.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q2071814",
+    "reason": "NPS confirms this is a memorial, not a lighthouse. Current conditions close plazas/rotunda/observation deck for 2026 and 2027 while the same page also says the memorial plaza is available, an internal scope conflict. Visitor center and grounds have separate access. Hold this native memorial-point record until the exposed visitor scope is resolved; do not silently replace it with the visitor center or offer a tower visit.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5411232",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5411232",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q448450",
+    "reason": "Aloha Tower has conflicting retained primary access claims: marketplace says observation deck currently closed without reopening date; Hawai\u02bbi DOT dated October 12 announces a planned October 15 reopening and warns of intermittent construction closures. The later owner announcement is material new evidence, but not confirmation that opening completed or that the deck is currently accessible. Hold pending authoritative post-opening/current scope corroboration; do not equate announcement with completion or marketplace retail access with tower access.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q6878674",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q6878674",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7886992",
+    "reason": "Brand operator confirms the giant tire landmark in Allen Park, but the retained page only says visitors cannot miss it. That is not affirmative permission to stop on corporate grounds or evidence of a safe public viewing destination beside I-94. Hold public-visit scope and approach; landmark visibility is not an invitation to enter private property.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q3308122",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q3308122",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7404187",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7404187",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q16983149",
+    "reason": "Native Old Colony/Newport host robots request failed through proxy tunnel 403; no operator page, alternative-host bypass or retry was attempted. Historical discovery indicates a successor/merged railway, which cannot silently be substituted for the native entity. Current primary visitor purpose, legal entity continuity and feature-point scope remain unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q97355534",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q97355534",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q30623769",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q30623769",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7371062",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7371062",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q137762677",
+    "reason": "Bounded discovery did not establish a primary land/operator source affirming public physical visits to this roadside cement-mixer sculpture. Informal stories and regional/Reddit leads alone do not validate public land access, a safe stopping place or current condition; no operator page was fabricated.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7106394",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7106394",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7775619",
+    "reason": "Historical discovery flags this former attraction as closed/removed in 2006-2007, and no current primary physical visitor purpose was established. A historical image or online nostalgic discussion is not a present attraction. Hold closure/retention status rather than importing a vanished attraction; no fresh operator endpoint was invented.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5093786",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5093786",
+    "tier": "T2"
+  }
+]

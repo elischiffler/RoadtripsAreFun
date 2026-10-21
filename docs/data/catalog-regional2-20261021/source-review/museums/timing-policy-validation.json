@@ -1,0 +1,8 @@
+{
+  "applicable_crawl_delay_seconds": 10,
+  "first_content_after_robots_seconds": 12.0,
+  "immutable_replay_no_requests": true,
+  "passed": true,
+  "real_network_disabled": true,
+  "same_host_redirect_gap_seconds": 12.0
+}

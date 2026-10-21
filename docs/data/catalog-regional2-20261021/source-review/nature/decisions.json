@@ -1,0 +1,482 @@
+[
+  {
+    "decision": "T1",
+    "latitude": 36.4665,
+    "longitude": -93.813,
+    "name": "Blue Springs Heritage Center",
+    "native_id": "Q4929903",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q4929903",
+    "reason": "Timing-policy hold: robots Crawl-delay60 but first positive content began1.967786seconds after robots start. Prior fetcher did not enforce delay. No fresh acquisition.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/106"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T1",
+    "latitude": 36.1196,
+    "longitude": -93.1267,
+    "name": "Mystic Caverns and Crystal Dome",
+    "native_id": "Q16895579",
+    "original_category": "show_cave",
+    "pilot_id": "diversity:wd:Q16895579",
+    "reason": "Historical closure conflict: discovery sources report closed since 2021/2024 and official domain is under construction; current direct robots request failed URLError. No current primary reopening or public visit evidence. Closed/unresolved hold; no current opening claim.",
+    "reviewed_category": "show_cave",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/5"
+      ],
+      "receipt_id": "wd-show-caves-correct",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T2",
+    "latitude": 42.3422,
+    "longitude": -82.9794,
+    "name": "Belle Isle Conservatory",
+    "native_id": "Q4883646",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q4883646",
+    "reason": "Current primary identity/location and constrained public visitor purpose source-reviewed; feature geometry is not surveyed and arrival/calendar remain unknown.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/96"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T1",
+    "latitude": 42.338333333,
+    "longitude": -82.978055555,
+    "name": "Belle Isle Park",
+    "native_id": "Q458588",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q458588",
+    "reason": "Campus/component counting hold: Belle Isle Park is the parent island containing the separately reviewed conservatory and other facilities. Original botanical_garden classification is overbroad. No category substitution to fit persona rules; separate park scope and counting require review.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/85"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T1",
+    "latitude": 43.5997,
+    "longitude": -84.2869,
+    "name": "Chippewa Nature Center",
+    "native_id": "Q14716077",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q14716077",
+    "reason": "Operator returned HTTP202 tiny non-content response (robots also202). No usable current primary identity/public visit evidence retained. Do not treat successful transport as verification. Nature center scope likely differs from botanical garden; classification unresolved.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/22"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T2",
+    "latitude": 43.6234,
+    "longitude": -84.2496,
+    "name": "Dow Gardens",
+    "native_id": "Q5302612",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q5302612",
+    "reason": "Current primary identity/location and constrained public visitor purpose source-reviewed; feature geometry is not surveyed and arrival/calendar remain unknown.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/129"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T1",
+    "latitude": 43.040555555,
+    "longitude": -83.605833333,
+    "name": "For-Mar Nature Preserve & Arboretum",
+    "native_id": "Q49490187",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q49490187",
+    "reason": "Timing-policy hold: robots Crawl-delay10 but first positive content began1.121341seconds after robots start. Prior fetcher did not enforce delay. No fresh acquisition.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/107"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T1",
+    "latitude": 42.2458,
+    "longitude": -83.1869,
+    "name": "Hector J. Robinson Observatory",
+    "native_id": "Q14716128",
+    "original_category": "observatory",
+    "pilot_id": "diversity:wd:Q14716128",
+    "reason": "Current original school host returned403. Stop host; no alternate-host bypass. Public campus/school property does not affirm current public observatory entry.",
+    "reviewed_category": "observatory",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/36"
+      ],
+      "receipt_id": "wd-observatories",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T1",
+    "latitude": 42.6976,
+    "longitude": -83.3192,
+    "name": "McMath\u2013Hulbert Observatory",
+    "native_id": "Q3303709",
+    "original_category": "observatory",
+    "pilot_id": "diversity:wd:Q3303709",
+    "reason": "Original operator robots and page returned503; no usable current public visitor/location evidence, possible closure/access conflict requires primary resolution. Do not assert permanent closure from third-party discovery.",
+    "reviewed_category": "observatory",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/63"
+      ],
+      "receipt_id": "wd-observatories",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T2",
+    "latitude": 36.1299,
+    "longitude": -79.8341,
+    "name": "Greensboro Science Center",
+    "native_id": "Q14707954",
+    "original_category": "zoo",
+    "pilot_id": "diversity:wd:Q14707954",
+    "reason": "Current primary identity/location and constrained public visitor purpose source-reviewed; feature geometry is not surveyed and arrival/calendar remain unknown.",
+    "reviewed_category": "science_center",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/33"
+      ],
+      "receipt_id": "wd-zoos",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T1",
+    "latitude": 36.0286,
+    "longitude": -78.8973,
+    "name": "Museum of Life and Science",
+    "native_id": "Q12062222",
+    "original_category": "zoo",
+    "pilot_id": "diversity:wd:Q12062222",
+    "reason": "Timing-policy hold: orphan/global Crawl-delay10; initial404 began2.046584seconds after robots start. Later positive43.857305seconds after404 start lacks response-completion timestamp, insufficient for conservative35second-timeout+10second proof. No fresh acquisition.",
+    "reviewed_category": "zoo",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/19"
+      ],
+      "receipt_id": "wd-zoos",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T1",
+    "latitude": 33.9626,
+    "longitude": -77.9261,
+    "name": "North Carolina Aquarium at Fort Fisher",
+    "native_id": "Q136031996",
+    "original_category": "zoo",
+    "pilot_id": "diversity:wd:Q136031996",
+    "reason": "Prior ncaquariums.com robots.txt nonretryable denial applies. No request to host, robots or alternate hostname. Current operator public visit/location evidence remains unavailable.",
+    "reviewed_category": "zoo",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/24"
+      ],
+      "receipt_id": "wd-zoos",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T1",
+    "latitude": 35.9179,
+    "longitude": -75.7044,
+    "name": "North Carolina Aquarium on Roanoke Island",
+    "native_id": "Q136032261",
+    "original_category": "zoo",
+    "pilot_id": "diversity:wd:Q136032261",
+    "reason": "Prior ncaquariums.com robots.txt nonretryable denial applies. No request to host, robots or alternate hostname. Current operator public visit/location evidence remains unavailable.",
+    "reviewed_category": "zoo",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/26"
+      ],
+      "receipt_id": "wd-zoos",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T2",
+    "latitude": 35.4976,
+    "longitude": -82.609,
+    "name": "North Carolina Arboretum",
+    "native_id": "Q2539422",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q2539422",
+    "reason": "Current primary identity/location and constrained public visitor purpose source-reviewed; feature geometry is not surveyed and arrival/calendar remain unknown.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/54"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T2",
+    "latitude": 33.047777777,
+    "longitude": -79.948888888,
+    "name": "Cypress Gardens",
+    "native_id": "Q5200329",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q5200329",
+    "reason": "Current primary identity/location and constrained public visitor purpose source-reviewed; feature geometry is not surveyed and arrival/calendar remain unknown.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/124"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T2",
+    "latitude": 32.87641,
+    "longitude": -80.0835,
+    "name": "Magnolia Plantation and Gardens (Charleston, South Carolina)",
+    "native_id": "Q11684456",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q11684456",
+    "reason": "Current primary identity/location and constrained public visitor purpose source-reviewed; feature geometry is not surveyed and arrival/calendar remain unknown.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/8"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T2",
+    "latitude": 33.861488888,
+    "longitude": -79.822822222,
+    "name": "Moore Farms Botanical Garden",
+    "native_id": "Q15207803",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q15207803",
+    "reason": "Current primary identity/location and constrained public visitor purpose source-reviewed; feature geometry is not surveyed and arrival/calendar remain unknown.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/26"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T2",
+    "latitude": 36.086667,
+    "longitude": -86.873889,
+    "name": "Cheekwood Botanical Garden and Museum of Art",
+    "native_id": "Q2066407",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q2066407",
+    "reason": "Current primary identity/location and constrained public visitor purpose source-reviewed; feature geometry is not surveyed and arrival/calendar remain unknown.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/41"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T1",
+    "latitude": 47.738265734,
+    "longitude": -122.363036112,
+    "name": "Elisabeth C. Miller Botanical Garden",
+    "native_id": "Q112283746",
+    "original_category": "botanical_garden",
+    "pilot_id": "diversity:wd:Q112283746",
+    "reason": "Operator states all visits reservation-only, 2026 regular season filled and 2027 reservation request period closed. Possible future classes do not establish currently obtainable visit. Current precise location not corroborated; no request or operator contact.",
+    "reviewed_category": "botanical_garden",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/3"
+      ],
+      "receipt_id": "wd-gardens",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  },
+  {
+    "decision": "T1",
+    "latitude": 30.6847,
+    "longitude": -98.3508,
+    "name": "Longhorn Cavern State Park",
+    "native_id": "Q12061368",
+    "original_category": "show_cave",
+    "pilot_id": "diversity:wd:Q12061368",
+    "reason": "Texas operator robots explicitly disallows requested state-park page. Content GET not attempted; no concessionaire/alternate host bypass. Public purpose, arrival/calendar and current constraints not independently corroborated for admission.",
+    "reviewed_category": "show_cave",
+    "source_mapping": {
+      "json_pointers": [
+        "/results/bindings/3"
+      ],
+      "receipt_id": "wd-show-caves-correct",
+      "recipe": {
+        "category": "P31/P279 class filter in retained exact SPARQL query; class label checked separately",
+        "feature_coordinate": "coord.value WKT Point(longitude latitude), unchanged; never arrival",
+        "name": "itemLabel.value",
+        "operator_url": "website.value when present; link alone is not current operator verification",
+        "source_ids": "item.value last path segment prefixed wikidata:"
+      }
+    }
+  }
+]

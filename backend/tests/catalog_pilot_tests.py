@@ -201,6 +201,109 @@ def test_niche_categories_keep_activity_and_arrival_unknown(tmp_path, category, 
     assert not admission.routing_eligible(rows[0])
 
 
+def test_standalone_batch_compares_every_prior_artifact_and_preserves_reviews(
+    tmp_path, monkeypatch
+):
+    from scripts import catalog_expansion_campaign, catalog_pilot
+
+    monkeypatch.setattr(catalog_expansion_campaign, "baseline", lambda: ([], set()))
+    comparisons = []
+    stamps = []
+    for index in range(2):
+        directory = tmp_path / f"comparison-{index}"
+        directory.mkdir()
+        payload = artifact(directory)
+        native = payload["evidence"][0]
+        body = json.loads((directory / native["path"]).read_bytes())
+        body["results"]["bindings"][0].update(
+            item={"value": f"https://www.wikidata.org/entity/Q{999999990 + index}"},
+            itemLabel={"value": f"Synthetic comparison {index}"},
+            coord={"value": f"Point(-72 {42.5 + index * 0.5})"},
+        )
+        (directory / native["path"]).write_text(json.dumps(body))
+        native["sha256"] = hashlib.sha256((directory / native["path"]).read_bytes()).hexdigest()
+        compared, _ = replay(directory, payload)
+        (directory / "replay").mkdir()
+        catalog_pilot.write(directory / "replay/additions.preview.json", compared)
+        catalog_pilot.write(
+            directory / "reviewed.manifest.json",
+            {
+                "schema_version": pilot.SCHEMA,
+                "sha256": hashlib.sha256((directory / "reviewed.json").read_bytes()).hexdigest(),
+                "release": f"synthetic-comparison-{index}",
+            },
+        )
+        comparisons.append(directory)
+        stamps.append((directory / "reviewed.json").read_bytes())
+    source = tmp_path / "source"
+    source.mkdir()
+    payload = artifact(source)
+    catalog_pilot.write(source / "input.json", payload)
+    output = tmp_path / "standalone"
+    result = catalog_pilot.assemble(
+        [source / "input.json"],
+        source / "states.bin",
+        output,
+        expected_prospects=1,
+        comparison=comparisons,
+    )
+    # Only the second prior artifact contains the candidate's feature point.
+    assert result["accepted"] == 0 and result["discovery_or_held"] == 1
+    assembled = json.loads((output / "reviewed.json").read_bytes())
+    assert [item["source_admitted_rows"] for item in assembled["comparison_artifacts"]] == [1, 1]
+    assert len(json.loads((output / "local-baseline.json").read_bytes())) == 95
+    assert [(directory / "reviewed.json").read_bytes() for directory in comparisons] == stamps
+    with pytest.raises(ValueError, match="unique"):
+        catalog_pilot.assemble(
+            [source / "input.json"],
+            source / "states.bin",
+            tmp_path / "duplicate-comparison",
+            expected_prospects=1,
+            comparison=[comparisons[0], comparisons[0]],
+        )
+    assert not (tmp_path / "duplicate-comparison").exists()
+    catalog_pilot.write(comparisons[1] / "replay/additions.preview.json", [])
+    with pytest.raises(ValueError, match="do not shrink duplicate coverage"):
+        catalog_pilot.assemble(
+            [source / "input.json"],
+            source / "states.bin",
+            tmp_path / "changed-comparison",
+            expected_prospects=1,
+            comparison=comparisons,
+        )
+    assert not (tmp_path / "changed-comparison").exists()
+
+
+@pytest.mark.parametrize("change", ["entity", "snapshot", "denominator"])
+def test_prepared_standalone_queue_rejects_unreviewed_entity_or_snapshot(tmp_path, change):
+    from scripts import catalog_pilot
+
+    payload = artifact(tmp_path)
+    record = payload["records"][0]
+    record["pilot_id"] = "culture:wd:Q999999999"
+    native = payload["evidence"][0]
+    evidence = {
+        item["id"]: (item, (tmp_path / item["path"]).read_bytes()) for item in payload["evidence"]
+    }
+    queue = {
+        "unreviewed_operator_review": [record["pilot_id"]],
+        "frozen_native_sha256": {record["pilot_id"]: native["sha256"]},
+    }
+    if change == "entity":
+        record["pilot_id"] = "culture:wd:Q111111111"
+        queue = {
+            "unreviewed_operator_review": [record["pilot_id"]],
+            "frozen_native_sha256": {record["pilot_id"]: native["sha256"]},
+        }
+    elif change == "snapshot":
+        queue["frozen_native_sha256"][record["pilot_id"]] = "0" * 64
+    else:
+        queue["unreviewed_operator_review"].append("culture:wd:Q111111111")
+    catalog_pilot.write(tmp_path / "queue.json", queue)
+    with pytest.raises(ValueError, match="queue|snapshot"):
+        catalog_pilot.check_queue(payload["records"], evidence, tmp_path / "queue.json")
+
+
 def baltimore_artifact(tmp_path, monkeypatch):
     payload = artifact(tmp_path)
     native = payload["evidence"][0]
