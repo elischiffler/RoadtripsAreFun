@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 
 from psycopg2.extras import Json, RealDictCursor, execute_values
 
-from app.catalog import ingest
+from app.catalog import ingest, release_holds
 from app.catalog.mixed import distance
 from app.routing.visit_calendar import source_calendar
 
@@ -209,6 +209,7 @@ def _additions(payload, reader, *, max_rows, baseline=()):
         kaggle_cultural,
         kaggle_ny_markets,
         kaggle_ny_markets_more,
+        pilot,
         usfs_current,
     )
 
@@ -220,6 +221,7 @@ def _additions(payload, reader, *, max_rows, baseline=()):
         "kaggle-ca-markets": kaggle_ca_markets.prepare,
         "kaggle-coastal": kaggle_coastal.prepare,
         "kaggle-ny-markets-more": kaggle_ny_markets_more.prepare,
+        "reviewed-browse-pilot": pilot.prepare,
     }
     rows, entries, reports, scanned, size = [], [], [], 0, 0
     for item in inputs:
@@ -383,7 +385,20 @@ def prepare(path, *, max_rows=ingest.MAX_ROWS, max_bytes=ingest.MAX_BYTES):
             "incremental additions duplicate preserved identities or exceed row ceiling"
         )
     _cross_source_arrivals(baseline, additions)
-    entries = validate_entries([*payload.get("entries", []), *new_calendars], reader)
+    proposed_entries = [*payload.get("entries", []), *new_calendars]
+    if not proposed_entries and additions:
+        from app.catalog import admission
+
+        # Browse-only imports deliberately have no invented calendar. This
+        # exception is confined to replayed T2 rows in the dedicated adapter;
+        # legacy calendar enrichments and routing-ready imports keep their gate.
+        browse_only = all(
+            item.get("adapter") == "reviewed-browse-pilot"
+            for item in payload.get("addition_inputs", [])
+        ) and all((admission.admission_details(row) or {}).get("tier") == "T2" for row in additions)
+        entries = [] if browse_only else validate_entries(proposed_entries, reader)
+    else:
+        entries = validate_entries(proposed_entries, reader)
     prior_ids = {row["source_id"] for row in baseline}
     if any(entry.get("source_release") and entry["source_id"] in prior_ids for entry in entries):
         raise ValueError("supplementary calendars cannot replace preserved place source credits")
@@ -576,6 +591,7 @@ def _storage(cur):
 
 def stage(conn, prepared):
     """Clone a verified baseline and atomically stage an immutable companion."""
+    release_holds.reject(prepared["rows"])
     _prepared_guard(prepared)
     parent, generation = prepared["parent"], prepared["generation"]
     with conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
@@ -644,6 +660,7 @@ def stage(conn, prepared):
 
 def activate(conn, prepared, *, rollback=False):
     """Validate both generations and change only the active catalog pointer."""
+    release_holds.reject(prepared["baseline"] if rollback else prepared["rows"])
     _prepared_guard(prepared)
     parent, new = prepared["parent"]["generation"], prepared["generation"]
     target = parent if rollback else new
@@ -786,6 +803,7 @@ def rollback(conn, receipt):
         current = cur.fetchone()
         if not current or current["generation"] not in {parent, candidate}:
             raise ValueError("unexpected calendar recovery transition")
+        release_holds.check_generation(cur, parent)
         for name in ("parent", "candidate"):
             if _snapshot(cur, receipt[name]["generation"]) != receipt[name]:
                 raise ValueError("recovery generation content changed")

@@ -1,0 +1,86 @@
+[
+  {
+    "pilot_id": "diversity:wd:Q108801638",
+    "reason": "Earlier operator403 remains binding; no new request to the blocked Tanganyika host. Current primary public access uncorroborated.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1129875",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1129875",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1155919",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1155919",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q11781326",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q11781326",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q12859182",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q12859182",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q134734168",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q134734168",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q136032148",
+    "reason": "Current web research tool reports ncaquariums.com blocked by robots.txt(nonretryable). No direct fetch, alternate hostname or bypass attempted; public visit/location evidence remains held.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1392337",
+    "reason": "Original Mendenhall URL redirects to current CAS site, whose HTTP200 body is a soft404/general page rather than observatory visitor evidence. No current public-night or appointment admission established.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q141641853",
+    "reason": "Earlier operator403 remains binding; no new request to the blocked Dothan host. Current primary public access uncorroborated.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14709561",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q14709561",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14716222",
+    "reason": "Robots allowed the public MSU URL, but HTTP200 body is an Incapsula Request unsuccessful access challenge. It is not operator content; no scripts/resources/alternatehost bypass requested.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1475872",
+    "reason": "Current IAS source confirms IU ownership and IAS member/public-outreach relationship, but meetings can be at the observatory OR nearby library. Events page is an unrendered calendar. No current public event or nonmember appointment admission at the physical observatory established; membership/campus access is insufficient.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1937407",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1937407",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q2028223",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q2028223",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4961701",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4961701",
+    "tier": "T2"
+  }
+]

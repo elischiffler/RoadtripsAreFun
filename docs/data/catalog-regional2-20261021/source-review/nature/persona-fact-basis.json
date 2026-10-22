@@ -1,0 +1,873 @@
+[
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/106/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/106/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/106/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q4929903",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-show-caves-correct",
+          "pointer": "/results/bindings/5/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-show-caves-correct",
+        "pointer": "/results/bindings/5/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-show-caves-correct",
+        "pointer": "/results/bindings/5/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q16895579",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "show_cave"
+  },
+  {
+    "admission": "T2",
+    "factual_practical_constraints": [
+      "Primary Michigan operator identifies this conservatory within Belle Isle Park; Anna Scripps Whitcomb is its operator name. Conservatory hours differ from park hours.",
+      "Parent island park is separately held to avoid campus/component double counting. Source gives island directions, not surveyed conservatory arrival.",
+      "Park alert: Central Avenue closes annually December 1\u2013March 31; fountain resumes spring 2027; Casino reservations from October 1, 2026 paused. These do not mean conservatory closure.",
+      "Browsing only. Feature coordinate is unchanged Wikidata geometry, not independently surveyed or verified public arrival. No normalized hours, current cost, accessibility or amenities generated."
+    ],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/96/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/96/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/96/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [
+      {
+        "evidence_id": "nature-belle-conservatory",
+        "literal": "Anna Scripps Whitcomb Conservatory"
+      },
+      {
+        "evidence_id": "nature-belle-conservatory",
+        "literal": "99 Pleasure Drive, Detroit, Michigan, 48207"
+      }
+    ],
+    "pilot_id": "diversity:wd:Q4883646",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [
+      {
+        "evidence_id": "nature-belle-conservatory",
+        "literal": "Open Wednesday through Sunday"
+      }
+    ],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/85/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/85/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/85/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q458588",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/22/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/22/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/22/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q14716077",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T2",
+    "factual_practical_constraints": [
+      "Current home page gives Tuesday\u2013Sunday seasonal hours; no normalized year calendar. Gardens and Whiting Forest share one destination identity here.",
+      "External primary search lead notes temporary St. Andrews Bridge closure and different education/welcome center parking; not retained as accepted proof, so arrival and campus walking remain unresolved.",
+      "Browsing only. Feature coordinate is unchanged Wikidata geometry, not independently surveyed or verified public arrival. No normalized hours, current cost, accessibility or amenities generated."
+    ],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/129/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/129/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/129/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [
+      {
+        "evidence_id": "nature-dow",
+        "literal": "Dow Gardens"
+      },
+      {
+        "evidence_id": "nature-dow",
+        "literal": "1809 Eastman Avenue Midland, MI 48640"
+      }
+    ],
+    "pilot_id": "diversity:wd:Q5302612",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [
+      {
+        "evidence_id": "nature-dow",
+        "literal": "Dow Gardens is currently open Tuesday - Sunday"
+      }
+    ],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/107/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/107/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/107/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q49490187",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-observatories",
+          "pointer": "/results/bindings/36/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-observatories",
+        "pointer": "/results/bindings/36/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-observatories",
+        "pointer": "/results/bindings/36/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q14716128",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "observatory"
+  },
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-observatories",
+          "pointer": "/results/bindings/63/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-observatories",
+        "pointer": "/results/bindings/63/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-observatories",
+        "pointer": "/results/bindings/63/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q3303709",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "observatory"
+  },
+  {
+    "admission": "T2",
+    "factual_practical_constraints": [
+      "Corrected category from zoo to science center for the full aquarium/museum/zoo destination, not three counted places.",
+      "Operator reports expansion underway, site remains open with temporary parking changes. Retain holiday/gala closures, Winter Wonderlights early closing and separate seasonal/add-on tickets.",
+      "Operator page mentions Nathanael Greene entrance 3905; search discovery gave 3900 elsewhere. Neither address is used as verified arrival coordinates.",
+      "Browsing only. Feature coordinate is unchanged Wikidata geometry, not independently surveyed or verified public arrival. No normalized hours, current cost, accessibility or amenities generated."
+    ],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-zoos",
+          "pointer": "/results/bindings/33/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-zoos",
+        "pointer": "/results/bindings/33/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-zoos",
+        "pointer": "/results/bindings/33/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [
+      {
+        "evidence_id": "nature-greensboro-hours",
+        "literal": "Greensboro Science Center"
+      },
+      {
+        "evidence_id": "nature-greensboro-hours",
+        "literal": "4301 Lawndale Dr. Greensboro, NC 27455"
+      }
+    ],
+    "pilot_id": "diversity:wd:Q14707954",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [
+      {
+        "evidence_id": "nature-greensboro-hours",
+        "literal": "Open Year-Round: Daily, 9:00 am \u2013 5:00 pm"
+      }
+    ],
+    "reviewed_category": "science_center"
+  },
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-zoos",
+          "pointer": "/results/bindings/19/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-zoos",
+        "pointer": "/results/bindings/19/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-zoos",
+        "pointer": "/results/bindings/19/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q12062222",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "zoo"
+  },
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-zoos",
+          "pointer": "/results/bindings/24/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-zoos",
+        "pointer": "/results/bindings/24/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-zoos",
+        "pointer": "/results/bindings/24/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q136031996",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "zoo"
+  },
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-zoos",
+          "pointer": "/results/bindings/26/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-zoos",
+        "pointer": "/results/bindings/26/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-zoos",
+        "pointer": "/results/bindings/26/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q136032261",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "zoo"
+  },
+  {
+    "admission": "T2",
+    "factual_practical_constraints": [
+      "Property seasonal hours differ from exhibit/bonsai/building hours; incoming gate closes one hour before property closing. Christmas Day closure retained.",
+      "Current primary visitor invitation supports garden access; it does not establish full trail reopening or erase storm-related closures elsewhere. No trail activities or safe arrival inferred.",
+      "Browsing only. Feature coordinate is unchanged Wikidata geometry, not independently surveyed or verified public arrival. No normalized hours, current cost, accessibility or amenities generated."
+    ],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/54/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/54/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/54/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [
+      {
+        "evidence_id": "nature-arboretum-redirect",
+        "literal": "The North Carolina Arboretum"
+      },
+      {
+        "evidence_id": "nature-arboretum-redirect",
+        "literal": "20 Frederick Law Olmsted Way Asheville, NC 28806-9315"
+      }
+    ],
+    "pilot_id": "diversity:wd:Q2539422",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [
+      {
+        "evidence_id": "nature-arboretum-redirect",
+        "literal": "exploration of our 434-acre public garden"
+      }
+    ],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T2",
+    "factual_practical_constraints": [
+      "Retain current banner: no guided boat tours September 26\u2013October 31; splash pad closed for season September 30. Garden visit does not promise either activity.",
+      "Last admission 4pm; self-guided boat tours stop 4:15pm. Thanksgiving/Christmas Eve/Christmas/New Years closure rules and special-event access remain uncompiled.",
+      "Browsing only. Feature coordinate is unchanged Wikidata geometry, not independently surveyed or verified public arrival. No normalized hours, current cost, accessibility or amenities generated."
+    ],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/124/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/124/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/124/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [
+      {
+        "evidence_id": "nature-cypress",
+        "literal": "Cypress Gardens"
+      },
+      {
+        "evidence_id": "nature-cypress",
+        "literal": "3030 Cypress Gardens Rd. Moncks Corner, SC 29461"
+      }
+    ],
+    "pilot_id": "diversity:wd:Q5200329",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [
+      {
+        "evidence_id": "nature-cypress",
+        "literal": "Open 9:00 AM \u2013 5:00 PM"
+      }
+    ],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T2",
+    "factual_practical_constraints": [
+      "Retain Magnolia operator visitor/tours evidence and policy page. Some tours require add-on tickets; do not claim every activity included.",
+      "Thanksgiving and Christmas closures appear on retained primary homepage; no dates compiled. Heritage interpretation is not independently fact-checked beyond destination identity.",
+      "Browsing only. Feature coordinate is unchanged Wikidata geometry, not independently surveyed or verified public arrival. No normalized hours, current cost, accessibility or amenities generated."
+    ],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/8/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/8/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/8/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [
+      {
+        "evidence_id": "nature-magnolia-plan-redirect-redirect",
+        "literal": "Magnolia"
+      },
+      {
+        "evidence_id": "nature-magnolia-policy",
+        "literal": "Magnolia Plantation Corporation"
+      },
+      {
+        "evidence_id": "nature-magnolia-policy",
+        "literal": "3550 Ashley River Rd Charleston, South Carolina 29414"
+      }
+    ],
+    "pilot_id": "diversity:wd:Q11684456",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [
+      {
+        "evidence_id": "nature-magnolia-plan-redirect-redirect",
+        "literal": "Your admission includes access to the Magnolia"
+      }
+    ],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T2",
+    "factual_practical_constraints": [
+      "Not open daily. Tours requested at least two weeks ahead; office hours are not visitor opening hours.",
+      "Guided tours for groups under 15 available only Tuesdays/Thursdays by appointment, no weekend tours; subject to availability/cancellation. Event/open days have separate access.",
+      "Browsing only. Feature coordinate is unchanged Wikidata geometry, not independently surveyed or verified public arrival. No normalized hours, current cost, accessibility or amenities generated."
+    ],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/26/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/26/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/26/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [
+      {
+        "evidence_id": "nature-moore-redirect",
+        "literal": "Moore Farms Botanical Garden"
+      },
+      {
+        "evidence_id": "nature-moore-redirect",
+        "literal": "100 New Zion Rd Lake City, SC 29560"
+      }
+    ],
+    "pilot_id": "diversity:wd:Q15207803",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [
+      {
+        "evidence_id": "nature-moore-redirect",
+        "literal": "you can view our dynamic, breathtaking property through tours, events"
+      }
+    ],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T2",
+    "factual_practical_constraints": [
+      "Carell Sculpture Trail closed until further notice from August 3; do not advertise this component as available.",
+      "Daytime seasonal/holiday schedule differs from separately ticketed Holiday LIGHTS nights. Memorial Day/Labor Day/Thanksgiving/Christmas/New Years closures retained.",
+      "Gardens-only versus gardens+mansion admission differs. Native estate feature point is not verified vehicle arrival.",
+      "Browsing only. Feature coordinate is unchanged Wikidata geometry, not independently surveyed or verified public arrival. No normalized hours, current cost, accessibility or amenities generated."
+    ],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/41/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/41/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/41/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [
+      {
+        "evidence_id": "nature-cheekwood-visit",
+        "literal": "Cheekwood"
+      },
+      {
+        "evidence_id": "nature-cheekwood-visit",
+        "literal": "1200 Forrest Park Drive Nashville, TN 37205"
+      }
+    ],
+    "pilot_id": "diversity:wd:Q2066407",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [
+      {
+        "evidence_id": "nature-cheekwood-visit",
+        "literal": "Admission Ticket pricing varies by program and day."
+      }
+    ],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-gardens",
+          "pointer": "/results/bindings/3/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/3/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-gardens",
+        "pointer": "/results/bindings/3/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q112283746",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "botanical_garden"
+  },
+  {
+    "admission": "T1",
+    "factual_practical_constraints": [],
+    "native_identity_coordinate_bindings": {
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "wd-show-caves-correct",
+          "pointer": "/results/bindings/3/coord/value"
+        }
+      },
+      "name": {
+        "evidence_id": "wd-show-caves-correct",
+        "pointer": "/results/bindings/3/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "wd-show-caves-correct",
+        "pointer": "/results/bindings/3/item/value",
+        "transform": "url_tail"
+      }
+    },
+    "normalized_unknown_fields": [
+      "hours",
+      "cost",
+      "accessibility",
+      "amenities",
+      "reservation_availability",
+      "live_operating_status",
+      "arrival_verified"
+    ],
+    "operator_evidence": [],
+    "pilot_id": "diversity:wd:Q12061368",
+    "profile_policy": "Root deterministic pilot_personas 14 canonical attributes; category-based recommendations are inferred, other scores uninformative0.5priors. Activities empty unless separately evidenced. T1 records receive no accepted profile.",
+    "public_visit_evidence": [],
+    "reviewed_category": "show_cave"
+  }
+]

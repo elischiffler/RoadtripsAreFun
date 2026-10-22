@@ -2,7 +2,7 @@
 
 from collections.abc import Callable
 
-from app.catalog import repository
+from app.catalog import admission, repository
 from app.catalog.identity import PREFIXES, catalog_source_id
 from app.routing.base import PlanningError
 from app.routing.runtime import threaded
@@ -20,7 +20,8 @@ def _explicit_calendar(record):
 
 def explicit_calendar_ineligible(record):
     return not isinstance(record.get("source_provenance", []), list) or (
-        _explicit_calendar(record) and not calendar_eligible(record)
+        (admission.requires_admission(record) or _explicit_calendar(record))
+        and not calendar_eligible(record)
     )
 
 
@@ -43,7 +44,8 @@ async def refresh_for_timing(stops, *, catalog_lookup: CatalogLookup | None = No
 
     def marked(record):
         return (
-            record.get("source") in sources
+            admission.requires_admission(record)
+            or record.get("source") in sources
             or str(record.get("provider_id", "")).startswith(
                 ("overture:", *(prefix for prefix, _ in PREFIXES))
             )
@@ -131,6 +133,7 @@ async def refresh_for_timing(stops, *, catalog_lookup: CatalogLookup | None = No
                 suggestion
                 for suggestion in stop["evening_suggestions"]
                 if id(suggestion) not in discarded
+                and not admission.requires_admission(suggestion)
                 and not explicit_calendar_ineligible(suggestion)
                 and (
                     (sid := catalog_source_id(suggestion.get("provider_id"))) is None

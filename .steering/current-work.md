@@ -1,5 +1,17 @@
 # Current release and acceptance
 
+## October 22 cloud catalog reconciliation
+
+The reconciled develop tree preserves the Mac research/session-cache work and
+all twelve exported cloud commits through `5e139b5`. Historical research contains
+221 T2 browse identities, with 133 retrospective acquisition holds now enforced
+by pinned code/data across replay, browse/routing reads, staging, activation and
+recovery targets. The other 88 are not blanket cleared; zero new T3 conversions
+or live imports are claimed. Earlier 93 USFS records remain outside this audit.
+Private typed-replay originals and current live-parent reconciliation are still
+required for data release. The app continues using its configured Neon database.
+See [integration boundaries and counts](../docs/catalog-cloud-integration-20261022.md).
+
 ## October 19 automated attraction imports
 
 Develop now includes command-driven NPS/USFS acquisition, automatic test-route

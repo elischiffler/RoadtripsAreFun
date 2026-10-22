@@ -15,6 +15,8 @@
 !scripts/catalog_mix.py
 !scripts/catalog_expansion_manifest.py
 !scripts/catalog_nature_manifest.py
+!scripts/run_offline_tests.py
+!scripts/catalog_*.py
 !docs/
 !docs/data/
 !docs/data/catalog-expansion-20261015/

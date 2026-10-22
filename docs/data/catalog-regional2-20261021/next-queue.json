@@ -1,0 +1,376 @@
+{
+  "frozen_native_sha256": {
+    "culture:wd:Q106670471": "e9220bebd62f9f32b6e286e9ff1ce25daf1ff6fbdc73183c7de51677943e6987",
+    "culture:wd:Q113623100": "f15818774f830ef2272120159dcaf4947f28b7c02e42ff38c30ba0ed486fd736",
+    "culture:wd:Q123983060": "a9720c0b52a1563038e81b542a1e3fa5b3623ce7658ce361925ca0cf609a23f1",
+    "culture:wd:Q129485809": "bdf6b84254879362d19e4f148fa652003194d74d8bfb9677f6fbfcbbfa998937",
+    "culture:wd:Q130052314": "bdf6b84254879362d19e4f148fa652003194d74d8bfb9677f6fbfcbbfa998937",
+    "culture:wd:Q130243688": "a9720c0b52a1563038e81b542a1e3fa5b3623ce7658ce361925ca0cf609a23f1",
+    "culture:wd:Q133806368": "a9720c0b52a1563038e81b542a1e3fa5b3623ce7658ce361925ca0cf609a23f1",
+    "culture:wd:Q135375121": "b347eba5a4e044868e2c5ce64b8ccbe612d90c933106142a66e4974ed4622bbb",
+    "culture:wd:Q14689405": "7581268153e4f22ee515c311ba4d659a52f7b42094865c6a23ba7f60aa28f1ca",
+    "culture:wd:Q16992203": "b9ea49cc703e0f1d7d9c5c5f32552db4d3eeb87dd28eaf49775a0380f446615f",
+    "culture:wd:Q18152462": "7581268153e4f22ee515c311ba4d659a52f7b42094865c6a23ba7f60aa28f1ca",
+    "culture:wd:Q18342357": "39b09c4cfb248c437b6964b7004993dde6f23c3bc4e73f3f130df4f7f60964a3",
+    "culture:wd:Q24898511": "f15818774f830ef2272120159dcaf4947f28b7c02e42ff38c30ba0ed486fd736",
+    "culture:wd:Q467580": "39b09c4cfb248c437b6964b7004993dde6f23c3bc4e73f3f130df4f7f60964a3",
+    "culture:wd:Q4698987": "39b09c4cfb248c437b6964b7004993dde6f23c3bc4e73f3f130df4f7f60964a3",
+    "culture:wd:Q4731598": "7581268153e4f22ee515c311ba4d659a52f7b42094865c6a23ba7f60aa28f1ca",
+    "culture:wd:Q4883470": "e9220bebd62f9f32b6e286e9ff1ce25daf1ff6fbdc73183c7de51677943e6987",
+    "culture:wd:Q4911837": "f15818774f830ef2272120159dcaf4947f28b7c02e42ff38c30ba0ed486fd736",
+    "culture:wd:Q5043965": "f15818774f830ef2272120159dcaf4947f28b7c02e42ff38c30ba0ed486fd736",
+    "culture:wd:Q5070193": "39b09c4cfb248c437b6964b7004993dde6f23c3bc4e73f3f130df4f7f60964a3",
+    "culture:wd:Q5351668": "b347eba5a4e044868e2c5ce64b8ccbe612d90c933106142a66e4974ed4622bbb",
+    "culture:wd:Q5487043": "b347eba5a4e044868e2c5ce64b8ccbe612d90c933106142a66e4974ed4622bbb",
+    "culture:wd:Q55610164": "e9220bebd62f9f32b6e286e9ff1ce25daf1ff6fbdc73183c7de51677943e6987",
+    "culture:wd:Q6020033": "b9ea49cc703e0f1d7d9c5c5f32552db4d3eeb87dd28eaf49775a0380f446615f",
+    "culture:wd:Q6364579": "7581268153e4f22ee515c311ba4d659a52f7b42094865c6a23ba7f60aa28f1ca",
+    "culture:wd:Q65072581": "b347eba5a4e044868e2c5ce64b8ccbe612d90c933106142a66e4974ed4622bbb",
+    "culture:wd:Q6693624": "a9720c0b52a1563038e81b542a1e3fa5b3623ce7658ce361925ca0cf609a23f1",
+    "culture:wd:Q6911646": "b9ea49cc703e0f1d7d9c5c5f32552db4d3eeb87dd28eaf49775a0380f446615f",
+    "culture:wd:Q7185868": "bdf6b84254879362d19e4f148fa652003194d74d8bfb9677f6fbfcbbfa998937",
+    "culture:wd:Q7720883": "9c76f6f0d9b4bec988b9a93a7d76d6af3ee0395414c69bfab7b968116fa96ee4",
+    "culture:wd:Q96633985": "bdf6b84254879362d19e4f148fa652003194d74d8bfb9677f6fbfcbbfa998937",
+    "culture:wd:Q99984323": "b9ea49cc703e0f1d7d9c5c5f32552db4d3eeb87dd28eaf49775a0380f446615f"
+  },
+  "local_comparison_count": 917,
+  "preparation": "Standalone bounded artifact compared with all917 local rows. Carry blocked/closed and timing-quarantine ledgers forward. No blanket approval or repeated denied probes.",
+  "records": [
+    {
+      "category": "museum",
+      "name": "Airpower Museum",
+      "native_sha256": "39b09c4cfb248c437b6964b7004993dde6f23c3bc4e73f3f130df4f7f60964a3",
+      "operator_url": "https://antiqueairfield.com/museum/",
+      "pilot_id": "culture:wd:Q4698987",
+      "source_family": "wikidata",
+      "state": "IA"
+    },
+    {
+      "category": "museum",
+      "name": "Biedenharn Coca-Cola Museum",
+      "native_sha256": "a9720c0b52a1563038e81b542a1e3fa5b3623ce7658ce361925ca0cf609a23f1",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q123983060",
+      "source_family": "wikidata",
+      "state": "MS"
+    },
+    {
+      "category": "museum",
+      "name": "First National Bank",
+      "native_sha256": "b9ea49cc703e0f1d7d9c5c5f32552db4d3eeb87dd28eaf49775a0380f446615f",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q16992203",
+      "source_family": "wikidata",
+      "state": "OK"
+    },
+    {
+      "category": "museum",
+      "name": "Ceredo Historical Society Museum",
+      "native_sha256": "bdf6b84254879362d19e4f148fa652003194d74d8bfb9677f6fbfcbbfa998937",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q96633985",
+      "source_family": "wikidata",
+      "state": "WV"
+    },
+    {
+      "category": "museum",
+      "name": "Allen County Jail",
+      "native_sha256": "7581268153e4f22ee515c311ba4d659a52f7b42094865c6a23ba7f60aa28f1ca",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q4731598",
+      "source_family": "wikidata",
+      "state": "KS"
+    },
+    {
+      "category": "museum",
+      "name": "El Museo Latino",
+      "native_sha256": "b347eba5a4e044868e2c5ce64b8ccbe612d90c933106142a66e4974ed4622bbb",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q5351668",
+      "source_family": "wikidata",
+      "state": "NE"
+    },
+    {
+      "category": "museum",
+      "name": "Billie Creek Village",
+      "native_sha256": "f15818774f830ef2272120159dcaf4947f28b7c02e42ff38c30ba0ed486fd736",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q4911837",
+      "source_family": "wikidata",
+      "state": "IN"
+    },
+    {
+      "category": "museum",
+      "name": "Bellanca Airfield",
+      "native_sha256": "e9220bebd62f9f32b6e286e9ff1ce25daf1ff6fbdc73183c7de51677943e6987",
+      "operator_url": "http://www.BellancaMuseum.org",
+      "pilot_id": "culture:wd:Q4883470",
+      "source_family": "wikidata",
+      "state": "DE"
+    },
+    {
+      "category": "museum",
+      "name": "The Cabildo",
+      "native_sha256": "9c76f6f0d9b4bec988b9a93a7d76d6af3ee0395414c69bfab7b968116fa96ee4",
+      "operator_url": "https://louisianastatemuseum.org/museum/cabildo",
+      "pilot_id": "culture:wd:Q7720883",
+      "source_family": "wikidata",
+      "state": "LA"
+    },
+    {
+      "category": "museum",
+      "name": "America's Old-Time Country Music Hall Of Fame",
+      "native_sha256": "39b09c4cfb248c437b6964b7004993dde6f23c3bc4e73f3f130df4f7f60964a3",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q467580",
+      "source_family": "wikidata",
+      "state": "IA"
+    },
+    {
+      "category": "museum",
+      "name": "E.E. Bass Cultural Arts Center",
+      "native_sha256": "a9720c0b52a1563038e81b542a1e3fa5b3623ce7658ce361925ca0cf609a23f1",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q133806368",
+      "source_family": "wikidata",
+      "state": "MS"
+    },
+    {
+      "category": "museum",
+      "name": "Indian City USA",
+      "native_sha256": "b9ea49cc703e0f1d7d9c5c5f32552db4d3eeb87dd28eaf49775a0380f446615f",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q6020033",
+      "source_family": "wikidata",
+      "state": "OK"
+    },
+    {
+      "category": "museum",
+      "name": "Huntington Children's Museum",
+      "native_sha256": "bdf6b84254879362d19e4f148fa652003194d74d8bfb9677f6fbfcbbfa998937",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q129485809",
+      "source_family": "wikidata",
+      "state": "WV"
+    },
+    {
+      "category": "museum",
+      "name": "Boot Hill Museum",
+      "native_sha256": "7581268153e4f22ee515c311ba4d659a52f7b42094865c6a23ba7f60aa28f1ca",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q18152462",
+      "source_family": "wikidata",
+      "state": "KS"
+    },
+    {
+      "category": "museum",
+      "name": "Elkhorn Valley Museum & Research Center",
+      "native_sha256": "b347eba5a4e044868e2c5ce64b8ccbe612d90c933106142a66e4974ed4622bbb",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q135375121",
+      "source_family": "wikidata",
+      "state": "NE"
+    },
+    {
+      "category": "museum",
+      "name": "Black Film Center & Archive",
+      "native_sha256": "f15818774f830ef2272120159dcaf4947f28b7c02e42ff38c30ba0ed486fd736",
+      "operator_url": "https://bfca.indiana.edu/",
+      "pilot_id": "culture:wd:Q113623100",
+      "source_family": "wikidata",
+      "state": "IN"
+    },
+    {
+      "category": "museum",
+      "name": "Dutch House",
+      "native_sha256": "e9220bebd62f9f32b6e286e9ff1ce25daf1ff6fbdc73183c7de51677943e6987",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q55610164",
+      "source_family": "wikidata",
+      "state": "DE"
+    },
+    {
+      "category": "museum",
+      "name": "Brunnier Art Museum",
+      "native_sha256": "39b09c4cfb248c437b6964b7004993dde6f23c3bc4e73f3f130df4f7f60964a3",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q18342357",
+      "source_family": "wikidata",
+      "state": "IA"
+    },
+    {
+      "category": "museum",
+      "name": "Lower Mississippi River Museum",
+      "native_sha256": "a9720c0b52a1563038e81b542a1e3fa5b3623ce7658ce361925ca0cf609a23f1",
+      "operator_url": "http://www.lmrm.org",
+      "pilot_id": "culture:wd:Q6693624",
+      "source_family": "wikidata",
+      "state": "MS"
+    },
+    {
+      "category": "museum",
+      "name": "Morgan Doll Museum",
+      "native_sha256": "b9ea49cc703e0f1d7d9c5c5f32552db4d3eeb87dd28eaf49775a0380f446615f",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q6911646",
+      "source_family": "wikidata",
+      "state": "OK"
+    },
+    {
+      "category": "museum",
+      "name": "Huntington Railroad Museum",
+      "native_sha256": "bdf6b84254879362d19e4f148fa652003194d74d8bfb9677f6fbfcbbfa998937",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q130052314",
+      "source_family": "wikidata",
+      "state": "WV"
+    },
+    {
+      "category": "museum",
+      "name": "Bukovina Society Headquarters and Museum",
+      "native_sha256": "7581268153e4f22ee515c311ba4d659a52f7b42094865c6a23ba7f60aa28f1ca",
+      "operator_url": "http://www.bukovinasociety.org/",
+      "pilot_id": "culture:wd:Q14689405",
+      "source_family": "wikidata",
+      "state": "KS"
+    },
+    {
+      "category": "museum",
+      "name": "Fontenelle Bank",
+      "native_sha256": "b347eba5a4e044868e2c5ce64b8ccbe612d90c933106142a66e4974ed4622bbb",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q65072581",
+      "source_family": "wikidata",
+      "state": "NE"
+    },
+    {
+      "category": "museum",
+      "name": "CCC Recreation Building-Nature Museum",
+      "native_sha256": "f15818774f830ef2272120159dcaf4947f28b7c02e42ff38c30ba0ed486fd736",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q24898511",
+      "source_family": "wikidata",
+      "state": "IN"
+    },
+    {
+      "category": "museum",
+      "name": "Iron Hill Museum",
+      "native_sha256": "e9220bebd62f9f32b6e286e9ff1ce25daf1ff6fbdc73183c7de51677943e6987",
+      "operator_url": "https://ironhillsciencecenter.org/",
+      "pilot_id": "culture:wd:Q106670471",
+      "source_family": "wikidata",
+      "state": "DE"
+    },
+    {
+      "category": "museum",
+      "name": "Champlin Memorial Masonic Temple",
+      "native_sha256": "39b09c4cfb248c437b6964b7004993dde6f23c3bc4e73f3f130df4f7f60964a3",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q5070193",
+      "source_family": "wikidata",
+      "state": "IA"
+    },
+    {
+      "category": "museum",
+      "name": "Margaret Walker Center",
+      "native_sha256": "a9720c0b52a1563038e81b542a1e3fa5b3623ce7658ce361925ca0cf609a23f1",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q130243688",
+      "source_family": "wikidata",
+      "state": "MS"
+    },
+    {
+      "category": "museum",
+      "name": "Shattuck Windmill Museum",
+      "native_sha256": "b9ea49cc703e0f1d7d9c5c5f32552db4d3eeb87dd28eaf49775a0380f446615f",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q99984323",
+      "source_family": "wikidata",
+      "state": "OK"
+    },
+    {
+      "category": "museum",
+      "name": "Phillips-Sprague Mine",
+      "native_sha256": "bdf6b84254879362d19e4f148fa652003194d74d8bfb9677f6fbfcbbfa998937",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q7185868",
+      "source_family": "wikidata",
+      "state": "WV"
+    },
+    {
+      "category": "museum",
+      "name": "Kansas Aviation Museum",
+      "native_sha256": "7581268153e4f22ee515c311ba4d659a52f7b42094865c6a23ba7f60aa28f1ca",
+      "operator_url": "http://www.kansasaviationmuseum.org",
+      "pilot_id": "culture:wd:Q6364579",
+      "source_family": "wikidata",
+      "state": "KS"
+    },
+    {
+      "category": "museum",
+      "name": "Frank H. Woods Telephone Museum",
+      "native_sha256": "b347eba5a4e044868e2c5ce64b8ccbe612d90c933106142a66e4974ed4622bbb",
+      "operator_url": null,
+      "pilot_id": "culture:wd:Q5487043",
+      "source_family": "wikidata",
+      "state": "NE"
+    },
+    {
+      "category": "museum",
+      "name": "Carnegie Museum of Montgomery County",
+      "native_sha256": "f15818774f830ef2272120159dcaf4947f28b7c02e42ff38c30ba0ed486fd736",
+      "operator_url": "http://www.cdpl.lib.in.us/services/carnegie",
+      "pilot_id": "culture:wd:Q5043965",
+      "source_family": "wikidata",
+      "state": "IN"
+    }
+  ],
+  "release": "catalog-next-museums",
+  "schema_version": "roadtrips-pilot-followup-queue/1",
+  "scope": "32 unreviewed museum-query entities across9 states. Native points have no immediate local name/identity/250m conflict; semantic review and all other gates remain. No current public access, operator rights or T2 admission inferred.",
+  "states": {
+    "DE": 3,
+    "IA": 4,
+    "IN": 4,
+    "KS": 4,
+    "LA": 1,
+    "MS": 4,
+    "NE": 4,
+    "OK": 4,
+    "WV": 4
+  },
+  "unreviewed_operator_review": [
+    "culture:wd:Q4698987",
+    "culture:wd:Q123983060",
+    "culture:wd:Q16992203",
+    "culture:wd:Q96633985",
+    "culture:wd:Q4731598",
+    "culture:wd:Q5351668",
+    "culture:wd:Q4911837",
+    "culture:wd:Q4883470",
+    "culture:wd:Q7720883",
+    "culture:wd:Q467580",
+    "culture:wd:Q133806368",
+    "culture:wd:Q6020033",
+    "culture:wd:Q129485809",
+    "culture:wd:Q18152462",
+    "culture:wd:Q135375121",
+    "culture:wd:Q113623100",
+    "culture:wd:Q55610164",
+    "culture:wd:Q18342357",
+    "culture:wd:Q6693624",
+    "culture:wd:Q6911646",
+    "culture:wd:Q130052314",
+    "culture:wd:Q14689405",
+    "culture:wd:Q65072581",
+    "culture:wd:Q24898511",
+    "culture:wd:Q106670471",
+    "culture:wd:Q5070193",
+    "culture:wd:Q130243688",
+    "culture:wd:Q99984323",
+    "culture:wd:Q7185868",
+    "culture:wd:Q6364579",
+    "culture:wd:Q5487043",
+    "culture:wd:Q5043965"
+  ]
+}

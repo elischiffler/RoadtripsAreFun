@@ -1,0 +1,13 @@
+{
+  "arrival_calendar_review": [
+    "catalog-pilot:baltimore-heritage:392",
+    "catalog-pilot:baltimore-heritage:396",
+    "catalog-pilot:baltimore-heritage:82"
+  ],
+  "held_counts_by_cohort": {
+    "unspecified": 1
+  },
+  "native_contract_review": [],
+  "scope": "Work queues only; no automatic promotion or fresh acquisition",
+  "unreviewed_operator_review": []
+}

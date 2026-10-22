@@ -1,0 +1,253 @@
+{
+  "audit_scope": "All current-group successful robots origins, first content requests and observed redirects. Rules apply after successful robots acquisition; no remediation acquisition performed.",
+  "missed_intervals": 0,
+  "policies": [
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-www-nps-gov",
+          "meets_required_interval": true,
+          "start_gap_seconds": 2.095784,
+          "to": "operator-Q2071814"
+        },
+        {
+          "from": "operator-Q2071814",
+          "meets_required_interval": true,
+          "start_gap_seconds": 80.146293,
+          "to": "operator-Q2071814-conditions"
+        }
+      ],
+      "robots_id": "robots-www-nps-gov",
+      "url": "https://www.nps.gov/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-www-esnarailway-com",
+          "meets_required_interval": true,
+          "start_gap_seconds": 1.934859,
+          "to": "operator-Q5411232"
+        }
+      ],
+      "robots_id": "robots-www-esnarailway-com",
+      "url": "https://www.esnarailway.com/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-hidot-hawaii-gov",
+          "meets_required_interval": true,
+          "start_gap_seconds": 1.898362,
+          "to": "operator-Q448450-hdot"
+        }
+      ],
+      "robots_id": "robots-hidot-hawaii-gov",
+      "url": "https://hidot.hawaii.gov/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-www-missionpointlighthouse-com",
+          "meets_required_interval": true,
+          "start_gap_seconds": 2.337672,
+          "to": "operator-Q6878674"
+        }
+      ],
+      "robots_id": "robots-www-missionpointlighthouse-com",
+      "url": "https://www.missionpointlighthouse.com/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-www-uniroyaltires-com",
+          "meets_required_interval": true,
+          "start_gap_seconds": 2.411814,
+          "to": "operator-Q7886992"
+        }
+      ],
+      "robots_id": "robots-www-uniroyaltires-com",
+      "url": "https://www.uniroyaltires.com/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 50,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-obcinc-org",
+          "meets_required_interval": true,
+          "start_gap_seconds": 108.159625,
+          "to": "operator-Q3308122-visit"
+        }
+      ],
+      "robots_id": "robots-obcinc-org",
+      "url": "https://obcinc.org/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-www-newsalem-nd-com",
+          "meets_required_interval": true,
+          "start_gap_seconds": 1.961774,
+          "to": "operator-Q7404187"
+        }
+      ],
+      "robots_id": "robots-www-newsalem-nd-com",
+      "url": "https://www.newsalem-nd.com/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-www-millersofficefurniture-com",
+          "meets_required_interval": true,
+          "start_gap_seconds": 1.736708,
+          "to": "operator-Q97355534"
+        }
+      ],
+      "robots_id": "robots-www-millersofficefurniture-com",
+      "url": "https://www.millersofficefurniture.com/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-www-visitoldmeadecounty-com",
+          "meets_required_interval": true,
+          "start_gap_seconds": 2.274676,
+          "to": "operator-Q30623769"
+        }
+      ],
+      "robots_id": "robots-www-visitoldmeadecounty-com",
+      "url": "https://www.visitoldmeadecounty.com/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 10,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-cityofpascagoula-com",
+          "meets_required_interval": true,
+          "start_gap_seconds": 10.762935,
+          "to": "operator-Q7371062"
+        }
+      ],
+      "robots_id": "robots-cityofpascagoula-com",
+      "url": "https://cityofpascagoula.com/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-www-chesterwv-org",
+          "meets_required_interval": true,
+          "start_gap_seconds": 1.878987,
+          "to": "operator-Q5093786"
+        },
+        {
+          "from": "operator-Q5093786",
+          "meets_required_interval": true,
+          "start_gap_seconds": 96.869137,
+          "to": "operator-Q5093786-teapot"
+        }
+      ],
+      "robots_id": "robots-www-chesterwv-org",
+      "url": "https://www.chesterwv.org/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-www-salemsue-com",
+          "meets_required_interval": true,
+          "start_gap_seconds": 2.3325,
+          "to": "operator-Q7404187-tourism"
+        },
+        {
+          "from": "operator-Q7404187-tourism",
+          "meets_required_interval": true,
+          "start_gap_seconds": 2.082855,
+          "to": "robots-salemsue-com"
+        },
+        {
+          "from": "robots-salemsue-com",
+          "meets_required_interval": true,
+          "start_gap_seconds": 1.790548,
+          "to": "operator-Q7404187-tourism-redirect1"
+        }
+      ],
+      "robots_id": "robots-www-salemsue-com",
+      "url": "https://www.salemsue.com/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-salemsue-com",
+          "meets_required_interval": true,
+          "start_gap_seconds": 1.790548,
+          "to": "operator-Q7404187-tourism-redirect1"
+        }
+      ],
+      "robots_id": "robots-salemsue-com",
+      "url": "https://salemsue.com/robots.txt"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-www-trainride-org-canonical",
+          "meets_required_interval": true,
+          "start_gap_seconds": 2.017373,
+          "to": "operator-Q7106394-home-redirect1"
+        },
+        {
+          "from": "operator-Q7106394-home-redirect1",
+          "meets_required_interval": true,
+          "start_gap_seconds": 1.527563,
+          "to": "robots-trainride-org"
+        },
+        {
+          "from": "robots-trainride-org",
+          "meets_required_interval": true,
+          "start_gap_seconds": 1.924663,
+          "to": "operator-Q7106394-home-redirect2"
+        }
+      ],
+      "robots_id": "robots-www-trainride-org-canonical",
+      "url": "https://trainride.org/robots.txt/"
+    },
+    {
+      "applicable_delay_seconds": 0,
+      "applicable_request_rate": null,
+      "pairs": [
+        {
+          "from": "robots-trainride-org",
+          "meets_required_interval": true,
+          "start_gap_seconds": 1.924663,
+          "to": "operator-Q7106394-home-redirect2"
+        }
+      ],
+      "robots_id": "robots-trainride-org",
+      "url": "https://trainride.org/robots.txt"
+    }
+  ],
+  "user_agent": "RoadtripsAreFun-CatalogFollowup/1.0 (bounded public research)"
+}

@@ -17,6 +17,7 @@ from ortools.sat.python import cp_model
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
 from app.agent.trip_dates import _localize
+from app.catalog import admission
 from app.models.scheduling_policy import advance, seconds_until
 from app.routing.base import PlanningError
 from app.routing.visit_duration import LEGACY_VISIT_SECONDS, dwell_source, visit_seconds
@@ -142,7 +143,8 @@ def source_calendar(record: dict) -> Calendar | None:
 def requires_calendar(record: dict) -> bool:
     """Identify timed venues; ordinary outdoor records keep explicit unknown hours."""
     return (
-        str(record.get("provider_id", "")).startswith(("usda-market:", "wikidata-park:"))
+        admission.requires_admission(record)
+        or str(record.get("provider_id", "")).startswith(("usda-market:", "wikidata-park:"))
         or bool(set(record.get("categories", [])) & {"food", "culture", "nightlife"})
         or (record.get("availability") or {}).get("status") == "within_published_window"
         or any(
@@ -153,6 +155,8 @@ def requires_calendar(record: dict) -> bool:
 
 
 def calendar_eligible(record: dict) -> bool:
+    if not admission.routing_eligible(record):
+        return False
     if not requires_calendar(record):
         return True
     calendar = source_calendar(record)
@@ -232,6 +236,10 @@ def solve_visit(record: dict, earliest: datetime, deadline: datetime, *, dwell=N
     feeds conflicts back into attraction reselection, and runs again after final
     road routing. Ticket/booking availability always remains unknown.
     """
+    if not admission.routing_eligible(record):
+        raise VisitCalendarConflict(
+            record.get("provider_id", "unknown"), "catalog admission is not itinerary-ready"
+        )
     dwell = visit_seconds(record) if dwell is None else dwell
     if not math.isfinite(dwell) or dwell <= 0:
         raise VisitCalendarConflict(record.get("provider_id", "unknown"), "invalid visit duration")

@@ -1,0 +1,32 @@
+{
+  "arrival_calendar_review": [
+    "catalog-pilot:wikidata:Q2650982",
+    "catalog-pilot:wikidata:Q2166814",
+    "catalog-pilot:wikidata:Q1786400",
+    "catalog-pilot:wikidata:Q4554796",
+    "catalog-pilot:wikidata:Q931081",
+    "catalog-pilot:wikidata:Q3485438",
+    "catalog-pilot:wikidata:Q6689220",
+    "catalog-pilot:wikidata:Q30591923",
+    "catalog-pilot:wikidata:Q2063082",
+    "catalog-pilot:wikidata:Q16974720",
+    "catalog-pilot:wikidata:Q4883646",
+    "catalog-pilot:wikidata:Q5302612",
+    "catalog-pilot:wikidata:Q14707954",
+    "catalog-pilot:wikidata:Q2539422",
+    "catalog-pilot:wikidata:Q5200329",
+    "catalog-pilot:wikidata:Q11684456",
+    "catalog-pilot:wikidata:Q15207803",
+    "catalog-pilot:wikidata:Q2066407",
+    "catalog-pilot:wikidata:Q5411232",
+    "catalog-pilot:wikidata:Q6878674"
+  ],
+  "held_counts_by_cohort": {
+    "museum_science": 14,
+    "regional2_nature": 12,
+    "remaining_niche": 7
+  },
+  "native_contract_review": [],
+  "scope": "Work queues only; no automatic promotion or fresh acquisition",
+  "unreviewed_operator_review": []
+}

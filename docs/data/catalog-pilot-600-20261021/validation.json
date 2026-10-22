@@ -1,0 +1,25 @@
+{
+  "backend": {
+    "coverage_percent": 80.72,
+    "log": "/workspace/catalog-pilot-600-20261021/backend-checkpoint-tests.log",
+    "passed": 2088,
+    "skipped": 138
+  },
+  "external_ai_requests": 0,
+  "frontend": {
+    "build": "passed; existing large-chunk warning",
+    "coverage_percent": 92.37,
+    "files": 41,
+    "format": "passed",
+    "lint": "passed",
+    "passed": 278
+  },
+  "full_container_smoke": "not run",
+  "postgres": {
+    "log": "/workspace/catalog-pilot-600-20261021/postgres-final-tests.log",
+    "passed": 71
+  },
+  "production_writes": false,
+  "ruff_check": "passed",
+  "ruff_format": "passed"
+}

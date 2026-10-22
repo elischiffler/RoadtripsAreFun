@@ -1,0 +1,201 @@
+{
+  "original_research_sha256": "77c72b86d0efa32479f41240b1aa9b0e8d55ac43aaf1ce45625655b729ea7ea8",
+  "records": [
+    {
+      "candidate_id": "serc-roadlog:stop-3",
+      "coordinates_or_null": null,
+      "evidence_refs": [
+        {
+          "path": "raw/serc-roadlog.html",
+          "receipt_id": "serc-roadlog",
+          "sha256": "8190bcdb956fb61657f86cb6bdc97b695b066bb06daedfd8588ddafabefa23d6",
+          "status": 200,
+          "url": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/Red_Lodge_Beartooth_Pass_Cooke_City.html"
+        }
+      ],
+      "future_monetization_excluded": true,
+      "name": "Rock Creek Vista",
+      "native_id_kind": "page URL plus explicit stop number; fragment is local identifier, not verified HTML anchor",
+      "native_source_id": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/Red_Lodge_Beartooth_Pass_Cooke_City.html#stop-3",
+      "partition": "noncommercial_only",
+      "primary_operator_url_or_null": null,
+      "reason": "Primary license version conflict (displayed4.0 links3.0), NC target context and ShareAlike unresolved; no native coordinate/arrival, current operator or duplicate clearance.",
+      "source_id": "serc-montana-geoheritage",
+      "status": "quarantined"
+    },
+    {
+      "candidate_id": "serc-roadlog:stop-8",
+      "coordinates_or_null": null,
+      "evidence_refs": [
+        {
+          "path": "raw/serc-roadlog.html",
+          "receipt_id": "serc-roadlog",
+          "sha256": "8190bcdb956fb61657f86cb6bdc97b695b066bb06daedfd8588ddafabefa23d6",
+          "status": 200,
+          "url": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/Red_Lodge_Beartooth_Pass_Cooke_City.html"
+        }
+      ],
+      "future_monetization_excluded": true,
+      "name": "Beartooth Lake Campground",
+      "native_id_kind": "page URL plus explicit stop number; fragment is local identifier, not verified HTML anchor",
+      "native_source_id": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/Red_Lodge_Beartooth_Pass_Cooke_City.html#stop-8",
+      "partition": "noncommercial_only",
+      "primary_operator_url_or_null": null,
+      "reason": "Primary license version conflict (displayed4.0 links3.0), NC target context and ShareAlike unresolved; no native coordinate/arrival, current operator or duplicate clearance.",
+      "source_id": "serc-montana-geoheritage",
+      "status": "quarantined"
+    },
+    {
+      "candidate_id": "thc:french-legation",
+      "coordinates_or_null": null,
+      "evidence_refs": [
+        {
+          "path": "raw/texas-french-legation.html",
+          "receipt_id": "texas-french-legation",
+          "sha256": "2aa4d865c9589843f971bbcd570de30aa9f29025471634aee34a79304b4f5d53",
+          "status": 200,
+          "url": "https://thc.texas.gov/state-historic-sites/french-legation/plan-your-visit-french-legation"
+        },
+        {
+          "path": "raw/texas-policy.html",
+          "receipt_id": "texas-policy",
+          "sha256": "772ec1ff8760e8f864cea782ce1fe283e191cb429f1c2a1adaec56ea31098966",
+          "status": 200,
+          "url": "https://thc.texas.gov/policies"
+        }
+      ],
+      "future_monetization_excluded": true,
+      "name": "French Legation State Historic Site",
+      "native_id_kind": "original agency page URI; no numeric native ID observed",
+      "native_source_id": "https://thc.texas.gov/state-historic-sites/french-legation/plan-your-visit-french-legation",
+      "partition": "noncommercial_only",
+      "primary_operator_url_or_null": "https://thc.texas.gov/state-historic-sites/french-legation/plan-your-visit-french-legation",
+      "reason": "Operator visitor proof retained, but NC reuse transformation scope/target qualification and location/arrival/dedup gates unresolved.",
+      "source_id": "texas-historical-commission",
+      "status": "quarantined"
+    },
+    {
+      "candidate_id": "baltimore-heritage:392",
+      "candidate_license_identifier": "CC-BY-4.0",
+      "coordinates_or_null": [
+        39.324338,
+        -76.61042199999997
+      ],
+      "evidence_refs": [
+        {
+          "path": "raw/baltimore-392-native.txt",
+          "receipt_id": "baltimore-392-native",
+          "sha256": "c506e1bc77d48e2dea82b8922b860e02d460217e1f0fcbda1b378242ab3416ee",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/392?output=mobile-json"
+        }
+      ],
+      "future_monetization_excluded": false,
+      "name": "Peabody Heights Brewery",
+      "native_source_id": 392,
+      "partition": "permissive_discovery",
+      "partition_note": "Conservative research staging only; factual records are permissive BY4, not NC licensed. Photo excluded.",
+      "primary_operator_url_or_null": "https://www.peabodyheightsbrewery.com/",
+      "reason": "Permissive BY4 alternative supplied separately for typed adapter; no admission by research agent. Native feature point is not arrival.",
+      "source_id": "baltimore-heritage-facts",
+      "status": "quarantined"
+    },
+    {
+      "candidate_id": "baltimore-heritage:396",
+      "candidate_license_identifier": "CC-BY-4.0",
+      "coordinates_or_null": [
+        39.3117426,
+        -76.62032440000002
+      ],
+      "evidence_refs": [
+        {
+          "path": "raw/baltimore-396-native.txt",
+          "receipt_id": "baltimore-396-native",
+          "sha256": "42996259c6c33e346eb5226fee5477ad752ac20f3925a7c3411c3b4f08e15d7c",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/396?output=mobile-json"
+        }
+      ],
+      "future_monetization_excluded": false,
+      "name": "Baltimore Streetcar Museum",
+      "native_source_id": 396,
+      "partition": "permissive_discovery",
+      "partition_note": "Conservative research staging only; factual records are permissive BY4, not NC licensed. Photo excluded.",
+      "primary_operator_url_or_null": "https://www.baltimorestreetcarmuseum.org/",
+      "reason": "Permissive BY4 alternative supplied separately for typed adapter; no admission by research agent. Native feature point is not arrival.",
+      "source_id": "baltimore-heritage-facts",
+      "status": "quarantined"
+    },
+    {
+      "candidate_id": "baltimore-heritage:82",
+      "candidate_license_identifier": "CC-BY-4.0",
+      "coordinates_or_null": [
+        39.2876495,
+        -76.62061089999997
+      ],
+      "evidence_refs": [
+        {
+          "path": "raw/baltimore-82-native.txt",
+          "receipt_id": "baltimore-82-native",
+          "sha256": "851359184e64ca8742477ce47ad8dd4dc4bef477a14a052168e9b829f55d8889",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/82?output=mobile-json"
+        }
+      ],
+      "future_monetization_excluded": false,
+      "name": "Bromo Seltzer Tower",
+      "native_source_id": 82,
+      "partition": "permissive_discovery",
+      "partition_note": "Conservative research staging only; factual records are permissive BY4, not NC licensed. Photo excluded.",
+      "primary_operator_url_or_null": "https://www.bromoseltzertower.com/",
+      "reason": "Permissive BY4 alternative supplied separately for typed adapter; no admission by research agent. Native feature point is not arrival.",
+      "source_id": "baltimore-heritage-facts",
+      "status": "quarantined"
+    },
+    {
+      "candidate_id": "baltimore-heritage:200",
+      "candidate_license_identifier": "CC-BY-4.0",
+      "coordinates_or_null": [
+        39.290709292867,
+        -76.60539150238003
+      ],
+      "evidence_refs": [
+        {
+          "path": "raw/baltimore-200-native.txt",
+          "receipt_id": "baltimore-200-native",
+          "sha256": "b5796a0fb27c4c0ef41eb6fc89c51ccabb67861465860040dd7115e74c796e28",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/200?output=mobile-json"
+        }
+      ],
+      "future_monetization_excluded": false,
+      "name": "Phoenix Shot Tower",
+      "native_source_id": 200,
+      "partition": "permissive_discovery",
+      "partition_note": "Conservative research staging only; factual records are permissive BY4, not NC licensed. Photo excluded.",
+      "primary_operator_url_or_null": "https://carrollmuseums.org/",
+      "reason": "operator_explicitly_temporarily_closed; operator redirects to separate Carroll Mansion page; never substitute its address/hours",
+      "source_id": "baltimore-heritage-facts",
+      "status": "quarantined"
+    },
+    {
+      "asset_type": "photo_reference_only",
+      "candidate_id": "baltimore-photo1551",
+      "coordinates_or_null": null,
+      "evidence_refs": [
+        {
+          "path": "raw/baltimore-file-license.html",
+          "receipt_id": "baltimore-file-license",
+          "sha256": "c0edcd185952715efdcd680408e6c114bf36dd8eac8a7b5693d9a477856dddfc",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/files/show/1551"
+        }
+      ],
+      "name": "Peabody Heights Brewery photograph1551",
+      "reason": "No photo downloaded; separate NC asset scope and intended-use eligibility remain unreviewed.",
+      "source_id": "baltimore-heritage-photo1551",
+      "status": "quarantined"
+    }
+  ],
+  "schema_version": "roadtrips-source-candidates/1"
+}

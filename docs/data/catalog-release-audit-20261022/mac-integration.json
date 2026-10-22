@@ -1,0 +1,52 @@
+{
+  "schema_version": "roadtrips-cloud-mac-integration/1",
+  "starting_develop_sha": "f3ed00795e0631572704104f4d54a70c93c7f2a4",
+  "cloud_base_sha": "3e7010ca5361b752f3e65255190dec249994de26",
+  "cloud_tip_sha": "5e139b5a5b42bbe44a4904294491ee80b6b02987",
+  "cloud_commits_included": 12,
+  "batches": [
+    {
+      "path": "docs/data/catalog-pilot-600-20261021/additions.preview.json",
+      "rows": 129,
+      "retrospective_holds": 121,
+      "sha256": "810d7cac907e2a4eb75191034e8ef05aef4ef9adcc9161fb51b7d19a5e54faf5"
+    },
+    {
+      "path": "docs/data/catalog-followup-20261021/new-additions-only.json",
+      "rows": 24,
+      "retrospective_holds": 2,
+      "sha256": "db9eae9c78911c53f2a5e90bc8225c33282c9a63a1507a7251c09582c487d02e"
+    },
+    {
+      "path": "docs/data/catalog-geodiverse-20261021/new-additions-only.json",
+      "rows": 41,
+      "retrospective_holds": 10,
+      "sha256": "a3dd2c43fe90b79e0b02354d52c1fea977f128047782ff07cd23df718a5110f7"
+    },
+    {
+      "path": "docs/data/catalog-regional2-20261021/additions.preview.json",
+      "rows": 27,
+      "retrospective_holds": 0,
+      "sha256": "3825dfa27c668eed40629a0307812e91a30b4c9b3564dec24e1001a64ec1720f"
+    }
+  ],
+  "unique_historical_T2": 221,
+  "retrospective_hold_ids": 133,
+  "not_in_retrospective_hold_list": 88,
+  "no_pacing_hold_found_in_earlier_194": 61,
+  "latest_separately_audited_T2": 27,
+  "not_in_hold_list_is_not_release_approval": true,
+  "new_T3_conversions": 0,
+  "earlier_USFS_records_outside_retrospective": 93,
+  "earlier_USFS_sha256": "5789c9912a09b5c568af7633a357f970377f591bde05e2e564b56ea16281baa9",
+  "live_catalog_imported_rows": 0,
+  "live_parent_reconciled": false,
+  "missing_for_data_release": [
+    "Private original evidence required by typed source replay",
+    "Complete current live catalog/calendar fingerprint and identity/name/spatial/campus reconciliation",
+    "Permitted evidence/review resolving each selected hold; no blanket clearance for unheld records",
+    "Normal coordinated staging, recovery and catalog release authorization"
+  ],
+  "preserved_held_ids_in_history": true,
+  "runtime_uses_local_mock_catalog": false
+}

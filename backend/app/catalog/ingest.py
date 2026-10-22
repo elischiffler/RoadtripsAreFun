@@ -18,6 +18,7 @@ from app.catalog import (
     nps,
     nps_heritage,
     nps_public,
+    release_holds,
     roadside,
     usfs,
 )
@@ -251,6 +252,7 @@ def stage(conn, path, manifest, *, max_rows=MAX_ROWS, max_bytes=MAX_BYTES, batch
     if not 1 <= batch_size <= 500:
         raise ValueError("batch size must be 1..500")
     rows, report = prepare(path, manifest, max_rows=max_rows, max_bytes=max_bytes)
+    release_holds.reject(rows)
     if not rows:
         raise ValueError("empty catalog cannot be staged")
     generation = hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest()
@@ -320,6 +322,7 @@ def activate(conn, generation):
             counts = cur.fetchone()
             if not counts or counts[0] == 0 or counts[0] != counts[1]:
                 raise ValueError("generation missing, incomplete or empty")
+            release_holds.check_generation(cur, generation)
             cur.execute("SELECT generation FROM places_catalog_active WHERE singleton=true")
             previous = cur.fetchone()
             cur.execute(

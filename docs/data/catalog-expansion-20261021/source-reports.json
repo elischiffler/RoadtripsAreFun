@@ -1,0 +1,1643 @@
+{
+  "automated-nps": {
+    "accepted": 0,
+    "bytes": 1477613,
+    "regions": {},
+    "rejection_ledger": [
+      {
+        "checked_at": "2026-10-21T01:33:09.304367+00:00",
+        "evidence_path": "sources/appa.json",
+        "name": "Appalachian Trail Conservancy - Harper's Ferry Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "3f0fac15e9594cde22a024ad242e28a53a76264fdef641a3c170bd7a53836edd",
+        "source_id": "nps-public:facility:appa:2467",
+        "source_url": "https://www.nps.gov/appa/structured_data_appa.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:09.304367+00:00",
+        "evidence_path": "sources/appa.json",
+        "name": "Appalachian Trail Conservancy - Damascus Trail Center",
+        "native_json_pointer": "/visitorCenters/1",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "3f0fac15e9594cde22a024ad242e28a53a76264fdef641a3c170bd7a53836edd",
+        "source_id": "nps-public:facility:appa:6072",
+        "source_url": "https://www.nps.gov/appa/structured_data_appa.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:09.304367+00:00",
+        "evidence_path": "sources/appa.json",
+        "name": "Appalachian Trail Conservancy - Monson Visitor Center",
+        "native_json_pointer": "/visitorCenters/2",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "3f0fac15e9594cde22a024ad242e28a53a76264fdef641a3c170bd7a53836edd",
+        "source_id": "nps-public:facility:appa:6073",
+        "source_url": "https://www.nps.gov/appa/structured_data_appa.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:09.159068+00:00",
+        "evidence_path": "sources/blue.json",
+        "name": "Sandstone Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "7ca3989ac1e6e9b5ac06a3b7a39f5faee0686d6d7805858eef255e74840ed3a0",
+        "source_id": "nps-public:facility:blue:1261",
+        "source_url": "https://www.nps.gov/blue/structured_data_blue.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:09.445361+00:00",
+        "evidence_path": "sources/bost.json",
+        "name": "Faneuil Hall Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "f4f9a86d4a11eda52b0f844a290fb2e9ae884130aea04ad0ab5d5775c2765aeb",
+        "source_id": "nps-public:facility:bost:3655",
+        "source_url": "https://www.nps.gov/bost/structured_data_bost.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:09.445361+00:00",
+        "evidence_path": "sources/bost.json",
+        "name": "Charlestown Navy Yard Visitor Center",
+        "native_json_pointer": "/visitorCenters/1",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "f4f9a86d4a11eda52b0f844a290fb2e9ae884130aea04ad0ab5d5775c2765aeb",
+        "source_id": "nps-public:facility:bost:3656",
+        "source_url": "https://www.nps.gov/bost/structured_data_bost.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:09.445361+00:00",
+        "evidence_path": "sources/bost.json",
+        "name": "Bunker Hill Museum",
+        "native_json_pointer": "/visitorCenters/2",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "f4f9a86d4a11eda52b0f844a290fb2e9ae884130aea04ad0ab5d5775c2765aeb",
+        "source_id": "nps-public:facility:bost:5911",
+        "source_url": "https://www.nps.gov/bost/structured_data_bost.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:09.271701+00:00",
+        "evidence_path": "sources/bowa.json",
+        "name": "Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "4aee32f438eb442a3f8c3ac4fac8cac06f6b5535c3436f31c6c81fcac407fe18",
+        "source_id": "nps-public:facility:bowa:135",
+        "source_url": "https://www.nps.gov/bowa/structured_data_bowa.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:10.137620+00:00",
+        "evidence_path": "sources/cajo.json",
+        "name": "Zimmerman Center for Heritage",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "unresolved_access_or_calendar_prose",
+        "snapshot_sha256": "609de693bf2480693608bb9aa31f17364e079b8224122f7034b10a3924aee18f",
+        "source_id": "nps-public:facility:cajo:2435",
+        "source_url": "https://www.nps.gov/cajo/structured_data_cajo.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:10.137620+00:00",
+        "evidence_path": "sources/cajo.json",
+        "name": "Historic Jamestowne - Trail Headquarters",
+        "native_json_pointer": "/visitorCenters/1",
+        "reason": "unresolved_access_or_calendar_prose",
+        "snapshot_sha256": "609de693bf2480693608bb9aa31f17364e079b8224122f7034b10a3924aee18f",
+        "source_id": "nps-public:facility:cajo:2450",
+        "source_url": "https://www.nps.gov/cajo/structured_data_cajo.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:10.399287+00:00",
+        "evidence_path": "sources/cham.json",
+        "name": "Chamizal National Memorial Cultural Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "market driving destination exceeds 75 metres",
+        "snapshot_sha256": "7b8c648512f870cea962d7fc950073fc85fd899b3acfd2cf4c439c1db964ba72",
+        "source_id": "nps-public:facility:cham:1250",
+        "source_url": "https://www.nps.gov/cham/structured_data_cham.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:10.533858+00:00",
+        "evidence_path": "sources/fobo.json",
+        "name": "Fort Bowie National Historic Site Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "unresolved_access_or_calendar_prose",
+        "snapshot_sha256": "2bf75a2bf421984e3095490f02ae48dc50dc8bf1f5693eff39dd6e897fe10182",
+        "source_id": "nps-public:facility:fobo:2446",
+        "source_url": "https://www.nps.gov/fobo/structured_data_fobo.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:11.038855+00:00",
+        "evidence_path": "sources/foma.json",
+        "name": "Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "unresolved_access_or_calendar_prose",
+        "snapshot_sha256": "fc9e3572390d02a9d2dcb93a0b7b812d1ddff9a5cf7af329ba0b1c19b5fc1602",
+        "source_id": "nps-public:facility:foma:5787",
+        "source_url": "https://www.nps.gov/foma/structured_data_foma.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:11.351391+00:00",
+        "evidence_path": "sources/fopu.json",
+        "name": "Fort Pulaski Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "5ed9f29cec8b3b99fefc37fbfa6ef582435c352aa7430f1a6c18d7895ac878e2",
+        "source_id": "nps-public:facility:fopu:5843",
+        "source_url": "https://www.nps.gov/fopu/structured_data_fopu.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:10.898311+00:00",
+        "evidence_path": "sources/fost.json",
+        "name": "Historic Fort Gregg Barracks ",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "02ac6288942cb0d9e89dd60b83d8eed8d723fd17dec0caaaec32e8b352489875",
+        "source_id": "nps-public:facility:fost:5696",
+        "source_url": "https://www.nps.gov/fost/structured_data_fost.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:10.898311+00:00",
+        "evidence_path": "sources/fost.json",
+        "name": "Marinus Willett Visitor Center",
+        "native_json_pointer": "/visitorCenters/1",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "02ac6288942cb0d9e89dd60b83d8eed8d723fd17dec0caaaec32e8b352489875",
+        "source_id": "nps-public:facility:fost:5975",
+        "source_url": "https://www.nps.gov/fost/structured_data_fost.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:11.415404+00:00",
+        "evidence_path": "sources/frst.json",
+        "name": "Sheriff's House Welcome Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "b1821d0833600a27e8a39d012f1f9924547131ea1e9f20779325413c3a572bc6",
+        "source_id": "nps-public:facility:frst:6044",
+        "source_url": "https://www.nps.gov/frst/structured_data_frst.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:11.472166+00:00",
+        "evidence_path": "sources/hafe.json",
+        "name": "Harpers Ferry NHP Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "14b0c98f35537a3358411a803fa996da4b0ae83593ee593b7059af4c114c0572",
+        "source_id": "nps-public:facility:hafe:2384",
+        "source_url": "https://www.nps.gov/hafe/structured_data_hafe.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:11.472166+00:00",
+        "evidence_path": "sources/hafe.json",
+        "name": "Lower Town Information Center",
+        "native_json_pointer": "/visitorCenters/1",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "14b0c98f35537a3358411a803fa996da4b0ae83593ee593b7059af4c114c0572",
+        "source_id": "nps-public:facility:hafe:2385",
+        "source_url": "https://www.nps.gov/hafe/structured_data_hafe.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:11.714436+00:00",
+        "evidence_path": "sources/hagr.json",
+        "name": "Hamilton Grange National Memorial Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "5fb517aa1873176d50faa49a346f88b237aa74f88df45166762ef999961e90b7",
+        "source_id": "nps-public:facility:hagr:2388",
+        "source_url": "https://www.nps.gov/hagr/structured_data_hagr.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:12.090195+00:00",
+        "evidence_path": "sources/hatu.json",
+        "name": "Harriet Tubman Underground Railroad Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "d6a1d87dc044fc896c1e88ec9fde693d962d1c9dd17cf337db9dd08b8ad5283f",
+        "source_id": "nps-public:facility:hatu:3651",
+        "source_url": "https://www.nps.gov/hatu/structured_data_hatu.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:12.485772+00:00",
+        "evidence_path": "sources/hobe.json",
+        "name": "Horseshoe Bend National Military Park Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "explicit_facility_us_state_missing",
+        "snapshot_sha256": "430e4a700fa67c3f25d758d5078a967fb32a349748f4274713f2ebde81dcd9c2",
+        "source_id": "nps-public:facility:hobe:5725",
+        "source_url": "https://www.nps.gov/hobe/structured_data_hobe.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:13.008510+00:00",
+        "evidence_path": "sources/hutr.json",
+        "name": "Hubbell Trading Post NHS Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "41e2340a0fbd6ae72f2a7bff8561ac8e8fe6dddc81ccdbebd13cd3fe4513722b",
+        "source_id": "nps-public:facility:hutr:1243",
+        "source_url": "https://www.nps.gov/hutr/structured_data_hutr.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:12.276800+00:00",
+        "evidence_path": "sources/inde.json",
+        "name": "Independence Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "2a82f28760281d7739698faadfc751cb7fe0c776b23eb23657d58c884fa299a5",
+        "source_id": "nps-public:facility:inde:1314",
+        "source_url": "https://www.nps.gov/inde/structured_data_inde.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:12.402836+00:00",
+        "evidence_path": "sources/jame.json",
+        "name": "Historic Jamestowne Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "public_car_frontage_directions_missing",
+        "snapshot_sha256": "b51a38f56448d50b2fdc786c70d3aa6183dc3e2c0e3957f1aa8c6337d32f8758",
+        "source_id": "nps-public:facility:jame:79",
+        "source_url": "https://www.nps.gov/jame/structured_data_jame.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:13.249180+00:00",
+        "evidence_path": "sources/lecl.json",
+        "name": "Lewis and Clark National Historic Trail Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "public_car_frontage_directions_missing",
+        "snapshot_sha256": "e64d8209124d2cc1a9550b2845923c3b9ed5d50dffdba488ba3f16af2705a393",
+        "source_id": "nps-public:facility:lecl:1242",
+        "source_url": "https://www.nps.gov/lecl/structured_data_lecl.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:12.670672+00:00",
+        "evidence_path": "sources/lewi.json",
+        "name": "Fort Clatsop Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "36323a61ca00bdade075300ef64cec529e9ed5570c97952fa58784b7711cb9c3",
+        "source_id": "nps-public:facility:lewi:5791",
+        "source_url": "https://www.nps.gov/lewi/structured_data_lewi.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:13.311069+00:00",
+        "evidence_path": "sources/libi.json",
+        "name": "Little Bighorn Battlefield Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "unresolved_access_or_calendar_prose",
+        "snapshot_sha256": "d3135800c3dfadba17a734d035dcb0d5bb8e23c4857265181b304424f2f5565d",
+        "source_id": "nps-public:facility:libi:5979",
+        "source_url": "https://www.nps.gov/libi/structured_data_libi.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:13.349124+00:00",
+        "evidence_path": "sources/mabi.json",
+        "name": "Carriage Barn Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "2e7eb98d8c1a8b74fb29d377938799d86c58faf0ad803d7d29a2af3c41925c02",
+        "source_id": "nps-public:facility:mabi:6004",
+        "source_url": "https://www.nps.gov/mabi/structured_data_mabi.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:13.349124+00:00",
+        "evidence_path": "sources/mabi.json",
+        "name": "Billings Farm & Museum Visitor Center (Partner Visitor Center in Shared Parking Area)",
+        "native_json_pointer": "/visitorCenters/1",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "2e7eb98d8c1a8b74fb29d377938799d86c58faf0ad803d7d29a2af3c41925c02",
+        "source_id": "nps-public:facility:mabi:6016",
+        "source_url": "https://www.nps.gov/mabi/structured_data_mabi.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:13.612031+00:00",
+        "evidence_path": "sources/nico.json",
+        "name": "Township Hall and Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "8c817f57dc112b6254dadf4b16a2de5398f6fbcc01b0c35f109fc7fc103f11e0",
+        "source_id": "nps-public:facility:nico:5859",
+        "source_url": "https://www.nps.gov/nico/structured_data_nico.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:13.612031+00:00",
+        "evidence_path": "sources/nico.json",
+        "name": "Temporary Building Closure",
+        "native_json_pointer": "/visitorCenters/1",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "8c817f57dc112b6254dadf4b16a2de5398f6fbcc01b0c35f109fc7fc103f11e0",
+        "source_id": "nps-public:facility:nico:6135",
+        "source_url": "https://www.nps.gov/nico/structured_data_nico.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:13.612031+00:00",
+        "evidence_path": "sources/nico.json",
+        "name": "Temporary Building Closure",
+        "native_json_pointer": "/visitorCenters/2",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "8c817f57dc112b6254dadf4b16a2de5398f6fbcc01b0c35f109fc7fc103f11e0",
+        "source_id": "nps-public:facility:nico:6136",
+        "source_url": "https://www.nps.gov/nico/structured_data_nico.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:14.412990+00:00",
+        "evidence_path": "sources/niob.json",
+        "name": "Niobrara National Scenic River Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "unresolved_access_or_calendar_prose",
+        "snapshot_sha256": "c0e4f27c8023bf5838def2bd3420838a9c58d5b9e78cfe3b6083223e7bfc6b14",
+        "source_id": "nps-public:facility:niob:27",
+        "source_url": "https://www.nps.gov/niob/structured_data_niob.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:14.167375+00:00",
+        "evidence_path": "sources/safr.json",
+        "name": "San Francisco Maritime Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "350d88792137800cb5145ca4ec1d9367a0c37aa6d8eeac5baa44626010a9e884",
+        "source_id": "nps-public:facility:safr:1209",
+        "source_url": "https://www.nps.gov/safr/structured_data_safr.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:14.167375+00:00",
+        "evidence_path": "sources/safr.json",
+        "name": "Maritime Museum",
+        "native_json_pointer": "/visitorCenters/1",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "350d88792137800cb5145ca4ec1d9367a0c37aa6d8eeac5baa44626010a9e884",
+        "source_id": "nps-public:facility:safr:6061",
+        "source_url": "https://www.nps.gov/safr/structured_data_safr.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:13.976691+00:00",
+        "evidence_path": "sources/saga.json",
+        "name": "Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "0a2cf323f325ed6cfdee8bf0acc1dc86081429cf73f1e5c7599fb9c1ab01904c",
+        "source_id": "nps-public:facility:saga:5774",
+        "source_url": "https://www.nps.gov/saga/structured_data_saga.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:14.643197+00:00",
+        "evidence_path": "sources/sahi.json",
+        "name": "Theodore Roosevelt Museum at Old Orchard",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "582bd43abb566f0c91b8985dee8023050c8c16543be628145583b6726bfdcec7",
+        "source_id": "nps-public:facility:sahi:2587",
+        "source_url": "https://www.nps.gov/sahi/structured_data_sahi.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:14.442003+00:00",
+        "evidence_path": "sources/sair.json",
+        "name": "Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "14b0c22b3c06ef2f768183a981f82d6ce8c386ab4e27e64c203da97962b23529",
+        "source_id": "nps-public:facility:sair:5784",
+        "source_url": "https://www.nps.gov/sair/structured_data_sair.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:14.577391+00:00",
+        "evidence_path": "sources/sama.json",
+        "name": "Salem Armory",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "1959eecb4454517f8dc6ec59a398e06d6cffad875b48727175f776400f050f09",
+        "source_id": "nps-public:facility:sama:5749",
+        "source_url": "https://www.nps.gov/sama/structured_data_sama.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:14.577391+00:00",
+        "evidence_path": "sources/sama.json",
+        "name": "Waite & Peirce",
+        "native_json_pointer": "/visitorCenters/1",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "1959eecb4454517f8dc6ec59a398e06d6cffad875b48727175f776400f050f09",
+        "source_id": "nps-public:facility:sama:5750",
+        "source_url": "https://www.nps.gov/sama/structured_data_sama.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:14.807675+00:00",
+        "evidence_path": "sources/stea.json",
+        "name": "Visitor Center and Park Store",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "e7f09efc3dc0457c1e0b9cded7dff4c382e04e325dacf69aab766b0d38d16a8b",
+        "source_id": "nps-public:facility:stea:5923",
+        "source_url": "https://www.nps.gov/stea/structured_data_stea.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:14.951256+00:00",
+        "evidence_path": "sources/stge.json",
+        "name": "Ste. Genevieve Welcome Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "unresolved_access_or_calendar_prose",
+        "snapshot_sha256": "4e8ba6fac271d91d870725d09c5fc7df37cc49164f4ef77214a6ebf30e43654a",
+        "source_id": "nps-public:facility:stge:5738",
+        "source_url": "https://www.nps.gov/stge/structured_data_stge.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:15.036596+00:00",
+        "evidence_path": "sources/ston.json",
+        "name": "Stonewall National Monument Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "ef1fb39059ca089181e0b5585552909b8f1ce8868fe5b06b216431f2de7b108f",
+        "source_id": "nps-public:facility:ston:6062",
+        "source_url": "https://www.nps.gov/ston/structured_data_ston.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:15.711067+00:00",
+        "evidence_path": "sources/stri.json",
+        "name": "Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "3bb47dbc62800e0bc2b061a6e3bc23f651cebfc5d627321df89016ca4ee7ac7e",
+        "source_id": "nps-public:facility:stri:68",
+        "source_url": "https://www.nps.gov/stri/structured_data_stri.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:15.072614+00:00",
+        "evidence_path": "sources/tapr.json",
+        "name": "Tallgrass Prairie National Preserve Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "unresolved_access_or_calendar_prose",
+        "snapshot_sha256": "829be02f1545e9a571b9e45efe39cb3bd9624c2080b267050e09e82cffc4c7d2",
+        "source_id": "nps-public:facility:tapr:76",
+        "source_url": "https://www.nps.gov/tapr/structured_data_tapr.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:15.312120+00:00",
+        "evidence_path": "sources/thco.json",
+        "name": "Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "f94d371dadb5e629f5d4f27ece29828b8f19741e8d0b5b0242b321811beec32b",
+        "source_id": "nps-public:facility:thco:5918",
+        "source_url": "https://www.nps.gov/thco/structured_data_thco.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:15.719200+00:00",
+        "evidence_path": "sources/thrb.json",
+        "name": "Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "fb2c832eee857c64943b8b2bd74f1c5b396b071854379d13988fdd04d595f0a6",
+        "source_id": "nps-public:facility:thrb:5933",
+        "source_url": "https://www.nps.gov/thrb/structured_data_thrb.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:16.021946+00:00",
+        "evidence_path": "sources/vama.json",
+        "name": "Pavilion Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "540c03542456716c5539634900fab1a38d3690ab9c203fa47165100ddf30ba45",
+        "source_id": "nps-public:facility:vama:131",
+        "source_url": "https://www.nps.gov/vama/structured_data_vama.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:16.083585+00:00",
+        "evidence_path": "sources/vick.json",
+        "name": "Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "bfb69be11eedd33f18e7047ef92ed540ee74d3ba05c9778ac398b007ba334f70",
+        "source_id": "nps-public:facility:vick:97",
+        "source_url": "https://www.nps.gov/vick/structured_data_vick.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:16.083585+00:00",
+        "evidence_path": "sources/vick.json",
+        "name": "USS Cairo Museum",
+        "native_json_pointer": "/visitorCenters/1",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "bfb69be11eedd33f18e7047ef92ed540ee74d3ba05c9778ac398b007ba334f70",
+        "source_id": "nps-public:facility:vick:3684",
+        "source_url": "https://www.nps.gov/vick/structured_data_vick.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:16.159896+00:00",
+        "evidence_path": "sources/wefa.json",
+        "name": "Burlingham House Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "72a2b14a60c1c83464ac42695be2a19fcd54bac072cf0216ab75602753c4e24b",
+        "source_id": "nps-public:facility:wefa:39",
+        "source_url": "https://www.nps.gov/wefa/structured_data_wefa.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:16.121076+00:00",
+        "evidence_path": "sources/whis.json",
+        "name": "Whiskeytown Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "unresolved_access_or_calendar_prose",
+        "snapshot_sha256": "7111053d45edfb5835510357226da9f0aae472843317430ebcce5971871d81d2",
+        "source_id": "nps-public:facility:whis:2409",
+        "source_url": "https://www.nps.gov/whis/structured_data_whis.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:16.396241+00:00",
+        "evidence_path": "sources/whmi.json",
+        "name": "Whitman Mission Visitor Center",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "unresolved_access_or_calendar_prose",
+        "snapshot_sha256": "6b79148585ccd0f8cdd1e1e300f32d49d55eba28cef9165767151aa781087d4d",
+        "source_id": "nps-public:facility:whmi:5743",
+        "source_url": "https://www.nps.gov/whmi/structured_data_whmi.json"
+      },
+      {
+        "checked_at": "2026-10-21T01:33:16.417095+00:00",
+        "evidence_path": "sources/wotr.json",
+        "name": "Ranger Station",
+        "native_json_pointer": "/visitorCenters/0",
+        "reason": "published_public_auto_arrival_missing",
+        "snapshot_sha256": "e1538c9e4576fd3e741e1d9aa83fff16fea05e0f1b6215091cc5552a33f9aeea",
+        "source_id": "nps-public:facility:wotr:1193",
+        "source_url": "https://www.nps.gov/wotr/structured_data_wotr.json"
+      }
+    ],
+    "rejects": {
+      "explicit_facility_us_state_missing": 1,
+      "market driving destination exceeds 75 metres": 1,
+      "public_car_frontage_directions_missing": 2,
+      "published_public_auto_arrival_missing": 41,
+      "unresolved_access_or_calendar_prose": 10
+    },
+    "scanned": 290,
+    "source_rows": {
+      "parent_schedule_slots": 137,
+      "parking_lots": 49,
+      "units": 49,
+      "visitor_facilities": 55
+    }
+  },
+  "usfs-current": {
+    "accepted": 93,
+    "admission_ledger": [
+      {
+        "name": "Icehouse Trailhead",
+        "reason": null,
+        "site_cn": "10053010393",
+        "source_id": "usfs:facility:10053010393",
+        "status": "accepted"
+      },
+      {
+        "name": "Bomb Site Trailhead",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "10075010526",
+        "source_id": "usfs:facility:10075010526",
+        "status": "held"
+      },
+      {
+        "name": "Lower Jack's River Trailhead",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "10163010511",
+        "source_id": "usfs:facility:10163010511",
+        "status": "held"
+      },
+      {
+        "name": "Stuart Lake Day Use",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "10214010313",
+        "source_id": "usfs:facility:10214010313",
+        "status": "held"
+      },
+      {
+        "name": "East Gateway Information Site",
+        "reason": null,
+        "site_cn": "10261010337",
+        "source_id": "usfs:facility:10261010337",
+        "status": "accepted"
+      },
+      {
+        "name": "Angel Windows Trailhead",
+        "reason": null,
+        "site_cn": "10879010474",
+        "source_id": "usfs:facility:10879010474",
+        "status": "accepted"
+      },
+      {
+        "name": "Auxier Ridge Trailhead",
+        "reason": null,
+        "site_cn": "10880010474",
+        "source_id": "usfs:facility:10880010474",
+        "status": "accepted"
+      },
+      {
+        "name": "Bison Way Trailhead",
+        "reason": null,
+        "site_cn": "10882010474",
+        "source_id": "usfs:facility:10882010474",
+        "status": "accepted"
+      },
+      {
+        "name": "Corner Ridge Trailhead",
+        "reason": null,
+        "site_cn": "10884010474",
+        "source_id": "usfs:facility:10884010474",
+        "status": "accepted"
+      },
+      {
+        "name": "Martins Fork Trailhead",
+        "reason": null,
+        "site_cn": "10885010474",
+        "source_id": "usfs:facility:10885010474",
+        "status": "accepted"
+      },
+      {
+        "name": "Pinch-em-tight Trailhead Parking Lot",
+        "reason": null,
+        "site_cn": "10886010474",
+        "source_id": "usfs:facility:10886010474",
+        "status": "accepted"
+      },
+      {
+        "name": "Sheltowee Trace Stanton Trailhead",
+        "reason": null,
+        "site_cn": "10888010474",
+        "source_id": "usfs:facility:10888010474",
+        "status": "accepted"
+      },
+      {
+        "name": "Swift Camp Creek, Rough Trailhead",
+        "reason": null,
+        "site_cn": "10889010474",
+        "source_id": "usfs:facility:10889010474",
+        "status": "accepted"
+      },
+      {
+        "name": "Whistling Arch Trailhead",
+        "reason": null,
+        "site_cn": "10890010474",
+        "source_id": "usfs:facility:10890010474",
+        "status": "accepted"
+      },
+      {
+        "name": "Wildcat Trailhead Parking Area",
+        "reason": null,
+        "site_cn": "10891010474",
+        "source_id": "usfs:facility:10891010474",
+        "status": "accepted"
+      },
+      {
+        "name": "Castle Lake Viewpoint",
+        "reason": "public_hours_not_complete_literal_daily_clocks",
+        "site_cn": "10944010274",
+        "source_id": "usfs:facility:10944010274",
+        "status": "held"
+      },
+      {
+        "name": "Ohio View Trailhead - S.R. 7",
+        "reason": "unresolved_published_access_qualification",
+        "site_cn": "11001010307",
+        "source_id": "usfs:facility:11001010307",
+        "status": "held"
+      },
+      {
+        "name": "North Country Trail Boy River Trailhead ",
+        "reason": null,
+        "site_cn": "11010010299",
+        "source_id": "usfs:facility:11010010299",
+        "status": "accepted"
+      },
+      {
+        "name": "North Country Trail Highway 84 Trailhead",
+        "reason": null,
+        "site_cn": "11011010299",
+        "source_id": "usfs:facility:11011010299",
+        "status": "accepted"
+      },
+      {
+        "name": "North Country Trail County Road 4 Trailh",
+        "reason": null,
+        "site_cn": "11022010299",
+        "source_id": "usfs:facility:11022010299",
+        "status": "accepted"
+      },
+      {
+        "name": "Bass Lake Trailhead",
+        "reason": null,
+        "site_cn": "11029010436",
+        "source_id": "usfs:facility:11029010436",
+        "status": "accepted"
+      },
+      {
+        "name": "Bass Overlook Trailhead",
+        "reason": null,
+        "site_cn": "11106010374",
+        "source_id": "usfs:facility:11106010374",
+        "status": "accepted"
+      },
+      {
+        "name": "Glen Lake Trailhead",
+        "reason": null,
+        "site_cn": "11107010374",
+        "source_id": "usfs:facility:11107010374",
+        "status": "accepted"
+      },
+      {
+        "name": "West Cady Ridge Trailhead",
+        "reason": null,
+        "site_cn": "11199010357",
+        "source_id": "usfs:facility:11199010357",
+        "status": "accepted"
+      },
+      {
+        "name": "Necklace Valley Trailhead",
+        "reason": null,
+        "site_cn": "11206010357",
+        "source_id": "usfs:facility:11206010357",
+        "status": "accepted"
+      },
+      {
+        "name": "Baker River Trailhead",
+        "reason": "independent_arrival_review_hold: indistinguishable_shared_driving_directions_for_distant_native_points",
+        "site_cn": "11230010357",
+        "source_id": "usfs:facility:11230010357",
+        "status": "held"
+      },
+      {
+        "name": "Baker Lake Trailhead",
+        "reason": "independent_arrival_review_hold: indistinguishable_shared_driving_directions_for_distant_native_points",
+        "site_cn": "11231010357",
+        "source_id": "usfs:facility:11231010357",
+        "status": "held"
+      },
+      {
+        "name": "Boulder Ridge Trailhead",
+        "reason": null,
+        "site_cn": "11233010357",
+        "source_id": "usfs:facility:11233010357",
+        "status": "accepted"
+      },
+      {
+        "name": "Lewellyn Cove Nature Trail",
+        "reason": null,
+        "site_cn": "11238010282",
+        "source_id": "usfs:facility:11238010282",
+        "status": "accepted"
+      },
+      {
+        "name": "Goat Mountain Trailhead",
+        "reason": null,
+        "site_cn": "11238010357",
+        "source_id": "usfs:facility:11238010357",
+        "status": "accepted"
+      },
+      {
+        "name": "Watson Lakes Trailhead",
+        "reason": null,
+        "site_cn": "11247010357",
+        "source_id": "usfs:facility:11247010357",
+        "status": "accepted"
+      },
+      {
+        "name": "Welcome Pass Trailhead",
+        "reason": null,
+        "site_cn": "11248010357",
+        "source_id": "usfs:facility:11248010357",
+        "status": "accepted"
+      },
+      {
+        "name": "Taylor Lake Trailhead",
+        "reason": "known_public_negative_or_unrecognized_status",
+        "site_cn": "11362010356",
+        "source_id": "usfs:facility:11362010356",
+        "status": "held"
+      },
+      {
+        "name": "Four Corners (coggins Saddle) Trailhead",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "11377010262",
+        "source_id": "usfs:facility:11377010262",
+        "status": "held"
+      },
+      {
+        "name": "Clay Butte Trailhead",
+        "reason": "independent_arrival_review_hold: seasonal_approach_road_restriction_unresolved",
+        "site_cn": "11475010337",
+        "source_id": "usfs:facility:11475010337",
+        "status": "held"
+      },
+      {
+        "name": "Lodgepole Trailhead",
+        "reason": null,
+        "site_cn": "11476010337",
+        "source_id": "usfs:facility:11476010337",
+        "status": "accepted"
+      },
+      {
+        "name": "Big Bend Vista",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "11603.006441",
+        "source_id": "usfs:facility:11603.006441",
+        "status": "held"
+      },
+      {
+        "name": "Billy Creek Trail",
+        "reason": null,
+        "site_cn": "11618.006441",
+        "source_id": "usfs:facility:11618.006441",
+        "status": "accepted"
+      },
+      {
+        "name": "Fourche Mountain Trailhead",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "11622.006441",
+        "source_id": "usfs:facility:11622.006441",
+        "status": "held"
+      },
+      {
+        "name": "Buffalo Gap Trailhead",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "11640.006441",
+        "source_id": "usfs:facility:11640.006441",
+        "status": "held"
+      },
+      {
+        "name": "Little Blakely Trailhead",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "11641.006441",
+        "source_id": "usfs:facility:11641.006441",
+        "status": "held"
+      },
+      {
+        "name": "Jessie-hwy 27 Trailhead",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "11644.006441",
+        "source_id": "usfs:facility:11644.006441",
+        "status": "held"
+      },
+      {
+        "name": "Lake Sylvia",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "11649.006441",
+        "source_id": "usfs:facility:11649.006441",
+        "status": "held"
+      },
+      {
+        "name": "Cody Peak Interpretive Site",
+        "reason": null,
+        "site_cn": "11657.001771",
+        "source_id": "usfs:facility:11657.001771",
+        "status": "accepted"
+      },
+      {
+        "name": "Boole Tree Trailhead",
+        "reason": "known_public_negative_or_unrecognized_status",
+        "site_cn": "11664010432",
+        "source_id": "usfs:facility:11664010432",
+        "status": "held"
+      },
+      {
+        "name": "Settler's Grove Interpretive Site",
+        "reason": null,
+        "site_cn": "11802010359",
+        "source_id": "usfs:facility:11802010359",
+        "status": "accepted"
+      },
+      {
+        "name": "Bristlecone Pine Trailhead",
+        "reason": null,
+        "site_cn": "11877010473",
+        "source_id": "usfs:facility:11877010473",
+        "status": "accepted"
+      },
+      {
+        "name": "Little Bear Trailhead",
+        "reason": null,
+        "site_cn": "11980010491",
+        "source_id": "usfs:facility:11980010491",
+        "status": "accepted"
+      },
+      {
+        "name": "Dakota Point Trailhead",
+        "reason": null,
+        "site_cn": "12485010421",
+        "source_id": "usfs:facility:12485010421",
+        "status": "accepted"
+      },
+      {
+        "name": "Twenty Mile Trailhead",
+        "reason": null,
+        "site_cn": "13048.003141",
+        "source_id": "usfs:facility:13048.003141",
+        "status": "accepted"
+      },
+      {
+        "name": "Iron Bridge Trailhead",
+        "reason": null,
+        "site_cn": "1415879010602",
+        "source_id": "usfs:facility:1415879010602",
+        "status": "accepted"
+      },
+      {
+        "name": "River Road Trailhead",
+        "reason": null,
+        "site_cn": "1415912010602",
+        "source_id": "usfs:facility:1415912010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Wauponsee Trailhead",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "1415993010602",
+        "source_id": "usfs:facility:1415993010602",
+        "status": "held"
+      },
+      {
+        "name": "Mt. Rose Trailhead",
+        "reason": null,
+        "site_cn": "14165010386",
+        "source_id": "usfs:facility:14165010386",
+        "status": "accepted"
+      },
+      {
+        "name": "Horse Lake Trailhead",
+        "reason": "public_season_requires_separate_review",
+        "site_cn": "14311010263",
+        "source_id": "usfs:facility:14311010263",
+        "status": "held"
+      },
+      {
+        "name": "Gold King Trailhead",
+        "reason": "public_season_requires_separate_review",
+        "site_cn": "14312010263",
+        "source_id": "usfs:facility:14312010263",
+        "status": "held"
+      },
+      {
+        "name": "Deer Creek Lake Trailhead",
+        "reason": null,
+        "site_cn": "14573010473",
+        "source_id": "usfs:facility:14573010473",
+        "status": "accepted"
+      },
+      {
+        "name": "Pow Wow Trail Trailhead",
+        "reason": "unresolved_published_access_qualification",
+        "site_cn": "14810.007601",
+        "source_id": "usfs:facility:14810.007601",
+        "status": "held"
+      },
+      {
+        "name": "Oregon OHV Trailhead",
+        "reason": "public_season_requires_separate_review",
+        "site_cn": "15261010263",
+        "source_id": "usfs:facility:15261010263",
+        "status": "held"
+      },
+      {
+        "name": "Maxwell Butte Trailhead",
+        "reason": null,
+        "site_cn": "162454010602",
+        "source_id": "usfs:facility:162454010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Bingham Ridge Trailhead",
+        "reason": null,
+        "site_cn": "162457010602",
+        "source_id": "usfs:facility:162457010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Convict Lake Trail",
+        "reason": null,
+        "site_cn": "1711399010602",
+        "source_id": "usfs:facility:1711399010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Joyce Estate",
+        "reason": "public_season_requires_separate_review",
+        "site_cn": "1808211010602",
+        "source_id": "usfs:facility:1808211010602",
+        "status": "held"
+      },
+      {
+        "name": "Sand Camp",
+        "reason": "independent_arrival_review_hold: native_point_role_ambiguous_relative_to_separate_parking",
+        "site_cn": "204537010602",
+        "source_id": "usfs:facility:204537010602",
+        "status": "held"
+      },
+      {
+        "name": "Mt. Wrightson Picnic Area & Trailheads",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "20933010519",
+        "source_id": "usfs:facility:20933010519",
+        "status": "held"
+      },
+      {
+        "name": "Sherman Cr. Trailhead",
+        "reason": null,
+        "site_cn": "210226010602",
+        "source_id": "usfs:facility:210226010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Smokejumper Base Interpretive Site",
+        "reason": "public_hours_not_complete_literal_daily_clocks",
+        "site_cn": "22585010444",
+        "source_id": "usfs:facility:22585010444",
+        "status": "held"
+      },
+      {
+        "name": "Pulaski 1910 Fire Tunnel Trail Interpret",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "236438010602",
+        "source_id": "usfs:facility:236438010602",
+        "status": "held"
+      },
+      {
+        "name": "Navigation Trailhead",
+        "reason": null,
+        "site_cn": "236482010602",
+        "source_id": "usfs:facility:236482010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Cole Creek Trailhead",
+        "reason": null,
+        "site_cn": "2477932010602",
+        "source_id": "usfs:facility:2477932010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Ravine Loop Trailhead",
+        "reason": null,
+        "site_cn": "249226010602",
+        "source_id": "usfs:facility:249226010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Gorge Ponds Trailhead",
+        "reason": "independent_arrival_review_hold: directions_name_a_different_arrival",
+        "site_cn": "249235010602",
+        "source_id": "usfs:facility:249235010602",
+        "status": "held"
+      },
+      {
+        "name": "South Slope Trailhead",
+        "reason": null,
+        "site_cn": "249237010602",
+        "source_id": "usfs:facility:249237010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Eagle Forks Trailhead",
+        "reason": "public_season_requires_separate_review",
+        "site_cn": "2546834010602",
+        "source_id": "usfs:facility:2546834010602",
+        "status": "held"
+      },
+      {
+        "name": "Warren Falls",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "258079010602",
+        "source_id": "usfs:facility:258079010602",
+        "status": "held"
+      },
+      {
+        "name": "Round Mountain North Trailhead",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "3254315010602",
+        "source_id": "usfs:facility:3254315010602",
+        "status": "held"
+      },
+      {
+        "name": "North Country Trail Highway 50 Trailhead",
+        "reason": null,
+        "site_cn": "32614010299",
+        "source_id": "usfs:facility:32614010299",
+        "status": "accepted"
+      },
+      {
+        "name": "Geyser Pass Summer Trailhead",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "3417245010602",
+        "source_id": "usfs:facility:3417245010602",
+        "status": "held"
+      },
+      {
+        "name": "North Willow Creek Trailhead",
+        "reason": null,
+        "site_cn": "38644010349",
+        "source_id": "usfs:facility:38644010349",
+        "status": "accepted"
+      },
+      {
+        "name": "Homer Stone Trailhead",
+        "reason": null,
+        "site_cn": "4222251010602",
+        "source_id": "usfs:facility:4222251010602",
+        "status": "accepted"
+      },
+      {
+        "name": "AT/LT Rte. 140 Trailhead",
+        "reason": null,
+        "site_cn": "4222380010602",
+        "source_id": "usfs:facility:4222380010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Laurentian Divide Overlook Parking",
+        "reason": null,
+        "site_cn": "4295296010602",
+        "source_id": "usfs:facility:4295296010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Superior Hiking Trailhead-temperance Riv",
+        "reason": null,
+        "site_cn": "4311033010602",
+        "source_id": "usfs:facility:4311033010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Superior Hiking Trailhead- Cc 6",
+        "reason": null,
+        "site_cn": "4311034010602",
+        "source_id": "usfs:facility:4311034010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Schroeder Trailhead",
+        "reason": null,
+        "site_cn": "4362315010602",
+        "source_id": "usfs:facility:4362315010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Hayward Trailhead",
+        "reason": null,
+        "site_cn": "4379007010602",
+        "source_id": "usfs:facility:4379007010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Shanks Trailhead",
+        "reason": null,
+        "site_cn": "4379172010602",
+        "source_id": "usfs:facility:4379172010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Loleta Day Use Area",
+        "reason": "known_public_negative_or_unrecognized_status",
+        "site_cn": "4860103010602",
+        "source_id": "usfs:facility:4860103010602",
+        "status": "held"
+      },
+      {
+        "name": "Monocle Lake Picnic Area And Boat Launch",
+        "reason": "known_public_negative_or_unrecognized_status",
+        "site_cn": "4874043010602",
+        "source_id": "usfs:facility:4874043010602",
+        "status": "held"
+      },
+      {
+        "name": "White Rocks Picnic Area",
+        "reason": null,
+        "site_cn": "5007.007841",
+        "source_id": "usfs:facility:5007.007841",
+        "status": "accepted"
+      },
+      {
+        "name": "Hanging Rock Trailhead",
+        "reason": "contradictory_access_text",
+        "site_cn": "5011.010011",
+        "source_id": "usfs:facility:5011.010011",
+        "status": "held"
+      },
+      {
+        "name": "Little Boulder Trailhead",
+        "reason": "public_hours_not_complete_literal_daily_clocks",
+        "site_cn": "5014.000271",
+        "source_id": "usfs:facility:5014.000271",
+        "status": "held"
+      },
+      {
+        "name": "Sand Pond-Picnic/Trailhead",
+        "reason": null,
+        "site_cn": "5025.004481",
+        "source_id": "usfs:facility:5025.004481",
+        "status": "accepted"
+      },
+      {
+        "name": "Oregon Creek Day Use Area",
+        "reason": "public_season_requires_separate_review",
+        "site_cn": "5031.004481",
+        "source_id": "usfs:facility:5031.004481",
+        "status": "held"
+      },
+      {
+        "name": "Middle Fork Trailhead & Transfer Camp",
+        "reason": null,
+        "site_cn": "5036.002901",
+        "source_id": "usfs:facility:5036.002901",
+        "status": "accepted"
+      },
+      {
+        "name": "Falls Of Lana Picnic Area",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "5041.007841",
+        "source_id": "usfs:facility:5041.007841",
+        "status": "held"
+      },
+      {
+        "name": "Homestake Trailhead",
+        "reason": "public_hours_not_complete_literal_daily_clocks",
+        "site_cn": "5045.000601",
+        "source_id": "usfs:facility:5045.000601",
+        "status": "held"
+      },
+      {
+        "name": "Clarks Fork Overlook",
+        "reason": "independent_arrival_review_hold: seasonal_approach_road_restriction_unresolved",
+        "site_cn": "5045.001771",
+        "source_id": "usfs:facility:5045.001771",
+        "status": "held"
+      },
+      {
+        "name": "Brush Hollow Trailhead",
+        "reason": null,
+        "site_cn": "5055.007791",
+        "source_id": "usfs:facility:5055.007791",
+        "status": "accepted"
+      },
+      {
+        "name": "Sunlight Bridge Overlook",
+        "reason": null,
+        "site_cn": "5068.001771",
+        "source_id": "usfs:facility:5068.001771",
+        "status": "accepted"
+      },
+      {
+        "name": "Timberline Trailhead",
+        "reason": null,
+        "site_cn": "5070.000471",
+        "source_id": "usfs:facility:5070.000471",
+        "status": "accepted"
+      },
+      {
+        "name": "Laurel Mill Trailhead",
+        "reason": null,
+        "site_cn": "5070.007791",
+        "source_id": "usfs:facility:5070.007791",
+        "status": "accepted"
+      },
+      {
+        "name": "East Rosebud Trailhead",
+        "reason": null,
+        "site_cn": "5071.000471",
+        "source_id": "usfs:facility:5071.000471",
+        "status": "accepted"
+      },
+      {
+        "name": "Double D Trailhead",
+        "reason": null,
+        "site_cn": "5071.001771",
+        "source_id": "usfs:facility:5071.001771",
+        "status": "accepted"
+      },
+      {
+        "name": "Nez Perce Pass Trailhead",
+        "reason": null,
+        "site_cn": "5074.000271",
+        "source_id": "usfs:facility:5074.000271",
+        "status": "accepted"
+      },
+      {
+        "name": "Rocket John Atv Trailhead",
+        "reason": null,
+        "site_cn": "5074.007791",
+        "source_id": "usfs:facility:5074.007791",
+        "status": "accepted"
+      },
+      {
+        "name": "Spot Mountain Trailhead",
+        "reason": null,
+        "site_cn": "5079.000271",
+        "source_id": "usfs:facility:5079.000271",
+        "status": "accepted"
+      },
+      {
+        "name": "Buehler Corners Atv Trailhead",
+        "reason": null,
+        "site_cn": "5079.007791",
+        "source_id": "usfs:facility:5079.007791",
+        "status": "accepted"
+      },
+      {
+        "name": "Jakes Rock Trailhead And Day Use",
+        "reason": null,
+        "site_cn": "5084.007791",
+        "source_id": "usfs:facility:5084.007791",
+        "status": "accepted"
+      },
+      {
+        "name": "Middle Fork Trailhead",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "5089.001771",
+        "source_id": "usfs:facility:5089.001771",
+        "status": "held"
+      },
+      {
+        "name": "Rock Creek Nature Trail",
+        "reason": null,
+        "site_cn": "5098.004481",
+        "source_id": "usfs:facility:5098.004481",
+        "status": "accepted"
+      },
+      {
+        "name": "Clearwater Trailhead",
+        "reason": null,
+        "site_cn": "5106.001771",
+        "source_id": "usfs:facility:5106.001771",
+        "status": "accepted"
+      },
+      {
+        "name": "Battell Trailhead",
+        "reason": null,
+        "site_cn": "5107.007841",
+        "source_id": "usfs:facility:5107.007841",
+        "status": "accepted"
+      },
+      {
+        "name": "Canyon Creek Trailhead",
+        "reason": null,
+        "site_cn": "5109.000271",
+        "source_id": "usfs:facility:5109.000271",
+        "status": "accepted"
+      },
+      {
+        "name": "Cooley Glen/Emily Proctor Trailhead",
+        "reason": null,
+        "site_cn": "5109.007841",
+        "source_id": "usfs:facility:5109.007841",
+        "status": "accepted"
+      },
+      {
+        "name": "Skylight Pond Trailhead",
+        "reason": null,
+        "site_cn": "5110.007841",
+        "source_id": "usfs:facility:5110.007841",
+        "status": "accepted"
+      },
+      {
+        "name": "Roaring Lion Trailhead",
+        "reason": null,
+        "site_cn": "5111.000271",
+        "source_id": "usfs:facility:5111.000271",
+        "status": "accepted"
+      },
+      {
+        "name": "Oak Ridge Trailhead",
+        "reason": null,
+        "site_cn": "5111.007841",
+        "source_id": "usfs:facility:5111.007841",
+        "status": "accepted"
+      },
+      {
+        "name": "Moosalamoo/North Branch Trailhead",
+        "reason": null,
+        "site_cn": "5116.007841",
+        "source_id": "usfs:facility:5116.007841",
+        "status": "accepted"
+      },
+      {
+        "name": "Lake Davis Kiosk",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "5156.004101",
+        "source_id": "usfs:facility:5156.004101",
+        "status": "held"
+      },
+      {
+        "name": "Rotary Ann Overlook",
+        "reason": null,
+        "site_cn": "5169.006571",
+        "source_id": "usfs:facility:5169.006571",
+        "status": "accepted"
+      },
+      {
+        "name": "Giant Cedar",
+        "reason": "public_season_requires_separate_review",
+        "site_cn": "5198.000411",
+        "source_id": "usfs:facility:5198.000411",
+        "status": "held"
+      },
+      {
+        "name": "Sloan Bridge Picnic Area",
+        "reason": null,
+        "site_cn": "5220.006791",
+        "source_id": "usfs:facility:5220.006791",
+        "status": "accepted"
+      },
+      {
+        "name": "Fern Croft Trailhead",
+        "reason": null,
+        "site_cn": "5224.007961",
+        "source_id": "usfs:facility:5224.007961",
+        "status": "accepted"
+      },
+      {
+        "name": "Hidden Cove Trailhead",
+        "reason": null,
+        "site_cn": "5242.007541",
+        "source_id": "usfs:facility:5242.007541",
+        "status": "accepted"
+      },
+      {
+        "name": "Buttermilk Hill Trailhead",
+        "reason": null,
+        "site_cn": "5243.007541",
+        "source_id": "usfs:facility:5243.007541",
+        "status": "accepted"
+      },
+      {
+        "name": "Enoree OHV Trailhead",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "5262.006791",
+        "source_id": "usfs:facility:5262.006791",
+        "status": "held"
+      },
+      {
+        "name": "Bear Canyon Trailhead",
+        "reason": "unresolved_published_access_qualification",
+        "site_cn": "5263.002231",
+        "source_id": "usfs:facility:5263.002231",
+        "status": "held"
+      },
+      {
+        "name": "Boen Gulf",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "5350.006571",
+        "source_id": "usfs:facility:5350.006571",
+        "status": "held"
+      },
+      {
+        "name": "Chestnut Lead Trailhead",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "5396.005951",
+        "source_id": "usfs:facility:5396.005951",
+        "status": "held"
+      },
+      {
+        "name": "Betty Gap Trailhead",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "5398.005951",
+        "source_id": "usfs:facility:5398.005951",
+        "status": "held"
+      },
+      {
+        "name": "Dally Gap Trailhead",
+        "reason": null,
+        "site_cn": "5401.005951",
+        "source_id": "usfs:facility:5401.005951",
+        "status": "accepted"
+      },
+      {
+        "name": "Hickory Creek Trailhead",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "5402.005951",
+        "source_id": "usfs:facility:5402.005951",
+        "status": "held"
+      },
+      {
+        "name": "Davis Path Trailhead",
+        "reason": null,
+        "site_cn": "5422.007961",
+        "source_id": "usfs:facility:5422.007961",
+        "status": "accepted"
+      },
+      {
+        "name": "Dakota Point Picnic Ground",
+        "reason": "public_season_requires_separate_review",
+        "site_cn": "5426.001101",
+        "source_id": "usfs:facility:5426.001101",
+        "status": "held"
+      },
+      {
+        "name": "Lake Shore Picnic Ground",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "5431.001101",
+        "source_id": "usfs:facility:5431.001101",
+        "status": "held"
+      },
+      {
+        "name": "Veterans Point Picnic Ground And Trailhe",
+        "reason": "public_season_requires_separate_review",
+        "site_cn": "5439.001101",
+        "source_id": "usfs:facility:5439.001101",
+        "status": "held"
+      },
+      {
+        "name": "Boulder Hill Trailhead",
+        "reason": null,
+        "site_cn": "5496.001101",
+        "source_id": "usfs:facility:5496.001101",
+        "status": "accepted"
+      },
+      {
+        "name": "Brush Creek Trailhead",
+        "reason": null,
+        "site_cn": "5497.001101",
+        "source_id": "usfs:facility:5497.001101",
+        "status": "accepted"
+      },
+      {
+        "name": "Rapid Creek Trailhead",
+        "reason": null,
+        "site_cn": "5508.001101",
+        "source_id": "usfs:facility:5508.001101",
+        "status": "accepted"
+      },
+      {
+        "name": "Pinhoti 136/ Snake Creek Gap Trailhead",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "5570.005951",
+        "source_id": "usfs:facility:5570.005951",
+        "status": "held"
+      },
+      {
+        "name": "High Knob Trailhead",
+        "reason": null,
+        "site_cn": "5614203010602",
+        "source_id": "usfs:facility:5614203010602",
+        "status": "accepted"
+      },
+      {
+        "name": "Bald River Falls",
+        "reason": null,
+        "site_cn": "5634.006041",
+        "source_id": "usfs:facility:5634.006041",
+        "status": "accepted"
+      },
+      {
+        "name": "White Deer Lake Trailhead",
+        "reason": "known_public_negative_or_unrecognized_status",
+        "site_cn": "5803.007461",
+        "source_id": "usfs:facility:5803.007461",
+        "status": "held"
+      },
+      {
+        "name": "Lane Spring Picnic Area",
+        "reason": "public_identity_point_more_than_500m_away",
+        "site_cn": "5970565010602",
+        "source_id": "usfs:facility:5970565010602",
+        "status": "held"
+      },
+      {
+        "name": "Chriss Lake Trailhead",
+        "reason": null,
+        "site_cn": "6142.002941",
+        "source_id": "usfs:facility:6142.002941",
+        "status": "accepted"
+      },
+      {
+        "name": "Beech Bottom Trailhead",
+        "reason": null,
+        "site_cn": "6326.005951",
+        "source_id": "usfs:facility:6326.005951",
+        "status": "accepted"
+      },
+      {
+        "name": "Gum Springs Horse Trailhead",
+        "reason": null,
+        "site_cn": "6425.006181",
+        "source_id": "usfs:facility:6425.006181",
+        "status": "accepted"
+      },
+      {
+        "name": "Backbone Scenic Byway",
+        "reason": "native_arrival_not_within_75m_of_driving_destination",
+        "site_cn": "6447.006181",
+        "source_id": "usfs:facility:6447.006181",
+        "status": "held"
+      },
+      {
+        "name": "Balancing Rock Trailhead",
+        "reason": "contradictory_access_text",
+        "site_cn": "6733975010602",
+        "source_id": "usfs:facility:6733975010602",
+        "status": "held"
+      }
+    ],
+    "bytes": 12586815,
+    "rejects": {
+      "contradictory_access_text": 2,
+      "independent_arrival_review_hold: directions_name_a_different_arrival": 1,
+      "independent_arrival_review_hold: indistinguishable_shared_driving_directions_for_distant_native_points": 2,
+      "independent_arrival_review_hold: native_point_role_ambiguous_relative_to_separate_parking": 1,
+      "independent_arrival_review_hold: seasonal_approach_road_restriction_unresolved": 2,
+      "known_public_negative_or_unrecognized_status": 5,
+      "native_arrival_not_within_75m_of_driving_destination": 15,
+      "public_hours_not_complete_literal_daily_clocks": 4,
+      "public_identity_point_more_than_500m_away": 13,
+      "public_season_requires_separate_review": 9,
+      "unresolved_published_access_qualification": 3
+    },
+    "scanned": 197
+  }
+}

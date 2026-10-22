@@ -1,0 +1,653 @@
+[
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10053010393"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10261010337"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10879010474"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10880010474"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10882010474"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10884010474"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10885010474"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10886010474"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10888010474"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10889010474"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10890010474"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:10891010474"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11010010299"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11011010299"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11022010299"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11029010436"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11106010374"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11107010374"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11199010357"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11206010357"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11233010357"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11238010282"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11238010357"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11247010357"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11248010357"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11476010337"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11618.006441"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11657.001771"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11802010359"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11877010473"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:11980010491"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:12485010421"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:13048.003141"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:1415879010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:1415912010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:14165010386"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:14573010473"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:162454010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:162457010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:1711399010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:210226010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:236482010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:2477932010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:249226010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:249237010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:32614010299"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:38644010349"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:4222251010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:4222380010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:4295296010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:4311033010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:4311034010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:4362315010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:4379007010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:4379172010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5007.007841"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5025.004481"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5036.002901"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5055.007791"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5068.001771"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5070.000471"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5070.007791"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5071.000471"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5071.001771"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5074.000271"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5074.007791"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5079.000271"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5079.007791"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5084.007791"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5098.004481"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5106.001771"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5107.007841"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5109.000271"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5109.007841"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5110.007841"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5111.000271"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5111.007841"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5116.007841"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5169.006571"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5220.006791"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5224.007961"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5242.007541"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5243.007541"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5401.005951"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5422.007961"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5496.001101"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5497.001101"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5508.001101"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5614203010602"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:5634.006041"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:6142.002941"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:6326.005951"
+  },
+  {
+    "adapter": "usfs-current",
+    "conflicting_source_id": null,
+    "decision": "selected",
+    "reason": null,
+    "source_id": "usfs:facility:6425.006181"
+  }
+]

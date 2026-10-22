@@ -1,0 +1,1545 @@
+[
+  {
+    "bytes": 112790,
+    "checked_at": "2026-10-21T14:33:45.498057+00:00",
+    "id": "group-0:nhl-undercovered-0",
+    "path": "evidence/94d8024f7cdf6eb950144991504acd7040482ca000356dc3227a22cd97a08d2c.bin",
+    "sha256": "94d8024f7cdf6eb950144991504acd7040482ca000356dc3227a22cd97a08d2c",
+    "status": 200,
+    "url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=Is_NHL%3D%27X%27+AND+STATUS%3D%27Listed%27+AND+State+IN+%28%27CONNECTICUT%27%2C%27DELAWARE%27%2C%27RHODE+ISLAND%27%2C%27WEST+VIRGINIA%27%2C%27NEBRASKA%27%2C%27KANSAS%27%2C%27IOWA%27%2C%27MISSISSIPPI%27%2C%27LOUISIANA%27%2C%27OKLAHOMA%27%2C%27NEW+JERSEY%27%2C%27INDIANA%27%29&outFields=OBJECTID%2CNRIS_Refnum%2CRESNAME%2CState%2CSTATUS%2CIS_EXTANT%2CIs_NHL%2CCONSTRANT%2CAddress%2CCity&returnGeometry=true&outSR=4326&resultRecordCount=500"
+  },
+  {
+    "bytes": 99004,
+    "checked_at": "2026-10-21T14:34:40.486786+00:00",
+    "id": "group-0:operator-amc",
+    "path": "evidence/ccb63fa16a9a8969e4e69d200ad467f9e9bbce519ce84b72e57fe108aeec1a65.bin",
+    "sha256": "ccb63fa16a9a8969e4e69d200ad467f9e9bbce519ce84b72e57fe108aeec1a65",
+    "status": 200,
+    "url": "https://amcmuseum.org/visit/"
+  },
+  {
+    "bytes": 944815,
+    "checked_at": "2026-10-21T14:39:53.614718+00:00",
+    "id": "group-0:operator-crescent-carousel",
+    "path": "evidence/6c3a34065d8f832ebad16b65075eb41087eaa636d48892fa9df1c3c64732bc58.bin",
+    "sha256": "6c3a34065d8f832ebad16b65075eb41087eaa636d48892fa9df1c3c64732bc58",
+    "status": 200,
+    "url": "https://www.crescentparkcarousel.org/hours"
+  },
+  {
+    "bytes": 58209,
+    "checked_at": "2026-10-21T14:41:33.472791+00:00",
+    "id": "group-0:operator-ct-capitol-operator",
+    "path": "evidence/0512152eccea2b967b50a2c8347731b29413c93ddbe3fc0b3e6dabf5a7e21a17.bin",
+    "sha256": "0512152eccea2b967b50a2c8347731b29413c93ddbe3fc0b3e6dabf5a7e21a17",
+    "status": 200,
+    "url": "https://my.lwv.org/connecticut/capitol-information-and-tours"
+  },
+  {
+    "bytes": 216706,
+    "checked_at": "2026-10-21T14:34:48.532310+00:00",
+    "id": "group-0:operator-ctscience",
+    "path": "evidence/0272a42de40b28e4b28cc9c0ad5c25398933419d2fb2cffbb6674f4e27e5c5df.bin",
+    "sha256": "0272a42de40b28e4b28cc9c0ad5c25398933419d2fb2cffbb6674f4e27e5c5df",
+    "status": 200,
+    "url": "https://ctsciencecenter.org/visit/"
+  },
+  {
+    "bytes": 40767,
+    "checked_at": "2026-10-21T14:34:26.602529+00:00",
+    "id": "group-0:operator-delart",
+    "path": "evidence/51e972411611d24af175d3b426bc16254c93feed32b5a485a365eb45db599504.bin",
+    "sha256": "51e972411611d24af175d3b426bc16254c93feed32b5a485a365eb45db599504",
+    "status": 200,
+    "url": "https://delart.org/visit/"
+  },
+  {
+    "bytes": 79668,
+    "checked_at": "2026-10-21T14:39:38.974318+00:00",
+    "id": "group-0:operator-durham-hours",
+    "path": "evidence/973bfc7d776fbe23181506c1b4bb8eef1a320cbefd1ca1f8bcab74db8f70d9ef.bin",
+    "sha256": "973bfc7d776fbe23181506c1b4bb8eef1a320cbefd1ca1f8bcab74db8f70d9ef",
+    "status": 200,
+    "url": "https://durhammuseum.org/visit/hours-and-admission/"
+  },
+  {
+    "bytes": 216573,
+    "checked_at": "2026-10-21T14:34:29.984396+00:00",
+    "id": "group-0:operator-hagley",
+    "path": "evidence/06ac619d1c9a79659c6b19f033495e66b03ecb209cd0c44c4804b95f1d8b8024.bin",
+    "sha256": "06ac619d1c9a79659c6b19f033495e66b03ecb209cd0c44c4804b95f1d8b8024",
+    "status": 200,
+    "url": "https://www.hagley.org/hours-tickets"
+  },
+  {
+    "bytes": 239604,
+    "checked_at": "2026-10-21T14:35:28.562863+00:00",
+    "id": "group-0:operator-kansas-cosmosphere",
+    "path": "evidence/440b7aec12bbd0bf81dc8e9d49e03961f513e620556937cdd8e891d85f50062a.bin",
+    "sha256": "440b7aec12bbd0bf81dc8e9d49e03961f513e620556937cdd8e891d85f50062a",
+    "status": 200,
+    "url": "https://cosmo.org/visit/"
+  },
+  {
+    "bytes": 66716,
+    "checked_at": "2026-10-21T14:34:59.832829+00:00",
+    "id": "group-0:operator-marktwain",
+    "path": "evidence/0abdd54771c92ab13aba9d8700cd044b1c9f68f27c595327276ffaaa302a1bbb.bin",
+    "sha256": "0abdd54771c92ab13aba9d8700cd044b1c9f68f27c595327276ffaaa302a1bbb",
+    "status": 200,
+    "url": "https://marktwainhouse.org/visit/"
+  },
+  {
+    "bytes": 138246,
+    "checked_at": "2026-10-21T14:34:45.595911+00:00",
+    "id": "group-0:operator-mysticseaport",
+    "path": "evidence/319025379a65797eb57278f13459902dc8ce72859b30b8cf5f8027f7c4b6a978.bin",
+    "sha256": "319025379a65797eb57278f13459902dc8ce72859b30b8cf5f8027f7c4b6a978",
+    "status": 200,
+    "url": "https://mysticseaport.org/visit/"
+  },
+  {
+    "bytes": 57817,
+    "checked_at": "2026-10-21T14:34:22.448271+00:00",
+    "id": "group-0:operator-nbmaa",
+    "path": "evidence/6af65dff3a39e00307dc8985ab12500df509f6223df77d43f3992267c25f77df.bin",
+    "sha256": "6af65dff3a39e00307dc8985ab12500df509f6223df77d43f3992267c25f77df",
+    "status": 200,
+    "url": "https://www.nbmaa.org/visit"
+  },
+  {
+    "bytes": 396023,
+    "checked_at": "2026-10-21T14:39:40.691163+00:00",
+    "id": "group-0:operator-nebraska-museum",
+    "path": "evidence/21712260c52ea3f19407dd985a9f60e57752d6a57074c7be47d064426b156c50.bin",
+    "sha256": "21712260c52ea3f19407dd985a9f60e57752d6a57074c7be47d064426b156c50",
+    "status": 200,
+    "url": "https://history.nebraska.gov/museum/"
+  },
+  {
+    "bytes": 148810,
+    "checked_at": "2026-10-21T14:39:50.548465+00:00",
+    "id": "group-0:operator-providence-athenaeum",
+    "path": "evidence/94d51c48d41ac717e26ce6f7ae2de4bfe82f807479581752b05bd5a9a7c5a155.bin",
+    "sha256": "94d51c48d41ac717e26ce6f7ae2de4bfe82f807479581752b05bd5a9a7c5a155",
+    "status": 200,
+    "url": "https://providenceathenaeum.org/visit/plan-your-visit/"
+  },
+  {
+    "bytes": 164628,
+    "checked_at": "2026-10-21T14:35:03.863715+00:00",
+    "id": "group-0:operator-stowe",
+    "path": "evidence/49abf39b15c0ddfe445cb3a262536583eaa4600c5d96f781faf86765d17f10dc.bin",
+    "sha256": "49abf39b15c0ddfe445cb3a262536583eaa4600c5d96f781faf86765d17f10dc",
+    "status": 200,
+    "url": "https://harrietbeecherstowecenter.org/visit/"
+  },
+  {
+    "bytes": 88616,
+    "checked_at": "2026-10-21T14:34:34.042292+00:00",
+    "id": "group-0:operator-winterthur",
+    "path": "evidence/bb3810703f44112a69a565655dc38acd9ab9ce86239667e4a0d6b50ac3f21b7b.bin",
+    "sha256": "bb3810703f44112a69a565655dc38acd9ab9ce86239667e4a0d6b50ac3f21b7b",
+    "status": 200,
+    "url": "https://www.winterthur.org/visit/"
+  },
+  {
+    "bytes": 86186,
+    "checked_at": "2026-10-21T14:35:41.014783+00:00",
+    "id": "group-0:operator-wv-state-museum",
+    "path": "evidence/f535dc03e07aac2b863ee4ef49c729a855d74bf13b3374aabd516b250cd9cd27.bin",
+    "sha256": "f535dc03e07aac2b863ee4ef49c729a855d74bf13b3374aabd516b250cd9cd27",
+    "status": 200,
+    "url": "https://wvculture.org/explore/wv-state-museum/"
+  },
+  {
+    "bytes": 116492,
+    "checked_at": "2026-10-21T14:35:12.272594+00:00",
+    "id": "group-0:operator-zwaanendael",
+    "path": "evidence/5b9e3907050da34d1311c83dcbd0201b022617315aad175973944e9d388d9ee1.bin",
+    "sha256": "5b9e3907050da34d1311c83dcbd0201b022617315aad175973944e9d388d9ee1",
+    "status": 200,
+    "url": "https://history.delaware.gov/zwaanendael-museum/"
+  },
+  {
+    "bytes": 38448,
+    "checked_at": "2026-10-21T05:00:00.297924+00:00",
+    "id": "group-0:rights-nps",
+    "path": "evidence/1b3b523964301d1c30ec8d6243cc551e99cac340b187c8883b356d93bea5e363.bin",
+    "sha256": "1b3b523964301d1c30ec8d6243cc551e99cac340b187c8883b356d93bea5e363",
+    "status": 200,
+    "url": "https://www.nps.gov/aboutus/disclaimer.htm"
+  },
+  {
+    "bytes": 106051,
+    "checked_at": "2026-10-21T05:00:38.667446+00:00",
+    "id": "group-0:rights-wikidata",
+    "path": "evidence/3e5d1bc82606c2ca57c41baaaa254a6b2de948fea61b8ef6ae1fe050d4c9416d.bin",
+    "sha256": "3e5d1bc82606c2ca57c41baaaa254a6b2de948fea61b8ef6ae1fe050d4c9416d",
+    "status": 200,
+    "url": "https://www.wikidata.org/wiki/Wikidata:Copyright"
+  },
+  {
+    "bytes": 30306,
+    "checked_at": "2026-10-21T14:32:59.283361+00:00",
+    "id": "group-0:wd-museum-box-ct",
+    "path": "evidence/9ac92c127695b2ecccf433f390ef315574049fd4c9d23e90d7d7de1747f98263.bin",
+    "sha256": "9ac92c127695b2ecccf433f390ef315574049fd4c9d23e90d7d7de1747f98263",
+    "status": 200,
+    "url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+SERVICE+wikibase%3Abox+%7B+%3Fitem+wdt%3AP625+%3Fcoord.+bd%3AserviceParam+wikibase%3AcornerWest+%22Point%28-73.73+40.95%29%22%5E%5Egeo%3AwktLiteral%3B+wikibase%3AcornerEast+%22Point%28-71.78+42.06%29%22%5E%5Egeo%3AwktLiteral.+%7D+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ33506%3B+wdt%3AP17+wd%3AQ30.+OPTIONAL+%7B+%3Fitem+wdt%3AP856+%3Fwebsite.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+60&format=json"
+  },
+  {
+    "bytes": 14130,
+    "checked_at": "2026-10-21T14:33:06.964427+00:00",
+    "id": "group-0:wd-museum-box-de",
+    "path": "evidence/e9220bebd62f9f32b6e286e9ff1ce25daf1ff6fbdc73183c7de51677943e6987.bin",
+    "sha256": "e9220bebd62f9f32b6e286e9ff1ce25daf1ff6fbdc73183c7de51677943e6987",
+    "status": 200,
+    "url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+SERVICE+wikibase%3Abox+%7B+%3Fitem+wdt%3AP625+%3Fcoord.+bd%3AserviceParam+wikibase%3AcornerWest+%22Point%28-75.79+38.44%29%22%5E%5Egeo%3AwktLiteral%3B+wikibase%3AcornerEast+%22Point%28-75.03+39.85%29%22%5E%5Egeo%3AwktLiteral.+%7D+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ33506%3B+wdt%3AP17+wd%3AQ30.+OPTIONAL+%7B+%3Fitem+wdt%3AP856+%3Fwebsite.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+40&format=json"
+  },
+  {
+    "bytes": 10204,
+    "checked_at": "2026-10-21T14:33:21.889487+00:00",
+    "id": "group-0:wd-museum-box-ks",
+    "path": "evidence/7581268153e4f22ee515c311ba4d659a52f7b42094865c6a23ba7f60aa28f1ca.bin",
+    "sha256": "7581268153e4f22ee515c311ba4d659a52f7b42094865c6a23ba7f60aa28f1ca",
+    "status": 200,
+    "url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+SERVICE+wikibase%3Abox+%7B+%3Fitem+wdt%3AP625+%3Fcoord.+bd%3AserviceParam+wikibase%3AcornerWest+%22Point%28-102.06+37.0%29%22%5E%5Egeo%3AwktLiteral%3B+wikibase%3AcornerEast+%22Point%28-94.58+40.0%29%22%5E%5Egeo%3AwktLiteral.+%7D+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ33506%3B+wdt%3AP17+wd%3AQ30.+OPTIONAL+%7B+%3Fitem+wdt%3AP856+%3Fwebsite.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+20&format=json"
+  },
+  {
+    "bytes": 1568,
+    "checked_at": "2026-10-21T14:46:34.232384+00:00",
+    "id": "group-0:wd-museum-named-ne",
+    "path": "evidence/a0c474923d3e75b897d817f639c1bd20d0c515d1fe5c3d89562936ac1f4d0636.bin",
+    "sha256": "a0c474923d3e75b897d817f639c1bd20d0c515d1fe5c3d89562936ac1f4d0636",
+    "status": 200,
+    "url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+VALUES+%3FitemLabel+%7B+%22Strategic+Air+Command+and+Aerospace+Museum%22%40en+%22Strategic+Air+Command+%26+Aerospace+Museum%22%40en+%22Durham+Museum%22%40en+%22The+Durham+Museum%22%40en+%22Nebraska+History+Museum%22%40en+%7D+%3Fitem+rdfs%3Alabel+%3FitemLabel%3B+wdt%3AP625+%3Fcoord.+OPTIONAL+%7B+%3Fitem+wdt%3AP856+%3Fwebsite.+%7D+%7D+LIMIT+10&format=json"
+  },
+  {
+    "bytes": 85969,
+    "checked_at": "2026-10-21T14:38:37.232457+00:00",
+    "content_type": "text/html; charset=utf-8",
+    "etag": null,
+    "final_url": "https://www.alapark.com/parks/cathedral-caverns-state-park",
+    "id": "group-1:operator-Q1050851",
+    "last_modified": null,
+    "path": "evidence/2eabaa85cf833b655e6a366099be39ce53df45aa8b14fe6f4ca0d48e06e5c657.bin",
+    "sha256": "2eabaa85cf833b655e6a366099be39ce53df45aa8b14fe6f4ca0d48e06e5c657",
+    "status": 200,
+    "url": "https://www.alapark.com/parks/cathedral-caverns-state-park"
+  },
+  {
+    "bytes": 111473,
+    "checked_at": "2026-10-21T14:37:10.044322+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://ncbg.unc.edu/visit/",
+    "id": "group-1:operator-Q1099139",
+    "last_modified": null,
+    "path": "evidence/7170a7169a0690efb58d99e1b6d03ccaf5eb9b81f80015485b3a771c13b92d95.bin",
+    "sha256": "7170a7169a0690efb58d99e1b6d03ccaf5eb9b81f80015485b3a771c13b92d95",
+    "status": 200,
+    "url": "https://ncbg.unc.edu/visit/"
+  },
+  {
+    "bytes": 89459,
+    "checked_at": "2026-10-21T14:37:36.425055+00:00",
+    "content_type": "text/html; charset=utf-8",
+    "etag": null,
+    "final_url": "https://www.accgov.com/bearhollow",
+    "id": "group-1:operator-Q113867110",
+    "last_modified": null,
+    "path": "evidence/c7d392f41c75e0711ac1ede371e0f5d1ccabaf129b8b5a1019ecd94fb2cb1db8.bin",
+    "sha256": "c7d392f41c75e0711ac1ede371e0f5d1ccabaf129b8b5a1019ecd94fb2cb1db8",
+    "status": 200,
+    "url": "https://www.accgov.com/bearhollow"
+  },
+  {
+    "bytes": 174628,
+    "checked_at": "2026-10-21T14:38:31.316339+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://yerkesobservatory.org/tour-and-event-tickets/",
+    "id": "group-1:operator-Q14310",
+    "last_modified": null,
+    "path": "evidence/4a2939f24097baaf7c6c79fbbd6078a6564c7d682f0316a5cc95ff9ae200d820.bin",
+    "sha256": "4a2939f24097baaf7c6c79fbbd6078a6564c7d682f0316a5cc95ff9ae200d820",
+    "status": 200,
+    "url": "https://yerkesobservatory.org/visit/"
+  },
+  {
+    "bytes": 156875,
+    "checked_at": "2026-10-21T14:37:14.356860+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://myriadgardens.org/",
+    "id": "group-1:operator-Q14708625",
+    "last_modified": null,
+    "path": "evidence/635ed9534f377188a04ac31ca5bda42e4808a73e673fd2335505127f1d193c66.bin",
+    "sha256": "635ed9534f377188a04ac31ca5bda42e4808a73e673fd2335505127f1d193c66",
+    "status": 200,
+    "url": "https://myriadgardens.org/"
+  },
+  {
+    "bytes": 118218,
+    "checked_at": "2026-10-21T14:37:43.022076+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://savingcranes.org/visit/",
+    "id": "group-1:operator-Q1666487",
+    "last_modified": "Wed, 21 Oct 2026 14:37:43 GMT",
+    "path": "evidence/a29bf2e8a4d72e1621002f55ab5418635ab2cb2ad5bb763f4beffc2f99ec4beb.bin",
+    "sha256": "a29bf2e8a4d72e1621002f55ab5418635ab2cb2ad5bb763f4beffc2f99ec4beb",
+    "status": 200,
+    "url": "https://savingcranes.org/plan-a-visit/"
+  },
+  {
+    "bytes": 123518,
+    "checked_at": "2026-10-21T14:37:17.627210+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://tulsabotanic.org/",
+    "id": "group-1:operator-Q16902084",
+    "last_modified": null,
+    "path": "evidence/8c155fe05253395b8583d09ed9bc4c2ab0b3e72e537ea11292beaf2e5497821a.bin",
+    "sha256": "8c155fe05253395b8583d09ed9bc4c2ab0b3e72e537ea11292beaf2e5497821a",
+    "status": 200,
+    "url": "https://www.tulsabotanic.org/"
+  },
+  {
+    "bytes": 77292,
+    "checked_at": "2026-10-21T14:38:25.268897+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://www.mccarthyobservatory.org/",
+    "id": "group-1:operator-Q20757604",
+    "last_modified": null,
+    "path": "evidence/08c4d7a628ad7ae092c6c84deac8b7f411804e217c699fccb8f58be15fd03df3.bin",
+    "sha256": "08c4d7a628ad7ae092c6c84deac8b7f411804e217c699fccb8f58be15fd03df3",
+    "status": 200,
+    "url": "https://www.mccarthyobservatory.org/"
+  },
+  {
+    "bytes": 590795,
+    "checked_at": "2026-10-21T14:38:46.056499+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": "W/\"37e81e8e63cc63bf0ce1d632346e30d5\"",
+    "final_url": "https://www.prehistoricgardens.com/",
+    "id": "group-1:operator-Q48803945",
+    "last_modified": null,
+    "path": "evidence/ec8210a7103474471a40dee35567c9cbd006a0f06cef931fa0c867da097faef8.bin",
+    "sha256": "ec8210a7103474471a40dee35567c9cbd006a0f06cef931fa0c867da097faef8",
+    "status": 200,
+    "url": "https://www.prehistoricgardens.com/"
+  },
+  {
+    "bytes": 140563,
+    "checked_at": "2026-10-21T14:37:24.413374+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://bellingrath.org/",
+    "id": "group-1:operator-Q4884044",
+    "last_modified": null,
+    "path": "evidence/3b7ffebb4dd0ea6ca9fad7c7777c6e45a2007b7402264c802e49fbbbf20c6e6c.bin",
+    "sha256": "3b7ffebb4dd0ea6ca9fad7c7777c6e45a2007b7402264c802e49fbbbf20c6e6c",
+    "status": 200,
+    "url": "https://bellingrath.org/"
+  },
+  {
+    "bytes": 160849,
+    "checked_at": "2026-10-21T14:37:25.864671+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://bernheim.org/visit/",
+    "id": "group-1:operator-Q4894262",
+    "last_modified": "Wed, 21 Oct 2026 12:02:47 GMT",
+    "path": "evidence/38fc34e24a49ae70ccb5c4ce382bc4838bd0f2e55c381d636a568bfa89ddb82c.bin",
+    "sha256": "38fc34e24a49ae70ccb5c4ce382bc4838bd0f2e55c381d636a568bfa89ddb82c",
+    "status": 200,
+    "url": "https://bernheim.org/plan-your-visit/"
+  },
+  {
+    "bytes": 199401,
+    "checked_at": "2026-10-21T14:37:27.973815+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://bbgardens.org/visit/",
+    "id": "group-1:operator-Q4916622",
+    "last_modified": null,
+    "path": "evidence/68f789f25d60b99e598623238bfe22f5fc611b2fd7df2b142b57c224d4c2be54.bin",
+    "sha256": "68f789f25d60b99e598623238bfe22f5fc611b2fd7df2b142b57c224d4c2be54",
+    "status": 200,
+    "url": "https://bbgardens.org/visit/"
+  },
+  {
+    "bytes": 153897,
+    "checked_at": "2026-10-21T14:38:40.428718+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://www.caveofthemounds.com/plan-your-visit/",
+    "id": "group-1:operator-Q5054958",
+    "last_modified": null,
+    "path": "evidence/9aca8021165e96d5d51b597e2d52496ad283231604d4245730e7bd8b1c587b82.bin",
+    "sha256": "9aca8021165e96d5d51b597e2d52496ad283231604d4245730e7bd8b1c587b82",
+    "status": 200,
+    "url": "https://www.caveofthemounds.com/plan-your-visit/"
+  },
+  {
+    "bytes": 25628,
+    "checked_at": "2026-10-21T14:37:29.857407+00:00",
+    "content_type": "text/html; charset=utf-8",
+    "etag": null,
+    "final_url": "https://crosbyarboretum.msstate.edu/2026-blue-star-museum",
+    "id": "group-1:operator-Q5188024",
+    "last_modified": null,
+    "path": "evidence/c1332a06161aadb4a137785e4e6a09b51c9b2eaf22d8124762902274e288b681.bin",
+    "sha256": "c1332a06161aadb4a137785e4e6a09b51c9b2eaf22d8124762902274e288b681",
+    "status": 200,
+    "url": "https://crosbyarboretum.msstate.edu/visit"
+  },
+  {
+    "bytes": 176206,
+    "checked_at": "2026-10-21T14:38:44.347612+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://essexsteamtrain.com/",
+    "id": "group-1:operator-Q7912179",
+    "last_modified": "Wed, 21 Oct 2026 14:21:52 GMT",
+    "path": "evidence/c899d865150489fbf2af80bbaa23be9af707c6c8948a49c7cafb7c31da8eb218.bin",
+    "sha256": "c899d865150489fbf2af80bbaa23be9af707c6c8948a49c7cafb7c31da8eb218",
+    "status": 200,
+    "url": "https://essexsteamtrain.com/"
+  },
+  {
+    "bytes": 69582,
+    "checked_at": "2026-10-21T14:31:47.007034+00:00",
+    "content_type": "application/sparql-results+json;charset=utf-8",
+    "etag": null,
+    "final_url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ167346%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+130&format=json",
+    "id": "group-1:wd-gardens",
+    "last_modified": null,
+    "path": "evidence/a21e583732f39a5728239c5f23d8b0daab256e5528c0d2a5b9049d2470d7e849.bin",
+    "sha256": "a21e583732f39a5728239c5f23d8b0daab256e5528c0d2a5b9049d2470d7e849",
+    "status": 200,
+    "url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ167346%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+130&format=json"
+  },
+  {
+    "bytes": 22094,
+    "checked_at": "2026-10-21T14:33:07.895256+00:00",
+    "content_type": "application/sparql-results+json;charset=utf-8",
+    "etag": null,
+    "final_url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ420962%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+70&format=json",
+    "id": "group-1:wd-heritage-rail",
+    "last_modified": null,
+    "path": "evidence/0c99db96b3ebceb8b022f9aa5ebf832d23c0c3d1d3d907e6b718bc6ac13d17bf.bin",
+    "sha256": "0c99db96b3ebceb8b022f9aa5ebf832d23c0c3d1d3d907e6b718bc6ac13d17bf",
+    "status": 200,
+    "url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ420962%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+70&format=json"
+  },
+  {
+    "bytes": 40643,
+    "checked_at": "2026-10-21T14:31:52.465509+00:00",
+    "content_type": "application/sparql-results+json;charset=utf-8",
+    "etag": null,
+    "final_url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ62832%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+75&format=json",
+    "id": "group-1:wd-observatories",
+    "last_modified": null,
+    "path": "evidence/090a16e517ce155647e7e08795be0e9a295763b9803bec45f9bd4092ff5a53c2.bin",
+    "sha256": "090a16e517ce155647e7e08795be0e9a295763b9803bec45f9bd4092ff5a53c2",
+    "status": 200,
+    "url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ62832%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+75&format=json"
+  },
+  {
+    "bytes": 12164,
+    "checked_at": "2026-10-21T14:33:06.471379+00:00",
+    "content_type": "application/sparql-results+json;charset=utf-8",
+    "etag": null,
+    "final_url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ14915208%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+80&format=json",
+    "id": "group-1:wd-roadside",
+    "last_modified": null,
+    "path": "evidence/3eeeeeb787a396b51b9da2fcd464797df8f206b3fcdeebb601c5b46fb2161bca.bin",
+    "sha256": "3eeeeeb787a396b51b9da2fcd464797df8f206b3fcdeebb601c5b46fb2161bca",
+    "status": 200,
+    "url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ14915208%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+80&format=json"
+  },
+  {
+    "bytes": 29687,
+    "checked_at": "2026-10-21T14:33:04.569526+00:00",
+    "content_type": "application/sparql-results+json;charset=utf-8",
+    "etag": null,
+    "final_url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ2232001%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+60&format=json",
+    "id": "group-1:wd-show-caves-correct",
+    "last_modified": null,
+    "path": "evidence/a2c8cd105b9bf49507d8e622432b01e616b3b606c7c14f7adbd7e627fe028456.bin",
+    "sha256": "a2c8cd105b9bf49507d8e622432b01e616b3b606c7c14f7adbd7e627fe028456",
+    "status": 200,
+    "url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ2232001%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+60&format=json"
+  },
+  {
+    "bytes": 36752,
+    "checked_at": "2026-10-21T14:31:49.975105+00:00",
+    "content_type": "application/sparql-results+json;charset=utf-8",
+    "etag": null,
+    "final_url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ43501%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+70&format=json",
+    "id": "group-1:wd-zoos",
+    "last_modified": null,
+    "path": "evidence/be3921ed1e8c52e0fd7eaa391b4328f041dcd55c0fc1293ab42f561d8a7a1614.bin",
+    "sha256": "be3921ed1e8c52e0fd7eaa391b4328f041dcd55c0fc1293ab42f561d8a7a1614",
+    "status": 200,
+    "url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ43501%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+70&format=json"
+  },
+  {
+    "bytes": 106051,
+    "checked_at": "2026-10-21T14:33:02.301533+00:00",
+    "content_type": "text/html; charset=UTF-8",
+    "etag": null,
+    "final_url": "https://www.wikidata.org/wiki/Wikidata:Copyright",
+    "id": "group-1:wikidata-cc0",
+    "last_modified": "Tue, 06 Oct 2026 16:32:19 GMT",
+    "path": "evidence/e0744a22fe6ed5e46fa537e41625f26f560c9eb1a34cb28db4ef52b03a2f618e.bin",
+    "sha256": "e0744a22fe6ed5e46fa537e41625f26f560c9eb1a34cb28db4ef52b03a2f618e",
+    "status": 200,
+    "url": "https://www.wikidata.org/wiki/Wikidata:Copyright"
+  },
+  {
+    "bytes": 162647,
+    "checked_at": "2026-10-21T14:30:51.897081+00:00",
+    "id": "group-2:blm-rights",
+    "path": "evidence/ff96b94f8dda0b7531bda06b18e8b94bc1b362a749ad11bf613ec8acd5c91c32.bin",
+    "sha256": "ff96b94f8dda0b7531bda06b18e8b94bc1b362a749ad11bf613ec8acd5c91c32",
+    "status": 200,
+    "url": "https://www.blm.gov/info/notices/drctp-policy"
+  },
+  {
+    "bytes": 32254,
+    "checked_at": "2026-10-21T14:30:47.208624+00:00",
+    "id": "group-2:blm-visitor-centers",
+    "path": "evidence/16567d07243917d80ec0c19425b3197861d21665f1b5a0b52e4e7e32ca2b4a13.bin",
+    "sha256": "16567d07243917d80ec0c19425b3197861d21665f1b5a0b52e4e7e32ca2b4a13",
+    "status": 200,
+    "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recs_pts/FeatureServer/15/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=100&orderByFields=OBJECTID&outSR=4326"
+  },
+  {
+    "bytes": 54857,
+    "checked_at": "2026-10-21T14:39:40.826615+00:00",
+    "id": "group-2:doi-copyright",
+    "path": "evidence/af669cd6a33bae15fe9dd714a344b166c3c47e0495dea682c471f5ac804d88c0.bin",
+    "sha256": "af669cd6a33bae15fe9dd714a344b166c3c47e0495dea682c471f5ac804d88c0",
+    "status": 200,
+    "url": "https://www.doi.gov/copyright"
+  },
+  {
+    "bytes": 12962,
+    "checked_at": "2026-10-21T14:30:45.926076+00:00",
+    "id": "group-2:fws-ct-de-public-access",
+    "path": "evidence/b75698e914397f70e2aa240c57a2d13677d6704091250a36a9c255ce8c179dad.bin",
+    "sha256": "b75698e914397f70e2aa240c57a2d13677d6704091250a36a9c255ce8c179dad",
+    "status": 200,
+    "url": "https://services.arcgis.com/QVENGdaPbd4LUkLV/arcgis/rest/services/FWS_HQ_Tran_Gate_Access_PublicView/FeatureServer/0/query?f=json&where=Public_Use%3D%27Public+Use%27+AND+Status%3D%27Valid%27+AND+StateAbbr+IN+%28%27CT%27%2C%27DE%27%29&outFields=OBJECTID%2COrgCode%2COrgName%2CStateAbbr%2CGate_Name%2CPublic_Use%2CAcc_Type%2COwner%2COrigin%2CGlobalID%2CEditDate%2CComments&resultRecordCount=50&orderByFields=OBJECTID&outSR=4326"
+  },
+  {
+    "bytes": 150062,
+    "checked_at": "2026-10-21T14:29:55.329108+00:00",
+    "id": "group-2:fws-public-visitor-buildings",
+    "path": "evidence/e8dc4a64857815b12e149bc69d6cf21ce3a12035466aab17945c3858371d97af.bin",
+    "sha256": "e8dc4a64857815b12e149bc69d6cf21ce3a12035466aab17945c3858371d97af",
+    "status": 200,
+    "url": "https://services.arcgis.com/QVENGdaPbd4LUkLV/arcgis/rest/services/FWS_HQ_Fac_Building_Pt_PubicView/FeatureServer/0/query?f=json&where=Pub_Use%3D%27Public+Use%27+AND+Status%3D%27Valid%27+AND+%28UPPER%28Bld_Name%29+LIKE+%27%25VISITOR%25%27+OR+UPPER%28Bld_Name%29+LIKE+%27%25EDUCATION%25%27+OR+UPPER%28Bld_Name%29+LIKE+%27%25INTERPRET%25%27%29&outFields=OBJECTID%2COrgCode%2COrgName%2CStateAbbr%2CBld_Name%2CPub_Use%2CStatus%2COwner%2COrigin%2CGlobalID%2CEditDate%2CComments%2CCmplx_Name%2CUnit_Name&resultRecordCount=300&orderByFields=OBJECTID&outSR=4326"
+  },
+  {
+    "bytes": 12134,
+    "checked_at": "2026-10-21T14:41:45.940778+00:00",
+    "id": "group-2:ny-market-selected-native-ids",
+    "path": "evidence/c58cc8f93282894b4f2e5af715aed56b58a26bb92dc24793277cbd97ebe82bcb.bin",
+    "sha256": "c58cc8f93282894b4f2e5af715aed56b58a26bb92dc24793277cbd97ebe82bcb",
+    "status": 200,
+    "url": "https://data.ny.gov/resource/qq4h-8p86.json?%24limit=100&%24order=county%2Cmarket_name&%24select=%3Aid%2Ccounty%2Cmarket_name%2Cmarket_location%2Caddress_line_1%2Ccity%2Cstate%2Czip%2Cmarket_link%2Coperation_hours%2Coperation_season%2Clatitude%2Clongitude&%24where=market_name+IN+%28%27Altamont+Orchards+Farm+Stand%27%2C%27Owen+Orchards+Farm+Stand%27%2C%27Northern+Orchard+Farm+Stand%27%2C%27Bellinger%27%27s+Orchard+Farm+Stand%27%2C%27Sleepy+Hills+Orchard+Farm+Stand%27%2C%27Middlefield+Orchard+Farm+Stand%27%2C%27Bowman+Orchards+Farm+Stand%27%2C%27Harvest+Home+St.+Mary%27%27s+Park+Farm+Stand%27%2C%27Russell+Farms+Farm+Stand%27%2C%27Canticle+Farm+Stand%27%2C%27Abers+Acres+Farm+Stand%27%2C%27Greene+Pasture+Ranch+Farm+Stand%27%2C%27Scarecrow+Farm+Stand%27%2C%27Catskill+Cattle+Company+Farm+Stand%27%2C%27Dykeman+Farm+Farm+Stand%27%2C%275+Loaves+Farm+Stand-Delavan+Ave%27%2C%27Gray%27%27s+Garden+%26+Greenhouse+Farm+Stand%27%2C%27Black+Horse+Farms+Farm+Stand%27%2C%27Northshire+Farm+Farm+Stand%27%2C%27Windswept+Meadows+Farm+Stand%27%2C%27Harvest+Home+Brower+Park+Farm+Stand%27%2C%27Colwell%27%27s+Farm+Stand%27%2C%27Dizzy+Lizzie%27%27s+Farm+Farm+Stand%27%2C%27Brightlys+Farms+Farm+Stand%27%2C%27Crossroads+Farm+Farm+Stand%27%2C%27Fleckenstein+Farms+Farm+Stand%27%2C%27Horn%27%27s+Family+Farm+Stand%27%2C%27Brady+Farm+Ford+Ave+Farm+Stand%27%2C%27Navarras+Farm+%26+Greenhouse+Farm+Stand%27%2C%27Guppy%27%27s+Berry+Farm+Farm+Stand%27%29"
+  },
+  {
+    "bytes": 128817,
+    "checked_at": "2026-10-21T14:37:30.149234+00:00",
+    "id": "group-2:ny-rights-pdf",
+    "path": "evidence/9437c849705d58df008f01fc23f404444becce6b86676adc3974f9160a4cb650.bin",
+    "sha256": "9437c849705d58df008f01fc23f404444becce6b86676adc3974f9160a4cb650",
+    "status": 200,
+    "url": "https://data.ny.gov/api/views/77gx-ii52/files/ef0c1840-ad54-4240-92fd-6397c49fde46?download=true&filename=OPEN-NY_20Terms_20of_20Use.pdf"
+  },
+  {
+    "bytes": 169882,
+    "checked_at": "2026-10-21T14:38:47.151032+00:00",
+    "id": "group-2:operator-blm-56662-resolved",
+    "path": "evidence/adb894eedcda61c3e7a4150c659a46d3bbfed359b7fadb21f578391c9273ef96.bin",
+    "sha256": "adb894eedcda61c3e7a4150c659a46d3bbfed359b7fadb21f578391c9273ef96",
+    "status": 200,
+    "url": "https://www.blm.gov/programs/national-conservation-lands/montana-dakotas/upper-missouri-river-breaks/interpretive-center"
+  },
+  {
+    "bytes": 180588,
+    "checked_at": "2026-10-21T14:35:15.979772+00:00",
+    "id": "group-2:operator-blm-66282",
+    "path": "evidence/5c8ff051f44885e6be2bed08cebc9c0ca387f2b4935e68d06cdd70949b6e6712.bin",
+    "sha256": "5c8ff051f44885e6be2bed08cebc9c0ca387f2b4935e68d06cdd70949b6e6712",
+    "status": 200,
+    "url": "https://www.blm.gov/visit/kanab-visitor-center"
+  },
+  {
+    "bytes": 182549,
+    "checked_at": "2026-10-21T14:35:17.206908+00:00",
+    "id": "group-2:operator-blm-66307",
+    "path": "evidence/5453bd03b96ac925a32742e4add2fd77713305245e00440901eda5225d582875.bin",
+    "sha256": "5453bd03b96ac925a32742e4add2fd77713305245e00440901eda5225d582875",
+    "status": 200,
+    "url": "https://www.blm.gov/learn/interpretive-centers/GSENM_VisitorCenters"
+  },
+  {
+    "bytes": 176051,
+    "checked_at": "2026-10-21T14:38:44.598926+00:00",
+    "id": "group-2:operator-blm-69735-resolved",
+    "path": "evidence/b608304e8e0e9b53c2bdf22bd801bcd7eb5abfa1104d0d6e1a83be3c3e3de876.bin",
+    "sha256": "b608304e8e0e9b53c2bdf22bd801bcd7eb5abfa1104d0d6e1a83be3c3e3de876",
+    "status": 200,
+    "url": "https://www.blm.gov/visit/california-trail-center"
+  },
+  {
+    "bytes": 180967,
+    "checked_at": "2026-10-21T14:35:02.623657+00:00",
+    "id": "group-2:operator-blm-78329",
+    "path": "evidence/448efe5e200ac585abbbb88d66916d01197c543127f09ced614c3e6f659e4c61.bin",
+    "sha256": "448efe5e200ac585abbbb88d66916d01197c543127f09ced614c3e6f659e4c61",
+    "status": 200,
+    "url": "https://www.blm.gov/learn/interpretive-centers/national-historic-trails-interpretive-center"
+  },
+  {
+    "bytes": 211805,
+    "checked_at": "2026-10-21T14:35:19.799924+00:00",
+    "id": "group-2:operator-blm-80777",
+    "path": "evidence/6d2e52e562b34d9553c7a2e4c2dcd6bfd51a47deab45665932a3c6ef88723024.bin",
+    "sha256": "6d2e52e562b34d9553c7a2e4c2dcd6bfd51a47deab45665932a3c6ef88723024",
+    "status": 200,
+    "url": "https://www.blm.gov/visit/wild-rivers-recreation-area"
+  },
+  {
+    "bytes": 174040,
+    "checked_at": "2026-10-21T14:35:22.533632+00:00",
+    "id": "group-2:operator-blm-80860",
+    "path": "evidence/25187fca05f36638a181bc155948c9c0d335deae52e42a2e63726c8a81147b1a.bin",
+    "sha256": "25187fca05f36638a181bc155948c9c0d335deae52e42a2e63726c8a81147b1a",
+    "status": 200,
+    "url": "https://www.blm.gov/visit/dripping-springs-natural-area"
+  },
+  {
+    "bytes": 171498,
+    "checked_at": "2026-10-21T14:35:04.760438+00:00",
+    "id": "group-2:operator-blm-83484",
+    "path": "evidence/e2d65e52e929b99a58cfd98239d6c63554f0e3e627098a6248d527e576d0d9f0.bin",
+    "sha256": "e2d65e52e929b99a58cfd98239d6c63554f0e3e627098a6248d527e576d0d9f0",
+    "status": 200,
+    "url": "https://www.blm.gov/visit/national-bighorn-sheep-interpretive-center-and-whiskey-mount"
+  },
+  {
+    "bytes": 72604,
+    "checked_at": "2026-10-21T14:37:13.204776+00:00",
+    "id": "group-2:operator-food-20d5e3f4f8adb1c1",
+    "path": "evidence/a191c77a7c7089bd0d4b98c9010d031477effd263d32fedf5144d900c3bfd364.bin",
+    "sha256": "a191c77a7c7089bd0d4b98c9010d031477effd263d32fedf5144d900c3bfd364",
+    "status": 200,
+    "url": "https://www.keeneyswindsweptmeadowsfarm.com"
+  },
+  {
+    "bytes": 63026,
+    "checked_at": "2026-10-21T14:36:52.916440+00:00",
+    "id": "group-2:operator-food-2d943054239908e0",
+    "path": "evidence/add981a57ecf59a0e9a54760791019401041865061d1508f3f8948453767b10f.bin",
+    "sha256": "add981a57ecf59a0e9a54760791019401041865061d1508f3f8948453767b10f",
+    "status": 200,
+    "url": "https://www.abersacres.com"
+  },
+  {
+    "bytes": 198606,
+    "checked_at": "2026-10-21T14:36:44.760903+00:00",
+    "id": "group-2:operator-food-39cf2400278b911c",
+    "path": "evidence/6bc0b9859f493db5a4d49b7eb054d612f72075a21674b6d7f805bceab62be780.bin",
+    "sha256": "6bc0b9859f493db5a4d49b7eb054d612f72075a21674b6d7f805bceab62be780",
+    "status": 200,
+    "url": "https://www.middlefieldorchard.com"
+  },
+  {
+    "bytes": 227286,
+    "checked_at": "2026-10-21T14:37:06.223178+00:00",
+    "id": "group-2:operator-food-4729dac887929ec7",
+    "path": "evidence/4f5c82b40af6beb27168e1aa88ba24aeeba8e93b88999da81c179a9c59cdd0d8.bin",
+    "sha256": "4f5c82b40af6beb27168e1aa88ba24aeeba8e93b88999da81c179a9c59cdd0d8",
+    "status": 200,
+    "url": "https://5loavesfarm.org"
+  },
+  {
+    "bytes": 113202,
+    "checked_at": "2026-10-21T14:36:47.025482+00:00",
+    "id": "group-2:operator-food-62cb17d7c4378380",
+    "path": "evidence/9367c68385a1e7cf68bef72536e6d3017add746f52f214d81ebcea371cf5d57b.bin",
+    "sha256": "9367c68385a1e7cf68bef72536e6d3017add746f52f214d81ebcea371cf5d57b",
+    "status": 200,
+    "url": "https://www.bowmanorchards.com"
+  },
+  {
+    "bytes": 97083,
+    "checked_at": "2026-10-21T14:36:51.710258+00:00",
+    "id": "group-2:operator-food-983907c4b8928581",
+    "path": "evidence/80948d6911cb2abf1bf3a0cdbe4ab853b7cd7b5fa396453e63a7bb50b04462b7.bin",
+    "sha256": "80948d6911cb2abf1bf3a0cdbe4ab853b7cd7b5fa396453e63a7bb50b04462b7",
+    "status": 200,
+    "url": "https://www.canticlefarm.org"
+  },
+  {
+    "bytes": 629913,
+    "checked_at": "2026-10-21T14:37:03.947143+00:00",
+    "id": "group-2:operator-food-addd92486ce829d4",
+    "path": "evidence/435b762d4093c6b72937fffee15f64aa350083257643a88b2bc3e7d1522937b7.bin",
+    "sha256": "435b762d4093c6b72937fffee15f64aa350083257643a88b2bc3e7d1522937b7",
+    "status": 200,
+    "url": "https://www.dykemanfarm.com"
+  },
+  {
+    "bytes": 122950,
+    "checked_at": "2026-10-21T14:36:40.949014+00:00",
+    "id": "group-2:operator-food-c4fe406a23730216",
+    "path": "evidence/d0189639d957665a400871fd8a385bcca3a702b2b2cf3b237a0365551628a481.bin",
+    "sha256": "d0189639d957665a400871fd8a385bcca3a702b2b2cf3b237a0365551628a481",
+    "status": 200,
+    "url": "https://www.bellingersorchard.com"
+  },
+  {
+    "bytes": 66761,
+    "checked_at": "2026-10-21T14:36:36.041349+00:00",
+    "id": "group-2:operator-food-d3b7543725959225",
+    "path": "evidence/b5b5c8bd7973f899c980cd4e2c285c91540a3dcd7d7863b4dc29d1d5148d2a83.bin",
+    "sha256": "b5b5c8bd7973f899c980cd4e2c285c91540a3dcd7d7863b4dc29d1d5148d2a83",
+    "status": 200,
+    "url": "https://www.owenorchard.com"
+  },
+  {
+    "bytes": 22638,
+    "checked_at": "2026-10-21T14:37:00.698596+00:00",
+    "id": "group-2:operator-food-da19279929638dbf",
+    "path": "evidence/3f0cb1a359027d587bc72f0049352cf59f3b5719b834d9008fd4c6cdf305afd5.bin",
+    "sha256": "3f0cb1a359027d587bc72f0049352cf59f3b5719b834d9008fd4c6cdf305afd5",
+    "status": 200,
+    "url": "https://www.scarecrowfarmny.com"
+  },
+  {
+    "bytes": 58819,
+    "checked_at": "2026-10-21T14:36:34.881021+00:00",
+    "id": "group-2:operator-food-f8da2f7d760e2838",
+    "path": "evidence/fd41ab4f95f199cd7a6afb42f57e479570517616630ef178787e3d01c956749b.bin",
+    "sha256": "fd41ab4f95f199cd7a6afb42f57e479570517616630ef178787e3d01c956749b",
+    "status": 200,
+    "url": "https://www.altamontorchards.com"
+  },
+  {
+    "bytes": 106614,
+    "checked_at": "2026-10-21T14:46:35.485615+00:00",
+    "id": "group-2:operator-food-harvest-bronx",
+    "path": "evidence/738b6f56559173dc1fae266bbc88f04b7fa8e94e546629145200cea0055cf69a.bin",
+    "sha256": "738b6f56559173dc1fae266bbc88f04b7fa8e94e546629145200cea0055cf69a",
+    "status": 200,
+    "url": "https://www.harvesthomefm.org/bronx-markets"
+  },
+  {
+    "bytes": 90410,
+    "checked_at": "2026-10-21T14:46:37.089481+00:00",
+    "id": "group-2:operator-food-harvest-brooklyn",
+    "path": "evidence/088a1466e443f598231dfd1110a1008212039e1f7ac3b305c45bc12e421d83a5.bin",
+    "sha256": "088a1466e443f598231dfd1110a1008212039e1f7ac3b305c45bc12e421d83a5",
+    "status": 200,
+    "url": "https://www.harvesthomefm.org/brooklyn-markets"
+  },
+  {
+    "bytes": 120475,
+    "checked_at": "2026-10-21T14:33:23.903019+00:00",
+    "id": "group-2:operator-fws-12530",
+    "path": "evidence/16b803588b62ff53755fed06e9b44dfaae6b8b1f6ab6f61198af400bec44ac02.bin",
+    "sha256": "16b803588b62ff53755fed06e9b44dfaae6b8b1f6ab6f61198af400bec44ac02",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/kilauea-point/visit-us"
+  },
+  {
+    "bytes": 110666,
+    "checked_at": "2026-10-21T14:33:22.372299+00:00",
+    "id": "group-2:operator-fws-12531",
+    "path": "evidence/994de0effd778b1e0ee7af78cb66561fe5056251c9362b8ddfa97fd95ce04ed0.bin",
+    "sha256": "994de0effd778b1e0ee7af78cb66561fe5056251c9362b8ddfa97fd95ce04ed0",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/kealia-pond/visit-us"
+  },
+  {
+    "bytes": 130441,
+    "checked_at": "2026-10-21T14:34:53.398723+00:00",
+    "id": "group-2:operator-fws-13510",
+    "path": "evidence/1762903d275efc1ef365f0e938b208f65641d031451b32b2d738b651f8347ecd.bin",
+    "sha256": "1762903d275efc1ef365f0e938b208f65641d031451b32b2d738b651f8347ecd",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/columbia/visit-us"
+  },
+  {
+    "bytes": 146181,
+    "checked_at": "2026-10-21T14:34:51.608128+00:00",
+    "id": "group-2:operator-fws-13529",
+    "path": "evidence/9861d9377817ece68859fc707a31d224f0fc7180818de7c4ccd7a7131e67da6b.bin",
+    "sha256": "9861d9377817ece68859fc707a31d224f0fc7180818de7c4ccd7a7131e67da6b",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/billy-frank-jr-nisqually/visit-us"
+  },
+  {
+    "bytes": 141922,
+    "checked_at": "2026-10-21T14:34:42.412591+00:00",
+    "id": "group-2:operator-fws-13596",
+    "path": "evidence/95652a8fabbec2bb91c59584974f8bf1b5198a8aefa2e9dac57d97bac159ce90.bin",
+    "sha256": "95652a8fabbec2bb91c59584974f8bf1b5198a8aefa2e9dac57d97bac159ce90",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/bandon-marsh/visit-us"
+  },
+  {
+    "bytes": 133976,
+    "checked_at": "2026-10-21T14:34:44.250704+00:00",
+    "id": "group-2:operator-fws-13600",
+    "path": "evidence/02e231051c6dcdffd4985573f0fcc42159b29a5054aba11b2ee055e661371c96.bin",
+    "sha256": "02e231051c6dcdffd4985573f0fcc42159b29a5054aba11b2ee055e661371c96",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/tualatin-river/visit-us"
+  },
+  {
+    "bytes": 180801,
+    "checked_at": "2026-10-21T14:34:12.328863+00:00",
+    "id": "group-2:operator-fws-14560",
+    "path": "evidence/4619bc3abc83180bf34ffad16bd29e44fad7601d572dcbd992e3c0ceeb455cf2.bin",
+    "sha256": "4619bc3abc83180bf34ffad16bd29e44fad7601d572dcbd992e3c0ceeb455cf2",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/deer-flat/visit-us"
+  },
+  {
+    "bytes": 144125,
+    "checked_at": "2026-10-21T14:34:10.675192+00:00",
+    "id": "group-2:operator-fws-14611",
+    "path": "evidence/2af8064cfca1a87729c12fceb7da620de367701c8e178afcc1d0f98c2a1c9d94.bin",
+    "sha256": "2af8064cfca1a87729c12fceb7da620de367701c8e178afcc1d0f98c2a1c9d94",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/camas/visit-us"
+  },
+  {
+    "bytes": 130217,
+    "checked_at": "2026-10-21T14:34:07.822735+00:00",
+    "id": "group-2:operator-fws-21532",
+    "path": "evidence/6095646c30a1fcb661aa62558f58740f30a3a0247d6ca23a8875aca1f4a35fb4.bin",
+    "sha256": "6095646c30a1fcb661aa62558f58740f30a3a0247d6ca23a8875aca1f4a35fb4",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/aransas/visit-us"
+  },
+  {
+    "bytes": 151964,
+    "checked_at": "2026-10-21T14:34:09.343171+00:00",
+    "id": "group-2:operator-fws-21561",
+    "path": "evidence/5153b1f47963a34e6989ee11597aaaab75d0947e84fa561c80dc51dfc2fc0566.bin",
+    "sha256": "5153b1f47963a34e6989ee11597aaaab75d0947e84fa561c80dc51dfc2fc0566",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/balcones-canyonlands/visit-us"
+  },
+  {
+    "bytes": 126779,
+    "checked_at": "2026-10-21T14:32:56.044172+00:00",
+    "id": "group-2:operator-fws-21630",
+    "path": "evidence/49daaf03b023b9afa36c5a85efd30398e8dc79ef3dc412557a792536b0caa4b9.bin",
+    "sha256": "49daaf03b023b9afa36c5a85efd30398e8dc79ef3dc412557a792536b0caa4b9",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/salt-plains/visit-us"
+  },
+  {
+    "bytes": 132918,
+    "checked_at": "2026-10-21T14:32:57.622689+00:00",
+    "id": "group-2:operator-fws-21640",
+    "path": "evidence/87266977c6d807742e7b9d014862cf117a200fe78b26a8151ffb9255b6a4e59e.bin",
+    "sha256": "87266977c6d807742e7b9d014862cf117a200fe78b26a8151ffb9255b6a4e59e",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/sequoyah/visit-us"
+  },
+  {
+    "bytes": 206417,
+    "checked_at": "2026-10-21T14:36:26.020926+00:00",
+    "id": "group-2:operator-fws-22510-main",
+    "path": "evidence/e8614016c351b48233b74ce992d6095b7efb7bcf6ded58e14a720d1f3bfc46b4.bin",
+    "sha256": "e8614016c351b48233b74ce992d6095b7efb7bcf6ded58e14a720d1f3bfc46b4",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/bitter-lake"
+  },
+  {
+    "bytes": 141152,
+    "checked_at": "2026-10-21T14:34:20.381926+00:00",
+    "id": "group-2:operator-fws-22520",
+    "path": "evidence/b1851e737961d7008f7f5d237dbdfdb46ea80af0c0a320526a87a2c6b15ad69d.bin",
+    "sha256": "b1851e737961d7008f7f5d237dbdfdb46ea80af0c0a320526a87a2c6b15ad69d",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/bosque-del-apache/visit-us"
+  },
+  {
+    "bytes": 123885,
+    "checked_at": "2026-10-21T14:34:40.588029+00:00",
+    "id": "group-2:operator-fws-22530",
+    "path": "evidence/e1fe4e947ea29b6b269f0079883bbfb0c36fad19a51a4fb0dd449a1761fbf9f4.bin",
+    "sha256": "e1fe4e947ea29b6b269f0079883bbfb0c36fad19a51a4fb0dd449a1761fbf9f4",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/buenos-aires/visit-us"
+  },
+  {
+    "bytes": 133915,
+    "checked_at": "2026-10-21T14:34:38.868177+00:00",
+    "id": "group-2:operator-fws-22551",
+    "path": "evidence/0c7dfa621563f93c2c73110fdac4a629c56482256ad0688860e39896a1f60ee2.bin",
+    "sha256": "0c7dfa621563f93c2c73110fdac4a629c56482256ad0688860e39896a1f60ee2",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/bill-williams-river/visit-us"
+  },
+  {
+    "bytes": 182535,
+    "checked_at": "2026-10-21T14:34:17.552849+00:00",
+    "id": "group-2:operator-fws-31521",
+    "path": "evidence/5d07e4d1765ca89c2505ba67da97e4718417248bec7e92f9fdeed4b02ef10a96.bin",
+    "sha256": "5d07e4d1765ca89c2505ba67da97e4718417248bec7e92f9fdeed4b02ef10a96",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/detroit-river/visit-us"
+  },
+  {
+    "bytes": 147544,
+    "checked_at": "2026-10-21T14:33:18.948075+00:00",
+    "id": "group-2:operator-fws-31530",
+    "path": "evidence/d32aa9ed4c19f1c2a91faf8f7cfaa2d3bdb7d58103dd225f4521600fac34f7bc.bin",
+    "sha256": "d32aa9ed4c19f1c2a91faf8f7cfaa2d3bdb7d58103dd225f4521600fac34f7bc",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/muscatatuck/visit-us"
+  },
+  {
+    "bytes": 212805,
+    "checked_at": "2026-10-21T14:33:56.762250+00:00",
+    "id": "group-2:operator-fws-31540",
+    "path": "evidence/84687a2ba536cffaa074ed6c70b8c54e1fde28846fc3489c44588c19b3d74602.bin",
+    "sha256": "84687a2ba536cffaa074ed6c70b8c54e1fde28846fc3489c44588c19b3d74602",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/ottawa/visit-us"
+  },
+  {
+    "bytes": 135333,
+    "checked_at": "2026-10-21T14:38:39.913750+00:00",
+    "id": "group-2:operator-fws-31560-resolved",
+    "path": "evidence/5bcbdf9937175b863c57e6c1dc5ec62bc9911106bcb43c4c36f000e6ee586cd2.bin",
+    "sha256": "5bcbdf9937175b863c57e6c1dc5ec62bc9911106bcb43c4c36f000e6ee586cd2",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/patoka-river-and-management-area/visit-us"
+  },
+  {
+    "bytes": 133609,
+    "checked_at": "2026-10-21T14:34:01.812034+00:00",
+    "id": "group-2:operator-fws-32510",
+    "path": "evidence/0fc73f0fdf94fe1e31ec0048ac9178982c41e16eeeb8bf4b1fbf3a8033492b4e.bin",
+    "sha256": "0fc73f0fdf94fe1e31ec0048ac9178982c41e16eeeb8bf4b1fbf3a8033492b4e",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/agassiz/visit-us"
+  },
+  {
+    "bytes": 166943,
+    "checked_at": "2026-10-21T14:33:42.233001+00:00",
+    "id": "group-2:operator-fws-32520",
+    "path": "evidence/f7c235345f41fed4a3ed7d01076d403e4eb83638d4c38f25b92dcdaf7e960629.bin",
+    "sha256": "f7c235345f41fed4a3ed7d01076d403e4eb83638d4c38f25b92dcdaf7e960629",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/horicon/visit-us"
+  },
+  {
+    "bytes": 176784,
+    "checked_at": "2026-10-21T14:33:43.543525+00:00",
+    "id": "group-2:operator-fws-32530",
+    "path": "evidence/651e45b6efeafa2ffd8bb55eecd3a96354faf4526ca1af3d1915382640f19ef7.bin",
+    "sha256": "651e45b6efeafa2ffd8bb55eecd3a96354faf4526ca1af3d1915382640f19ef7",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/necedah/visit-us"
+  },
+  {
+    "bytes": 153124,
+    "checked_at": "2026-10-21T14:34:03.356928+00:00",
+    "id": "group-2:operator-fws-32640",
+    "path": "evidence/a9d3396448cd12986eb4c0ad160a5d2f14cc8a0a4fa52371e06f1f60898b3cb6.bin",
+    "sha256": "a9d3396448cd12986eb4c0ad160a5d2f14cc8a0a4fa52371e06f1f60898b3cb6",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/big-stone/visit-us"
+  },
+  {
+    "bytes": 175742,
+    "checked_at": "2026-10-21T14:32:44.346524+00:00",
+    "id": "group-2:operator-fws-33510",
+    "path": "evidence/20fb85dccc5dda0e17fc3993ade1610b246ec65e03fdab5be0041196b9095cbd.bin",
+    "sha256": "20fb85dccc5dda0e17fc3993ade1610b246ec65e03fdab5be0041196b9095cbd",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/desoto/visit-us"
+  },
+  {
+    "bytes": 241921,
+    "checked_at": "2026-10-21T14:34:21.931173+00:00",
+    "id": "group-2:operator-fws-33590",
+    "path": "evidence/d58031ccd1a90fa1fe189a0ce2fa4d746163c163f338ab8b42d2e62bbd023a78.bin",
+    "sha256": "d58031ccd1a90fa1fe189a0ce2fa4d746163c163f338ab8b42d2e62bbd023a78",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/big-muddy/visit-us"
+  },
+  {
+    "bytes": 139641,
+    "checked_at": "2026-10-21T14:34:15.689749+00:00",
+    "id": "group-2:operator-fws-33621",
+    "path": "evidence/a888c5625f49b8139ee43b89845afdea1f5a9ac125c5a9abadf75d4369b5a4a8.bin",
+    "sha256": "a888c5625f49b8139ee43b89845afdea1f5a9ac125c5a9abadf75d4369b5a4a8",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/two-rivers/visit-us"
+  },
+  {
+    "bytes": 141719,
+    "checked_at": "2026-10-21T14:34:23.779892+00:00",
+    "id": "group-2:operator-fws-33643",
+    "path": "evidence/05f912f2a15d613a089b12889e8d803abadae539cc5602f646dd320c1a8af34c.bin",
+    "sha256": "05f912f2a15d613a089b12889e8d803abadae539cc5602f646dd320c1a8af34c",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/clarence-cannon/visit-us"
+  },
+  {
+    "bytes": 132889,
+    "checked_at": "2026-10-21T14:34:14.141236+00:00",
+    "id": "group-2:operator-fws-33652",
+    "path": "evidence/d4d8a7913a5e092f245041252f209b8b5cd1de0792cf4657b948863ed5207abc.bin",
+    "sha256": "d4d8a7913a5e092f245041252f209b8b5cd1de0792cf4657b948863ed5207abc",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/meredosia/visit-us"
+  },
+  {
+    "bytes": 151792,
+    "checked_at": "2026-10-21T14:32:46.076686+00:00",
+    "id": "group-2:operator-fws-33670",
+    "path": "evidence/4211d6fdca249fcb7eed0c5069787e5ea6202a9db64585df689dba2bc5d98c73.bin",
+    "sha256": "4211d6fdca249fcb7eed0c5069787e5ea6202a9db64585df689dba2bc5d98c73",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/neal-smith/visit-us"
+  },
+  {
+    "bytes": 205624,
+    "checked_at": "2026-10-21T14:36:21.226755+00:00",
+    "id": "group-2:operator-fws-41210-main",
+    "path": "evidence/f65fd4636950ad748e94984b7395cec553376afc35fee14fc799e17bd22e8f84.bin",
+    "sha256": "f65fd4636950ad748e94984b7395cec553376afc35fee14fc799e17bd22e8f84",
+    "status": 200,
+    "url": "https://www.fws.gov/fish-hatchery/chattahoochee-forest"
+  },
+  {
+    "bytes": 182288,
+    "checked_at": "2026-10-21T14:33:46.888293+00:00",
+    "id": "group-2:operator-fws-41560",
+    "path": "evidence/333d2196ef00f1b3791e7f04142145f3b96b6c32e2b255cc4bce7e214d8d73a7.bin",
+    "sha256": "333d2196ef00f1b3791e7f04142145f3b96b6c32e2b255cc4bce7e214d8d73a7",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/arthur-r-marshall-loxahatchee/visit-us"
+  },
+  {
+    "bytes": 108163,
+    "checked_at": "2026-10-21T14:36:19.013996+00:00",
+    "id": "group-2:operator-fws-41561-main",
+    "path": "evidence/7b9c245210055c6caa8fab2e5e6d33ba1f56c4b15934bdbd162132750b9d61ba.bin",
+    "sha256": "7b9c245210055c6caa8fab2e5e6d33ba1f56c4b15934bdbd162132750b9d61ba",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/hobe-sound"
+  },
+  {
+    "bytes": 182028,
+    "checked_at": "2026-10-21T14:33:35.764408+00:00",
+    "id": "group-2:operator-fws-41630",
+    "path": "evidence/0d5c6957a0022f5136302e8ad3e6f776e1d2971ead6e947c5d984a8d53914957.bin",
+    "sha256": "0d5c6957a0022f5136302e8ad3e6f776e1d2971ead6e947c5d984a8d53914957",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/alligator-river/visit-us"
+  },
+  {
+    "bytes": 159551,
+    "checked_at": "2026-10-21T14:36:16.522329+00:00",
+    "id": "group-2:operator-fws-42220-main",
+    "path": "evidence/e07f827dde61adbe5ab0bb691c34c968971689c79b2cd7fc37ad6f361e24f01e.bin",
+    "sha256": "e07f827dde61adbe5ab0bb691c34c968971689c79b2cd7fc37ad6f361e24f01e",
+    "status": 200,
+    "url": "https://www.fws.gov/fish-hatchery/edenton"
+  },
+  {
+    "bytes": 224888,
+    "checked_at": "2026-10-21T14:36:27.757382+00:00",
+    "id": "group-2:operator-fws-42280-main",
+    "path": "evidence/1380034baf096ce5ec7006b304f0d472502f0fe33c26f7178d80d9223c539056.bin",
+    "sha256": "1380034baf096ce5ec7006b304f0d472502f0fe33c26f7178d80d9223c539056",
+    "status": 200,
+    "url": "https://www.fws.gov/fish-hatchery/wolf-creek"
+  },
+  {
+    "bytes": 178625,
+    "checked_at": "2026-10-21T14:33:38.848549+00:00",
+    "id": "group-2:operator-fws-42510",
+    "path": "evidence/bec946bc2110a5d6351ab655632a56158812676ef3991d0f8aaf38c6e2675b42.bin",
+    "sha256": "bec946bc2110a5d6351ab655632a56158812676ef3991d0f8aaf38c6e2675b42",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/cape-romain/visit-us"
+  },
+  {
+    "bytes": 164965,
+    "checked_at": "2026-10-21T14:33:40.604870+00:00",
+    "id": "group-2:operator-fws-42511",
+    "path": "evidence/77cc9e401c553e16b6408b9a7900a4f5ae036e0941f0c2d7ecd4791bd443d8e7.bin",
+    "sha256": "77cc9e401c553e16b6408b9a7900a4f5ae036e0941f0c2d7ecd4791bd443d8e7",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/ernest-f-hollings-ace-basin/visit-us"
+  },
+  {
+    "bytes": 132191,
+    "checked_at": "2026-10-21T14:33:49.940953+00:00",
+    "id": "group-2:operator-fws-42526",
+    "path": "evidence/5e293d9f53d0c8bd4bf2e80199c4e6c106dc414cc72275c1461df8c9d533a32b.bin",
+    "sha256": "5e293d9f53d0c8bd4bf2e80199c4e6c106dc414cc72275c1461df8c9d533a32b",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/chickasaw/visit-us"
+  },
+  {
+    "bytes": 145460,
+    "checked_at": "2026-10-21T14:34:31.451836+00:00",
+    "id": "group-2:operator-fws-42622",
+    "path": "evidence/bd0f249a1d7cc2a48e963462a7d98694b9633c6b90ff032fc185a2d22cbf1613.bin",
+    "sha256": "bd0f249a1d7cc2a48e963462a7d98694b9633c6b90ff032fc185a2d22cbf1613",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/clarks-river/visit-us"
+  },
+  {
+    "bytes": 152357,
+    "checked_at": "2026-10-21T14:36:33.330194+00:00",
+    "id": "group-2:operator-fws-43290-main",
+    "path": "evidence/ac523b0be29fb18bfbf67fd28d1a8ec0c0b056ee93cdbcc6d509666965a40f5e.bin",
+    "sha256": "ac523b0be29fb18bfbf67fd28d1a8ec0c0b056ee93cdbcc6d509666965a40f5e",
+    "status": 200,
+    "url": "https://www.fws.gov/fish-hatchery/private-john-allen"
+  },
+  {
+    "bytes": 113673,
+    "checked_at": "2026-10-21T14:33:17.252513+00:00",
+    "id": "group-2:operator-fws-43514",
+    "path": "evidence/1d936f3f201da986937ef519c8b610959fa253e0562da37e7b58578c8518863e.bin",
+    "sha256": "1d936f3f201da986937ef519c8b610959fa253e0562da37e7b58578c8518863e",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/cache-river/visit-us"
+  },
+  {
+    "bytes": 126716,
+    "checked_at": "2026-10-21T14:33:15.507676+00:00",
+    "id": "group-2:operator-fws-43515",
+    "path": "evidence/0e033c98ad5259de87278d36b4f342ae19834af8db9bff56223856999b9788ce.bin",
+    "sha256": "0e033c98ad5259de87278d36b4f342ae19834af8db9bff56223856999b9788ce",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/big-lake/visit-us"
+  },
+  {
+    "bytes": 138944,
+    "checked_at": "2026-10-21T14:32:48.247357+00:00",
+    "id": "group-2:operator-fws-43530",
+    "path": "evidence/814f003be1fffbc9a811d2ba6be54628e1e7bf30b12d7dd03a6dc03c31da146a.bin",
+    "sha256": "814f003be1fffbc9a811d2ba6be54628e1e7bf30b12d7dd03a6dc03c31da146a",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/bayou-cocodrie/visit-us"
+  },
+  {
+    "bytes": 134273,
+    "checked_at": "2026-10-21T14:32:35.046828+00:00",
+    "id": "group-2:operator-fws-43582",
+    "path": "evidence/1a5f5fed0f6884234e17b1e48d82d99cedfff75e48316c7c7720da4be712f94f.bin",
+    "sha256": "1a5f5fed0f6884234e17b1e48d82d99cedfff75e48316c7c7720da4be712f94f",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/morgan-brake/visit-us"
+  },
+  {
+    "bytes": 125207,
+    "checked_at": "2026-10-21T14:32:32.613285+00:00",
+    "id": "group-2:operator-fws-43615",
+    "path": "evidence/7631406e8cf1c74d5732c1090e12a0f813b032658710082cfd76f4b07e920628.bin",
+    "sha256": "7631406e8cf1c74d5732c1090e12a0f813b032658710082cfd76f4b07e920628",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/mississippi-sandhill-crane/visit-us"
+  },
+  {
+    "bytes": 128440,
+    "checked_at": "2026-10-21T14:32:50.742313+00:00",
+    "id": "group-2:operator-fws-43628",
+    "path": "evidence/c9328e92ffaccb8e395f195ddfd102e9a46acb175ae7d49069b89e303e7ca65d.bin",
+    "sha256": "c9328e92ffaccb8e395f195ddfd102e9a46acb175ae7d49069b89e303e7ca65d",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/bayou-teche/visit-us"
+  },
+  {
+    "bytes": 154455,
+    "checked_at": "2026-10-21T14:33:05.301688+00:00",
+    "id": "group-2:operator-fws-43660",
+    "path": "evidence/d0472b0f835a885e8a7ecd30e21f0f85356e30165544653459e35f2f43d302c6.bin",
+    "sha256": "d0472b0f835a885e8a7ecd30e21f0f85356e30165544653459e35f2f43d302c6",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/wheeler/visit-us"
+  },
+  {
+    "bytes": 153379,
+    "checked_at": "2026-10-21T14:36:05.828695+00:00",
+    "id": "group-2:operator-fws-51270-main",
+    "path": "evidence/1b50af1882b9d47c8a2aef8f82f12291e9c6d3b362d1615ca7ccdbe752b21c38.bin",
+    "sha256": "1b50af1882b9d47c8a2aef8f82f12291e9c6d3b362d1615ca7ccdbe752b21c38",
+    "status": 200,
+    "url": "https://www.fws.gov/fish-hatchery/white-sulphur-springs"
+  },
+  {
+    "bytes": 149729,
+    "checked_at": "2026-10-21T14:33:28.977438+00:00",
+    "id": "group-2:operator-fws-51510",
+    "path": "evidence/892e688184bf0f26082c9af6f1c1892997116899964fdbacff41315bb32c34cb.bin",
+    "sha256": "892e688184bf0f26082c9af6f1c1892997116899964fdbacff41315bb32c34cb",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/back-bay/visit-us"
+  },
+  {
+    "bytes": 172158,
+    "checked_at": "2026-10-21T14:33:25.508307+00:00",
+    "id": "group-2:operator-fws-51531",
+    "path": "evidence/83fbc2833a3fb156402c8e89a3d6f7716669839c5b09a3c6b6be29dba1ef9bbd.bin",
+    "sha256": "83fbc2833a3fb156402c8e89a3d6f7716669839c5b09a3c6b6be29dba1ef9bbd",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/blackwater/visit-us"
+  },
+  {
+    "bytes": 143754,
+    "checked_at": "2026-10-21T14:32:28.174731+00:00",
+    "id": "group-2:operator-fws-51550",
+    "path": "evidence/466ee161b51b1ae8c2cbc07decab64241e667e653f1464b91974fbb78ffeccd5.bin",
+    "sha256": "466ee161b51b1ae8c2cbc07decab64241e667e653f1464b91974fbb78ffeccd5",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/bombay-hook/visit-us"
+  },
+  {
+    "bytes": 141898,
+    "checked_at": "2026-10-21T14:32:30.467707+00:00",
+    "id": "group-2:operator-fws-51560",
+    "path": "evidence/2cfeb97800114550517c6a2d74f980946f171859e98788b025d8dd90a6a155ff.bin",
+    "sha256": "2cfeb97800114550517c6a2d74f980946f171859e98788b025d8dd90a6a155ff",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/prime-hook/visit-us"
+  },
+  {
+    "bytes": 168314,
+    "checked_at": "2026-10-21T14:33:30.810259+00:00",
+    "id": "group-2:operator-fws-51570",
+    "path": "evidence/73d067e33e5b469c2c11f7c0207f2090b056cf4e3e20c6685435bf05e729723d.bin",
+    "sha256": "73d067e33e5b469c2c11f7c0207f2090b056cf4e3e20c6685435bf05e729723d",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/chincoteague/visit-us"
+  },
+  {
+    "bytes": 123856,
+    "checked_at": "2026-10-21T14:32:41.586736+00:00",
+    "id": "group-2:operator-fws-51660",
+    "path": "evidence/6c88c3c3e2925cafccac427f8f04bceef5491b124befb58e0f4ceef8177bd626.bin",
+    "sha256": "6c88c3c3e2925cafccac427f8f04bceef5491b124befb58e0f4ceef8177bd626",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/ohio-river-islands/visit-us"
+  },
+  {
+    "bytes": 195160,
+    "checked_at": "2026-10-21T14:32:38.893269+00:00",
+    "id": "group-2:operator-fws-52510",
+    "path": "evidence/d4573f08118d305363b0d34686c0c8fbb87aa7888f52da5606d0c2ab3fe1e773.bin",
+    "sha256": "d4573f08118d305363b0d34686c0c8fbb87aa7888f52da5606d0c2ab3fe1e773",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/edwin-b-forsythe/visit-us"
+  },
+  {
+    "bytes": 122283,
+    "checked_at": "2026-10-21T14:32:36.521460+00:00",
+    "id": "group-2:operator-fws-52515",
+    "path": "evidence/29d3a44263c99898fdeb5bc8a93755a42c84fb583cbeeac96f17b61c8d3b4e1d.bin",
+    "sha256": "29d3a44263c99898fdeb5bc8a93755a42c84fb583cbeeac96f17b61c8d3b4e1d",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/cape-may/visit-us"
+  },
+  {
+    "bytes": 148827,
+    "checked_at": "2026-10-21T14:33:58.493949+00:00",
+    "id": "group-2:operator-fws-52520",
+    "path": "evidence/41fef13933f62db18118377648fa17bb8f345ca4cfb1074189c7cde1405a0f5a.bin",
+    "sha256": "41fef13933f62db18118377648fa17bb8f345ca4cfb1074189c7cde1405a0f5a",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/erie/visit-us"
+  },
+  {
+    "bytes": 166950,
+    "checked_at": "2026-10-21T14:34:47.431504+00:00",
+    "id": "group-2:operator-fws-52540",
+    "path": "evidence/5468301564e8103130be155d940153428a1a85397aab94e47a7c8d9a09dea192.bin",
+    "sha256": "5468301564e8103130be155d940153428a1a85397aab94e47a7c8d9a09dea192",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/iroquois/visit-us"
+  },
+  {
+    "bytes": 156541,
+    "checked_at": "2026-10-21T14:38:42.309788+00:00",
+    "id": "group-2:operator-fws-52566-resolved",
+    "path": "evidence/9a0adb267b94c9845c0b62f89b074ef461747d0110522e7e8f573815c72647ac.bin",
+    "sha256": "9a0adb267b94c9845c0b62f89b074ef461747d0110522e7e8f573815c72647ac",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/elizabeth-alexandra-morton/visit-us"
+  },
+  {
+    "bytes": 117767,
+    "checked_at": "2026-10-21T14:34:00.076477+00:00",
+    "id": "group-2:operator-fws-52570",
+    "path": "evidence/b7e3f7e46e419333eb3b117e5d7d45c290dfe3339a9700f95fa35563438d0faf.bin",
+    "sha256": "b7e3f7e46e419333eb3b117e5d7d45c290dfe3339a9700f95fa35563438d0faf",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/john-heinz-tinicum/visit-us"
+  },
+  {
+    "bytes": 156860,
+    "checked_at": "2026-10-21T14:33:32.529314+00:00",
+    "id": "group-2:operator-fws-53511",
+    "path": "evidence/21f4bc2a2b5faf285a3e0b92ead1023ebb8389c65d045c724c49499808c619da.bin",
+    "sha256": "21f4bc2a2b5faf285a3e0b92ead1023ebb8389c65d045c724c49499808c619da",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/great-meadows/visit-us"
+  },
+  {
+    "bytes": 149180,
+    "checked_at": "2026-10-21T14:33:34.114639+00:00",
+    "id": "group-2:operator-fws-53512",
+    "path": "evidence/416c7eabc78cd193de22f4e8b2d2a57518730c3f71f52e39075496c3374af75e.bin",
+    "sha256": "416c7eabc78cd193de22f4e8b2d2a57518730c3f71f52e39075496c3374af75e",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/oxbow/visit-us"
+  },
+  {
+    "bytes": 149267,
+    "checked_at": "2026-10-21T14:32:59.162346+00:00",
+    "id": "group-2:operator-fws-53542",
+    "path": "evidence/9fec34c1ad6230c2187b89f0264bc3241a4870178631fb9b96d86295f544216e.bin",
+    "sha256": "9fec34c1ad6230c2187b89f0264bc3241a4870178631fb9b96d86295f544216e",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/ninigret/visit-us"
+  },
+  {
+    "bytes": 133350,
+    "checked_at": "2026-10-21T14:33:00.827096+00:00",
+    "id": "group-2:operator-fws-53543",
+    "path": "evidence/a8c987c86941de23c64467f0006f8aa19bf171b7dd9e82302e7aec55ab88000f.bin",
+    "sha256": "a8c987c86941de23c64467f0006f8aa19bf171b7dd9e82302e7aec55ab88000f",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/sachuest-point/visit-us"
+  },
+  {
+    "bytes": 123074,
+    "checked_at": "2026-10-21T14:33:45.139374+00:00",
+    "id": "group-2:operator-fws-53580",
+    "path": "evidence/c9d0e6001e2bab3ae7b88cb9b35aed7a70be470e175ec7d0825df56f261ba7ff.bin",
+    "sha256": "c9d0e6001e2bab3ae7b88cb9b35aed7a70be470e175ec7d0825df56f261ba7ff",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/umbagog/visit-us"
+  },
+  {
+    "bytes": 131150,
+    "checked_at": "2026-10-21T14:33:09.789945+00:00",
+    "id": "group-2:operator-fws-53630",
+    "path": "evidence/3da12b5ad689d4281e38d27244e43716cfa05e0b64f9cf593ae82d0dd3abf4c0.bin",
+    "sha256": "3da12b5ad689d4281e38d27244e43716cfa05e0b64f9cf593ae82d0dd3abf4c0",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/aroostook/visit-us"
+  },
+  {
+    "bytes": 122820,
+    "checked_at": "2026-10-21T14:34:37.256609+00:00",
+    "id": "group-2:operator-fws-61530",
+    "path": "evidence/7544a1a81e8164663d54728147e0ba03a779dbb66704e833bde0d00e0030fd1f.bin",
+    "sha256": "7544a1a81e8164663d54728147e0ba03a779dbb66704e833bde0d00e0030fd1f",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/medicine-lake/visit-us"
+  },
+  {
+    "bytes": 114411,
+    "checked_at": "2026-10-21T14:34:35.612582+00:00",
+    "id": "group-2:operator-fws-61560",
+    "path": "evidence/3b111a047ed220aa2d7f806bfa61fac299add604a885b8dc31f695fb98c7334e.bin",
+    "sha256": "3b111a047ed220aa2d7f806bfa61fac299add604a885b8dc31f695fb98c7334e",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/lee-metcalf/visit-us"
+  },
+  {
+    "bytes": 144199,
+    "checked_at": "2026-10-21T14:32:52.417616+00:00",
+    "id": "group-2:operator-fws-62510",
+    "path": "evidence/b6549cfc019ab2e72e7f0d36be5183a3eaf83eb72e28f7485e3c820ab35d13cd.bin",
+    "sha256": "b6549cfc019ab2e72e7f0d36be5183a3eaf83eb72e28f7485e3c820ab35d13cd",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/arrowwood/visit-us"
+  },
+  {
+    "bytes": 161106,
+    "checked_at": "2026-10-21T14:32:53.960416+00:00",
+    "id": "group-2:operator-fws-62540",
+    "path": "evidence/4b50e51c545bb62eed478f9c2fd59586efb57387d972e5e8dd1a8c6caf8f98e4.bin",
+    "sha256": "4b50e51c545bb62eed478f9c2fd59586efb57387d972e5e8dd1a8c6caf8f98e4",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/audubon/visit-us"
+  },
+  {
+    "bytes": 204573,
+    "checked_at": "2026-10-21T14:36:23.978874+00:00",
+    "id": "group-2:operator-fws-64220-main",
+    "path": "evidence/8531afb790c94abfc361207fd2df83c1329d0b00a7c6b611c0c1724f03892a2a.bin",
+    "sha256": "8531afb790c94abfc361207fd2df83c1329d0b00a7c6b611c0c1724f03892a2a",
+    "status": 200,
+    "url": "https://www.fws.gov/fish-hatchery/gavins-point"
+  },
+  {
+    "bytes": 129161,
+    "checked_at": "2026-10-21T14:34:06.238720+00:00",
+    "id": "group-2:operator-fws-64570",
+    "path": "evidence/de3aa95c4c5f8f0fddfa7277e1f1506d35264e05eab9767c1aa7da1c3099d90a.bin",
+    "sha256": "de3aa95c4c5f8f0fddfa7277e1f1506d35264e05eab9767c1aa7da1c3099d90a",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/sand-lake/visit-us"
+  },
+  {
+    "bytes": 120866,
+    "checked_at": "2026-10-21T14:33:06.935178+00:00",
+    "id": "group-2:operator-fws-64580",
+    "path": "evidence/9fca0f31fdeab3c78856d599784a3079720493715cf0f3b83703235ddf2472e2.bin",
+    "sha256": "9fca0f31fdeab3c78856d599784a3079720493715cf0f3b83703235ddf2472e2",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/flint-hills/visit-us"
+  },
+  {
+    "bytes": 216128,
+    "checked_at": "2026-10-21T14:36:08.698316+00:00",
+    "id": "group-2:operator-fws-64610-main",
+    "path": "evidence/2f9b51c0b143e64a819b2dd5204ce4236b8f8378b5628b3ef7e4eb997a349311.bin",
+    "sha256": "2f9b51c0b143e64a819b2dd5204ce4236b8f8378b5628b3ef7e4eb997a349311",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/kirwin"
+  },
+  {
+    "bytes": 115973,
+    "checked_at": "2026-10-21T14:34:48.965337+00:00",
+    "id": "group-2:operator-fws-65520",
+    "path": "evidence/fbd57cd9f32ac0776baf6d4c38ffa93a71dc9d7213f644db61c8b041c54ae161.bin",
+    "sha256": "fbd57cd9f32ac0776baf6d4c38ffa93a71dc9d7213f644db61c8b041c54ae161",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/arapaho/visit-us"
+  },
+  {
+    "bytes": 154143,
+    "checked_at": "2026-10-21T14:36:31.981256+00:00",
+    "id": "group-2:operator-fws-65550-main",
+    "path": "evidence/cd93c6cceb6d942d1d298ae45223ba939fea519b43420cb1854088a74e206cf7.bin",
+    "sha256": "cd93c6cceb6d942d1d298ae45223ba939fea519b43420cb1854088a74e206cf7",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/browns-park"
+  },
+  {
+    "bytes": 126221,
+    "checked_at": "2026-10-21T14:36:29.138615+00:00",
+    "id": "group-2:operator-fws-65570-main",
+    "path": "evidence/9b558d54207c84715b61f6b6ea7504d3c86343178aab2f85051aff86d0642565.bin",
+    "sha256": "9b558d54207c84715b61f6b6ea7504d3c86343178aab2f85051aff86d0642565",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/ouray"
+  },
+  {
+    "bytes": 163456,
+    "checked_at": "2026-10-21T14:34:29.607985+00:00",
+    "id": "group-2:operator-fws-65580",
+    "path": "evidence/71c38a43dae975d2cbef5882827eea08e434e43882ca27dc389a318e643c6bc8.bin",
+    "sha256": "71c38a43dae975d2cbef5882827eea08e434e43882ca27dc389a318e643c6bc8",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/seedskadee/visit-us"
+  },
+  {
+    "bytes": 140642,
+    "checked_at": "2026-10-21T14:34:25.608020+00:00",
+    "id": "group-2:operator-fws-74500",
+    "path": "evidence/5006d24c352686ac94ee24c1c3d08437b5a95aa8ceed1a698d6758fdb2378be0.bin",
+    "sha256": "5006d24c352686ac94ee24c1c3d08437b5a95aa8ceed1a698d6758fdb2378be0",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/alaska-maritime/visit-us"
+  },
+  {
+    "bytes": 138191,
+    "checked_at": "2026-10-21T14:34:27.816322+00:00",
+    "id": "group-2:operator-fws-74525",
+    "path": "evidence/d9d23a6e343c93d38f75337defc84012de6d4f0320955c99e429315654895335.bin",
+    "sha256": "d9d23a6e343c93d38f75337defc84012de6d4f0320955c99e429315654895335",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/kenai/visit-us"
+  },
+  {
+    "bytes": 154092,
+    "checked_at": "2026-10-21T14:34:57.119330+00:00",
+    "id": "group-2:operator-fws-81590",
+    "path": "evidence/f4f59d441b9994ff59d1b250ae8ab573959db79551f59a59c085b68dd1777676.bin",
+    "sha256": "f4f59d441b9994ff59d1b250ae8ab573959db79551f59a59c085b68dd1777676",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/humboldt-bay/visit-us"
+  },
+  {
+    "bytes": 159208,
+    "checked_at": "2026-10-21T14:34:54.946352+00:00",
+    "id": "group-2:operator-fws-81648",
+    "path": "evidence/19cf85f48e9ca522d676e45692669cbd56bf3d01efd947cef4432d8994b7fe04.bin",
+    "sha256": "19cf85f48e9ca522d676e45692669cbd56bf3d01efd947cef4432d8994b7fe04",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/don-edwards-san-francisco-bay/visit-us"
+  },
+  {
+    "bytes": 228296,
+    "checked_at": "2026-10-21T14:36:13.272225+00:00",
+    "id": "group-2:operator-fws-84551-main",
+    "path": "evidence/3733ded6783e8ab615f20abdd7d44338df1230d0858ca39f583adf4c6ddba278.bin",
+    "sha256": "3733ded6783e8ab615f20abdd7d44338df1230d0858ca39f583adf4c6ddba278",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/pahranagat"
+  },
+  {
+    "bytes": 208287,
+    "checked_at": "2026-10-21T14:36:11.554544+00:00",
+    "id": "group-2:operator-fws-84554-main",
+    "path": "evidence/c607cd2688ebdad6645022dd46327c3349b2e634f57e070ad5b14d0d9f2e6307.bin",
+    "sha256": "c607cd2688ebdad6645022dd46327c3349b2e634f57e070ad5b14d0d9f2e6307",
+    "status": 200,
+    "url": "https://www.fws.gov/refuge/ash-meadows"
+  },
+  {
+    "bytes": 9235,
+    "checked_at": "2026-10-21T14:30:01.189680+00:00",
+    "content_type": "application/json;charset=utf-8",
+    "final_url": "https://www.arcgis.com/sharing/rest/content/items/a8166d1ed8c24a0aba9078bfa5fdd84f?f=json",
+    "id": "group-3:fws-buildings-item",
+    "path": "evidence/fb55f63981fcd3ed119b7c69c6fa5034ad3e859c79b677241ebae465c3506ab9.bin",
+    "retrieved_at": "2026-10-21T14:30:01.189680+00:00",
+    "sha256": "fb55f63981fcd3ed119b7c69c6fa5034ad3e859c79b677241ebae465c3506ab9",
+    "status": 200,
+    "url": "https://www.arcgis.com/sharing/rest/content/items/a8166d1ed8c24a0aba9078bfa5fdd84f?f=json"
+  },
+  {
+    "bytes": 86916,
+    "checked_at": "2026-10-21T14:30:02.795058+00:00",
+    "content_type": "text/html; charset=utf-8",
+    "final_url": "https://www.fws.gov/disclaimer",
+    "id": "group-3:fws-rights",
+    "path": "evidence/a2f5e9be2ccf5fb39f4d5845d2a518decb05e0d3b77f913e112394229c1b18d4.bin",
+    "retrieved_at": "2026-10-21T14:30:02.795058+00:00",
+    "sha256": "a2f5e9be2ccf5fb39f4d5845d2a518decb05e0d3b77f913e112394229c1b18d4",
+    "status": 200,
+    "url": "https://www.fws.gov/disclaimer"
+  }
+]

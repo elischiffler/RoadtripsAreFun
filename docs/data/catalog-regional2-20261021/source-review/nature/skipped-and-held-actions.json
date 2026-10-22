@@ -1,0 +1,26 @@
+[
+  {
+    "error": "robots_disallow",
+    "id": "nature-longhorn",
+    "not_requested": true,
+    "url": "https://tpwd.texas.gov/state-parks/longhorn-cavern"
+  },
+  {
+    "error": "robots_unavailable_or_denied",
+    "id": "nature-mystic",
+    "not_requested": true,
+    "url": "https://mysticcaverns.com/"
+  },
+  {
+    "id": "inherited-Q136031996",
+    "not_requested": true,
+    "reason": "Prior domain-wide nonretryable robots denial; no new materially relevant authorization/evidence.",
+    "url": "https://www.ncaquariums.com/fort-fisher"
+  },
+  {
+    "id": "inherited-Q136032261",
+    "not_requested": true,
+    "reason": "Prior domain-wide nonretryable robots denial; no new materially relevant authorization/evidence.",
+    "url": "https://www.ncaquariums.com/roanoke-island"
+  }
+]

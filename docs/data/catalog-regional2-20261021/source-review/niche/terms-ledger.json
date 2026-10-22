@@ -1,0 +1,26 @@
+{
+  "noncommercial_partition": {
+    "accepted": 0,
+    "reason": "This niche cohort only uses previously cleared Wikidata CC0 structured fields. No noncommercial-only source grant was presumed from app revenue status."
+  },
+  "operator_evidence": {
+    "license": "No blanket reuse license asserted; ordinary copyright/terms retained",
+    "redistribution": "Raw proof pages should remain private evidence, not shipped as licensed bulk operator content.",
+    "reuse_partition": "private verification evidence; not a source of copied public descriptions",
+    "robot_policy": "Original robots bodies retained; generic research user agent unchanged. Currituck wildcard Crawl-delay:50 respected; robots allow is not a content license. No accounts, agreements, waivers or contacts."
+  },
+  "reusable_source": {
+    "grant_evidence_id": "native-wikidata-cc0",
+    "grant_sha256": "e0744a22fe6ed5e46fa537e41625f26f560c9eb1a34cb28db4ef52b03a2f618e",
+    "grant_url": "https://www.wikidata.org/wiki/Wikidata:Copyright",
+    "license": "CC0-1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "obligations": "CC0 imposes no attribution condition; retain Wikidata attribution/provenance voluntarily. It does not clear third-party media, operator prose, trademarks or all extra rights.",
+    "reused_fields": [
+      "native QID",
+      "native label",
+      "native WKT feature coordinate"
+    ],
+    "steward": "Wikidata contributors / Wikimedia Foundation"
+  }
+}

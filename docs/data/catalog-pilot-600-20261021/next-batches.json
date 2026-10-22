@@ -1,0 +1,112 @@
+{
+  "arrival_calendar_review": [
+    "catalog-pilot:wikidata:Q4165331",
+    "catalog-pilot:wikidata:Q5161605",
+    "catalog-pilot:wikidata:Q7005718",
+    "catalog-pilot:wikidata:Q1890082",
+    "catalog-pilot:wikidata:Q21028346",
+    "catalog-pilot:wikidata:Q8075609",
+    "catalog-pilot:wikidata:Q1183941",
+    "catalog-pilot:wikidata:Q2585168",
+    "catalog-pilot:wikidata:Q4785686",
+    "catalog-pilot:wikidata:Q847637",
+    "catalog-pilot:wikidata:Q131340500",
+    "catalog-pilot:wikidata:Q5316537",
+    "catalog-pilot:nps-nhl:70000834",
+    "catalog-pilot:wikidata:Q1099139",
+    "catalog-pilot:wikidata:Q14708625",
+    "catalog-pilot:wikidata:Q16902084",
+    "catalog-pilot:wikidata:Q4884044",
+    "catalog-pilot:wikidata:Q4894262",
+    "catalog-pilot:wikidata:Q4916622",
+    "catalog-pilot:wikidata:Q5188024"
+  ],
+  "held_counts_by_cohort": {
+    "art_destination_clusters": 60,
+    "gardens_zoos_observatories_caves": 67,
+    "museum_science": 188,
+    "public_heritage": 99,
+    "remaining_niche": 28,
+    "unspecified": 29
+  },
+  "native_contract_review": [
+    {
+      "pilot_id": "nature-002",
+      "reason": "FWS original agency ownership/public-use fields are unresolved",
+      "tier": "T1"
+    },
+    {
+      "pilot_id": "nature-039",
+      "reason": "native name does not use the reviewed source field",
+      "tier": "T1"
+    },
+    {
+      "pilot_id": "nature-041",
+      "reason": "native name does not use the reviewed source field",
+      "tier": "T1"
+    },
+    {
+      "pilot_id": "nature-070",
+      "reason": "native name does not use the reviewed source field",
+      "tier": "T1"
+    },
+    {
+      "pilot_id": "nature-088",
+      "reason": "native name does not use the reviewed source field",
+      "tier": "T1"
+    }
+  ],
+  "scope": "Work queues only; no automatic promotion or fresh acquisition",
+  "unreviewed_operator_review": [
+    "culture:wd:Q7008533",
+    "culture:wd:Q16992238",
+    "culture:wd:Q8047439",
+    "culture:wd:Q5281942",
+    "culture:wd:Q38250800",
+    "culture:wd:Q6255455",
+    "culture:wd:Q5098184",
+    "culture:wd:Q15961623",
+    "culture:wd:Q18325686",
+    "culture:wd:Q6789613",
+    "culture:wd:Q1618645",
+    "culture:wd:Q132041721",
+    "culture:wd:Q7611132",
+    "culture:wd:Q17109130",
+    "culture:wd:Q4744478",
+    "culture:wd:Q7284063",
+    "culture:wd:Q15961620",
+    "culture:wd:Q1568434",
+    "culture:wd:Q6706021",
+    "culture:wd:Q6783079",
+    "culture:wd:Q7722479",
+    "culture:wd:Q7009890",
+    "culture:wd:Q6973032",
+    "culture:wd:Q28874011",
+    "culture:wd:Q7152453",
+    "culture:wd:Q6352575",
+    "culture:wd:Q7912179",
+    "culture:wd:Q5913507",
+    "culture:wd:Q5761907",
+    "culture:wd:Q122945",
+    "culture:wd:Q4862010",
+    "culture:wd:Q8024200",
+    "culture:wd:Q6858332",
+    "culture:wd:Q139900416",
+    "culture:wd:Q110130950",
+    "culture:wd:Q7825165",
+    "culture:wd:Q22058816",
+    "culture:wd:Q5471260",
+    "culture:wd:Q4245099",
+    "culture:wd:Q8022799",
+    "culture:wd:Q7600744",
+    "culture:wd:Q116957677",
+    "culture:wd:Q5310011",
+    "culture:wd:Q112038023",
+    "culture:wd:Q5253245",
+    "culture:wd:Q18325919",
+    "culture:wd:Q84610482",
+    "culture:wd:Q14685297",
+    "culture:wd:Q3372066",
+    "culture:wd:Q126325502"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "actual_database_browse_queries": 153,
+  "backend_coverage_percent": 80.72,
+  "backend_passed": 2104,
+  "backend_skipped": 138,
+  "database_rollback_preserved_parent": true,
+  "database_staged_twice_idempotent": true,
+  "external_ai_requests": 0,
+  "focused_passed": 72,
+  "frontend": "unchanged; prior checkpoint278 passed, not rerun",
+  "logs_root": "/workspace/catalog-followup-20261021",
+  "optional_legacy_catalog_script_sweep": "28 existing issues outside changed files; preserved",
+  "private_arrival_audit_tests": 24,
+  "production_writes": false,
+  "ruff_backend_and_changed_scripts": "passed"
+}

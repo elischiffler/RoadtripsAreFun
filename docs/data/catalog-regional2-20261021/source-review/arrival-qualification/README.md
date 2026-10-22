@@ -1,0 +1,13 @@
+# Fort Gratiot / Tybee arrival and calendar review
+
+Bounded cloud-local source review, 2026-10-21: two existing T2 lighthouse records reviewed; zero T3 qualifications. No repository changes or live app/database/AI calls.
+
+`qualification-report.json` contains actual supported fields, exact literal proof fragments and unresolved gates. `evidence-receipts.json` pins eleven retained original bodies (seven newly acquired, four reused without network); `receipts.json` contains the seven new GET attempts. `size-receipts.json` records three serial HEAD size checks. All bodies were hash checked and all selected HTML proof fragments replayed against cleaned original text by `build_report.py`. These checks establish integrity/replay, not factual completeness or operator accuracy.
+
+Fort Gratiot's official county directions PDF is a schematic local-street locator. Visual review found no coordinate grid, georeference, scale, parking symbol or explicit vehicle entrance point. Its HTTP Last-Modified is February 12, 2026; document date and point precision remain unknown. The county's “Map This Park” link leads to a county GIS page, not the lighthouse parking map. Adjacent active Coast Guard property must not be treated as a public arrival. Official operator text places December 20, 2026 in both the visiting-period endpoint and closure-period start. Grounds access and guided tower tours have distinct clocks.
+
+Tybee's official general page supports approach via US80 → N Campbell Avenue → Van Horne Avenue → Meddin Drive, and ticket-purchaser parking for up to two hours. Neither that text nor its address-based directions link identifies an exact lot entrance/parking coordinate. Its general page and saved homepage conflict about Christmas Day versus New Year's Eve half-day exceptions. The parade-day closure also lacks an acquired year-specific date; weather and unspecified closures remain conditional.
+
+Two linked brochures were size-checked but not downloaded: Tybee 2,728,239 bytes and Fort Gratiot's 2025 brochure 1,167,086 bytes exceed this task's 1MiB response ceiling. No range request, partial extraction or alternate-path bypass was attempted. These are bounded acquisition limits, not access denials. No request returned 401, 403 or 429. New county robots returned404; saved operator robots allow inspected public paths.
+
+No geographic coordinate was invented or inferred from an address, native feature point, schematic drawing, map viewport or routing snap. Calendar exception completeness remains false. Existing T2 status is preserved; only the root's admission/calendar pipeline may qualify a future T3.

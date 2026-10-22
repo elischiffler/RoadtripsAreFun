@@ -16,18 +16,30 @@ class RunResult(BaseModel):
 @pytest.mark.asyncio
 async def test_progress_and_heartbeat_arrive_before_blocking_provider_finishes(monkeypatch):
     release = threading.Event()
+    finished = threading.Event()
     monkeypatch.setattr(progress_stream, "HEARTBEAT_SECONDS", 0.02)
 
     async def run():
         with stage("route.test"):
             release.wait(2)  # Deliberately blocking: transport must remain responsive.
+            finished.set()
         return RunResult(reply="Done")
 
     stream = progress_stream.stream_turn(run)
     try:
-        events = [json.loads(await anext(stream)), json.loads(await anext(stream))]
-        assert events[1]["stage"] == "route.test" and events[1]["state"] == "started"
-        assert not release.is_set()
+        events = []
+
+        async def receive_route_start():
+            # A heartbeat may precede worker startup on a loaded host. Preserve
+            # the responsiveness deadline instead of assuming a frame index.
+            while True:
+                event = json.loads(await anext(stream))
+                events.append(event)
+                if event.get("stage") == "route.test" and event.get("state") == "started":
+                    return
+
+        await asyncio.wait_for(receive_route_start(), 0.5)
+        assert not release.is_set() and not finished.is_set()
         heartbeat = json.loads(await asyncio.wait_for(anext(stream), 0.5))
         assert heartbeat["type"] == "heartbeat"
         release.set()

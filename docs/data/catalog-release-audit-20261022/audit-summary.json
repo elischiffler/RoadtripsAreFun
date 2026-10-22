@@ -1,0 +1,81 @@
+{
+  "audit_date": "2026-10-22",
+  "bundle": {
+    "clean_repository_proof": {
+      "base_only_seed": true,
+      "bundle_fetch_passed": true,
+      "fsck_strict_passed": true,
+      "history_count": 12,
+      "tip_matches": true,
+      "tree_matches_source": true
+    },
+    "filename": "roadtrips-cloud-complete-through-5e139b5.bundle",
+    "included_commits": [
+      "f3c561b0b97b2dad228ecd20656f9558b611c5d2 Expand catalog with reviewed USFS arrivals and deterministic personas",
+      "a38a3d68281e47d6ae598730c92b0c2ab0caffc8 Plan a diverse 5,000 net-new attraction catalog program",
+      "ff0d4aafd0633dc97bb4c75e2dee79b4e8769045 Separate reviewed browse admission from itinerary eligibility",
+      "0a3d64220ad1207eb0079f6ff8b3778a2465e0bf Implement bounded source-evidence replay for the 600-prospect pilot",
+      "04293998dc5ece4fb8354ad55b4ec2098fb000d6 Record 129 browse admissions, held prospects and local recovery proof",
+      "9e87b22a4966391d143bbe92027c864ea7600586 Replay bounded operator follow-ups and audit arrival geometry without promotion",
+      "f0b5af76192a98377b3b55fa3b66d724a05bac28 Record 24 additional browse places and two visitor-point evidence holds",
+      "791fc8bfffa26c216fab320cd762372bf9abe4a7 Check streamed progress by event semantics while preserving responsiveness deadlines",
+      "babd9690b53efbf41a51eafcc8e4ab7496908f8f Add bounded regional and Baltimore source replay with separate rights quarantine",
+      "190e12c93577d202d3205cab9f5b23e6e36f9f81 Record 41 regional admissions, source rights review and next bounded queue",
+      "b0facd1387e5244eb89ee3fa1b2a833009c6ed7c Add 27 browse admissions with bounded replay and audited source pacing",
+      "5e139b5a5b42bbe44a4904294491ee80b6b02987 Require retrospective pacing audit before combined catalog release"
+    ],
+    "no_production_writes": true,
+    "no_source_acquisition": true,
+    "prerequisite": "3e7010ca5361b752f3e65255190dec249994de26",
+    "sha256": "e9018bb46213953f40b909fb1f29cc7e9e005114e303cc7e7b8f7da0badbfa53",
+    "size_bytes": 1008004,
+    "tip": "5e139b5a5b42bbe44a4904294491ee80b6b02987"
+  },
+  "by_group": {
+    "agency": {
+      "holds": 105,
+      "reviewed": 105
+    },
+    "culture": {
+      "holds": 13,
+      "reviewed": 60
+    },
+    "nature": {
+      "holds": 15,
+      "reviewed": 29
+    }
+  },
+  "confirmed_pacing_miss_source_ids": [
+    "catalog-pilot:wikidata:Q21028346",
+    "catalog-pilot:wikidata:Q4833765",
+    "catalog-pilot:wikidata:Q7797891",
+    "catalog-pilot:nps-nhl:70000834"
+  ],
+  "earlier_T2_reviewed": 194,
+  "existing_evidence_portability": "Raw restricted operator bodies and local DBs are intentionally absent. Original typed replay depends on private cloud originals; do not strip proof requirements or directly activate previewJSON to bypass that dependency.",
+  "findings": {
+    "confirmed_pacing_miss": 3,
+    "confirmed_pacing_miss_and_missing_policy": 1,
+    "declared_pacing_bound_satisfied": 1,
+    "hold_for_pacing_evidence": 15,
+    "hold_missing_operator_policy": 3,
+    "hold_missing_policy_and_doi_policy_ambiguity": 88,
+    "hold_ny_automation_scope_and_missing_policy": 13,
+    "no_declared_pacing_requirement": 46,
+    "no_declared_pacing_violation_found": 14,
+    "policy_or_receipt_coverage_gap": 8,
+    "timing_indeterminate": 2
+  },
+  "native_data_and_approvals_regenerated": false,
+  "no_observed_pacing_hold": 61,
+  "production_writes": false,
+  "qualification_limits": [
+    "61 means no pacing hold found under retained evidence/configured-UA assumptions, not full factual/legal/current-status verification or production release approval.",
+    "User-agent inferred from retained source code; original actual headers and most completion timestamps were not logged. Start timestamps alone are not completion-gap proof.",
+    "Latest27 admissions were outside the requested194-record retrospective scope; their October21 contemporaneous audit and existing holds remain unchanged.",
+    "221 browse-review admissions have zero T3 conversions. Separate93 USFS expansion keeps its original arrival/calendar claims, which this audit did not requalify.",
+    "The documented608 live count is not verified.917 is a diagnostic local total, not a live generation."
+  ],
+  "release_holds": 133,
+  "source_network_requests": 0
+}

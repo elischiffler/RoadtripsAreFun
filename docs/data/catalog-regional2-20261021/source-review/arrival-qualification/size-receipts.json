@@ -1,0 +1,35 @@
+[
+  {
+    "checked_at": "2026-10-21T18:23:10.141760+00:00",
+    "content_length": "2728239",
+    "content_type": "application/pdf",
+    "id": "tybee-brochure-size",
+    "last_modified": "Fri, 09 Oct 2026 16:58:59 GMT",
+    "location": null,
+    "method": "HEAD",
+    "status": 200,
+    "url": "https://www.tybeelighthouse.org/_files/ugd/f985d7_15fcfed44194459c99d3a373e4ec0be3.pdf"
+  },
+  {
+    "checked_at": "2026-10-21T18:23:10.860740+00:00",
+    "content_length": "986928",
+    "content_type": "application/pdf",
+    "id": "gratiot-directions-size",
+    "last_modified": "Thu, 12 Feb 2026 15:57:45 GMT",
+    "location": null,
+    "method": "HEAD",
+    "status": 200,
+    "url": "https://www.stclaircounty.org/Uploads/ParksAndRecreation/forms/FGLS%20map%20inset.pdf"
+  },
+  {
+    "checked_at": "2026-10-21T18:23:11.386909+00:00",
+    "content_length": "1167086",
+    "content_type": "application/pdf",
+    "id": "gratiot-brochure-size",
+    "last_modified": "Wed, 03 Dec 2025 14:12:34 GMT",
+    "location": null,
+    "method": "HEAD",
+    "status": 200,
+    "url": "https://www.stclaircounty.org/Uploads/ParksAndRecreation/forms/Brochures/FGLS%20Brochure%202025%20NEW%20WEB.pdf"
+  }
+]
