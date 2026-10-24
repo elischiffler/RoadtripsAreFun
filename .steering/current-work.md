@@ -1,5 +1,20 @@
 # Current release and acceptance
 
+## October 24 nature coverage and rating-audit replacement
+
+The active catalog now has 611 places and 192 calendars, adding three reviewed
+CDFW coastal reserve trail arrivals while preserving every parent row. The
+destination-specific v3 rubric refreshes all 39 captured place ratings via the
+configured gateway, with actual model provenance persisted. Replacement study
+`d0aee85d-bd6a-49c3-a74a-c5b5630549bf` completes 24 captures and 5,040 trials
+with the unchanged bell corridor, 15-second limit and 30 seeds. All 720 baseline
+trials are OPTIMAL; mean utility rises from 0.255999 to 0.409306 (+15.3307 points).
+Short nature selections now use the reserve trails (three-stop mean 0.69). Across
+all settings, 4,740 trials are OPTIMAL and 300 zero-loss trials are INFEASIBLE
+because conservative integer rounding makes their exact bound unattainable.
+Retain those outcomes in the paper. The earlier corridor study below is superseded.
+See the [replacement evidence packet](../docs/research/2026-10-24-nature/README.md).
+
 ## October 24 bell-shaped research corridor
 
 The user replaced sampled route discovery with deterministic, uncapped catalog

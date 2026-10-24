@@ -1,3 +1,5 @@
+> Superseded by the [nature coverage and rating-audit replacement](../2026-10-24-nature/README.md). Retained as historical evidence; do not use these numbers as the final paper dataset.
+
 # Completed bell-shaped corridor study
 
 Study `514e8250-12c7-4a22-bd2d-e550523fc7dc`, captured and solved using commit `dc231e1c33878487170669a61f621b3591a5f4dd`.

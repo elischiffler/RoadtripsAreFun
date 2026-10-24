@@ -404,3 +404,34 @@ Develop working tree after `48e3e48`, tested locally before commit:
   Open trip returned the saved result without another execution. Cards showed
   Sources links without the removed verbose source block. This synthetic check
   does not establish live provider or production acceptance.
+
+## October 24 nature catalog and rating audit
+
+Source commit `e2d0bf8ed2861c3ca09f45c40f00cc283c866c9c` passes backend formatting,
+Ruff and the full suite with disposable PostgreSQL 18: **2,235 passed, 73 skipped,
+81.96% coverage**, retaining the 63% minimum. Frontend `npm ci`, format check,
+lint, **295 tests / 92.60% coverage**, and build pass. Container smoke is 2/2;
+the disposable CRUD, recreation and backup/restore runner passes. All five
+repository CI gates and the Vercel preview pass on that exact source commit.
+Existing duplicate-operation-ID and frontend chunk-size warnings remain.
+
+The initial Mac test environment inherited a local CORS override omitting one
+required development origin. A partial override then omitted preview/production
+test origins. The passing run uses all five documented default origins explicitly;
+no CORS code, tests or thresholds were changed to clear those failures. Catalog
+and research tests use only disposable fixture data. A separate authentic
+catalog-only recovery rehearsal verifies the hosted pre-change backup; it does
+not substitute for local test gates.
+
+Reviewed source replay adds three CDFW/OSM trail arrivals, enforces source hashes,
+native road/parking geometry and a 30-day solar calendar. New tests cover DST,
+inward minute rounding, fixed-hour intersections, changed review rejection and
+private-road rejection. Existing rating-cache and provider tests verify the new
+rubric reaches the AI request while current place facts and cache semantics remain.
+
+Local file-sync stalls affected the original Python environment and API. Study
+execution used a clean clone of the exact tested commit and a fresh environment
+from pinned requirements on the same Mac; its identity records a clean tree and
+source hash. The local API currently serves that same source copy using the clean
+environment; Vite serves the original checkout. No Docker test containers remain
+running. See the [new research packet](research/2026-10-24-nature/README.md).

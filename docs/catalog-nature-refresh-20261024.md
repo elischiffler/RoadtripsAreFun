@@ -56,3 +56,17 @@ from 0.45 to 0.06, and Solana Beach Farmers Market from 0.39 to 0.06. Those chan
 are AI estimates under the revised instructions, not independent human ground
 truth. All eligible inputs across the replacement study use the same revised
 version. Solver settings, corridor widths, seeds and paper sweeps remain unchanged.
+
+## Verified activation and replacement
+
+Generation `f4f8d0672d4c6e6bfa0f818b937837df40909eb00d8d52df933157e1eb516bcf`
+is active and was reread as 611 rows / 192 calendar companions. The pre-change
+catalog-only custom dump is 2,880,273 bytes, SHA-256
+`de1d2ebf3c13a9f9ec00f9b6cd7ccd962b749e328760f3ad44c84f8bb120be5a`.
+Its separate PostgreSQL 18 restore matched all six snapshot fingerprints. The
+verified rollback receipt has SHA-256
+`7412c6b28b250c9f090674622dddb54dbb1664200d92a51d28f85549002896f7`.
+These are scoped catalog recovery checks, not evidence of whole-account disaster
+recovery. No schema migration, main merge or production application deployment
+was performed. The complete [replacement results](research/2026-10-24-nature/README.md)
+retain the zero-loss precision failures alongside successful baseline selections.
