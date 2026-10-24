@@ -8,8 +8,11 @@ route's full polyline. A normalized Gaussian gives 5-mile endpoint widths and a
 25-mile midpoint width by default; widths and sigma are frozen in schema-v4
 protocols. The same route pool, persisted traits and measured solo detours are
 reused across personas, requested stop counts and all solver settings/seeds.
-Ordinary app discovery retains its existing behavior. A live 10-candidate
-selection-only preflight passed; the new empirical campaign is not yet complete.
+Ordinary app discovery retains its existing behavior. The new campaign
+`514e8250-12c7-4a22-bd2d-e550523fc7dc` is complete: all 5,040 trials are OPTIMAL,
+using 10–23 eligible places per route and 36 distinct captured identities.
+Baseline mean utility rises from 0.403435 to 0.529637 (+12.6202 points); all
+requested counts are fulfilled. See the [current audited packet](../docs/research/2026-10-24-corridor/README.md).
 The previous schema-v3 results below are superseded for the paper and must not be
 combined with the revised protocol.
 

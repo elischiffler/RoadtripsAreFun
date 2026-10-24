@@ -1,5 +1,53 @@
 # Container migration evidence
 
+## Uncapped bell-shaped research corridor, October 24, 2026
+
+Source `dc231e1` passed Ruff format/lint and 2,230 backend tests with 73 skips and
+82.11% coverage, including catalog, research and trait persistence checks against
+disposable PostgreSQL 18. The first expanded local run selected PostgreSQL 16;
+its frozen-catalog recovery tests correctly rejected that unsupported version.
+Those checks passed on the required PostgreSQL 18 without code changes.
+Frontend format/lint, all 294 tests (92.56% statements) and production build pass.
+The existing warnings remain; no thresholds were reduced.
+
+The corridor regressions cover exact endpoint/midpoint widths, mirror symmetry,
+continuous polyline geometry, distance rather than time progress, deterministic
+ordering, 121 inputs reaching the solver, complete persisted AI-rating batches,
+and reuse across personas/stop counts without repeating provider calls. A real
+PostgreSQL test returns all 121 admitted fixture rows while excluding an
+unreviewed catalog identity. Test fixtures are separate from empirical inputs.
+
+A live selection-only preflight collected ten candidates, recorded no error and
+returned OPTIMAL in the baseline comparison (pool mean 0.22175, selected 0.45).
+Its evidence is private and excluded from the paper study. Full planner,
+scheduler and itinerary entry points were explicitly forbidden during the check.
+
+Exact-head CI passed frontend, backend, container and PostgreSQL CRUD checks.
+Local rebuilt diagnostic containers passed both smoke tests. A local test-image
+context read stalled on a cloud-hydrated fixture; the test image was instead
+built from the exact committed GitHub source archive. Revision labels were
+verified before `DB_TEST_SKIP_BUILD=true node tests/postgres/run.mjs`, which
+passed CRUD/ownership, research persistence, database-loss readiness, recreation,
+backup/restore and nonempty-restore refusal. Test volumes remain available;
+owned containers were stopped before controlled solver timings resumed.
+
+The schema-v3 point-sampling study was removed from active stores after a
+verified private recovery copy. Schema-v4 study
+`514e8250-12c7-4a22-bd2d-e550523fc7dc` freezes `dc231e1`; its four real route pools
+are shared across 24 scenario captures. The completed campaign is verified in PostgreSQL: all 5,064 queue items finished,
+including 5,040 OPTIMAL trials. Independent audits recomputed every pool mean,
+persona utility and selected mean, verified corridor/pool invariance, and matched
+all 36 distinct inputs to persisted traits. See the [audited packet](research/2026-10-24-corridor/README.md).
+
+A browser check caught a stale library cache after study replacement. The small
+study list now refreshes on page entry; snapshots remain cached by study/session.
+The displayed corridor widths come from frozen protocol metadata. Frontend
+regressions cover replaced-study discovery and database-backed corridor labels.
+The final frontend suite passes all 295 tests with 92.60% statement coverage;
+format/lint and build also pass. Browser verification shows the completed 5,064
+items, no candidate-count cap and the frozen 5/25-mile corridor settings.
+
+
 ## Selection-only scope revision, October 24, 2026
 
 The user removed full trip planning from research. The running combined study

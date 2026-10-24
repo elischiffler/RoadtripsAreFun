@@ -240,21 +240,23 @@ it('keeps cached results private to a capability and the current Studio session'
   expect(axios.get).toHaveBeenCalledTimes(4);
 });
 
-it('reuses the library and catalog, and honors cancellation even for cached responses', async () => {
+it('refreshes replaced studies, reuses the catalog, and honors cancellation', async () => {
   sessionStorage.setItem(
     'studioSession',
     JSON.stringify({ token: 'visitor', expires_at: Date.now() / 1000 + 60 })
   );
   axios.get.mockResolvedValueOnce({ data: { studies: [{ id: 'current', database: true }] } });
-  expect(await loadStudyLibrary()).toEqual(await loadStudyLibrary());
+  expect((await loadStudyLibrary()).current[0].id).toBe('current');
+  axios.get.mockResolvedValueOnce({ data: { studies: [{ id: 'replacement', database: true }] } });
+  expect((await loadStudyLibrary()).current[0].id).toBe('replacement');
   axios.get.mockResolvedValueOnce({ data: { trips: [], personas: [] } });
   expect(await researchCatalog()).toEqual(await researchCatalog());
-  expect(axios.get).toHaveBeenCalledTimes(2);
+  expect(axios.get).toHaveBeenCalledTimes(3);
   const controller = new AbortController();
   controller.abort();
   await expect(loadStudyLibrary(controller.signal)).rejects.toMatchObject({ name: 'AbortError' });
   await expect(researchCatalog(controller.signal)).rejects.toMatchObject({ name: 'AbortError' });
-  expect(axios.get).toHaveBeenCalledTimes(2);
+  expect(axios.get).toHaveBeenCalledTimes(3);
 });
 
 it('falls back to same-tab memory when session storage is unavailable', async () => {

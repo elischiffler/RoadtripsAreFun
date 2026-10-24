@@ -179,7 +179,21 @@ export function combineStudies(snapshots) {
       ),
     ],
     dataset_hashes: [...new Set(snapshots.map((study) => study.dataset_hash))],
-    datasets: snapshots.map((study) => study.dataset).filter(Boolean),
+    datasets: snapshots
+      .map(
+        (study) =>
+          study.dataset ??
+          (finite(study.design.corridor_midpoint_miles)
+            ? {
+                candidate_limit: null,
+                corridor: {
+                  endpoint_miles: study.design.corridor_endpoint_miles,
+                  midpoint_miles: study.design.corridor_midpoint_miles,
+                },
+              }
+            : null)
+      )
+      .filter(Boolean),
     rows: snapshots.flatMap((study) =>
       study.rows.map((row) => ({
         ...row,

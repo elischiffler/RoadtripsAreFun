@@ -241,6 +241,32 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   expect(screen.getByText('Feasible')).toBeInTheDocument();
 });
 
+it('shows the frozen uncapped corridor from database protocol metadata', async () => {
+  sessionStorage.setItem(
+    'studioSession',
+    JSON.stringify({ token: 'fixture-session', expires_at: Date.now() / 1000 + 3600 })
+  );
+  loadStudyLibrary.mockResolvedValue({
+    current: [{ id: 'corridor', database: true }],
+    archived: [],
+  });
+  savedStudies.mockReturnValue([{ id: 'corridor', database: true }]);
+  studyRequest.mockResolvedValue({
+    state: 'complete',
+    counts: { total: 1, captures: 0, solver: 1 },
+    design: { ...defaults, corridor_endpoint_miles: 5, corridor_midpoint_miles: 25 },
+    variants,
+    dataset_hash: 'corridor-fixture',
+    rows: [base],
+  });
+  mount();
+  await screen.findByText('Real input pools · no count cap');
+  expect(
+    screen.getByText('Bell-shaped corridor · 5 mi at endpoints · 25 mi at midpoint')
+  ).toBeInTheDocument();
+  expect(screen.queryByText('Real input pools · up to 60 places')).not.toBeInTheDocument();
+});
+
 it('does not confuse zeroes, missing measurements, failed trials or unmatched pairs', () => {
   expect(distribution([0, 1, null, NaN])).toMatchObject({
     n: 2,
