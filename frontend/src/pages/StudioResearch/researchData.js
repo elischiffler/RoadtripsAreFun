@@ -206,4 +206,4 @@ export const settingLabel = (setting) =>
     ? 'Default settings'
     : setting.parameter === 'quality_loss'
       ? `Allowed utility score drop: ${format(setting.value * 100)} points`
-      : `Added driving penalty: ${format(setting.value)}×`;
+      : `Added driving penalty: ${format(setting.value, 2)}×`;
