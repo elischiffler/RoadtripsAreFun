@@ -22,7 +22,7 @@ TIME_LIMIT_SECONDS = 15.0
 
 @dataclass(frozen=True)
 class SelectionConfig:
-    candidate_limit: int = MAX_CANDIDATES
+    candidate_limit: int | None = MAX_CANDIDATES
     utility_threshold: float = UTILITY_FLOOR
     quality_loss: float = MAX_AVERAGE_QUALITY_LOSS
     spacing_weight: float = 1.0
@@ -38,6 +38,8 @@ class SelectionConfig:
             ("workers", 1, 8),
         ):
             value = getattr(self, name)
+            if name == "candidate_limit" and value is None:
+                continue  # Uncapped, deterministic research corridor inputs.
             if isinstance(value, bool) or not isinstance(value, int) or not low <= value <= high:
                 raise ValueError(f"{name} must be an integer in {low}..{high}")
         for name, low, high in (
@@ -233,7 +235,9 @@ def select_attractions(
         or not 0 <= baseline_seconds <= 10_000_000
     ):
         raise ValueError("baseline_seconds must be finite in 0..10000000")
-    if not isinstance(candidates, list) or len(candidates) > config.candidate_limit:
+    if not isinstance(candidates, list) or (
+        config.candidate_limit is not None and len(candidates) > config.candidate_limit
+    ):
         raise PlanningError("Verified attraction candidate limit exceeded", 502)
     summary = {
         "status": "NOT_RUN",

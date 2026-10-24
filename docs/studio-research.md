@@ -8,7 +8,7 @@ removed from research. Ordinary trip planning remains available in Studio.
 
 ## Protocol
 
-The October 24 selection-only protocol (`schema_version: 3`) covers:
+The October 24 selection-only protocol (`schema_version: 4`) covers:
 
 | Route | Target days used to calculate requested stops | Requested attractions |
 | --- | ---: | --- |
@@ -20,18 +20,19 @@ The October 24 selection-only protocol (`schema_version: 3`) covers:
 Two explicit personas (nature and entertainment) and three stop densities yield
 24 scenarios. The requested departure is fixed for each study (default seven days
 later at 08:00 local time). Target days determine the requested attraction count;
-they are not a scheduled trip duration. Source calendars and visit-duration
-estimates still govern candidate eligibility. They do not establish final itinerary
-feasibility because no downstream scheduling is performed in this study.
+they are not a scheduled trip duration. The selector retains its source-calendar
+validity and positive-utility checks, but this selection-only study does not assess
+date-specific opening windows, visit durations or final itinerary feasibility.
 
 Each scenario has one input-collection job followed by 210 controlled solver
 trials: seven distinct configurations × 30 seeds (0–29). There are **24 captures
 and 5,040 solver trials**, or 5,064 queue items. Input collection is preparation,
 not a full-trip evaluation or an additional solver trial.
 
-All solver configurations use a **15-second limit**, **at most 60 eligible input
-candidates**, one search worker and spacing weight 1. Sixty is a cap, not a quota:
-scarce real pools are never padded with invented places.
+All solver configurations use a **15-second limit**, **no candidate-count cap**,
+one search worker and spacing weight 1. Every geographic match is considered;
+scarce real pools are never padded with invented places. Ordinary app discovery
+retains its existing limits; the revised corridor protocol is research-only.
 
 | One-factor sweep | Values | Other setting |
 | --- | --- | --- |
@@ -44,13 +45,47 @@ order. Unsupported full-trip/repeat options are rejected by the API.
 
 ## Real input collection
 
-`app/research/collect.py` resolves the route endpoints and measures its baseline
-using existing live providers. It reuses production discovery, source-calendar
-eligibility, persisted trait estimation and candidate road verification. Each
-candidate's solo origin–candidate–destination route is measured. Collection stops
-before selection; it never calls the full planner, scheduler or itinerary builder.
-The study runs at most two captures concurrently, then one solver trial at a time,
-so provider work does not compete with controlled solver timing.
+`app/research/collect.py` resolves the route endpoints and measures the initial
+route using existing live providers. `app/catalog/repository.py:routing_snapshot`
+reads all admitted daytime places from one immutable active generation, without
+a SQL result limit. `app/routing/corridor.py` checks every route segment, not
+scattered search points. Membership does not depend on persona or requested stops.
+
+For a place's nearest projection onto the road polyline, let `p` be the fraction
+of total baseline polyline distance (0 at the start, 1 at the end). The allowed
+one-sided distance is a normalized Gaussian:
+
+```
+g(p) = exp(-0.5 * ((p - 0.5) / sigma)^2)
+r(p) = endpoint + (midpoint - endpoint) * (g(p) - g(0)) / (1 - g(0))
+include iff distance_to_route <= r(p)
+```
+
+Defaults are **5 miles at either endpoint, 25 miles at the midpoint, sigma 0.25**.
+The width applies on both sides (50 miles total at the middle). It is a deterministic
+geographic rule, not random sampling or a probability. Design fields
+`corridor_endpoint_miles`, `corridor_midpoint_miles` and `corridor_sigma` configure
+and freeze it. Distances use the existing local segment projection followed by a
+WGS84 geodesic measurement; progress uses polyline length rather than driving time.
+Ties at crossings choose the earliest occurrence. The radius is evaluated at the
+nearest projection; a farther, wider part of the route cannot admit the place.
+
+![Bell-shaped route corridor](research/route-corridor.png)
+
+Every geographic match receives persisted AI trait ratings. Requests are batched
+in groups of at most five, but all groups are processed. Missing or unpersisted
+traits fail preparation instead of silently reducing the pool. The AI supplies
+ratings only; it does not suggest places or determine geographic membership.
+Each candidate's solo origin–candidate–destination road route is measured, and
+unusable-road exclusions remain in the evidence.
+
+`app/research/preparation.py` freezes one catalog snapshot and four measured route
+pools per study. The 24 scenario captures reuse those same route/trait/road facts;
+only persona utility arithmetic and the requested selection count change. Stored
+hashes and exclusive intent/result files prevent accidental recapture after a
+restart. Twenty reused scenario preparations make no provider calls. Collection
+never calls the full planner, scheduler or itinerary builder. At most two route
+preparations run concurrently, followed by one solver trial at a time.
 
 `app/research/evidence.py` validates catalog generation/source provenance and the
 persisted rating provider/model/timestamp, recalculates utility from the frozen

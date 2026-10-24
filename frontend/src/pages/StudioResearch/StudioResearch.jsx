@@ -405,7 +405,24 @@ export default function StudioResearch() {
             <progress value={finished} max={data.counts.total} aria-label="Finished study runs" />
             <div className="research-track-meta">
               <span>Stop selection · {format(data.counts.solver, 0)} trials</span>
-              <span>Real input pools · up to 60 places</span>
+              <span>
+                {data.datasets?.every((dataset) => dataset.candidate_limit === null) &&
+                data.datasets.length > 0
+                  ? 'Real input pools · no count cap'
+                  : 'Real input pools · up to 60 places'}
+              </span>
+              {[
+                ...new Set(
+                  (data.datasets ?? [])
+                    .filter((dataset) => dataset.corridor)
+                    .map(
+                      ({ corridor }) =>
+                        `${format(corridor.endpoint_miles)} mi at endpoints · ${format(corridor.midpoint_miles)} mi at midpoint`
+                    )
+                ),
+              ].map((label) => (
+                <span key={label}>Bell-shaped corridor · {label}</span>
+              ))}
               <span>
                 {(data.rows ?? []).filter((row) => row.track === 'capture').length} /{' '}
                 {data.counts.captures} input captures finished

@@ -33,8 +33,6 @@ def capture(envelope, case):
     candidates = deepcopy(explanation.get("candidates") or [])
     if baseline is None:
         return None
-    if len(candidates) > 60:
-        raise ValueError("Research capture exceeded the production candidate limit")
     for row in candidates:
         generations = {
             item["generation"]
@@ -62,7 +60,7 @@ def capture(envelope, case):
             raise ValueError("Captured utility does not match the frozen persona and traits")
         for key in ("selected", "reason", "objective_coefficient"):
             row.pop(key, None)
-    eligible, _ = _prepare(candidates, baseline, SelectionConfig())
+    eligible, _ = _prepare(candidates, baseline, SelectionConfig(candidate_limit=None))
     # Retain every supplied input, including exclusions, for denominator auditing.
     result = {
         "evidence": "real_catalog_and_measured_roads",
@@ -76,6 +74,7 @@ def capture(envelope, case):
         "candidates": candidates,
         "eligible_count": len(eligible),
         "query_points": explanation.get("query_points") or [],
+        "discovery": explanation.get("discovery") or {},
     }
     result["hash"] = fingerprint(result)
     return result

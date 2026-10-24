@@ -58,7 +58,7 @@ def test_capture_preserves_exact_roads_ratings_and_hash_across_solver_seeds():
         assert result["selected_utility_mean"] == pytest.approx(0.8)
         assert result["utility_gain"] == pytest.approx(0.2)
         assert result["dataset_hash"] == frozen["hash"]
-        assert result["solver"]["configuration"]["candidate_limit"] == 60
+        assert result["solver"]["configuration"]["candidate_limit"] is None
     assert frozen == before
 
 
@@ -155,19 +155,11 @@ async def test_collection_stops_before_selection_scheduling_hotels_and_itinerary
     monkeypatch.setattr(collect, "resolve_endpoint", AsyncMock(return_value=endpoint))
     initial = SimpleNamespace(duration=1000, model_dump=lambda **kwargs: {"duration": 1000})
     monkeypatch.setattr(collect, "call_route", AsyncMock(return_value=initial))
-    plan = SimpleNamespace(queries=[SimpleNamespace(coordinates=[34, -118])])
-    monkeypatch.setattr(collect, "make_discovery_plan", lambda *args: plan)
+    services = SimpleNamespace(timezone_at=None)
     monkeypatch.setattr(
-        collect,
-        "TripCalendar",
-        lambda *args: SimpleNamespace(eligible=AsyncMock(return_value=True)),
+        collect, "routing_snapshot", lambda: {"generation": "fixture", "records": []}
     )
-    services = SimpleNamespace(
-        timezone_at=None,
-        cp_sat_candidates=AsyncMock(
-            return_value=SimpleNamespace(candidates=frozen["candidates"], explanation={})
-        ),
-    )
+    monkeypatch.setattr(collect, "rated_pool", AsyncMock(return_value=(frozen["candidates"], {})))
     monkeypatch.setattr(collect, "_build_services", lambda: services)
     checked = AsyncMock(return_value=frozen["candidates"])
     monkeypatch.setattr(collect.CPSatPlanner, "_verify_detours", checked)

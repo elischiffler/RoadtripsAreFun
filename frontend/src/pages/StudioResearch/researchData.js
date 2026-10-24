@@ -179,6 +179,7 @@ export function combineStudies(snapshots) {
       ),
     ],
     dataset_hashes: [...new Set(snapshots.map((study) => study.dataset_hash))],
+    datasets: snapshots.map((study) => study.dataset).filter(Boolean),
     rows: snapshots.flatMap((study) =>
       study.rows.map((row) => ({
         ...row,

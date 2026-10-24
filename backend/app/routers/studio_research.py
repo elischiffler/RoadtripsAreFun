@@ -146,6 +146,7 @@ def snapshot(response: Response, study=Depends(authorized), after: int = Query(d
         "counts": planned["counts"],
         "design": planned["design"],
         "variants": planned["variants"],
+        "dataset": planned["dataset"],
         "dataset_hash": planned["dataset_hash"],
         "progress": progress,
         "cursor": cursor,

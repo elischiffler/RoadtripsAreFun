@@ -10,8 +10,7 @@ from uuid import UUID, uuid5
 
 from fastapi import HTTPException
 
-from app.research import evidence, store
-from app.research.collect import collect_inputs
+from app.research import evidence, preparation, store
 from app.research.metrics import observation
 from app.routing.cp_sat_selection import SelectionConfig, select_attractions
 from app.routing.evaluation.runner import atomic, identity, json_text
@@ -87,7 +86,7 @@ async def capture_trial(case, study):
                 "message": "An earlier capture did not finish; provider calls were not repeated.",
             },
         }
-    envelope = await asyncio.wait_for(collect_inputs(case), timeout=1200)
+    envelope = await asyncio.wait_for(preparation.inputs(case, study), timeout=1200)
     envelope["attempt_id"] = attempt_id
     result = {
         "outcome": "failed" if envelope.get("error") else "completed",

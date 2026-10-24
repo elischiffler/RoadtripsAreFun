@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, model_validator
 
+from app.routing.corridor import CorridorConfig
 from app.routing.cp_sat_selection import SelectionConfig
 from app.routing.evaluation.scenarios import CORRIDORS, PERSONAS
 from app.routing.run_metrics import fingerprint
@@ -38,6 +39,9 @@ class Design(BaseModel):
         )
     )
     seed: int = Field(default=1729, strict=True, ge=0, le=2147483647)
+    corridor_endpoint_miles: float = Field(default=5.0, strict=True, gt=0, le=100)
+    corridor_midpoint_miles: float = Field(default=25.0, strict=True, gt=0, le=100)
+    corridor_sigma: float = Field(default=0.25, strict=True, ge=0.05, le=1.0)
     quality_loss: list[StrictFloat] = Field(
         default_factory=lambda: [0.0, 0.05, 0.1, 0.2], min_length=1, max_length=7
     )
@@ -47,6 +51,9 @@ class Design(BaseModel):
 
     @model_validator(mode="after")
     def validate_design(self):
+        CorridorConfig(
+            self.corridor_endpoint_miles, self.corridor_midpoint_miles, self.corridor_sigma
+        )
         for name in ("trips", "personas", "stops_per_day", "quality_loss", "detour_weight"):
             values = getattr(self, name)
             if len(set(values)) != len(values):
@@ -64,7 +71,7 @@ class Design(BaseModel):
 
 
 def variants(design):
-    base = SelectionConfig(candidate_limit=60, time_limit_seconds=15.0)
+    base = SelectionConfig(candidate_limit=None, time_limit_seconds=15.0)
     rows = [{"id": "baseline", "parameter": "baseline", "value": None, "config": asdict(base)}]
     for parameter in ("quality_loss", "detour_weight"):
         for value in getattr(design, parameter):
@@ -94,6 +101,11 @@ def plan(design):
                     "departure_time": "08:00",
                     "num_stops": days * density,
                     "persona_weights": PERSONAS[persona],
+                    "corridor": CorridorConfig(
+                        design.corridor_endpoint_miles,
+                        design.corridor_midpoint_miles,
+                        design.corridor_sigma,
+                    ).snapshot(),
                 }
                 cells.append(
                     {
@@ -117,12 +129,15 @@ def plan(design):
         cases.extend(block)
     dataset = {
         "kind": "real_capture_per_scenario",
-        "candidate_limit": 60,
+        "candidate_limit": None,
+        "corridor": CorridorConfig(
+            design.corridor_endpoint_miles, design.corridor_midpoint_miles, design.corridor_sigma
+        ).snapshot(),
         "capture_repeat": 1,
-        "description": "Real pre-selection catalog candidates and measured solo road detours, captured once per scenario without trip planning; frozen across settings and seeds.",
+        "description": "All admitted catalog attractions in a deterministic bell-shaped route corridor, with no count cap; persisted traits and measured solo road detours, frozen across settings and seeds. No full-trip planning.",
     }
     return {
-        "schema_version": 3,
+        "schema_version": 4,
         "design": design.model_dump(mode="json"),
         "variants": conditions,
         "counts": {

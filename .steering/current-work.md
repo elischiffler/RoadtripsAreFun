@@ -1,5 +1,18 @@
 # Current release and acceptance
 
+## October 24 bell-shaped research corridor
+
+The user replaced sampled route discovery with deterministic, uncapped catalog
+membership. Research now checks every admitted daytime place against the initial
+route's full polyline. A normalized Gaussian gives 5-mile endpoint widths and a
+25-mile midpoint width by default; widths and sigma are frozen in schema-v4
+protocols. The same route pool, persisted traits and measured solo detours are
+reused across personas, requested stop counts and all solver settings/seeds.
+Ordinary app discovery retains its existing behavior. A live 10-candidate
+selection-only preflight passed; the new empirical campaign is not yet complete.
+The previous schema-v3 results below are superseded for the paper and must not be
+combined with the revised protocol.
+
 ## October 24 real-data selection research
 
 At the user's revised scope, research performs attraction selection only. The

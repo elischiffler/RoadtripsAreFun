@@ -1,5 +1,9 @@
 # Real-data selection results, October 24, 2026
 
+**Superseded protocol:** the user subsequently requested an uncapped bell-shaped
+route corridor. These schema-v3 results remain historical evidence and must not
+be combined with, or presented as results of, the revised corridor study.
+
 Study `05fc366d-4623-4467-ba06-a93911147993` completed from clean backend source
 `dec327426244f10e4c3c34bb7fd00177224586a7`. Its 24 real input captures and all 5,040
 CP-SAT trials are saved in PostgreSQL. All solver trials returned OPTIMAL; no

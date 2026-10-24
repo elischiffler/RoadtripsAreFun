@@ -1,4 +1,4 @@
-"""Bounded indexed catalog discovery through the application's existing pool."""
+"""Indexed nearby reads and uncapped research snapshots through the existing pool."""
 
 import math
 import time
@@ -290,38 +290,88 @@ def nearby_page(
             else None
         )
         records = [
-            {
-                "provider_id": identity(r["source_id"])[0],
-                "name": r["name"],
-                "coordinates": [r["latitude"], r["longitude"]],
-                "address": r["address"],
-                "url": r["url"],
-                "categories": r["categories"],
-                **persona_facts(r["provenance"]),
-                "provider_rank": (cursor.scanned if cursor else 0) + rank,
-                "source": identity(r["source_id"])[1],
-                "source_release": (r.get("calendar_enrichment") or {}).get("source_release")
-                or (r.get("source_catalogs") or {})
-                .get(identity(r["source_id"])[1], {})
-                .get("release", r["release"]),
-                "source_attribution": source_attribution(r),
-                "source_updated_at": r["source_updated_at"],
-                "source_provenance": project(r["provenance"], r.get("calendar_enrichment"))
-                + (
-                    [
-                        {
-                            "dataset": "Roadtrips active catalog",
-                            "generation": r["generation"],
-                            "release": r["release"],
-                        }
-                    ]
-                    if r.get("generation")
-                    else []
-                ),
-            }
-            for rank, r in enumerate(rows)
+            _record(r, (cursor.scanned if cursor else 0) + rank) for rank, r in enumerate(rows)
         ]
         return CatalogPage(records, next_cursor)
+    finally:
+        conn.rollback()
+        chat_crud._put_conn(conn)
+
+
+def _record(r, rank):
+    """Project stored source facts without changing admission or identities."""
+    return {
+        "provider_id": identity(r["source_id"])[0],
+        "name": r["name"],
+        "coordinates": [r["latitude"], r["longitude"]],
+        "address": r["address"],
+        "url": r["url"],
+        "categories": r["categories"],
+        **persona_facts(r["provenance"]),
+        "provider_rank": rank,
+        "source": identity(r["source_id"])[1],
+        "source_release": (r.get("calendar_enrichment") or {}).get("source_release")
+        or (r.get("source_catalogs") or {})
+        .get(identity(r["source_id"])[1], {})
+        .get("release", r["release"]),
+        "source_attribution": source_attribution(r),
+        "source_updated_at": r["source_updated_at"],
+        "source_provenance": project(r["provenance"], r.get("calendar_enrichment"))
+        + (
+            [
+                {
+                    "dataset": "Roadtrips active catalog",
+                    "generation": r["generation"],
+                    "release": r["release"],
+                }
+            ]
+            if r.get("generation")
+            else []
+        ),
+    }
+
+
+def routing_snapshot():
+    """Read every admitted daytime place from one immutable active generation.
+
+    This is an uncapped research read. Geographic selection happens against the
+    continuous route, rather than LIMITed nearby searches. Acquisition holds and
+    T3 admission still apply; date/calendar feasibility is a separate assessment.
+    """
+    if not (settings.DATABASE_URL or "").strip():
+        raise RuntimeError("Places catalog database is not configured")
+    conn = chat_crud._get_conn()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY")
+            cur.execute("SET LOCAL statement_timeout='10000ms'")
+            cur.execute("SELECT generation FROM places_catalog_active")
+            active = cur.fetchone()
+            if active is None:
+                raise RuntimeError("No active places catalog")
+            generation = active["generation"]
+            now_epoch = int(time.time())
+            cur.execute(
+                f"""
+                SELECT p.*, e.entry AS calendar_enrichment, i.release,
+                    i.manifest->>'attribution' AS attribution,
+                    i.manifest->'source_catalogs' AS source_catalogs
+                FROM places_catalog p
+                JOIN places_catalog_imports i ON i.generation=p.generation
+                LEFT JOIN places_catalog_calendars e
+                    ON e.generation=p.generation AND e.source_id=p.source_id
+                {admission.SQL_JOINS}
+                WHERE p.generation=%s AND p.categories && ARRAY['daytime']::text[]
+                    AND {admission.sql_predicate()}
+                ORDER BY p.source_id
+                """,
+                (generation, now_epoch, now_epoch),
+            )
+            rows = cur.fetchall()
+        return {
+            "generation": generation,
+            "records": [_record(row, i) for i, row in enumerate(rows)],
+        }
     finally:
         conn.rollback()
         chat_crud._put_conn(conn)

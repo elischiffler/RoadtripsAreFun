@@ -51,7 +51,7 @@ def test_matrix_and_one_factor_conditions_are_exact_and_paired():
     planned = plan(Design())
     assert planned["counts"] == {"combinations": 24, "captures": 24, "solver": 5040, "total": 5064}
     assert planned["dataset"]["kind"] == "real_capture_per_scenario"
-    assert planned["dataset"]["candidate_limit"] == 60
+    assert planned["dataset"]["candidate_limit"] is None
     assert planned == plan(Design())
     base = planned["variants"][0]["config"]
     assert base["time_limit_seconds"] == SelectionConfig().time_limit_seconds == 15
@@ -221,7 +221,7 @@ async def test_interrupted_capture_is_not_repeated_and_saved_capture_is_reused(m
     study = store.study(key, trusted=True)
     case = next(row for row in store.rows(key) if row["track"] == "capture")
     collected = AsyncMock(return_value={"runtime_seconds": 0, "error": {"code": "unit-test"}})
-    monkeypatch.setattr(worker, "collect_inputs", collected)
+    monkeypatch.setattr(worker.preparation, "inputs", collected)
     first = await worker.capture_trial(case, study)
     assert await worker.capture_trial(case, study) == first
     collected.assert_awaited_once()
