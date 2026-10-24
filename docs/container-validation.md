@@ -1,6 +1,34 @@
 # Container migration evidence
 
-## Real-data research protocol, October 24, 2026
+## Selection-only scope revision, October 24, 2026
+
+The user removed full trip planning from research. The running combined study
+`5f7c2e5e-d3fd-4249-8af0-f1d76588c464` was stopped, its running Lab records finalized
+as interrupted, and its research/Lab records removed after a private recovery
+copy. Its observations are not part of the revised study. Research now collects
+24 real input pools and runs 5,040 solver trials, with no scheduling, hotels,
+itineraries or final-route evaluation. The UI, exports and protocol omit the
+full-trip track and its measurements. The previous shared trip-metrics change was
+reverted, leaving ordinary trip measurements unchanged.
+
+The focused revised checks pass: 32 backend protocol/capture tests and 35 frontend
+research/service tests. A regression test makes full planning, scheduling,
+selection and itinerary calls fail during input collection. Durable capture
+intent/result tests verify that a restart cannot repeat provider work silently.
+The full backend suite passes: 2,151 tests, 139 environment-dependent skips,
+80.61% coverage, and Ruff format/lint. This includes disposable PostgreSQL
+research/trait persistence checks. Frontend format/lint, 294 tests and build pass.
+The existing duplicate health operation-ID and large frontend chunk warnings
+remain. The documented CORS defaults and disposable container's actual published
+port were supplied to the test process; no developer environment file was changed.
+
+A live selection-only preflight completed in 8.93 seconds, collecting four
+verified candidates. A baseline solve returned OPTIMAL: pool mean utility 0.30625
+and selected mean 0.45. The preflight explicitly prohibited full-planner,
+scheduler and itinerary entry points. Its saved evidence is separate from the
+paper study. These values describe that preflight only.
+
+## Earlier combined-protocol verification, October 24, 2026
 
 Frontend format/lint, 294 tests (92.66% statement coverage) and production build
 pass. Backend Ruff formatting/lint and 2,151 tests pass with 80.52% coverage;

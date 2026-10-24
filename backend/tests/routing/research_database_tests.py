@@ -35,7 +35,6 @@ def mirror(tmp_path, monkeypatch):
             trips=["short-1d"],
             personas=["nature"],
             stops_per_day=[1],
-            pipeline=False,
             solver_repeats=1,
         )
     )
@@ -53,7 +52,7 @@ def test_backfill_and_incremental_late_low_id_preserve_every_observation(mirror)
         "utility_values": [0.5, 0.8],
         "solver_seconds": 2.125,
         "capture": {"hash": "unit-fixture", "candidates": [{"provider_id": "fixture-only"}]},
-        "live_evidence": {"route": None, "error": {"code": "unit-test"}},
+        "capture_evidence": {"route": None, "error": {"code": "unit-test"}},
     }
     store.save(study_id, case_id, "finished", result)
     assert database.mirror_once() == len(planned["cases"])
@@ -61,7 +60,7 @@ def test_backfill_and_incremental_late_low_id_preserve_every_observation(mirror)
     assert protocol == {k: v for k, v in planned.items() if k != "cases"}
     assert first["rows"][0]["solver_status"] == "FEASIBLE"
     assert first["rows"][0]["solver_seconds"] == 2.125
-    assert "capture" not in first["rows"][0] and "live_evidence" not in first["rows"][0]
+    assert "capture" not in first["rows"][0] and "capture_evidence" not in first["rows"][0]
     assert key not in json.dumps(first) and "private-visitor" not in json.dumps(first)
     assert database.mirror_once() == 0
     store.save(study_id, 0, "finished", result | {"solver_status": "UNKNOWN", "completed": False})
@@ -75,7 +74,7 @@ def test_backfill_and_incremental_late_low_id_preserve_every_observation(mirror)
     assert next(row for row in rows if row["id"] == case_id)["utility_values"] == [0.5, 0.8]
     saved = next(row for row in rows if row["id"] == case_id)
     assert saved["capture"] == result["capture"]
-    assert saved["live_evidence"] == result["live_evidence"]
+    assert saved["capture_evidence"] == result["capture_evidence"]
 
 
 def test_database_read_access_needs_studio_session_and_never_grants_control(mirror):

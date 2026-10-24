@@ -8,7 +8,6 @@ import {
   RowChart,
   StatusColumns,
   SolverOutcomes,
-  Tradeoff,
   UtilitySpread,
   UtilityComparison,
 } from '../pages/StudioResearch/ResearchCharts';
@@ -47,7 +46,7 @@ vi.mock('../services/studioResearch', () => ({
   rememberStudyVersion: vi.fn(),
   readStudySnapshot: vi.fn(),
 }));
-const trips = ['short-1d', 'medium-2d', 'long-3d', 'coast-5d', 'tight-2d'].map((id) => ({
+const trips = ['short-1d', 'medium-2d', 'long-3d', 'coast-5d'].map((id) => ({
   id,
   label: id,
 }));
@@ -55,10 +54,7 @@ const defaults = {
   trips: trips.map((row) => row.id),
   personas: ['nature', 'entertainment'],
   stops_per_day: [1, 2, 3],
-  repeats: 10,
   solver_repeats: 30,
-  pipeline: true,
-  solver: true,
   departure_date: '2030-11-01',
   quality_loss: [0, 0.05, 0.1, 0.15, 0.2],
   detour_weight: [0.5, 1, 2],
@@ -82,7 +78,7 @@ const base = {
   runtime_seconds: 1,
   solver_seconds: 0.1,
   solver_status: 'FEASIBLE',
-  extra_seconds: -60,
+  estimated_detour_seconds: 60,
 };
 const variants = [
   { id: 'baseline', parameter: 'baseline' },
@@ -150,7 +146,7 @@ it('combines saved results without selecting a study or cancelling work on unmou
   studyRequest.mockImplementation((study) =>
     Promise.resolve({
       state: study.id === 'current' ? 'running' : 'complete',
-      counts: { total: 1, pipeline: 0, solver: 1 },
+      counts: { total: 1, captures: 0, solver: 1 },
       design: defaults,
       variants,
       dataset_hash: 'same-data',
@@ -159,7 +155,7 @@ it('combines saved results without selecting a study or cancelling work on unmou
   );
   const view = mount();
   expect(await screen.findByText('running · 2 / 2')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Stop selection · 2' })).toBeInTheDocument();
+  expect(screen.getByText('Stop selection · 2 trials')).toBeInTheDocument();
   expect(screen.getByRole('table')).toHaveTextContent('2 runs measured');
   expect(screen.queryByLabelText('Study')).not.toBeInTheDocument();
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
@@ -174,7 +170,7 @@ it('restores completed cached results without requesting study rows again', asyn
     id: 'saved',
     state: 'complete',
     cursor: 1,
-    counts: { total: 1, pipeline: 0, solver: 1 },
+    counts: { total: 1, captures: 0, solver: 1 },
     design: defaults,
     variants,
     dataset_hash: 'cached',
@@ -192,7 +188,7 @@ it('shows cached active results while fetching only newer observations', async (
     id: 'saved',
     state: 'running',
     cursor: 7,
-    counts: { total: 2, pipeline: 0, solver: 2 },
+    counts: { total: 2, captures: 0, solver: 2 },
     design: defaults,
     variants,
     dataset_hash: 'cached',
@@ -215,7 +211,7 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   savedStudies.mockReturnValue([study]);
   studyRequest.mockResolvedValue({
     state: 'complete',
-    counts: { total: 2, pipeline: 1, solver: 1 },
+    counts: { total: 2, captures: 1, solver: 1 },
     design: defaults,
     variants,
     dataset_hash: 'abc',
@@ -223,7 +219,7 @@ it('restores a study without Studio login, separates tracks and keeps failures v
     rows: [
       {
         ...base,
-        track: 'pipeline',
+        track: 'capture',
         id: 10,
         outcome: 'failed',
         completed: false,
@@ -235,13 +231,10 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   mount();
   await screen.findByText('Finished · 2 / 2');
   expect(screen.getByText('100% of finished runs')).toBeInTheDocument();
-  await userEvent.click(screen.getByRole('button', { name: 'Full trip planning · 1' }));
-  expect(screen.getByText('Not run')).toBeInTheDocument();
-  expect(screen.getByText('0% of finished runs')).toBeInTheDocument();
-  expect(screen.getByText('1 failed · 0 partial · 0 interrupted · 0 blocked')).toBeInTheDocument();
-  await userEvent.click(screen.getByRole('button', { name: 'Stop selection · 1' }));
+  expect(screen.queryByRole('button', { name: /Full trip planning/ })).not.toBeInTheDocument();
+  expect(screen.getByText('1 / 1 input captures finished')).toBeInTheDocument();
   expect(screen.queryByText('Settings comparison')).not.toBeInTheDocument();
-  expect(screen.getByText('Frozen real candidate pools · up to 60 places')).toBeInTheDocument();
+  expect(screen.getByText('Real input pools · up to 60 places')).toBeInTheDocument();
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
   expect(screen.queryByText(/Same candidates, persona/)).not.toBeInTheDocument();
   expect(screen.queryByRole('option', { name: 'Added distance' })).not.toBeInTheDocument();
@@ -270,7 +263,7 @@ it('does not confuse zeroes, missing measurements, failed trials or unmatched pa
   ).toMatchObject({ n: 1, mean: 0 });
 });
 
-it('renders charts with labeled units, measured sample sizes and negative driving deltas', () => {
+it('renders selection charts with labeled units and measured sample sizes', () => {
   const rows = [
     base,
     {
@@ -279,15 +272,14 @@ it('renders charts with labeled units, measured sample sizes and negative drivin
       persona: 'entertainment',
       variant: 'loss-0',
       utility_mean: 0.9,
-      extra_seconds: 120,
+      estimated_detour_seconds: 120,
     },
   ];
   const { container } = render(
     <>
       <Heatmap rows={rows} trips={trips} metric="utility_mean" />
       <StatusColumns rows={rows} trips={trips} />
-      <RowChart rows={rows} trips={trips} metric="extra_seconds" />
-      <Tradeoff rows={rows} />
+      <RowChart rows={rows} trips={trips} metric="estimated_detour_seconds" />
       <UtilitySpread rows={rows} />
     </>
   );
@@ -295,12 +287,9 @@ it('renders charts with labeled units, measured sample sizes and negative drivin
     '1 run measured'
   );
   expect(screen.getByRole('group', { name: 'Run outcomes by trip type' })).toBeInTheDocument();
-  expect(screen.getByRole('group', { name: 'Added driving by trip type' })).toHaveTextContent(
-    'minutes'
-  );
   expect(
-    screen.getByRole('group', { name: 'Mean utility score versus added driving scatter plot' })
-  ).toHaveTextContent('-1');
+    screen.getByRole('group', { name: 'Estimated solo detours by trip type' })
+  ).toHaveTextContent('minutes');
   expect(container.innerHTML).not.toMatch(/NaN|Infinity/);
   expect(
     within(container.querySelector('.research-stat-row')).getByText('40%')
@@ -370,7 +359,7 @@ it('keeps source identities and parameter pairs separate when merging matching c
   const snapshot = (id, rows) => ({
     id,
     state: 'complete',
-    counts: { total: rows.length, pipeline: 0, solver: rows.length },
+    counts: { total: rows.length, captures: 0, solver: rows.length },
     design: defaults,
     variants,
     dataset_hash: 'fixed-data',
@@ -380,7 +369,7 @@ it('keeps source identities and parameter pairs separate when merging matching c
     snapshot('main', [base, { ...base, id: 2, variant: 'tuned', utility_mean: 0.5 }]),
     snapshot('pilot', [{ ...base, variant: 'tuned', utility_mean: 0.9 }]),
   ]);
-  expect(data.counts).toEqual({ total: 3, pipeline: 0, solver: 3 });
+  expect(data.counts).toEqual({ total: 3, captures: 0, solver: 3 });
   expect(new Set(data.rows.map((row) => row.id)).size).toBe(3);
   expect(paired(data.rows, 'tuned', 'utility_mean')).toMatchObject({ n: 1, mean: -10 });
 });
@@ -504,7 +493,7 @@ it('reruns the largest saved matrix without pooling historical results or starti
   savedStudies.mockReturnValue([previous]);
   const snapshot = {
     state: 'paused',
-    counts: { total: 2, pipeline: 1, solver: 1 },
+    counts: { total: 2, captures: 1, solver: 1 },
     design: defaults,
     variants: [{ ...variants[0], config: { time_limit_seconds: 5 } }],
     dataset_hash: 'fixed',
@@ -517,7 +506,7 @@ it('reruns the largest saved matrix without pooling historical results or starti
         : {
             ...snapshot,
             state: 'running',
-            counts: { total: 1, pipeline: 0, solver: 1 },
+            counts: { total: 1, captures: 0, solver: 1 },
             variants: [{ ...variants[0], config: { time_limit_seconds: 15 } }],
             rows: [],
           }
@@ -548,7 +537,7 @@ it('switches versions without mixing results, mutating batches or changing the c
     Promise.resolve({
       id: study.id,
       state: study.id === 'current' ? 'running' : 'paused',
-      counts: { total: 1, solver: 1, pipeline: 0 },
+      counts: { total: 1, solver: 1, captures: 0 },
       design: defaults,
       dataset_hash: 'same',
       variants: [
@@ -640,7 +629,7 @@ it('loads database studies in a fresh browser and keeps shared results read-only
   });
   studyRequest.mockResolvedValue({
     state: 'running',
-    counts: { total: 7, solver: 7, pipeline: 0 },
+    counts: { total: 7, solver: 7, captures: 0 },
     design: defaults,
     variants,
     dataset_hash: 'same-data',

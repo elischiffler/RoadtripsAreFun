@@ -10,7 +10,6 @@ from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, model
 
 from app.routing.cp_sat_selection import SelectionConfig
 from app.routing.evaluation.scenarios import CORRIDORS, PERSONAS
-from app.routing.lab_presets import preset_catalog
 from app.routing.run_metrics import fingerprint
 
 TRIPS = {
@@ -32,10 +31,7 @@ class Design(BaseModel):
     stops_per_day: list[StrictInt] = Field(
         default_factory=lambda: [1, 2, 3], min_length=1, max_length=3
     )
-    repeats: int = Field(default=10, strict=True, ge=1, le=10)
     solver_repeats: int = Field(default=30, strict=True, ge=1, le=100)
-    pipeline: bool = True
-    solver: bool = True
     departure_date: date = Field(
         default_factory=lambda: (
             datetime.now(ZoneInfo("America/Los_Angeles")).date() + timedelta(days=7)
@@ -51,8 +47,6 @@ class Design(BaseModel):
 
     @model_validator(mode="after")
     def validate_design(self):
-        if not self.pipeline and not self.solver:
-            raise ValueError("Choose at least one study")
         for name in ("trips", "personas", "stops_per_day", "quality_loss", "detour_weight"):
             values = getattr(self, name)
             if len(set(values)) != len(values):
@@ -87,7 +81,6 @@ def variants(design):
 
 
 def plan(design):
-    presets = {row["id"]: row["inputs"] for row in preset_catalog()}
     conditions = variants(design)
     cells = []
     for trip in design.trips:
@@ -95,24 +88,12 @@ def plan(design):
         for persona in design.personas:
             for density in design.stops_per_day:
                 inputs = {
-                    **{
-                        key: value for key, value in presets["short-day"].items() if key != "budget"
-                    },
                     "start_id": start,
                     "destination_id": end,
                     "departure_date": design.departure_date.isoformat(),
                     "departure_time": "08:00",
                     "num_stops": days * density,
-                    "traveler_count": 2,
-                    "hotel_rooms": [{"adults": 2, "child_ages": []}],
-                    "car_status": "skipped",
-                    "car": None,
                     "persona_weights": PERSONAS[persona],
-                    "scheduling_policy": {
-                        **presets["short-day"]["scheduling_policy"],
-                        "latest_destination_arrival": "21:00",
-                    },
-                    "evening_interests": [],
                 }
                 cells.append(
                     {
@@ -121,40 +102,33 @@ def plan(design):
                         "stops_per_day": density,
                         "target_days": days,
                         "inputs": inputs,
-                        "preset_id": TRIPS[trip][1],
                     }
                 )
-    # Solver-only designs still collect one fresh real pool per scenario.
-    captures_only = design.solver and not design.pipeline
-    cases = []
+    cases = [{**cell, "track": "capture", "variant": "capture", "repeat": 1} for cell in cells]
     rng = random.Random(design.seed)
-    for repeat in range(1, max(design.repeats, design.solver_repeats) + 1):
-        block = []
-        for cell in cells:
-            if (design.pipeline and repeat <= design.repeats) or (captures_only and repeat == 1):
-                block.append({**cell, "track": "pipeline", "variant": "live", "repeat": repeat})
-            if design.solver and repeat <= design.solver_repeats:
-                for variant in conditions:
-                    block.append(
-                        {**cell, "track": "solver", "variant": variant["id"], "repeat": repeat}
-                    )
+    rng.shuffle(cases)
+    for repeat in range(1, design.solver_repeats + 1):
+        block = [
+            {**cell, "track": "solver", "variant": variant["id"], "repeat": repeat}
+            for cell in cells
+            for variant in conditions
+        ]
         rng.shuffle(block)
         cases.extend(block)
     dataset = {
         "kind": "real_capture_per_scenario",
         "candidate_limit": 60,
         "capture_repeat": 1,
-        "description": "Last measured selection pool from the first live attempt of each scenario; frozen across settings and seeds.",
+        "description": "Real pre-selection catalog candidates and measured solo road detours, captured once per scenario without trip planning; frozen across settings and seeds.",
     }
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "design": design.model_dump(mode="json"),
         "variants": conditions,
         "counts": {
             "combinations": len(cells),
-            "pipeline": len(cells)
-            * (design.repeats if design.pipeline else 1 if captures_only else 0),
-            "solver": len(cells) * design.solver_repeats * len(conditions) if design.solver else 0,
+            "captures": len(cells),
+            "solver": len(cells) * design.solver_repeats * len(conditions),
             "total": len(cases),
         },
         "dataset": dataset,

@@ -1,24 +1,27 @@
 # Current release and acceptance
 
-## October 24 real-data research protocol
+## October 24 real-data selection research
 
-Research now schedules 24 scenarios, 5,040 solver trials (15 seconds, up to 60 real
-candidates, 30 seeds, seven paper sweep configurations) and 240 live-trip attempts.
-The first attempt per scenario supplies frozen catalog/AI-trait/measured-road inputs.
-Candidate versus selected utility and percentage-point change are recorded and plotted.
-Research financial fields and its tight-budget scenario are removed; ordinary trip
-planning keeps its hotel policy. Three old studies were removed after a private,
-verified recovery copy; both active study stores were verified empty. The AI gateway
-preflight found Together's retired Llama model. Mentro PR #6 was merged with owner
-authorization after CI passed; its checked-main deployment passed. A fresh gateway
-request, full LA–San Diego trip and captured-input solver preflight succeeded with
-`mentro:Groq/openai/gpt-oss-120b` provenance. Frozen offline providers now explicitly
-disable the live trait cache; six legacy fixture entries were backed up and removed.
-The unused prepared study will be replaced to freeze the corrected source identity.
-Traits now retain upstream model IDs
-under a new cache-contract version. See [protocol](../docs/studio-research.md) and
-[validation](../docs/container-validation.md). Scheduled counts are not empirical
-completion claims.
+At the user's revised scope, research performs attraction selection only. The
+full-trip campaign was stopped and removed from active stores after a recovery
+copy. The new protocol collects 24 real pre-selection pools without hotels,
+scheduling, itinerary construction or final routing, then runs 5,040 controlled
+CP-SAT trials (15 seconds, cap 60, 30 seeds, seven paper sweep settings). Research
+financial fields and the tight-budget scenario are removed. Candidate-pool versus
+selected utility and percentage-point change are recorded and plotted.
+
+Mentro PR #6 was merged with owner authorization after CI and its checked-main
+deployment passed. The gateway returns valid responses with
+`mentro:Groq/openai/gpt-oss-120b` provenance. Traits retain actual upstream model IDs
+under a new cache contract. Frozen offline providers explicitly disable the live
+trait cache; six older fixture entries were backed up and removed. The three
+historical studies were also removed after verified recovery copies.
+
+See [selection protocol](../docs/studio-research.md) and
+[validation](../docs/container-validation.md). Planned counts are not empirical
+completion claims. The revised capture path passed a real four-candidate preflight
+without full planning, plus frontend/backend checks; the new study freezes that
+verified implementation.
 
 ## October 22 cloud catalog reconciliation
 

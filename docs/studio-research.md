@@ -1,160 +1,143 @@
-# Studio research
+# Studio selection research
 
-`/studio/research` displays saved research from PostgreSQL, with scenario filters,
-charts and CSV/JSON exports. The October 24 real-data protocol replaces the old
-synthetic studies. Synthetic fixtures remain in automated software tests, but
-cannot supply observations to this study.
+`/studio/research` compares CP-SAT attraction selections using real catalog places,
+persisted AI-estimated traits and measured road inputs. Research does not run full
+trip planning, hotel searches, scheduling, itinerary construction or final-route
+validation. Budget inputs, measurements and the old tight-budget scenario are
+removed from research. Ordinary trip planning remains available in Studio.
 
 ## Protocol
 
-Four routes × two personas (nature and entertainment) × three attraction densities
-produce 24 scenarios. Each has two adults in one room, an 08:00 origin-local
-departure, no car contribution and no evening suggestions. The departure date is
-frozen when the study is created (default: seven days after the Los Angeles date).
+The October 24 selection-only protocol (`schema_version: 3`) covers:
 
-| Route | Target days | Requested attractions |
+| Route | Target days used to calculate requested stops | Requested attractions |
+| --- | ---: | --- |
+| Los Angeles–San Diego | 1 | 1, 2, 3 |
+| San Francisco–Boise | 2 | 2, 4, 6 |
+| San Francisco–Denver | 3 | 3, 6, 9 |
+| San Francisco–New York | 5 | 5, 10, 15 |
+
+Two explicit personas (nature and entertainment) and three stop densities yield
+24 scenarios. The requested departure is fixed for each study (default seven days
+later at 08:00 local time). Target days determine the requested attraction count;
+they are not a scheduled trip duration. Source calendars and visit-duration
+estimates still govern candidate eligibility. They do not establish final itinerary
+feasibility because no downstream scheduling is performed in this study.
+
+Each scenario has one input-collection job followed by 210 controlled solver
+trials: seven distinct configurations × 30 seeds (0–29). There are **24 captures
+and 5,040 solver trials**, or 5,064 queue items. Input collection is preparation,
+not a full-trip evaluation or an additional solver trial.
+
+All solver configurations use a **15-second limit**, **at most 60 eligible input
+candidates**, one search worker and spacing weight 1. Sixty is a cap, not a quota:
+scarce real pools are never padded with invented places.
+
+| One-factor sweep | Values | Other setting |
 | --- | --- | --- |
-| Los Angeles–San Diego | 1 | 1 / 2 / 3 |
-| San Francisco–Boise | 2 | 2 / 4 / 6 |
-| San Francisco–Denver | 3 | 3 / 6 / 9 |
-| San Francisco–New York | 5 | 5 / 10 / 15 |
+| Absolute mean-utility loss allowance | 0, 0.05, 0.10, 0.20 | Detour weight 1 |
+| Detour weight | 0, 0.25, 1, 4 | Utility-loss allowance 0.10 |
 
-Target days determine requested stop counts; actual itinerary days remain an
-observed outcome. The tight-budget scenario is removed. Research does not measure
-or persist budgets, financial quotes or costs. The shared trip planner still uses
-its ordinary fixed nightly hotel target when executing live trips. This is an
-operational setting, not an experimental factor, and ordinary trip planning is
-unchanged.
+The shared default (loss 0.10, detour weight 1) appears once, yielding seven
+configurations. `app/research/design.py` owns the validated design and seeded run
+order. Unsupported full-trip/repeat options are rejected by the API.
 
-Every solver trial uses a 15-second limit, at most 60 supplied candidates, one
-OR-Tools worker and spacing weight 1. Each scenario has 30 seeds (0–29) under
-seven one-factor configurations. The baseline is counted once:
+## Real input collection
 
-| Configuration | Allowed mean utility loss | Detour weight |
-| --- | --- | --- |
-| Baseline | 0.10 | 1 |
-| Quality sweep | 0 / 0.05 / 0.20 | 1 |
-| Detour sweep | 0.10 | 0 / 0.25 / 4 |
+`app/research/collect.py` resolves the route endpoints and measures its baseline
+using existing live providers. It reuses production discovery, source-calendar
+eligibility, persisted trait estimation and candidate road verification. Each
+candidate's solo origin–candidate–destination route is measured. Collection stops
+before selection; it never calls the full planner, scheduler or itinerary builder.
+The study runs at most two captures concurrently, then one solver trial at a time,
+so provider work does not compete with controlled solver timing.
 
-That schedules **5,040 solver trials** and **240 fresh full-trip attempts** (ten
-per scenario). These are planned counts, not claims of successful completion.
+`app/research/evidence.py` validates catalog generation/source provenance and the
+persisted rating provider/model/timestamp, recalculates utility from the frozen
+persona and ratings, and hashes the capture. All supplied records, including any
+selector exclusions, remain available for auditing. A measured empty pool remains
+an empty capture; absent or invalid evidence blocks the associated trials.
 
-## Real inputs and execution order
+The active source catalog and its admission/calendar holds are preserved. Newly
+encountered places receive valid estimated traits from the configured AI gateway;
+traits are stored in `place_attribute_traits`, then reused across scenarios.
+Utility is recomputed for each persona. The cache contract
+`attraction-traits-v2-model-provenance` refreshes traits with unknown model identity.
+The verified gateway provider/model is `mentro:Groq/openai/gpt-oss-120b`; every
+capture retains its actual provider/model rather than assuming that never changes.
 
-The first full-trip attempt of each scenario runs before any controlled solver
-trials. Its last actual selection input is captured with catalog identities,
-source generations, facts/provenance, complete AI-estimated traits, persona
-weights, utilities, baseline driving duration, measured route progress, solo
-detours, query points and capture timestamp. Its first attempt is also one of the
-ten full-trip repetitions, not an additional independent observation. A failure
-after selection can still supply a valid measured candidate pool. Failure before
-capture blocks that scenario's solver trials; no invented pool or replacement
-attempt is substituted.
+These are real place records and measured road responses. Attribute scores remain
+AI estimates, not measured traveler satisfaction. Unit/offline fixtures never
+participate in the empirical study; frozen offline providers explicitly disable
+the live trait cache.
 
-The capture retains all supplied candidates, including rejected ones, so the
-eligibility denominator can be audited. Each capture is hashed and linked by case
-ID. Every solver seed and parameter setting for that scenario reuses those exact
-inputs. A tampered hash or mismatched scenario cannot be solved. Candidate pools
-can contain fewer than 60 places; they are never padded. Only the currently active
-catalog and normal admission/calendar/road checks supply live candidates.
+## Measurements and charts
 
-The existing `place_attribute_traits` cache stores valid missing trait estimates
-through the configured AI gateway. Utility is recomputed from frozen persona
-weights and the 14 traits, never accepted as a model-supplied final score. Traits
-remain AI estimates of real places, not human preference labels or visitor
-satisfaction. Every candidate's estimates and source provenance also remain in
-its research capture, independently of future cache expiry. The model-provenance
-cache contract refreshes older unidentified estimates on demand. Every captured
-candidate must have a persistent rating timestamp and served provider/model ID.
+The selector chooses `K = min(requested, eligible)` attractions. It protects mean
+utility with the absolute bound `selected mean >= top-K mean - allowance`, then
+minimizes spacing deviation plus weighted estimated solo detours. Utility itself
+is not the directly maximized objective.
 
-After the 24 initial attempts, solver trials execute serially without concurrent
-live research work. Remaining live attempts run two at a time. Each live attempt
-has a 20-minute deadline. Provider conditions, discovery and final routes may
-vary across live repetitions; these do not isolate solver parameter effects.
-The controlled repeats measure solver variation on the same captured pool, not
-30 independent samples of places or travelers.
+For every assessed selection, research records:
 
-## Utility and other measurements
+- Eligible candidate-pool mean utility, selected mean, and their paired difference.
+- Best available top-K mean, quality loss, selected utility values/minimum/median/maximum.
+- Requested, eligible and selected counts, plus selected/requested fulfillment.
+- Total baseline spacing deviation, longest baseline gap and summed estimated solo detours.
+- Solver status, solve time, model-and-solve time, objective and best bound.
+- Configuration/seed, source revision/hash, capture hash and start/end timestamps.
 
-- `candidate_utility_mean`: mean over eligible candidate records before selection.
-- `selected_utility_mean`: mean over solver-selected places for OPTIMAL/FEASIBLE
-  outcomes, including cases where later scheduling fails.
-- `utility_gain`: selected mean minus candidate mean, stored on the 0–1 scale and
-  displayed in percentage points. `selection_assessed` identifies valid pairs.
-- `best_available_utility_mean`: mean of the highest K eligible utility scores;
-  `quality_loss` is this reference minus the selected mean. The objective still
-  minimizes spacing deviations and estimated solo detours, not utility directly.
-- `utility_mean/min/median/max` and `utility_values` describe fully delivered,
-  timing-valid trips (or fully fulfilled solver selections). They are separate
-  from the paired selection measurements.
-- Spacing deviation, longest gap, estimated solo detours, actual added driving
-  and distance, fulfillment, actual days, solver/runtime measurements, objective,
-  bound, selected IDs and exact solver statuses remain available in exports.
-
-The paired utility chart uses the same assessed runs on both sides of every
-comparison. The metric selector also offers candidate mean, selected mean and
-utility change in the scenario heatmap. Each chart retains its assessed count;
-missing results never become zero. Distributions and ranges are descriptive,
-not confidence intervals or independent-sample claims. Full-trip utility quality
-plots require complete delivery and zero recorded timing violations.
+The paired utility chart shows candidate versus selected means, plus the best
+available mean, with assessed sample counts. The heatmap includes utility change,
+spacing and estimated detour measures. A valid OPTIMAL/FEASIBLE selection remains
+assessed even when the real pool contains fewer places than requested; fulfillment
+shows that shortage separately. Missing results stay missing rather than zero.
 
 OPTIMAL, FEASIBLE, INFEASIBLE, UNKNOWN, MODEL_INVALID, EMPTY and NOT_RUN remain
-distinct. Failure, partial delivery, interruption and missing-capture blocking
-remain in the dataset. Integer rounding can make the zero-loss quality bound
-unattainable; that does not prove a real-world shortage of places.
+distinct. Zero utility-loss tolerance can be infeasible due to conservative integer
+rounding. Optimality applies to the supplied selection model and pool, not to every
+possible trip. Repeated seeds share a frozen pool and are not independent place or
+traveler samples. Actual added driving/distance, hotel outcomes, trip duration and
+itinerary completion are not measured or reported.
 
-## Storage and access
+## Persistence, recovery and operation
 
-`app/research/store.py` owns the private SQLite execution queue under
-`.artifacts/studio-research` (or `STUDIO_RESEARCH_DIR`). PostgreSQL stores protocols,
-all declared cases and results in `studio_research_studies` and
-`studio_research_runs`. Existing JSONB columns hold the new protocol and evidence;
-no schema migration or production deployment is needed. Full live evidence is
-also saved through the existing owner-scoped Lab storage, with financial fields
-removed before persistence, and privately beside the local queue.
-
-The first pipeline result of each scenario contains `capture`; every pipeline
-result contains `live_evidence`. PostgreSQL stores these complete objects.
-Lightweight chart snapshots omit them, while JSON exports include them. CSV
-contains per-run observations, source identity, capture references and hashes.
-The protocol's `dataset_hash` identifies its capture specification; each solver
-row's `dataset_hash` identifies the actual frozen real input. Do not confuse the
-two or describe the protocol hash as a captured dataset hash.
+The private SQLite queue lives under `.artifacts/studio-research` (or
+`STUDIO_RESEARCH_DIR`). Existing PostgreSQL tables `studio_research_studies` and
+`studio_research_runs` retain the protocol, all cases and results. Capture rows
+contain `capture` and full `capture_evidence`; solver rows reference their capture
+hash and retain selected identities/solver diagnostics. JSON exports include the
+full evidence in `protocol.cases`; CSV exports contain per-trial measurements.
+Lightweight chart snapshots omit bulky evidence objects. No new SQL schema is
+required. The protocol's `dataset_hash` identifies the capture specification;
+each solver result's `dataset_hash` identifies its actual frozen input.
 
 `STUDIO_RESEARCH_ENABLED`, `STUDIO_RESEARCH_DATABASE` and
-`PLACE_TRAITS_CACHE_ENABLED` are local execution/persistence opt-ins; deployment
-defaults stay disabled. Existing additive research/trait SQL must already be
-applied explicitly. Database sync backfills the local queue and follows monotonic
-completion cursors. Source/protocol conflicts fail closed. A valid Studio session
-can read saved results across browsers; private study capabilities control work.
+`PLACE_TRAITS_CACHE_ENABLED` must be enabled locally; deployment defaults remain
+disabled. Valid Studio sessions can read database results across browsers. Private
+study capabilities control execution. The selection-only cache namespace prevents
+removed historical/full-trip studies from reappearing through old browser caches.
 
-The new browser cache namespace prevents removed synthetic versions from being
-restored by an old completed-study cache. Failed/partial provider work is retained
-under its original deterministic run UUID. Restart never silently repeats paid
-work. Three consecutive storage/auth/model-configuration failures pause unstarted
-cases. Capture validation failures retain the original live evidence. Source-hash
-changes prohibit resuming a mixed-code campaign. The detached macOS worker uses
-`caffeinate` while running, but the computer must remain on.
+Capture intent/result files prevent a restart from silently repeating provider
+calls. Three consecutive infrastructure/provenance failures pause unstarted work.
+Source-hash changes prohibit resuming a campaign against different application
+code. The detached macOS worker uses `caffeinate`; the computer must remain on.
 
-## Local operation
-
-From `backend/`, using the configured development environment:
+From `backend/` with the configured development environment:
 
 ```sh
 .venv/bin/python -m app.research.manage create --control-file /absolute/private/new-study.json
 .venv/bin/python -m app.research.manage status STUDY_UUID
 ```
 
-Creation verifies database/cache opt-in, saves the immutable protocol and private
-control key, mirrors it to PostgreSQL and starts the worker. To remove specifically
-approved old studies, `manage remove --study-id UUID [--study-id UUID ...] --backup
-/absolute/new/recovery-directory` first creates a verified SQLite backup and JSON
-copies of the named PostgreSQL research/Lab records. It serializes against mirror
-writes and refuses active studies, then removes only the named studies and their
-local run directories. Recovery copies are outside the active dataset and never
-participate in charts or paper results. This is an explicit local operator action,
-not a public deletion endpoint.
+Creation validates persistence opt-ins, saves the immutable protocol and private
+control key, mirrors it to PostgreSQL and starts execution. `manage remove
+--study-id UUID --backup /absolute/new/recovery-directory` backs up named inactive
+studies and associated records, serializes against mirror writes and deletes only
+those studies from active stores. It refuses active workers. Recovery copies never
+participate in charts or paper results.
 
-Application checks and small live verification attempts are separate from the
-paper campaign. See `docs/container-validation.md` for checks; report empirical
-completion only from the saved campaign's actual outcomes.
+The three original studies and the subsequently cancelled full-trip study were
+removed after private recovery copies. The cancelled study is not part of the
+selection-only experiment. Software checks and live preflights are separate from
+paper observations; see [validation](container-validation.md).

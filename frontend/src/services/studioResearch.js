@@ -4,7 +4,7 @@ import { clearResearchCache, readResearchCache, saveResearchCache } from './stud
 
 const scope = (study) =>
   JSON.stringify([
-    'real-research-v2',
+    'selection-research-v3',
     import.meta.env.VITE_BACKEND_SERVER,
     getStudioSession()?.token ?? null,
     study?.database ? 'database' : (study?.key ?? 'public'),
@@ -26,8 +26,8 @@ export async function readStudySnapshot(study) {
     : null;
 }
 
-const KEY = 'studioResearchRealStudies';
-const ARCHIVE_KEY = 'studioResearchRealArchivedStudies';
+const KEY = 'studioResearchSelectionStudies';
+const ARCHIVE_KEY = 'studioResearchSelectionArchivedStudies';
 function readStudies(key) {
   try {
     const rows = JSON.parse(localStorage.getItem(key) || '[]');

@@ -33,14 +33,18 @@ export const METRICS = {
   utility_median: { label: 'Median utility score', unit: '%', scale: 100, digits: 1 },
   utility_max: { label: 'Highest utility score', unit: '%', scale: 100, digits: 1 },
   max_gap_seconds: { label: 'Longest driving gap', unit: 'hours', scale: 1 / 3600, digits: 2 },
-  extra_meters: {
-    label: 'Added distance',
-    unit: 'miles',
-    scale: 1 / 1609.344,
+  estimated_detour_seconds: {
+    label: 'Estimated solo detours',
+    unit: 'minutes',
+    scale: 1 / 60,
     digits: 1,
-    live: true,
   },
-  extra_seconds: { label: 'Added driving', unit: 'minutes', scale: 1 / 60, digits: 1, live: true },
+  spacing_deviation_seconds: {
+    label: 'Total spacing deviation',
+    unit: 'minutes',
+    scale: 1 / 60,
+    digits: 1,
+  },
   candidate_utility_mean: {
     label: 'Candidate-pool mean utility',
     unit: '%',
@@ -49,10 +53,9 @@ export const METRICS = {
   },
   selected_utility_mean: { label: 'Selected-place mean utility', unit: '%', scale: 100, digits: 1 },
   utility_gain: { label: 'Utility change after selection', unit: 'points', scale: 100, digits: 1 },
-  runtime_seconds: { label: 'Planning time', unit: 's', scale: 1, digits: 2 },
+  runtime_seconds: { label: 'Selection run time', unit: 's', scale: 1, digits: 2 },
   solver_seconds: { label: 'Selection time', unit: 'ms', scale: 1000, digits: 1 },
-  fulfillment: { label: 'Requested stops delivered', unit: '%', scale: 100, digits: 1 },
-  actual_days: { label: 'Actual trip length', unit: 'days', scale: 1, digits: 1, live: true },
+  fulfillment: { label: 'Requested stops selected', unit: '%', scale: 100, digits: 1 },
 };
 export const metricValue = (row, metric) =>
   finite(row[metric]) ? row[metric] * METRICS[metric].scale : null;
@@ -96,7 +99,7 @@ export function sample(rows, metric) {
           (['candidate_utility_mean', 'selected_utility_mean', 'utility_gain'].includes(metric)
             ? row.selection_assessed
             : row.completed) ||
-          ['runtime_seconds', 'solver_seconds', 'fulfillment', 'actual_days'].includes(metric)
+          ['runtime_seconds', 'solver_seconds', 'fulfillment'].includes(metric)
       )
       .map((row) => metricValue(row, metric))
   );
@@ -125,23 +128,23 @@ const METRIC_HELP = {
   utility_median: 'Median attraction utility score within each run.',
   utility_max: 'Utility score of the highest-scoring attraction in each run.',
   max_gap_seconds:
-    'Longest driving gap between attractions, including the origin and destination. Stop selection runs use measured baseline progress; full trip planning runs use actual route legs, excluding overnight downtime.',
-  extra_meters: 'Road distance added compared with the direct origin-to-destination route.',
-  extra_seconds: 'Driving time added compared with the direct route; visit time is excluded.',
+    'Longest gap between selected attractions along the measured baseline, including the origin and destination. This is not a final itinerary driving gap.',
+  estimated_detour_seconds:
+    'Sum of measured origin–attraction–destination detours above the baseline. This estimate is not actual added itinerary driving.',
+  spacing_deviation_seconds:
+    'Sum of absolute baseline-gap deviations from equal spacing, including both endpoint gaps.',
   candidate_utility_mean:
     'Mean utility of the eligible places supplied to the solver, before selection.',
   selected_utility_mean:
-    'Mean utility of the solver-selected places. This describes selection even if later trip scheduling fails.',
+    'Mean utility of the solver-selected places for valid OPTIMAL or FEASIBLE results.',
   utility_gain:
     'Selected-place mean minus eligible candidate-pool mean, in percentage points. Each difference uses the same run and persona; positive values are not guaranteed.',
   runtime_seconds:
-    'Full trip planning time, or model-and-solve time for stop selection runs. Failed runs retain measured time until failure.',
+    'Model-and-solve time for stop selection. Failed runs retain measured time until failure.',
   solver_seconds:
     'Time inside the CP-SAT solver. Units adjust automatically; preparation time is excluded.',
   fulfillment:
-    'Delivered stops divided by requested stops. 100% means every requested stop was delivered. Measured partial and failed runs remain included.',
-  actual_days:
-    'Number of calendar days in the resulting itinerary, which can differ from the target trip length.',
+    'Selected stops divided by requested stops. The solver can select fewer than requested when the eligible pool is smaller. Measured partial and failed runs remain included.',
 };
 export const metricHelp = (metric) => METRIC_HELP[metric];
 
@@ -157,9 +160,9 @@ export function combineStudies(snapshots) {
     sources,
     state: active?.state ?? incomplete?.state ?? 'complete',
     counts: Object.fromEntries(
-      ['total', 'pipeline', 'solver'].map((key) => [
+      ['total', 'captures', 'solver'].map((key) => [
         key,
-        snapshots.reduce((sum, study) => sum + study.counts[key], 0),
+        snapshots.reduce((sum, study) => sum + (study.counts[key] ?? 0), 0),
       ])
     ),
     design: { trips: union('trips'), stops_per_day: union('stops_per_day') },

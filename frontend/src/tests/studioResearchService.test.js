@@ -82,30 +82,34 @@ it('retains original protocols in the combined JSON export and deduplicates save
   await downloadStudy(sources, 'json');
   expect(JSON.parse(await exportedText())).toEqual({ schema_version: 1, studies: documents });
   localStorage.setItem(
-    'studioResearchRealStudies',
+    'studioResearchSelectionStudies',
     JSON.stringify([sources[0], sources[0], null, sources[1]])
   );
   expect(savedStudies()).toEqual(sources);
 });
 
 it('archives historical access and replaces the active batch only after a successful rerun creation', async () => {
-  localStorage.setItem('studioResearchRealStudies', JSON.stringify(sources));
+  localStorage.setItem('studioResearchSelectionStudies', JSON.stringify(sources));
   const replacement = { id: 'rerun', key: 'new-key' };
   axios.post.mockResolvedValueOnce({ data: replacement });
   expect(await rerunStudy(sources[0], sources)).toEqual(replacement);
   expect(savedStudies()).toEqual([replacement]);
-  expect(JSON.parse(localStorage.getItem('studioResearchRealArchivedStudies'))).toEqual(sources);
+  expect(JSON.parse(localStorage.getItem('studioResearchSelectionArchivedStudies'))).toEqual(
+    sources
+  );
   expect(axios.post.mock.calls[0][2].headers['X-Studio-Batch-Key']).toBe('main-key');
   axios.post.mockRejectedValueOnce(new Error('active batch'));
   await expect(rerunStudy(replacement, [replacement])).rejects.toThrow('active batch');
   expect(savedStudies()).toEqual([replacement]);
-  expect(JSON.parse(localStorage.getItem('studioResearchRealArchivedStudies'))).toEqual(sources);
+  expect(JSON.parse(localStorage.getItem('studioResearchSelectionArchivedStudies'))).toEqual(
+    sources
+  );
 });
 
 it('finds the previous full matrix and reads version metadata without fetching its run records', async () => {
-  localStorage.setItem('studioResearchRealStudies', JSON.stringify([sources[0]]));
+  localStorage.setItem('studioResearchSelectionStudies', JSON.stringify([sources[0]]));
   localStorage.setItem(
-    'studioResearchRealArchivedStudies',
+    'studioResearchSelectionArchivedStudies',
     JSON.stringify([
       sources[1],
       { id: 'previous', key: 'old-key' },

@@ -122,7 +122,7 @@ def rerun(payload: RerunStudy, response: Response, study=Depends(authorized)):
         ):
             raise HTTPException(409, "This rerun ID is already in use.")
     try:
-        design = Design.model_validate(study["plan"]["design"] | {"pipeline": True, "solver": True})
+        design = Design.model_validate(study["plan"]["design"])
     except ValidationError:
         raise HTTPException(422, "The saved stop selection design is no longer valid.") from None
     planned = plan(design)
@@ -153,7 +153,7 @@ def snapshot(response: Response, study=Depends(authorized), after: int = Query(d
             {
                 key: value
                 for key, value in row.items()
-                if key not in {"inputs", "preset_id", "capture", "live_evidence"}
+                if key not in {"inputs", "preset_id", "capture", "capture_evidence"}
             }
             for row in rows
             if row["state"] == "finished"
@@ -239,8 +239,6 @@ def render_export(study, data, rows, format):
         "utility_max",
         "utility_median",
         "max_gap_seconds",
-        "extra_meters",
-        "extra_seconds",
         "candidate_utility_mean",
         "selected_utility_mean",
         "utility_gain",
@@ -256,16 +254,13 @@ def render_export(study, data, rows, format):
         "solver_seconds",
         "solver_status",
         "objective",
-        "actual_days",
         "fulfillment",
-        "failed_stage",
         "error_code",
-        "delivered",
+        "selected",
         "requested",
         "candidate_count",
         "candidate_hash",
         "evidence",
-        "run_id",
         "study_id",
         "revision",
         "metric_version",

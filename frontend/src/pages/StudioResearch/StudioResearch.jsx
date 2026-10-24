@@ -17,7 +17,6 @@ import {
   RowChart,
   StatusColumns,
   SolverOutcomes,
-  Tradeoff,
   UtilitySpread,
   UtilityComparison,
 } from './ResearchCharts';
@@ -47,7 +46,6 @@ export default function StudioResearch() {
   const [error, setError] = useState('');
   const [connectionError, setConnectionError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [track, setTrack] = useState('solver');
   const [metric, setMetric] = useState('utility_mean');
   const [persona, setPersona] = useState('all');
   const [density, setDensity] = useState('all');
@@ -99,7 +97,6 @@ export default function StudioResearch() {
     setData(null);
     setConnectionError('');
     setError('');
-    setTrack('solver');
     setMetric('utility_mean');
     setVersion(next);
   };
@@ -209,12 +206,12 @@ export default function StudioResearch() {
       setBusy(false);
     }
   };
-  const trackRows = (data?.rows ?? []).filter((row) => row.track === track);
+  const trackRows = (data?.rows ?? []).filter((row) => row.track === 'solver');
   const filtered = trackRows.filter(
     (row) =>
       (persona === 'all' || row.persona === persona) &&
       (density === 'all' || row.stops_per_day === Number(density)) &&
-      (track !== 'solver' || row.variant === variant)
+      row.variant === variant
   );
   const runtime = distribution(trackRows.map((row) => row.runtime_seconds));
   const successful = trackRows.filter((row) => row.completed).length;
@@ -342,7 +339,6 @@ export default function StudioResearch() {
                         studies.find((study) => study.id === source.id),
                         studies
                       );
-                      setTrack('solver');
                       setMetric('utility_mean');
                       setData(null);
                       setVersions(null);
@@ -398,35 +394,12 @@ export default function StudioResearch() {
         ) : (
           <>
             <progress value={finished} max={data.counts.total} aria-label="Finished study runs" />
-            <nav className="research-tabs" aria-label="Study track">
-              {data.counts.pipeline > 0 && (
-                <button
-                  aria-pressed={track === 'pipeline'}
-                  onClick={() => {
-                    setTrack('pipeline');
-                    setMetric('utility_mean');
-                  }}
-                >
-                  Full trip planning · {data.counts.pipeline}
-                </button>
-              )}
-              {data.counts.solver > 0 && (
-                <button
-                  aria-pressed={track === 'solver'}
-                  onClick={() => {
-                    setTrack('solver');
-                    setMetric('utility_mean');
-                  }}
-                >
-                  Stop selection · {data.counts.solver}
-                </button>
-              )}
-            </nav>
             <div className="research-track-meta">
+              <span>Stop selection · {format(data.counts.solver, 0)} trials</span>
+              <span>Real input pools · up to 60 places</span>
               <span>
-                {track === 'pipeline'
-                  ? 'Live trips'
-                  : 'Frozen real candidate pools · up to 60 places'}
+                {(data.rows ?? []).filter((row) => row.track === 'capture').length} /{' '}
+                {data.counts.captures} input captures finished
               </span>
               {data.solve_limits.length > 0 && (
                 <span>
@@ -434,23 +407,17 @@ export default function StudioResearch() {
                 </span>
               )}
               <ResearchInfo label="Study data">
-                {track === 'pipeline'
-                  ? 'Fresh full-trip attempts using live catalog and routing providers. Failed and partial attempts remain recorded.'
-                  : 'Real catalog places, AI-estimated traits, and measured road inputs captured once per scenario. The same pool is reused across settings and seeds; repeats are not independent place samples.'}
+                Real catalog places, persisted AI-estimated traits, and measured baseline and
+                solo-detour road inputs are captured once per scenario. The same pool is reused
+                across settings and seeds. Research stops at attraction selection; it does not plan
+                complete trips.
               </ResearchInfo>
             </div>
             <div className="research-stat-row research-summary">
               <div>
                 <span>Finished runs</span>
                 <strong>{format(trackRows.length, 0)}</strong>
-                <small>
-                  {format(
-                    (track === 'solver' ? data.counts.solver : data.counts.pipeline) -
-                      trackRows.length,
-                    0
-                  )}{' '}
-                  runs remaining
-                </small>
+                <small>{format(data.counts.solver - trackRows.length, 0)} runs remaining</small>
               </div>
               <div>
                 <span>Complete runs</span>
@@ -469,13 +436,13 @@ export default function StudioResearch() {
                 as="div"
                 first
                 disabled={!runtime.n}
-                label="Observed planning time range"
+                label="Observed selection run time range"
                 insight={{
                   value: `${format(runtime.min)}–${format(runtime.max)} s range`,
                   detail: 'Includes timed failures',
                 }}
               >
-                <span>Median planning time</span>
+                <span>Median selection run time</span>
                 <strong>
                   {format(runtime.median)}
                   <small> s</small>
@@ -493,14 +460,12 @@ export default function StudioResearch() {
               <label>
                 Measure
                 <select value={metric} onChange={(e) => setMetric(e.target.value)}>
-                  {Object.entries(METRICS)
-                    .filter(([, value]) => track === 'pipeline' || !value.live)
-                    .map(([key, value]) => (
-                      <option value={key} key={key}>
-                        {value.label}
-                        {key === 'max_gap_seconds' && track === 'solver' ? ' (baseline)' : ''}
-                      </option>
-                    ))}
+                  {Object.entries(METRICS).map(([key, value]) => (
+                    <option value={key} key={key}>
+                      {value.label}
+                      {key === 'max_gap_seconds' ? ' (baseline)' : ''}
+                    </option>
+                  ))}
                 </select>
               </label>
               <label>
@@ -522,18 +487,16 @@ export default function StudioResearch() {
                   ))}
                 </select>
               </label>
-              {track === 'solver' && (
-                <label>
-                  Selection setting
-                  <select value={variant} onChange={(e) => setVariant(e.target.value)}>
-                    {data.variants.map((row) => (
-                      <option value={row.id} key={row.id}>
-                        {settingLabel(row)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
+              <label>
+                Selection setting
+                <select value={variant} onChange={(e) => setVariant(e.target.value)}>
+                  {data.variants.map((row) => (
+                    <option value={row.id} key={row.id}>
+                      {settingLabel(row)}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
             <section className="research-card">
               <ChartHeading
@@ -560,11 +523,6 @@ export default function StudioResearch() {
             <section className="research-card">
               <UtilitySpread rows={filtered} />
             </section>
-            {track === 'pipeline' && (
-              <section className="research-card">
-                <Tradeoff rows={filtered} trips={trips} />
-              </section>
-            )}
           </>
         )}
       </main>
