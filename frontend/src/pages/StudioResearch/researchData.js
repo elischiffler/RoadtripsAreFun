@@ -140,7 +140,7 @@ const METRIC_HELP = {
   utility_gain:
     'Selected-place mean minus eligible candidate-pool mean, in percentage points. Each difference uses the same run and persona; positive values are not guaranteed.',
   runtime_seconds:
-    'Model-and-solve time for stop selection. Failed runs retain measured time until failure.',
+    'Time to validate frozen inputs, prepare the model and solve. Failed runs retain measured time until failure.',
   solver_seconds:
     'Time inside the CP-SAT solver. Units adjust automatically; preparation time is excluded.',
   fulfillment:

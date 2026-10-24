@@ -141,3 +141,6 @@ The three original studies and the subsequently cancelled full-trip study were
 removed after private recovery copies. The cancelled study is not part of the
 selection-only experiment. Software checks and live preflights are separate from
 paper observations; see [validation](container-validation.md).
+
+The completed October 24 selection-only study and its audited figures/tables are
+in [the results packet](research/2026-10-24-selection/README.md).

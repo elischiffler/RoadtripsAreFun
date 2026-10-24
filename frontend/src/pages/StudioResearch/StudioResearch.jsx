@@ -20,12 +20,21 @@ import {
   UtilitySpread,
   UtilityComparison,
 } from './ResearchCharts';
-import { combineStudies, distribution, format, METRICS, settingLabel } from './researchData';
+import {
+  combineStudies,
+  distribution,
+  format,
+  formatSelectionTime,
+  METRICS,
+  settingLabel,
+} from './researchData';
 import { getStudioSession, unlockStudio } from '../../services/studioSession';
 import ResearchInfo, { ChartHeading } from './ResearchInfo';
 import { InspectionProvider, InspectMark } from './ResearchInspect';
 import '../AlgorithmLab/AlgorithmLab.css';
 import './StudioResearch.css';
+
+const runTime = (seconds) => formatSelectionTime(seconds == null ? null : seconds * 1000);
 
 export default function StudioResearch() {
   const [session, setSession] = useState(getStudioSession);
@@ -420,16 +429,16 @@ export default function StudioResearch() {
                 <small>{format(data.counts.solver - trackRows.length, 0)} runs remaining</small>
               </div>
               <div>
-                <span>Complete runs</span>
+                <span>Valid selections</span>
                 <strong>{format(successful, 0)}</strong>
                 <small>{percentFinished(successful)}</small>
               </div>
               <div>
-                <span>Incomplete runs</span>
+                <span>No valid selection</span>
                 <strong>{format(trackRows.length - successful, 0)}</strong>
                 <small>
-                  {failed} failed · {partial} partial · {interrupted} interrupted · {blocked}{' '}
-                  blocked
+                  {failed} failed · {partial} without selection · {interrupted} interrupted ·{' '}
+                  {blocked} blocked
                 </small>
               </div>
               <InspectMark
@@ -438,18 +447,15 @@ export default function StudioResearch() {
                 disabled={!runtime.n}
                 label="Observed selection run time range"
                 insight={{
-                  value: `${format(runtime.min)}–${format(runtime.max)} s range`,
+                  value: `${runTime(runtime.min)}–${runTime(runtime.max)} range`,
                   detail: 'Includes timed failures',
                 }}
               >
                 <span>Median selection run time</span>
-                <strong>
-                  {format(runtime.median)}
-                  <small> s</small>
-                </strong>
+                <strong>{runTime(runtime.median)}</strong>
                 <small>
                   {runtime.n > 1
-                    ? `Middle 50%: ${format(runtime.q1)}–${format(runtime.q3)} s`
+                    ? `Middle 50%: ${runTime(runtime.q1)}–${runTime(runtime.q3)}`
                     : runtime.n === 1
                       ? '1 timed run'
                       : 'No times recorded'}

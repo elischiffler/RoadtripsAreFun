@@ -23,6 +23,14 @@ completion claims. The revised capture path passed a real four-candidate preflig
 without full planning, plus frontend/backend checks; the new study freezes that
 verified implementation.
 
+Selection-only study `05fc366d-4623-4467-ba06-a93911147993` is complete and verified
+in PostgreSQL: 24 captures and 5,040 OPTIMAL solver trials. Actual pools contain
+4–8 eligible candidates, 20 distinct places overall. Default mean utility changes
+from 0.417234 to 0.479866 (+6.2632 percentage points); ten scenarios have fewer
+eligible places than requested. These small-pool results do not establish
+60-candidate scaling or full-trip feasibility. See the [audited results and paper
+packet](../docs/research/2026-10-24-selection/README.md).
+
 ## October 22 cloud catalog reconciliation
 
 The reconciled develop tree preserves the Mac research/session-cache work and

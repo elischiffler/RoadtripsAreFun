@@ -295,8 +295,8 @@ Heatmap.propTypes = {
 
 export function StatusColumns({ rows, trips }) {
   const categories = [
-    ['Complete', (row) => row.completed, '#234a3c'],
-    ['Partial', (row) => row.outcome === 'completed' && !row.completed, '#a56b28'],
+    ['Valid selection', (row) => row.completed, '#234a3c'],
+    ['No selection', (row) => row.outcome === 'completed' && !row.completed, '#a56b28'],
     ['Failed', (row) => row.outcome === 'failed', '#ac4c43'],
     ['Blocked', (row) => row.outcome === 'blocked', '#756f66'],
     ['Interrupted', (row) => row.outcome === 'interrupted', '#8c857b'],
@@ -312,7 +312,7 @@ export function StatusColumns({ rows, trips }) {
     <figure>
       <ChartHeading
         title="Run outcomes"
-        help="Complete: every requested stop delivered with valid timing. Finished runs only."
+        help="Valid selection: an OPTIMAL or FEASIBLE solver result. A smaller eligible pool can produce fewer stops than requested; inspect requested-stop fulfillment separately. Finished solver trials only."
       />
       <div className="research-legend">
         {categories.map(([label, , color]) => (
@@ -379,7 +379,7 @@ export function StatusColumns({ rows, trips }) {
               </text>
               <text x={x + 26} y="270" textAnchor="middle">
                 {row.counts.some(Boolean)
-                  ? `${format((row.counts[0] / row.counts.reduce((a, b) => a + b, 0)) * 100)}% complete`
+                  ? `${format((row.counts[0] / row.counts.reduce((a, b) => a + b, 0)) * 100)}% valid`
                   : 'Not tested yet'}
               </text>
             </g>

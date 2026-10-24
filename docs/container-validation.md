@@ -28,6 +28,20 @@ and selected mean 0.45. The preflight explicitly prohibited full-planner,
 scheduler and itinerary entry points. Its saved evidence is separate from the
 paper study. These values describe that preflight only.
 
+The rebuilt selection-only preview passes both container smoke tests. Exact-head
+CI at `dec327426244f10e4c3c34bb7fd00177224586a7` passes frontend/backend, container,
+and real PostgreSQL CRUD/recovery checks. The preview and disposable test database
+were stopped after verification, preserving recovery volumes and the user's dev servers.
+
+Study `05fc366d-4623-4467-ba06-a93911147993` completed 24 real captures and 5,040
+OPTIMAL solver trials. PostgreSQL independently reports all 5,064 records finished,
+24 full capture-evidence records and 24 distinct referenced solver datasets. Only
+this study remains in the active research tables. No synthetic trait entries remain.
+The analysis checks capture hashes, selected identities and counts, recomputed
+utility, quality bounds, completion and omitted full-trip/financial fields. Figures
+were rendered and visually inspected. See [results](research/2026-10-24-selection/README.md)
+for actual pool sizes, denominators, timings, paired setting effects and limitations.
+
 ## Earlier combined-protocol verification, October 24, 2026
 
 Frontend format/lint, 294 tests (92.66% statement coverage) and production build
