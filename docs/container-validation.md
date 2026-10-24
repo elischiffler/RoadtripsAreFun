@@ -3,7 +3,7 @@
 ## Real-data research protocol, October 24, 2026
 
 Frontend format/lint, 294 tests (92.66% statement coverage) and production build
-pass. Backend Ruff formatting/lint and 2,151 tests pass with 80.53% coverage;
+pass. Backend Ruff formatting/lint and 2,151 tests pass with 80.52% coverage;
 139 environment-dependent tests are skipped. This run includes the disposable
 PostgreSQL research/trait persistence tests and supplies the documented standard
 CORS origins, since the existing developer environment overrides them narrowly.
@@ -16,12 +16,31 @@ The existing duplicate health operation-ID and large frontend chunk warnings rem
 These are software and disposable-fixture checks, not empirical study outcomes.
 The three explicitly named old studies were removed from the local queue,
 PostgreSQL mirrors and their associated Lab records after a private verified
-recovery copy. Both active study stores were then verified empty. The live AI
+recovery copy. Both active study stores were then verified empty. The first live AI
 preflight authenticated successfully but failed on Together's retired Llama model.
 Its unfinished verification-only Lab record was marked failed, not counted as a
-research observation. No new research results or complete live trip are claimed.
-The Mentro model replacement is prepared in its separate repository and requires
-owner merge, checked-main deployment and successful live preflight before execution.
+research observation. With explicit owner authorization, Mentro PR #6 was merged
+after CI passed. Its main CI run 40133794624 and automatic deployment 40133968658
+passed at main revision `34c968786a82796a1edbec4abe539890e4741e44`.
+
+A fresh gateway request returned valid JSON from `mentro:Groq/openai/gpt-oss-120b`.
+The real LA–San Diego, nature-persona, one-stop preflight completed its full trip
+and saved Lab record `8deb762c-9fbd-4cdc-bee5-73148f25e763`. The provenance capture
+was corrected to read the catalog generation from the actual nested source metadata.
+Reusing that saved evidence, a solver preflight returned OPTIMAL with two eligible
+candidates: pool mean utility 0.1925 and selected mean 0.205. This is a preflight,
+not a completed study or a basis for aggregate paper claims.
+
+This inspection also found six fixture-generated trait-cache entries from offline
+replays (three from October 21 and three from October 24). They were privately
+backed up and removed by exact cache keys. Frozen offline providers now explicitly
+disable the live trait store, including when the developer opt-in is enabled.
+A regression check forbids both cache reads and writes for all three offline
+methods; all 50 focused evidence/evaluation tests and the complete backend suite
+pass after the fix. No synthetic trait rows remained after regression testing.
+The earlier offline test
+run therefore cannot be described as having no database side effects. The new
+study had not started; none of these fixture entries are research observations.
 
 The [research protocol](studio-research.md) records the planned 5,040 controlled
 trials and 240 live attempts. Existing catalog admission/calendar restrictions

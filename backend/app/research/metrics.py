@@ -109,9 +109,10 @@ def observation(envelope, elapsed_ms, *, solver_only=False):
         "candidate_hash": metrics.get("candidate_hash"),
         "catalog_generations": sorted(
             {
-                row["source_generation"]
+                item["generation"]
                 for row in metrics.get("candidate_snapshot", [])
-                if row.get("source_generation")
+                for item in row.get("source_provenance", [])
+                if item.get("dataset") == "Roadtrips active catalog" and item.get("generation")
             }
         ),
         "source_releases": sorted(

@@ -42,8 +42,19 @@ def capture(envelope, case):
     if len(candidates) > 60:
         raise ValueError("Research capture exceeded the production candidate limit")
     for row in candidates:
-        if not row.get("source_generation") or not row.get("source_provenance"):
+        generations = {
+            item["generation"]
+            for item in row.get("source_provenance", [])
+            if item.get("dataset") == "Roadtrips active catalog"
+            and isinstance(item.get("generation"), str)
+            and item["generation"]
+        }
+        if len(generations) != 1:
             raise ValueError("Research requires catalog-backed candidate provenance")
+        generation = next(iter(generations))
+        if row.get("source_generation", generation) != generation:
+            raise ValueError("Candidate generation conflicts with its source provenance")
+        row["source_generation"] = generation
         provenance = row.get("provenance") or {}
         if not provenance.get("ratings_created_at") or "/" not in (
             provenance.get("ratings_provider") or ""

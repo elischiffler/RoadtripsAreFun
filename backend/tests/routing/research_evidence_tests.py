@@ -27,8 +27,12 @@ def fixture_capture():
             "coordinates": [34, -118],
             "attribute_ratings": dict.fromkeys(ATTRIBUTE_KEYS, utility),
             "utility": utility,
-            "source_generation": "unit-fixture-not-empirical-data",
-            "source_provenance": [{"dataset": "unit test fixture"}],
+            "source_provenance": [
+                {
+                    "dataset": "Roadtrips active catalog",
+                    "generation": "unit-fixture-not-empirical-data",
+                }
+            ],
             "provenance": {
                 "ratings_created_at": "2026-10-24T00:00:00Z",
                 "ratings_provider": "unit-fixture/test-model",
@@ -98,7 +102,9 @@ def test_unverified_sources_and_invented_utility_are_rejected():
     envelope["explanation"]["candidates"][0]["source_provenance"] = []
     with pytest.raises(ValueError, match="provenance"):
         evidence.capture(envelope, case)
-    envelope["explanation"]["candidates"][0]["source_provenance"] = [{"dataset": "test"}]
+    envelope["explanation"]["candidates"][0]["source_provenance"] = [
+        {"dataset": "Roadtrips active catalog", "generation": "unit-fixture-not-empirical-data"}
+    ]
     envelope["explanation"]["candidates"][0]["utility"] = 0.99
     with pytest.raises(ValueError, match="utility"):
         evidence.capture(envelope, case)

@@ -9,9 +9,13 @@ Candidate versus selected utility and percentage-point change are recorded and p
 Research financial fields and its tight-budget scenario are removed; ordinary trip
 planning keeps its hotel policy. Three old studies were removed after a private,
 verified recovery copy; both active study stores were verified empty. The AI gateway
-preflight found Together's retired Llama model. The replacement is prepared in the
-Mentro server repository; research execution awaits owner merge, checked-main
-deployment and a successful live preflight. Traits now retain upstream model IDs
+preflight found Together's retired Llama model. Mentro PR #6 was merged with owner
+authorization after CI passed; its checked-main deployment passed. A fresh gateway
+request, full LA–San Diego trip and captured-input solver preflight succeeded with
+`mentro:Groq/openai/gpt-oss-120b` provenance. Frozen offline providers now explicitly
+disable the live trait cache; six legacy fixture entries were backed up and removed.
+The unused prepared study will be replaced to freeze the corrected source identity.
+Traits now retain upstream model IDs
 under a new cache-contract version. See [protocol](../docs/studio-research.md) and
 [validation](../docs/container-validation.md). Scheduled counts are not empirical
 completion claims.

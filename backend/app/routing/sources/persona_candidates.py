@@ -387,7 +387,7 @@ async def attraction_candidates(
         "queries": observations,
         "rounds": rounds,
         "rating_attempts": [],
-        "trait_cache": {"enabled": trait_store is not None, "hits": 0, "misses": 0, "stored": 0},
+        "trait_cache": {"enabled": bool(trait_store), "hits": 0, "misses": 0, "stored": 0},
         "eligibility_policy": "positive_utility",
         "calendar_eligibility_policy": "requested_trip_full_dwell_before_discovery_quotas"
         if plan.trip_calendar
