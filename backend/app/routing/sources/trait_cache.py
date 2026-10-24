@@ -11,8 +11,8 @@ from psycopg2.extras import Json, RealDictCursor
 from app.core.config import settings
 from app.crud import chat_crud
 from app.routing.profiles import AttributeRatings
+from app.routing.sources.trait_rubric import VERSION
 
-VERSION = "attraction-traits-v2-model-provenance"
 logger = logging.getLogger(__name__)
 
 

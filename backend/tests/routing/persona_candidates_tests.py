@@ -481,6 +481,8 @@ async def test_only_missing_place_traits_are_sent_to_ai_and_source_facts_are_sup
                 "overture:new" in prompt and "independently of any traveler's preferences" in prompt
             )
             assert "Cached Park" not in prompt
+            assert "Walking between shops or stalls is not hiking" in prompt
+            assert "a farmers market is not the surrounding beach" in prompt
             return super().complete(messages, tools)
 
     ai = MissAI([{"name": "New Park", "attribute_ratings": _ratings(0.8)}])

@@ -204,6 +204,7 @@ def _additions(payload, reader, *, max_rows, baseline=()):
     from app.catalog import (
         automated_bindings,
         automated_nps,
+        cdfw_nature,
         kaggle_ca_markets,
         kaggle_coastal,
         kaggle_cultural,
@@ -215,6 +216,7 @@ def _additions(payload, reader, *, max_rows, baseline=()):
 
     adapters = {
         "automated-nps": automated_nps.prepare,
+        "cdfw-nature": cdfw_nature.prepare,
         "usfs-current": usfs_current.prepare,
         "kaggle-cultural": kaggle_cultural.prepare,
         "kaggle-ny-markets": kaggle_ny_markets.prepare,
