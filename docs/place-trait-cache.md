@@ -31,16 +31,21 @@ never accepted as reusable traits.
 The key hashes the stable source ID, name, coordinates, address, categories,
 activities and description, plus the gateway identity and explicit rating-contract
 version. Changed place facts or a version change cause a miss. Estimates expire
-after 90 days. The served provider is retained, but the gateway does not expose
-an exact model revision; a gateway model/prompt policy change should bump the
-rating-contract version if immediate invalidation is needed. Expiry supplies a
-bounded refresh even when the gateway changes independently.
+after 90 days. The gateway's served model ID is now retained alongside its provider
+in the existing provider field. This identifies the requested upstream model,
+not an immutable weights revision. The October 24 contract version is
+`attraction-traits-v2-model-provenance`, so earlier estimates without model
+identity are refreshed on demand. Future gateway model/prompt policy changes
+should bump this version when immediate invalidation is needed. Expiry supplies
+a bounded refresh even when the gateway changes independently.
 
 Opening-hours evidence, entrances, availability, prices, dated room quotes,
 visit-duration estimates and persona utility are separate. Reusing traits does
 not waive any live source/calendar/road checks. Hotel ratings retain their
 existing behavior. Historical and synthetic research candidates are not inserted
-into the live attraction cache, and the active controlled CP-SAT batch is unchanged.
+into the live attraction cache. Real research captures require persisted traits
+and upstream model identity; a failed cache write cannot silently supply a
+research comparison.
 
 ## Database and failure behavior
 

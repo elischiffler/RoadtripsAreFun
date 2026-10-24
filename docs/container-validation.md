@@ -1,5 +1,32 @@
 # Container migration evidence
 
+## Real-data research protocol, October 24, 2026
+
+Frontend format/lint, 294 tests (92.66% statement coverage) and production build
+pass. Backend Ruff formatting/lint and 2,151 tests pass with 80.53% coverage;
+139 environment-dependent tests are skipped. This run includes the disposable
+PostgreSQL research/trait persistence tests and supplies the documented standard
+CORS origins, since the existing developer environment overrides them narrowly.
+No CORS implementation or developer environment file was changed. Thirteen focused
+capture, database round-trip, targeted removal and cost-exclusion checks also pass.
+The rebuilt guarded preview passes both container smoke tests. The root disposable
+PostgreSQL CRUD/recreation/recovery/backup runner passes; recovery volumes remain.
+The existing duplicate health operation-ID and large frontend chunk warnings remain.
+
+These are software and disposable-fixture checks, not empirical study outcomes.
+The three explicitly named old studies were removed from the local queue,
+PostgreSQL mirrors and their associated Lab records after a private verified
+recovery copy. Both active study stores were then verified empty. The live AI
+preflight authenticated successfully but failed on Together's retired Llama model.
+Its unfinished verification-only Lab record was marked failed, not counted as a
+research observation. No new research results or complete live trip are claimed.
+The Mentro model replacement is prepared in its separate repository and requires
+owner merge, checked-main deployment and successful live preflight before execution.
+
+The [research protocol](studio-research.md) records the planned 5,040 controlled
+trials and 240 live attempts. Existing catalog admission/calendar restrictions
+remain in force; the active source catalog was not expanded or released by this work.
+
 ## Automated catalog import, October 19, 2026
 
 Develop's automated NPS/USFS importer passes synthetic source and orchestration

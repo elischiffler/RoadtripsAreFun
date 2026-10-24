@@ -1,5 +1,21 @@
 # Current release and acceptance
 
+## October 24 real-data research protocol
+
+Research now schedules 24 scenarios, 5,040 solver trials (15 seconds, up to 60 real
+candidates, 30 seeds, seven paper sweep configurations) and 240 live-trip attempts.
+The first attempt per scenario supplies frozen catalog/AI-trait/measured-road inputs.
+Candidate versus selected utility and percentage-point change are recorded and plotted.
+Research financial fields and its tight-budget scenario are removed; ordinary trip
+planning keeps its hotel policy. Three old studies were removed after a private,
+verified recovery copy; both active study stores were verified empty. The AI gateway
+preflight found Together's retired Llama model. The replacement is prepared in the
+Mentro server repository; research execution awaits owner merge, checked-main
+deployment and a successful live preflight. Traits now retain upstream model IDs
+under a new cache-contract version. See [protocol](../docs/studio-research.md) and
+[validation](../docs/container-validation.md). Scheduled counts are not empirical
+completion claims.
+
 ## October 22 cloud catalog reconciliation
 
 The reconciled develop tree preserves the Mac research/session-cache work and

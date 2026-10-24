@@ -75,6 +75,99 @@ export function SolverOutcomes({ counts }) {
 }
 SolverOutcomes.propTypes = { counts: PropTypes.objectOf(PropTypes.number).isRequired };
 
+export function UtilityComparison({ rows, trips }) {
+  const pairedRows = rows.filter(
+    (row) =>
+      row.selection_assessed &&
+      finite(row.candidate_utility_mean) &&
+      finite(row.selected_utility_mean)
+  );
+  return (
+    <figure>
+      <ChartHeading
+        title="Utility before and after selection"
+        unit="%"
+        help="Each pair compares the eligible candidate-pool mean with the selected-place mean for the same run. Rows average those paired runs. AI-estimated utility is not measured traveler satisfaction. Selection may succeed even if later trip scheduling fails."
+      />
+      {!pairedRows.length ? (
+        <p className="research-empty">No paired selection measurements yet.</p>
+      ) : (
+        <div className="research-utility-comparison">
+          <p className="research-comparison-key">
+            Gray: candidate pool · Teal: selected places · Amber: best available mean
+          </p>
+          {trips.map((trip) => {
+            const matching = pairedRows.filter((row) => row.trip === trip.id);
+            if (!matching.length) return null;
+            const before = distribution(
+              matching.map((row) => row.candidate_utility_mean * 100)
+            ).mean;
+            const after = distribution(matching.map((row) => row.selected_utility_mean * 100)).mean;
+            const best = distribution(
+              matching.map((row) =>
+                finite(row.best_available_utility_mean)
+                  ? row.best_available_utility_mean * 100
+                  : null
+              )
+            ).mean;
+            const delta = after - before;
+            return (
+              <div className="research-comparison-row" key={trip.id}>
+                <strong>{trip.label}</strong>
+                <svg
+                  viewBox="0 0 440 42"
+                  role="img"
+                  aria-label={`${trip.label}: candidate pool ${format(before)}%, selected ${format(after)}%, change ${format(delta)} percentage points, ${runCount(matching.length)}`}
+                >
+                  <line x1="20" x2="420" y1="20" y2="20" stroke="#dedbd4" />
+                  <line
+                    x1={20 + before * 4}
+                    x2={20 + after * 4}
+                    y1="20"
+                    y2="20"
+                    stroke="#477560"
+                    strokeWidth="4"
+                  />
+                  <circle cx={20 + before * 4} cy="20" r="5" fill="#706b62" />
+                  <circle cx={20 + after * 4} cy="20" r="6" fill="#234a3c" />
+                  {finite(best) && (
+                    <line
+                      x1={20 + best * 4}
+                      x2={20 + best * 4}
+                      y1="9"
+                      y2="31"
+                      stroke="#a56b28"
+                      strokeWidth="2"
+                    />
+                  )}
+                  <text x="20" y="40" fontSize="10">
+                    0%
+                  </text>
+                  <text x="420" y="40" fontSize="10" textAnchor="end">
+                    100%
+                  </text>
+                </svg>
+                <span>
+                  {format(before)}% → {format(after)}% · {delta > 0 ? '+' : ''}
+                  {format(delta)} points
+                </span>
+                <small>
+                  {runCount(matching.length)} paired ·{' '}
+                  {rows.filter((row) => row.trip === trip.id).length - matching.length} unassessed
+                </small>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </figure>
+  );
+}
+UtilityComparison.propTypes = {
+  rows: PropTypes.array.isRequired,
+  trips: PropTypes.array.isRequired,
+};
+
 export function Heatmap({ rows, trips, metric }) {
   const columns = ['nature', 'entertainment'].flatMap((persona) =>
     [1, 2, 3].map((density) => ({ persona, density }))
@@ -90,7 +183,7 @@ export function Heatmap({ rows, trips, metric }) {
   }));
   const values = distribution(cells.flatMap((trip) => trip.cells.map((cell) => cell.mean)));
   const firstCell = cells.flatMap((trip) => trip.cells).find((cell) => cell.n);
-  const utility = metric.startsWith('utility');
+  const utility = METRICS[metric].unit === '%' && metric.includes('utility');
   const span = Math.max(2 * (values.sd ?? 0), utility ? 5 : 10 ** -METRICS[metric].digits);
   const low = utility ? Math.max(0, (values.mean ?? 0) - span) : (values.mean ?? 0) - span;
   const high = utility ? Math.min(100, (values.mean ?? 0) + span) : (values.mean ?? 0) + span;
@@ -205,6 +298,7 @@ export function StatusColumns({ rows, trips }) {
     ['Complete', (row) => row.completed, '#234a3c'],
     ['Partial', (row) => row.outcome === 'completed' && !row.completed, '#a56b28'],
     ['Failed', (row) => row.outcome === 'failed', '#ac4c43'],
+    ['Blocked', (row) => row.outcome === 'blocked', '#756f66'],
     ['Interrupted', (row) => row.outcome === 'interrupted', '#8c857b'],
   ];
   const values = trips.map((trip) => ({
@@ -306,7 +400,7 @@ export function RowChart({ rows, trips, metric }) {
     ),
   }));
   const extent = values.flatMap((row) => [row.min, row.max]).filter(finite);
-  const utility = metric.startsWith('utility') && extent.length > 0;
+  const utility = METRICS[metric].unit === '%' && metric.includes('utility') && extent.length > 0;
   const low = utility
     ? Math.max(0, Math.floor((Math.min(...extent) - 2) / 5) * 5)
     : Math.min(0, ...extent);

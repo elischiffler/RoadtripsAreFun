@@ -51,4 +51,5 @@ class LLMResponse(BaseModel):
     content: str = ""
     tool_calls: list[ToolCall] = Field(default_factory=list)
     provider: str = ""
+    model: str | None = None
     usage: AgentUsage | None = None

@@ -209,7 +209,7 @@ def driving_gaps(stops, assessed):
     }
 
 
-def trip_evaluation(envelope):
+def trip_evaluation(envelope, *, include_costs=True):
     """Measurements from actual route evidence, including partially completed runs."""
     route = envelope.get("route")
     inputs = envelope["input_snapshot"]
@@ -268,56 +268,58 @@ def trip_evaluation(envelope):
         else "requested_count_unavailable",
     }
     hotels = [stop for stop in stops if stop.get("type") == "hotel"]
-    expected_rooms = len(inputs.get("hotel_rooms") or [])
-    prices = []
-    quotes_complete = assessed
-    for hotel in hotels:
-        offers = hotel.get("room_offers") or []
-        valid = [_number(offer.get("price")) for offer in offers]
-        if (
-            not offers
-            or (expected_rooms and len(offers) != expected_rooms)
-            or any(price is None or price < 0 for price in valid)
-        ):
-            quotes_complete = False
-        prices.extend(price for price in valid if price is not None and price >= 0)
-    budget = _number(inputs.get("budget"))
-    costs = {
-        "currency": "USD",
-        "scope": "quoted_room_nights_only",
-        "quotes_complete": quotes_complete,
-        "quoted_total_usd": sum(prices) if quotes_complete else None,
-        "room_night_count": len(prices) if quotes_complete else None,
-        "max_room_night_usd": max(prices, default=0) if quotes_complete else None,
-        "over_target_room_nights": sum(price > budget for price in prices)
-        if quotes_complete and budget is not None
-        else None,
-        "above_target_total_usd": sum(max(0, price - budget) for price in prices)
-        if quotes_complete and budget is not None
-        else None,
-        "budget_utilization": sum(prices) / (budget * len(prices))
-        if quotes_complete and prices and budget is not None and budget > 0
-        else None,
-        "over_target_fraction": sum(price > budget for price in prices) / len(prices)
-        if quotes_complete and prices and budget is not None
-        else None,
-        "maximum_excess_usd": max((max(0, price - budget) for price in prices), default=0)
-        if quotes_complete and budget is not None
-        else None,
-        "signed_target_difference_usd": sum(price - budget for price in prices)
-        if quotes_complete and budget is not None
-        else None,
-        "unused_target_usd": sum(max(0, budget - price) for price in prices)
-        if quotes_complete and budget is not None
-        else None,
-        "assessment_reason": reason
-        if not assessed
-        else "incomplete_room_quotes"
-        if not quotes_complete
-        else "nightly_target_unavailable"
-        if budget is None
-        else None,
-    }
+    costs = None
+    if include_costs:
+        expected_rooms = len(inputs.get("hotel_rooms") or [])
+        prices = []
+        quotes_complete = assessed
+        for hotel in hotels:
+            offers = hotel.get("room_offers") or []
+            valid = [_number(offer.get("price")) for offer in offers]
+            if (
+                not offers
+                or (expected_rooms and len(offers) != expected_rooms)
+                or any(price is None or price < 0 for price in valid)
+            ):
+                quotes_complete = False
+            prices.extend(price for price in valid if price is not None and price >= 0)
+        budget = _number(inputs.get("budget"))
+        costs = {
+            "currency": "USD",
+            "scope": "quoted_room_nights_only",
+            "quotes_complete": quotes_complete,
+            "quoted_total_usd": sum(prices) if quotes_complete else None,
+            "room_night_count": len(prices) if quotes_complete else None,
+            "max_room_night_usd": max(prices, default=0) if quotes_complete else None,
+            "over_target_room_nights": sum(price > budget for price in prices)
+            if quotes_complete and budget is not None
+            else None,
+            "above_target_total_usd": sum(max(0, price - budget) for price in prices)
+            if quotes_complete and budget is not None
+            else None,
+            "budget_utilization": sum(prices) / (budget * len(prices))
+            if quotes_complete and prices and budget is not None and budget > 0
+            else None,
+            "over_target_fraction": sum(price > budget for price in prices) / len(prices)
+            if quotes_complete and prices and budget is not None
+            else None,
+            "maximum_excess_usd": max((max(0, price - budget) for price in prices), default=0)
+            if quotes_complete and budget is not None
+            else None,
+            "signed_target_difference_usd": sum(price - budget for price in prices)
+            if quotes_complete and budget is not None
+            else None,
+            "unused_target_usd": sum(max(0, budget - price) for price in prices)
+            if quotes_complete and budget is not None
+            else None,
+            "assessment_reason": reason
+            if not assessed
+            else "incomplete_room_quotes"
+            if not quotes_complete
+            else "nightly_target_unavailable"
+            if budget is None
+            else None,
+        }
     final = next((stop for stop in reversed(stops) if stop.get("type") == "end"), {})
     arrival = _instant(final.get("arrival_time")) if assessed else None
     start = _instant(inputs.get("start_date"))
@@ -451,7 +453,7 @@ def trip_evaluation(envelope):
         "stop_fulfillment": fulfillment,
         "schedule": schedule,
         "schedule_compliance": compliance,
-        "hotel_costs": costs,
+        **({"hotel_costs": costs} if include_costs else {}),
         "warnings": warnings,
         "stages": stages,
         "first_failed_stage": next(

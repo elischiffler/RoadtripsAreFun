@@ -19,6 +19,7 @@ import {
   SolverOutcomes,
   Tradeoff,
   UtilitySpread,
+  UtilityComparison,
 } from './ResearchCharts';
 import { combineStudies, distribution, format, METRICS, settingLabel } from './researchData';
 import { getStudioSession, unlockStudio } from '../../services/studioSession';
@@ -219,6 +220,7 @@ export default function StudioResearch() {
   const successful = trackRows.filter((row) => row.completed).length;
   const failed = trackRows.filter((row) => row.outcome === 'failed').length;
   const partial = trackRows.filter((row) => row.outcome === 'completed' && !row.completed).length;
+  const blocked = trackRows.filter((row) => row.outcome === 'blocked').length;
   const interrupted = trackRows.filter((row) => row.outcome === 'interrupted').length;
   const percentFinished = (count) =>
     trackRows.length
@@ -351,7 +353,7 @@ export default function StudioResearch() {
                     })
                   }
                 >
-                  Rerun stop selection
+                  Run new real-data study
                 </button>
               )}
               <button
@@ -424,9 +426,7 @@ export default function StudioResearch() {
               <span>
                 {track === 'pipeline'
                   ? 'Live trips'
-                  : data.dataset_hashes.length === 1
-                    ? '100 simulated attractions'
-                    : 'Simulated attractions'}
+                  : 'Frozen real candidate pools · up to 60 places'}
               </span>
               {data.solve_limits.length > 0 && (
                 <span>
@@ -435,8 +435,8 @@ export default function StudioResearch() {
               )}
               <ResearchInfo label="Study data">
                 {track === 'pipeline'
-                  ? 'Complete live trips with valid timing. Hotel costs cover room-nights only.'
-                  : 'Fixed simulated attractions and driving inputs. Repeated runs are not independent real-world samples.'}
+                  ? 'Fresh full-trip attempts using live catalog and routing providers. Failed and partial attempts remain recorded.'
+                  : 'Real catalog places, AI-estimated traits, and measured road inputs captured once per scenario. The same pool is reused across settings and seeds; repeats are not independent place samples.'}
               </ResearchInfo>
             </div>
             <div className="research-stat-row research-summary">
@@ -461,7 +461,8 @@ export default function StudioResearch() {
                 <span>Incomplete runs</span>
                 <strong>{format(trackRows.length - successful, 0)}</strong>
                 <small>
-                  {failed} failed · {partial} partial · {interrupted} interrupted
+                  {failed} failed · {partial} partial · {interrupted} interrupted · {blocked}{' '}
+                  blocked
                 </small>
               </div>
               <InspectMark
@@ -497,7 +498,7 @@ export default function StudioResearch() {
                     .map(([key, value]) => (
                       <option value={key} key={key}>
                         {value.label}
-                        {key === 'max_gap_seconds' && track === 'solver' ? ' (simulated)' : ''}
+                        {key === 'max_gap_seconds' && track === 'solver' ? ' (baseline)' : ''}
                       </option>
                     ))}
                 </select>
@@ -553,6 +554,9 @@ export default function StudioResearch() {
                 <RowChart rows={filtered} trips={trips} metric={metric} />
               </section>
             </div>
+            <section className="research-card">
+              <UtilityComparison rows={filtered} trips={trips} />
+            </section>
             <section className="research-card">
               <UtilitySpread rows={filtered} />
             </section>

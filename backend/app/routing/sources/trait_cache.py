@@ -12,7 +12,7 @@ from app.core.config import settings
 from app.crud import chat_crud
 from app.routing.profiles import AttributeRatings
 
-VERSION = "attraction-traits-v1"
+VERSION = "attraction-traits-v2-model-provenance"
 logger = logging.getLogger(__name__)
 
 

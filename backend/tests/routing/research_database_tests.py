@@ -52,6 +52,8 @@ def test_backfill_and_incremental_late_low_id_preserve_every_observation(mirror)
         "solver_status": "FEASIBLE",
         "utility_values": [0.5, 0.8],
         "solver_seconds": 2.125,
+        "capture": {"hash": "unit-fixture", "candidates": [{"provider_id": "fixture-only"}]},
+        "live_evidence": {"route": None, "error": {"code": "unit-test"}},
     }
     store.save(study_id, case_id, "finished", result)
     assert database.mirror_once() == len(planned["cases"])
@@ -59,6 +61,7 @@ def test_backfill_and_incremental_late_low_id_preserve_every_observation(mirror)
     assert protocol == {k: v for k, v in planned.items() if k != "cases"}
     assert first["rows"][0]["solver_status"] == "FEASIBLE"
     assert first["rows"][0]["solver_seconds"] == 2.125
+    assert "capture" not in first["rows"][0] and "live_evidence" not in first["rows"][0]
     assert key not in json.dumps(first) and "private-visitor" not in json.dumps(first)
     assert database.mirror_once() == 0
     store.save(study_id, 0, "finished", result | {"solver_status": "UNKNOWN", "completed": False})
@@ -70,6 +73,9 @@ def test_backfill_and_incremental_late_low_id_preserve_every_observation(mirror)
     _, _, rows = database.read(study_id, export=True)
     assert len(rows) == len(planned["cases"])
     assert next(row for row in rows if row["id"] == case_id)["utility_values"] == [0.5, 0.8]
+    saved = next(row for row in rows if row["id"] == case_id)
+    assert saved["capture"] == result["capture"]
+    assert saved["live_evidence"] == result["live_evidence"]
 
 
 def test_database_read_access_needs_studio_session_and_never_grants_control(mirror):
@@ -118,3 +124,39 @@ def test_conflicting_source_and_read_only_gate_leave_database_intact(mirror, mon
     with pytest.raises(RuntimeError, match="disabled"):
         database.mirror_once()
     assert database.read(study_id)[0]["cursor"] == before["cursor"]
+
+
+def test_explicit_removal_backs_up_data_and_does_not_touch_other_studies(mirror, tmp_path):
+    from app.research.manage import remove_studies
+
+    study_id, _, planned = mirror
+    other = str(uuid4())
+    store.create(other, "other-visitor", planned, {"source_snapshot_hash": "frozen"})
+    store.save(study_id, 0, "finished", {"capture": {"hash": "test-fixture"}, "utility_gain": 0.2})
+    database.mirror_once()
+    with database.transaction(write=True) as cur:
+        cur.execute(
+            (Path(__file__).resolve().parents[2] / "sql/algorithm_lab_runs.sql").read_text()
+        )
+    backup = tmp_path / "recovery"
+    result = remove_studies([study_id], backup)
+    assert result["removed_studies"] == [study_id]
+    assert (backup / "studies.sqlite3").is_file()
+    assert len(json.loads((backup / "studio_research_runs.json").read_text())) == len(
+        planned["cases"]
+    )
+    assert all(row["id"] != study_id for row in database.library())
+    assert any(row["id"] == other for row in database.library())
+    assert store.study(other, trusted=True)["id"] == other
+    database.mirror_once()
+    assert all(row["id"] != study_id for row in database.library())
+
+
+def test_active_study_cannot_be_removed(mirror, tmp_path):
+    from app.research.manage import remove_studies
+
+    study_id, _, _ = mirror
+    store.state(study_id, "running")
+    with pytest.raises(ValueError, match="pausing"):
+        remove_studies([study_id], tmp_path / "blocked-removal")
+    assert store.rows(study_id)

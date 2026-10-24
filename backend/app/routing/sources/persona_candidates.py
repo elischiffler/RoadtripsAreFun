@@ -309,6 +309,7 @@ async def _propose(
         raise CandidateProviderError("AI candidate provider unavailable") from exc
     if diagnostics is not None:
         diagnostics["provider"] = getattr(response, "provider", "unknown")
+        diagnostics["model"] = getattr(response, "model", None)
     return _parse_proposals(response.content, limit, diagnostics=diagnostics)
 
 
@@ -556,9 +557,10 @@ async def attraction_candidates(
                     }
                     fresh.append((place, proposal.attribute_ratings.model_dump()))
             if trait_store and fresh:
-                stored = await threaded(
-                    "catalog", trait_store.put_many, fresh, validation.get("provider", "unknown")
-                )
+                provider = validation.get("provider", "unknown")
+                if validation.get("model"):
+                    provider = f"{provider}/{validation['model']}"
+                stored = await threaded("catalog", trait_store.put_many, fresh, provider)
                 by_id.update(stored)
                 explanation["trait_cache"]["stored"] += len(stored)
         output = []

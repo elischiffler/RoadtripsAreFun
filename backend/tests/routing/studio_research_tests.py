@@ -50,8 +50,9 @@ def make_study(design=None):
 
 def test_matrix_and_one_factor_conditions_are_exact_and_paired():
     planned = plan(Design())
-    assert planned["counts"] == {"combinations": 30, "pipeline": 300, "solver": 6300, "total": 6600}
-    assert len(planned["dataset"]) == len({row["provider_id"] for row in planned["dataset"]}) == 100
+    assert planned["counts"] == {"combinations": 24, "pipeline": 240, "solver": 5040, "total": 5280}
+    assert planned["dataset"]["kind"] == "real_capture_per_scenario"
+    assert planned["dataset"]["candidate_limit"] == 60
     assert planned == plan(Design())
     base = planned["variants"][0]["config"]
     assert base["time_limit_seconds"] == SelectionConfig().time_limit_seconds == 15
@@ -63,17 +64,9 @@ def test_matrix_and_one_factor_conditions_are_exact_and_paired():
         assert case["inputs"]["num_stops"] == case["target_days"] * case["stops_per_day"]
         assert case["inputs"]["traveler_count"] == 2
         assert case["inputs"]["evening_interests"] == []
-    medium = next(row for row in planned["cases"] if row["trip"] == "medium-2d")
-    tight = next(
-        row
-        for row in planned["cases"]
-        if row["trip"] == "tight-2d"
-        and row["persona"] == medium["persona"]
-        and row["stops_per_day"] == medium["stops_per_day"]
-    )
-    assert {k: v for k, v in medium["inputs"].items() if k != "budget"} == {
-        k: v for k, v in tight["inputs"].items() if k != "budget"
-    }
+    assert all("budget" not in row["inputs"] for row in planned["cases"])
+    assert set(planned["design"]["quality_loss"]) == {0, 0.05, 0.1, 0.2}
+    assert set(planned["design"]["detour_weight"]) == {0, 0.25, 1, 4}
 
 
 @pytest.mark.parametrize(
@@ -137,6 +130,12 @@ def test_api_requires_authorization_and_keeps_keys_out_of_results(monkeypatch):
     )
     assert client.get(f"{url}/export?format=csv", headers=access).text.startswith("id,state,trip,")
     assert client.get(f"{url}/export?format=bad", headers=access).status_code == 422
+    evidence = {"capture": {"hash": "test-only"}, "live_evidence": {"error": None}}
+    store.save(payload["id"], 0, "finished", evidence)
+    chart = client.get(url, headers=access).json()["rows"][0]
+    assert "capture" not in chart and "live_evidence" not in chart
+    exported = client.get(f"{url}/export?format=json", headers=access).json()
+    assert exported["protocol"]["cases"][0]["capture"] == evidence["capture"]
 
 
 def test_immutable_owner_plan_and_global_study_limit():
@@ -169,7 +168,7 @@ def test_observations_do_not_invent_budget_or_utility_for_failed_or_partial_runs
     assert result["utility_mean"] == pytest.approx(0.6)
     assert result["utility_min"] == 0.4 and result["utility_max"] == 0.8
     assert result["utility_median"] == pytest.approx(0.6)
-    assert result["extra_meters"] is None and result["budget_utilization"] is None
+    assert result["extra_meters"] is None and "budget_utilization" not in result
     envelope["error"] = {"code": "selection"}
     assert observation(envelope, 1000, solver_only=True)["utility_mean"] is None
     envelope = {
@@ -192,7 +191,7 @@ def test_observations_do_not_invent_budget_or_utility_for_failed_or_partial_runs
     }
     result = observation(envelope, 1000)
     assert not result["completed"] and result["utility_mean"] is None
-    assert result["budget_excess_usd"] is None
+    assert "budget_excess_usd" not in result
 
 
 def test_live_utility_pool_uses_only_selected_delivered_and_assessed_candidates():
@@ -274,7 +273,7 @@ async def test_interrupted_live_work_is_reconciled_without_repaying(monkeypatch)
     recorded.assert_not_called()
 
 
-def test_source_change_refuses_mixing_and_real_solver_uses_exactly_100(monkeypatch):
+def test_source_change_refuses_mixing_and_solver_requires_real_capture(monkeypatch):
     key, access = make_study()
     study = store.study(key, access)
     monkeypatch.setattr(api, "identity", lambda: {"source_snapshot_hash": "changed"})
@@ -285,11 +284,8 @@ def test_source_change_refuses_mixing_and_real_solver_uses_exactly_100(monkeypat
     planned["variants"][0]["config"]["time_limit_seconds"] = 0.05
     case = next(row for row in store.rows(key) if row["track"] == "solver")
     result = worker.solver_trial(case, planned)
-    assert result["evidence"] == "synthetic_controlled_100"
-    assert result["candidate_count"] == 100
-    assert result["solver"]["configuration"]["workers"] == 1
-    assert result["solver"]["configuration"]["time_limit_seconds"] == 0.05
-    assert result["dataset_hash"] == planned["dataset_hash"]
+    assert result["outcome"] == "blocked"
+    assert result["solver_status"] == "NOT_RUN"
 
 
 def test_incremental_results_never_lose_late_lower_numbered_cases():
@@ -306,7 +302,7 @@ def test_incremental_results_never_lose_late_lower_numbered_cases():
     assert len(store.changes(key)[0]) == 2
 
 
-async def test_solver_trials_run_before_provider_work_without_competing_for_timing(monkeypatch):
+async def test_real_capture_precedes_solver_trials_without_competing_for_timing(monkeypatch):
     key, _ = make_study()
     order = []
     monkeypatch.setattr(
@@ -320,7 +316,7 @@ async def test_solver_trials_run_before_provider_work_without_competing_for_timi
     monkeypatch.setattr(worker, "live_trial", live)
     store.claim(key)
     await worker.execute(key)
-    assert order == ["solver", "live"]
+    assert order == ["live", "solver"]
 
 
 def test_execution_requires_opt_in_but_existing_results_and_pause_remain_available(monkeypatch):
@@ -350,7 +346,7 @@ def test_existing_study_keeps_its_frozen_five_second_protocol():
     assert saved["plan"]["variants"][0]["config"]["time_limit_seconds"] == 5.0
 
 
-def test_rerun_preserves_history_and_schedules_only_solver_with_current_limit():
+def test_new_study_captures_fresh_real_inputs_with_current_limit():
     historical = plan(minimal())
     for variant in historical["variants"]:
         variant["config"]["time_limit_seconds"] = 5.0
@@ -373,10 +369,10 @@ def test_rerun_preserves_history_and_schedules_only_solver_with_current_limit():
     fresh = store.study(replacement["id"], replacement["key"])
     assert fresh["plan"]["supersedes"] == previous_id
     assert fresh["plan"]["dataset_hash"] == historical["dataset_hash"]
-    assert fresh["plan"]["counts"]["pipeline"] == 0
+    assert fresh["plan"]["counts"]["pipeline"] == 1
     assert fresh["plan"]["counts"]["solver"] == 1
     assert fresh["plan"]["variants"][0]["config"]["time_limit_seconds"] == 15
-    assert {row["track"] for row in store.rows(fresh["id"])} == {"solver"}
+    assert {row["track"] for row in store.rows(fresh["id"])} == {"solver", "pipeline"}
     previous = store.study(previous_id, previous_key)
     assert previous["state"] == "paused"
     assert previous["plan"]["variants"][0]["config"]["time_limit_seconds"] == 5

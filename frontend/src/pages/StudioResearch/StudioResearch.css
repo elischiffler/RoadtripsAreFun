@@ -625,3 +625,29 @@ svg [data-inspection-target] > circle {
   box-shadow: 0 1px 4px #30271c10;
   color: #234a3c;
 }
+
+.research-comparison-key {
+  color: #625e57;
+  font-size: 0.85rem;
+}
+.research-comparison-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(180px, 2fr) minmax(160px, 1fr);
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e7e2d8;
+}
+.research-comparison-row svg {
+  width: 100%;
+  overflow: visible;
+}
+.research-comparison-row small {
+  grid-column: 1 / -1;
+  color: #625e57;
+}
+@media (max-width: 700px) {
+  .research-comparison-row {
+    grid-template-columns: 1fr;
+  }
+}

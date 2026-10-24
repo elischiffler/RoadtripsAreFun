@@ -41,8 +41,14 @@ export const METRICS = {
     live: true,
   },
   extra_seconds: { label: 'Added driving', unit: 'minutes', scale: 1 / 60, digits: 1, live: true },
-  budget_utilization: { label: 'Hotel target used', unit: '%', scale: 100, digits: 1, live: true },
-  budget_excess_usd: { label: 'Above hotel target', unit: 'USD', scale: 1, digits: 2, live: true },
+  candidate_utility_mean: {
+    label: 'Candidate-pool mean utility',
+    unit: '%',
+    scale: 100,
+    digits: 1,
+  },
+  selected_utility_mean: { label: 'Selected-place mean utility', unit: '%', scale: 100, digits: 1 },
+  utility_gain: { label: 'Utility change after selection', unit: 'points', scale: 100, digits: 1 },
   runtime_seconds: { label: 'Planning time', unit: 's', scale: 1, digits: 2 },
   solver_seconds: { label: 'Selection time', unit: 'ms', scale: 1000, digits: 1 },
   fulfillment: { label: 'Requested stops delivered', unit: '%', scale: 100, digits: 1 },
@@ -87,7 +93,9 @@ export function sample(rows, metric) {
     rows
       .filter(
         (row) =>
-          row.completed ||
+          (['candidate_utility_mean', 'selected_utility_mean', 'utility_gain'].includes(metric)
+            ? row.selection_assessed
+            : row.completed) ||
           ['runtime_seconds', 'solver_seconds', 'fulfillment', 'actual_days'].includes(metric)
       )
       .map((row) => metricValue(row, metric))
@@ -117,13 +125,15 @@ const METRIC_HELP = {
   utility_median: 'Median attraction utility score within each run.',
   utility_max: 'Utility score of the highest-scoring attraction in each run.',
   max_gap_seconds:
-    'Longest driving gap between attractions, including the origin and destination. Stop selection runs use simulated baseline progress; full trip planning runs use actual route legs, excluding overnight downtime.',
+    'Longest driving gap between attractions, including the origin and destination. Stop selection runs use measured baseline progress; full trip planning runs use actual route legs, excluding overnight downtime.',
   extra_meters: 'Road distance added compared with the direct origin-to-destination route.',
   extra_seconds: 'Driving time added compared with the direct route; visit time is excluded.',
-  budget_utilization:
-    'Quoted hotel cost divided by the room-night target. 100% is on target; above 100% is over. This covers hotels only. Missing quotes are unassessed.',
-  budget_excess_usd:
-    'Total quoted hotel dollars above the room-night targets; zero means none above target. This is not total-trip spending.',
+  candidate_utility_mean:
+    'Mean utility of the eligible places supplied to the solver, before selection.',
+  selected_utility_mean:
+    'Mean utility of the solver-selected places. This describes selection even if later trip scheduling fails.',
+  utility_gain:
+    'Selected-place mean minus eligible candidate-pool mean, in percentage points. Each difference uses the same run and persona; positive values are not guaranteed.',
   runtime_seconds:
     'Full trip planning time, or model-and-solve time for stop selection runs. Failed runs retain measured time until failure.',
   solver_seconds:

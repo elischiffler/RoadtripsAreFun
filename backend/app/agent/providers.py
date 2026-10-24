@@ -432,6 +432,7 @@ class MentroGatewayProvider:
             content=content,
             tool_calls=[],  # gateway has no native tool-calling
             provider=provider,
+            model=payload.get("model") if isinstance(payload.get("model"), str) else None,
             usage=usage,
         )
 

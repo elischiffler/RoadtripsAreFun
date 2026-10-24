@@ -10,6 +10,7 @@ import {
   SolverOutcomes,
   Tradeoff,
   UtilitySpread,
+  UtilityComparison,
 } from '../pages/StudioResearch/ResearchCharts';
 import ResearchInfo from '../pages/StudioResearch/ResearchInfo';
 import { InspectionProvider } from '../pages/StudioResearch/ResearchInspect';
@@ -237,10 +238,10 @@ it('restores a study without Studio login, separates tracks and keeps failures v
   await userEvent.click(screen.getByRole('button', { name: 'Full trip planning · 1' }));
   expect(screen.getByText('Not run')).toBeInTheDocument();
   expect(screen.getByText('0% of finished runs')).toBeInTheDocument();
-  expect(screen.getByText('1 failed · 0 partial · 0 interrupted')).toBeInTheDocument();
+  expect(screen.getByText('1 failed · 0 partial · 0 interrupted · 0 blocked')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Stop selection · 1' }));
   expect(screen.queryByText('Settings comparison')).not.toBeInTheDocument();
-  expect(screen.getByText('100 simulated attractions')).toBeInTheDocument();
+  expect(screen.getByText('Frozen real candidate pools · up to 60 places')).toBeInTheDocument();
   expect(screen.queryByText('New study')).not.toBeInTheDocument();
   expect(screen.queryByText(/Same candidates, persona/)).not.toBeInTheDocument();
   expect(screen.queryByRole('option', { name: 'Added distance' })).not.toBeInTheDocument();
@@ -525,14 +526,14 @@ it('reruns the largest saved matrix without pooling historical results or starti
   rerunStudy.mockResolvedValue(replacement);
   mount();
   await screen.findByText('5 s solve limit');
-  await userEvent.click(screen.getByRole('button', { name: 'Rerun stop selection' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Run new real-data study' }));
   expect(rerunStudy).toHaveBeenCalledWith(previous, [previous]);
   await screen.findByText('15 s solve limit');
   expect(studyRequest).toHaveBeenCalledWith(replacement, 'start', 'post');
   expect(studyVersions).toHaveBeenCalledWith([replacement], expect.anything(), [previous]);
   expect(screen.queryByRole('table')).toHaveTextContent('—');
   expect(screen.queryByRole('button', { name: /Full trip planning/ })).not.toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Rerun stop selection' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Run new real-data study' })).toBeDisabled();
 });
 
 it('switches versions without mixing results, mutating batches or changing the current worker', async () => {
@@ -570,7 +571,7 @@ it('switches versions without mixing results, mutating batches or changing the c
   expect(screen.getByText('Archived · 1 / 1')).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Resume' })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Pause' })).not.toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: 'Rerun stop selection' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Run new real-data study' })).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
   expect(downloadStudy).toHaveBeenCalledWith([previous], 'csv');
   await userEvent.click(within(versions).getByRole('button', { name: '15 s' }));
@@ -657,10 +658,45 @@ it('loads database studies in a fresh browser and keeps shared results read-only
   expect(screen.getByText('Feasible')).toBeInTheDocument();
   expect(screen.getByText('Unknown')).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Pause' })).not.toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: 'Rerun stop selection' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Run new real-data study' })).not.toBeInTheDocument();
   act(() => {
     sessionStorage.removeItem('studioSession');
     window.dispatchEvent(new Event('studio-access-changed'));
   });
   expect(await screen.findByText('Enter Studio password')).toBeInTheDocument();
+});
+
+it('compares paired candidate and selected utility without treating missing results as zero', () => {
+  const rows = [
+    {
+      ...base,
+      selection_assessed: true,
+      candidate_utility_mean: 0.5,
+      selected_utility_mean: 0.7,
+      best_available_utility_mean: 0.8,
+    },
+    {
+      ...base,
+      id: 2,
+      selection_assessed: false,
+      candidate_utility_mean: 0.4,
+      selected_utility_mean: null,
+    },
+  ];
+  render(<UtilityComparison rows={rows} trips={trips} />);
+  expect(
+    screen.getByRole('img', {
+      name: /candidate pool 50%, selected 70%, change 20 percentage points, 1 run/,
+    })
+  ).toBeInTheDocument();
+  expect(screen.getByText('1 run paired · 1 unassessed')).toBeInTheDocument();
+  expect(
+    sample(
+      [
+        { ...rows[0], utility_gain: 0.2 },
+        { ...rows[1], utility_gain: null },
+      ],
+      'utility_gain'
+    ).mean
+  ).toBe(20);
 });

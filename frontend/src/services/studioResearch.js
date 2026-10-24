@@ -4,6 +4,7 @@ import { clearResearchCache, readResearchCache, saveResearchCache } from './stud
 
 const scope = (study) =>
   JSON.stringify([
+    'real-research-v2',
     import.meta.env.VITE_BACKEND_SERVER,
     getStudioSession()?.token ?? null,
     study?.database ? 'database' : (study?.key ?? 'public'),
@@ -25,8 +26,8 @@ export async function readStudySnapshot(study) {
     : null;
 }
 
-const KEY = 'studioResearchStudies';
-const ARCHIVE_KEY = 'studioResearchArchivedStudies';
+const KEY = 'studioResearchRealStudies';
+const ARCHIVE_KEY = 'studioResearchRealArchivedStudies';
 function readStudies(key) {
   try {
     const rows = JSON.parse(localStorage.getItem(key) || '[]');
@@ -47,13 +48,15 @@ export const savedStudies = () => readStudies(KEY);
 export const archivedStudies = () => readStudies(ARCHIVE_KEY);
 export function savedStudyVersion() {
   try {
-    return sessionStorage.getItem('studioResearchVersion') === 'previous' ? 'previous' : 'current';
+    return sessionStorage.getItem('studioResearchRealVersion') === 'previous'
+      ? 'previous'
+      : 'current';
   } catch {
     return 'current';
   }
 }
 export function rememberStudyVersion(version) {
-  sessionStorage.setItem('studioResearchVersion', version);
+  sessionStorage.setItem('studioResearchRealVersion', version);
 }
 export async function studyVersions(currentStudies, signal, archive = archivedStudies()) {
   // The incremental endpoint can return protocol metadata without transferring saved run records.
