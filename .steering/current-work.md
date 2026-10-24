@@ -7,8 +7,11 @@ original attribute profiles and provenance; three new reserves retain their firs
 ratings. Stored place profiles are now permanent by source identity, independent
 of persona, metadata, prompt/model version and legacy expiry. Database failures
 and corrupt stored ratings stop estimation rather than regenerate ratings. The
-v3-only nature study below is withdrawn as the current paper dataset; its historical
-exports remain intact. See [rating persistence](../docs/place-trait-cache.md).
+v3-only nature study below is withdrawn; its historical exports remain intact.
+Replacement `cffa789a-bd7c-4ec0-8be0-8223e1cff9bc` completes 24 captures and
+5,040 OPTIMAL trials with zero AI rating calls. All twelve Entertainment baseline
+means match the original corridor study. See the [current study](../docs/research/2026-10-24-restored/README.md)
+and [rating persistence](../docs/place-trait-cache.md).
 
 ## October 24 nature coverage and rating-audit replacement
 

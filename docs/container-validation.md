@@ -435,3 +435,32 @@ from pinned requirements on the same Mac; its identity records a clean tree and
 source hash. The local API currently serves that same source copy using the clean
 environment; Vite serves the original checkout. No Docker test containers remain
 running. See the [new research packet](research/2026-10-24-nature/README.md).
+
+## October 24 original-rating restoration
+
+All 36 changed live place profiles were restored to their original attributes and
+model/version/timestamp/context provenance after a verified 75-row backup. The
+three first-time reserve profiles are unchanged. Identity-based permanent lookup
+returns all 39 expected profiles without AI calls. No hosted schema migration or
+production application deployment was performed.
+
+Source `eef029b409c441381fc803071fa7c2e06ec87ef5` passes Ruff 0.16.7 formatting/lint,
+the full backend suite with disposable PostgreSQL (2,239 passed, 73 skipped,
+82.42% coverage; required 63% unchanged), and all GitHub CI gates including frontend
+build/tests, containers and real PostgreSQL CRUD/recovery. The local disposable
+CRUD/recreate/backup/restore run also passes, including ten research/trait tests.
+The same pre-existing duplicate-operation-ID warning remains.
+
+The first expanded local backend run selected a disposable database named
+`ratings_regression` for catalog fixtures; those fixtures correctly refused any
+name other than `catalog_test`. Rerunning with the existing isolated fixture
+`catalog_test` passed. Local Docker initially exhausted address pools; removing
+only an empty network from this chat's prior completed fixture run allowed the
+successful retry. Original-checkout file-sync stalls were avoided for image builds
+with a clean clone of the exact commit. None of these local environment repairs
+used hosted data to clear tests or relaxed a test threshold.
+
+The local API now serves `eef029b` from the clean temporary checkout; Vite continues
+to serve the original frontend. All disposable database containers are stopped;
+recovery volumes are retained. Historical re-rated study exports remain unchanged
+and are withdrawn as the current paper evidence.

@@ -1,5 +1,10 @@
 # October 24 nature coverage and rating audit
 
+**Later correction:** the three catalog additions remain active, but all 36 existing
+place profiles were restored to their original ratings at the user's direction.
+The v3 re-rating experiment is historical. The [current study](research/2026-10-24-restored/README.md)
+uses fixed original profiles plus the three new places' first profiles.
+
 The LA–San Diego bell corridor previously contained nine farmers markets and one
 amusement park. It contained no dedicated nature destination. Its weak nature
 selection is therefore an input-coverage problem as well as a rating problem.
