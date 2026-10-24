@@ -27,7 +27,8 @@ ratings. Corrupt records and database outages fail closed instead of silently
 asking AI for replacements or using unpersisted estimates.
 
 Explicitly apply `backend/sql/place_attribute_traits.sql`, then enable
-`PLACE_TRAITS_CACHE_ENABLED=true` for live attraction reuse. Research always
+`PLACE_TRAITS_CACHE_ENABLED=true` for live attraction reuse. Disabled persistence stops live discovery instead of
+falling back to temporary AI ratings. Research always
 requires the persistent store. The configured local database is enabled; this
 change does not deploy the application or change other deployments' settings.
 Offline fixture providers remain independent of this live store.

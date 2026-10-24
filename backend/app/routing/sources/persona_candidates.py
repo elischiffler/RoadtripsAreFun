@@ -380,7 +380,11 @@ async def attraction_candidates(
         return DiscoveryResult([], {"plan": plan.snapshot(), "stop_reason": "zero_requested"})
     ai = ai or run_resource("rating_provider", build_default_chain)
     places = places or LivePlaceProvider()
-    if trait_store is None and isinstance(places, LivePlaceProvider) and trait_cache.enabled():
+    if trait_store is None and isinstance(places, LivePlaceProvider):
+        if not trait_cache.enabled():
+            raise trait_cache.TraitStoreError(
+                "Persistent place ratings must be enabled before live attraction discovery"
+            )
         trait_store = trait_cache
     measure = RouteMeasure(raw_route)
     raw, rated, attempted, queried = {}, {}, set(), []

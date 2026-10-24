@@ -587,3 +587,12 @@ async def test_enabled_live_provider_automatically_uses_database_trait_store(mon
         object(), [[40, -74]], default_weights(), ai=ai, duration_estimator=unchanged_duration
     )
     assert ai.calls == 0 and result[0]["provenance"]["ratings_cache"] == "hit"
+
+
+@pytest.mark.asyncio
+async def test_disabled_persistence_cannot_bypass_permanent_live_ratings(monkeypatch):
+    monkeypatch.setenv("PLACE_TRAITS_CACHE_ENABLED", "false")
+    ai = FakeAI([])
+    with pytest.raises(source.trait_cache.TraitStoreError, match="must be enabled"):
+        await discover(object(), [[40, -74]], default_weights(), ai=ai)
+    assert ai.calls == 0
