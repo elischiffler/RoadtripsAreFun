@@ -1,4 +1,6 @@
-# Replacement study: nature coverage and destination-specific ratings
+# Historical study: nature coverage and destination-specific ratings
+
+**Withdrawn as the current paper dataset:** the user directed restoration of all original place ratings. This packet preserves the re-rated experiment as historical evidence only. See [restoration](../2026-10-24-restored/ratings-restoration.json).
 
 Study **d0aee85d-bd6a-49c3-a74a-c5b5630549bf** replaces
 `514e8250-12c7-4a22-bd2d-e550523fc7dc` as the current paper dataset. It ran

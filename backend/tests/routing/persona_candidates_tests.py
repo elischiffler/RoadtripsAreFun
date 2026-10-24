@@ -463,6 +463,28 @@ async def test_place_traits_are_reused_across_runs_but_utility_follows_each_pers
 
 
 @pytest.mark.asyncio
+async def test_stored_rating_outage_never_triggers_ai_rerating():
+    place = source.VerifiedPlace(provider_id="overture:saved", name="Park", coordinates=[40, -74])
+
+    class UnavailableStore:
+        def get_many(self, places):
+            raise source.trait_cache.TraitStoreError("Stored ratings unavailable")
+
+    ai = FakeAI([])
+    with pytest.raises(source.trait_cache.TraitStoreError):
+        await discover(
+            object(),
+            [[40, -74]],
+            default_weights(),
+            ai=ai,
+            places=FakePlaces([place]),
+            trait_store=UnavailableStore(),
+            duration_estimator=unchanged_duration,
+        )
+    assert ai.calls == 0
+
+
+@pytest.mark.asyncio
 async def test_only_missing_place_traits_are_sent_to_ai_and_source_facts_are_supplied():
     cached = source.VerifiedPlace(
         provider_id="overture:cached", name="Cached Park", coordinates=[40, -74]

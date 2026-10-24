@@ -1,85 +1,51 @@
-# Reusable attraction traits
+# Permanent attraction ratings
 
-Live attraction discovery reuses a small JSON object of estimated traits for each
-source place. These are the same 14 canonical attributes already used by persona
-matching: scenery, nature, hiking/outdoors, food, history, culture/arts, nightlife,
-shopping, beaches/water, adventure, relaxation, unique local experiences, family
-friendliness and crowd avoidance. Values remain numbers from 0 to 1.
+Each source place has one reusable, persona-independent profile of the 14
+canonical attraction attributes. The first persisted rating is retained. Adding
+places, changing prompts/models, editing metadata, restarting the application or
+repeating a study does not regenerate an existing place's ratings. Corrections
+require explicit user direction and an audited data repair.
 
-Before this change, traits were retained inside saved trip explanations/results,
-but a later live trip did not look them up. Run-local request deduplication did
-not provide reuse across trips or API restarts.
+The attributes are AI estimates, not proof of objective or unbiased quality.
+Traveler preferences are excluded from the rating prompt. `crossmatch` applies
+those preferences to the stored profile deterministically: a nature traveler and
+an entertainment traveler can have different utilities for the same place, but
+unchanged preferences and ratings always produce the same utility.
 
-## Lookup, estimation and scoring
+## Storage and lookup
 
-`backend/app/routing/sources/trait_cache.py` supplies `get_many(places)` and
-`put_many(entries, provider)`. The live attraction source reads the cache after
-source identity and calendar eligibility checks. It sends only missing places to
-the existing rating provider, validates complete 14-attribute responses, matches
-their names to the supplied source records, and persists the successful estimates.
-Same-name records are rated in separate requests so one name cannot conflate two
-source identities. Supplied facts distinguish each place; traveler preferences
-are not sent in the trait-rating prompt.
+`backend/app/routing/sources/trait_cache.py` looks up the earliest persisted row
+by stable `source_id`, including historical context-hashed rows. Legacy expiry
+is ignored. New rows have an identity-only key and infinite expiry. Model,
+rubric, source facts and rating timestamp remain provenance, not invalidation
+triggers. No database migration is needed for this behavior.
 
-The cache contains traits, source context, rating-contract version, provider,
-creation timestamp and expiry. It does **not** contain persona weights or a final
-utility score. Each trip recomputes utility and per-attribute contributions with
-`crossmatch(current_weights, cached_traits)`. A valid zero trait is not a missing
-value. Unknown, incomplete, boolean, non-finite or out-of-range estimates are
-never accepted as reusable traits.
+Concurrent writes take a transaction-scoped advisory lock per source identity,
+then check for an existing rating. The first stored profile wins; callers re-read
+that profile. Writes never automatically replace expired, invalid or changed
+ratings. Corrupt records and database outages fail closed instead of silently
+asking AI for replacements or using unpersisted estimates.
 
-The key hashes the stable source ID, name, coordinates, address, categories,
-activities and description, plus the gateway identity and explicit rating-contract
-version. Changed place facts or a version change cause a miss. Estimates expire
-after 90 days. The gateway's served model ID is now retained alongside its provider
-in the existing provider field. This identifies the requested upstream model,
-not an immutable weights revision. The October 24 contract version is
-`attraction-traits-v2-model-provenance`, so earlier estimates without model
-identity are refreshed on demand. Future gateway model/prompt policy changes
-should bump this version when immediate invalidation is needed. Expiry supplies
-a bounded refresh even when the gateway changes independently.
+Explicitly apply `backend/sql/place_attribute_traits.sql`, then enable
+`PLACE_TRAITS_CACHE_ENABLED=true` for live attraction reuse. Research always
+requires the persistent store. The configured local database is enabled; this
+change does not deploy the application or change other deployments' settings.
+Offline fixture providers remain independent of this live store.
 
-Opening-hours evidence, entrances, availability, prices, dated room quotes,
-visit-duration estimates and persona utility are separate. Reusing traits does
-not waive any live source/calendar/road checks. Hotel ratings retain their
-existing behavior. Historical and synthetic research candidates are not inserted
-into the live attraction cache. Real research captures require persisted traits
-and upstream model identity; a failed cache write cannot silently supply a
-research comparison.
+Opening hours, road access, availability and visit-duration estimates remain
+separate checks. Hotel behavior is unchanged. Stored ratings do not establish
+that a destination is open or reachable.
 
-## Database and failure behavior
+## October 24 restoration
 
-Explicitly apply `backend/sql/place_attribute_traits.sql`, then set backend-only
-`PLACE_TRAITS_CACHE_ENABLED=true` for live reuse. Startup never creates schema.
-The configured local Neon database has this additive table and local cache
-opt-in; deployments default to disabled until explicitly configured. No immutable
-catalog rows, account data or production application deployment is changed.
+The nature refresh incorrectly regenerated all 36 existing places under a new
+rubric. At the user's direction, every changed row was restored to its original
+14 attributes and original model/version/timestamp/context provenance. The three
+new CDFW destinations retain their first ratings. A complete 75-row pre-change
+backup and exact database readback are preserved privately. The historical
+research exports retain the values actually used; they must not be silently
+rewritten to imply the restored ratings were used in those experiments.
 
-The application uses its existing PostgreSQL pool and honors the database write
-gate. Writes are bounded transactions. The first valid unexpired writer wins;
-concurrent trips re-read the canonical winner. Expired or invalid entries can be
-refreshed. A database/cache failure falls back to fresh model estimates and does
-not discard a valid generated result. Provider failures retain their existing
-error/retry behavior. Cache access adds no new public endpoint.
-
-Fresh/cached origin, provider, estimate timestamp and rating version accompany the
-candidate's provenance. Discovery diagnostics include cache enabled state, hits,
-misses and successful stores so later evaluations can distinguish reused traits
-from newly generated estimates. Trait persistence reduces repeated rating calls;
-other provider calls, including visit-duration estimates, may still be required.
-
-## Verification
-
-Tests cover reuse across two runs with different personas and different resulting
-utility scores, generating only missing traits, distinct same-name source IDs,
-rejecting unmatched AI names, fact/version invalidation, invalid JSON, database
-failure, real PostgreSQL persistence, first-writer behavior, expiry refresh,
-repairing an invalid stored entry and the write gate. The disposable PostgreSQL
-workflow includes the real cache tests before its backup/recovery checks.
-
-October 20 validation: backend Ruff formatting/lint and the full suite passed
-(2,018 tests, 130 skipped, 80.45% coverage). The disposable PostgreSQL workflow
-passed with six research/cache checks, including the real cache migration and
-expiry/repair test. The additive migration was applied to the configured Neon
-database over verified direct TLS and local live reuse was enabled. No provider
-requests were made to seed estimates; the cache fills on live attraction searches.
+Regression checks cover stable lookup across metadata/version/expiry changes,
+legacy keys, concurrent first writers, corruption and storage failures, and zero
+AI rating calls on repeated discovery or a failed lookup.

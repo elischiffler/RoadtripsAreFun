@@ -1,5 +1,15 @@
 # Current release and acceptance
 
+## October 24 permanent ratings restoration
+
+At the user's direction, all 36 re-rated places were restored exactly to their
+original attribute profiles and provenance; three new reserves retain their first
+ratings. Stored place profiles are now permanent by source identity, independent
+of persona, metadata, prompt/model version and legacy expiry. Database failures
+and corrupt stored ratings stop estimation rather than regenerate ratings. The
+v3-only nature study below is withdrawn as the current paper dataset; its historical
+exports remain intact. See [rating persistence](../docs/place-trait-cache.md).
+
 ## October 24 nature coverage and rating-audit replacement
 
 The active catalog now has 611 places and 192 calendars, adding three reviewed
