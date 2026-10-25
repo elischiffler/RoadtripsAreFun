@@ -289,7 +289,16 @@ def test_full_100_is_offline_only_and_defaults_have_parity(tmp_path):
 
 
 @pytest.mark.parametrize("method", ["cp_sat", "utility_first", "spacing_first"])
-def test_actual_pipeline_and_selection_share_metrics_zero_network(tmp_path, method):
+def test_actual_pipeline_and_selection_share_metrics_zero_network(tmp_path, method, monkeypatch):
+    from app.routing.sources import trait_cache
+
+    monkeypatch.setenv("PLACE_TRAITS_CACHE_ENABLED", "true")
+
+    def forbidden(*args):
+        pytest.fail("Frozen providers must never read or write the live trait database")
+
+    monkeypatch.setattr(trait_cache, "get_many", forbidden)
+    monkeypatch.setattr(trait_cache, "put_many", forbidden)
     write_fixture(tmp_path / "short-1d")
     row = execute(spec(tmp_path, "offline-pipeline", method))
     assert row["status"] == "completed", row["error"]

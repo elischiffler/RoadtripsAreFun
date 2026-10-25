@@ -463,6 +463,28 @@ async def test_place_traits_are_reused_across_runs_but_utility_follows_each_pers
 
 
 @pytest.mark.asyncio
+async def test_stored_rating_outage_never_triggers_ai_rerating():
+    place = source.VerifiedPlace(provider_id="overture:saved", name="Park", coordinates=[40, -74])
+
+    class UnavailableStore:
+        def get_many(self, places):
+            raise source.trait_cache.TraitStoreError("Stored ratings unavailable")
+
+    ai = FakeAI([])
+    with pytest.raises(source.trait_cache.TraitStoreError):
+        await discover(
+            object(),
+            [[40, -74]],
+            default_weights(),
+            ai=ai,
+            places=FakePlaces([place]),
+            trait_store=UnavailableStore(),
+            duration_estimator=unchanged_duration,
+        )
+    assert ai.calls == 0
+
+
+@pytest.mark.asyncio
 async def test_only_missing_place_traits_are_sent_to_ai_and_source_facts_are_supplied():
     cached = source.VerifiedPlace(
         provider_id="overture:cached", name="Cached Park", coordinates=[40, -74]
@@ -481,6 +503,8 @@ async def test_only_missing_place_traits_are_sent_to_ai_and_source_facts_are_sup
                 "overture:new" in prompt and "independently of any traveler's preferences" in prompt
             )
             assert "Cached Park" not in prompt
+            assert "Walking between shops or stalls is not hiking" in prompt
+            assert "a farmers market is not the surrounding beach" in prompt
             return super().complete(messages, tools)
 
     ai = MissAI([{"name": "New Park", "attribute_ratings": _ratings(0.8)}])
@@ -563,3 +587,12 @@ async def test_enabled_live_provider_automatically_uses_database_trait_store(mon
         object(), [[40, -74]], default_weights(), ai=ai, duration_estimator=unchanged_duration
     )
     assert ai.calls == 0 and result[0]["provenance"]["ratings_cache"] == "hit"
+
+
+@pytest.mark.asyncio
+async def test_disabled_persistence_cannot_bypass_permanent_live_ratings(monkeypatch):
+    monkeypatch.setenv("PLACE_TRAITS_CACHE_ENABLED", "false")
+    ai = FakeAI([])
+    with pytest.raises(source.trait_cache.TraitStoreError, match="must be enabled"):
+        await discover(object(), [[40, -74]], default_weights(), ai=ai)
+    assert ai.calls == 0

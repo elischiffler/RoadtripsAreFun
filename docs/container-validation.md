@@ -1,5 +1,157 @@
 # Container migration evidence
 
+## Entertainment enrichment, October 25, 2026 UTC
+
+Clean application revision `9619c755e15bf1636bfd548b8a7b49391a37143e`:
+Ruff 0.16.7 format/check passed; 2,248 backend tests passed, 73 skipped,
+82.27% coverage against the unchanged 63% threshold. This run enabled the
+disposable PostgreSQL catalog and rating regression databases; restored hosted
+data remained separate from local test gates. GitHub CI passed frontend tests
+and build, backend tests, container smoke, and PostgreSQL CRUD/recreate/recovery.
+
+Live study `1ca40240-107e-4817-ab8b-bc461e0d26f6` completed 24 captures and
+5,040 OPTIMAL trials. PostgreSQL rows exactly match the local export; all captured
+profiles match permanent stored ratings, with zero rating calls/writes during
+evaluation. Original catalog/calendar/rating rows are unchanged after sixteen
+new reviewed additions. See [the evidence packet](research/2026-10-25-entertainment/README.md).
+No main merge or production API deployment is implied by this validation.
+
+## Uncapped bell-shaped research corridor, October 24, 2026
+
+Source `dc231e1` passed Ruff format/lint and 2,230 backend tests with 73 skips and
+82.11% coverage, including catalog, research and trait persistence checks against
+disposable PostgreSQL 18. The first expanded local run selected PostgreSQL 16;
+its frozen-catalog recovery tests correctly rejected that unsupported version.
+Those checks passed on the required PostgreSQL 18 without code changes.
+Frontend format/lint, all 294 tests (92.56% statements) and production build pass.
+The existing warnings remain; no thresholds were reduced.
+
+The corridor regressions cover exact endpoint/midpoint widths, mirror symmetry,
+continuous polyline geometry, distance rather than time progress, deterministic
+ordering, 121 inputs reaching the solver, complete persisted AI-rating batches,
+and reuse across personas/stop counts without repeating provider calls. A real
+PostgreSQL test returns all 121 admitted fixture rows while excluding an
+unreviewed catalog identity. Test fixtures are separate from empirical inputs.
+
+A live selection-only preflight collected ten candidates, recorded no error and
+returned OPTIMAL in the baseline comparison (pool mean 0.22175, selected 0.45).
+Its evidence is private and excluded from the paper study. Full planner,
+scheduler and itinerary entry points were explicitly forbidden during the check.
+
+Exact-head CI passed frontend, backend, container and PostgreSQL CRUD checks.
+Local rebuilt diagnostic containers passed both smoke tests. A local test-image
+context read stalled on a cloud-hydrated fixture; the test image was instead
+built from the exact committed GitHub source archive. Revision labels were
+verified before `DB_TEST_SKIP_BUILD=true node tests/postgres/run.mjs`, which
+passed CRUD/ownership, research persistence, database-loss readiness, recreation,
+backup/restore and nonempty-restore refusal. Test volumes remain available;
+owned containers were stopped before controlled solver timings resumed.
+
+The schema-v3 point-sampling study was removed from active stores after a
+verified private recovery copy. Schema-v4 study
+`514e8250-12c7-4a22-bd2d-e550523fc7dc` freezes `dc231e1`; its four real route pools
+are shared across 24 scenario captures. The completed campaign is verified in PostgreSQL: all 5,064 queue items finished,
+including 5,040 OPTIMAL trials. Independent audits recomputed every pool mean,
+persona utility and selected mean, verified corridor/pool invariance, and matched
+all 36 distinct inputs to persisted traits. See the [audited packet](research/2026-10-24-corridor/README.md).
+
+A browser check caught a stale library cache after study replacement. The small
+study list now refreshes on page entry; snapshots remain cached by study/session.
+The displayed corridor widths come from frozen protocol metadata. Frontend
+regressions cover replaced-study discovery and database-backed corridor labels.
+The final frontend suite passes all 295 tests with 92.60% statement coverage;
+format/lint and build also pass. Browser verification shows the completed 5,064
+items, no candidate-count cap and the frozen 5/25-mile corridor settings.
+
+
+## Selection-only scope revision, October 24, 2026
+
+The user removed full trip planning from research. The running combined study
+`5f7c2e5e-d3fd-4249-8af0-f1d76588c464` was stopped, its running Lab records finalized
+as interrupted, and its research/Lab records removed after a private recovery
+copy. Its observations are not part of the revised study. Research now collects
+24 real input pools and runs 5,040 solver trials, with no scheduling, hotels,
+itineraries or final-route evaluation. The UI, exports and protocol omit the
+full-trip track and its measurements. The previous shared trip-metrics change was
+reverted, leaving ordinary trip measurements unchanged.
+
+The focused revised checks pass: 32 backend protocol/capture tests and 35 frontend
+research/service tests. A regression test makes full planning, scheduling,
+selection and itinerary calls fail during input collection. Durable capture
+intent/result tests verify that a restart cannot repeat provider work silently.
+The full backend suite passes: 2,151 tests, 139 environment-dependent skips,
+80.61% coverage, and Ruff format/lint. This includes disposable PostgreSQL
+research/trait persistence checks. Frontend format/lint, 294 tests and build pass.
+The existing duplicate health operation-ID and large frontend chunk warnings
+remain. The documented CORS defaults and disposable container's actual published
+port were supplied to the test process; no developer environment file was changed.
+
+A live selection-only preflight completed in 8.93 seconds, collecting four
+verified candidates. A baseline solve returned OPTIMAL: pool mean utility 0.30625
+and selected mean 0.45. The preflight explicitly prohibited full-planner,
+scheduler and itinerary entry points. Its saved evidence is separate from the
+paper study. These values describe that preflight only.
+
+The rebuilt selection-only preview passes both container smoke tests. Exact-head
+CI at `dec327426244f10e4c3c34bb7fd00177224586a7` passes frontend/backend, container,
+and real PostgreSQL CRUD/recovery checks. The preview and disposable test database
+were stopped after verification, preserving recovery volumes and the user's dev servers.
+
+Study `05fc366d-4623-4467-ba06-a93911147993` completed 24 real captures and 5,040
+OPTIMAL solver trials. PostgreSQL independently reports all 5,064 records finished,
+24 full capture-evidence records and 24 distinct referenced solver datasets. Only
+this study remains in the active research tables. No synthetic trait entries remain.
+The analysis checks capture hashes, selected identities and counts, recomputed
+utility, quality bounds, completion and omitted full-trip/financial fields. Figures
+were rendered and visually inspected. See [results](research/2026-10-24-selection/README.md)
+for actual pool sizes, denominators, timings, paired setting effects and limitations.
+
+## Earlier combined-protocol verification, October 24, 2026
+
+Frontend format/lint, 294 tests (92.66% statement coverage) and production build
+pass. Backend Ruff formatting/lint and 2,151 tests pass with 80.52% coverage;
+139 environment-dependent tests are skipped. This run includes the disposable
+PostgreSQL research/trait persistence tests and supplies the documented standard
+CORS origins, since the existing developer environment overrides them narrowly.
+No CORS implementation or developer environment file was changed. Thirteen focused
+capture, database round-trip, targeted removal and cost-exclusion checks also pass.
+The rebuilt guarded preview passes both container smoke tests. The root disposable
+PostgreSQL CRUD/recreation/recovery/backup runner passes; recovery volumes remain.
+The existing duplicate health operation-ID and large frontend chunk warnings remain.
+
+These are software and disposable-fixture checks, not empirical study outcomes.
+The three explicitly named old studies were removed from the local queue,
+PostgreSQL mirrors and their associated Lab records after a private verified
+recovery copy. Both active study stores were then verified empty. The first live AI
+preflight authenticated successfully but failed on Together's retired Llama model.
+Its unfinished verification-only Lab record was marked failed, not counted as a
+research observation. With explicit owner authorization, Mentro PR #6 was merged
+after CI passed. Its main CI run 40133794624 and automatic deployment 40133968658
+passed at main revision `34c968786a82796a1edbec4abe539890e4741e44`.
+
+A fresh gateway request returned valid JSON from `mentro:Groq/openai/gpt-oss-120b`.
+The real LA–San Diego, nature-persona, one-stop preflight completed its full trip
+and saved Lab record `8deb762c-9fbd-4cdc-bee5-73148f25e763`. The provenance capture
+was corrected to read the catalog generation from the actual nested source metadata.
+Reusing that saved evidence, a solver preflight returned OPTIMAL with two eligible
+candidates: pool mean utility 0.1925 and selected mean 0.205. This is a preflight,
+not a completed study or a basis for aggregate paper claims.
+
+This inspection also found six fixture-generated trait-cache entries from offline
+replays (three from October 21 and three from October 24). They were privately
+backed up and removed by exact cache keys. Frozen offline providers now explicitly
+disable the live trait store, including when the developer opt-in is enabled.
+A regression check forbids both cache reads and writes for all three offline
+methods; all 50 focused evidence/evaluation tests and the complete backend suite
+pass after the fix. No synthetic trait rows remained after regression testing.
+The earlier offline test
+run therefore cannot be described as having no database side effects. The new
+study had not started; none of these fixture entries are research observations.
+
+The [research protocol](studio-research.md) records the planned 5,040 controlled
+trials and 240 live attempts. Existing catalog admission/calendar restrictions
+remain in force; the active source catalog was not expanded or released by this work.
+
 ## Automated catalog import, October 19, 2026
 
 Develop's automated NPS/USFS importer passes synthetic source and orchestration
@@ -268,3 +420,63 @@ Develop working tree after `48e3e48`, tested locally before commit:
   Open trip returned the saved result without another execution. Cards showed
   Sources links without the removed verbose source block. This synthetic check
   does not establish live provider or production acceptance.
+
+## October 24 nature catalog and rating audit
+
+Source commit `e2d0bf8ed2861c3ca09f45c40f00cc283c866c9c` passes backend formatting,
+Ruff and the full suite with disposable PostgreSQL 18: **2,235 passed, 73 skipped,
+81.96% coverage**, retaining the 63% minimum. Frontend `npm ci`, format check,
+lint, **295 tests / 92.60% coverage**, and build pass. Container smoke is 2/2;
+the disposable CRUD, recreation and backup/restore runner passes. All five
+repository CI gates and the Vercel preview pass on that exact source commit.
+Existing duplicate-operation-ID and frontend chunk-size warnings remain.
+
+The initial Mac test environment inherited a local CORS override omitting one
+required development origin. A partial override then omitted preview/production
+test origins. The passing run uses all five documented default origins explicitly;
+no CORS code, tests or thresholds were changed to clear those failures. Catalog
+and research tests use only disposable fixture data. A separate authentic
+catalog-only recovery rehearsal verifies the hosted pre-change backup; it does
+not substitute for local test gates.
+
+Reviewed source replay adds three CDFW/OSM trail arrivals, enforces source hashes,
+native road/parking geometry and a 30-day solar calendar. New tests cover DST,
+inward minute rounding, fixed-hour intersections, changed review rejection and
+private-road rejection. Existing rating-cache and provider tests verify the new
+rubric reaches the AI request while current place facts and cache semantics remain.
+
+Local file-sync stalls affected the original Python environment and API. Study
+execution used a clean clone of the exact tested commit and a fresh environment
+from pinned requirements on the same Mac; its identity records a clean tree and
+source hash. The local API currently serves that same source copy using the clean
+environment; Vite serves the original checkout. No Docker test containers remain
+running. See the [new research packet](research/2026-10-24-nature/README.md).
+
+## October 24 original-rating restoration
+
+All 36 changed live place profiles were restored to their original attributes and
+model/version/timestamp/context provenance after a verified 75-row backup. The
+three first-time reserve profiles are unchanged. Identity-based permanent lookup
+returns all 39 expected profiles without AI calls. No hosted schema migration or
+production application deployment was performed.
+
+Source `eef029b409c441381fc803071fa7c2e06ec87ef5` passes Ruff 0.16.7 formatting/lint,
+the full backend suite with disposable PostgreSQL (2,239 passed, 73 skipped,
+82.42% coverage; required 63% unchanged), and all GitHub CI gates including frontend
+build/tests, containers and real PostgreSQL CRUD/recovery. The local disposable
+CRUD/recreate/backup/restore run also passes, including ten research/trait tests.
+The same pre-existing duplicate-operation-ID warning remains.
+
+The first expanded local backend run selected a disposable database named
+`ratings_regression` for catalog fixtures; those fixtures correctly refused any
+name other than `catalog_test`. Rerunning with the existing isolated fixture
+`catalog_test` passed. Local Docker initially exhausted address pools; removing
+only an empty network from this chat's prior completed fixture run allowed the
+successful retry. Original-checkout file-sync stalls were avoided for image builds
+with a clean clone of the exact commit. None of these local environment repairs
+used hosted data to clear tests or relaxed a test threshold.
+
+The local API now serves `eef029b` from the clean temporary checkout; Vite continues
+to serve the original frontend. All disposable database containers are stopped;
+recovery volumes are retained. Historical re-rated study exports remain unchanged
+and are withdrawn as the current paper evidence.

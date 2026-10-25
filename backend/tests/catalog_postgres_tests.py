@@ -228,6 +228,44 @@ def connection(monkeypatch):
     conn.close()
 
 
+def test_research_snapshot_has_no_count_limit_and_preserves_admission(connection):
+    rows = [
+        ("fixture", f"record-{i:03}", f"Fixture {i}", 35, -119, "CA", ["daytime"], Json([]))
+        for i in range(121)
+    ]
+    rows.append(
+        (
+            "fixture",
+            "catalog-pilot:unreviewed",
+            "Unreviewed fixture",
+            35,
+            -119,
+            "CA",
+            ["daytime"],
+            Json([]),
+        )
+    )
+    rows.append(("fixture", "food-only", "Food fixture", 35, -119, "CA", ["food"], Json([])))
+    with connection, connection.cursor() as cur:
+        cur.execute(
+            "INSERT INTO places_catalog_imports(generation,release,manifest,row_count) VALUES (%s,%s,%s,%s)",
+            ("fixture", "fixture", Json({"attribution": "Controlled test records"}), len(rows)),
+        )
+        execute_values(
+            cur,
+            "INSERT INTO places_catalog(generation,source_id,name,latitude,longitude,region,categories,provenance) VALUES %s",
+            rows,
+        )
+        cur.execute("INSERT INTO places_catalog_active VALUES(true,'fixture')")
+    snapshot = repository.routing_snapshot()
+    assert snapshot["generation"] == "fixture"
+    assert len(snapshot["records"]) == 121
+    assert [r["provider_id"] for r in snapshot["records"]] == [
+        f"overture:record-{i:03}" for i in range(121)
+    ]
+    assert all(r["source_provenance"][-1]["generation"] == "fixture" for r in snapshot["records"])
+
+
 def test_atomic_stage_activation_closure_refresh_and_rollback(connection, tmp_path):
     path, manifest = bundle(tmp_path, [feature()])
     first = ingest.stage(connection, path, manifest)

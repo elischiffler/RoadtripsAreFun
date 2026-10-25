@@ -1,51 +1,60 @@
-"""Detached campaign execution: two live trips and one solver trial at a time."""
+"""Detached campaign execution: two input captures and one solver trial at a time."""
 
 import asyncio
+import json
 import os
 import sys
 from dataclasses import replace
 from time import perf_counter
 from uuid import UUID, uuid5
 
-from fastapi import HTTPException, Response
+from fastapi import HTTPException
 
-from app.research import store
-from app.research.design import TRIPS
+from app.research import evidence, preparation, store
 from app.research.metrics import observation
-from app.routers import algorithm_lab as lab
 from app.routing.cp_sat_selection import SelectionConfig, select_attractions
 from app.routing.evaluation.runner import atomic, identity, json_text
 from app.routing.explanation import capture_explanation
-from app.routing.profiles import crossmatch
 
 
-def solver_trial(case, planned):
+def solver_trial(case, planned, snapshot=None):
     started = perf_counter()
     variant = next(row for row in planned["variants"] if row["id"] == case["variant"])
     config = replace(SelectionConfig(**variant["config"]), seed=case["repeat"] - 1)
-    baseline = TRIPS[case["trip"]][2]
-    candidates = [
-        {
-            **row,
-            **crossmatch(case["inputs"]["persona_weights"], row["attribute_ratings"]).model_dump(),
-            "route_progress_seconds": row["progress_fraction"] * baseline,
+    try:
+        frozen = evidence.validate_capture(snapshot, case)
+    except ValueError as exc:
+        return {
+            "outcome": "blocked",
+            "completed": False,
+            "solver_status": "NOT_RUN",
+            "evidence": "real_capture_unavailable",
+            "error": {"code": "capture_unavailable", "message": str(exc)},
         }
-        for row in planned["dataset"]
-    ]
+    baseline = frozen["baseline_seconds"]
+    candidates = frozen["candidates"]
     with capture_explanation() as explanation:
         error = None
         try:
-            select_attractions(candidates, [], case["inputs"]["num_stops"], baseline, config=config)
+            select_attractions(
+                candidates,
+                frozen["query_points"],
+                case["inputs"]["num_stops"],
+                baseline,
+                config=config,
+            )
         except Exception as exc:
             error = {"code": "selection", "message": str(exc)}
         result = observation(
             {"explanation": explanation, "error": error},
             (perf_counter() - started) * 1000,
-            solver_only=True,
         )
         return result | {
-            "evidence": "synthetic_controlled_100",
-            "dataset_hash": planned["dataset_hash"],
+            "evidence": "real_frozen_selection",
+            "dataset_hash": frozen["hash"],
+            "candidate_hash": frozen["hash"],
+            "capture_case_id": frozen["capture_case_id"],
+            "catalog_generations": sorted({row["source_generation"] for row in candidates}),
             "solver": explanation.get("solver"),
             "selected_ids": [
                 row["provider_id"]
@@ -55,42 +64,68 @@ def solver_trial(case, planned):
         }
 
 
-async def live_trial(case, study):
-    started = perf_counter()
-    run_id = uuid5(UUID(study["id"]), str(case["id"]))
-    # A restart may inspect prior work, but never silently repeat a paid trip.
-    previous = await asyncio.to_thread(lab.lab_runs.record, study["owner"], run_id)
-    if previous:
-        if previous["status"] == "running":
-            return {
-                "outcome": "interrupted",
-                "completed": False,
-                "solver_status": "NOT_RUN",
-                "error": {
-                    "code": "interrupted",
-                    "message": "An earlier provider run has no terminal record; it was not repeated.",
-                },
-            }
-        envelope = previous["result"] | {
-            "run_record": {"id": str(run_id), "saved": True, "metrics": previous["metrics"]}
+async def capture_trial(case, study):
+    attempt_id = str(uuid5(UUID(study["id"]), str(case["id"])))
+    root = store.directory() / study["id"]
+    root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    result_path = root / f"{attempt_id}.json"
+    intent_path = root / f"{attempt_id}.started"
+    if result_path.is_file():
+        return json.loads(result_path.read_text())
+    try:
+        with intent_path.open("x") as handle:
+            os.chmod(intent_path, 0o600)
+            handle.write(store.now())
+    except FileExistsError:
+        return {
+            "outcome": "interrupted",
+            "completed": False,
+            "solver_status": "NOT_RUN",
+            "error": {
+                "code": "interrupted",
+                "message": "An earlier capture did not finish; provider calls were not repeated.",
+            },
         }
-    else:
-        request = lab.LabRun(
-            preset_id=case["preset_id"],
-            inputs=case["inputs"],
-            batch_id=study["id"],
-            repeat_index=case["repeat"],
+    envelope = await asyncio.wait_for(preparation.inputs(case, study), timeout=1200)
+    envelope["attempt_id"] = attempt_id
+    result = {
+        "outcome": "failed" if envelope.get("error") else "completed",
+        "completed": not envelope.get("error"),
+        "evidence": "live_candidate_capture",
+        "capture_evidence": envelope,
+        "runtime_seconds": envelope["runtime_seconds"],
+        "error": envelope.get("error"),
+        "solver_status": "NOT_RUN",
+    }
+    try:
+        if not envelope.get("error"):
+            result["capture"] = evidence.capture(envelope, case)
+            if result["capture"] is None:
+                raise ValueError("Candidate capture did not retain measured baseline inputs")
+            result["candidate_count"] = len(result["capture"]["candidates"])
+    except (ValueError, KeyError) as exc:
+        result.update(
+            outcome="failed",
+            completed=False,
+            capture_error=str(exc),
+            halt_reason="Candidate provenance validation failed; inspect the saved capture evidence.",
         )
-        envelope = await asyncio.wait_for(
-            lab.recorded_run(request, Response(), study["owner"], job_id=run_id), timeout=1200
+    atomic(result_path, json_text(result))
+    return result
+
+
+def infrastructure_failure(result):
+    error = result.get("error") or {}
+    causes = [error, *error.get("causes", [])]
+    return (
+        bool(result.get("halt_reason"))
+        or result.get("saved") is False
+        or any(
+            cause.get("http_status") in {401, 403}
+            or cause.get("provider_code") in {"BAD_REQUEST", "UNAUTHORIZED", "MODEL_NOT_FOUND"}
+            for cause in causes
         )
-    atomic(store.directory() / study["id"] / f"{run_id}.json", json_text(envelope))
-    elapsed = (
-        ((envelope.get("run_record") or {}).get("metrics") or {}).get("latency_ms", {}).get("total")
     )
-    return observation(
-        envelope, elapsed if elapsed is not None else (perf_counter() - started) * 1000
-    ) | {"evidence": "live_pipeline"}
 
 
 async def execute(study_id):
@@ -104,10 +139,13 @@ async def execute(study_id):
     cases = store.rows(study_id)
     for case in cases:
         if case["state"] == "running":
-            # Reconcile live records; solver trials can safely be recomputed.
+            # Capture intent/result files prevent repeated provider calls; solver trials can be recomputed.
             store.save(study_id, case["id"], "pending")
             case["state"] = "pending"
-    live = iter([row for row in cases if row["track"] == "pipeline" and row["state"] == "pending"])
+    captures = iter(
+        [row for row in cases if row["track"] == "capture" and row["state"] == "pending"]
+    )
+    frozen = {}
     solver = iter([row for row in cases if row["track"] == "solver" and row["state"] == "pending"])
 
     fatal_failures = 0
@@ -122,9 +160,11 @@ async def execute(study_id):
             started_at = store.now()
             try:
                 result = (
-                    await live_trial(case, study)
-                    if case["track"] == "pipeline"
-                    else await asyncio.to_thread(solver_trial, case, study["plan"])
+                    await capture_trial(case, study)
+                    if case["track"] == "capture"
+                    else await asyncio.to_thread(
+                        solver_trial, case, study["plan"], frozen.get(evidence.scenario_key(case))
+                    )
                 )
             except Exception as exc:
                 result = {
@@ -145,19 +185,22 @@ async def execute(study_id):
             if result.get("requested") is None:
                 result["requested"] = case["inputs"]["num_stops"]
             store.save(study_id, case["id"], "finished", result)
-            if case["track"] == "pipeline":
-                fatal = (
-                    bool(result.get("halt_reason"))
-                    or (result.get("error") or {}).get("http_status") in {401, 403}
-                    or result.get("saved") is False
-                )
+            if case["track"] == "capture":
+                fatal = infrastructure_failure(result)
                 fatal_failures = fatal_failures + 1 if fatal else 0
                 if fatal_failures >= 3:
                     store.state(study_id, "pausing")
 
-    # Prioritize controlled solver trials; keep their timing separate from live work.
+    # Capture real pools first; controlled trials share them and run without provider contention.
+    await asyncio.gather(lane(captures), lane(captures))
+    frozen.update(
+        {
+            evidence.scenario_key(row): row["capture"]
+            for row in store.rows(study_id)
+            if row.get("capture")
+        }
+    )
     await lane(solver)
-    await asyncio.gather(lane(live), lane(live))
     pending = any(row["state"] in {"pending", "running"} for row in store.rows(study_id))
     store.state(study_id, "paused" if pending else "complete")
 

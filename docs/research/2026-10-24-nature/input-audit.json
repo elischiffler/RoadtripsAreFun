@@ -1,0 +1,728 @@
+[
+  {
+    "case_id": 0,
+    "trip": "long-3d",
+    "persona": "entertainment",
+    "geographic_count": 10,
+    "captured_count": 10,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.2435,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 1,
+    "trip": "medium-2d",
+    "persona": "nature",
+    "geographic_count": 11,
+    "captured_count": 11,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usda-market:300652",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.2927272727272727,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 2,
+    "trip": "long-3d",
+    "persona": "entertainment",
+    "geographic_count": 10,
+    "captured_count": 10,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.2435,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 3,
+    "trip": "coast-5d",
+    "persona": "entertainment",
+    "geographic_count": 24,
+    "captured_count": 24,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481",
+      "usfs:22904",
+      "nps-public:facility:lecl:1242",
+      "nps-heritage:heho",
+      "nps-heritage:pull",
+      "nps-public:indu:d14b1e88a5304c98",
+      "nps-public:indu:d574c3eb27135351",
+      "nps-public:indu:80235752d1b27966",
+      "nps-public:indu:2dfecc7b25d547a5",
+      "nps-public:indu:50916d1367bb065a",
+      "nps:cuva",
+      "usda-market:311799",
+      "usda-market:312114",
+      "usda-market:311840"
+    ],
+    "excluded": [
+      {
+        "source_id": "chicago-facility:3743",
+        "name": "Rainbow Beach",
+        "reason": "nonpositive_utility"
+      },
+      {
+        "source_id": "nps-heritage:edis",
+        "name": "Thomas Edison National Historical Park \u2014 Laboratory Complex Visitor Center",
+        "reason": "unknown_source_visit_calendar"
+      }
+    ],
+    "candidate_mean": 0.18477272727272728,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 4,
+    "trip": "medium-2d",
+    "persona": "entertainment",
+    "geographic_count": 11,
+    "captured_count": 11,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usda-market:300652",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.24681818181818183,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 5,
+    "trip": "medium-2d",
+    "persona": "entertainment",
+    "geographic_count": 11,
+    "captured_count": 11,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usda-market:300652",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.24681818181818183,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 6,
+    "trip": "long-3d",
+    "persona": "nature",
+    "geographic_count": 10,
+    "captured_count": 10,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.31849999999999995,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 7,
+    "trip": "short-1d",
+    "persona": "nature",
+    "geographic_count": 13,
+    "captured_count": 13,
+    "eligible_ids": [
+      "usda-market:308655",
+      "usda-market:301342",
+      "usda-market:301343",
+      "usda-market:cas-m-20",
+      "usda-market:308979",
+      "catalog-pilot:cdfw-bolsa-trail",
+      "usda-market:301265",
+      "catalog-pilot:cdfw-newport-trail",
+      "usda-market:308884",
+      "catalog-pilot:cdfw-batiquitos-trail",
+      "usda-market:308740",
+      "usda-market:300109",
+      "wikidata-park:Q44041"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.22807692307692307,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 8,
+    "trip": "medium-2d",
+    "persona": "nature",
+    "geographic_count": 11,
+    "captured_count": 11,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usda-market:300652",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.2927272727272727,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 9,
+    "trip": "coast-5d",
+    "persona": "nature",
+    "geographic_count": 24,
+    "captured_count": 24,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481",
+      "usfs:22904",
+      "nps-public:facility:lecl:1242",
+      "nps-heritage:heho",
+      "nps-heritage:pull",
+      "chicago-facility:3743",
+      "nps-public:indu:d14b1e88a5304c98",
+      "nps-public:indu:d574c3eb27135351",
+      "nps-public:indu:80235752d1b27966",
+      "nps-public:indu:2dfecc7b25d547a5",
+      "nps-public:indu:50916d1367bb065a",
+      "nps:cuva",
+      "usda-market:311799",
+      "usda-market:312114",
+      "usda-market:311840"
+    ],
+    "excluded": [
+      {
+        "source_id": "nps-heritage:edis",
+        "name": "Thomas Edison National Historical Park \u2014 Laboratory Complex Visitor Center",
+        "reason": "unknown_source_visit_calendar"
+      }
+    ],
+    "candidate_mean": 0.2828260869565217,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 10,
+    "trip": "short-1d",
+    "persona": "nature",
+    "geographic_count": 13,
+    "captured_count": 13,
+    "eligible_ids": [
+      "usda-market:308655",
+      "usda-market:301342",
+      "usda-market:301343",
+      "usda-market:cas-m-20",
+      "usda-market:308979",
+      "catalog-pilot:cdfw-bolsa-trail",
+      "usda-market:301265",
+      "catalog-pilot:cdfw-newport-trail",
+      "usda-market:308884",
+      "catalog-pilot:cdfw-batiquitos-trail",
+      "usda-market:308740",
+      "usda-market:300109",
+      "wikidata-park:Q44041"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.22807692307692307,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 11,
+    "trip": "short-1d",
+    "persona": "entertainment",
+    "geographic_count": 13,
+    "captured_count": 13,
+    "eligible_ids": [
+      "usda-market:308655",
+      "usda-market:301342",
+      "usda-market:301343",
+      "usda-market:cas-m-20",
+      "usda-market:308979",
+      "catalog-pilot:cdfw-bolsa-trail",
+      "usda-market:301265",
+      "catalog-pilot:cdfw-newport-trail",
+      "usda-market:308884",
+      "catalog-pilot:cdfw-batiquitos-trail",
+      "usda-market:308740",
+      "usda-market:300109",
+      "wikidata-park:Q44041"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.25076923076923074,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 12,
+    "trip": "short-1d",
+    "persona": "entertainment",
+    "geographic_count": 13,
+    "captured_count": 13,
+    "eligible_ids": [
+      "usda-market:308655",
+      "usda-market:301342",
+      "usda-market:301343",
+      "usda-market:cas-m-20",
+      "usda-market:308979",
+      "catalog-pilot:cdfw-bolsa-trail",
+      "usda-market:301265",
+      "catalog-pilot:cdfw-newport-trail",
+      "usda-market:308884",
+      "catalog-pilot:cdfw-batiquitos-trail",
+      "usda-market:308740",
+      "usda-market:300109",
+      "wikidata-park:Q44041"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.25076923076923074,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 13,
+    "trip": "coast-5d",
+    "persona": "entertainment",
+    "geographic_count": 24,
+    "captured_count": 24,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481",
+      "usfs:22904",
+      "nps-public:facility:lecl:1242",
+      "nps-heritage:heho",
+      "nps-heritage:pull",
+      "nps-public:indu:d14b1e88a5304c98",
+      "nps-public:indu:d574c3eb27135351",
+      "nps-public:indu:80235752d1b27966",
+      "nps-public:indu:2dfecc7b25d547a5",
+      "nps-public:indu:50916d1367bb065a",
+      "nps:cuva",
+      "usda-market:311799",
+      "usda-market:312114",
+      "usda-market:311840"
+    ],
+    "excluded": [
+      {
+        "source_id": "chicago-facility:3743",
+        "name": "Rainbow Beach",
+        "reason": "nonpositive_utility"
+      },
+      {
+        "source_id": "nps-heritage:edis",
+        "name": "Thomas Edison National Historical Park \u2014 Laboratory Complex Visitor Center",
+        "reason": "unknown_source_visit_calendar"
+      }
+    ],
+    "candidate_mean": 0.18477272727272728,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 14,
+    "trip": "medium-2d",
+    "persona": "nature",
+    "geographic_count": 11,
+    "captured_count": 11,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usda-market:300652",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.2927272727272727,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 15,
+    "trip": "medium-2d",
+    "persona": "entertainment",
+    "geographic_count": 11,
+    "captured_count": 11,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usda-market:300652",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.24681818181818183,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 16,
+    "trip": "coast-5d",
+    "persona": "nature",
+    "geographic_count": 24,
+    "captured_count": 24,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481",
+      "usfs:22904",
+      "nps-public:facility:lecl:1242",
+      "nps-heritage:heho",
+      "nps-heritage:pull",
+      "chicago-facility:3743",
+      "nps-public:indu:d14b1e88a5304c98",
+      "nps-public:indu:d574c3eb27135351",
+      "nps-public:indu:80235752d1b27966",
+      "nps-public:indu:2dfecc7b25d547a5",
+      "nps-public:indu:50916d1367bb065a",
+      "nps:cuva",
+      "usda-market:311799",
+      "usda-market:312114",
+      "usda-market:311840"
+    ],
+    "excluded": [
+      {
+        "source_id": "nps-heritage:edis",
+        "name": "Thomas Edison National Historical Park \u2014 Laboratory Complex Visitor Center",
+        "reason": "unknown_source_visit_calendar"
+      }
+    ],
+    "candidate_mean": 0.2828260869565217,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 17,
+    "trip": "coast-5d",
+    "persona": "entertainment",
+    "geographic_count": 24,
+    "captured_count": 24,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481",
+      "usfs:22904",
+      "nps-public:facility:lecl:1242",
+      "nps-heritage:heho",
+      "nps-heritage:pull",
+      "nps-public:indu:d14b1e88a5304c98",
+      "nps-public:indu:d574c3eb27135351",
+      "nps-public:indu:80235752d1b27966",
+      "nps-public:indu:2dfecc7b25d547a5",
+      "nps-public:indu:50916d1367bb065a",
+      "nps:cuva",
+      "usda-market:311799",
+      "usda-market:312114",
+      "usda-market:311840"
+    ],
+    "excluded": [
+      {
+        "source_id": "chicago-facility:3743",
+        "name": "Rainbow Beach",
+        "reason": "nonpositive_utility"
+      },
+      {
+        "source_id": "nps-heritage:edis",
+        "name": "Thomas Edison National Historical Park \u2014 Laboratory Complex Visitor Center",
+        "reason": "unknown_source_visit_calendar"
+      }
+    ],
+    "candidate_mean": 0.18477272727272728,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 18,
+    "trip": "short-1d",
+    "persona": "entertainment",
+    "geographic_count": 13,
+    "captured_count": 13,
+    "eligible_ids": [
+      "usda-market:308655",
+      "usda-market:301342",
+      "usda-market:301343",
+      "usda-market:cas-m-20",
+      "usda-market:308979",
+      "catalog-pilot:cdfw-bolsa-trail",
+      "usda-market:301265",
+      "catalog-pilot:cdfw-newport-trail",
+      "usda-market:308884",
+      "catalog-pilot:cdfw-batiquitos-trail",
+      "usda-market:308740",
+      "usda-market:300109",
+      "wikidata-park:Q44041"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.25076923076923074,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 19,
+    "trip": "long-3d",
+    "persona": "nature",
+    "geographic_count": 10,
+    "captured_count": 10,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.31849999999999995,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 20,
+    "trip": "long-3d",
+    "persona": "entertainment",
+    "geographic_count": 10,
+    "captured_count": 10,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.2435,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 21,
+    "trip": "long-3d",
+    "persona": "nature",
+    "geographic_count": 10,
+    "captured_count": 10,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:308694",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.31849999999999995,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 22,
+    "trip": "short-1d",
+    "persona": "nature",
+    "geographic_count": 13,
+    "captured_count": 13,
+    "eligible_ids": [
+      "usda-market:308655",
+      "usda-market:301342",
+      "usda-market:301343",
+      "usda-market:cas-m-20",
+      "usda-market:308979",
+      "catalog-pilot:cdfw-bolsa-trail",
+      "usda-market:301265",
+      "catalog-pilot:cdfw-newport-trail",
+      "usda-market:308884",
+      "catalog-pilot:cdfw-batiquitos-trail",
+      "usda-market:308740",
+      "usda-market:300109",
+      "wikidata-park:Q44041"
+    ],
+    "excluded": [],
+    "candidate_mean": 0.22807692307692307,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  },
+  {
+    "case_id": 23,
+    "trip": "coast-5d",
+    "persona": "nature",
+    "geographic_count": 24,
+    "captured_count": 24,
+    "eligible_ids": [
+      "overture:f541cb40-d4b5-4cb7-9394-e4b436e32efc",
+      "usda-market:308779",
+      "usda-market:301226",
+      "nps-heritage:rori",
+      "usda-market:cas-m-42",
+      "usfs:facility:5340.004481",
+      "usfs:facility:1550615010602",
+      "usfs:facility:1550547010602",
+      "usfs:facility:5770.004481",
+      "usfs:22904",
+      "nps-public:facility:lecl:1242",
+      "nps-heritage:heho",
+      "nps-heritage:pull",
+      "chicago-facility:3743",
+      "nps-public:indu:d14b1e88a5304c98",
+      "nps-public:indu:d574c3eb27135351",
+      "nps-public:indu:80235752d1b27966",
+      "nps-public:indu:2dfecc7b25d547a5",
+      "nps-public:indu:50916d1367bb065a",
+      "nps:cuva",
+      "usda-market:311799",
+      "usda-market:312114",
+      "usda-market:311840"
+    ],
+    "excluded": [
+      {
+        "source_id": "nps-heritage:edis",
+        "name": "Thomas Edison National Historical Park \u2014 Laboratory Complex Visitor Center",
+        "reason": "unknown_source_visit_calendar"
+      }
+    ],
+    "candidate_mean": 0.2828260869565217,
+    "rating_versions": [
+      "attraction-traits-v3-destination-rubric"
+    ]
+  }
+]

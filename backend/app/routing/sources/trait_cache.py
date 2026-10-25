@@ -1,4 +1,4 @@
-"""Reusable estimated attraction traits; never caches a traveler's utility score."""
+"""Permanent, persona-independent place ratings; never automatically re-estimated."""
 
 import hashlib
 import json
@@ -11,8 +11,8 @@ from psycopg2.extras import Json, RealDictCursor
 from app.core.config import settings
 from app.crud import chat_crud
 from app.routing.profiles import AttributeRatings
+from app.routing.sources.trait_rubric import VERSION
 
-VERSION = "attraction-traits-v1"
 logger = logging.getLogger(__name__)
 
 
@@ -36,9 +36,13 @@ def context(place):
 
 
 def key(place):
-    # Gateway deployment identity is hashed, never persisted as a credential-bearing URL.
-    payload = {"version": VERSION, "place": context(place), "gateway": settings.MENTRO_GATEWAY_URL}
-    return hashlib.sha256(json.dumps(payload, sort_keys=True, allow_nan=False).encode()).hexdigest()
+    # Metadata, model and prompt changes must not replace an existing place's ratings.
+    payload = {"identity": "permanent-place-traits-v1", "source_id": place.provider_id}
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+
+
+class TraitStoreError(RuntimeError):
+    """Persistence must work before a place can be rated or used."""
 
 
 @contextmanager
@@ -70,55 +74,59 @@ def get_many(places):
     if not places:
         return {}
     try:
-        by_key = {key(place): place.provider_id for place in places}
+        source_ids = sorted({place.provider_id for place in places})
         with transaction() as cur:
             cur.execute(
-                "SELECT * FROM place_attribute_traits WHERE cache_key=ANY(%s) AND expires_at>now()",
-                (list(by_key),),
+                "SELECT DISTINCT ON (source_id) * FROM place_attribute_traits "
+                "WHERE source_id=ANY(%s) ORDER BY source_id,rated_at,cache_key",
+                (source_ids,),
             )
             rows = cur.fetchall()
         result = {}
         for row in rows:
-            try:
-                result[by_key[row["cache_key"]]] = _entry(row)
-            except ValueError:
-                continue  # Invalid/incomplete stored JSON is a miss, never a fabricated score.
+            # A corrupt stored rating requires explicit repair, never a fresh AI estimate.
+            result[row["source_id"]] = _entry(row)
         return result
     except Exception as exc:
         logger.warning(
-            "Place trait cache read failed (%s); using fresh ratings", type(exc).__name__
+            "Place trait read failed (%s); refusing automatic re-rating", type(exc).__name__
         )
-        return {}
+        raise TraitStoreError(
+            "Stored place ratings unavailable; no ratings were regenerated"
+        ) from None
 
 
 def put_many(entries, provider):
-    """Validate all 14 traits; first unexpired writer wins concurrent requests."""
-    if not entries or settings.NEON_READ_ONLY:
+    """Insert only unrated source identities; the first persisted rating wins forever."""
+    if not entries:
         return {}
+    if settings.NEON_READ_ONLY:
+        raise TraitStoreError("Place rating storage is read-only")
     validated = [
         (place, AttributeRatings.model_validate(ratings).model_dump()) for place, ratings in entries
     ]
     try:
         with transaction() as cur:
-            for place, ratings in sorted(validated, key=lambda entry: key(entry[0])):
+            for place, ratings in sorted(validated, key=lambda entry: entry[0].provider_id):
                 cache_key = key(place)
+                # Serialize even the first insert, before a source has a row to lock.
                 cur.execute(
-                    "SELECT attribute_ratings FROM place_attribute_traits WHERE cache_key=%s FOR UPDATE",
-                    (cache_key,),
+                    "SELECT pg_advisory_xact_lock(hashtextextended(%s,0))",
+                    ("place-traits:" + place.provider_id,),
+                )
+                cur.execute(
+                    "SELECT attribute_ratings FROM place_attribute_traits WHERE source_id=%s "
+                    "ORDER BY rated_at,cache_key LIMIT 1 FOR UPDATE",
+                    (place.provider_id,),
                 )
                 previous = cur.fetchone()
-                invalid = False
                 if previous:
-                    try:
-                        AttributeRatings.model_validate(previous["attribute_ratings"])
-                    except ValueError:
-                        invalid = True
+                    AttributeRatings.model_validate(previous["attribute_ratings"])
+                    continue
                 cur.execute(
                     "INSERT INTO place_attribute_traits(cache_key,source_id,rating_version,place_context,"
-                    "attribute_ratings,provider) VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT(cache_key) "
-                    "DO UPDATE SET attribute_ratings=EXCLUDED.attribute_ratings,provider=EXCLUDED.provider,"
-                    "rated_at=now(),expires_at=now()+interval '90 days' "
-                    "WHERE place_attribute_traits.expires_at<=now() OR %s",
+                    "attribute_ratings,provider,expires_at) VALUES(%s,%s,%s,%s,%s,%s,'infinity') "
+                    "ON CONFLICT(cache_key) DO NOTHING",
                     (
                         cache_key,
                         place.provider_id,
@@ -126,13 +134,14 @@ def put_many(entries, provider):
                         Json(context(place)),
                         Json(ratings),
                         provider,
-                        invalid,
                     ),
                 )
         # Re-read the canonical winner so concurrent trips do not keep different fresh estimates.
         return get_many([place for place, _ in validated])
     except Exception as exc:
         logger.warning(
-            "Place trait cache write failed (%s); retaining fresh ratings", type(exc).__name__
+            "Place trait write failed (%s); refusing unpersisted ratings", type(exc).__name__
         )
-        return {}
+        raise TraitStoreError(
+            "Place ratings could not be stored; no replacement ratings used"
+        ) from None

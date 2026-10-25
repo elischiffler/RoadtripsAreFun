@@ -124,7 +124,13 @@ class FrozenProviders(LivePlaceProvider):
 
     async def candidates(self, route, plan, weights):
         result = await attraction_candidates(
-            route, plan, weights, ai=self, places=self, duration_estimator=self.durations
+            route,
+            plan,
+            weights,
+            ai=self,
+            places=self,
+            duration_estimator=self.durations,
+            trait_store=False,
         )
         for item in result.explanation.get("rated_candidates", []):
             original = self.by_id[item["provider_id"]]

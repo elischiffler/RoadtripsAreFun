@@ -122,16 +122,10 @@ def rerun(payload: RerunStudy, response: Response, study=Depends(authorized)):
         ):
             raise HTTPException(409, "This rerun ID is already in use.")
     try:
-        design = Design.model_validate(
-            study["plan"]["design"] | {"pipeline": False, "solver": True}
-        )
+        design = Design.model_validate(study["plan"]["design"])
     except ValidationError:
         raise HTTPException(422, "The saved stop selection design is no longer valid.") from None
     planned = plan(design)
-    if planned["dataset_hash"] != study["plan"]["dataset_hash"]:
-        raise HTTPException(
-            409, "The candidate dataset changed; it cannot be treated as the same rerun."
-        )
     planned["supersedes"] = study["id"]
     key = store.create(str(payload.id), study["owner"], planned, identity())
     response.headers["Cache-Control"] = "no-store"
@@ -152,11 +146,16 @@ def snapshot(response: Response, study=Depends(authorized), after: int = Query(d
         "counts": planned["counts"],
         "design": planned["design"],
         "variants": planned["variants"],
+        "dataset": planned["dataset"],
         "dataset_hash": planned["dataset_hash"],
         "progress": progress,
         "cursor": cursor,
         "rows": [
-            {key: value for key, value in row.items() if key not in {"inputs", "preset_id"}}
+            {
+                key: value
+                for key, value in row.items()
+                if key not in {"inputs", "preset_id", "capture", "capture_evidence"}
+            }
             for row in rows
             if row["state"] == "finished"
         ],
@@ -241,24 +240,28 @@ def render_export(study, data, rows, format):
         "utility_max",
         "utility_median",
         "max_gap_seconds",
-        "extra_meters",
-        "extra_seconds",
-        "budget_utilization",
-        "budget_excess_usd",
+        "candidate_utility_mean",
+        "selected_utility_mean",
+        "utility_gain",
+        "selection_assessed",
+        "eligible_candidate_count",
+        "best_available_utility_mean",
+        "quality_loss",
+        "spacing_deviation_seconds",
+        "estimated_detour_seconds",
+        "best_bound",
+        "capture_case_id",
         "runtime_seconds",
         "solver_seconds",
         "solver_status",
         "objective",
-        "actual_days",
         "fulfillment",
-        "failed_stage",
         "error_code",
-        "delivered",
+        "selected",
         "requested",
         "candidate_count",
         "candidate_hash",
         "evidence",
-        "run_id",
         "study_id",
         "revision",
         "metric_version",
@@ -283,7 +286,7 @@ def render_export(study, data, rows, format):
                 "revision": study["identity"].get("revision"),
                 "metric_version": study["identity"].get("metric_version"),
                 "source_snapshot_hash": study["identity"]["source_snapshot_hash"],
-                "dataset_hash": study["plan"]["dataset_hash"] if row["track"] == "solver" else None,
+                "dataset_hash": row.get("dataset_hash") or (row.get("capture") or {}).get("hash"),
                 "parameter": condition.get("parameter"),
                 "parameter_value": condition.get("value"),
                 "seed": row["repeat"] - 1 if row["track"] == "solver" else None,

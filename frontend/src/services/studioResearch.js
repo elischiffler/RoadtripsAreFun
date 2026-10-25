@@ -4,6 +4,7 @@ import { clearResearchCache, readResearchCache, saveResearchCache } from './stud
 
 const scope = (study) =>
   JSON.stringify([
+    'selection-research-v4-corridor',
     import.meta.env.VITE_BACKEND_SERVER,
     getStudioSession()?.token ?? null,
     study?.database ? 'database' : (study?.key ?? 'public'),
@@ -25,8 +26,8 @@ export async function readStudySnapshot(study) {
     : null;
 }
 
-const KEY = 'studioResearchStudies';
-const ARCHIVE_KEY = 'studioResearchArchivedStudies';
+const KEY = 'studioResearchSelectionStudies';
+const ARCHIVE_KEY = 'studioResearchSelectionArchivedStudies';
 function readStudies(key) {
   try {
     const rows = JSON.parse(localStorage.getItem(key) || '[]');
@@ -47,13 +48,15 @@ export const savedStudies = () => readStudies(KEY);
 export const archivedStudies = () => readStudies(ARCHIVE_KEY);
 export function savedStudyVersion() {
   try {
-    return sessionStorage.getItem('studioResearchVersion') === 'previous' ? 'previous' : 'current';
+    return sessionStorage.getItem('studioResearchRealVersion') === 'previous'
+      ? 'previous'
+      : 'current';
   } catch {
     return 'current';
   }
 }
 export function rememberStudyVersion(version) {
-  sessionStorage.setItem('studioResearchVersion', version);
+  sessionStorage.setItem('studioResearchRealVersion', version);
 }
 export async function studyVersions(currentStudies, signal, archive = archivedStudies()) {
   // The incremental endpoint can return protocol metadata without transferring saved run records.
@@ -98,10 +101,8 @@ export async function studyVersions(currentStudies, signal, archive = archivedSt
 }
 // Database references grant read access through Studio; control capabilities stay browser-local.
 export async function loadStudyLibrary(signal) {
-  const owner = scope();
-  const cached = await readResearchCache('library', owner);
   checkAborted(signal);
-  if (Array.isArray(cached?.current) && Array.isArray(cached?.archived)) return cached;
+  // The small library must be current: campaigns can be replaced outside this browser.
   const { data } = await studioRequest('get', 'research/saved', undefined, signal);
   const local = new Map(
     [...archivedStudies(), ...savedStudies()].map((study) => [study.id, study])
@@ -109,7 +110,6 @@ export async function loadStudyLibrary(signal) {
   const studies = data.studies.map((study) => local.get(study.id) || study);
   const library = { current: studies.slice(0, 1), archived: studies.slice(1) };
   checkAborted(signal);
-  await saveResearchCache('library', owner, library);
   return library;
 }
 export async function researchCatalog(signal) {

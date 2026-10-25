@@ -1,0 +1,1005 @@
+{
+  "schema_version": "roadtrips-reviewed-entertainment/1",
+  "reviewed_at": "2026-10-25T00:02:17.563467+00:00",
+  "first_date": "2026-10-25",
+  "days": 30,
+  "criteria": "Add geographically distributed real walk-in cultural and food destinations along the study route regions; verify official access/hours, unchanged OSM point and road snap <=75m, and no duplicate identity. Exact fixed-corridor membership is measured separately; venues outside it are not inserted into study pools. Chosen before any AI ratings. Existing ratings and persona weights remain fixed.",
+  "scope": "Published factual names, addresses, hours and paraphrased destination facts for user-authorized research. No copied images or marketing prose; retained private originals for verification. OSM coordinates under ODbL.",
+  "withheld": [
+    {
+      "key": "iowa80",
+      "reason": "Official website TLS validation failed; not admitted from search snippets."
+    },
+    {
+      "key": "archway",
+      "reason": "Building spans I-80; centroid road snap does not establish visitor entrance. Arrival review incomplete."
+    }
+  ],
+  "profiles": [
+    {
+      "key": "reno",
+      "source_id": "catalog-pilot:entertainment-reno",
+      "name": "National Automobile Museum",
+      "region": "NV",
+      "address": "1 Museum Drive, Reno, NV 89501",
+      "categories": [
+        "daytime",
+        "museum",
+        "culture_arts"
+      ],
+      "description": "Indoor automobile museum with historic street scenes, vehicle galleries, theater presentations and interactive photo displays. Self-guided visits are available. Volunteer guided tours are not guaranteed. This rating covers the museum, not nearby casinos.",
+      "pages": [
+        "reno.html"
+      ],
+      "checks": [
+        "Mon\u2013Fri: 9am-5pm Sat: 10am-4pm | Sun: 10am-4pm",
+        "1 Museum Dr. Reno, NV 89501"
+      ],
+      "geo": "reno-geo.json",
+      "native_type": "way",
+      "native_id": 1350127617,
+      "road": "reno-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "opens": "09:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            5,
+            6
+          ],
+          "opens": "10:00",
+          "closes": "16:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    },
+    {
+      "key": "folklife",
+      "source_id": "catalog-pilot:entertainment-folklife",
+      "name": "Western Folklife Center \u2014 Wiegand Gallery and Gift Shop",
+      "region": "NV",
+      "address": "501 Railroad Street, Elko, NV 89801",
+      "categories": [
+        "daytime",
+        "museum",
+        "art_gallery",
+        "shopping"
+      ],
+      "description": "Gallery and gift shop focused on the traditional cultures of the American West. Exhibitions and locally made art, books and music are available. This destination excludes the separately scheduled theater, Pioneer Saloon and annual Cowboy Poetry Gathering.",
+      "pages": [
+        "folklife.html",
+        "folklife-about.html"
+      ],
+      "checks": [
+        "10 am - 5:30 pm Monday through Friday",
+        "10 am - 5 pm Saturday",
+        "501 Railroad Street"
+      ],
+      "geo": "folklife-geo.json",
+      "native_type": "way",
+      "native_id": 1036489182,
+      "road": "folklife-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "opens": "10:00",
+          "closes": "17:30",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            5
+          ],
+          "opens": "10:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [
+        "2026-11-11"
+      ],
+      "date_windows": {}
+    },
+    {
+      "key": "elko",
+      "source_id": "catalog-pilot:entertainment-elko",
+      "name": "Northeastern Nevada Museum",
+      "region": "NV",
+      "address": "1515 Idaho Street, Elko, NV 89801",
+      "categories": [
+        "daytime",
+        "museum",
+        "art_gallery"
+      ],
+      "description": "Museum with galleries about northeastern Nevada history, art and wildlife. Visitors can explore regional exhibits and community heritage. Archive research requires an appointment and is excluded from the ordinary walk-in visit.",
+      "pages": [
+        "elko.html"
+      ],
+      "checks": [
+        "Tuesday \u2013 Saturday: 9AM to 5PM",
+        "Sunday: 1PM to 5PM",
+        "1515 IDAHO STREET"
+      ],
+      "geo": "elko-geo.json",
+      "native_type": "way",
+      "native_id": 954370315,
+      "road": "elko-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "opens": "09:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            6
+          ],
+          "opens": "13:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [
+        "2026-11-11"
+      ],
+      "date_windows": {}
+    },
+    {
+      "key": "clark",
+      "source_id": "catalog-pilot:entertainment-clark",
+      "name": "Clark Planetarium \u2014 Public Exhibits",
+      "region": "UT",
+      "address": "110 S 400 W, Salt Lake City, UT 84101",
+      "categories": [
+        "daytime",
+        "museum",
+        "science"
+      ],
+      "description": "Three floors of free indoor space and science exhibits. The building also has separately ticketed dome and IMAX theaters with scheduled shows; this visit covers the public exhibits, not a guaranteed film or laser-show admission. Nearby Gateway restaurants and nightlife are separate destinations.",
+      "pages": [
+        "clark.html"
+      ],
+      "checks": [
+        "Sun. - Thurs. 9:30 a.m. to 8 p.m. Fri. Sat. 9:30 a.m. to 11 p.m.",
+        "110 S 400 W"
+      ],
+      "geo": "clark-geo.json",
+      "native_type": "node",
+      "native_id": 11141711596,
+      "road": "clark-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            0,
+            1,
+            2,
+            3,
+            6
+          ],
+          "opens": "09:30",
+          "closes": "20:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            4,
+            5
+          ],
+          "opens": "09:30",
+          "closes": "23:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {
+        "2026-10-27": [
+          {
+            "opens": "09:30",
+            "closes": "17:00",
+            "end_day_offset": 0
+          }
+        ]
+      }
+    },
+    {
+      "key": "carbon",
+      "source_id": "catalog-pilot:entertainment-carbon",
+      "name": "Carbon County Museum",
+      "region": "WY",
+      "address": "904 West Walnut Street, Rawlins, WY 82301",
+      "categories": [
+        "daytime",
+        "museum"
+      ],
+      "description": "Local history museum in Rawlins with permanent exhibits, historical artifacts and photographs from Carbon County. This entry covers the physical museum galleries; online archives, online shopping and other Rawlins attractions are excluded.",
+      "pages": [
+        "carbon.html",
+        "carbon-about.html"
+      ],
+      "checks": [
+        "Monday (April-October)",
+        "Tuesday - Saturday",
+        "10:00 AM - 5:00 PM",
+        "904 West Walnut Street"
+      ],
+      "geo": "carbon-geo.json",
+      "native_type": "way",
+      "native_id": 193302392,
+      "road": "carbon-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "opens": "10:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            0
+          ],
+          "opens": "10:00",
+          "closes": "15:00",
+          "end_day_offset": 0,
+          "months": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    },
+    {
+      "key": "cheyenne",
+      "source_id": "catalog-pilot:entertainment-cheyenne",
+      "name": "Cheyenne Depot Museum",
+      "region": "WY",
+      "address": "121 West 15th Street, Cheyenne, WY 82001",
+      "categories": [
+        "daytime",
+        "museum",
+        "shopping"
+      ],
+      "description": "Museum in the historic Union Pacific depot about Cheyenne and the transcontinental railroad, including a narrow-gauge model railroad and gift shop. This entry covers the museum and excludes separately scheduled plaza events and nearby businesses.",
+      "pages": [
+        "cheyenne.html",
+        "cheyenne-about.html"
+      ],
+      "checks": [
+        "Monday - Friday 9:00 AM - 5:00 PM",
+        "Saturday 9:00 AM - 3:00 PM",
+        "Sunday 11:00 AM - 3:00 PM"
+      ],
+      "geo": "cheyenne-geo.json",
+      "native_type": "way",
+      "native_id": 232402672,
+      "road": "cheyenne-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "opens": "09:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            5
+          ],
+          "opens": "09:00",
+          "closes": "15:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            6
+          ],
+          "opens": "11:00",
+          "closes": "15:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    },
+    {
+      "key": "milk",
+      "source_id": "catalog-pilot:entertainment-milk",
+      "name": "Denver Milk Market",
+      "region": "CO",
+      "address": "1800 Wazee Street Suite 100, Denver, CO 80202",
+      "categories": [
+        "daytime",
+        "food_hall",
+        "dining"
+      ],
+      "description": "Indoor food hall with multiple food vendors and drinks in downtown Denver. Offers weekday happy hour and scheduled trivia and drag bingo brunch. Regular food-hall access does not guarantee a seat at a special event. Adjacent Dairy Block shops are not included.",
+      "pages": [
+        "milk.html",
+        "milk-about.html"
+      ],
+      "checks": [
+        "Sunday - Thursday",
+        "11:00 am - 8:00 pm",
+        "Friday - Saturday",
+        "11:00 am - 9:00 pm",
+        "1800 Wazee St Suite 100"
+      ],
+      "geo": "milk-geo2.json",
+      "native_type": "way",
+      "native_id": 592892866,
+      "road": "milk-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            0,
+            1,
+            2,
+            3,
+            6
+          ],
+          "opens": "11:00",
+          "closes": "20:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            4,
+            5
+          ],
+          "opens": "11:00",
+          "closes": "21:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    },
+    {
+      "key": "durham",
+      "source_id": "catalog-pilot:entertainment-durham",
+      "name": "The Durham Museum",
+      "region": "NE",
+      "address": "801 S 10th Street, Omaha, NE 68108",
+      "categories": [
+        "daytime",
+        "museum",
+        "shopping"
+      ],
+      "description": "History museum in Omaha Union Station with permanent and changing exhibits, museum shop, soda fountain and candy shop. Walk-in museum visits are accepted. Special events and separately scheduled tours are not guaranteed by ordinary admission.",
+      "pages": [
+        "durham-hours.html",
+        "durham-about.html"
+      ],
+      "checks": [
+        "FALL Hours of Operation",
+        "Noon-4PM",
+        "Wednesday-Saturday",
+        "10AM-4PM",
+        "Walk-ins welcomed."
+      ],
+      "geo": "durham-geo.json",
+      "native_type": "way",
+      "native_id": 107367985,
+      "road": "durham-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "opens": "10:00",
+          "closes": "16:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            6
+          ],
+          "opens": "12:00",
+          "closes": "16:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [
+        "2026-11-11"
+      ],
+      "date_windows": {}
+    },
+    {
+      "key": "desmoines",
+      "source_id": "catalog-pilot:entertainment-desmoines",
+      "name": "Des Moines Art Center",
+      "region": "IA",
+      "address": "4700 Grand Avenue, Des Moines, IA 50312",
+      "categories": [
+        "daytime",
+        "museum",
+        "art_gallery"
+      ],
+      "description": "Art museum displaying modern and contemporary artwork with free admission. This entry covers the Grand Avenue museum and its museum shop, not the separate downtown Pappajohn Sculpture Park or classes requiring registration.",
+      "pages": [
+        "desmoines.html"
+      ],
+      "checks": [
+        "Tuesday",
+        "10am - 4pm",
+        "Thursday",
+        "10am - 7pm",
+        "Saturday",
+        "10am - 5pm",
+        "4700 Grand Avenue"
+      ],
+      "geo": "desmoines-geo.json",
+      "native_type": "node",
+      "native_id": 600667768,
+      "road": "desmoines-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            1,
+            2
+          ],
+          "opens": "10:00",
+          "closes": "16:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            3,
+            4
+          ],
+          "opens": "10:00",
+          "closes": "19:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            5,
+            6
+          ],
+          "opens": "10:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    },
+    {
+      "key": "westside",
+      "source_id": "catalog-pilot:entertainment-westside",
+      "name": "West Side Market",
+      "region": "OH",
+      "address": "1979 West 25th Street, Cleveland, OH 44113",
+      "categories": [
+        "daytime",
+        "market",
+        "food",
+        "shopping"
+      ],
+      "description": "Year-round public food market with independent vendors and a self-guided historical tour. Visitors can buy food and browse the market stalls during published market hours. Nearby Ohio City restaurants and bars are not part of this destination.",
+      "pages": [
+        "westside.html",
+        "westside-about.html"
+      ],
+      "checks": [
+        "MONDAY, WEDNESDAY, FRIDAY: 8am \u2013 5pm",
+        "SUNDAY: 10am \u2013 4pm",
+        "1979 West 25th Street"
+      ],
+      "geo": "westside-geo.json",
+      "native_type": "way",
+      "native_id": 93599980,
+      "road": "westside-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            0,
+            2,
+            4,
+            5
+          ],
+          "opens": "08:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            6
+          ],
+          "opens": "10:00",
+          "closes": "16:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    },
+    {
+      "key": "akron",
+      "source_id": "catalog-pilot:entertainment-akron",
+      "name": "Akron Art Museum",
+      "region": "OH",
+      "address": "1 South High Street, Akron, OH 44308",
+      "categories": [
+        "daytime",
+        "museum",
+        "art_gallery",
+        "shopping"
+      ],
+      "description": "Art museum with galleries, garden and gift shop, with free gallery admission on Thursdays. Entry is from South High Street. Special evening events require their own schedule and are not guaranteed by regular museum admission.",
+      "pages": [
+        "akron.html"
+      ],
+      "checks": [
+        "Wednesday, Friday, Saturday, and Sunday 12:00 pm \u2013 5:00 pm.",
+        "Free Every Thursday 12:00 pm \u2013 9:00 pm.",
+        "1 South High Street"
+      ],
+      "geo": "akron-geo.json",
+      "native_type": "way",
+      "native_id": 305101135,
+      "road": "akron-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            2,
+            4,
+            5,
+            6
+          ],
+          "opens": "12:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            3
+          ],
+          "opens": "12:00",
+          "closes": "21:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    },
+    {
+      "key": "greatlakes",
+      "source_id": "catalog-pilot:entertainment-greatlakes",
+      "name": "National Museum of the Great Lakes \u2014 Museum Galleries",
+      "region": "OH",
+      "address": "1701 Front Street, Toledo, OH 43605",
+      "categories": [
+        "daytime",
+        "museum"
+      ],
+      "description": "Indoor museum galleries about Great Lakes maritime history. This destination excludes the separately seasonal museum ships, whose boarding closes for winter. Free parking is available on site.",
+      "pages": [
+        "greatlakes.html"
+      ],
+      "checks": [
+        "Monday through Saturday: 10am - 5pm",
+        "Sunday: 12pm - 5pm",
+        "Tuesdays (November 1 \u2013 April 30)",
+        "1701 Front Street"
+      ],
+      "geo": "greatlakes-geo.json",
+      "native_type": "way",
+      "native_id": 421852806,
+      "road": "greatlakes-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "opens": "10:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            1
+          ],
+          "opens": "10:00",
+          "closes": "17:00",
+          "end_day_offset": 0,
+          "months": [
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "weekdays": [
+            6
+          ],
+          "opens": "12:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    },
+    {
+      "key": "basque",
+      "source_id": "catalog-pilot:entertainment-basque",
+      "name": "The Basque Market",
+      "region": "ID",
+      "address": "608 W Grove Street, Boise, ID 83702",
+      "categories": [
+        "daytime",
+        "market",
+        "food",
+        "shopping"
+      ],
+      "description": "Basque and Spanish food market with pintxos, tapas, wines and take-home paella supplies. Walk-in dining is first-come, first-served. Scheduled paella services and private catering are not guaranteed by ordinary opening hours. This entry does not include the separate Basque Museum or other Basque Block businesses.",
+      "pages": [
+        "basque.html"
+      ],
+      "checks": [
+        "Tuesday through Saturday, 11:00am\u20135:00pm",
+        "608 W Grove Street",
+        "6:00pm on Thursdays, Fridays, and Saturdays"
+      ],
+      "geo": "basque-geo.json",
+      "native_type": "node",
+      "native_id": 4985653923,
+      "road": "basque-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            1,
+            2
+          ],
+          "opens": "11:00",
+          "closes": "17:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            3,
+            4,
+            5
+          ],
+          "opens": "11:00",
+          "closes": "18:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    }
+  ],
+  "receipts": {
+    "reno-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=National+Automobile+Museum%2C+Reno&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:58:47.586373+00:00",
+      "evidence_path": "reno-geo.json",
+      "snapshot_sha256": "96c7f972be4fd360fad18503c689220fb6b5a4b5d71cb95badec67bb6ba6125e"
+    },
+    "reno-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-119.8067918,39.527861;-119.8087918,39.525861?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:26.035582+00:00",
+      "evidence_path": "reno-road.json",
+      "snapshot_sha256": "118c0ffe41753b32cbcbd57b5582b74b7911a6823a8acf36384c73cc00f453de"
+    },
+    "osm-copyright.html": {
+      "source_url": "https://www.openstreetmap.org/copyright",
+      "checked_at": "2026-10-24T23:59:31.992762+00:00",
+      "evidence_path": "osm-copyright.html",
+      "snapshot_sha256": "c2a3c7bce64cf536a9ad30efe1ea3303d83cbd4c73ddb230da7200df5c141222"
+    },
+    "reno.html": {
+      "source_url": "https://automuseum.org/visit/",
+      "checked_at": "2026-10-24T23:58:44.725785+00:00",
+      "evidence_path": "reno.html",
+      "snapshot_sha256": "5f6069cb2ac37c577078532cd1c1fc33f65e7e76cf1c8877e1d26efb31399ee0"
+    },
+    "folklife-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=Western+Folklife+Center%2C+Elko&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:58:49.035462+00:00",
+      "evidence_path": "folklife-geo.json",
+      "snapshot_sha256": "fafa092b596a59ba2cef31acce0e7eacbfdb001aed5a492d26d7d328873ba671"
+    },
+    "folklife-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-115.76036280000001,40.834488900000004;-115.7623628,40.8324889?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:19.227199+00:00",
+      "evidence_path": "folklife-road.json",
+      "snapshot_sha256": "7e2020c2f9d9769b4013cb9610e135e4be1cededb6e756f255f7a144200e5e7b"
+    },
+    "folklife.html": {
+      "source_url": "https://www.westernfolklife.org/where-we-are/",
+      "checked_at": "2026-10-24T23:58:44.320253+00:00",
+      "evidence_path": "folklife.html",
+      "snapshot_sha256": "ec8901626356cd684b01756099c7914ed750edddb35608231b5ec9b13d907cd6"
+    },
+    "folklife-about.html": {
+      "source_url": "https://www.westernfolklife.org/gift-shop",
+      "checked_at": "2026-10-24T23:59:27.047125+00:00",
+      "evidence_path": "folklife-about.html",
+      "snapshot_sha256": "a4c39fefe2b2daa436d1d7be65452ba390ca3e1170cf14772e23fdc836884e56"
+    },
+    "elko-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=Northeastern+Nevada+Museum%2C+Elko&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:58:50.796241+00:00",
+      "evidence_path": "elko-geo.json",
+      "snapshot_sha256": "453b2cc2b4dadf0efaa7f4f55ce90c5e11480e8bb96d0b3a410610318cb030c2"
+    },
+    "elko-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-115.7510833,40.843889700000005;-115.7530833,40.8418897?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:17.543793+00:00",
+      "evidence_path": "elko-road.json",
+      "snapshot_sha256": "0f111f5eee50952a6ef8955f05f8c1040151fe8ff0e6fb6c717543180a34aa54"
+    },
+    "elko.html": {
+      "source_url": "https://museumelko.squarespace.com/about",
+      "checked_at": "2026-10-24T23:58:44.429329+00:00",
+      "evidence_path": "elko.html",
+      "snapshot_sha256": "4d8f37deadf65c7d24bead020cb6aba79371f7b2a01b4ede25d5bcb14607edf4"
+    },
+    "clark-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=Clark+Planetarium%2C+Salt+Lake+City&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:58:52.177516+00:00",
+      "evidence_path": "clark-geo.json",
+      "snapshot_sha256": "c3efe404df31b8820313afa0399e721a4eb25b944ddc61e784a38e0b30082bf1"
+    },
+    "clark-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-111.9011435,40.768706200000004;-111.9031435,40.7667062?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:12.509690+00:00",
+      "evidence_path": "clark-road.json",
+      "snapshot_sha256": "8ecbdb4c0fa775a08b1c92b10a8db972b7bbabad5a334ee34081f6ee9337896d"
+    },
+    "clark.html": {
+      "source_url": "https://www.saltlakecounty.gov/clark-planetarium",
+      "checked_at": "2026-10-24T23:58:43.753675+00:00",
+      "evidence_path": "clark.html",
+      "snapshot_sha256": "52a3bc2bed241ae598fef8ac3a5a9d69a1d8c300de59ad87c48c3b249afbae43"
+    },
+    "carbon-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=Carbon+County+Museum%2C+Rawlins&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:58:53.955173+00:00",
+      "evidence_path": "carbon-geo.json",
+      "snapshot_sha256": "03c370964608f9657edfabcad218e0ec0313ea6403bba921f5a494eeea077292"
+    },
+    "carbon-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-107.24516030000001,41.7929285;-107.2471603,41.7909285?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:09.130315+00:00",
+      "evidence_path": "carbon-road.json",
+      "snapshot_sha256": "6690cfd34a8e55f9a0ebb5053b8137229cb30117631fef259dea5082163c71b8"
+    },
+    "carbon.html": {
+      "source_url": "https://www.carboncountymuseum.org/contact-us",
+      "checked_at": "2026-10-24T23:58:44.853463+00:00",
+      "evidence_path": "carbon.html",
+      "snapshot_sha256": "20a2781487a0453ebb851b9f2332735925d691b7fa0a4aab07cd2892d1eb83b6"
+    },
+    "carbon-about.html": {
+      "source_url": "https://www.carboncountymuseum.org/",
+      "checked_at": "2026-10-24T23:59:28.126253+00:00",
+      "evidence_path": "carbon-about.html",
+      "snapshot_sha256": "8ef9aa2952e777859b3fb8349ee9daeabb9a8b4e45ceeae1079e585ff9e79e8a"
+    },
+    "cheyenne-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=Cheyenne+Depot+Museum%2C+Cheyenne&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:58:55.441544+00:00",
+      "evidence_path": "cheyenne-geo.json",
+      "snapshot_sha256": "52542397a87c455ceba9305d1665b984502bd6079d7d47d202dc1b9fb58a77e6"
+    },
+    "cheyenne-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-104.81231000000001,41.1338172;-104.81431,41.1318172?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:10.810066+00:00",
+      "evidence_path": "cheyenne-road.json",
+      "snapshot_sha256": "0672c0a19fc6e557c46f5b836770c28007e4a0131dbf855e858f77556156deff"
+    },
+    "cheyenne.html": {
+      "source_url": "https://www.cheyennedepotmuseum.org/hours-of-operation",
+      "checked_at": "2026-10-24T23:58:44.779268+00:00",
+      "evidence_path": "cheyenne.html",
+      "snapshot_sha256": "2d40d4544f4b8ca88884b7538fe0409df819f0a3bc55224f24c3b2a08339191c"
+    },
+    "cheyenne-about.html": {
+      "source_url": "https://www.cheyennedepotmuseum.org/",
+      "checked_at": "2026-10-24T23:59:28.363466+00:00",
+      "evidence_path": "cheyenne-about.html",
+      "snapshot_sha256": "3b21e641245e82d18d4d7c8f8d2c2d6b3d455b56e715ea12cb1962d3c2365b46"
+    },
+    "milk-geo2.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=1800+Wazee+Street%2C+Denver&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:59:32.328041+00:00",
+      "evidence_path": "milk-geo2.json",
+      "snapshot_sha256": "c26c24e782d537b4de1e36ec7e2893753e9c74a26abbe5fb459228e17ff3b37c"
+    },
+    "milk-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-104.9949469,39.7552187;-104.9969469,39.7532187?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:24.331618+00:00",
+      "evidence_path": "milk-road.json",
+      "snapshot_sha256": "82d720161623df165d696dc8b2d374584babcaa71412c80f21951ae2472b0cc5"
+    },
+    "milk.html": {
+      "source_url": "https://www.denvermilkmarket.com/location/denver-milk-market/",
+      "checked_at": "2026-10-24T23:58:44.766820+00:00",
+      "evidence_path": "milk.html",
+      "snapshot_sha256": "1872f85a8fb15322b9410796e8a9b06adba996736b165eea3bfdb4191ae3ce55"
+    },
+    "milk-about.html": {
+      "source_url": "https://www.denvermilkmarket.com/happenings/",
+      "checked_at": "2026-10-24T23:59:25.225257+00:00",
+      "evidence_path": "milk-about.html",
+      "snapshot_sha256": "64dc89684af1d24e164e10589cf8639ff0c3ab55750dadabcd7dba52b7280b38"
+    },
+    "durham-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=Durham+Museum%2C+Omaha&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:58:59.924010+00:00",
+      "evidence_path": "durham-geo.json",
+      "snapshot_sha256": "4d51cad7e4179d06b7eb521f2998b3b473891fa5f21aa1db40e63938faa74566"
+    },
+    "durham-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-95.92609990000001,41.2533982;-95.9280999,41.2513982?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:15.880308+00:00",
+      "evidence_path": "durham-road.json",
+      "snapshot_sha256": "155a12bd8afbc779e1096dd8291b1e5312689f25fb37a74806eea57477256afe"
+    },
+    "durham-hours.html": {
+      "source_url": "https://durhammuseum.org/visit/hours-and-admission/",
+      "checked_at": "2026-10-24T23:59:40.636983+00:00",
+      "evidence_path": "durham-hours.html",
+      "snapshot_sha256": "213ef102e5e5704219f241441ccbc0d5e2679a9daff722c88b7c1e47ac5ad03e"
+    },
+    "durham-about.html": {
+      "source_url": "https://durhammuseum.org/",
+      "checked_at": "2026-10-24T23:59:31.643989+00:00",
+      "evidence_path": "durham-about.html",
+      "snapshot_sha256": "e2f362aeb69d96f9b2b670c9ebc8850439896554cf85d45afa90ade80013d80a"
+    },
+    "desmoines-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=Des+Moines+Art+Center%2C+Des+Moines&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:59:03.324469+00:00",
+      "evidence_path": "desmoines-geo.json",
+      "snapshot_sha256": "3b7873b3bf33c494faad10d7f03a71630fe3d28230e1f33ac24effd37f8af06a"
+    },
+    "desmoines-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-93.67918660000001,41.585942;-93.6811866,41.583942?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:14.159636+00:00",
+      "evidence_path": "desmoines-road.json",
+      "snapshot_sha256": "5c0b7ccb4d8a6c27c98884fb6c258cc312fdb06dab7147222cf34f1fc2834c26"
+    },
+    "desmoines.html": {
+      "source_url": "https://desmoinesartcenter.org/visit/",
+      "checked_at": "2026-10-24T23:58:45.719410+00:00",
+      "evidence_path": "desmoines.html",
+      "snapshot_sha256": "1f50da4c4509b4fa2cb9b8f50a2a56b8ecb1dac8aa6bc76032b61d0f02623f72"
+    },
+    "westside-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=West+Side+Market%2C+Cleveland&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:59:05.244210+00:00",
+      "evidence_path": "westside-geo.json",
+      "snapshot_sha256": "2befdc05e273693f63e1ed96ce0ce94b6ead7eb8992147b8b4dbec91ffba965d"
+    },
+    "westside-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-81.7009998,41.4866588;-81.7029998,41.4846588?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:27.765566+00:00",
+      "evidence_path": "westside-road.json",
+      "snapshot_sha256": "4359472e288ba9cc0c772a7ef27473ca0572b5a28ba3103d49bdb018eb3c90e6"
+    },
+    "westside.html": {
+      "source_url": "https://westsidemarket.org/location/hours/",
+      "checked_at": "2026-10-24T23:58:45.862329+00:00",
+      "evidence_path": "westside.html",
+      "snapshot_sha256": "073fa90c7fd29dc2cfbf6cb82f144f6fcbb215301a4bd3a5eafe1aecdde9532b"
+    },
+    "westside-about.html": {
+      "source_url": "https://westsidemarket.org/faq/",
+      "checked_at": "2026-10-24T23:59:26.457828+00:00",
+      "evidence_path": "westside-about.html",
+      "snapshot_sha256": "c1e193f20ecc05fddc2ec3531ead9ed154a748500df3ea744a48adb97157b4ac"
+    },
+    "akron-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=Akron+Art+Museum%2C+Akron&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:59:07.004055+00:00",
+      "evidence_path": "akron-geo.json",
+      "snapshot_sha256": "98cff0bc625579bf7d1dcc73b2609ba8e1d7529e459a9c61df84609ba7bcda4d"
+    },
+    "akron-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-81.5132442,41.086227900000004;-81.5152442,41.0842279?overview=false&steps=false",
+      "checked_at": "2026-10-24T23:59:41.889099+00:00",
+      "evidence_path": "akron-road.json",
+      "snapshot_sha256": "10e9ce6a5e79dd5ddd630a62f9961cfc33627df4db2d48969fdb2c3c8f35082c"
+    },
+    "akron.html": {
+      "source_url": "https://akronartmuseum.org/visit/",
+      "checked_at": "2026-10-24T23:58:46.725879+00:00",
+      "evidence_path": "akron.html",
+      "snapshot_sha256": "9a6c63b8b46072b888aad5ef18b8f210a25342d9b956f2a4793161fe27aa6a06"
+    },
+    "greatlakes-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=National+Museum+of+the+Great+Lakes%2C+Toledo&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:59:08.852055+00:00",
+      "evidence_path": "greatlakes-geo.json",
+      "snapshot_sha256": "10e9fb711063905b537d190b7e921f0c8bd98fb56b0c6a1f979020fb9ceabf71"
+    },
+    "greatlakes-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-83.5130853,41.6586499;-83.5150853,41.6566499?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:20.941876+00:00",
+      "evidence_path": "greatlakes-road.json",
+      "snapshot_sha256": "22c23e6c81af66299e0b892541abe6b9df2e995446b3ad2061a7ed359c11c1b4"
+    },
+    "greatlakes.html": {
+      "source_url": "https://nmgl.org/visit/",
+      "checked_at": "2026-10-24T23:58:46.424458+00:00",
+      "evidence_path": "greatlakes.html",
+      "snapshot_sha256": "dd6b55f9c4b59d9036b70306e627eb13eb33150a5e68d315c1d1bb1e047e7089"
+    },
+    "basque-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=The+Basque+Market%2C+Boise&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-24T23:59:36.598453+00:00",
+      "evidence_path": "basque-geo.json",
+      "snapshot_sha256": "3ff450d1290e5b5d7945cf2af1b552a944c931d64d0904acf6ba10598083a1af"
+    },
+    "basque-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-116.20007600000001,43.615971900000005;-116.202076,43.6139719?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:00:07.487236+00:00",
+      "evidence_path": "basque-road.json",
+      "snapshot_sha256": "b3e335364ea8461b46bbdf54644d4627258f1aad6dc9c0f24f9fe8e1e801805c"
+    },
+    "basque.html": {
+      "source_url": "https://www.thebasquemarket.com/faq",
+      "checked_at": "2026-10-24T23:59:25.084832+00:00",
+      "evidence_path": "basque.html",
+      "snapshot_sha256": "91f8521dbb946bea14c4ddfe97caede557c2ae2561ffec7d2a8758ce93c1caf6"
+    }
+  }
+}

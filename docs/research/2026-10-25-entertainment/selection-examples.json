@@ -1,0 +1,308 @@
+{
+  "long-3d:nature:2": {
+    "before": {
+      "selected_utility_mean": 0.63625,
+      "best_available_utility_mean": 0.6695833333333333,
+      "quality_loss": 0.033333333333333326,
+      "max_gap_seconds": 58073.268696416286,
+      "spacing_deviation_seconds": 95806.376821404,
+      "estimated_detour_seconds": 3105.274999999965,
+      "places": [
+        {
+          "name": "South Berkeley Farmers' Market",
+          "utility": 0.29
+        },
+        {
+          "name": "Auburn Old Town CFM",
+          "utility": 0.29
+        },
+        {
+          "name": "Donner Summit  Trailhead",
+          "utility": 0.8975
+        },
+        {
+          "name": "Sawtooth Trailhead",
+          "utility": 0.88
+        },
+        {
+          "name": "Hobart Mills Trailhead , Prosser Trailhe",
+          "utility": 0.845
+        },
+        {
+          "name": "Boca Historic Townsite Interpretive Trai",
+          "utility": 0.615
+        }
+      ]
+    },
+    "after": {
+      "selected_utility_mean": 0.5854166666666667,
+      "best_available_utility_mean": 0.6695833333333333,
+      "quality_loss": 0.08416666666666672,
+      "max_gap_seconds": 29787.197707774823,
+      "spacing_deviation_seconds": 58994.52017524507,
+      "estimated_detour_seconds": 2837.3909999999887,
+      "places": [
+        {
+          "name": "Donner Summit  Trailhead",
+          "utility": 0.8975
+        },
+        {
+          "name": "Sawtooth Trailhead",
+          "utility": 0.88
+        },
+        {
+          "name": "Hobart Mills Trailhead , Prosser Trailhe",
+          "utility": 0.845
+        },
+        {
+          "name": "Boca Historic Townsite Interpretive Trai",
+          "utility": 0.615
+        },
+        {
+          "name": "Northeastern Nevada Museum",
+          "utility": 0.245
+        },
+        {
+          "name": "Woodbine Food Hall",
+          "utility": 0.030000000000000002
+        }
+      ]
+    }
+  },
+  "long-3d:entertainment:3": {
+    "before": {
+      "selected_utility_mean": 0.35944444444444446,
+      "best_available_utility_mean": 0.4077777777777778,
+      "quality_loss": 0.04833333333333334,
+      "max_gap_seconds": 58073.268696416286,
+      "spacing_deviation_seconds": 101908.42499283257,
+      "estimated_detour_seconds": 7563.290999999954,
+      "places": [
+        {
+          "name": "GLBT Historical Society Museum",
+          "utility": 0.45500000000000007
+        },
+        {
+          "name": "South Berkeley Farmers' Market",
+          "utility": 0.56
+        },
+        {
+          "name": "Rosie the Riveter WWII Home Front National Historical Park \u2014 Rosie the Riveter Visitor Education Center",
+          "utility": 0.37
+        },
+        {
+          "name": "Historic Folsom Farmers Market",
+          "utility": 0.615
+        },
+        {
+          "name": "Auburn Old Town CFM",
+          "utility": 0.56
+        },
+        {
+          "name": "Donner Summit  Trailhead",
+          "utility": 0.075
+        },
+        {
+          "name": "Sawtooth Trailhead",
+          "utility": 0.11
+        },
+        {
+          "name": "Hobart Mills Trailhead , Prosser Trailhe",
+          "utility": 0.1
+        },
+        {
+          "name": "Boca Historic Townsite Interpretive Trai",
+          "utility": 0.39
+        }
+      ]
+    },
+    "after": {
+      "selected_utility_mean": 0.4266666666666667,
+      "best_available_utility_mean": 0.5188888888888888,
+      "quality_loss": 0.0922222222222222,
+      "max_gap_seconds": 15749.263430225255,
+      "spacing_deviation_seconds": 55219.36286062407,
+      "estimated_detour_seconds": 3783.9519999999757,
+      "places": [
+        {
+          "name": "South Berkeley Farmers' Market",
+          "utility": 0.56
+        },
+        {
+          "name": "Auburn Old Town CFM",
+          "utility": 0.56
+        },
+        {
+          "name": "Boca Historic Townsite Interpretive Trai",
+          "utility": 0.39
+        },
+        {
+          "name": "Reno Public Market",
+          "utility": 0.59
+        },
+        {
+          "name": "Western Folklife Center \u2014 Wiegand Gallery and Gift Shop",
+          "utility": 0.375
+        },
+        {
+          "name": "Northeastern Nevada Museum",
+          "utility": 0.22999999999999998
+        },
+        {
+          "name": "Woodbine Food Hall",
+          "utility": 0.615
+        },
+        {
+          "name": "Carbon County Museum",
+          "utility": 0.18
+        },
+        {
+          "name": "Denver Milk Market",
+          "utility": 0.34
+        }
+      ]
+    }
+  },
+  "coast-5d:entertainment:3": {
+    "before": {
+      "selected_utility_mean": 0.32966666666666666,
+      "best_available_utility_mean": 0.42433333333333334,
+      "quality_loss": 0.09466666666666668,
+      "max_gap_seconds": 49909.53187779452,
+      "spacing_deviation_seconds": 169183.58463620115,
+      "estimated_detour_seconds": 12426.158999999927,
+      "places": [
+        {
+          "name": "South Berkeley Farmers' Market",
+          "utility": 0.56
+        },
+        {
+          "name": "Rosie the Riveter WWII Home Front National Historical Park \u2014 Rosie the Riveter Visitor Education Center",
+          "utility": 0.37
+        },
+        {
+          "name": "Auburn Old Town CFM",
+          "utility": 0.56
+        },
+        {
+          "name": "Donner Summit  Trailhead",
+          "utility": 0.075
+        },
+        {
+          "name": "Sawtooth Trailhead",
+          "utility": 0.11
+        },
+        {
+          "name": "Hobart Mills Trailhead , Prosser Trailhe",
+          "utility": 0.1
+        },
+        {
+          "name": "Boca Historic Townsite Interpretive Trai",
+          "utility": 0.39
+        },
+        {
+          "name": "Vedauwoo Picnic Site",
+          "utility": 0.13
+        },
+        {
+          "name": "Lewis & Clark National Historic Trail \u2014 Lewis and Clark National Historic Trail Visitor Center",
+          "utility": 0.34500000000000003
+        },
+        {
+          "name": "Herbert Hoover National Historic Site \u2014 Visitor Center",
+          "utility": 0.255
+        },
+        {
+          "name": "Pullman National Historical Park \u2014 Administration Clock Tower Building Visitor Center",
+          "utility": 0.395
+        },
+        {
+          "name": "Central Avenue Beach \u2014 Central Avenue Beach",
+          "utility": 0.16
+        },
+        {
+          "name": "Cuyahoga Valley National Park \u2014 Boston Mill Visitor Center",
+          "utility": 0.28
+        },
+        {
+          "name": "79th Street Greenmarket",
+          "utility": 0.675
+        },
+        {
+          "name": "Tompkins Square Greenmarket",
+          "utility": 0.54
+        }
+      ]
+    },
+    "after": {
+      "selected_utility_mean": 0.38466666666666666,
+      "best_available_utility_mean": 0.4843333333333334,
+      "quality_loss": 0.09966666666666668,
+      "max_gap_seconds": 26361.94194982457,
+      "spacing_deviation_seconds": 91940.29118486776,
+      "estimated_detour_seconds": 11141.214000000036,
+      "places": [
+        {
+          "name": "South Berkeley Farmers' Market",
+          "utility": 0.56
+        },
+        {
+          "name": "Auburn Old Town CFM",
+          "utility": 0.56
+        },
+        {
+          "name": "Reno Public Market",
+          "utility": 0.59
+        },
+        {
+          "name": "Western Folklife Center \u2014 Wiegand Gallery and Gift Shop",
+          "utility": 0.375
+        },
+        {
+          "name": "Woodbine Food Hall",
+          "utility": 0.615
+        },
+        {
+          "name": "Carbon County Museum",
+          "utility": 0.18
+        },
+        {
+          "name": "Cheyenne Depot Museum",
+          "utility": 0.22499999999999998
+        },
+        {
+          "name": "Lewis & Clark National Historic Trail \u2014 Lewis and Clark National Historic Trail Visitor Center",
+          "utility": 0.34500000000000003
+        },
+        {
+          "name": "Des Moines Art Center",
+          "utility": 0.345
+        },
+        {
+          "name": "Herbert Hoover National Historic Site \u2014 Visitor Center",
+          "utility": 0.255
+        },
+        {
+          "name": "Pullman National Historical Park \u2014 Administration Clock Tower Building Visitor Center",
+          "utility": 0.395
+        },
+        {
+          "name": "Porter Beach \u2014 Porter Beach",
+          "utility": 0.18000000000000002
+        },
+        {
+          "name": "National Museum of the Great Lakes \u2014 Museum Galleries",
+          "utility": 0.19
+        },
+        {
+          "name": "Cuyahoga Valley National Park \u2014 Boston Mill Visitor Center",
+          "utility": 0.28
+        },
+        {
+          "name": "79th Street Greenmarket",
+          "utility": 0.675
+        }
+      ]
+    }
+  }
+}

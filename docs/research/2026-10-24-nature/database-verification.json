@@ -1,0 +1,12 @@
+{
+  "study_id": "d0aee85d-bd6a-49c3-a74a-c5b5630549bf",
+  "state": "complete",
+  "database_cases": 5064,
+  "captures": 24,
+  "solver_status": {
+    "OPTIMAL": 4740,
+    "INFEASIBLE": 300
+  },
+  "database_rows_equal_local": true,
+  "export_sha256": "ac7ed6e3765cdf5179624d29a73f7d694e46e1d13d53556a4a9305f0670b38c2"
+}

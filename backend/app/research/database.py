@@ -164,7 +164,11 @@ def read(study_id, after=0, *, export=False):
     snapshot = study["snapshot"] | {
         "database_synced_at": study["synced_at"].isoformat(),
         "rows": [
-            {k: v for k, v in row.items() if k not in {"inputs", "preset_id"}}
+            {
+                k: v
+                for k, v in row.items()
+                if k not in {"inputs", "preset_id", "capture", "capture_evidence"}
+            }
             for row in rows
             if row["state"] == "finished"
         ],

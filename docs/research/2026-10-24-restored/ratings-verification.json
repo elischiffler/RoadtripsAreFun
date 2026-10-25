@@ -1,0 +1,133 @@
+{
+  "study_id": "cffa789a-bd7c-4ec0-8be0-8223e1cff9bc",
+  "all_captured_profiles_equal_original_or_first_rating": true,
+  "distinct_places": 39,
+  "restored_places": 36,
+  "new_places_unchanged": 3,
+  "ai_rating_attempts": 0,
+  "rating_misses": 0,
+  "rating_writes": 0,
+  "same_design_as_previous_study": true,
+  "scenario_comparison": [
+    {
+      "scenario": "short-1d:nature:1",
+      "original_study_mean": 0.45,
+      "restored_study_mean": 0.6849999999999999
+    },
+    {
+      "scenario": "short-1d:nature:2",
+      "original_study_mean": 0.3275,
+      "restored_study_mean": 0.69
+    },
+    {
+      "scenario": "short-1d:nature:3",
+      "original_study_mean": 0.28833333333333333,
+      "restored_study_mean": 0.69
+    },
+    {
+      "scenario": "short-1d:entertainment:1",
+      "original_study_mean": 0.5700000000000001,
+      "restored_study_mean": 0.5700000000000001
+    },
+    {
+      "scenario": "short-1d:entertainment:2",
+      "original_study_mean": 0.5875,
+      "restored_study_mean": 0.5875
+    },
+    {
+      "scenario": "short-1d:entertainment:3",
+      "original_study_mean": 0.5800000000000001,
+      "restored_study_mean": 0.5800000000000001
+    },
+    {
+      "scenario": "medium-2d:nature:1",
+      "original_study_mean": 0.87125,
+      "restored_study_mean": 0.87125
+    },
+    {
+      "scenario": "medium-2d:nature:2",
+      "original_study_mean": 0.728125,
+      "restored_study_mean": 0.728125
+    },
+    {
+      "scenario": "medium-2d:nature:3",
+      "original_study_mean": 0.5904166666666667,
+      "restored_study_mean": 0.5904166666666667
+    },
+    {
+      "scenario": "medium-2d:entertainment:1",
+      "original_study_mean": 0.5025,
+      "restored_study_mean": 0.5025
+    },
+    {
+      "scenario": "medium-2d:entertainment:2",
+      "original_study_mean": 0.47000000000000003,
+      "restored_study_mean": 0.47000000000000003
+    },
+    {
+      "scenario": "medium-2d:entertainment:3",
+      "original_study_mean": 0.4425,
+      "restored_study_mean": 0.4425
+    },
+    {
+      "scenario": "long-3d:nature:1",
+      "original_study_mean": 0.7858333333333333,
+      "restored_study_mean": 0.7858333333333333
+    },
+    {
+      "scenario": "long-3d:nature:2",
+      "original_study_mean": 0.63625,
+      "restored_study_mean": 0.63625
+    },
+    {
+      "scenario": "long-3d:nature:3",
+      "original_study_mean": 0.4647222222222222,
+      "restored_study_mean": 0.4647222222222222
+    },
+    {
+      "scenario": "long-3d:entertainment:1",
+      "original_study_mean": 0.5033333333333334,
+      "restored_study_mean": 0.5033333333333334
+    },
+    {
+      "scenario": "long-3d:entertainment:2",
+      "original_study_mean": 0.42833333333333334,
+      "restored_study_mean": 0.42833333333333334
+    },
+    {
+      "scenario": "long-3d:entertainment:3",
+      "original_study_mean": 0.35944444444444446,
+      "restored_study_mean": 0.35944444444444446
+    },
+    {
+      "scenario": "coast-5d:nature:1",
+      "original_study_mean": 0.764,
+      "restored_study_mean": 0.764
+    },
+    {
+      "scenario": "coast-5d:nature:2",
+      "original_study_mean": 0.64425,
+      "restored_study_mean": 0.64425
+    },
+    {
+      "scenario": "coast-5d:nature:3",
+      "original_study_mean": 0.5098333333333334,
+      "restored_study_mean": 0.5098333333333334
+    },
+    {
+      "scenario": "coast-5d:entertainment:1",
+      "original_study_mean": 0.47800000000000004,
+      "restored_study_mean": 0.47800000000000004
+    },
+    {
+      "scenario": "coast-5d:entertainment:2",
+      "original_study_mean": 0.3995,
+      "restored_study_mean": 0.3995
+    },
+    {
+      "scenario": "coast-5d:entertainment:3",
+      "original_study_mean": 0.32966666666666666,
+      "restored_study_mean": 0.32966666666666666
+    }
+  ]
+}

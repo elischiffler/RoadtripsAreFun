@@ -1,0 +1,237 @@
+{
+  "schema_version": "roadtrips-cdfw-nature-review/1",
+  "reviewed_at": "2026-10-24T22:52:21.052329+00:00",
+  "first_date": "2026-10-24",
+  "days": 30,
+  "timezone": "America/Los_Angeles",
+  "receipts": {
+    "Batiquitos-Lagoon-ER.html": {
+      "source_url": "https://wildlife.ca.gov/Lands/Places-to-Visit/Batiquitos-Lagoon-ER",
+      "checked_at": "2026-10-24T22:45:55.518802+00:00",
+      "evidence_path": "Batiquitos-Lagoon-ER.html",
+      "snapshot_sha256": "bd64d53896622b1d83a8f1baf6e2cc0f97408315f1b42164814967a1ab9b0e7d"
+    },
+    "Upper-Newport-Bay-ER.html": {
+      "source_url": "https://wildlife.ca.gov/Lands/Places-to-Visit/Upper-Newport-Bay-ER",
+      "checked_at": "2026-10-24T22:45:56.461661+00:00",
+      "evidence_path": "Upper-Newport-Bay-ER.html",
+      "snapshot_sha256": "de6e04597e0abeaf2f3115928d7c0c0b8ab0fc1bad6e8aa52353684c7a6f010f"
+    },
+    "batiquitos-gis.json": {
+      "source_url": "https://services2.arcgis.com/Uq9r85Potqm3MfRV/arcgis/rest/services/biosds3077_fpu/FeatureServer/0/query?f=json&where=PROP_NAME+LIKE+%27%25Batiquitos%25%27&outFields=%2A&returnGeometry=true&outSR=4326",
+      "checked_at": "2026-10-24T22:46:09.779918+00:00",
+      "evidence_path": "batiquitos-gis.json",
+      "snapshot_sha256": "8da7c3ecb75de85b45d2e12e27e7447c7f7827fd4fa6f82fbf773b3ba5d5c673"
+    },
+    "batiquitos-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-117.29932240000001,33.095742300000005;-117.3013224,33.0937423?overview=false&steps=false",
+      "checked_at": "2026-10-24T22:51:09.140430+00:00",
+      "evidence_path": "batiquitos-road.json",
+      "snapshot_sha256": "ad739d4d1ca82e37a28b398bc53d51bf068acf5228089b7caf4cbd5be804c7cb"
+    },
+    "bolsa-gis.json": {
+      "source_url": "https://services2.arcgis.com/Uq9r85Potqm3MfRV/arcgis/rest/services/biosds3077_fpu/FeatureServer/0/query?f=json&where=PROP_NAME+LIKE+%27%25Bolsa+Chica%25%27&outFields=%2A&returnGeometry=true&outSR=4326",
+      "checked_at": "2026-10-24T22:44:21.529648+00:00",
+      "evidence_path": "bolsa-gis.json",
+      "snapshot_sha256": "f89c47b262f82d7ed311bc4548e59927a5995d7b4da350d42f14eb54bcb16dd9"
+    },
+    "bolsa-reserve.html": {
+      "source_url": "https://wildlife.ca.gov/Lands/Places-to-Visit/Bolsa-Chica-ER",
+      "checked_at": "2026-10-24T22:41:50.122860+00:00",
+      "evidence_path": "bolsa-reserve.html",
+      "snapshot_sha256": "58e0d156c44f1ef2f35b9857d5392cb1193dd490306a54c27853a32f8ee119b1"
+    },
+    "bolsa-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-118.0446872,33.6975192;-118.0466872,33.6955192?overview=false&steps=false",
+      "checked_at": "2026-10-24T22:51:07.418443+00:00",
+      "evidence_path": "bolsa-road.json",
+      "snapshot_sha256": "7f92078a390397887aeeaa7144aae950e034d145dd426787cf7e58d0e948b731"
+    },
+    "cdfw-regulations.pdf": {
+      "source_url": "https://nrm.dfg.ca.gov/FileHandler.ashx?DocumentID=203137&inline",
+      "checked_at": "2026-10-24T22:46:57.600731+00:00",
+      "evidence_path": "cdfw-regulations.pdf",
+      "snapshot_sha256": "42eae718be17fada15d4f61f6d77a724757bc03278dc1af37ef59ffbf3ec4878"
+    },
+    "cdfw-webmap.json": {
+      "source_url": "https://www.arcgis.com/sharing/rest/content/items/d22897ea2828431c81fad1ab6f1a0e7d/data?f=json",
+      "checked_at": "2026-10-24T22:52:17.146670+00:00",
+      "evidence_path": "cdfw-webmap.json",
+      "snapshot_sha256": "c7c961b06137407330b4d39ecf85b30723aef169f2d4aa9691f8eaedf9212181"
+    },
+    "lands.html": {
+      "source_url": "https://apps.wildlife.ca.gov/bios6/lands.html?qlands=Bolsa%20Chica%20Ecological%20Reserve",
+      "checked_at": "2026-10-24T22:52:20.965569+00:00",
+      "evidence_path": "lands.html",
+      "snapshot_sha256": "f9be70a76d0298b1440d13cc820e0c49dbd150c443a02826948eac39ddecf67d"
+    },
+    "newport-gis.json": {
+      "source_url": "https://services2.arcgis.com/Uq9r85Potqm3MfRV/arcgis/rest/services/biosds3077_fpu/FeatureServer/0/query?f=json&where=PROP_NAME+LIKE+%27%25Newport%25%27&outFields=%2A&returnGeometry=true&outSR=4326",
+      "checked_at": "2026-10-24T22:46:10.095411+00:00",
+      "evidence_path": "newport-gis.json",
+      "snapshot_sha256": "c0eb1b63e83519b17d46f4d1bd2e983d60db8b4a470341e7442973bb03933f94"
+    },
+    "newport-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-117.8833384,33.6328152;-117.8853384,33.6308152?overview=false&steps=false",
+      "checked_at": "2026-10-24T22:51:10.918063+00:00",
+      "evidence_path": "newport-road.json",
+      "snapshot_sha256": "e876a42cfea36d9a9725fa532b50c53b6a38fb5efe28cae93c524c9c590ef92e"
+    },
+    "osm-copyright.html": {
+      "source_url": "https://www.openstreetmap.org/copyright",
+      "checked_at": "2026-10-24T22:51:05.504054+00:00",
+      "evidence_path": "osm-copyright.html",
+      "snapshot_sha256": "0c892b842d426ebf2621387ffe73582d6e9a5c57aac8d81da0e1a2665dd61f3a"
+    },
+    "osm-way-1352381959.xml": {
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/1352381959/full",
+      "checked_at": "2026-10-24T22:51:02.307028+00:00",
+      "evidence_path": "osm-way-1352381959.xml",
+      "snapshot_sha256": "63647881ca9e8fa33fa21089677a4b4c8cafd66ecbe843d8de6da9bac9e96f20"
+    },
+    "osm-way-1352381960.xml": {
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/1352381960/full",
+      "checked_at": "2026-10-24T22:51:00.679852+00:00",
+      "evidence_path": "osm-way-1352381960.xml",
+      "snapshot_sha256": "1b6288261c8795eeb7fae162f414cad534beb82288bda22bd06ca5b4f4727f45"
+    },
+    "osm-way-1561872709.xml": {
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/1561872709/full",
+      "checked_at": "2026-10-24T22:50:52.369359+00:00",
+      "evidence_path": "osm-way-1561872709.xml",
+      "snapshot_sha256": "e7ce98ba69915a78c2786bb0e972db322de043a10c99c9c40b903c3b2194ead4"
+    },
+    "osm-way-171421720.xml": {
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/171421720/full",
+      "checked_at": "2026-10-24T22:51:03.952908+00:00",
+      "evidence_path": "osm-way-171421720.xml",
+      "snapshot_sha256": "0d796af68eca1d180c46005e9260851497607d00ccec179ce075bd98f759dc6e"
+    },
+    "osm-way-461749772.xml": {
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/461749772/full",
+      "checked_at": "2026-10-24T22:50:54.005660+00:00",
+      "evidence_path": "osm-way-461749772.xml",
+      "snapshot_sha256": "4f289e41074c4924e433434540c3dbf1c1bfe14cc9af3293a9987755c55f4283"
+    },
+    "osm-way-54135531.xml": {
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/54135531/full",
+      "checked_at": "2026-10-24T22:50:59.046985+00:00",
+      "evidence_path": "osm-way-54135531.xml",
+      "snapshot_sha256": "460471e9199b59c01c008e11ebbf4f81c5f18ecbd035c919024d30323c6c96d9"
+    },
+    "osm-way-55677604.xml": {
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/55677604/full",
+      "checked_at": "2026-10-24T22:50:50.640216+00:00",
+      "evidence_path": "osm-way-55677604.xml",
+      "snapshot_sha256": "444f8fd3578abe83ee8d7af00436e368707895bafa9b3fbf0644a0ce60d3d0b1"
+    },
+    "osm-way-55677605.xml": {
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/55677605/full",
+      "checked_at": "2026-10-24T22:50:48.929361+00:00",
+      "evidence_path": "osm-way-55677605.xml",
+      "snapshot_sha256": "b772dc6e4b812449c9631c68407274dd4c56ea15f21f7ac21c41990b039d7b3f"
+    },
+    "osm-way-747194342.xml": {
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/747194342/full",
+      "checked_at": "2026-10-24T22:50:55.653767+00:00",
+      "evidence_path": "osm-way-747194342.xml",
+      "snapshot_sha256": "658b0630b7ee74a5477305c27c7332c368247e1e4e2190b5bd9e4be8e9a35d65"
+    },
+    "osm-way-86939133.xml": {
+      "source_url": "https://api.openstreetmap.org/api/0.6/way/86939133/full",
+      "checked_at": "2026-10-24T22:50:57.406785+00:00",
+      "evidence_path": "osm-way-86939133.xml",
+      "snapshot_sha256": "3f342d45c6b04c64a979fd49ab4f95da41aa443da1dead6016cb4b5ec8811f94"
+    },
+    "wildlife-closures.html": {
+      "source_url": "https://wildlife.ca.gov/Closures",
+      "checked_at": "2026-10-24T22:42:19.870258+00:00",
+      "evidence_path": "wildlife-closures.html",
+      "snapshot_sha256": "2b54b44272b1a54cc80ca533d1f11bce4b918d2fd94fa789d28de41391cad39c"
+    },
+    "wildlife-terms.html": {
+      "source_url": "https://wildlife.ca.gov/Conditions-of-Use",
+      "checked_at": "2026-10-24T22:42:19.141481+00:00",
+      "evidence_path": "wildlife-terms.html",
+      "snapshot_sha256": "1cf1b6dd03f30e97c8c77d92618f987b68fb700e0693a32b21c869d564ff24de"
+    }
+  },
+  "profiles": [
+    {
+      "key": "bolsa",
+      "name": "Bolsa Chica Ecological Reserve \u2014 South Trail Access",
+      "page": "bolsa-reserve",
+      "gis": "bolsa-gis",
+      "global_id": "86ed02fc-66ba-4f60-97ba-19b4fad5c91b",
+      "node": 699596608,
+      "road": 55677604,
+      "parking": 55677605,
+      "ways": [
+        55677605,
+        55677604,
+        1561872709
+      ],
+      "address": "South parking lot, Pacific Coast Highway, Huntington Beach, CA",
+      "description": "Public trail access from the south parking lot at Bolsa Chica Ecological Reserve. Designated walking trails and scenic overlooks offer coastal wetland habitat and birdwatching. Stay on established trails; oil-production areas are closed. Pets and bicycles are prohibited. This destination does not include Bolsa Chica State Beach or the separate nature center.",
+      "checks": [
+        "Hours: Open daily, 6 a.m. to 8 p.m.",
+        "Directions: (South Parking Lot)",
+        "Hiking trails"
+      ],
+      "clock": [
+        "06:00",
+        "20:00"
+      ],
+      "source_id": "catalog-pilot:cdfw-bolsa-trail"
+    },
+    {
+      "key": "newport",
+      "name": "Upper Newport Bay Ecological Reserve \u2014 Big Canyon Trail Access",
+      "page": "Upper-Newport-Bay-ER",
+      "gis": "newport-gis",
+      "global_id": "d709e548-5f1e-4c92-96bf-81b21d37393e",
+      "node": 12512732477,
+      "road": 1352381960,
+      "parking": 54135531,
+      "ways": [
+        54135531,
+        1352381960,
+        1352381959,
+        171421720
+      ],
+      "address": "Big Canyon trailhead parking, Back Bay Drive, Newport Beach, CA",
+      "description": "Big Canyon trailhead provides access to a bluff-top trail overlooking the coastal wetland at Upper Newport Bay Ecological Reserve. Hiking and wildlife viewing are supported. Approach via Back Bay Drive, which is one-way northbound for motor vehicles inside the reserve. Observe gate and trail closures. This trail destination does not include the separately scheduled science center, off-site rentals or boat launches.",
+      "checks": [
+        "Big Canyon trailhead leads to a bluff-top trail",
+        "Hours: Open daily, sunrise to sunset.",
+        "one-way only for motor vehicle traffic"
+      ],
+      "clock": null,
+      "source_id": "catalog-pilot:cdfw-newport-trail"
+    },
+    {
+      "key": "batiquitos",
+      "name": "Batiquitos Lagoon Ecological Reserve \u2014 Gabbiano Trail Access",
+      "page": "Batiquitos-Lagoon-ER",
+      "gis": "batiquitos-gis",
+      "global_id": "3be93e6d-1712-43c5-ae7a-8029676cfe76",
+      "node": 49300796,
+      "road": 747194342,
+      "parking": 461749772,
+      "ways": [
+        461749772,
+        747194342,
+        86939133
+      ],
+      "address": "End of Gabbiano Lane, Carlsbad, CA 92011",
+      "description": "Public trail access at the end of Gabbiano Lane to Batiquitos Lagoon Ecological Reserve. Trails provide coastal wetland and wildlife viewing. Public parking is very limited. Stay on designated trails; bicycles, horses and unauthorized drones are prohibited. The nearby independently operated nature center and restricted fishing areas are not included in this trail destination.",
+      "checks": [
+        "Trail access to the Reserve is at the end of the street",
+        "Public parking at the reserve is very limited."
+      ],
+      "clock": null,
+      "source_id": "catalog-pilot:cdfw-batiquitos-trail"
+    }
+  ],
+  "review_scope": "Three CDFW public trail components only; official access, regulations pp.61 and112, emergency closures and factual-use notice reviewed. Native OSM driving arrivals retained unchanged. No park centroid, no beach transfer, no center-hours transfer. No numeric traits assigned by this review."
+}

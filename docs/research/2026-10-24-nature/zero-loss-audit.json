@@ -1,0 +1,97 @@
+{
+  "scope": "Conservative integer quality encoding at exactly zero allowable loss. Retained outcomes, not discarded/retried trials. No solver changes made.",
+  "scale": 1000000,
+  "infeasible_cases": 300,
+  "scenarios": [
+    {
+      "trip": "coast-5d",
+      "persona": "entertainment",
+      "stops_per_day": 3,
+      "seeds": 30,
+      "required_scaled_total": 3905000,
+      "maximum_attainable_scaled_total": 3904999,
+      "gap": 1
+    },
+    {
+      "trip": "coast-5d",
+      "persona": "nature",
+      "stops_per_day": 1,
+      "seeds": 30,
+      "required_scaled_total": 3085000,
+      "maximum_attainable_scaled_total": 3084996,
+      "gap": 4
+    },
+    {
+      "trip": "coast-5d",
+      "persona": "nature",
+      "stops_per_day": 2,
+      "seeds": 30,
+      "required_scaled_total": 5085000,
+      "maximum_attainable_scaled_total": 5084991,
+      "gap": 9
+    },
+    {
+      "trip": "coast-5d",
+      "persona": "nature",
+      "stops_per_day": 3,
+      "seeds": 30,
+      "required_scaled_total": 6020000,
+      "maximum_attainable_scaled_total": 6019990,
+      "gap": 10
+    },
+    {
+      "trip": "long-3d",
+      "persona": "nature",
+      "stops_per_day": 1,
+      "seeds": 30,
+      "required_scaled_total": 1995000,
+      "maximum_attainable_scaled_total": 1994997,
+      "gap": 3
+    },
+    {
+      "trip": "long-3d",
+      "persona": "nature",
+      "stops_per_day": 2,
+      "seeds": 30,
+      "required_scaled_total": 2865000,
+      "maximum_attainable_scaled_total": 2864997,
+      "gap": 3
+    },
+    {
+      "trip": "long-3d",
+      "persona": "nature",
+      "stops_per_day": 3,
+      "seeds": 30,
+      "required_scaled_total": 3150000,
+      "maximum_attainable_scaled_total": 3149997,
+      "gap": 3
+    },
+    {
+      "trip": "medium-2d",
+      "persona": "nature",
+      "stops_per_day": 1,
+      "seeds": 30,
+      "required_scaled_total": 1330000,
+      "maximum_attainable_scaled_total": 1329998,
+      "gap": 2
+    },
+    {
+      "trip": "medium-2d",
+      "persona": "nature",
+      "stops_per_day": 2,
+      "seeds": 30,
+      "required_scaled_total": 2555000,
+      "maximum_attainable_scaled_total": 2554997,
+      "gap": 3
+    },
+    {
+      "trip": "medium-2d",
+      "persona": "nature",
+      "stops_per_day": 3,
+      "seeds": 30,
+      "required_scaled_total": 2865000,
+      "maximum_attainable_scaled_total": 2864997,
+      "gap": 3
+    }
+  ]
+}

@@ -246,7 +246,7 @@ def test_gateway_reduces_end_event(monkeypatch):
         'data: {"choices":[{"delta":{"content":"Hel"}}]}',
         "",
         "event: end",
-        'data: {"content":"Hello!","provider":"Cerebras","usage":'
+        'data: {"content":"Hello!","provider":"Cerebras","model":"gpt-oss-120b","usage":'
         '{"prompt_tokens":20,"completion_tokens":9,"total_tokens":29}}',
         "",
     ]
@@ -256,6 +256,7 @@ def test_gateway_reduces_end_event(monkeypatch):
 
     assert resp.content == "Hello!"
     assert resp.provider == "mentro:Cerebras"
+    assert resp.model == "gpt-oss-120b"
     assert resp.usage.promptTokens == 20
     assert resp.usage.completionTokens == 9
 

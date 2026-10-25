@@ -1,5 +1,95 @@
 # Current release and acceptance
 
+## October 25 entertainment coverage with permanent ratings
+
+The catalog now has 627 places and 208 calendars: sixteen real cultural/food
+venues added, with all original 611 places, 192 calendars and 75 rating rows
+unchanged. New identities received one first profile each; no existing profile
+was regenerated. Fourteen additions enter the unchanged route corridors.
+Study `1ca40240-107e-4817-ab8b-bc461e0d26f6` completes 24 captures and 5,040
+OPTIMAL trials, with zero rating calls or writes during evaluation. It replaces
+the restored-rating and intermediate enrichment studies after recovery copies.
+All nine medium/long/coast Entertainment cells improve; four Nature means fall
+because the unchanged spacing/detour objective selects different places within
+its utility allowance. The two enrichment iterations and mixed outcomes are
+retained as adaptive dataset engineering, not a blinded evaluation. See the
+[current evidence packet](../docs/research/2026-10-25-entertainment/README.md).
+
+## October 24 permanent ratings restoration
+
+At the user's direction, all 36 re-rated places were restored exactly to their
+original attribute profiles and provenance; three new reserves retain their first
+ratings. Stored place profiles are now permanent by source identity, independent
+of persona, metadata, prompt/model version and legacy expiry. Database failures
+and corrupt stored ratings stop estimation rather than regenerate ratings. The
+v3-only nature study below is withdrawn; its historical exports remain intact.
+Replacement `cffa789a-bd7c-4ec0-8be0-8223e1cff9bc` completes 24 captures and
+5,040 OPTIMAL trials with zero AI rating calls. All twelve Entertainment baseline
+means match the original corridor study. See the [current study](../docs/research/2026-10-24-restored/README.md)
+and [rating persistence](../docs/place-trait-cache.md).
+
+## October 24 nature coverage and rating-audit replacement
+
+The active catalog now has 611 places and 192 calendars, adding three reviewed
+CDFW coastal reserve trail arrivals while preserving every parent row. The
+destination-specific v3 rubric refreshes all 39 captured place ratings via the
+configured gateway, with actual model provenance persisted. Replacement study
+`d0aee85d-bd6a-49c3-a74a-c5b5630549bf` completes 24 captures and 5,040 trials
+with the unchanged bell corridor, 15-second limit and 30 seeds. All 720 baseline
+trials are OPTIMAL; mean utility rises from 0.255999 to 0.409306 (+15.3307 points).
+Short nature selections now use the reserve trails (three-stop mean 0.69). Across
+all settings, 4,740 trials are OPTIMAL and 300 zero-loss trials are INFEASIBLE
+because conservative integer rounding makes their exact bound unattainable.
+Retain those outcomes in the paper. The earlier corridor study below is superseded.
+See the [replacement evidence packet](../docs/research/2026-10-24-nature/README.md).
+
+## October 24 bell-shaped research corridor
+
+The user replaced sampled route discovery with deterministic, uncapped catalog
+membership. Research now checks every admitted daytime place against the initial
+route's full polyline. A normalized Gaussian gives 5-mile endpoint widths and a
+25-mile midpoint width by default; widths and sigma are frozen in schema-v4
+protocols. The same route pool, persisted traits and measured solo detours are
+reused across personas, requested stop counts and all solver settings/seeds.
+Ordinary app discovery retains its existing behavior. The new campaign
+`514e8250-12c7-4a22-bd2d-e550523fc7dc` is complete: all 5,040 trials are OPTIMAL,
+using 10–23 eligible places per route and 36 distinct captured identities.
+Baseline mean utility rises from 0.403435 to 0.529637 (+12.6202 points); all
+requested counts are fulfilled. See the [current audited packet](../docs/research/2026-10-24-corridor/README.md).
+The previous schema-v3 results below are superseded for the paper and must not be
+combined with the revised protocol.
+
+## October 24 real-data selection research
+
+At the user's revised scope, research performs attraction selection only. The
+full-trip campaign was stopped and removed from active stores after a recovery
+copy. The new protocol collects 24 real pre-selection pools without hotels,
+scheduling, itinerary construction or final routing, then runs 5,040 controlled
+CP-SAT trials (15 seconds, cap 60, 30 seeds, seven paper sweep settings). Research
+financial fields and the tight-budget scenario are removed. Candidate-pool versus
+selected utility and percentage-point change are recorded and plotted.
+
+Mentro PR #6 was merged with owner authorization after CI and its checked-main
+deployment passed. The gateway returns valid responses with
+`mentro:Groq/openai/gpt-oss-120b` provenance. Traits retain actual upstream model IDs
+under a new cache contract. Frozen offline providers explicitly disable the live
+trait cache; six older fixture entries were backed up and removed. The three
+historical studies were also removed after verified recovery copies.
+
+See [selection protocol](../docs/studio-research.md) and
+[validation](../docs/container-validation.md). Planned counts are not empirical
+completion claims. The revised capture path passed a real four-candidate preflight
+without full planning, plus frontend/backend checks; the new study freezes that
+verified implementation.
+
+Selection-only study `05fc366d-4623-4467-ba06-a93911147993` is complete and verified
+in PostgreSQL: 24 captures and 5,040 OPTIMAL solver trials. Actual pools contain
+4–8 eligible candidates, 20 distinct places overall. Default mean utility changes
+from 0.417234 to 0.479866 (+6.2632 percentage points); ten scenarios have fewer
+eligible places than requested. These small-pool results do not establish
+60-candidate scaling or full-trip feasibility. See the [audited results and paper
+packet](../docs/research/2026-10-24-selection/README.md).
+
 ## October 22 cloud catalog reconciliation
 
 The reconciled develop tree preserves the Mac research/session-cache work and

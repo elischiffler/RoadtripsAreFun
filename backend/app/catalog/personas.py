@@ -158,7 +158,11 @@ def facts(provenance):
         p
         for p in provenance
         if (p.get("dataset"), p.get("schema_version"))
-        in {(DATASET, VERSION), (pilot_personas.DATASET, pilot_personas.VERSION)}
+        in {
+            (DATASET, VERSION),
+            (pilot_personas.DATASET, pilot_personas.VERSION),
+            ("Roadtrips reviewed destination facts", "roadtrips-reviewed-destination-facts/1"),
+        }
     ]
     if len(matches) != 1:
         return {}
