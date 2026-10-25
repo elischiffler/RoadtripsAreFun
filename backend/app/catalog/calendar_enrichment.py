@@ -211,12 +211,14 @@ def _additions(payload, reader, *, max_rows, baseline=()):
         kaggle_ny_markets,
         kaggle_ny_markets_more,
         pilot,
+        reviewed_entertainment,
         usfs_current,
     )
 
     adapters = {
         "automated-nps": automated_nps.prepare,
         "cdfw-nature": cdfw_nature.prepare,
+        "reviewed-entertainment": reviewed_entertainment.prepare,
         "usfs-current": usfs_current.prepare,
         "kaggle-cultural": kaggle_cultural.prepare,
         "kaggle-ny-markets": kaggle_ny_markets.prepare,
