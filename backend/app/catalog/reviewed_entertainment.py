@@ -19,6 +19,7 @@ from app.catalog.kaggle_coastal import driving_destination
 from app.catalog.venue_visit_calendar import intersect_layers
 
 REVIEW_SHA256 = "1a3c3974f61162e1337b0ac45934d09be2e884f98830e42278609df5b4e58519"
+FOODHALLS_REVIEW_SHA256 = "055b857df5ed26fec0e5539d0444fb4df05742e2ed7cdf28d752a38392bc5d8c"
 ATTRIBUTION = (
     "Published venue facts from the individually cited operators; descriptions paraphrased "
     "for research. Coordinates © OpenStreetMap contributors, ODbL 1.0 "
@@ -47,7 +48,8 @@ def prepare(path, manifest=None, *, max_rows=50_000, max_bytes=104_857_600):
     if not 0 < path.stat().st_size <= max_bytes:
         raise ValueError("review exceeds byte ceiling")
     body = path.read_bytes()
-    if hashlib.sha256(body).hexdigest() != REVIEW_SHA256:
+    review_sha = hashlib.sha256(body).hexdigest()
+    if review_sha not in {REVIEW_SHA256, FOODHALLS_REVIEW_SHA256}:
         raise ValueError("reviewed entertainment identities or facts differ")
     review = json.loads(body)
     if review["schema_version"] != "roadtrips-reviewed-entertainment/1":
@@ -114,7 +116,7 @@ def prepare(path, manifest=None, *, max_rows=50_000, max_bytes=104_857_600):
                 "source_constraints": constraints,
                 "transformation": {
                     "method": "Reviewed local-clock recurrences expanded to bounded dates; no extrapolation",
-                    "review_sha256": REVIEW_SHA256,
+                    "review_sha256": review_sha,
                 },
                 "source_attribution": ATTRIBUTION,
             }
@@ -133,7 +135,7 @@ def prepare(path, manifest=None, *, max_rows=50_000, max_bytes=104_857_600):
                 "provenance": [
                     {
                         "dataset": "Reviewed entertainment destination facts and OSM locations",
-                        "review_sha256": REVIEW_SHA256,
+                        "review_sha256": review_sha,
                         "source_attribution": ATTRIBUTION,
                         "native_type": profile["native_type"],
                         "native_id": profile["native_id"],

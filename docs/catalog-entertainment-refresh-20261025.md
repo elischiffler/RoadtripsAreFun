@@ -62,3 +62,32 @@ a deterministic persona-weighted sum of the permanent attribute profile. New
 results must be reported as a separate dataset generation; seeded repeats are
 not independent venue samples and improvements must not be attributed to a
 solver change.
+
+## Food-hall follow-up
+
+An initial enriched study, `021f5329-e4f2-41a7-84cb-83c07566c84f`, is retained as
+an intermediate dataset experiment. Its early baseline outcomes showed that the
+history/science additions were often weak matches for the entertainment weights.
+A second, explicitly adaptive batch therefore adds three independently verified
+food halls: [Reno Public Market](https://www.renopublicmarket.com/faq),
+[Woodbine Food Hall](https://www.woodbineslc.com/contact), and
+[Inner Rail Food Hall](https://www.innerrailfoodhall.com/about). All three fit the
+unchanged route corridors. They were selected before receiving their first AI
+ratings; no previous profile was changed or discarded. HallPass was withheld by
+the existing 250-metre nearby-arrival review rule near Clark Planetarium.
+
+Final generation
+`7a9b32d07f6b48393f098733f570c30ae3979f06a29bfabf210c1f3bf17519d0`
+preserves the entire 624-place parent and adds three places/calendars, yielding
+**627 places and 208 calendars**, sixteen additions in total. Fourteen additions
+are within at least one study corridor. The second catalog backup (4,008,740
+bytes, SHA-256
+`7e9ad56bf707707ff4d92de8f6dc2f151ddf6dcfb6da1ba799bd0b69022f6b5a`)
+was restored separately and matched the parent fingerprints. The second rollback
+receipt hash is
+`8b8bb789d602efe1c2a8caaf62005f647a0ae748b19b488c509082fd531c0dcd`.
+
+This adaptive expansion must be disclosed in the paper. The final study measures
+selection behavior on an enriched catalog; it is not an untouched holdout test.
+Food-hall opening hours do not guarantee a scheduled performance or service from
+every individual vendor. Full trip planning and scheduling remain outside scope.

@@ -61,3 +61,16 @@ def test_clark_notice_overrides_late_hours_and_holiday_uncertainty_is_omitted():
 def test_no_extrapolation_beyond_review_horizon(days):
     with pytest.raises(ValueError, match="horizon"):
         source.calendar_windows(profiles()["reno"], "2026-10-25", days)
+
+
+def test_second_foodhall_review_is_pinned_without_replacing_first_inventory():
+    path = REVIEW.with_name("entertainment_foodhalls_review.json")
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == source.FOODHALLS_REVIEW_SHA256
+    second = json.loads(path.read_text())
+    assert len(second["profiles"]) == 3
+    assert not (
+        {p["source_id"] for p in second["profiles"]} & {p["source_id"] for p in profiles().values()}
+    )
+    for profile in second["profiles"]:
+        dates = source.calendar_windows(profile, "2026-10-31", 2)
+        assert all(d["windows"] for d in dates)

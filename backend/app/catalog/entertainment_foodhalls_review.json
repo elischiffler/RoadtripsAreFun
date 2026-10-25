@@ -1,0 +1,240 @@
+{
+  "schema_version": "roadtrips-reviewed-entertainment/1",
+  "reviewed_at": "2026-10-25T00:10:37.874982+00:00",
+  "first_date": "2026-10-25",
+  "days": 30,
+  "criteria": "Second targeted coverage batch: multi-vendor food halls with drinks and social or cultural activities along the unchanged routes. Selected before rating these venues; motivated by weak entertainment coverage in the first enriched study. Preserve that study and all existing profiles. This is adaptive dataset engineering, not a blinded independent test.",
+  "scope": "Public factual names, addresses, hours and paraphrased activities, privately retained source originals; OSM coordinates under ODbL. No ratings or persona weights assigned by this review.",
+  "withheld": [
+    {
+      "key": "hallpass",
+      "reason": "Within 250m of already admitted Clark Planetarium; existing conservative nearby-arrival rule requires separate resolution, so not included."
+    }
+  ],
+  "profiles": [
+    {
+      "key": "rpm",
+      "source_id": "catalog-pilot:entertainment-rpm",
+      "name": "Reno Public Market",
+      "region": "NV",
+      "address": "299 E Plumb Lane, Reno, NV 89502",
+      "categories": [
+        "daytime",
+        "food_hall",
+        "dining",
+        "live_music",
+        "art"
+      ],
+      "description": "Indoor food hall with independent food vendors, drinks, local art and a performance stage. Regular programming includes live music and community events; visitors should check the calendar for individual performances. Food-hall access and shopping do not guarantee a performance or reserved seating.",
+      "pages": [
+        "rpm.html",
+        "rpm-about.html"
+      ],
+      "checks": [
+        "MONDAY: 11AM-9PM",
+        "FRIDAY: 11AM-11PM",
+        "Is there live entertainment?",
+        "299 E Plumb Lane"
+      ],
+      "geo": "rpm-geo.json",
+      "native_type": "node",
+      "native_id": 12883789001,
+      "road": "rpm-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            0,
+            1,
+            2,
+            3,
+            6
+          ],
+          "opens": "11:00",
+          "closes": "21:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            4,
+            5
+          ],
+          "opens": "11:00",
+          "closes": "23:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    },
+    {
+      "key": "woodbine",
+      "source_id": "catalog-pilot:entertainment-woodbine",
+      "name": "Woodbine Food Hall",
+      "region": "UT",
+      "address": "545 West 700 South, Salt Lake City, UT 84101",
+      "categories": [
+        "daytime",
+        "food_hall",
+        "dining",
+        "entertainment"
+      ],
+      "description": "Food hall in a restored warehouse with diverse food vendors, drinks, a covered patio and ping-pong or cornhole. The venue hosts concerts, comedy and other scheduled events. Ordinary food-hall hours do not guarantee event admission. Separate lounge hours are not assumed.",
+      "pages": [
+        "woodbine-contact.html",
+        "woodbine.html"
+      ],
+      "checks": [
+        "Open Daily",
+        "11am - 9pm",
+        "545 West 700 South"
+      ],
+      "geo": "woodbine-geo.json",
+      "native_type": "way",
+      "native_id": 1125266188,
+      "road": "woodbine-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "opens": "11:00",
+          "closes": "21:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    },
+    {
+      "key": "innerrail",
+      "source_id": "catalog-pilot:entertainment-innerrail",
+      "name": "Inner Rail Food Hall",
+      "region": "NE",
+      "address": "1911 S 67th Street, Omaha, NE 68106",
+      "categories": [
+        "daytime",
+        "food_hall",
+        "dining",
+        "bar"
+      ],
+      "description": "Food hall with rotating cuisine vendors, a central bar and indoor and outdoor seating. Visitors can use its patio with outdoor games. This entry covers the food hall and its bar, not the separate Sonny\u2019s bar, volleyball courts or dog park. Individual vendor service hours can differ from hall hours.",
+      "pages": [
+        "innerrail.html"
+      ],
+      "checks": [
+        "Sunday-Thursday: 11am-9pm",
+        "Friday-Saturday: 11am-10pm",
+        "1911 S 67th St"
+      ],
+      "geo": "innerrail-geo.json",
+      "native_type": "way",
+      "native_id": 761810803,
+      "road": "innerrail-road.json",
+      "windows": [
+        {
+          "weekdays": [
+            0,
+            1,
+            2,
+            3,
+            6
+          ],
+          "opens": "11:00",
+          "closes": "21:00",
+          "end_day_offset": 0
+        },
+        {
+          "weekdays": [
+            4,
+            5
+          ],
+          "opens": "11:00",
+          "closes": "22:00",
+          "end_day_offset": 0
+        }
+      ],
+      "omit_dates": [],
+      "date_windows": {}
+    }
+  ],
+  "receipts": {
+    "rpm-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=Reno+Public+Market%2C+Reno&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-25T00:09:33.656125+00:00",
+      "evidence_path": "rpm-geo.json",
+      "snapshot_sha256": "7398fad1f202013bc4844bc5699a4f38b30ccf0a914a3775e710805123ceb83d"
+    },
+    "rpm-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-119.8001874,39.5089059;-119.8021874,39.5069059?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:09:40.485937+00:00",
+      "evidence_path": "rpm-road.json",
+      "snapshot_sha256": "19ce178b88eafdc542d6cabad2a623f4c7923cd5cbba589234798b2d7fd35c47"
+    },
+    "osm-copyright.html": {
+      "source_url": "https://www.openstreetmap.org/copyright",
+      "checked_at": "2026-10-25T00:09:39.820417+00:00",
+      "evidence_path": "osm-copyright.html",
+      "snapshot_sha256": "a25ef23a091382193e75bf560587d46dbe9434461e87d14a8d0becafbeaeec3c"
+    },
+    "rpm.html": {
+      "source_url": "https://www.renopublicmarket.com/faq",
+      "checked_at": "2026-10-25T00:09:33.348136+00:00",
+      "evidence_path": "rpm.html",
+      "snapshot_sha256": "44b33b6e0c907dd7edc76d218d9e8e03f3f55fbbb3f9bb7b53c3c585bc3310b9"
+    },
+    "rpm-about.html": {
+      "source_url": "https://www.renopublicmarket.com/",
+      "checked_at": "2026-10-25T00:09:39.119291+00:00",
+      "evidence_path": "rpm-about.html",
+      "snapshot_sha256": "1124d1d9dbb759502e81195719b2d016c0c1929fc203a875fb50d499228c91cd"
+    },
+    "woodbine-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=Woodbine+Food+Hall%2C+Salt+Lake+City&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-25T00:10:15.644115+00:00",
+      "evidence_path": "woodbine-geo.json",
+      "snapshot_sha256": "5c338dc5b0d586ee94922242c36d47f0bf8215f7cb86ff96df3305a97b4749b6"
+    },
+    "woodbine-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-111.9049054,40.7556789;-111.9069054,40.7536789?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:10:16.277458+00:00",
+      "evidence_path": "woodbine-road.json",
+      "snapshot_sha256": "41d3600e6e74fe9e922dfaad7d8b03bcf2a10f73f6509f8adfa8a991f42a3574"
+    },
+    "woodbine-contact.html": {
+      "source_url": "https://www.woodbineslc.com/contact",
+      "checked_at": "2026-10-25T00:10:15.048487+00:00",
+      "evidence_path": "woodbine-contact.html",
+      "snapshot_sha256": "131e98ae2f63895825cf27a3d6797c2a27de38c1b337b16b03435207b5528db6"
+    },
+    "woodbine.html": {
+      "source_url": "https://www.woodbineslc.com/",
+      "checked_at": "2026-10-25T00:10:14.773096+00:00",
+      "evidence_path": "woodbine.html",
+      "snapshot_sha256": "4473df52bd8bbb4415cbb30b6dfe98d770fe9e1e15ccfe6db647f4e9e8ac4987"
+    },
+    "innerrail-geo.json": {
+      "source_url": "https://nominatim.openstreetmap.org/search?q=Inner+Rail+Food+Hall%2C+Omaha&format=jsonv2&limit=3&addressdetails=1",
+      "checked_at": "2026-10-25T00:09:37.707494+00:00",
+      "evidence_path": "innerrail-geo.json",
+      "snapshot_sha256": "351a5d660c124395ad22603727afd63c5547afe6cad23ac23b6412d134d5a1d0"
+    },
+    "innerrail-road.json": {
+      "source_url": "https://router.project-osrm.org/route/v1/driving/-96.011717,41.2425883;-96.013717,41.2405883?overview=false&steps=false",
+      "checked_at": "2026-10-25T00:09:43.958172+00:00",
+      "evidence_path": "innerrail-road.json",
+      "snapshot_sha256": "62617f2e86d24744d0f302d6450cc06133f8baf4fc49d44680a64045adf48c7e"
+    },
+    "innerrail.html": {
+      "source_url": "https://www.innerrailfoodhall.com/about",
+      "checked_at": "2026-10-25T00:09:37.473878+00:00",
+      "evidence_path": "innerrail.html",
+      "snapshot_sha256": "eb731ebc084b3ad16c32873cf0ac39e4df0f9466b53a9da89be4d396e431156b"
+    }
+  }
+}
