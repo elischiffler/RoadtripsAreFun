@@ -5,7 +5,7 @@ California. Increasing its requested stops exhausted the higher entertainment
 matches and selected trail destinations. This is a geographic coverage limitation;
 it does not justify changing stored attraction ratings.
 
-This expansion adds thirteen real, individually reviewed cultural and food
+The initial batch adds thirteen real, individually reviewed cultural and food
 venues. Selection preceded AI scoring and used published visitor access and hours,
 source identity, unchanged OpenStreetMap coordinates, a measured driving arrival
 within 75 metres, and duplicate checks. Existing profiles, persona weights, the
@@ -47,7 +47,7 @@ review inventory pins their bindings. OSM locations retain ODbL attribution.
 
 Generation `2b6426033674f2fafd1467f2896a7f6729a045bec039894d99f9c987c13b8297`
 adds thirteen places and calendars to the unchanged 611-place/192-calendar parent.
-The current generation has 624 places and 205 calendars. A fresh catalog-only
+That intermediate generation has 624 places and 205 calendars. A fresh catalog-only
 backup (3,436,560 bytes, SHA-256
 `a4d9d99ea435e944eef831012de51e4bcdbc19e977a8f6f0b214c98d5c449493`)
 was restored to a separate PostgreSQL 18 recovery database and all six parent

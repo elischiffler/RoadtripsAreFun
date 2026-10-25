@@ -1,5 +1,21 @@
 # Container migration evidence
 
+## Entertainment enrichment, October 25, 2026 UTC
+
+Clean application revision `9619c755e15bf1636bfd548b8a7b49391a37143e`:
+Ruff 0.16.7 format/check passed; 2,248 backend tests passed, 73 skipped,
+82.27% coverage against the unchanged 63% threshold. This run enabled the
+disposable PostgreSQL catalog and rating regression databases; restored hosted
+data remained separate from local test gates. GitHub CI passed frontend tests
+and build, backend tests, container smoke, and PostgreSQL CRUD/recreate/recovery.
+
+Live study `1ca40240-107e-4817-ab8b-bc461e0d26f6` completed 24 captures and
+5,040 OPTIMAL trials. PostgreSQL rows exactly match the local export; all captured
+profiles match permanent stored ratings, with zero rating calls/writes during
+evaluation. Original catalog/calendar/rating rows are unchanged after sixteen
+new reviewed additions. See [the evidence packet](research/2026-10-25-entertainment/README.md).
+No main merge or production API deployment is implied by this validation.
+
 ## Uncapped bell-shaped research corridor, October 24, 2026
 
 Source `dc231e1` passed Ruff format/lint and 2,230 backend tests with 73 skips and

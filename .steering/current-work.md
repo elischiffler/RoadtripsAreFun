@@ -1,5 +1,20 @@
 # Current release and acceptance
 
+## October 25 entertainment coverage with permanent ratings
+
+The catalog now has 627 places and 208 calendars: sixteen real cultural/food
+venues added, with all original 611 places, 192 calendars and 75 rating rows
+unchanged. New identities received one first profile each; no existing profile
+was regenerated. Fourteen additions enter the unchanged route corridors.
+Study `1ca40240-107e-4817-ab8b-bc461e0d26f6` completes 24 captures and 5,040
+OPTIMAL trials, with zero rating calls or writes during evaluation. It replaces
+the restored-rating and intermediate enrichment studies after recovery copies.
+All nine medium/long/coast Entertainment cells improve; four Nature means fall
+because the unchanged spacing/detour objective selects different places within
+its utility allowance. The two enrichment iterations and mixed outcomes are
+retained as adaptive dataset engineering, not a blinded evaluation. See the
+[current evidence packet](../docs/research/2026-10-25-entertainment/README.md).
+
 ## October 24 permanent ratings restoration
 
 At the user's direction, all 36 re-rated places were restored exactly to their

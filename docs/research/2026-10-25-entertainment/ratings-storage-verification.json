@@ -1,0 +1,26 @@
+{
+  "first_batch": {
+    "prior_rows": 75,
+    "prior_unique_places": 39,
+    "prior_rows_identical": true,
+    "new_rows": 13,
+    "new_unique_places": 13,
+    "total_rows": 88,
+    "providers": [
+      "mentro:Groq/openai/gpt-oss-120b"
+    ],
+    "new_first_ratings_only": true
+  },
+  "second_batch": {
+    "prior_rows": 88,
+    "prior_unique_places": 52,
+    "prior_rows_identical": true,
+    "new_rows": 3,
+    "new_unique_places": 3,
+    "total_rows": 91,
+    "providers": [
+      "mentro:Groq/openai/gpt-oss-120b"
+    ],
+    "new_first_ratings_only": true
+  }
+}
