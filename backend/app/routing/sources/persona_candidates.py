@@ -21,7 +21,7 @@ from app.agent.progress import emit, stage
 from app.agent.provider_diagnostics import retry_async
 from app.agent.providers import LLMProvider, build_default_chain
 from app.agent.schemas import LLMMessage
-from app.catalog import repository
+from app.catalog import admission, repository
 from app.routing import config
 from app.routing.discovery import (
     DiscoveryPlan,
@@ -435,6 +435,8 @@ async def attraction_candidates(
         return output, calendar_excluded
 
     async def calendar_ok(record):
+        if not admission.routing_eligible(record):
+            return False
         return (
             await plan.trip_calendar.eligible(record)
             if plan.trip_calendar
@@ -798,15 +800,24 @@ class LivePlaceProvider:
             # in the public diagnostic exception chain.
             raise CandidateProviderError("Places catalog lookup unavailable") from None
         output = []
-        for record in records[:MAX_ATTRACTIONS]:
+        for record in records:
             try:
                 place = VerifiedPlace.model_validate(record)
                 if (
                     "daytime" in place.categories
                     and _distance_miles(point, place.coordinates) <= _ATTRACTION_RADIUS_MI
-                    and (not require_visit_calendar or calendar_eligible(place.model_dump()))
+                    and admission.routing_eligible(place.model_dump())
+                    and (
+                        (
+                            not require_visit_calendar
+                            and not admission.requires_admission(place.model_dump())
+                        )
+                        or calendar_eligible(place.model_dump())
+                    )
                 ):
                     output.append(place)
+                    if len(output) == MAX_ATTRACTIONS:
+                        break
             except (TypeError, ValueError):
                 continue
         return output
@@ -836,6 +847,7 @@ class LivePlaceProvider:
                     continue
                 if (
                     "daytime" not in place.categories
+                    or not admission.routing_eligible(place.model_dump())
                     or _distance_miles(point, place.coordinates) > _ATTRACTION_RADIUS_MI
                 ):
                     continue

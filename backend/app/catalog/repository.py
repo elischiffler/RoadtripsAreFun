@@ -1,12 +1,14 @@
 """Bounded indexed catalog discovery through the application's existing pool."""
 
 import math
+import time
 from dataclasses import dataclass
 
 from psycopg2.extras import RealDictCursor
 
+from app.catalog import admission, release_holds
 from app.catalog.attribution import combine
-from app.catalog.calendar_enrichment import project
+from app.catalog.calendar_projection import project
 from app.catalog.identity import identity
 from app.core.config import settings
 from app.crud import chat_crud
@@ -42,9 +44,16 @@ class CatalogPage:
     next_cursor: CatalogCursor | None
 
 
-def nearby(point, categories, radius_miles=5, limit=60, *, require_visit_calendar=False):
+def nearby(
+    point, categories, radius_miles=5, limit=60, *, require_visit_calendar=False, legacy_only=False
+):
     return nearby_page(
-        point, categories, radius_miles, limit, require_visit_calendar=require_visit_calendar
+        point,
+        categories,
+        radius_miles,
+        limit,
+        require_visit_calendar=require_visit_calendar,
+        legacy_only=legacy_only,
     ).records
 
 
@@ -67,8 +76,8 @@ def current_records(source_ids):
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SET LOCAL statement_timeout='2000ms'")
             cur.execute(
-                """
-                SELECT p.source_id,p.latitude,p.longitude,p.categories,p.provenance,p.generation,p.source_updated_at,
+                f"""
+                SELECT p.source_id,p.name,p.region,p.address,p.url,p.latitude,p.longitude,p.categories,p.provenance,p.generation,p.source_updated_at,
                     e.entry AS calendar_enrichment,i.release,
                     i.manifest->>'attribution' AS attribution,
                     i.manifest->'source_catalogs' AS source_catalogs
@@ -77,13 +86,18 @@ def current_records(source_ids):
                 JOIN places_catalog_imports i ON i.generation=p.generation
                 LEFT JOIN places_catalog_calendars e
                     ON e.generation=p.generation AND e.source_id=p.source_id
-                WHERE p.source_id=ANY(%s::text[])
+                WHERE p.source_id=ANY(%s::text[]) AND {release_holds.SQL_ALLOWED}
                 """,
                 (source_ids,),
             )
             rows = cur.fetchall()
         return {
             row["source_id"]: {
+                "provider_id": identity(row["source_id"])[0],
+                "name": row["name"],
+                "region": row["region"],
+                "address": row["address"],
+                "url": row["url"],
                 "categories": row["categories"],
                 "coordinates": [row["latitude"], row["longitude"]],
                 "source_provenance": project(row["provenance"], row["calendar_enrichment"])
@@ -109,7 +123,14 @@ def current_records(source_ids):
 
 
 def nearby_page(
-    point, categories, radius_miles=5, limit=60, *, require_visit_calendar=False, cursor=None
+    point,
+    categories,
+    radius_miles=5,
+    limit=60,
+    *,
+    require_visit_calendar=False,
+    cursor=None,
+    legacy_only=False,
 ):
     """Read bounded source facts, optionally prefiltering automatic visit candidates.
 
@@ -134,6 +155,8 @@ def nearby_page(
         raise ValueError("radius must be within five miles")
     if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 60:
         raise ValueError("limit must be 1..60")
+    if not isinstance(legacy_only, bool):
+        raise ValueError("legacy_only must be a boolean")
     if not isinstance(require_visit_calendar, bool):
         raise ValueError("require_visit_calendar must be a boolean")
     if cursor is not None and not isinstance(cursor, CatalogCursor):
@@ -159,8 +182,9 @@ def nearby_page(
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SET LOCAL statement_timeout='2000ms'")
+            now_epoch = int(time.time())
             cur.execute(
-                """
+                f"""
                 WITH candidates AS (
                     SELECT p.*, e.entry AS calendar_enrichment,
                     i.release, i.row_count AS generation_row_count,
@@ -178,14 +202,17 @@ def nearby_page(
                       SELECT CASE WHEN e.entry IS NULL THEN p.provenance
                         ELSE jsonb_build_array(e.entry) END AS calendar_provenance
                     ) facts
+                    {admission.SQL_JOINS}
                     WHERE p.generation=COALESCE(%s, (SELECT generation FROM places_catalog_active))
                       AND p.latitude BETWEEN %s AND %s
                       AND ((%s >= -180 AND %s <= 180 AND p.longitude BETWEEN %s AND %s)
                         OR (%s < -180 AND (p.longitude >= %s+360 OR p.longitude <= %s))
                         OR (%s > 180 AND (p.longitude >= %s OR p.longitude <= %s-360)))
                       AND p.categories && %s::text[]
-                      AND (NOT %s OR (
-                        (NOT p.categories && ARRAY['food','culture','nightlife']::text[]
+                      AND {admission.sql_predicate()}
+                      AND {"NOT admission_review.required" if legacy_only else "true"}
+                      AND ((NOT %s AND NOT admission_review.required) OR (
+                        (NOT admission_review.required AND NOT p.categories && ARRAY['food','culture','nightlife']::text[]
                           AND split_part(p.source_id, ':', 1) NOT IN ('usda-market','wikidata-park')
                           AND NOT jsonb_path_exists(facts.calendar_provenance, '$[*].source_visit_calendar'))
                         OR (
@@ -216,6 +243,8 @@ def nearby_page(
                     low,
                     high,
                     categories,
+                    now_epoch,
+                    now_epoch,
                     require_visit_calendar,
                     radius_miles,
                     cursor.source_id if cursor else None,

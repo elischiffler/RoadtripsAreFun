@@ -1,6 +1,7 @@
 """Stable public identity namespaces for explicitly reviewed source adapters."""
 
 PREFIXES = (
+    ("catalog-pilot:", "catalog-pilot"),
     ("boulder:", "boulder-osmp"),
     ("nps:", "nps"),
     ("nps-public:", "nps-public"),
