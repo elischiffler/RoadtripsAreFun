@@ -239,3 +239,123 @@ else:
         [sys.executable, "-c", code, str(root)], capture_output=True, text=True, timeout=20
     )
     assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.asyncio
+async def test_exact_exception_survives_discovery_scheduling_and_saved_itinerary(monkeypatch):
+    from types import SimpleNamespace
+
+    from app.agent.persona import default_weights
+    from app.models.itinerary_models import Itinerary_Payload
+    from app.models.routing_models.routing_models import Route
+    from app.routers.itinerary_api import build_itinerary
+    from app.routing.base import PlanOptions
+    from app.routing.cp_sat_scheduler import schedule_cp_sat_route
+    from app.routing.cp_sat_selection import select_attractions
+    from app.routing.occupancy import HotelRoom
+    from app.routing.planners.cp_sat import CPSatPlanner
+    from app.routing.travel_timing import apply_timing
+    from tests.routing.conftest import FakeServices, build_route
+    from tests.routing.persona_candidates_tests import FakeAI, FakePlaces, _ratings, discover
+
+    entry = next(
+        e
+        for e in h.RESOLUTIONS
+        if any(
+            f.get("catalog_admission", {}).get("tier") == "T3"
+            for f in e["approved_payload"]["provenance"]
+        )
+    )
+    row = row_for(entry)
+    value = runtime(row)
+    qualification = next(
+        f for f in row["provenance"] if f.get("dataset") == "Roadtrips routing qualification"
+    )
+    contract = next(f["catalog_admission"] for f in row["provenance"] if "catalog_admission" in f)
+    monkeypatch.setattr(admission.time, "time", lambda: contract["reviewed_at_epoch"] + 1)
+    original = copy.deepcopy(row)
+    point = value["coordinates"]
+    candidates = await discover(
+        None,
+        [point],
+        default_weights(),
+        ai=FakeAI([{"name": value["name"], "attribute_ratings": _ratings()}]),
+        places=FakePlaces(attractions=[value]),
+    )
+    assert len(candidates) == 1
+
+    route = build_route(3600)
+    lat, lon = point
+    route.geometry.coordinates = [[lon - 0.01, lat], [lon + 0.01, lat]]
+    route.legs[0].steps[0].geometry.coordinates = route.geometry.coordinates
+    measured = route.model_copy(deep=True)
+    measured.duration = 3720
+    measured.legs = [route.legs[0].model_copy(deep=True) for _ in range(2)]
+    for leg in measured.legs:
+        leg.duration = 1860
+
+    async def road(*_args):
+        return measured
+
+    checked = await CPSatPlanner._verify_detours(
+        route, candidates, SimpleNamespace(candidate_route=road)
+    )
+    selected = select_attractions(checked, [point], 1, route.duration)
+    assert len(selected) == 1
+    zone = ZoneInfo(qualification["timezone"])
+    start = datetime(2026, 11, 4, 9, tzinfo=zone)
+    options = PlanOptions(
+        num_stops=1,
+        budget=100,
+        start=start,
+        traveler_count=1,
+        hotel_rooms=[HotelRoom(adults=1, child_ages=[])],
+        weights=default_weights(),
+    )
+    services = FakeServices().bundle()
+
+    async def timezone(_point):
+        return qualification["timezone"]
+
+    async def hotels(*_args):
+        pytest.fail("this short route must not need a hotel")
+
+    services.timezone_at = timezone
+    services.cp_sat_hotels = hotels
+    stops, cost = await schedule_cp_sat_route(route, selected, options, services)
+    assert len(stops) == 1 and cost == 0
+    # The router adds actual Mapbox legs before authoritative refresh and timing.
+    stops[0].update(duration=1800.0, distance=1000.0)
+
+    def lookup(ids):
+        assert ids == [row["source_id"]]
+        return {row["source_id"]: copy.deepcopy(value)}
+
+    await refresh_for_timing(stops, catalog_lookup=lookup)
+    apply_timing(stops, start, options.scheduling_policy, qualification["timezone"])
+    planned = Route(
+        coordinates=[point, point],
+        distance=1000,
+        duration=1800,
+        steps=[],
+        stops=stops,
+        geometry=route.geometry,
+        cost=0,
+        scheduling_policy=options.scheduling_policy,
+        start_timezone=qualification["timezone"],
+        departure_time=start,
+    )
+    payload = Itinerary_Payload.model_validate(
+        Itinerary_Payload(route=planned).model_dump(mode="json")
+    )
+    days = await build_itinerary(payload, catalog_lookup=lookup)
+    assert any(stop.provider_id == value["provider_id"] for day in days for stop in day.stops)
+    assert payload.route.stops[0]["availability"]["status"] == "within_published_window"
+    assert row == original
+    tampered = copy.deepcopy(value)
+    tampered["name"] += " unreviewed"
+    with pytest.raises(VisitCalendarConflict):
+        await build_itinerary(payload, catalog_lookup=lambda ids: {row["source_id"]: tampered})
+    monkeypatch.setattr(admission.time, "time", lambda: contract["expires_at_epoch"])
+    with pytest.raises(VisitCalendarConflict):
+        await build_itinerary(payload, catalog_lookup=lookup)

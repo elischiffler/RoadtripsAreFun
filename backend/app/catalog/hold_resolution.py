@@ -78,6 +78,25 @@ _RUNTIME_KEYS = {
     "visit_duration",
     "arrival",
     "departure",
+    # Existing discovery, road-check and saved-trip annotations are not source
+    # facts. They may accompany the exact canonical payload without changing it.
+    "section_id",
+    "source_query_ids",
+    "route_progress_seconds",
+    "distance_meters",
+    "segment_index",
+    "detour_seconds",
+    "detour_raw_seconds",
+    "detour_provenance",
+    "road_check_status",
+    "duration",
+    "distance",
+    "road_arrival_time",
+    "wait_seconds",
+    "arrival_time",
+    "departure_time",
+    "travel_day",
+    "deadline",
 }
 
 
