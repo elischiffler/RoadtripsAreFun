@@ -20,6 +20,7 @@ from urllib.parse import urlparse
 from psycopg2.extras import Json, RealDictCursor, execute_values
 
 from app.catalog import ingest
+from app.catalog.calendar_projection import project as project
 from app.catalog.mixed import distance
 from app.routing.visit_calendar import source_calendar
 
@@ -159,18 +160,6 @@ def validate_entries(entries, reader):
             if not isinstance(fact, dict) or not fact:
                 raise ValueError("source constraints require separately attributed factual objects")
     return entries
-
-
-def project(provenance, entry):
-    """Expose one effective calendar while retaining the superseded source facts."""
-    result = copy.deepcopy(provenance)
-    if entry is None:
-        return result
-    for item in result:
-        if "source_visit_calendar" in item:
-            item["superseded_source_visit_calendar"] = item.pop("source_visit_calendar")
-    result.append({"dataset": "Roadtrips attributed calendar enrichment", **copy.deepcopy(entry)})
-    return result
 
 
 def _adapter_entries(value, adapter_root, artifact_root):
