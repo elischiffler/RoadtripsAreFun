@@ -89,7 +89,9 @@ async def chat_add(chat_id: str, request: ChatSchema):
     logger.info("CREATE chat_id=%s user_id=%s", chat_id, user_id)
     try:
         # Create a new item in the database for the given chat data and log
-        response = create_chat(user_id, chat_id, chat_data.model_dump(), chat_log.model_dump())
+        response = create_chat(
+            user_id, chat_id, chat_data.model_dump(mode="json"), chat_log.model_dump(mode="json")
+        )
         if response is None:
             raise ChatIdentityConflict("Trip ID belongs to a different planning request")
         else:

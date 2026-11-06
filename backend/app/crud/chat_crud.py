@@ -176,7 +176,8 @@ def get_segments(user_id: str, chat_id: str, route_id: str):
 
 def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
     """Update a component of a user's chat in the database."""
-    comp_dict = chat_schema.model_dump()
+    # Durable JSON must contain ISO timestamps, not Pydantic datetime objects.
+    comp_dict = chat_schema.model_dump(mode="json")
     if prefix == "ChatData" and "presentation" not in chat_schema.model_fields_set:
         # An older client cannot clear UI metadata it never sent or understood.
         comp_dict.pop("presentation", None)
