@@ -1,1 +1,5 @@
-{ "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }] }
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": { "deploymentEnabled": { "main": false } },
+  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }]
+}

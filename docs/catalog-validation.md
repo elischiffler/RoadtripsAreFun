@@ -158,7 +158,7 @@ terms acceptance if required. Kaggle rights and access-point quality still need
 review; see [source assessment](catalog-source-review.md).
 
 Then run an authentic bounded pilot, measure storage/compute, validate restore,
-expand and quantify coverage, and test live chat/Studio/route journeys. Keep the
+expand and quantify coverage, and test live saved-trip/Studio/route journeys. Keep the
 PR in draft until those gates and release coordination are complete. Follow the
 [rollout/rollback runbook](neon-places-catalog.md); do not infer production
 readiness from synthetic tests.

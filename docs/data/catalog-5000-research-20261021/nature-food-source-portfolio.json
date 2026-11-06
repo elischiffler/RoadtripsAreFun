@@ -1,0 +1,1136 @@
+{
+  "generated_at": "2026-10-21T05:12:11.782313+00:00",
+  "scope": "Bounded read-only source research, US roadtrip attraction planning; no records admitted, no repository changes or production writes.",
+  "count_semantics": "API assets, sites and rows are candidate volumes, not net-new attractions. First/offset samples are non-random diagnostic checks, not acceptance-rate estimates. Every forecast is conditional expert planning budget; all committed net counts are zero pending rights, operator evidence and live-catalog reconciliation. Do not sum overlapping sources.",
+  "portfolio": [
+    {
+      "id": "blm",
+      "name": "BLM national recreation points, with RIDB mirror crosswalk",
+      "steward": "Bureau of Land Management",
+      "coverage": "Western states; interpretive sites, scenic viewpoints, geological POIs, visitor centers, lighthouses, natural areas",
+      "candidate_counts": {
+        "measured_total_assets": 10241,
+        "measured_nontrail_interpretive_poi_scenic_visitor_lighthouse_firelookout_natural_assets": 1448,
+        "measured_picnic_assets": 342,
+        "measured_trailhead_assets": 1256,
+        "measured_ridb_mirror_facilities": 1263,
+        "type_counts": {
+          "interpretive_site": 430,
+          "point_of_interest": 510,
+          "scenic_overlook": 381,
+          "visitor_center": 52,
+          "lighthouse": 10,
+          "fire_lookout": 2,
+          "natural_endangered_area": 63
+        }
+      },
+      "sample_findings": "POI first10:10/10 finite coordinates; names/GlobalID/native points present, but first SEINEURS REACH has no description or web link. Asset type alone establishes neither destination appeal nor arrival/access. RIDB mirror first10:10 finite, detailed descriptions but campground-heavy.",
+      "rights": {
+        "status": "primary agency PD assertion found; check dataset/record third-party exceptions before admission",
+        "primary_url": "https://www.blm.gov/info/notices/drctp-policy",
+        "evidence": "BLM says most posted content public domain and protected third-party material is marked. Original BLM factual points appear suitable subject to record-credit check; no blanket rights claim for linked operator text/photos. Retain BLM credit/no endorsement; no logo/media."
+      },
+      "freshness": "Native point dataset is interim standard; no service SLA or per-site operation freshness established. Separate BLM RIDB mirror metadata explicitly says nightly updates, but record operating facts can lag.",
+      "arrival_access": "Native recreation asset points, not guaranteed vehicle entrances; toilets/campsites/boat ramps are not separate attractions. Confirm operator public access, walk required and dated closures.",
+      "overlap": "Substantial USFS/NPS/RIDB/USACE/OSM/Overture overlap. Mirror adds zero independent forecast.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [250, 500],
+        "itinerary_ready_net_if_all_gates_pass": [100, 250]
+      },
+      "effort_cost": "Public read-only API, no fee observed; adapter1\u20133 engineer days plus authoritative arrival/public-access review per destination.",
+      "blockers": [
+        "Dataset-specific exceptions and original-credit checks",
+        "Nontrail assets can be components of same destination",
+        "Current closure/arrival/season unknown"
+      ],
+      "entity_keys": [
+        "GlobalID",
+        "Original_GlobalID",
+        "ADM_UNIT_CD",
+        "RIDB FacilityID",
+        "RIDB ParentRecAreaID"
+      ],
+      "receipts": [
+        {
+          "id": "blm-service",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recs_pts/FeatureServer?f=pjson",
+          "retrieved_at": "2026-10-21T05:00:14.026305+00:00",
+          "status": 200,
+          "bytes": 13074,
+          "sha256": "2e8c3dc438e2810283f6df5ac3fad8e104c02c48f28b7ad8f4f5985aba7b8c3b",
+          "path": "blm-service.body",
+          "error": null
+        },
+        {
+          "id": "blm-all-count",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recs_pts/FeatureServer/23/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:00:15.369797+00:00",
+          "status": 200,
+          "bytes": 15,
+          "sha256": "07f09d4aad7039985dc8eb52a252780bbb04ad293d290397375ae9324cf7b1bc",
+          "path": "blm-all-count.body",
+          "error": null
+        },
+        {
+          "id": "blm-type-6-count",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recs_pts/FeatureServer/6/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:02:43.879043+00:00",
+          "status": 200,
+          "bytes": 13,
+          "sha256": "47be4ffdf21ecc48af32fc57c800bd1220812ba9afc4aa3d79c3cd65712b00a7",
+          "path": "blm-type-6-count.body",
+          "error": null
+        },
+        {
+          "id": "blm-type-10-count",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recs_pts/FeatureServer/10/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:02:45.280238+00:00",
+          "status": 200,
+          "bytes": 13,
+          "sha256": "ce36606aec920d9bfcf619393f0cb39704125b95c17ae511b69b09e580b92268",
+          "path": "blm-type-10-count.body",
+          "error": null
+        },
+        {
+          "id": "blm-type-13-count",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recs_pts/FeatureServer/13/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:02:46.259489+00:00",
+          "status": 200,
+          "bytes": 13,
+          "sha256": "8aa7d78647862613164b6809485a14fd7779720a481127ae0dde77baeba090fe",
+          "path": "blm-type-13-count.body",
+          "error": null
+        },
+        {
+          "id": "blm-type-15-count",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recs_pts/FeatureServer/15/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:02:47.518670+00:00",
+          "status": 200,
+          "bytes": 12,
+          "sha256": "a4e4a89f9f08eddc6bc4b72a5efb42891979be7af44b62d85ecfe22c86678682",
+          "path": "blm-type-15-count.body",
+          "error": null
+        },
+        {
+          "id": "blm-type-17-count",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recs_pts/FeatureServer/17/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:02:48.176245+00:00",
+          "status": 200,
+          "bytes": 12,
+          "sha256": "4c9caa2c9fbb5e5f0099ac08ff7a74fd9c6711d307d1e88705cb791b157d3404",
+          "path": "blm-type-17-count.body",
+          "error": null
+        },
+        {
+          "id": "blm-type-20-count",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recs_pts/FeatureServer/20/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:02:49.128578+00:00",
+          "status": 200,
+          "bytes": 11,
+          "sha256": "57413ce83ee1d989e384dfd3a82c6e2d9052a23c4204706bd2d7df11aa4c2d7c",
+          "path": "blm-type-20-count.body",
+          "error": null
+        },
+        {
+          "id": "blm-type-21-count",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recs_pts/FeatureServer/21/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:02:49.748925+00:00",
+          "status": 200,
+          "bytes": 12,
+          "sha256": "3d97add019759bafd0161d19042cfff243989290aee7288857f4f348887d911a",
+          "path": "blm-type-21-count.body",
+          "error": null
+        },
+        {
+          "id": "blm-poi-sample",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recs_pts/FeatureServer/10/query?where=1%3D1&outFields=*&resultRecordCount=10&outSR=4326&f=json",
+          "retrieved_at": "2026-10-21T05:00:16.135821+00:00",
+          "status": 200,
+          "bytes": 8230,
+          "sha256": "029ff2dee9518fefab269ba012a4639d40579554f9a56708511c1c581981a766",
+          "path": "blm-poi-sample.body",
+          "error": null
+        },
+        {
+          "id": "blm-ridb-layer",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recreation_Sites_Facilities/FeatureServer/0?f=pjson",
+          "retrieved_at": "2026-10-21T05:02:13.329898+00:00",
+          "status": 200,
+          "bytes": 14556,
+          "sha256": "ac3430a5576b97e739dd39abc4891ea8dce72ad44b03963499a1f5d2516b970f",
+          "path": "blm-ridb-layer.body",
+          "error": null
+        },
+        {
+          "id": "blm-ridb-count",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recreation_Sites_Facilities/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:02:14.531279+00:00",
+          "status": 200,
+          "bytes": 14,
+          "sha256": "5a6ceafc0b3951c912025f9d2943399e49ec73ea144ca87dbf00631d1ba00e87",
+          "path": "blm-ridb-count.body",
+          "error": null
+        },
+        {
+          "id": "blm-digital-rights",
+          "url": "https://www.blm.gov/info/notices/drctp-policy",
+          "retrieved_at": "2026-10-21T05:09:23.146018+00:00",
+          "status": 200,
+          "bytes": 162645,
+          "sha256": "d3a76f0af04a118a0110a82c09edb4c2ef145d748141afc6cf344065f1aac800",
+          "path": "blm-digital-rights.body",
+          "error": null
+        }
+      ],
+      "acquisition_recipe": "Use service layers6,10,13,15,17,20,21 (counts sum1448 assets), ordered OBJECTID pages<=250; request native ID,name,type,adminunit,coords,URLs. Join RIDB mirror by source IDs; do not sum its1263 again. Exclude infrastructure; group same parent/name/experience, resolve against live catalog, seek operator evidence before exposure."
+    },
+    {
+      "id": "usace",
+      "name": "USACE recreation site entrance points",
+      "steward": "US Army Corps of Engineers",
+      "coverage": "Nationwide reservoirs/rivers, scenic lookouts, day-use areas, industrial/water engineering settings",
+      "candidate_counts": {
+        "measured_entrance_assets": 4855,
+        "subtypes": {
+          "day_use": 1237,
+          "multipurpose": 1009,
+          "scenic_viewing": 136,
+          "land_access": 641,
+          "marina_resort": 694,
+          "water_access": 979,
+          "campground": 159
+        }
+      },
+      "sample_findings": "Two bounded strata: first10 only6 finite geometries (4 NaN); offset2000 sample10 allfinite. AreaStatus/Camp/Boat/Beach/Flood null in20/20. First Hopewell Trailhead lacks coords/address; Bay Springs Marina sample has operator concession and address. No acceptance rate inferred.",
+      "rights": {
+        "status": "hold pending source-specific reuse evidence",
+        "primary_attempt": "https://www.usace.army.mil/InformationQualityAct/",
+        "evidence": "Information-quality page403; public ArcGISitem metadata reference returns item-not-found. Federal agency lineage promising but no explicit retained source reuse assertion yet; do not bank on presumed federal ownership of all partner content."
+      },
+      "freshness": "Native service says staff supplied entrances; some source field naming FY20 suggests age. No verified refresh cadence/closure timestamp.",
+      "arrival_access": "Metadata explicitly entrance locations, stronger than polygon centroids. Managing agency can be state or concession business; point alone not present open access.",
+      "overlap": "Parent project sites and areas can overlap RIDB/BLM/stateparks and eachother. Distinct parent destination rather than separate ramps/loops.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [150, 350],
+        "itinerary_ready_net_if_all_gates_pass": [75, 200]
+      },
+      "effort_cost": "Free public query observed;1\u20133days adapter plus higher operator review. No paid API needed.",
+      "blockers": [
+        "Rights evidence unresolved",
+        "NaN coordinates",
+        "No current status/hours in sampled rows",
+        "Campgrounds/marinas not automatically attraction eligible"
+      ],
+      "entity_keys": ["recProjectSiteAreaId", "recProjectSiteId", "CWIS"],
+      "receipts": [
+        {
+          "id": "usace-layer",
+          "url": "https://geospatial.sec.usace.army.mil/server/rest/services/Recreation/Recreation_Site/FeatureServer/0?f=pjson",
+          "retrieved_at": "2026-10-21T05:00:08.251659+00:00",
+          "status": 200,
+          "bytes": 16601,
+          "sha256": "03fc64800b75e4367147de3482918821a5b860bc48f65af3a152e4e4094d8310",
+          "path": "usace-layer.body",
+          "error": null
+        },
+        {
+          "id": "usace-count",
+          "url": "https://geospatial.sec.usace.army.mil/server/rest/services/Recreation/Recreation_Site/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:00:11.784234+00:00",
+          "status": 200,
+          "bytes": 14,
+          "sha256": "881e0d96b4c0c75baaada2537e98782f5babaef6ef4142de28d15a4ef5e0db0b",
+          "path": "usace-count.body",
+          "error": null
+        },
+        {
+          "id": "usace-types",
+          "url": "https://geospatial.sec.usace.army.mil/server/rest/services/Recreation/Recreation_Site/FeatureServer/0/query?f=json&where=1%3D1&groupByFieldsForStatistics=primaryAreaSubType&outStatistics=%5B%7B%22statisticType%22%3A+%22count%22%2C+%22onStatisticField%22%3A+%22OBJECTID%22%2C+%22outStatisticFieldName%22%3A+%22n%22%7D%5D&returnGeometry=false",
+          "retrieved_at": "2026-10-21T05:03:31.601128+00:00",
+          "status": 200,
+          "bytes": 721,
+          "sha256": "329f3d584d3168f5eba75549ccd018122c37e73d2aac239639b03ed66c47531a",
+          "path": "usace-types.body",
+          "error": null
+        },
+        {
+          "id": "usace-sample",
+          "url": "https://geospatial.sec.usace.army.mil/server/rest/services/Recreation/Recreation_Site/FeatureServer/0/query?where=1%3D1&outFields=*&resultRecordCount=10&outSR=4326&f=json",
+          "retrieved_at": "2026-10-21T05:00:12.705759+00:00",
+          "status": 200,
+          "bytes": 14042,
+          "sha256": "6cb1ef4491e69c1762a5bafe39028006dace899747a2b786baf8a52c413135d5",
+          "path": "usace-sample.body",
+          "error": null
+        },
+        {
+          "id": "usace-sample-offset2000",
+          "url": "https://geospatial.sec.usace.army.mil/server/rest/services/Recreation/Recreation_Site/FeatureServer/0/query?where=1%3D1&outFields=*&resultRecordCount=10&resultOffset=2000&outSR=4326&f=json",
+          "retrieved_at": "2026-10-21T05:02:01.548167+00:00",
+          "status": 200,
+          "bytes": 13978,
+          "sha256": "3b827c603d9103d5a937ccc2685169be34454aa99df63a83e19d048f15549280",
+          "path": "usace-sample-offset2000.body",
+          "error": null
+        },
+        {
+          "id": "usace-privacy",
+          "url": "https://www.usace.army.mil/InformationQualityAct/",
+          "retrieved_at": "2026-10-21T05:02:05.125764+00:00",
+          "status": 403,
+          "bytes": 402,
+          "sha256": "d727b180b1027957002ae0880364fde66567ee9431b97b9627908019c98c16ce",
+          "path": "usace-privacy.body",
+          "error": "HTTPError"
+        }
+      ],
+      "acquisition_recipe": "Select scenicViewingArea then curated dayUseArea/multipurposeArea. Count distinct recProjectSiteAreaId, group project names; preserve operating agency and entrance role. Reject nonfinite native geometry; never substitute project centroid. Verify public day-use experience/arrival and rights."
+    },
+    {
+      "id": "fws",
+      "name": "USFWS public visitor buildings and public motor access",
+      "steward": "US Fish and Wildlife Service",
+      "coverage": "Nationwide refuges/hatcheries; wildlife drives, birding, coastal marshes, visitor/education centers",
+      "candidate_counts": {
+        "measured_buildings": 2278,
+        "measured_filtered_public_valid_visitor_education_interpretive_buildings": 284,
+        "measured_gates": 7230,
+        "measured_filtered_public_valid_general_motor_access_gates": 462
+      },
+      "sample_findings": "Filtered first10 buildings and10 access points each10/10 finite; named visitor buildings in9states. A separate unfiltered access sample explicitly Public_View=Yes but Public_Use=Non-public Use. Valid is GIS record QA, not current operating status.",
+      "rights": {
+        "status": "agency factual geometry lineage supported; copyright exceptions must be resolved, no blanket PD clearance",
+        "primary_url": "https://www.fws.gov/disclaimer",
+        "evidence": "FWS explicitly says not all website content public domain; images/third-party content can be restricted, logos require permission. Items owned by FWS, original USFWS property fields support original geometry, but retain credit/exception inspection before import."
+      },
+      "freshness": "Building item modifiedMay2026, per-record EditDate sampleSep2023; gates mixed older records. MAPLand new recreation sites roads/trails listed comingApril2027, unavailable now.",
+      "arrival_access": "Use building/gate geometries, never National Realty centroid (officialGISpage explicitly warns these are not entrances). Need public-visitor operator visit pages, validate arrival separately from building point. Gate can be exit/locked/limited access.",
+      "overlap": "Group by OrgCode; refuge plus visitor building/auto tour gate may be single destination or distinct experience. Crossmatch existing NPS/USFS/BLM/RIDB, preserve hatcheries as possible distinct attractions.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [150, 300],
+        "itinerary_ready_net_if_all_gates_pass": [75, 180]
+      },
+      "effort_cost": "Free anonymous read APIs;2\u20134days adapter/join plus per-refuge visit-page closure review.",
+      "blockers": [
+        "Public visibility not access",
+        "Copyright exceptions",
+        "Outdated record dates",
+        "Gate exits/admin offices not separate attractions",
+        "No future MAPLand data available"
+      ],
+      "entity_keys": [
+        "OrgCode",
+        "GlobalID",
+        "OBJECTID",
+        "operator canonical refuge/hatchery URL"
+      ],
+      "receipts": [
+        {
+          "id": "fws-gis-page",
+          "url": "https://www.fws.gov/service/national-wildlife-refuge-system-gis-data-and-mapping-tools",
+          "retrieved_at": "2026-10-21T05:00:17.332834+00:00",
+          "status": 200,
+          "bytes": 98256,
+          "sha256": "a1a4a034e2aba9e6e061625f61f3f824873a823fff640492141ec4cfdb71472d",
+          "path": "fws-gis-page.body",
+          "error": null
+        },
+        {
+          "id": "fws-mapland",
+          "url": "https://www.fws.gov/mapland-implementation",
+          "retrieved_at": "2026-10-21T05:00:18.956678+00:00",
+          "status": 200,
+          "bytes": 91810,
+          "sha256": "d8a9cc506f280b86a0b2756f9efa739f95ba8d1b8d903ba3691029719603653e",
+          "path": "fws-mapland.body",
+          "error": null
+        },
+        {
+          "id": "fws-buildings-item",
+          "url": "https://www.arcgis.com/sharing/rest/content/items/a8166d1ed8c24a0aba9078bfa5fdd84f?f=json",
+          "retrieved_at": "2026-10-21T05:02:16.746305+00:00",
+          "status": 200,
+          "bytes": 9235,
+          "sha256": "63da0d86970690376834197731c24a4ffd615c8b3fce9469da9679b53f2bae79",
+          "path": "fws-buildings-item.body",
+          "error": null
+        },
+        {
+          "id": "fws-access-item",
+          "url": "https://www.arcgis.com/sharing/rest/content/items/8e100f88f9074606b38cbd4088dce084?f=json",
+          "retrieved_at": "2026-10-21T05:02:18.410674+00:00",
+          "status": 200,
+          "bytes": 6394,
+          "sha256": "eaae8438e75775e10197c20c2f8b8f940fdc0c1144cf1d2f70dd16d666e571ee",
+          "path": "fws-access-item.body",
+          "error": null
+        },
+        {
+          "id": "fws-visitor-building-count",
+          "url": "https://services.arcgis.com/QVENGdaPbd4LUkLV/arcgis/rest/services/FWS_HQ_Fac_Building_Pt_PubicView/FeatureServer/0/query?f=json&where=Pub_Use%3D%27Public+Use%27+AND+Status%3D%27Valid%27+AND+%28UPPER%28Bld_Name%29+LIKE+%27%25VISITOR%25%27+OR+UPPER%28Bld_Name%29+LIKE+%27%25EDUCATION%25%27+OR+UPPER%28Bld_Name%29+LIKE+%27%25INTERPRET%25%27%29&returnCountOnly=true",
+          "retrieved_at": "2026-10-21T05:05:09.822735+00:00",
+          "status": 200,
+          "bytes": 75,
+          "sha256": "b35bb48781af4f45364251cd223a89f79252ade4e14a975bafac4f9674c9b858",
+          "path": "fws-visitor-building-count.body",
+          "error": null
+        },
+        {
+          "id": "fws-visitor-building-sample",
+          "url": "https://services.arcgis.com/QVENGdaPbd4LUkLV/arcgis/rest/services/FWS_HQ_Fac_Building_Pt_PubicView/FeatureServer/0/query?f=json&where=Pub_Use%3D%27Public+Use%27+AND+Status%3D%27Valid%27+AND+%28UPPER%28Bld_Name%29+LIKE+%27%25VISITOR%25%27+OR+UPPER%28Bld_Name%29+LIKE+%27%25EDUCATION%25%27+OR+UPPER%28Bld_Name%29+LIKE+%27%25INTERPRET%25%27%29&outFields=OBJECTID%2COrgCode%2COrgName%2CStateAbbr%2CBld_Name%2CPub_Use%2CStatus%2CEditDate%2CComments&resultRecordCount=10&outSR=4326",
+          "retrieved_at": "2026-10-21T05:05:11.123289+00:00",
+          "status": 200,
+          "bytes": 7583,
+          "sha256": "197b355f9f6563e2e4dd0a7a54d63b75f2fef750a7af95bec1b36d38f4de7c6c",
+          "path": "fws-visitor-building-sample.body",
+          "error": null
+        },
+        {
+          "id": "fws-public-motor-access-count",
+          "url": "https://services.arcgis.com/QVENGdaPbd4LUkLV/arcgis/rest/services/FWS_HQ_Tran_Gate_Access_PublicView/FeatureServer/0/query?f=json&where=Public_Use%3D%27Public+Use%27+AND+Status%3D%27Valid%27+AND+Acc_Type+IN+%28%27Public-General%27%2C%27Motorized+Vehicle%27%29&returnCountOnly=true",
+          "retrieved_at": "2026-10-21T05:05:12.532064+00:00",
+          "status": 200,
+          "bytes": 75,
+          "sha256": "2f0f3489dc9ad3d8e9a4af94798ef9992b6ebced31bc000bdba3f6e7aad37bd1",
+          "path": "fws-public-motor-access-count.body",
+          "error": null
+        },
+        {
+          "id": "fws-public-motor-access-sample",
+          "url": "https://services.arcgis.com/QVENGdaPbd4LUkLV/arcgis/rest/services/FWS_HQ_Tran_Gate_Access_PublicView/FeatureServer/0/query?f=json&where=Public_Use%3D%27Public+Use%27+AND+Status%3D%27Valid%27+AND+Acc_Type+IN+%28%27Public-General%27%2C%27Motorized+Vehicle%27%29&outFields=OBJECTID%2COrgCode%2COrgName%2CStateAbbr%2CGate_Name%2CAcc_Type%2CPublic_Use%2CGate_Type%2CStatus%2CEditDate%2CComments&resultRecordCount=10&outSR=4326",
+          "retrieved_at": "2026-10-21T05:05:13.216435+00:00",
+          "status": 200,
+          "bytes": 10152,
+          "sha256": "80361afb6a689742561312861c63857cdacbd95a5de661e0342f9d8b13685c71",
+          "path": "fws-public-motor-access-sample.body",
+          "error": null
+        },
+        {
+          "id": "fws-policy",
+          "url": "https://www.fws.gov/disclaimer",
+          "retrieved_at": "2026-10-21T05:02:21.593536+00:00",
+          "status": 200,
+          "bytes": 86919,
+          "sha256": "b4f89e5c547d4df7c99e02d4150df1872327d6b2d6590a8e596cf6332422f61d",
+          "path": "fws-policy.body",
+          "error": null
+        },
+        {
+          "id": "fws-station-visit-profile",
+          "url": "https://www.fws.gov/refuge/rachel-carson/visit-us",
+          "retrieved_at": "2026-10-21T05:05:13.741763+00:00",
+          "status": 200,
+          "bytes": 131933,
+          "sha256": "af4c004a578c3e22943583b4f40ba6bbfd7364c2ed71f425e04be8fe5372c617",
+          "path": "fws-station-visit-profile.body",
+          "error": null
+        },
+        {
+          "id": "fws-station-visit-profile2",
+          "url": "https://www.fws.gov/refuge/bombay-hook/visit-us",
+          "retrieved_at": "2026-10-21T05:05:15.217525+00:00",
+          "status": 200,
+          "bytes": 143757,
+          "sha256": "71c640c88ee21a24b711685bca705fdec5f80c77e2c4d89382879ec7333f9de3",
+          "path": "fws-station-visit-profile2.body",
+          "error": null
+        }
+      ],
+      "acquisition_recipe": "Buildings where Pub_Use='Public Use' AND Status='Valid' AND (UPPER(Bld_Name) LIKE '%VISITOR%' OR UPPER(Bld_Name) LIKE '%EDUCATION%' OR UPPER(Bld_Name) LIKE '%INTERPRET%'). Gates where Public_Use='Public Use' AND Status='Valid' AND Acc_Type IN ('Public-General','Motorized Vehicle'). Inner/left join OrgCode, flag gate-name exits, multiple arrivals and offices. Operator visit-us page must explicitly confirm public experience; take hours/season/temporary restrictions only from current source. Do not count284+462 as746 places."
+    },
+    {
+      "id": "fl",
+      "name": "Florida state park native entrance stations",
+      "steward": "Florida Department of Environmental Protection / Florida Park Service",
+      "coverage": "Florida parks, gardens, forts, beaches, scenic sites and trails",
+      "candidate_counts": {
+        "measured_all_entrance_points": 299,
+        "measured_main_entrance_points": 210,
+        "measured_distinct_unit_ids_among_main": 174
+      },
+      "sample_findings": "First10 main points10finite with UNIT_ID and SITE_NAME. Metadata says approximate main/secondary entrance station, honor-box parking or point of entry; no survey accuracy guarantee.",
+      "rights": {
+        "status": "hold: exact entrance-layer license blank",
+        "primary_metadata_url": "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/PARKS_BOUNDARIES/MapServer/2/iteminfo?f=json",
+        "evidence": "A related website-app item has CC-BY-SA licenseInfo but app licensing does not establish entrance data licensing. Exact layer licenseInfo empty. State government is not automatically federal public domain."
+      },
+      "freshness": "No verified entrance update SLA; operator garden page accessible for practical current checks.",
+      "arrival_access": "Native main entrances are useful but may multiple points per unit; explicitly nonpublic entrances must quarantine. Garden inside park may separate admission/hours.",
+      "overlap": "Group UNIT_ID to174 parents, choose current operator-recommended main arrival by travel mode; secondary gates are access variants, not new places. Existingparks and historical site overlap.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [110, 160],
+        "itinerary_ready_net_if_all_gates_pass": [75, 130]
+      },
+      "effort_cost": "Anonymous ArcGIS query, nofeeobserved;1\u20132days adapter after rights clarification plus park review.",
+      "blockers": [
+        "Exact data license unresolved",
+        "Multiple main entrances",
+        "Approximate geometry",
+        "Seasonal/temporary access requires operator check"
+      ],
+      "entity_keys": ["UNIT_ID", "OBJECTID", "TYPE", "operator canonical URL"],
+      "receipts": [
+        {
+          "id": "fl-layer",
+          "url": "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/PARKS_BOUNDARIES/MapServer/2?f=pjson",
+          "retrieved_at": "2026-10-21T05:00:20.795878+00:00",
+          "status": 200,
+          "bytes": 42725,
+          "sha256": "ecab7d708bdf662ae396ed98aea96b0e805a0c5429f6de23b3ccbdc547efdb69",
+          "path": "fl-layer.body",
+          "error": null
+        },
+        {
+          "id": "fl-count",
+          "url": "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/PARKS_BOUNDARIES/MapServer/2/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:00:22.547352+00:00",
+          "status": 200,
+          "bytes": 13,
+          "sha256": "b3b7518114d0734f7882b300a36f9844ec893b12bd04bb57266487308c137534",
+          "path": "fl-count.body",
+          "error": null
+        },
+        {
+          "id": "fl-main-count",
+          "url": "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/PARKS_BOUNDARIES/MapServer/2/query?where=TYPE%3D%27Main%20Entrance%27&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:00:23.515398+00:00",
+          "status": 200,
+          "bytes": 13,
+          "sha256": "bf6f83987593e6021667794ba8eb089cc1765c407dac1123ccbfc037e4e87c86",
+          "path": "fl-main-count.body",
+          "error": null
+        },
+        {
+          "id": "fl-distinctunits",
+          "url": "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/PARKS_BOUNDARIES/MapServer/2/query?where=TYPE%3D%27Main%20Entrance%27&outFields=UNIT_ID&returnGeometry=false&returnDistinctValues=true&f=json",
+          "retrieved_at": "2026-10-21T05:02:24.854780+00:00",
+          "status": 200,
+          "bytes": 6433,
+          "sha256": "2683995c0a951a18b21dae831ea89bd6a51992b9869549cabddd155e5b1baa83",
+          "path": "fl-distinctunits.body",
+          "error": null
+        },
+        {
+          "id": "fl-main-sample",
+          "url": "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/PARKS_BOUNDARIES/MapServer/2/query?where=TYPE%3D%27Main%20Entrance%27&outFields=*&resultRecordCount=10&outSR=4326&f=json",
+          "retrieved_at": "2026-10-21T05:00:24.894812+00:00",
+          "status": 200,
+          "bytes": 3623,
+          "sha256": "8acb21b0f963b5a8d0951988b39a79e77bb711174171b5ae10f948826e131ee2",
+          "path": "fl-main-sample.body",
+          "error": null
+        },
+        {
+          "id": "fl-entrances-metadata",
+          "url": "https://ca.dep.state.fl.us/arcgis/rest/services/OpenData/PARKS_BOUNDARIES/MapServer/2/iteminfo?f=json",
+          "retrieved_at": "2026-10-21T05:03:48.315937+00:00",
+          "status": 200,
+          "bytes": 743,
+          "sha256": "d04954d77454ee1b3e7b7c7f54f5b5e4b9a28408ef4b243f7d84065dfff1d5df",
+          "path": "fl-entrances-metadata.body",
+          "error": null
+        },
+        {
+          "id": "fl-hub-item",
+          "url": "https://www.arcgis.com/sharing/rest/content/items/841cd28db0ff4c81a364cdb1d4319cf5?f=json",
+          "retrieved_at": "2026-10-21T05:06:03.203732+00:00",
+          "status": 200,
+          "bytes": 1951,
+          "sha256": "7fa20f147ee99984634a105be5e906a1d1c053735f676b9d5428d3d962142ad0",
+          "path": "fl-hub-item.body",
+          "error": null
+        },
+        {
+          "id": "fl-park-profile",
+          "url": "https://www.floridastateparks.org/parks-and-trails/alfred-b-maclay-gardens-state-park",
+          "retrieved_at": "2026-10-21T05:05:16.894574+00:00",
+          "status": 200,
+          "bytes": 64596,
+          "sha256": "ba27518390ed773b1335b79abdaff443217e4ee6a92fab61910eecd42b2da969",
+          "path": "fl-park-profile.body",
+          "error": null
+        }
+      ],
+      "acquisition_recipe": "Filter TYPE='Main Entrance', dedup UNIT_ID. Retain all main points as arrivals under one destination; operator page picks preferred entrance. Non-public Entrance never public candidate. Reconcile parent and sub-experiences using units/access rules, not distance alone. Route only after native-point plausibility and road arrival checks."
+    },
+    {
+      "id": "or",
+      "name": "Oregon OPRD access point layer (actually centroids)",
+      "steward": "Oregon Parks and Recreation Department",
+      "coverage": "Oregon coastal, scenic, historic and garden parks",
+      "candidate_counts": {
+        "measured_points": 463,
+        "measured_centroid": 342,
+        "measured_null_type": 121,
+        "measured_active_entrance_type": 0
+      },
+      "sample_findings": "First10 finite, but fieldpresence not arrivalvalidation. Domain offers ENTRANCE but countquery returns0; primary geometry should not be silently treated as car entrance.",
+      "rights": {
+        "status": "hold pending exact dataset rights",
+        "primary_attempt": "https://www.oregon.gov/geo/Pages/terms.aspx",
+        "evidence": "Redirected to geographic information homepage, not a retained terms grant."
+      },
+      "freshness": "Some sampleEditDateJan2026; RETIREDATE must be checked; no update guarantee.",
+      "arrival_access": "CENTROID/null only. Requires independent operator address/entrance/nativepoint; cannot75mrouteguardcentroid or manufacture coordinates.",
+      "overlap": "PARK_HUB_ID parent dedup plus park names; parks can overlap federalcoastal sites.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [75, 150],
+        "itinerary_ready_net_if_all_gates_pass": [25, 75]
+      },
+      "effort_cost": "Free read endpoint; moderate-high manualarrivalacquisition; lowpriority until pointsource/rights found.",
+      "blockers": [
+        "Zero usable entrance features in advertised layer",
+        "Exact rights unknown",
+        "463 features not distinct parks"
+      ],
+      "entity_keys": ["PARK_HUB_ID", "POINT_TYPE", "RETIREDATE", "OBJECTID"],
+      "receipts": [
+        {
+          "id": "or-layer",
+          "url": "https://gis.prd.state.or.us/arcgis/rest/services/Land_Ownership/LO_OPRD_Access_Points/FeatureServer/0?f=pjson",
+          "retrieved_at": "2026-10-21T05:02:25.995395+00:00",
+          "status": 200,
+          "bytes": 9610,
+          "sha256": "0acb11134f35aeea269ae6055c8bdc74b76ab76cc739953181becac82a640b9f",
+          "path": "or-layer.body",
+          "error": null
+        },
+        {
+          "id": "or-all-count",
+          "url": "https://gis.prd.state.or.us/arcgis/rest/services/Land_Ownership/LO_OPRD_Access_Points/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:02:27.359578+00:00",
+          "status": 200,
+          "bytes": 13,
+          "sha256": "1f36dc53da0692a1e5f537a90621658d3390321e850dae2200d070ed234a8d03",
+          "path": "or-all-count.body",
+          "error": null
+        },
+        {
+          "id": "or-point-types",
+          "url": "https://gis.prd.state.or.us/arcgis/rest/services/Land_Ownership/LO_OPRD_Access_Points/FeatureServer/0/query?f=json&where=1%3D1&groupByFieldsForStatistics=POINT_TYPE&outStatistics=%5B%7B%22statisticType%22%3A+%22count%22%2C+%22onStatisticField%22%3A+%22OBJECTID%22%2C+%22outStatisticFieldName%22%3A+%22n%22%7D%5D&returnGeometry=false",
+          "retrieved_at": "2026-10-21T05:03:32.166754+00:00",
+          "status": 200,
+          "bytes": 330,
+          "sha256": "3c82b0f4de19aa16ac538de43429199b876c3eaa0b50cfb4a23472654bda46cb",
+          "path": "or-point-types.body",
+          "error": null
+        },
+        {
+          "id": "or-entrances-count",
+          "url": "https://gis.prd.state.or.us/arcgis/rest/services/Land_Ownership/LO_OPRD_Access_Points/FeatureServer/0/query?where=POINT_TYPE%3D%27ENTRANCE%27%20AND%20RETIREDATE%20IS%20NULL&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:02:33.023317+00:00",
+          "status": 200,
+          "bytes": 11,
+          "sha256": "618de7d9f46f3f697d827a1b6d84974760d5deda62e4e592adaa3c646602a94c",
+          "path": "or-entrances-count.body",
+          "error": null
+        },
+        {
+          "id": "or-sample-all",
+          "url": "https://gis.prd.state.or.us/arcgis/rest/services/Land_Ownership/LO_OPRD_Access_Points/FeatureServer/0/query?f=json&where=1%3D1&outFields=%2A&resultRecordCount=10&outSR=4326",
+          "retrieved_at": "2026-10-21T05:03:32.794934+00:00",
+          "status": 200,
+          "bytes": 5827,
+          "sha256": "2861691436b18a2c3291e77fe958fab48b62950d5105f3bdf65ef30ea227f50b",
+          "path": "or-sample-all.body",
+          "error": null
+        },
+        {
+          "id": "or-government-data-policy",
+          "url": "https://www.oregon.gov/geo/Pages/terms.aspx",
+          "retrieved_at": "2026-10-21T05:05:19.560651+00:00",
+          "status": 200,
+          "bytes": 85205,
+          "sha256": "4aba6f5bedf801a4294b73d43a752885a2586e97c84b01196b8c2448972330e5",
+          "path": "or-government-data-policy.body",
+          "error": null
+        }
+      ],
+      "acquisition_recipe": "Use parent IDs as discovery only. Do not ingest centroid into arrival_coordinates. Find operator-backed actual visitor arrival and confirm public season independently."
+    },
+    {
+      "id": "nerr",
+      "name": "NOAA National Estuarine Research Reserves",
+      "steward": "NOAA Office for Coastal Management with state/university partners",
+      "coverage": "Coastal wetlands, education centers, boardwalks and wildlife observation",
+      "candidate_counts": {
+        "measured_reserve_polygons": 30
+      },
+      "sample_findings": "5 attributes-only sample records have reserve name, leadagency, siteURL; no visitor arrival geometry probed. Polygon cannot substitute for visitor entrance.",
+      "rights": {
+        "status": "partner-rights review required",
+        "primary_url": "https://coast.noaa.gov/digitalcoast/data/nerr.html",
+        "evidence": "Publisher requests reserve acknowledgment; partner agency contributes data. General NOAA disclaimer is not blanket permission for state/partner copyrighted text/media."
+      },
+      "freshness": "No verified dataset revision cadence fromboundedprobe; currentlydirectory30reserves.",
+      "arrival_access": "Reserve boundary can include inaccessible restoration/science areas; identify actual publicly open visitor center/boardwalk operator.",
+      "overlap": "Reserves include otherparks/refuges; site+center grouping avoids duplicate experience.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [15, 25],
+        "itinerary_ready_net_if_all_gates_pass": [10, 20]
+      },
+      "effort_cost": "Free public GIS query, nofeeobserved; smallbatch1day plus operatorreview.",
+      "blockers": [
+        "Polygon only",
+        "Partnerreuse obligations",
+        "Public visitor entrance/hours not yet checked"
+      ],
+      "entity_keys": ["reserve name", "lead agency", "operatorURL"],
+      "receipts": [
+        {
+          "id": "noaa-nerr-layer",
+          "url": "https://coast.noaa.gov/arcgismc/rest/services/hosted/NationalEstuarineResearchReserveSystem/FeatureServer/0?f=pjson",
+          "retrieved_at": "2026-10-21T05:00:25.656354+00:00",
+          "status": 200,
+          "bytes": 10620,
+          "sha256": "9968327b2bd6fe1b4de5616105a3bff9163fd3e1005cae9991b3ebbd8bb772e3",
+          "path": "noaa-nerr-layer.body",
+          "error": null
+        },
+        {
+          "id": "noaa-nerr-count",
+          "url": "https://coast.noaa.gov/arcgismc/rest/services/hosted/NationalEstuarineResearchReserveSystem/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+          "retrieved_at": "2026-10-21T05:00:27.076598+00:00",
+          "status": 200,
+          "bytes": 12,
+          "sha256": "84f3f23634eb171f98aad6eb14fca27f32071db5897dc68835388f9bf5230df7",
+          "path": "noaa-nerr-count.body",
+          "error": null
+        },
+        {
+          "id": "noaa-nerr-sample",
+          "url": "https://coast.noaa.gov/arcgismc/rest/services/hosted/NationalEstuarineResearchReserveSystem/FeatureServer/0/query?where=1%3D1&outFields=*&resultRecordCount=5&returnGeometry=false&f=json",
+          "retrieved_at": "2026-10-21T05:00:28.141108+00:00",
+          "status": 200,
+          "bytes": 3156,
+          "sha256": "32ff4a5af5fb0792fc0aee1d0c37d4663391b56a60489e809e82add963aedd4a",
+          "path": "noaa-nerr-sample.body",
+          "error": null
+        },
+        {
+          "id": "noaa-policy",
+          "url": "https://www.noaa.gov/disclaimer",
+          "retrieved_at": "2026-10-21T05:02:39.262190+00:00",
+          "status": 200,
+          "bytes": 49564,
+          "sha256": "bfcd573750b14c88769748b7ae60cd6bc41fd49c4b1a15d5e181d9939f3b3864",
+          "path": "noaa-policy.body",
+          "error": null
+        }
+      ],
+      "acquisition_recipe": "Countquery, then attributes-only download30, resolve operator website and admission/arrival. Request polygons only if needed for containment; no giant national polygon fetch."
+    },
+    {
+      "id": "noaa-centers",
+      "name": "NOAA marine sanctuary visitor centers",
+      "steward": "NOAA Office of National Marine Sanctuaries",
+      "coverage": "Coastal/marine education including Great Lakes, CA, WA, GA, FL, HI",
+      "candidate_counts": "Publisher page10 literal Visitor Center links; includes American Samoa outside50-state/USroadtrip assumption and regional links potentially covering same centers. Not10provenuniqueplaces.",
+      "sample_findings": "HTMLlistoperatorlinks verified accessible; no coordinate/hour acceptance claimed.",
+      "rights": {
+        "status": "primary explicit public-information redistribution grant; exceptions for partner pages/media",
+        "primary_url": "https://sanctuaries.noaa.gov/disclaimer.html",
+        "evidence": "NOAA sanctuary notice explicitly allows distributing/copying website public information. Retain credit/noendorsement; restrict factual summaries, inspect third-party rights and avoid images/logos."
+      },
+      "freshness": "Live directory checked2026-10-21; no percenter operating-date freshness established.",
+      "arrival_access": "Visitorcentername is promising publicexperience, but verify specific entrance/accesscalendar. Offshore sanctuaries not drivable destinations.",
+      "overlap": "Partnerexhibits overlapmuseums; regionaldirectorymayrepeatcenters.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [6, 9],
+        "itinerary_ready_net_if_all_gates_pass": [5, 8]
+      },
+      "effort_cost": "Freeofficialpages; bounded10centers, ~0.5\u20131day review.",
+      "blockers": [
+        "Coordinates/currentoperatorhours needverification",
+        "Exclude AmericanSamoa if50-state scope",
+        "Partnerscarryseparaterights"
+      ],
+      "entity_keys": ["canonical visitor center URL", "parent sanctuary"],
+      "receipts": [
+        {
+          "id": "noaa-centers",
+          "url": "https://sanctuaries.noaa.gov/visit/visitor-centers.html",
+          "retrieved_at": "2026-10-21T05:02:38.132212+00:00",
+          "status": 200,
+          "bytes": 36885,
+          "sha256": "4df6dc7dae2122588426582722c8dc83641e68ba805060f83ea3638329b71996",
+          "path": "noaa-centers.body",
+          "error": null
+        },
+        {
+          "id": "noaa-sanctuaries-disclaimer",
+          "url": "https://sanctuaries.noaa.gov/disclaimer.html",
+          "retrieved_at": "2026-10-21T05:06:00.843550+00:00",
+          "status": 200,
+          "bytes": 14827,
+          "sha256": "b2f7882967a578e2bfb4d68aef0dbc1b015c1ffa315b5724eb07736dac0235f7",
+          "path": "noaa-sanctuaries-disclaimer.body",
+          "error": null
+        }
+      ],
+      "acquisition_recipe": "Extract10 visitor-center links then scopefilter; separate true venue from sanctuaryparent and partnerexhibit; authoritativesitefacts only."
+    },
+    {
+      "id": "nnl",
+      "name": "National Natural Landmarks discovery",
+      "steward": "National Park Service National Natural Landmarks program",
+      "coverage": "Geological/ecological sites, caves, waterfalls, dunes, fossil sites and prairies",
+      "candidate_counts": "606 publisher-claimed designatedsites, covering48states+territories; no national APIcount queried.",
+      "sample_findings": "Officialdirectory accessible; publisher explicitly explains about half public, one-third fullyprivate, remainder mixed. Designation grants no public access.",
+      "rights": {
+        "status": "original NPS factual material generally PD unless marked; third-party exceptions",
+        "primary_url": "https://www.nps.gov/aboutus/disclaimer.htm",
+        "evidence": "NPSoriginalmaterialreusepolicy retained; no implied rights to privateoperatorcreativecontent/photos/logos. Public-domain government fact does not confer right to enter site."
+      },
+      "freshness": "Directory checked2026-10-21; designation notoperatingstatus, updatecadenceunknown.",
+      "arrival_access": "Never route natural landmark centroid; privateownerpermission/visitoroperator essential. Some sensitive/cave sites should stay undisclosed or excluded.",
+      "overlap": "Highparks/refuges/USFS/stateoverlap; designation is enrichment tag notnewentitybydefault.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [50, 120],
+        "itinerary_ready_net_if_all_gates_pass": [25, 60]
+      },
+      "effort_cost": "No feeobserved; highmanualpublicaccess+entrance review, useonlyselectedpublicsites.",
+      "blockers": [
+        "Private access",
+        "Sensitive sites",
+        "Boundary/centroidgeometry",
+        "Overlap existing public parks"
+      ],
+      "entity_keys": ["NNL designation/siteID", "siteowneroperatorURL"],
+      "receipts": [
+        {
+          "id": "nnl-directory",
+          "url": "https://www.nps.gov/subjects/nnlandmarks/nation.htm",
+          "retrieved_at": "2026-10-21T05:02:36.777198+00:00",
+          "status": 200,
+          "bytes": 43579,
+          "sha256": "b043f75dfa0611f6b0c2d71d2aae3b5652235139d49334ba8a9dabce8603aaa7",
+          "path": "nnl-directory.body",
+          "error": null
+        },
+        {
+          "id": "nps-disclaimer",
+          "url": "https://www.nps.gov/aboutus/disclaimer.htm",
+          "retrieved_at": "2026-10-21T05:06:01.511772+00:00",
+          "status": 200,
+          "bytes": 38448,
+          "sha256": "c74222e99ad0c87fc4850e699164bf10b9cea8af92a06b9a5e82830bc507f778",
+          "path": "nps-disclaimer.body",
+          "error": null
+        }
+      ],
+      "acquisition_recipe": "Useofficialstate listings as discovery and program fact. Require actual public operator visitorlocation,currentrestrictionpolicy and independent arrival; private sites exclude unless explicit legitimate public admission."
+    },
+    {
+      "id": "usda-food",
+      "name": "USDA agritourism/on-farm/farmers market directories",
+      "steward": "USDA Agricultural Marketing Service",
+      "coverage": "Nationwide seasonal farms, farm shops, educational/agritourism visits",
+      "candidate_counts": "No measured agritourism/on-farm count. OfficialAMS confirms5directoryfamilies; portalCSV/API blocked here.",
+      "sample_findings": "AMS landing accessible; publicdatasharing/APIHTTP403, retained errors; no record sample accessible. Noattempttobypass/applykey.",
+      "rights": {
+        "status": "hold pending accessible dataset-specific contribution/reuse terms",
+        "primary_url": "https://www.ams.usda.gov/services/local-regional/food-directories",
+        "evidence": "Agencyhosting/selfregisteredprivatebusinessprofiles doesnotprove all submittedtext/media governmentPD."
+      },
+      "freshness": "Selfregisteredbusinesses: stale/hours/seasonrisk; exactcadenceunknown.",
+      "arrival_access": "Privatefarms/CSA pickups/foodhubs are notautomatically visitorattractions. Needwalkin publicexperience, operatorarrival, seasoncalendar; donotreleasepersonalregistrantcontacts.",
+      "overlap": "HeavyNY/CO/RIDB/OSMfarmermarketoverlap; samefarm canoccurinmultiplefamilies.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [100, 300],
+        "itinerary_ready_net_if_all_gates_pass": [50, 150]
+      },
+      "effort_cost": "No paid API authorized. Officialdocs advertiseCSV and appliedAPIkey, but access403here. Account/keysetupneedsuserapproval; actualnoaccountpublicdownloadpreferred.",
+      "blockers": [
+        "HTTP403 on portal docs/API",
+        "No measuredcount/sample",
+        "Termsandsubmissionrights",
+        "Seasonal/privateaccess"
+      ],
+      "entity_keys": [
+        "directoryID",
+        "operatorcanonicalURL",
+        "address+name+nativepoint"
+      ],
+      "receipts": [
+        {
+          "id": "usda-ams-food",
+          "url": "https://www.ams.usda.gov/services/local-regional/food-directories",
+          "retrieved_at": "2026-10-21T05:02:40.913920+00:00",
+          "status": 200,
+          "bytes": 45634,
+          "sha256": "d51e2f10451c9c15d8cbb6e2d50307076d032ba030a806705535f02531dd39a7",
+          "path": "usda-ams-food.body",
+          "error": null
+        },
+        {
+          "id": "usda-sharing",
+          "url": "https://www.usdalocalfoodportal.com/fe/datasharing/",
+          "retrieved_at": "2026-10-21T05:00:28.897350+00:00",
+          "status": 403,
+          "bytes": 118,
+          "sha256": "58bf2215b395dcac74c009aa98701854e43cbe54a1cd3a95fee6a647ca9910d4",
+          "path": "usda-sharing.body",
+          "error": "HTTPError"
+        },
+        {
+          "id": "usda-agritourism-api",
+          "url": "https://www.usdalocalfoodportal.com/api/agritourism/?state=vt",
+          "retrieved_at": "2026-10-21T05:00:30.185889+00:00",
+          "status": 403,
+          "bytes": 118,
+          "sha256": "58bf2215b395dcac74c009aa98701854e43cbe54a1cd3a95fee6a647ca9910d4",
+          "path": "usda-agritourism-api.body",
+          "error": "HTTPError"
+        }
+      ],
+      "acquisition_recipe": "First obtain authorizedpublicCSV or existingapprovedreadkey; inspectrights and10records beforebulk. Exclude wholesalefacilities/CSA-onlyprivatepickup andplaceswithoutpublicvisitorpurpose. This is contingency, notbankedcount."
+    },
+    {
+      "id": "ridb",
+      "name": "RIDB national recreation facilities enrichment",
+      "steward": "Recreation.gov federal agency partners",
+      "coverage": "Federal recreation/historic/cultural places nationwide",
+      "candidate_counts": "No authenticatedAPIcount measured. BLMpublishedmirror1263facilities alreadycounted underBLM and notincremental.",
+      "sample_findings": "Unauthenticatedlimit5probe returnedHTTP401 UnauthorizedAccess; no retry/keycreation.",
+      "rights": {
+        "status": "explicit reuse permission for government data, third-party exceptions",
+        "primary_url": "https://www.recreation.gov/use-our-data",
+        "evidence": "Publisher permits government data forwebsites/business/publications, encourages DataSource:Recreation.govcredit; photos/third-partycontentneedownrights."
+      },
+      "freshness": "APIversion/recorddatesneedinspectafterapprovedaccess; BLMmirrorisnightly.",
+      "arrival_access": "Facilitycoordinatesoftenrecreationcenter/campgroundpoints notvisitorentrance; publicaccess/statusrulesstillapply.",
+      "overlap": "VeryhighUSFS/NPS/BLM/USACEoverlap; no independentcountallocation.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [0, 0],
+        "itinerary_ready_net_if_all_gates_pass": [0, 0]
+      },
+      "effort_cost": "Datafree; APIkey/accountrequiresapproval ifnotalreadyavailable. Publicbulkdownloadmethodnotverified.",
+      "blockers": [
+        "401missingauthorization",
+        "Noapprovedkey",
+        "Existingfederaloverlap"
+      ],
+      "entity_keys": [
+        "FacilityID",
+        "LegacyFacilityID",
+        "ParentRecAreaID",
+        "OrgID"
+      ],
+      "receipts": [
+        {
+          "id": "ridb-unauth",
+          "url": "https://ridb.recreation.gov/api/v1/facilities?limit=5&offset=0",
+          "retrieved_at": "2026-10-21T05:00:31.355856+00:00",
+          "status": 401,
+          "bytes": 32,
+          "sha256": "2a2dd162f134578c65a592fe3805ec8776d761f59bac403d7e1e480d5542a21a",
+          "path": "ridb-unauth.body",
+          "error": "HTTPError"
+        },
+        {
+          "id": "ridb-sharing",
+          "url": "https://www.recreation.gov/use-our-data",
+          "retrieved_at": "2026-10-21T05:00:33.143404+00:00",
+          "status": 200,
+          "bytes": 13172,
+          "sha256": "3eef75e5eb312ecde6f758eba5d0e5700a24672100b7b0de97e1dc9ef8353dc6",
+          "path": "ridb-sharing.body",
+          "error": null
+        },
+        {
+          "id": "blm-ridb-layer",
+          "url": "https://gis.blm.gov/natl/rest/services/recreation/BLM_Natl_Recreation_Sites_Facilities/FeatureServer/0?f=pjson",
+          "retrieved_at": "2026-10-21T05:02:13.329898+00:00",
+          "status": 200,
+          "bytes": 14556,
+          "sha256": "ac3430a5576b97e739dd39abc4891ea8dce72ad44b03963499a1f5d2516b970f",
+          "path": "blm-ridb-layer.body",
+          "error": null
+        }
+      ],
+      "acquisition_recipe": "UseasIDcrosswalk/corroboration afterauthorizedreadaccess. Do notsumfacilitiesagainstagencypoints; determineentitiesfirst."
+    },
+    {
+      "id": "ny-food",
+      "name": "New York current farmers markets/farm stands",
+      "steward": "NYS Department of Agriculture and Markets",
+      "coverage": "NewYork seasonalmarket/farmstandfoodstops",
+      "candidate_counts": {
+        "measured_rows": 675
+      },
+      "sample_findings": "First10hasoperatorlinks/address/season/hours; firstAltamontOrchardsFarmStand givesrealaddress andJune\u2013Novemberseason. Needindependentpublicvisitorquality andnativepointvalidation. No whole675acceptance claim.",
+      "rights": {
+        "status": "retainedrepoOPEN-NYgrant; primarytermsmetadataalsoqueried",
+        "primary_url": "https://data.ny.gov/dataset/OPEN-NY-Terms-Of-Use/77gx-ii52",
+        "evidence": "ExistingretainedtermsLicenseRef-NY-Open-Data permitslawfulpublic/private reuse underrevocablenonexclusivegrant, noattribution/sharealike requirement; credit agency anyway. Excludepersonalcontacts/creativecopy/photos."
+      },
+      "freshness": "RowsupdatedOct6,2026. MetadataQuarterly vsnotesweeklycontradiction; noassuranceeverybusinessfresh.",
+      "arrival_access": "Nativecoords/addressarecandidateidentity; schedulesnotguarantee/currentinventory. Exclude nonvisitordistributioncenters; dateseasonreview.",
+      "overlap": "Existingbatchaccepted33NYmarkets; significantoverlapcannotcountall675. CrossmatchUSDAID/farmwebsite/address.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [50, 150],
+        "itinerary_ready_net_if_all_gates_pass": [25, 100]
+      },
+      "effort_cost": "FreeanonymousSocrataquerywithpagination; adapterexisting,1day+operatorreview.",
+      "blockers": [
+        "Currentoperatorverification",
+        "Livecatalogunavailable",
+        "Datasetcadencemetadatacontradiction",
+        "Existing33overlap"
+      ],
+      "entity_keys": [
+        "market_name",
+        "operatorURL",
+        "address",
+        "USDAIDifavailable"
+      ],
+      "receipts": [
+        {
+          "id": "ny-markets-count",
+          "url": "https://data.ny.gov/resource/qq4h-8p86.json?$select=count(*)",
+          "retrieved_at": "2026-10-21T05:04:29.350555+00:00",
+          "status": 200,
+          "bytes": 18,
+          "sha256": "cdbb9e0829c6228d73963e022b0665369c77c7a558a4c4881f009bd83d1480de",
+          "path": "ny-markets-count.body",
+          "error": null
+        },
+        {
+          "id": "ny-markets-meta",
+          "url": "https://data.ny.gov/api/views/qq4h-8p86.json",
+          "retrieved_at": "2026-10-21T05:04:31.016100+00:00",
+          "status": 200,
+          "bytes": 37534,
+          "sha256": "f2d017669bb122a4ea90ef0fdc1b38e511609935f441a44bb559e4c7e1658166",
+          "path": "ny-markets-meta.body",
+          "error": null
+        },
+        {
+          "id": "ny-markets-sample",
+          "url": "https://data.ny.gov/resource/qq4h-8p86.json?$limit=10",
+          "retrieved_at": "2026-10-21T05:04:30.040400+00:00",
+          "status": 200,
+          "bytes": 5765,
+          "sha256": "3d35cacf2faac59731bbfa6e98f050e3ba07e4a8a6cea5cc1afe6955c7aa502c",
+          "path": "ny-markets-sample.body",
+          "error": null
+        },
+        {
+          "id": "ny-terms-dataset",
+          "url": "https://data.ny.gov/api/views/77gx-ii52.json",
+          "retrieved_at": "2026-10-21T05:09:36.643424+00:00",
+          "status": 200,
+          "bytes": 2821,
+          "sha256": "264e25329b2a41b6f9bbd042ab6c8b9b2edf6e51c68eb1a94fedb1cdff3fa036",
+          "path": "ny-terms-dataset.body",
+          "error": null
+        }
+      ],
+      "acquisition_recipe": "Usecountthenboundedorderedpages; retaineddatasetupdatedtimestamp. Nativecoordinatesunchanged, currentoperatorcorroborationexplicit. Stripcontactpersonalfields atstaging."
+    },
+    {
+      "id": "co-food",
+      "name": "Colorado farmers markets historic source",
+      "steward": "Colorado Department of Agriculture",
+      "coverage": "Coloradofoodmarket/farmvisitorleads",
+      "candidate_counts": {
+        "measured_rows": 201
+      },
+      "sample_findings": "First5finitecoords; BoulderFarmersMarket fieldtimes literally Times andconflictingseasonfields. Datasettitle2017,description2014; notcurrenthours.",
+      "rights": {
+        "status": "datasetmetadataexplicitPublicDomain; no copythirdpartylinkedtext",
+        "primary_url": "https://data.colorado.gov/api/views/ms6b-y4xc.json",
+        "evidence": "SocratametadataexplicitPublicDomainlicense. CreditCDA; noendorsement/photos/logos."
+      },
+      "freshness": "RowsupdatedMay2017; metadataexpectedupdateNever; rowtimefields2013. Allpracticalfacts needfreshoperatorreview.",
+      "arrival_access": "Marketlocationscanberoadclosures/civicvenues/seasonal; nativepointidentitycandidate notcurrentarrivalparking.",
+      "overlap": "USDAFMIDstrongcrosswalk; overlapothermarketfamiliesandOSMhigh.",
+      "forecast": {
+        "type": "conditional expert planning allowance, NOT measured acceptance or additive guarantee",
+        "current_admitted": 0,
+        "committed_net": 0,
+        "identity_public_access_verified_net_if_all_gates_pass": [50, 100],
+        "itinerary_ready_net_if_all_gates_pass": [20, 60]
+      },
+      "effort_cost": "Freeanonymousquery;1\u20132daysadapter+currentoperatorreview, muchhigherstalenessreviewthanNY.",
+      "blockers": [
+        "2017datasetneverupdates",
+        "Invalidhoursplaceholder",
+        "Currentmarketexistence/location",
+        "Seasonalcalendars"
+      ],
+      "entity_keys": ["usdafmid", "operatorURL", "name+address"],
+      "receipts": [
+        {
+          "id": "co-markets-count",
+          "url": "https://data.colorado.gov/resource/ms6b-y4xc.json?$select=count(*)",
+          "retrieved_at": "2026-10-21T05:04:31.880835+00:00",
+          "status": 200,
+          "bytes": 18,
+          "sha256": "d7f29c402c6b803036321c5d2e31908d7ad266a72b4b0bf23a13ceeed0d41d79",
+          "path": "co-markets-count.body",
+          "error": null
+        },
+        {
+          "id": "co-markets-meta",
+          "url": "https://data.colorado.gov/api/views/ms6b-y4xc.json",
+          "retrieved_at": "2026-10-21T05:04:38.440002+00:00",
+          "status": 200,
+          "bytes": 61754,
+          "sha256": "130a287173f31b54184d8001a6906b869b11b5d3f62a2e8beab1120e6e99f7e1",
+          "path": "co-markets-meta.body",
+          "error": null
+        },
+        {
+          "id": "co-markets-sample",
+          "url": "https://data.colorado.gov/resource/ms6b-y4xc.json?$limit=5",
+          "retrieved_at": "2026-10-21T05:04:33.107557+00:00",
+          "status": 200,
+          "bytes": 5344,
+          "sha256": "f4694bccceff48b650eb4b6047d7b86921814933b4534bdb1c0f42218e76d795",
+          "path": "co-markets-sample.body",
+          "error": null
+        }
+      ],
+      "acquisition_recipe": "TakeIDs/names/nativepoints as historicalleads only. Verifyoperatorcurrentidentity/location/hours from scratch; quarantineclosed/moved/unknown, never carryoldhoursintoprofiles."
+    }
+  ],
+  "evidence_receipts": "receipts.json: original URL, retrieval timestamp,status,retained bytes,SHA256; originals .body. HTTP failures retained as failures, not permission or data.",
+  "total_conditional_nonadditive_identity_range": [1006, 2164],
+  "total_conditional_nonadditive_ready_range": [485, 1233],
+  "interpretation": "Sums of source-family allowances are a non-additive opportunity envelope; USDA/markets/federal sites overlap and low ends are not guaranteed. Suggest diversified nature+food allocation700\u20131300 net identity/public-access-verified after pilot, with trailhead cap; cannot substantiate 5000 from these sources alone."
+}

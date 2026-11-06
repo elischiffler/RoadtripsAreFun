@@ -1,0 +1,74 @@
+{
+  "schema_version": "roadtrips-catalog-research-artifacts/1",
+  "research_date": "2026-10-21",
+  "preserved_implementation_commit": "f3c561b",
+  "manifest_excludes_itself": true,
+  "files": [
+    {
+      "path": "docs/catalog-5000-plan-20261021.md",
+      "bytes": 72044,
+      "sha256": "390617b605df1c29a6d3a1b6953742429354a39052d017e3cf0a320c41799ae8"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/README.md",
+      "bytes": 3092,
+      "sha256": "94b1a4d747ade2cf49abf1bee69632fc6f5305360af6d9d4e1fb2586ac0092fd"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/coverage-and-sizing.json",
+      "bytes": 7061,
+      "sha256": "f059469c145faf6f72bd1d08a57da336bd0dd2d06a609a42bbd50ffef7a9b7c2"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/culture-source-portfolio.json",
+      "bytes": 67907,
+      "sha256": "c31a1c05cef72dc3922eee4c63e8dea0f519ef9076798094018c106a0a96cab6"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/derived-metrics.json",
+      "bytes": 261,
+      "sha256": "c205496653776e9b9ebfb46be8067a50ac1e90c045a794aa95d188326ae4de95"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/nature-food-source-portfolio.json",
+      "bytes": 61832,
+      "sha256": "93058b6b16bdd01ae6fdb1410906303b7cb4c0f9de7588feb02b3d6438356952"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/nhl-listed-leads-by-state.json",
+      "bytes": 1171,
+      "sha256": "924135f3fde3fab9233215fe922e89cb796d106a9fabf5aef6f9729be4ada328"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/niche-reddit-source-portfolio.json",
+      "bytes": 20142,
+      "sha256": "feb2df71ab85b5b5fb91274a476269d1b88fe48ce76f0a1a7666f8fe9c993a98"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/program.json",
+      "bytes": 3738,
+      "sha256": "2485343744e6e7633909c98bfab88c59dbc5c8348920df35e8ebc0fb07074563"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/reddit-leads.json",
+      "bytes": 11910,
+      "sha256": "fda020bfcd6d8ed32ebb6e1412eff37ca6554910e8d8e4622cde44a9655757bf"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/research-receipts.json",
+      "bytes": 166752,
+      "sha256": "d73bd1cba77dec9dc091c72b267ec56e1a71324e1809aba508109cee6894aaa4"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/root-source-portfolio.json",
+      "bytes": 17363,
+      "sha256": "28d52c508a17551925944ca7600933781c997b3b07d273202278af213a6b30e6"
+    },
+    {
+      "path": "docs/data/catalog-5000-research-20261021/validation.json",
+      "bytes": 1510,
+      "sha256": "f8c73278049061be7e896967b12f886a4fec0d3a537be4c829cdff258d5ef8df"
+    }
+  ],
+  "total_artifact_bytes_excluding_manifest": 434783
+}

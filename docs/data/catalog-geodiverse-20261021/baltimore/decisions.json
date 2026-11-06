@@ -1,0 +1,25 @@
+[
+  {
+    "pilot_id": "baltimore-heritage-392",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:baltimore-heritage:392",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "baltimore-heritage-396",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:baltimore-heritage:396",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "baltimore-heritage-82",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:baltimore-heritage:82",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "baltimore-heritage-200",
+    "reason": "operator_explicitly_temporarily_closed; operator redirects to separate Carroll Mansion page; never substitute its address/hours",
+    "tier": "T1"
+  }
+]

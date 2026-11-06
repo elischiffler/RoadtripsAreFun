@@ -1,0 +1,378 @@
+{
+  "original_research_sha256": "460be19121bf5ad970d50615d9f7f08af25edd5574a87bd27723101c81ae67b5",
+  "schema_version": "roadtrips-source-ledger/1",
+  "sources": [
+    {
+      "access_terms": "Public documents accessible. Robots disallows admin/dev, query URLs and several action paths; sampled public pages have no queries. Initial guessed copyright path returned404; correct linked terms then read.",
+      "adaptation": "Noncommercial adaptations require ShareAlike; exact version/compatible-license obligation unresolved because primary policy label and URL disagree.",
+      "attribution": "At minimum credit named author(s) and link original; full citation recommended. Preserve copyright/license notices.",
+      "candidate_count_measured": 2,
+      "checked_at": "2026-10-21T17:55:05.288351+00:00",
+      "commercial_definition": "Not primarily intended for or directed towards commercial advantage or monetary compensation. Zero app revenue alone does not establish qualification.",
+      "decision": "quarantine_license_version_conflict_target_context_and_arrival",
+      "evidence_refs": [
+        {
+          "path": "raw/serc-terms.html",
+          "receipt_id": "serc-terms",
+          "sha256": "63edca974aaa965954a4bff9a0dd0fa3defce6623c505f4fa01c5d8afff9d0e8",
+          "status": 200,
+          "url": "https://serc.carleton.edu/serc/terms_of_use.html"
+        },
+        {
+          "path": "raw/serc-beartooth.html",
+          "receipt_id": "serc-beartooth",
+          "sha256": "4c0815f80488dfb43a87133e24b6fd95d45c9c2f29de8d1196ae4ab8da6a79ec",
+          "status": 200,
+          "url": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/beartooth_mountains/index.html"
+        },
+        {
+          "path": "raw/serc-roadlog.html",
+          "receipt_id": "serc-roadlog",
+          "sha256": "8190bcdb956fb61657f86cb6bdc97b695b066bb06daedfd8588ddafabefa23d6",
+          "status": 200,
+          "url": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/Red_Lodge_Beartooth_Pass_Cooke_City.html"
+        },
+        {
+          "path": "raw/serc-robots.txt",
+          "receipt_id": "serc-robots",
+          "sha256": "d6470fb2a6627830782bd426ecd3b37ae27ddff62680d42ba0061618ee97829c",
+          "status": 200,
+          "url": "https://serc.carleton.edu/robots.txt"
+        },
+        {
+          "path": "raw/cc-ncsa4.html",
+          "receipt_id": "cc-ncsa4",
+          "sha256": "527c4e0e75a7aafe819a9ed481c227f27645736fa800f25d6d94ed37a362afd7",
+          "status": 200,
+          "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en"
+        }
+      ],
+      "freshness": "Terms updated June 12, 2026; roadlog initial publication January 13, 2025. Publication date does not establish current road/access status.",
+      "future_monetization_excluded": true,
+      "license_identifier": "CC-BY-NC-SA (version conflict: displayed 4.0; linked 3.0)",
+      "license_url": "https://serc.carleton.edu/serc/terms_of_use.html",
+      "license_version": "ambiguous: terms anchor text says 4.0 but href is http://creativecommons.org/licenses/by-nc-sa/3.0/",
+      "partition": "noncommercial_only",
+      "precise_question": "Which CC BY-NC-SA version governs default text (displayed4.0 versus linked3.0)? Does trip planner qualify as NC and can separated transformed profiles comply with the resolved ShareAlike grant? Current access/location/arrival/dedup still unresolved.",
+      "redistribution": "Noncommercial sharing with attribution, original link, license and notices.",
+      "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+      "rights_scope": "Default original page text NC/SA grant has version conflict: displayed Attribution-NonCommercial-ShareAlike 4.0 links to BY-NC-SA 3.0. Author retains copyright. Individual media may carry different terms; all media excluded.",
+      "source_id": "serc-montana-geoheritage",
+      "source_url": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/beartooth_mountains/index.html",
+      "steward": "Science Education Resource Center, Carleton College"
+    },
+    {
+      "access_terms": "No framing/hotlinking individual graphics/tables; deep links must remain verified; image publication needs separate one-time written permission. No permission requested.",
+      "adaptation": "General use grant is not explicit about transformed profiles; image alteration prohibited absent permission. No images used.",
+      "attribution": "Credit Texas Historical Commission; preserve relevant third-party credits.",
+      "candidate_count_measured": 1,
+      "checked_at": "2026-10-21T17:55:05.288351+00:00",
+      "commercial_definition": "Noncommercial not further defined in inspected policy; no assumption from zero revenue.",
+      "decision": "quarantine_target_context_and_transformation_scope",
+      "evidence_refs": [
+        {
+          "path": "raw/texas-policy.html",
+          "receipt_id": "texas-policy",
+          "sha256": "772ec1ff8760e8f864cea782ce1fe283e191cb429f1c2a1adaec56ea31098966",
+          "status": 200,
+          "url": "https://thc.texas.gov/policies"
+        },
+        {
+          "path": "raw/texas-french-legation.html",
+          "receipt_id": "texas-french-legation",
+          "sha256": "2aa4d865c9589843f971bbcd570de30aa9f29025471634aee34a79304b4f5d53",
+          "status": 200,
+          "url": "https://thc.texas.gov/state-historic-sites/french-legation/plan-your-visit-french-legation"
+        },
+        {
+          "path": "raw/texas-robots.txt",
+          "receipt_id": "texas-robots",
+          "sha256": "17f7b0b22f4a02e7b9d4b252bf47b78870c738d7f35dcfdb043b02470e347603",
+          "status": 200,
+          "url": "https://thc.texas.gov/robots.txt"
+        }
+      ],
+      "future_monetization_excluded": true,
+      "license_identifier": "LicenseRef-THC-Noncommercial",
+      "license_url": "https://thc.texas.gov/policies",
+      "license_version": "unknown; 2026 copyright notice",
+      "partition": "noncommercial_only",
+      "precise_question": "Does NC trip planning qualify under THC policy, and does general use in part permit normalized records/derived profiles? Need exact location, arrival, duplicate and current access review.",
+      "redistribution": "Policy permits copy, distribute or use in whole/part for any noncommercial purpose without fee with THC credit, subject to exceptions.",
+      "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+      "rights_scope": "Agency material general NC copy/distribution/use grant; third-party and image-specific rights reserved. Images, graphics and logos excluded.",
+      "source_id": "texas-historical-commission",
+      "source_url": "https://thc.texas.gov/policies",
+      "steward": "Texas Historical Commission"
+    },
+    {
+      "access_terms": "Robots explicitly disallows / for GPTBot, ChatGPT-User and OAI-SearchBot. Learned after disclaimer read; acquisition stopped. No place record fetched, no retry/bypass.",
+      "adaptation": "NoDerivs may prohibit sharing transformed expressive profiles. Separate factual extraction scope and database rights unresolved.",
+      "attribution": "Credit project and original creators; exact legal-version notice requirements unknown.",
+      "candidate_count_measured": 0,
+      "checked_at": "2026-10-21T17:55:05.288351+00:00",
+      "commercial_definition": "Source describes noncommercial scholarly purposes; app purpose not established as scholarly.",
+      "decision": "quarantine_access_restricted_and_ncnd_scope",
+      "evidence_refs": [
+        {
+          "path": "raw/newdeal-disclaimer.html",
+          "receipt_id": "newdeal-disclaimer",
+          "sha256": "0e905714e34a92e0f9a19546b3cc397806c192b204df36fc0233df6d80ccb9cc",
+          "status": 200,
+          "url": "https://livingnewdeal.org/disclaimer/"
+        },
+        {
+          "path": "raw/newdeal-robots.txt",
+          "receipt_id": "newdeal-robots",
+          "sha256": "ba8fc6e66645a34e5ef7480b9d3c0e5359de6a35ad8595207c74ed2b033fdb03",
+          "status": 200,
+          "url": "https://livingnewdeal.org/robots.txt"
+        }
+      ],
+      "future_monetization_excluded": true,
+      "license_identifier": "CC-BY-NC-ND (version unspecified)",
+      "license_url": "https://livingnewdeal.org/disclaimer/",
+      "license_version": "unknown; source links Creative Commons homepage, not versioned license",
+      "partition": "noncommercial_only",
+      "precise_question": "Can this agent acquire records under published access restrictions? Is trip planning a permitted scholarly use, which exact license version applies, and can transformed profiles be shared? No contact authorized.",
+      "redistribution": "Original content stated available under Attribution NonCommercial NoDerivs; version and noncommercial scholarly restriction unresolved.",
+      "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+      "rights_scope": "Only data/images original to project where unspecified. Third-party material retains original rights; fair-use statement is not a sublicense.",
+      "source_id": "living-new-deal",
+      "source_url": "https://livingnewdeal.org/disclaimer/",
+      "steward": "Living New Deal"
+    },
+    {
+      "access_terms": "Primary metadata endpoint returned HTTP503; stopped without retry or alternate-path bypass. No request form submitted, archive downloaded, account created or agreements accepted. Publisher-indexed size ~2.9GB is not a measured download.",
+      "adaptation": "NC adaptations permitted with attribution/change notice if license confirmed; no SA condition.",
+      "attribution": "Retain original authors, DOI, version/license and change notices; exact dataset citation to confirm from accessible original.",
+      "candidate_count_measured": 0,
+      "checked_at": "2026-10-21T17:55:05.288351+00:00",
+      "commercial_definition": "Not primarily intended for or directed towards commercial advantage or monetary compensation. Zero app revenue alone does not establish qualification.",
+      "decision": "quarantine_primary_metadata_unavailable_context_only",
+      "evidence_refs": [
+        {
+          "path": null,
+          "receipt_id": "gfz-worldatlas",
+          "sha256": null,
+          "status": "blocked_or_failed",
+          "url": "https://dataservices.gfz-potsdam.de/contact/showshort.php?contactform=&id=escidoc%3A1541893"
+        },
+        {
+          "path": "raw/cc-nc4.html",
+          "receipt_id": "cc-nc4",
+          "sha256": "3307f50ad87c95b551b6a9c4e30c7fc4408f15e5b0e957542b2883f24df74474",
+          "status": 200,
+          "url": "https://creativecommons.org/licenses/by-nc/4.0/legalcode.en"
+        }
+      ],
+      "future_monetization_excluded": true,
+      "license_identifier": "CC-BY-NC-4.0 (indexed primary claim; raw metadata unverified)",
+      "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "license_version": "4.0 claimed in indexed publisher metadata; license change November 13, 2019",
+      "partition": "noncommercial_only",
+      "precise_question": "Need accessible primary data/license grant through permitted means and target NC qualification; even then old raster cannot prove present sky quality or public night access.",
+      "redistribution": "NC attribution sharing permitted if claimed license confirmed on actual data.",
+      "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+      "rights_scope": "2016 artificial night sky brightness raster, DOI10.5880/GFZ.1.4.2016.001 version1.1; context only, no visitor place/arrival data.",
+      "source_id": "gfz-new-world-atlas",
+      "source_url": "https://dataservices.gfz-potsdam.de/contact/showshort.php?contactform=&id=escidoc%3A1541893",
+      "steward": "GFZ Data Services; Falchi and colleagues"
+    },
+    {
+      "access_terms": "Only policy read, no bridge records acquired; no contact or permission requested. Selective metal/concrete bridges, not wooden covered-bridge catalog.",
+      "adaptation": "No adaptation grant verified. No source articles/photos copied into candidate profiles.",
+      "attribution": "Proper citation for limited quoted/paraphrased use; exact permission needed for broader publication.",
+      "candidate_count_measured": 0,
+      "checked_at": "2026-10-21T17:55:05.288351+00:00",
+      "commercial_definition": "No blanket NC exception found; fees/permission may apply.",
+      "decision": "discovery_only_rights_hold",
+      "evidence_refs": [
+        {
+          "path": "raw/historicbridges-policy.html",
+          "receipt_id": "historicbridges-policy",
+          "sha256": "5abedcef506ac054ae2be98cadc11625cc890c6f9d83f0f807e082f56b015659",
+          "status": 200,
+          "url": "https://historicbridges.org/info/about/index.php"
+        }
+      ],
+      "future_monetization_excluded": true,
+      "license_identifier": "All-rights-reserved; no NC grant verified",
+      "license_url": "https://historicbridges.org/info/about/index.php",
+      "license_version": "unknown",
+      "partition": "noncommercial_only",
+      "precise_question": "Would owner license a bounded factual identity/location subset and transformed profiles for public NC redistribution? Existing authority does not permit contacting or accepting agreements.",
+      "redistribution": "Third-party website photo/graphic redistribution forbidden absent permission; limited quoted/paraphrased excerpts with citation described as fair use, not bulk reuse grant.",
+      "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+      "rights_scope": "Photographs, graphics and written material copyright authors; no broad factual database license established.",
+      "source_id": "historicbridges",
+      "source_url": "https://historicbridges.org/info/about/index.php",
+      "steward": "HistoricBridges.org"
+    },
+    {
+      "access_terms": "Public robots file contains User-agent:* with no disallow. Native per-item JSON explicitly linked in original item figure data-json-source. Four individual objects retained; no bulk crawl.",
+      "adaptation": "BY4 adapted factual/profile selection may be shared with attribution/change notice; photo transformations not evaluated.",
+      "attribution": "Preserve each original author/title/itemURL, Baltimore Heritage, BY4 URL and changes notice. Sample photo would need Steve Earley/file-specific credit if ever used.",
+      "candidate_count_measured": 4,
+      "checked_at": "2026-10-21T17:55:05.288351+00:00",
+      "commercial_definition": "CC-BY4 factual partition has no commercial restriction; NC2 photo scope commercial definition not evaluated.",
+      "decision": "separate_permissive_adapter_inputs_ready_nc_media_excluded",
+      "evidence_refs": [
+        {
+          "path": "raw/baltimore-home.html",
+          "receipt_id": "baltimore-home",
+          "sha256": "534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/"
+        },
+        {
+          "path": "raw/baltimore-file-license.html",
+          "receipt_id": "baltimore-file-license",
+          "sha256": "c0edcd185952715efdcd680408e6c114bf36dd8eac8a7b5693d9a477856dddfc",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/files/show/1551"
+        },
+        {
+          "path": "raw/baltimore-robots.txt",
+          "receipt_id": "baltimore-robots",
+          "sha256": "fd89345af6aca5dab85f2aa6a830e270a362b1fa6b5f19607ddd773a081ed651",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/robots.txt"
+        },
+        {
+          "path": "raw/baltimore-392-native.txt",
+          "receipt_id": "baltimore-392-native",
+          "sha256": "c506e1bc77d48e2dea82b8922b860e02d460217e1f0fcbda1b378242ab3416ee",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/392?output=mobile-json"
+        },
+        {
+          "path": "raw/baltimore-396-native.txt",
+          "receipt_id": "baltimore-396-native",
+          "sha256": "42996259c6c33e346eb5226fee5477ad752ac20f3925a7c3411c3b4f08e15d7c",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/396?output=mobile-json"
+        },
+        {
+          "path": "raw/baltimore-82-native.txt",
+          "receipt_id": "baltimore-82-native",
+          "sha256": "851359184e64ca8742477ce47ad8dd4dc4bef477a14a052168e9b829f55d8889",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/82?output=mobile-json"
+        },
+        {
+          "path": "raw/baltimore-200-native.txt",
+          "receipt_id": "baltimore-200-native",
+          "sha256": "b5796a0fb27c4c0ef41eb6fc89c51ccabb67861465860040dd7115e74c796e28",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/200?output=mobile-json"
+        }
+      ],
+      "future_monetization_excluded": false,
+      "license_identifier": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "license_version": "4.0",
+      "partition": "permissive_discovery",
+      "permissive_alternative_path": "../baltimore/adapter-inputs.json",
+      "precise_question": "NC media use is not required or proposed. Four permissive factual records supplied separately to typed adapter; three visitor/address review recommendations and one explicit closure hold require parent gate replay.",
+      "redistribution": "Proposed factual record subset has permissive BY4 attribution grant. NC photo redistribution has separate obligations and is excluded.",
+      "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+      "rights_scope": "Homepage global CC-BY4 grant applies source work; file1551 separately credits Steve Earley and CC-BY-NC2. Do not treat media NC license as applying to factual source records. No photos/article prose imported.",
+      "source_id": "baltimore-heritage-facts",
+      "source_url": "https://explore.baltimoreheritage.org/",
+      "steward": "Baltimore Heritage; named item authors; individual photo creators"
+    },
+    {
+      "access_terms": "Public robots file contains User-agent:* with no disallow. Native per-item JSON explicitly linked in original item figure data-json-source. Four individual objects retained; no bulk crawl.",
+      "adaptation": "BY4 adapted factual/profile selection may be shared with attribution/change notice; photo transformations not evaluated.",
+      "attribution": "Preserve each original author/title/itemURL, Baltimore Heritage, BY4 URL and changes notice. Sample photo would need Steve Earley/file-specific credit if ever used.",
+      "candidate_count_measured": 4,
+      "checked_at": "2026-10-21T17:55:05.288351+00:00",
+      "commercial_definition": "CC-BY4 factual partition has no commercial restriction; NC2 photo scope commercial definition not evaluated.",
+      "decision": "separate_permissive_adapter_inputs_ready_nc_media_excluded",
+      "evidence_refs": [
+        {
+          "path": "raw/baltimore-home.html",
+          "receipt_id": "baltimore-home",
+          "sha256": "534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/"
+        },
+        {
+          "path": "raw/baltimore-file-license.html",
+          "receipt_id": "baltimore-file-license",
+          "sha256": "c0edcd185952715efdcd680408e6c114bf36dd8eac8a7b5693d9a477856dddfc",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/files/show/1551"
+        },
+        {
+          "path": "raw/baltimore-robots.txt",
+          "receipt_id": "baltimore-robots",
+          "sha256": "fd89345af6aca5dab85f2aa6a830e270a362b1fa6b5f19607ddd773a081ed651",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/robots.txt"
+        },
+        {
+          "path": "raw/baltimore-392-native.txt",
+          "receipt_id": "baltimore-392-native",
+          "sha256": "c506e1bc77d48e2dea82b8922b860e02d460217e1f0fcbda1b378242ab3416ee",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/392?output=mobile-json"
+        },
+        {
+          "path": "raw/baltimore-396-native.txt",
+          "receipt_id": "baltimore-396-native",
+          "sha256": "42996259c6c33e346eb5226fee5477ad752ac20f3925a7c3411c3b4f08e15d7c",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/396?output=mobile-json"
+        },
+        {
+          "path": "raw/baltimore-82-native.txt",
+          "receipt_id": "baltimore-82-native",
+          "sha256": "851359184e64ca8742477ce47ad8dd4dc4bef477a14a052168e9b829f55d8889",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/82?output=mobile-json"
+        },
+        {
+          "path": "raw/baltimore-200-native.txt",
+          "receipt_id": "baltimore-200-native",
+          "sha256": "b5796a0fb27c4c0ef41eb6fc89c51ccabb67861465860040dd7115e74c796e28",
+          "status": 200,
+          "url": "https://explore.baltimoreheritage.org/items/show/200?output=mobile-json"
+        }
+      ],
+      "future_monetization_excluded": true,
+      "license_identifier": "CC-BY-NC-2.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc/2.0/",
+      "license_version": "2.0",
+      "partition": "noncommercial_only",
+      "permissive_alternative_path": "../baltimore/adapter-inputs.json",
+      "precise_question": "Would the exact noncommercial grant cover proposed photo use, including author attribution and app purpose? No photo use is implemented.",
+      "redistribution": "Proposed factual record subset has permissive BY4 attribution grant. NC photo redistribution has separate obligations and is excluded.",
+      "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+      "rights_scope": "Only Steve Earley photograph1551, not item factual fields or text; no photo downloaded or imported.",
+      "source_id": "baltimore-heritage-photo1551",
+      "source_url": "https://explore.baltimoreheritage.org/",
+      "steward": "Baltimore Heritage; named item authors; individual photo creators"
+    }
+  ],
+  "summary": {
+    "accepted_count": 0,
+    "downloaded_large_dataset_bytes": 0,
+    "exploratory_not_pursued": [
+      "Clio: generic CC terms did not establish exact license version; sampled historic residence not public visitor destination.",
+      "Cleveland Historical: no explicit page-wide reuse grant observed on inspected homepage.",
+      "Lincoln Zoo personal-use restriction/earlier403 not reprobed."
+    ],
+    "limitations": [
+      "Research does not establish rights qualification from zero revenue.",
+      "No NC place admitted; no routing/dedup/Census gate replay in this research.",
+      "No fresh operator alert review beyond retained French Legation and four Baltimore operator pages."
+    ],
+    "network_attempts": 34,
+    "quarantined_count": 7,
+    "raw_successful_response_bytes": 2049523,
+    "sampled_candidates": 7,
+    "source_count_reviewed": 6
+  }
+}

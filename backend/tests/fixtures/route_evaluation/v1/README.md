@@ -141,7 +141,29 @@ there is no live/capture CLI mode.
 
 ## Measurements and comparisons
 
-`balanced-route-v4` extends existing Lab metrics. Selected/delivered utility each
+Optional `data.json.visit_duration_estimates` contains entries described by
+`duration-estimates.schema.json`: `provider_id`, `capture_id`, `context_hash`, and
+the canonical bounded `visit_duration` object. Compute the context hash with
+`duration_context_hash(duration_context(candidate, normalized_weights))` from
+`app.routing.sources.visit_durations`, using original source names, the same
+validated provider details/ratings and backend match contributions as discovery.
+The prompt version is part of this signature. A changed place, activity,
+preference or match requires a separate capture. ID or utility alone cannot
+identify a reusable estimate.
+
+Real fixtures containing these entries require `manifest.duration_capture` with
+the same model/prompt/configuration/aware-time fields as `rating_capture`. Its
+time must precede the evaluation clock and its ID must match each entry. Both
+data and manifest remain hash-pinned. The offline provider never invokes an AI
+service or uses the live process cache: an absent/mismatched context produces a
+labeled conservative fallback, subject to the full current calendar and road
+checks. Synthetic entries remain unit controls, not real capture evidence.
+
+`balanced-route-v5` extends existing Lab metrics. Daily active time uses measured
+driving, elapsed variable visits and opening waits, excluding hotel rest.
+Incomplete/conflicting active-time evidence is unassessed. Preselection workload
+screening reports bounded visit-time ranges instead of assuming two hours per
+visit. Selected/delivered utility each
 has count, sum, mean, minimum, maximum and median. Missing delivered scored IDs
 make delivered utility unassessed. Unsolved utility is null. Gaps include all
 baseline endpoint gaps, actual longest final driving leg with its distance,

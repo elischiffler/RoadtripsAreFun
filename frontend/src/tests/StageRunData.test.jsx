@@ -75,9 +75,9 @@ it('shows useful summaries and lazily displays precise candidate scores and back
   expect(screen.getByText('2 retained candidates · 1 route sample')).toBeInTheDocument();
   expect(screen.getByText('OPTIMAL · 1 selected / 1 eligible')).toBeInTheDocument();
   expect(
-    screen.queryByLabelText('Raw data: Verified candidates and scores')
+    screen.queryByLabelText('Raw data: Verified candidates and utility scores')
   ).not.toBeInTheDocument();
-  const raw = await open('Verified candidates and scores');
+  const raw = await open('Verified candidates and utility scores');
   expect(JSON.parse(raw.textContent)).toEqual({
     effective_weights: data.explanation.weights,
     query_points: data.explanation.query_points,
@@ -85,10 +85,10 @@ it('shows useful summaries and lazily displays precise candidate scores and back
   });
   expect(raw).toHaveTextContent('0.7123456789');
   expect(raw.querySelector('forest')).toBeNull();
-  await userEvent.click(screen.getByText('Verified candidates and scores'));
+  await userEvent.click(screen.getByText('Verified candidates and utility scores'));
   await waitFor(() =>
     expect(
-      screen.queryByLabelText('Raw data: Verified candidates and scores')
+      screen.queryByLabelText('Raw data: Verified candidates and utility scores')
     ).not.toBeInTheDocument()
   );
 });
@@ -159,7 +159,7 @@ it('includes the error beside retained candidate inputs when discovery fails', a
     { operation: 'attractions.ratings', attempt: 3, max_attempts: 3, outcome: 'failed' },
   ];
   render(<StageRunData result={data} />);
-  const raw = JSON.parse((await open('Verified candidates and scores')).textContent);
+  const raw = JSON.parse((await open('Verified candidates and utility scores')).textContent);
   expect(raw.error).toEqual(data.error);
   expect(raw.attempts).toEqual(data.attempts);
   expect(raw.effective_weights).toEqual(data.explanation.weights);

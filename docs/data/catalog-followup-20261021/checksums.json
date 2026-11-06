@@ -1,0 +1,19 @@
+{
+  "additions.preview.json": "6f529e133c9fb443b4e6aab2ae44d2b2f46e0d519c2b8e05409003cfd21adef2",
+  "arrival-geometry-research.json": "8aa66df5d0a794c0a6cd2ffc550e65189e8b8dadc5f103d0f8024e74b2e80bee",
+  "arrival-qualification.json": "50289046c36fb0eeedfedde009f1383a46e951cb575d9e11e8003e1269bdc44b",
+  "coverage.json": "90044e459498d151e3e5c7d330a54f0b0cbe7de70e1257811cb6773890a10c6a",
+  "decisions.json": "954dcf99ec2817e0be10d94efb350a72f4a34ef79f6cdf2338d828df4cff94c2",
+  "local-proof.json": "eae35482c19d864bab49689a86c5ca36eb37309bcfe634789e89bb1c55db3023",
+  "museums-a-decisions.json": "b320c8b8b42bd16dd70a7cd872118d856653f30f53e0474c5522f1db0098238a",
+  "museums-a-validation.json": "7dd6f1edd7091537b9238495ea2249ddf77cd388cee5dc1543272618ee1cc019",
+  "museums-b-decisions.json": "c9c7fa80380844d8bf12fb8ab12b7f12ba4218fe02b56a5fa0670d0153ea66e3",
+  "museums-b-validation.json": "20f6ae709349e6bca5961fa8cc3363e1d7cd41ab0b8505f5fd27f553270d4bb9",
+  "new-additions-only.json": "db9eae9c78911c53f2a5e90bc8225c33282c9a63a1507a7251c09582c487d02e",
+  "next-batches.json": "6b87f9956666d51ba14446575dab6aa281a6dddb85389e16df3de50b049ae243",
+  "personas.json": "386c5465c358733f62142f79558a5be04b53dd675654aca2a3da4b37b7aef938",
+  "receipts.json": "d72a88c9667f0d568e62435a775ac92fd7826ff4666bd54764f1be82c416fb49",
+  "recovery-receipt.json": "3c1f4c2c82fe8ce98ead3973bdd0a6b808c5e722093258d71e727cb8cc0753aa",
+  "report.json": "ac4cfdffe7c74ed409bb4f6eeced104577a0ac81810ebc206357ed3437b8fccc",
+  "validation.json": "5f9b2a1295db43debcf6f80c34468f8a7ed1bad234f1d397c545432aa25e1d78"
+}

@@ -1,0 +1,170 @@
+[
+  {
+    "pilot_id": "culture:wd:Q1184855",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1184855",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q121088055",
+    "reason": "Operator homepage exceeded the 1 MiB response ceiling. Acquisition stopped; no complete retained body or positive public-visit proof. Source point and identity remain unchanged.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q138709930",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q138709930",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q14704886",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q14704886",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q14709390",
+    "reason": "Primary operator robots returned HTTP 403; stopped without fetching visitor content.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q1477833",
+    "reason": "unresolved local identity/name/250m duplicate or co-location",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q17041213",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q17041213",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q18342322",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q18342322",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q21014382",
+    "reason": "Operator robots returned HTTP 202 challenge/non-policy response. Policy and visitor evidence remain unresolved; no bypass or repeated probe.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q2383834",
+    "reason": "Primary operator robots returned HTTP 503. Policy and current physical visitor evidence remain unresolved; no operator content request or bypass.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q2390897",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q2390897",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q27877659",
+    "reason": "Canonical operator homepage returned HTTP 503 after ordinary redirects; no usable current visitor proof retained.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4121358",
+    "reason": "Source entity and operator homepage cover three separate museum sites. The frozen point may refer to Morrill Hall, but this pass did not resolve institution-versus-physical-destination scope and property-specific current access. No site point or identity substituted.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4833765",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4833765",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q5129847",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5129847",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q5161775",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5161775",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q5263501",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5263501",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q56249541",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q56249541",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6365021",
+    "reason": "Operator homepage retains museum name/address but contains stray template/pop-up/holistic-news content and no affirmative current physical public-visit terms. Identity alone does not establish visitor admission.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6941000",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q6941000",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6941084",
+    "reason": "Primary operator robots returned HTTP 503; policy unresolved and visitor content not fetched.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7028918",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7028918",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7235209",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7235209",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7493533",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7493533",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7525439",
+    "reason": "Primary operator robots returned HTTP 403; stopped without fetching visitor content.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7569917",
+    "reason": "Frozen operator-domain homepage returned HTTP 404. Current primary operator and physical visitor access at the native point remain unresolved; no alternate domain crawl.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7797891",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7797891",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7998110",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7998110",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7998113",
+    "reason": "Operator explicitly states no part of its website may be downloaded or reproduced without prior written permission. Stopped after discovering restriction; body is private negative evidence and excluded from positive adapter. Native CC0 facts alone do not establish an admissible operator review.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q8031716",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q8031716",
+    "tier": "T2"
+  }
+]

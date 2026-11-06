@@ -1,0 +1,22 @@
+{
+  "backend": {
+    "coverage_percent": 80.73,
+    "passed": 2120,
+    "skipped": 138
+  },
+  "backend_and_changed_script_ruff": "passed",
+  "external_ai_requests": 0,
+  "final_backend_run": "complete pass",
+  "frontend_coverage_percent": 92.37,
+  "frontend_format_lint_build": "passed; existing chunk warning",
+  "frontend_tests_passed": 278,
+  "initial_backend_run": "two timing failures under parallel load; performance retry passed; startup-heartbeat test corrected without changing deadlines/runtime",
+  "live_net_new": null,
+  "local_repository_browse_queries": 194,
+  "local_rollback": "both restored synthetic parents and retained candidates",
+  "postgres_tests_passed": 71,
+  "production_writes": false,
+  "proof_batches": 2,
+  "raw_source_and_logs": "/workspace/catalog-geodiverse-20261021",
+  "rights_research_originals_hash_verified": 31
+}

@@ -1,0 +1,43 @@
+{
+  "activated": {
+    "generation": "95ab8e1217d0f1b52e35f6851e34453e1feddec4a50cf35163d96add59b71a6b",
+    "previous_generation": "273873454998fbb1ec36d4b92fcc49f876c2d9dd68847647771e5c8387bf3d00"
+  },
+  "actual_repository_queries": 191,
+  "assembled": {
+    "additions": 191,
+    "bytes": 53075264,
+    "calendar_updates": 0,
+    "evidence_files": 6,
+    "generation": "95ab8e1217d0f1b52e35f6851e34453e1feddec4a50cf35163d96add59b71a6b",
+    "network_or_database_calls": false,
+    "normalized_rows_sha256": "a1f29a72cd41c80c1405d95d8c2b2ac05ff7560da6109dc10888be8e26f7f409",
+    "parent_generation": "273873454998fbb1ec36d4b92fcc49f876c2d9dd68847647771e5c8387bf3d00",
+    "preserved_rows": 1,
+    "retained_evidence_bytes": 52151272,
+    "retained_evidence_files": 243,
+    "rows": 192,
+    "source_scanned_rows": 2703
+  },
+  "calendar_relation_bytes": 16384,
+  "database_bytes": 9336511,
+  "disposable_loopback_port": 55433,
+  "external_network_and_ai": "blocked; fixed disposable loopback database only",
+  "generation": "95ab8e1217d0f1b52e35f6851e34453e1feddec4a50cf35163d96add59b71a6b",
+  "itinerary_ready": 0,
+  "live_net_new": null,
+  "parent_content_preserved": true,
+  "places_index_bytes": 131072,
+  "places_relation_bytes_including_indexes_toast": 1302528,
+  "production_writes": false,
+  "rolled_back": {
+    "generation": "273873454998fbb1ec36d4b92fcc49f876c2d9dd68847647771e5c8387bf3d00",
+    "previous_generation": "95ab8e1217d0f1b52e35f6851e34453e1feddec4a50cf35163d96add59b71a6b"
+  },
+  "scope": "Disposable synthetic-parent development proof; not production/live-parent reconciliation",
+  "source_additions_sha256": "1051120c39ed2e2bc9e503eed0593137830a845b51a53692d79a866d5eae5158",
+  "source_admitted_browse": 191,
+  "source_manifest_sha256": "f5badc26a61d908a9a6d544786ab8524e0ae28f6ad10eee3f02f2eaacf8c4eca",
+  "stage_preserved_pointer": true,
+  "staged_twice_idempotent": true
+}

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import mapboxgl from 'mapbox-gl';
 import LabResults from '../pages/AlgorithmLab/LabResults';
@@ -23,6 +23,12 @@ function run(id, coordinates) {
 }
 
 describe('Lab map lifecycle', () => {
+  beforeEach(() => {
+    vi.stubEnv('VITE_LOCAL_JOURNEY', 'false');
+    vi.stubEnv('VITE_MAPBOX_TOKEN', 'fixture-map-token');
+  });
+  afterEach(() => vi.unstubAllEnvs());
+
   it('recreates the shared map for the next live run even without a pending render', () => {
     const view = render(
       <LabResults

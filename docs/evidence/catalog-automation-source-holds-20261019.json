@@ -1,0 +1,216 @@
+{
+  "receipts": {
+    "ebrpd_guidebook": {
+      "bytes": 24424864,
+      "retrieved_at": "2026-10-20T02:07:21.306665+00:00",
+      "sha256": "0902705b76ca24fe277be35a11803cbc1340252a1207b0c28d2f63eb25f86eb7",
+      "status": 200,
+      "url": "https://www.ebparks.org/sites/default/files/TC-2026-Guidebook-web.pdf"
+    },
+    "ebrpd_terms": {
+      "bytes": 112593,
+      "retrieved_at": "2026-10-20T02:08:22.572268+00:00",
+      "sha256": "4be63d45217af3b3c3db7e8482f3a4d666c1d5c37215c0240c52030fc2151c8f",
+      "status": 200,
+      "url": "https://www.ebparks.org/terms-use"
+    },
+    "fws_don_edwards": {
+      "bytes": 159217,
+      "retrieved_at": "2026-10-20T02:10:05.541317+00:00",
+      "sha256": "1dd952cb6cc6441373ae455fc10b593c785e30f1f92ddd8b4389815c4448253f",
+      "status": 200,
+      "url": "https://www.fws.gov/refuge/don-edwards-san-francisco-bay/visit-us"
+    },
+    "fws_ridgefield": {
+      "bytes": 142316,
+      "retrieved_at": "2026-10-20T02:10:05.948616+00:00",
+      "sha256": "976b5d7577bb273742d5472880e660ebd649e2e510ea38f74b266f06c11a0e64",
+      "status": 200,
+      "url": "https://www.fws.gov/refuge/ridgefield/visit-us"
+    },
+    "fws_stone_lakes": {
+      "bytes": 136389,
+      "retrieved_at": "2026-10-20T02:10:07.466247+00:00",
+      "sha256": "ac263366995420dbeb4d09dd45d86994f19a375dae4db2999e53946d5c826c9e",
+      "status": 200,
+      "url": "https://www.fws.gov/refuge/stone-lakes/visit-us"
+    },
+    "osm_get": {
+      "bytes": 412,
+      "method": "GET",
+      "retrieved_at": "2026-10-20T02:13:02.725019+00:00",
+      "sha256": "ffac0fbc32cf347de3acb1d5fcc0e0dbe4a26fd8fa28479e4b60a6ec17b52b37",
+      "status": 200,
+      "url": "https://overpass-api.de/api/interpreter"
+    },
+    "osm_post": {
+      "bytes": 156,
+      "method": "POST",
+      "retrieved_at": "2026-10-20T02:12:03.778672+00:00",
+      "sha256": "7cd905d731bc5983f218aa91824747ef52e7b2cef4a2bf4aa2adba91dc3e61e6",
+      "status": 406,
+      "url": "https://overpass-api.de/api/interpreter"
+    }
+  },
+  "review_local_date": "2026-10-19",
+  "route_index": {
+    "bytes": 4601,
+    "radius_miles": 5,
+    "real_geometry_vertex_sample_spacing_miles": 4,
+    "result_limit_per_sample": 60,
+    "route_count": 8,
+    "sha256": "dd75b05f65bd067078c6daad07fdb30409f552327b88035215cf0ee10c9f8fde"
+  },
+  "schema_version": "roadtrips-source-hold-review/1",
+  "scope": "Source research and read-only route diagnostics; no source in this report was admitted or activated.",
+  "source_decisions": {
+    "ebrpd": {
+      "admitted": 0,
+      "guidebook_trail_pages_reviewed": 20,
+      "reason": "Explicit publisher reuse restrictions; no compatible reuse grant confirmed. Source text, photographs and artwork were not copied into destination records."
+    },
+    "fws": {
+      "admitted": 0,
+      "native_map_points_examined": 8,
+      "other_holds": [
+        {
+          "facility": "Stone Lakes Blue Heron Trails",
+          "nearest_sample_miles": 14.74,
+          "reason": "Outside every tested route query radius despite explicit seasonal clocks and visitor parking."
+        },
+        {
+          "facility": "Don Edwards Fremont visitor center",
+          "nearest_sample_miles": 6.51,
+          "reason": "Outside tested route query radius; exact visitor-center arrival is not established by the broader unit/administration map marker."
+        }
+      ],
+      "refuge_pages_reviewed": 3,
+      "within_radius_holds": "Solar-hour qualifications remain unresolved; numeric gate clocks alone do not override sunrise/sunset restrictions.",
+      "within_sampled_route_radius": 5
+    },
+    "nps_additional_arrivals": {
+      "admitted": 0,
+      "attempts": [
+        {
+          "code": "prsf",
+          "id": 2353,
+          "name": "William Penn Mott Jr. Presidio Visitor Center",
+          "reason": "arrival_page_facility_address_or_typed_car_section_ambiguous",
+          "url": "https://www.nps.gov/prsf/planyourvisit/presidio-visitor-center.htm"
+        },
+        {
+          "code": "prsf",
+          "id": 2353,
+          "name": "William Penn Mott Jr. Presidio Visitor Center",
+          "reason": "http_301",
+          "url": "https://www.parksconservancy.org/visit/trip-planner.html?to=Presidio%20of%20San%20Francisco:312644314?referrer=https://www.nps.gov/prsf/planyourvisit/directions.htm"
+        },
+        {
+          "code": "goga",
+          "id": 1200,
+          "name": "William Penn Mott Jr. Presidio Visitor Center",
+          "reason": "arrival_page_facility_address_or_typed_car_section_ambiguous",
+          "url": "https://www.nps.gov/prsf/planyourvisit/presidio-visitor-center.htm"
+        },
+        {
+          "code": "goga",
+          "id": 1200,
+          "name": "William Penn Mott Jr. Presidio Visitor Center",
+          "reason": "arrival_page_facility_address_or_typed_car_section_ambiguous",
+          "url": "https://www.nps.gov/goga/planyourvisit/directions.htm"
+        },
+        {
+          "code": "juba",
+          "id": 6027,
+          "name": "William Penn Mott, Jr. Presidio Visitor Center",
+          "reason": "arrival_page_facility_address_or_typed_car_section_ambiguous",
+          "url": "https://www.nps.gov/prsf/planyourvisit/presidio-visitor-center.htm"
+        },
+        {
+          "code": "juba",
+          "id": 6027,
+          "name": "William Penn Mott, Jr. Presidio Visitor Center",
+          "reason": "arrival_page_facility_address_or_typed_car_section_ambiguous",
+          "url": "https://www.nps.gov/juba/planyourvisit/placestogo.htm"
+        },
+        {
+          "code": "klse",
+          "id": 30,
+          "name": "Klondike Gold Rush Visitor Center",
+          "reason": "arrival_page_facility_address_or_typed_car_section_ambiguous",
+          "url": "https://www.nps.gov/klse/planyourvisit/visitor-center.htm"
+        },
+        {
+          "code": "klse",
+          "id": 30,
+          "name": "Klondike Gold Rush Visitor Center",
+          "reason": "arrival_page_facility_address_or_typed_car_section_ambiguous",
+          "url": "https://www.nps.gov/klse/planyourvisit/directions.htm"
+        },
+        {
+          "code": "safr",
+          "id": 1209,
+          "name": "San Francisco Maritime Visitor Center",
+          "reason": "arrival_page_facility_address_or_typed_car_section_ambiguous",
+          "url": "https://www.nps.gov/safr/planyourvisit/the-visitor-center.htm"
+        },
+        {
+          "code": "safr",
+          "id": 1209,
+          "name": "San Francisco Maritime Visitor Center",
+          "reason": "arrival_page_facility_address_or_typed_car_section_ambiguous",
+          "url": "https://www.nps.gov/safr/planyourvisit/directions.htm"
+        },
+        {
+          "code": "safr",
+          "id": 6061,
+          "name": "Maritime Museum",
+          "reason": "arrival_page_facility_address_or_typed_car_section_ambiguous",
+          "url": "https://www.nps.gov/safr/planyourvisit/directions.htm"
+        }
+      ],
+      "ledger_bytes": 2801,
+      "ledger_sha256": "c5c1f4b2e6b7d40f75a60dfebbbea73ee2c270635496d611fccba38c57cda566",
+      "reviewed_restrictions": {
+        "klse": "Street-parking/time limits, private paid lots and street closures remain qualifications",
+        "prsf": "No complete facility-address and typed Car-section match; external unit link was not used as primary NPS access evidence",
+        "safr": "Explicit absence of designated visitor parking; no invented parking arrival"
+      },
+      "scope": "Only these held candidates; other NPS facilities were admitted separately"
+    },
+    "osm": {
+      "adapter_built": false,
+      "attempts": [
+        {
+          "method": "POST",
+          "result": "HTTP406"
+        },
+        {
+          "method": "GET",
+          "result": "HTTP200 with explicit server out-of-memory error; not a usable response"
+        },
+        {
+          "method": "GET",
+          "result": "ReadTimeout at40seconds; no responsebody acquired"
+        }
+      ],
+      "bbox": [
+        37.7,
+        -122.55,
+        37.85,
+        -122.35
+      ],
+      "checked_at": "2026-10-20T02:14:04.662576+00:00",
+      "conclusion": "No complete source response acquired; do not interpret this as an empty attraction catalog. Stop without switching instances or weakening identity/arrival/hours requirements.",
+      "endpoint": "https://overpass-api.de/api/interpreter",
+      "verified_additions": 0
+    }
+  },
+  "unknowns_preserved": [
+    "Actual candidate IANA timezone and arrival",
+    "Source-local solar opening/closing instants",
+    "Holiday exceptions and current component closures",
+    "Parking inventory and ticket availability",
+    "Exact visitor arrival where the publisher supplies only a unit or administration marker"
+  ]
+}

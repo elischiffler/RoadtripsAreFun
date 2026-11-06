@@ -1,0 +1,132 @@
+[
+  {
+    "bytes": 21144,
+    "checked_at": "2026-10-21T17:48:18.819230+00:00",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/200",
+    "id": "group-0:baltimore-pass-baltimore-200",
+    "path": "evidence/67cca50a5f8ba851ac89a9cd22a24c7a7d15619757fb5459943be6bb3385e94b.bin",
+    "sha256": "67cca50a5f8ba851ac89a9cd22a24c7a7d15619757fb5459943be6bb3385e94b",
+    "status": 200,
+    "url": "https://explore.baltimoreheritage.org/items/show/200"
+  },
+  {
+    "bytes": 2729,
+    "checked_at": "2026-10-21T17:49:33.913508+00:00",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/200?output=mobile-json",
+    "id": "group-0:baltimore-pass-baltimore-200-native",
+    "path": "evidence/b5796a0fb27c4c0ef41eb6fc89c51ccabb67861465860040dd7115e74c796e28.bin",
+    "sha256": "b5796a0fb27c4c0ef41eb6fc89c51ccabb67861465860040dd7115e74c796e28",
+    "status": 200,
+    "url": "https://explore.baltimoreheritage.org/items/show/200?output=mobile-json"
+  },
+  {
+    "bytes": 21814,
+    "checked_at": "2026-10-21T17:48:18.817734+00:00",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/392",
+    "id": "group-0:baltimore-pass-baltimore-392",
+    "path": "evidence/cbd148755b1fe281d2d6b6a1637843a915e61cdaf9160703df51efe2614aaec0.bin",
+    "sha256": "cbd148755b1fe281d2d6b6a1637843a915e61cdaf9160703df51efe2614aaec0",
+    "status": 200,
+    "url": "https://explore.baltimoreheritage.org/items/show/392"
+  },
+  {
+    "bytes": 2452,
+    "checked_at": "2026-10-21T17:49:33.911991+00:00",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/392?output=mobile-json",
+    "id": "group-0:baltimore-pass-baltimore-392-native",
+    "path": "evidence/c506e1bc77d48e2dea82b8922b860e02d460217e1f0fcbda1b378242ab3416ee.bin",
+    "sha256": "c506e1bc77d48e2dea82b8922b860e02d460217e1f0fcbda1b378242ab3416ee",
+    "status": 200,
+    "url": "https://explore.baltimoreheritage.org/items/show/392?output=mobile-json"
+  },
+  {
+    "bytes": 27463,
+    "checked_at": "2026-10-21T17:48:18.818604+00:00",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/396",
+    "id": "group-0:baltimore-pass-baltimore-396",
+    "path": "evidence/8576edf557cea503eb45cc43401b3b53c5c6fb7f62fed821f2f56c27c581595c.bin",
+    "sha256": "8576edf557cea503eb45cc43401b3b53c5c6fb7f62fed821f2f56c27c581595c",
+    "status": 200,
+    "url": "https://explore.baltimoreheritage.org/items/show/396"
+  },
+  {
+    "bytes": 5059,
+    "checked_at": "2026-10-21T17:49:33.912898+00:00",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/396?output=mobile-json",
+    "id": "group-0:baltimore-pass-baltimore-396-native",
+    "path": "evidence/42996259c6c33e346eb5226fee5477ad752ac20f3925a7c3411c3b4f08e15d7c.bin",
+    "sha256": "42996259c6c33e346eb5226fee5477ad752ac20f3925a7c3411c3b4f08e15d7c",
+    "status": 200,
+    "url": "https://explore.baltimoreheritage.org/items/show/396?output=mobile-json"
+  },
+  {
+    "bytes": 29028,
+    "checked_at": "2026-10-21T17:48:18.819918+00:00",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/82",
+    "id": "group-0:baltimore-pass-baltimore-82",
+    "path": "evidence/12b8c9a9c365c1f7556b1b6fb6e25e3dc3e3f0d73b5665ca62ba8b0f53f2c22a.bin",
+    "sha256": "12b8c9a9c365c1f7556b1b6fb6e25e3dc3e3f0d73b5665ca62ba8b0f53f2c22a",
+    "status": 200,
+    "url": "https://explore.baltimoreheritage.org/items/show/82"
+  },
+  {
+    "bytes": 5444,
+    "checked_at": "2026-10-21T17:49:33.914128+00:00",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/82?output=mobile-json",
+    "id": "group-0:baltimore-pass-baltimore-82-native",
+    "path": "evidence/851359184e64ca8742477ce47ad8dd4dc4bef477a14a052168e9b829f55d8889.bin",
+    "sha256": "851359184e64ca8742477ce47ad8dd4dc4bef477a14a052168e9b829f55d8889",
+    "status": 200,
+    "url": "https://explore.baltimoreheritage.org/items/show/82?output=mobile-json"
+  },
+  {
+    "bytes": 30005,
+    "checked_at": "2026-10-21T17:46:34.207136+00:00",
+    "final_url": "https://explore.baltimoreheritage.org/",
+    "id": "group-0:baltimore-pass-baltimore-home",
+    "path": "evidence/534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7.bin",
+    "sha256": "534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7",
+    "status": 200,
+    "url": "https://explore.baltimoreheritage.org/"
+  },
+  {
+    "bytes": 26047,
+    "checked_at": "2026-10-21T17:49:35.187530+00:00",
+    "final_url": "https://www.bromoseltzertower.com/",
+    "id": "group-0:baltimore-pass-operator-bromo",
+    "path": "evidence/44da5dbfbf69de9d897d79853408ad8c657750dc3f263603fedcdbf6cc59f5cc.bin",
+    "sha256": "44da5dbfbf69de9d897d79853408ad8c657750dc3f263603fedcdbf6cc59f5cc",
+    "status": 200,
+    "url": "https://www.bromoseltzertower.com/"
+  },
+  {
+    "bytes": 118235,
+    "checked_at": "2026-10-21T17:49:34.581255+00:00",
+    "final_url": "https://peabodyheightsbrewery.com/",
+    "id": "group-0:baltimore-pass-operator-peabody",
+    "path": "evidence/6aad30c6d0cea358ae140462fe3ed5b450a7cd07418415de0ce2225f79e2ca3d.bin",
+    "sha256": "6aad30c6d0cea358ae140462fe3ed5b450a7cd07418415de0ce2225f79e2ca3d",
+    "status": 200,
+    "url": "https://www.peabodyheightsbrewery.com/"
+  },
+  {
+    "bytes": 101782,
+    "checked_at": "2026-10-21T17:49:34.939304+00:00",
+    "final_url": "https://www.poeinbaltimore.org/home/poe-death-exhibit-carroll-mansion/",
+    "id": "group-0:baltimore-pass-operator-shot-tower",
+    "path": "evidence/de91662decf5e2929e15fd90faca685816021d85d198ab039142f94248df5124.bin",
+    "sha256": "de91662decf5e2929e15fd90faca685816021d85d198ab039142f94248df5124",
+    "status": 200,
+    "url": "https://carrollmuseums.org/"
+  },
+  {
+    "bytes": 197845,
+    "checked_at": "2026-10-21T17:49:34.766939+00:00",
+    "final_url": "https://baltimorestreetcarmuseum.org/",
+    "id": "group-0:baltimore-pass-operator-streetcar",
+    "path": "evidence/696e9f87b54fed7736317e2de8e8ba6713097a94d7617150d546084814e08f7f.bin",
+    "sha256": "696e9f87b54fed7736317e2de8e8ba6713097a94d7617150d546084814e08f7f",
+    "status": 200,
+    "url": "https://www.baltimorestreetcarmuseum.org/"
+  }
+]

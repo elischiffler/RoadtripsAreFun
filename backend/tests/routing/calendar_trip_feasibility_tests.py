@@ -85,7 +85,16 @@ def outdoor_place():
         "coordinates": list(POINT),
         "provider_rank": 100,
         "categories": ["daytime", "nature"],
-        "source_provenance": [{"dataset": "Untimed outdoor regression control"}],
+        "source_provenance": [
+            {
+                "dataset": "Synthetic outdoor regression control; explicit fixture hours",
+                "source_visit_calendar": fixture_calendar(
+                    weekly_windows=[
+                        {"weekdays": list(range(7)), "opens": "08:00", "closes": "20:00"}
+                    ]
+                ),
+            }
+        ],
     }
 
 
@@ -211,8 +220,15 @@ async def test_unusable_full_shortlist_cannot_starve_a_real_outdoor_plan(fake_se
         result = await CPSatPlanner().plan(baseline, trip, services)
     assert [stop["provider_id"] for stop in result.stopping_points] == [outdoor["provider_id"]]
     assert [p["provider_id"] for p in discoveries[0].candidates] == [outdoor["provider_id"]]
-    assert ai.rated_names == [outdoor["name"]]
-    assert discoveries[0].explanation["raw_pool_count"] == 1
+    if unusable == "expired_season":
+        assert ai.rated_names == [outdoor["name"]]
+        assert discoveries[0].explanation["raw_pool_count"] == 1
+    else:
+        # A sub-two-hour window can now fit an AI-estimated visit. Reserve the
+        # fallback-feasible outdoor place before spending remaining rating slots
+        # on those windows; this ratings-only fake triggers two-hour fallbacks.
+        assert ai.rated_names.count(outdoor["name"]) == 1
+        assert discoveries[0].explanation["raw_pool_count"] == 19
     assert len(discoveries[0].explanation["calendar_excluded_provider_ids"]) == 18
     assert result.stopping_points[0]["source_provenance"] == outdoor["source_provenance"]
     assert expired == original and hotel_dates == []

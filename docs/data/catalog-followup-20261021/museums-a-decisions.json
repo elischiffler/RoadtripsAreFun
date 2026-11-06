@@ -1,0 +1,1129 @@
+[
+  {
+    "pilot_id": "culture:wd:Q7008533",
+    "native_id": "Q7008533",
+    "name": "New Haven Museum",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/29/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/29/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/29/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Primary operator robots request returned HTTP 403; operator page was not fetched. Identity/location/public visitor admission remain unresolved in this pass."
+  },
+  {
+    "pilot_id": "culture:wd:Q16992238",
+    "native_id": "Q16992238",
+    "name": "Ebenezer Avery House",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/59/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/59/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/59/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Property operator limits house visits to Memorial Day through Labor Day; October 21 is outside the published season. Appointment availability is stated for a separate research center, not confirmed house access. Hold pending current house-visit evidence.",
+    "negative_or_insufficient_evidence": {
+      "receipt": {
+        "id": "followup0-Q16992238-0",
+        "url": "https://averymemorialassociation.com/the-ebenezer-avery-house/",
+        "checked_at": "2026-10-21T15:40:36.258352+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://averymemorialassociation.com/the-ebenezer-avery-house/",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": null,
+        "last_modified": null,
+        "path": "raw/followup0-Q16992238-0.body",
+        "bytes": 89715,
+        "sha256": "2c26c60eb4214b8eb6b5b519c2028b6238bb6152873eff0f86f0ad8a841b763b"
+      },
+      "literal": "The House is open Saturdays and Sundays from Memorial Day to Labor Day"
+    }
+  },
+  {
+    "pilot_id": "culture:wd:Q8047439",
+    "native_id": "Q8047439",
+    "name": "Yale Morris Steinert Collection of Musical Instruments",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/32/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/32/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/32/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Yale operator expressly reports physical collection closure for renovation with projected spring 2027 reopening. Online collection access does not validate a physical visit. Do not infer reopening.",
+    "negative_or_insufficient_evidence": {
+      "receipt": {
+        "id": "operator-Q8047439-0",
+        "url": "https://music.yale.edu/collection",
+        "checked_at": "2026-10-21T15:33:56.932820+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://music.yale.edu/collection",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": "W/\"1792589811\"",
+        "last_modified": "Wed, 21 Oct 2026 13:36:51 GMT",
+        "path": "raw/operator-Q8047439-0.body",
+        "bytes": 160455,
+        "sha256": "aeb5a3f315355aef6fa62aeec64d689130a31be3f865e0090d260de0a85256f6"
+      },
+      "literal": "closed for renovation and projected to reopen Spring 2027"
+    }
+  },
+  {
+    "pilot_id": "culture:wd:Q5281942",
+    "native_id": "Q5281942",
+    "name": "Discovery Museum and Planetarium",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/19/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/19/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/19/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Frozen operator-domain robots request returned HTTP 503. Robots/access policy and current physical visitor eligibility remain unresolved; no alternate host was used to route around this failure."
+  },
+  {
+    "pilot_id": "culture:wd:Q38250800",
+    "native_id": "Q38250800",
+    "name": "Gridley-Parsons-Staples Homestead",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/41/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/41/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/41/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Municipal operator describes town social/family-service offices at the homestead, without affirmative public museum/attraction visits. A historic designation and public-service office are not sufficient tourist eligibility.",
+    "negative_or_insufficient_evidence": {
+      "receipt": {
+        "id": "operator-Q38250800-0",
+        "url": "https://www.explorefarmington.com/guides/staples-house-community-services",
+        "checked_at": "2026-10-21T15:34:03.227337+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://www.explorefarmington.com/guides/staples-house-community-services",
+        "location": null,
+        "content_type": "text/html; charset=utf-8",
+        "etag": null,
+        "last_modified": "Wed, 21 Oct 2026 15:34:03 GMT",
+        "path": "raw/operator-Q38250800-0.body",
+        "bytes": 30798,
+        "sha256": "9e245c12ef4b4248acff0c8ffd6c1103efccf13b7cd654893f5023ad8c13497a"
+      },
+      "literal": "The building houses the town's offices"
+    }
+  },
+  {
+    "pilot_id": "culture:wd:Q6255455",
+    "native_id": "Q6255455",
+    "name": "John Rogers Studio",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/2/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/2/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/2/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Operator corroborates Rogers Studio identity/location and a permanent display, but retained general campus hours do not affirm current public access to this particular studio. Hold property-specific visitor eligibility rather than infer it.",
+    "negative_or_insufficient_evidence": {
+      "receipt": {
+        "id": "operator-Q6255455-0",
+        "url": "https://nchistory.org/portfolio/rogers-studio/",
+        "checked_at": "2026-10-21T15:34:06.302122+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://nchistory.org/portfolio/rogers-studio/",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": null,
+        "last_modified": null,
+        "path": "raw/operator-Q6255455-0.body",
+        "bytes": 195530,
+        "sha256": "95346487d1a373cf1f717ad0959455fb37c40ef88157d0077e3c4aa6e4329a8e"
+      },
+      "literal": "It houses a substantial exhibition of his work on permanent display"
+    }
+  },
+  {
+    "pilot_id": "culture:wd:Q5098184",
+    "native_id": "Q5098184",
+    "name": "Children's Museum of Southeastern Connecticut",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/40/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/40/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/40/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Frozen domain redirects to unrelated motorcycle/restaurant sites. Independently discovered Niantic operator describes the former museum name in search results, but its robots request returned HTTP 403; no operator body was fetched or admission asserted."
+  },
+  {
+    "pilot_id": "culture:wd:Q15961623",
+    "native_id": "Q15961623",
+    "name": "Connecticut Landmarks",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/46/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/46/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/46/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Operator is a statewide network of house museums. Public visits to its member properties do not establish a distinct public attraction at the organization/headquarters point. Physical entity scope remains unresolved.",
+    "negative_or_insufficient_evidence": {
+      "receipt": {
+        "id": "operator-Q15961623-0",
+        "url": "https://ctlandmarks.org/",
+        "checked_at": "2026-10-21T15:34:32.135362+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://ctlandmarks.org/",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": "\"8205-65e59ee5f713e\"",
+        "last_modified": "Wed, 21 Oct 2026 13:43:24 GMT",
+        "path": "raw/operator-Q15961623-0.body",
+        "bytes": 162292,
+        "sha256": "a3dd88ac2281a29713bdad1c35f6aa4e40ae4e06298fba7fe398476514e53dff"
+      },
+      "literal": "a state-wide network of historic house museums"
+    }
+  },
+  {
+    "pilot_id": "culture:wd:Q18325686",
+    "native_id": "Q18325686",
+    "name": "University of Saint Joseph Art Gallery",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/33/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/33/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/33/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "University operator robots request returned HTTP 403; no gallery page fetched. Current physical visitor access/location corroboration remains unresolved."
+  },
+  {
+    "pilot_id": "culture:wd:Q6789613",
+    "native_id": "Q6789613",
+    "name": "Mattatuck Museum",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/11/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/11/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/11/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Museum operator robots request returned HTTP 403; no visitor page fetched. Current physical visitor eligibility remains unresolved."
+  },
+  {
+    "pilot_id": "culture:wd:Q1618645",
+    "native_id": "Q1618645",
+    "name": "Hill-Stead Museum",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/38/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/38/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/38/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T2_source_review",
+    "reason": "Operator offers guided museum visits at the Farmington estate. Source point is a feature location, not a surveyed arrival. Grounds, museum tours and last tour have different constraints; no calendar is compiled.",
+    "operator_url": "https://hillstead.org/",
+    "operator_receipts": [
+      {
+        "id": "operator-Q1618645-1",
+        "url": "https://hillstead.org/",
+        "checked_at": "2026-10-21T15:34:47.242597+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://hillstead.org/",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": null,
+        "last_modified": null,
+        "path": "raw/operator-Q1618645-1.body",
+        "bytes": 243332,
+        "sha256": "9978514d1ccd9ec7a226bf10320c6e38d9b003058a634c474315344a273620ee"
+      }
+    ],
+    "missing_gates": [
+      "arrival",
+      "calendar",
+      "combined_cohort_duplicate_review",
+      "live_parent_reconciliation"
+    ]
+  },
+  {
+    "pilot_id": "culture:wd:Q132041721",
+    "native_id": "Q132041721",
+    "name": "Connecticut Museum of Culture and History",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/31/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/31/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/31/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T2_source_review",
+    "reason": "Physical museum and ticketed exhibitions are corroborated at the Hartford visitor address. Research-center hours differ from museum hours. Former institution aliases and future cross-source duplicates still need the normal reconciliation gates.",
+    "operator_url": "https://www.connecticutmuseum.org/",
+    "operator_receipts": [
+      {
+        "id": "operator-Q132041721-0",
+        "url": "https://www.connecticutmuseum.org/",
+        "checked_at": "2026-10-21T15:34:54.298166+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://www.connecticutmuseum.org/",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": null,
+        "last_modified": "Wed, 21 Oct 2026 15:26:15 GMT",
+        "path": "raw/operator-Q132041721-0.body",
+        "bytes": 175354,
+        "sha256": "08f88c41fb00090a678f2edea6b86bd01c3299f90ff408140471328f0f06423e"
+      }
+    ],
+    "missing_gates": [
+      "arrival",
+      "calendar",
+      "combined_cohort_duplicate_review",
+      "live_parent_reconciliation"
+    ]
+  },
+  {
+    "pilot_id": "culture:wd:Q7611132",
+    "native_id": "Q7611132",
+    "name": "Stepping Stones Museum for Children",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/3/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/3/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/3/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T2_source_review",
+    "reason": "Museum admission and Norwalk physical address are corroborated. Published weekly closure and other opening constraints are retained as source statements, not a routable calendar. Child age suitability and amenities are not inferred from the name.",
+    "operator_url": "https://www.steppingstonesmuseum.org/",
+    "operator_receipts": [
+      {
+        "id": "operator-Q7611132-0",
+        "url": "https://www.steppingstonesmuseum.org/",
+        "checked_at": "2026-10-21T15:34:57.347527+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://www.steppingstonesmuseum.org/",
+        "location": null,
+        "content_type": "text/html; charset=utf-8",
+        "etag": null,
+        "last_modified": "Wed, 21 Oct 2026 04:53:20 GMT",
+        "path": "raw/operator-Q7611132-0.body",
+        "bytes": 91330,
+        "sha256": "313cf24725bac1b2b2bf836b830b28e7f7c64db4d3e08ccced17de0ab99973f8"
+      }
+    ],
+    "missing_gates": [
+      "arrival",
+      "calendar",
+      "combined_cohort_duplicate_review",
+      "live_parent_reconciliation"
+    ]
+  },
+  {
+    "pilot_id": "culture:wd:Q17109130",
+    "native_id": "Q17109130",
+    "name": "Garbage Museum",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/8/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/8/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/8/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Archived original operator announced immediate closure on August 25, 2011 at 1410 Honeyspot Road Extension, Stratford. The frozen feature point is inconsistent with that locality; current operating status/reopening is unverified. Historical closure is not a fabricated permanent-current-status claim.",
+    "negative_or_insufficient_evidence": {
+      "receipt": {
+        "id": "operator-Q17109130-0",
+        "url": "https://web.archive.org/web/20140206095140/www.crra.org/pages/contact_garbage_museum.htm",
+        "checked_at": "2026-10-21T15:35:01.046138+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://web.archive.org/web/20140206095140/www.crra.org/pages/contact_garbage_museum.htm",
+        "location": null,
+        "content_type": "text/html",
+        "etag": null,
+        "last_modified": null,
+        "path": "raw/operator-Q17109130-0.body",
+        "bytes": 17845,
+        "sha256": "2ad4b2dc97f2f37ee56e70f7e6647f4172f6eae088f5a563d636df95395c8cec"
+      },
+      "literal": "the CRRA Board of Directors voted to close the Garbage Museum immediately"
+    }
+  },
+  {
+    "pilot_id": "culture:wd:Q4744478",
+    "native_id": "Q4744478",
+    "name": "American Museum of Tort Law",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/18/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/18/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/18/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T2_source_review",
+    "reason": "Primary visit page corroborates physical Winsted museum visits. No marketing superlatives copied. Parking text does not certify a source-coordinate arrival, and tour/holiday/calendar constraints remain uncompiled.",
+    "operator_url": "https://www.tortmuseum.org/visit/",
+    "operator_receipts": [
+      {
+        "id": "followup3-Q4744478-1",
+        "url": "https://www.tortmuseum.org/visit/",
+        "checked_at": "2026-10-21T15:40:46.240774+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://www.tortmuseum.org/visit/",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": null,
+        "last_modified": null,
+        "path": "raw/followup3-Q4744478-1.body",
+        "bytes": 566062,
+        "sha256": "5b36c1fa2de3a9c215865ba3016be443bf89cdb47904d6feb7c6b00eb611d313"
+      }
+    ],
+    "missing_gates": [
+      "arrival",
+      "calendar",
+      "combined_cohort_duplicate_review",
+      "live_parent_reconciliation"
+    ]
+  },
+  {
+    "pilot_id": "culture:wd:Q7284063",
+    "native_id": "Q7284063",
+    "name": "Railroad Museum of New England",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/28/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/28/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/28/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T2_source_review",
+    "reason": "Operator offers ticketed heritage train experiences from the Thomaston museum/station context. Directions locate the station; they do not establish dated excursion availability or authorize arbitrary equipment-yard access. Source point remains unchanged.",
+    "operator_url": "https://www.rmne.org/map-directions",
+    "operator_receipts": [
+      {
+        "id": "followup4-Q7284063-0",
+        "url": "https://www.rmne.org/map-directions",
+        "checked_at": "2026-10-21T15:40:50.812729+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://www.rmne.org/map-directions",
+        "location": null,
+        "content_type": "text/html;charset=utf-8",
+        "etag": "W/\"dd272df72d3662a967e8bd2b55fc66fe--gzip\"",
+        "last_modified": null,
+        "path": "raw/followup4-Q7284063-0.body",
+        "bytes": 206924,
+        "sha256": "a26960538b78943c9403e1c428752867d978ce86b372058495a05dcf24f65f98"
+      }
+    ],
+    "missing_gates": [
+      "arrival",
+      "calendar",
+      "combined_cohort_duplicate_review",
+      "live_parent_reconciliation"
+    ]
+  },
+  {
+    "pilot_id": "culture:wd:Q15961620",
+    "native_id": "Q15961620",
+    "name": "Webb-Deane-Stevens Museum",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/47/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/47/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/47/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T2_source_review",
+    "reason": "Observed redirects reach the current primary museum operator. The Wethersfield visitor campus offers exhibitions and guided tours; houses, grounds, seasons and tour times have distinct constraints. This is one campus destination, not an addition for each house.",
+    "operator_url": "https://wdsmuseum.org/",
+    "operator_receipts": [
+      {
+        "id": "operator-Q15961620-2",
+        "url": "https://wdsmuseum.org/",
+        "checked_at": "2026-10-21T15:37:06.602508+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://wdsmuseum.org/",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": null,
+        "last_modified": null,
+        "path": "raw/operator-Q15961620-2.body",
+        "bytes": 125688,
+        "sha256": "b2f0de513d12777c45e90f526ec79c66257fab0a12bece0ff1a0adbd10503d08"
+      }
+    ],
+    "missing_gates": [
+      "arrival",
+      "calendar",
+      "combined_cohort_duplicate_review",
+      "live_parent_reconciliation"
+    ]
+  },
+  {
+    "pilot_id": "culture:wd:Q1568434",
+    "native_id": "Q1568434",
+    "name": "Yale University Art Gallery",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/44/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/44/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/44/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T2_source_review",
+    "reason": "Current Yale gallery page explicitly affirms public physical admission at the New Haven address. Native Wikidata point is retained. Nearby independent Yale museums remain subject to the unchanged co-location guard; no exception is requested.",
+    "operator_url": "https://artgallery.yale.edu/",
+    "operator_receipts": [
+      {
+        "id": "operator-Q1568434-0",
+        "url": "https://artgallery.yale.edu/",
+        "checked_at": "2026-10-21T15:37:11.250352+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://artgallery.yale.edu/",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": "W/\"1792596098\"",
+        "last_modified": "Wed, 21 Oct 2026 15:21:38 GMT",
+        "path": "raw/operator-Q1568434-0.body",
+        "bytes": 52772,
+        "sha256": "56ecc662af569e00b897cad19801744ff4c3e8f1864969d24e2f9eaacc7ba0ae"
+      }
+    ],
+    "missing_gates": [
+      "arrival",
+      "calendar",
+      "combined_cohort_duplicate_review",
+      "live_parent_reconciliation"
+    ]
+  },
+  {
+    "pilot_id": "culture:wd:Q6706021",
+    "native_id": "Q6706021",
+    "name": "Lutz Children's Museum",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/53/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/53/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/53/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T2_source_review",
+    "reason": "Operator publishes physical museum admission and Manchester address. Source point is not a verified parking entrance. No child/family suitability rating or animal encounter is asserted merely from branding.",
+    "operator_url": "https://lutzmuseum.org/",
+    "operator_receipts": [
+      {
+        "id": "operator-Q6706021-0",
+        "url": "https://lutzmuseum.org/",
+        "checked_at": "2026-10-21T15:37:14.481832+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://lutzmuseum.org/",
+        "location": null,
+        "content_type": "text/html;charset=utf-8",
+        "etag": "67cfb594c1cdf06cc65aa60db3e9efe0",
+        "last_modified": null,
+        "path": "raw/operator-Q6706021-0.body",
+        "bytes": 308593,
+        "sha256": "06b4cd33daf76a3bdd4caffe56f91fd33309cdc3728b8fe62250f3a806fb7f23"
+      }
+    ],
+    "missing_gates": [
+      "arrival",
+      "calendar",
+      "combined_cohort_duplicate_review",
+      "live_parent_reconciliation"
+    ]
+  },
+  {
+    "pilot_id": "culture:wd:Q6783079",
+    "native_id": "Q6783079",
+    "name": "Mashantucket Pequot Museum and Research Center",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/52/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/52/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/52/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T2_source_review",
+    "reason": "Tribal museum operator confirms public museum visits and the Mashantucket visitor address. Exhibit access, tickets, dates and tours remain source constraints, not guaranteed availability or itinerary readiness.",
+    "operator_url": "https://www.pequotmuseum.org/",
+    "operator_receipts": [
+      {
+        "id": "operator-Q6783079-0",
+        "url": "https://www.pequotmuseum.org/",
+        "checked_at": "2026-10-21T15:37:18.629338+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://www.pequotmuseum.org/",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": null,
+        "last_modified": "Wed, 21 Oct 2026 04:24:29 GMT",
+        "path": "raw/operator-Q6783079-0.body",
+        "bytes": 166239,
+        "sha256": "bf68a889f765dc7ef13b70ebbc1b8ffd9ba31067c173f28a41a01852ed2bd3fb"
+      }
+    ],
+    "missing_gates": [
+      "arrival",
+      "calendar",
+      "combined_cohort_duplicate_review",
+      "live_parent_reconciliation"
+    ]
+  },
+  {
+    "pilot_id": "culture:wd:Q7722479",
+    "native_id": "Q7722479",
+    "name": "The Children's Museum, Connecticut",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/27/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/27/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/27/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Current operator describes mobile programs based in Simsbury, a preschool and a separate Canton nature center; it does not affirm a public museum visit at the frozen West Hartford point. Do not replace the source point with another facility or headquarters.",
+    "negative_or_insufficient_evidence": {
+      "receipt": {
+        "id": "operator-Q7722479-0",
+        "url": "https://www.thechildrensmuseumct.org/",
+        "checked_at": "2026-10-21T15:37:22.294927+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://www.thechildrensmuseumct.org/",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": null,
+        "last_modified": null,
+        "path": "raw/operator-Q7722479-0.body",
+        "bytes": 109126,
+        "sha256": "9ad873191c532f1d8581a866a9b57cf3830264e147915d6c6741edae4db24e45"
+      },
+      "literal": "TCM Mobile Museum, based in Simsbury, CT"
+    }
+  },
+  {
+    "pilot_id": "culture:wd:Q7009890",
+    "native_id": "Q7009890",
+    "name": "New London Customhouse",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/57/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/57/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/57/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T2_source_review",
+    "reason": "Current maritime-society operator corroborates public museum visits at the New London Custom House. Museum identity differs from lighthouse trips and memberships; those are not added as extra stops. Price is not emitted as a maintained current-cost field.",
+    "operator_url": "https://nlmaritimesociety.org/",
+    "operator_receipts": [
+      {
+        "id": "operator-Q7009890-0",
+        "url": "https://nlmaritimesociety.org/",
+        "checked_at": "2026-10-21T15:37:25.854847+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://nlmaritimesociety.org/",
+        "location": null,
+        "content_type": "text/html",
+        "etag": null,
+        "last_modified": null,
+        "path": "raw/operator-Q7009890-0.body",
+        "bytes": 120460,
+        "sha256": "7fd09167578b7af13d7d03d9390b3a42b12e371d152c52a78c4f59f97bca8c3e"
+      }
+    ],
+    "missing_gates": [
+      "arrival",
+      "calendar",
+      "combined_cohort_duplicate_review",
+      "live_parent_reconciliation"
+    ]
+  },
+  {
+    "pilot_id": "culture:wd:Q6973032",
+    "native_id": "Q6973032",
+    "name": "National Helicopter Museum",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/0/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/0/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/0/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Operator publishes a season ending mid October and contradictory Wednesday-Sunday versus Friday-Sunday hours; no current late October visit is affirmed. Hold pending updated seasonal/current access evidence.",
+    "negative_or_insufficient_evidence": {
+      "receipt": {
+        "id": "operator-Q6973032-1",
+        "url": "https://nationalhelicoptermuseum.org/",
+        "checked_at": "2026-10-21T15:37:34.074778+00:00",
+        "method": "GET",
+        "max_response_bytes": 1048576,
+        "status": 200,
+        "final_url": "https://nationalhelicoptermuseum.org/",
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "etag": null,
+        "last_modified": null,
+        "path": "raw/operator-Q6973032-1.body",
+        "bytes": 35267,
+        "sha256": "d182e392378fcab37b229a02f8e1bbd49093b2b94b181e069080b74742131115"
+      },
+      "literal": "from Memorial Day to mid-October"
+    }
+  },
+  {
+    "pilot_id": "culture:wd:Q28874011",
+    "native_id": "Q28874011",
+    "name": "Audubon Center at Bent of the River",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/4/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/4/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/4/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Robots redirect response exceeded the 128 KiB acquisition ceiling; robots policy unresolved. No operator visitor page fetched and no public-access admission inferred."
+  },
+  {
+    "pilot_id": "culture:wd:Q7152453",
+    "native_id": "Q7152453",
+    "name": "Paul Mellon Arts Center",
+    "agent_review": true,
+    "native_source_receipt_id": "group-0:wd-museum-box-ct",
+    "bindings": {
+      "name": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/35/itemLabel/value"
+      },
+      "native_id": {
+        "evidence_id": "group-0:wd-museum-box-ct",
+        "pointer": "/results/bindings/35/item/value",
+        "transform": "url_tail"
+      },
+      "coordinates": {
+        "encoding": "wkt",
+        "value": {
+          "evidence_id": "group-0:wd-museum-box-ct",
+          "pointer": "/results/bindings/35/coord/value"
+        }
+      }
+    },
+    "reviewed_at_epoch": 1792597725,
+    "live_net_new": null,
+    "decision": "T1_hold",
+    "reason": "Robots response exceeded the 128 KiB acquisition ceiling; robots policy unresolved. No private-school arts-center visitor page fetched and no public gallery eligibility inferred."
+  }
+]

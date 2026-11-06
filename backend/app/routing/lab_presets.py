@@ -90,6 +90,22 @@ BENCHMARKS = {
         60,
         "Medium trip with a $60 nightly room target; this is not a hard total budget.",
     ),
+    "long-three-day": (
+        "Long three-day",
+        "sf",
+        "denver",
+        6,
+        180,
+        "Three-day target; actual days depend on visits and the validated schedule.",
+    ),
+    "coast-to-coast": (
+        "Coast to coast",
+        "sf",
+        "nyc",
+        10,
+        180,
+        "Five-day target; inspect actual days and fulfillment rather than assuming feasibility.",
+    ),
 }
 
 # Complete form variations share the benchmark routes, not candidate/provider data.
@@ -172,6 +188,14 @@ BENCHMARK_PROFILES = {
         "evening_interests": ["food"],
     },
 }
+
+for _key in ("long-three-day", "coast-to-coast"):
+    BENCHMARK_PROFILES[_key] = {
+        **deepcopy(BENCHMARK_PROFILES["short-day"]),
+        "traveler_count": 2,
+        "hotel_rooms": [{"adults": 2, "child_ages": []}],
+        "scheduling_policy": {"latest_destination_arrival": "21:00"},
+    }
 
 PRESETS = {
     "coastal-nature": (

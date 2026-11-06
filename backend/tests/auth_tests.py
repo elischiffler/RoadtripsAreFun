@@ -217,7 +217,7 @@ def test_rejects_without_configuration(signed_token, monkeypatch):
     assert error.value.status_code == 503
 
 
-def test_unverified_token_cannot_reach_chat_or_agent(signed_token):
+def test_unverified_token_cannot_reach_saved_trips(signed_token):
     client = TestClient(app)
     with patch("app.routers.chat_api.get_all_chats") as db_read:
         assert (
@@ -225,13 +225,6 @@ def test_unverified_token_cannot_reach_chat_or_agent(signed_token):
             == 401
         )
         db_read.assert_not_called()
-    with patch("app.crud.memory_crud.MemoryCrudStore.load_facts") as memory_read:
-        response = client.post(
-            "/agent/chat",
-            json={"partitionKey": "cognito-user-123", "chatId": "42", "message": "hi"},
-        )
-        assert response.status_code == 401
-        memory_read.assert_not_called()
 
 
 def test_query_tokens_cannot_authorize_chat_reads_or_deletes(signed_token):

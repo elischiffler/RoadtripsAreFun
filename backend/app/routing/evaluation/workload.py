@@ -3,6 +3,8 @@
 from datetime import UTC, timedelta
 from zoneinfo import ZoneInfo
 
+from app.routing.visit_duration import LEGACY_VISIT_SECONDS, MAX_VISIT_SECONDS, MIN_VISIT_SECONDS
+
 
 def screen_workload(fixture, scenario):
     policy = scenario.inputs.scheduling_policy
@@ -36,15 +38,20 @@ def screen_workload(fixture, scenario):
             }
         )
     available = sum(window["active_seconds"] for window in windows)
-    visits = scenario.inputs.num_stops * 7200
+    minimum_visits = scenario.inputs.num_stops * MIN_VISIT_SECONDS
+    maximum_visits = scenario.inputs.num_stops * MAX_VISIT_SECONDS
     driving = fixture.baseline.duration
     return {
         "assessment": "screening_estimate",
         "proof_of_infeasibility": False,
         "direct_driving_seconds": driving,
-        "requested_visit_seconds": visits,
+        "requested_visit_seconds": None,
+        "minimum_requested_visit_seconds": minimum_visits,
+        "maximum_requested_visit_seconds": maximum_visits,
+        "legacy_policy_visit_seconds": scenario.inputs.num_stops * LEGACY_VISIT_SECONDS,
+        "visit_duration_basis": "bounded_estimates_not_yet_selected",
         "optimistic_active_window_seconds": available,
         "utc_windows": windows,
-        "workload_exceeds_screening_windows": driving + visits > available,
+        "workload_exceeds_screening_windows": driving + minimum_visits > available,
         "reason": "Direct provider duration is an estimate, not a certified minimum; actual scheduling and final roads decide observed outcomes.",
     }

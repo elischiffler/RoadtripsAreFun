@@ -1,0 +1,3375 @@
+{
+  "records": [
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Mark Twain House",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f40c3827b0876e6858e5019036d19d586b9d1f4404ce43ac3dab3490c1208472",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q4165331"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "New Britain Museum of American Art",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "c75d48906250e8546af3edfff31381ad0d6915d561db6cd93d3226b3cde043c6",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7005718"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "policy_or_receipt_coverage_gap",
+      "hold_from_combined_release": true,
+      "name": "Mystic Seaport",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "75648d2f685cc4ffc726328e73a685b2b4a36b1e364711bc5de0184efbfce129",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q1890082"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Hill-Stead Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "6f20fec21edb4ffee74134cdfd2dbd62576d6934a5576d27cd74909ba3f24094",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q1618645"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "policy_or_receipt_coverage_gap",
+      "hold_from_combined_release": true,
+      "name": "Connecticut Museum of Culture and History",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "5dd055647f525a1a5ff53597e48c0cee4ffafabda05afe240981fee801d8b986",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q132041721"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Stepping Stones Museum for Children",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f1ced336e587de7f935ab61eae2790a0ee140674e4a0779ed3b7b005114dd657",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7611132"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [
+        {
+          "all_frozen_identity_location_and_access_literals_present": true,
+          "pacing_audit": {
+            "automatic_redirects_observed": false,
+            "body_hash_verified": true,
+            "checked_at": "2026-10-21T15:35:05.314285+00:00",
+            "classification": "no_declared_pacing_requirement_in_retained_policy",
+            "exported_evidence_path": null,
+            "original_receipt_matches": 1,
+            "release_hold_required": false,
+            "request_chain_checks": [
+              {
+                "bounded_completion_gap_satisfied": false,
+                "classification": "no_declared_pacing_requirement_in_retained_policy",
+                "confirmed_miss": false,
+                "conservative_completion_gap_lower_bound_seconds": -32.608938,
+                "event": {
+                  "absolute_body_path": "/workspace/catalog-followup-20261021/museums-a/raw/operator-Q4744478-0.body",
+                  "audit_event_id": "event-0375",
+                  "auto_redirects": false,
+                  "body_sha256_verified": true,
+                  "checked_at": "2026-10-21T15:35:05.314285+00:00",
+                  "final_url": "https://www.tortmuseum.org/",
+                  "hard_wall_cap_seconds": 35,
+                  "id": "operator-Q4744478-0",
+                  "ledger": "/workspace/catalog-followup-20261021/museums-a/receipts.json",
+                  "ledger_pointer": "/39",
+                  "script": "/workspace/catalog-followup-20261021/museums-a/acquire.py",
+                  "script_sha256": "6836d9e0a4e1634611579e31951bbbfd333bd92d04b4a204695be3997233ddff",
+                  "sha256": "2b1753ed4907698f734d9ec58a52c1e527c84e8577533f54d21e1580300b43a7",
+                  "status": 200,
+                  "url": "https://www.tortmuseum.org/",
+                  "user_agent_assumption": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+                },
+                "issues": [],
+                "policy": {
+                  "applicable_user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)",
+                  "crawl_delay_seconds": null,
+                  "event": {
+                    "absolute_body_path": "/workspace/catalog-followup-20261021/museums-a/raw/robots-www-tortmuseum-org-0.body",
+                    "audit_event_id": "event-0373",
+                    "auto_redirects": false,
+                    "body_sha256_verified": true,
+                    "checked_at": "2026-10-21T15:35:02.923223+00:00",
+                    "final_url": "https://www.tortmuseum.org/robots.txt",
+                    "hard_wall_cap_seconds": 35,
+                    "id": "robots-www-tortmuseum-org-0",
+                    "ledger": "/workspace/catalog-followup-20261021/museums-a/receipts.json",
+                    "ledger_pointer": "/38",
+                    "script": "/workspace/catalog-followup-20261021/museums-a/acquire.py",
+                    "script_sha256": "6836d9e0a4e1634611579e31951bbbfd333bd92d04b4a204695be3997233ddff",
+                    "sha256": "ab30c5474e21d8c3737be057fa6dbe57ef7e9a0ddd1b8a38c4a603b2f3c2df6d",
+                    "status": 200,
+                    "url": "https://www.tortmuseum.org/robots.txt",
+                    "user_agent_assumption": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+                  },
+                  "origin": "https://www.tortmuseum.org",
+                  "redirect_chain": [
+                    {
+                      "absolute_body_path": "/workspace/catalog-followup-20261021/museums-a/raw/robots-www-tortmuseum-org-0.body",
+                      "audit_event_id": "event-0373",
+                      "auto_redirects": false,
+                      "body_sha256_verified": true,
+                      "checked_at": "2026-10-21T15:35:02.923223+00:00",
+                      "final_url": "https://www.tortmuseum.org/robots.txt",
+                      "hard_wall_cap_seconds": 35,
+                      "id": "robots-www-tortmuseum-org-0",
+                      "ledger": "/workspace/catalog-followup-20261021/museums-a/receipts.json",
+                      "ledger_pointer": "/38",
+                      "script": "/workspace/catalog-followup-20261021/museums-a/acquire.py",
+                      "script_sha256": "6836d9e0a4e1634611579e31951bbbfd333bd92d04b4a204695be3997233ddff",
+                      "sha256": "ab30c5474e21d8c3737be057fa6dbe57ef7e9a0ddd1b8a38c4a603b2f3c2df6d",
+                      "status": 200,
+                      "url": "https://www.tortmuseum.org/robots.txt",
+                      "user_agent_assumption": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+                    }
+                  ],
+                  "request_rate": null,
+                  "state": "valid_text_policy",
+                  "unscoped_pacing_directives": []
+                },
+                "policy_coverage_missing": false,
+                "previous_same_origin_request": {
+                  "absolute_body_path": "/workspace/catalog-followup-20261021/museums-a/raw/robots-www-tortmuseum-org-0.body",
+                  "audit_event_id": "event-0373",
+                  "auto_redirects": false,
+                  "body_sha256_verified": true,
+                  "checked_at": "2026-10-21T15:35:02.923223+00:00",
+                  "final_url": "https://www.tortmuseum.org/robots.txt",
+                  "hard_wall_cap_seconds": 35,
+                  "id": "robots-www-tortmuseum-org-0",
+                  "ledger": "/workspace/catalog-followup-20261021/museums-a/receipts.json",
+                  "ledger_pointer": "/38",
+                  "script": "/workspace/catalog-followup-20261021/museums-a/acquire.py",
+                  "script_sha256": "6836d9e0a4e1634611579e31951bbbfd333bd92d04b4a204695be3997233ddff",
+                  "sha256": "ab30c5474e21d8c3737be057fa6dbe57ef7e9a0ddd1b8a38c4a603b2f3c2df6d",
+                  "status": 200,
+                  "url": "https://www.tortmuseum.org/robots.txt",
+                  "user_agent_assumption": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+                },
+                "request_start_gap_seconds": 2.391062,
+                "timing_indeterminate": false
+              }
+            ],
+            "snapshot_sha256": "2b1753ed4907698f734d9ec58a52c1e527c84e8577533f54d21e1580300b43a7",
+            "source_url": "https://www.tortmuseum.org/"
+          },
+          "scope": "Potential retained replacement proof only; no approval changed, no new factual review or automatic evidence rebinding."
+        }
+      ],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "American Museum of Tort Law",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "03ef40ac2c8044631da779cfbc7dff4529a0e02266cd3cd1d324083d568b76e6",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q4744478"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [
+        {
+          "all_frozen_identity_location_and_access_literals_present": true,
+          "pacing_audit": {
+            "automatic_redirects_observed": false,
+            "body_hash_verified": true,
+            "checked_at": "2026-10-21T15:35:09.246227+00:00",
+            "classification": "no_declared_pacing_requirement_in_retained_policy",
+            "exported_evidence_path": null,
+            "original_receipt_matches": 1,
+            "release_hold_required": false,
+            "request_chain_checks": [
+              {
+                "bounded_completion_gap_satisfied": false,
+                "classification": "no_declared_pacing_requirement_in_retained_policy",
+                "confirmed_miss": false,
+                "conservative_completion_gap_lower_bound_seconds": -33.28139,
+                "event": {
+                  "absolute_body_path": "/workspace/catalog-followup-20261021/museums-a/raw/operator-Q7284063-0.body",
+                  "audit_event_id": "event-0379",
+                  "auto_redirects": false,
+                  "body_sha256_verified": true,
+                  "checked_at": "2026-10-21T15:35:09.246227+00:00",
+                  "final_url": "https://www.rmne.org/",
+                  "hard_wall_cap_seconds": 35,
+                  "id": "operator-Q7284063-0",
+                  "ledger": "/workspace/catalog-followup-20261021/museums-a/receipts.json",
+                  "ledger_pointer": "/41",
+                  "script": "/workspace/catalog-followup-20261021/museums-a/acquire.py",
+                  "script_sha256": "6836d9e0a4e1634611579e31951bbbfd333bd92d04b4a204695be3997233ddff",
+                  "sha256": "16cb65eabfee33b8f6e41f0fc168b10ccf0f7375aae59e34708380aff5bfdddd",
+                  "status": 200,
+                  "url": "https://www.rmne.org/",
+                  "user_agent_assumption": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+                },
+                "issues": [],
+                "policy": {
+                  "applicable_user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)",
+                  "crawl_delay_seconds": null,
+                  "event": {
+                    "absolute_body_path": "/workspace/catalog-followup-20261021/museums-a/raw/robots-www-rmne-org-0.body",
+                    "audit_event_id": "event-0377",
+                    "auto_redirects": false,
+                    "body_sha256_verified": true,
+                    "checked_at": "2026-10-21T15:35:07.527617+00:00",
+                    "final_url": "https://www.rmne.org/robots.txt",
+                    "hard_wall_cap_seconds": 35,
+                    "id": "robots-www-rmne-org-0",
+                    "ledger": "/workspace/catalog-followup-20261021/museums-a/receipts.json",
+                    "ledger_pointer": "/40",
+                    "script": "/workspace/catalog-followup-20261021/museums-a/acquire.py",
+                    "script_sha256": "6836d9e0a4e1634611579e31951bbbfd333bd92d04b4a204695be3997233ddff",
+                    "sha256": "c3fd6cd0cb3dbb982cfef1506b3e5b3e39804371c9899964df1abb784a14eba9",
+                    "status": 200,
+                    "url": "https://www.rmne.org/robots.txt",
+                    "user_agent_assumption": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+                  },
+                  "origin": "https://www.rmne.org",
+                  "redirect_chain": [
+                    {
+                      "absolute_body_path": "/workspace/catalog-followup-20261021/museums-a/raw/robots-www-rmne-org-0.body",
+                      "audit_event_id": "event-0377",
+                      "auto_redirects": false,
+                      "body_sha256_verified": true,
+                      "checked_at": "2026-10-21T15:35:07.527617+00:00",
+                      "final_url": "https://www.rmne.org/robots.txt",
+                      "hard_wall_cap_seconds": 35,
+                      "id": "robots-www-rmne-org-0",
+                      "ledger": "/workspace/catalog-followup-20261021/museums-a/receipts.json",
+                      "ledger_pointer": "/40",
+                      "script": "/workspace/catalog-followup-20261021/museums-a/acquire.py",
+                      "script_sha256": "6836d9e0a4e1634611579e31951bbbfd333bd92d04b4a204695be3997233ddff",
+                      "sha256": "c3fd6cd0cb3dbb982cfef1506b3e5b3e39804371c9899964df1abb784a14eba9",
+                      "status": 200,
+                      "url": "https://www.rmne.org/robots.txt",
+                      "user_agent_assumption": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+                    }
+                  ],
+                  "request_rate": null,
+                  "state": "valid_text_policy",
+                  "unscoped_pacing_directives": []
+                },
+                "policy_coverage_missing": false,
+                "previous_same_origin_request": {
+                  "absolute_body_path": "/workspace/catalog-followup-20261021/museums-a/raw/robots-www-rmne-org-0.body",
+                  "audit_event_id": "event-0377",
+                  "auto_redirects": false,
+                  "body_sha256_verified": true,
+                  "checked_at": "2026-10-21T15:35:07.527617+00:00",
+                  "final_url": "https://www.rmne.org/robots.txt",
+                  "hard_wall_cap_seconds": 35,
+                  "id": "robots-www-rmne-org-0",
+                  "ledger": "/workspace/catalog-followup-20261021/museums-a/receipts.json",
+                  "ledger_pointer": "/40",
+                  "script": "/workspace/catalog-followup-20261021/museums-a/acquire.py",
+                  "script_sha256": "6836d9e0a4e1634611579e31951bbbfd333bd92d04b4a204695be3997233ddff",
+                  "sha256": "c3fd6cd0cb3dbb982cfef1506b3e5b3e39804371c9899964df1abb784a14eba9",
+                  "status": 200,
+                  "url": "https://www.rmne.org/robots.txt",
+                  "user_agent_assumption": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+                },
+                "request_start_gap_seconds": 1.71861,
+                "timing_indeterminate": false
+              }
+            ],
+            "snapshot_sha256": "16cb65eabfee33b8f6e41f0fc168b10ccf0f7375aae59e34708380aff5bfdddd",
+            "source_url": "https://www.rmne.org/"
+          },
+          "scope": "Potential retained replacement proof only; no approval changed, no new factual review or automatic evidence rebinding."
+        }
+      ],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Railroad Museum of New England",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "c68f187bb13a14d4e133a208dec33f89eb5287daec6f9c406ca92ce326e2fd01",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7284063"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Webb-Deane-Stevens Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "cb90985ddab296de63004b4b1a996dede8cb633484bc248fe48173bd3c3b79d3",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q15961620"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Yale University Art Gallery",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "2dca8464c432623f39951564041b16bf7bbec7eb48de90f03751daa2fd8676d7",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q1568434"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Lutz Children's Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "baeb1f18f2476eecdd1262ee15d2a5aebb2a82f5dcb8be727a0e5f2f2ad8fef7",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q6706021"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Mashantucket Pequot Museum and Research Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "44339a97884d512f631f700bf8f93cb8192a535987f70581544f0154dd6cd09b",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q6783079"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "New London Customhouse",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "af1505bc0fbcb7efbbaa4b34850c833c1b71b7582e8e64edae2d75efe2dca00d",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7009890"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Housatonic Museum of Art",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "1fec056c3426176e318f118bcd7c8e116f0575744a6ccec92d506bd5fa7c972c",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q5913507"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Yale Peabody Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f005884094191f222e3db5d1dbc945ab2a315cc8ec437de422131f484f4b34c3",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q122945"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Windham Textile and History Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f4df583ca38a94d7c254545abb855ac8403dfd190458da4865610da0177f2418",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q8024200"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Mill Hill Historic Park",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "ebceab9172fd2d2c9a05f6220687d326a40f822fd54b3ba2e68e7092eb8449b5",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q6858332"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "declared_pacing_bound_satisfied",
+      "hold_from_combined_release": false,
+      "name": "Meriden Historical Society Museum & History Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "2f3548a43ae4648666e5a30034fe305c3cea93f1e27041baa0ca8bca46f6d09b",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q139900416"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Connecticut Antique Machinery Association",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "ac0e1635d3d5fd915a3b58ed5d66aaa5eaa0de2b31895d4de02187e1c4dc0055",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q110130950"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Topsmead",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "485d00fdda064edcc46280b78015b0506a042ccca623cbf1cef07995bc9fdc4d",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7825165"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Fort Griswold",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "e00bce6e791701851bba5c26db5c55fb1c55b2586b2f83786f0c46b70f3fc37d",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q5471260"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "confirmed_pacing_miss",
+      "hold_from_combined_release": true,
+      "name": "Air Mobility Command Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "77fb37816e0fb2c1d3b82e088a4ca56d260741b1b857f23559a2e6a6faceed7c",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q21028346"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Zwaanendael Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "ff43d157a6ebbf6a3c8bcd2c4ddb5c729fe6f5c5f7ecbf15b6063352473b2a82",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q8075609"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Delaware Art Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "a605865e1afd70f3f609751714ed9fc67ebb40cfc99c5532d7fba7619bccc8a9",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q1183941"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Winterthur Museum, Garden and Library",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "de9997e407e4497ac619b77a14467471fa52ad497d0d47434efafd8d6a27e0c9",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q2585168"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Hagley Museum and Library",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "47439efeb2fe082e72d4f46d8f4014a2e4e6596ba253030265638a1e640dcc1d",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q4785686"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Nemours Mansion and Gardens",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "9a25c9d78289f82af46a33c05c2d71f55327358d038af24247f6d4c8d35e8de9",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q4245099"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Wilmington and Western Railroad",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "7ae7f68a667616138c5dce289ecdf2fa2fa50d1b0941d6f23e0c9a0b675ad2f1",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q8022799"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Delaware Center for the Contemporary Arts",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "d839261e431d4152baebf0a09f682d9344850470cc3b4f5e73fe795719135ba3",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q5253245"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Biggs Museum of American Art",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "ccef83c0c1245e0af46af37888dc424e2f25e98f34d07748c33e17c9638ff425",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q18325919"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "policy_or_receipt_coverage_gap",
+      "hold_from_combined_release": true,
+      "name": "Lewes History Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "6da924b856907e9c45c6270336afbbca4159e9f60d0ae1fbd40ad41f20467b8d",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q84610482"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Nanticoke Indian Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "832d8175e28580d9cdd4eb6ae32e13744f3e8b96d1def52938fd42831b9be9de",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q126325502"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "timing_indeterminate",
+      "hold_from_combined_release": true,
+      "name": "Conner Prairie",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "dc9fc60345de5c42f93ef2136f79eb5ba5dd5d5a06bcb5a6155205235fed59fd",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q5161775"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "policy_or_receipt_coverage_gap",
+      "hold_from_combined_release": true,
+      "name": "Kansas Cosmosphere and Space Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "a9e0268ce55f0b893ffe6f23c2fd9168af7c658555d20cb2a9a66fec7090fbbe",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q847637"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Nebraska History Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f460bf2bfd9a1ea47653b085f12d698f94adb790acb08ad7a8a485a9574aeb59",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q131340500"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Pottawattamie County Jail",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "a457d9b98c7a7a5a82c285f99eb3584c2e3f5f4ea9cfebfa56a48faf21156ec2",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7235209"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Ogden Museum of Southern Art",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "6fd2f41636126d5c3c8d89be48b18db7552439df5aa4cb8b90af776140a2c790",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q2390897"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Durham Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "1706790a1b35ba6ad07527c4ebab91496f7b17f30b7a617d6f5cfb98692448bc",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q5316537"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Des Moines Art Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "8805b0a8d060a89c99d39a76fc4d4da6c2a2f08adc5aab027443194aa9aaa199",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q5263501"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Delta Blues Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "b9a0170a4ae7149d6fcc56384520d88755f069b6ac5fa27b47714ffa21c2f710",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q1184855"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Southern Plains Indian Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "fa956a032de60df6f591d55a665b2507651aa09254b1823cd38c506e5f284daa",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q56249541"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Museum of Radio and Technology",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "848111b80288f31aa972650369b9ca39dcaa973922816750637f5c29320143fc",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q6941000"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Nicodemus National Historic Site",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f34d93aa80903424c9754dd91bb3b3c483e830cd549d7ba1fd1ca87f319a4235",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7028918"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "policy_or_receipt_coverage_gap",
+      "hold_from_combined_release": true,
+      "name": "International Quilt Study Center & Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "8c3881b6fd13651bb51ba0bd6422db16081504b8f7f961e249f5d2dffaaf3988",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q14704886"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "West Virginia Mine Wars Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "046f6caf4bcbd9ea02ae9c8b27ad6274090f27a26ab368fbbfdd2c64e50b86a2",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q138709930"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "confirmed_pacing_miss",
+      "hold_from_combined_release": true,
+      "name": "B.B. King Museum and Delta Interpretive Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "c4267665db83d81863a47ebe9726a39e5135cf4086ba1c39b6a63c4edfd9afc1",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q4833765"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Sheldon Museum of Art",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "4e349aea0f3e04b3f5577c2f40bd5d38a81e599d0a9c9bc082931bcb365db8db",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7493533"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Art Museum of Greater Lafayette",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "992d74f6dc251d4944b79fb3dcdd4b8ed20a40a767be4270ff9b5e40db8af2a8",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q18342322"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Wichita-Sedgwick County Historical Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "5d5a1452d935e2b74ed20a70c4c45985c10f9cc1b6c331d355291c01a4eee8ba",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7998110"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "confirmed_pacing_miss",
+      "hold_from_combined_release": true,
+      "name": "Three Valley Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "56b85ae367e52d58d18745faada678f387c496670718558e717771edbd8e1e60",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7797891"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "timing_indeterminate",
+      "hold_from_combined_release": true,
+      "name": "Omaha Children's Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "d4e63780f48c5ec9b00e0f684678847a6fc6e86bfd7d8e809c18994ed4ce1665",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q17041213"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "policy_or_receipt_coverage_gap",
+      "hold_from_combined_release": true,
+      "name": "Prehistoric Gardens",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "d8cc8e51648353eef5887409abc9ff26e89376189c777a05cf350127003b652d",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q48803945"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Big South Fork Scenic Railway",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "8ac765956028122adcd7aad223a0654d000d59801f009cfd7df8e0496c4395c4",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q4906395"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Black Hills Central Railroad",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "a318795efbecf2ae4793d9a584c622b6b60ee9586051d5268f3dffd70a37793d",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q4920959"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "policy_or_receipt_coverage_gap",
+      "hold_from_combined_release": true,
+      "name": "Cass Scenic Railroad State Park",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "b7303b65cf9483eeff38f1cc772bba451d0820b27aa76c71ac702cc7b02cc13b",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q5049180"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "policy_or_receipt_coverage_gap",
+      "hold_from_combined_release": true,
+      "name": "Valley Railroad",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "ce4e2ca9819c5da928c3e0d6d557e7dca808e725cf04418fa8316724f85eec15",
+      "requirements_or_limits": [
+        "Hold selected evidence pending root review/rebinding of a sufficient retained independent candidate, or a separately authorized compliant future source review. No new acquisition performed."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7912179"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Cumbres and Toltec Scenic Railroad",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "554d6f89cc2ebc9782c19342ec055c757a06b7896030ead0c95ea11bc91c0af2",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q1143763"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Fort Gratiot Light",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "091fd8e630fbc564c19f1a66feccfb38b29ca54d322dd4507e4df00420065b95",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q5471242"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Tybee Island Lighthouse and Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "d04378f68600b79f22d408afa1aae30cffb86320103e9f80dbc9278926fe11cc",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q7859692"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "culture",
+      "detail_file": "details/culture-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_requirement",
+      "hold_from_combined_release": false,
+      "name": "Absecon Light",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "4acd48d0259c38d25ceb64d695f6c9b5b8fd29dc24a09fed7e3743277593ca62",
+      "requirements_or_limits": [
+        "No observed pacing hold under retained policy and stated UA assumptions; this is not blanket terms or factual certification."
+      ],
+      "source_id": "catalog-pilot:wikidata:Q4669685"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Connecticut Science Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "b1b7581d8c4b11ad5f46aeaba5adc4cdd642b66f8b9ceba73cabe2b366907efd",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://ctsciencecenter.org/visit/",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "0272a42de40b28e4b28cc9c0ad5c25398933419d2fb2cffbb6674f4e27e5c5df"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q5161605"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "WonderLab",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "cc7c7a4a62bb2ba48a15a87e5d483c4caae37025138a57f6ea035732428dcbbf",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q8031716"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Clay Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f4d783f10978891a9069c6d870c5fc71ad99c896de8eed124db07379dae53e11",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q5129847"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "North Carolina Botanical Garden",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "685d187636fdebf9d847ba02a7220ea074c6f7c2e1cce94d064eb640e0b6a3b7",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://ncbg.unc.edu/visit/",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "7170a7169a0690efb58d99e1b6d03ccaf5eb9b81f80015485b3a771c13b92d95"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q1099139"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Myriad Botanical Gardens",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "9cf053d419a52d079a76cd051278ed61715bd5a63663b68606b55bebef1a1268",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://myriadgardens.org/",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "635ed9534f377188a04ac31ca5bda42e4808a73e673fd2335505127f1d193c66"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q14708625"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Tulsa Botanic Garden",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "37601d4a4367d84547844999cb4ac495c37235e135f589689e65bbf7027c2543",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://www.tulsabotanic.org/",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "8c155fe05253395b8583d09ed9bc4c2ab0b3e72e537ea11292beaf2e5497821a"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q16902084"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Minnetrista",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "3d9153d7e0af3b2ecbd0d2b68efe64fdcc9bbccf2812f5d22aca401e8eb458d2",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q1937407"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Atlanta Botanical Garden",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f3e0e1da07b462e6bf58e34824526ea21faa2891eef162d7870f7b43592d283f",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q2028223"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Bellingrath Gardens and Home",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "18adfd7201d98ccc6312b6e4386cbecd256d972f3678b831a0c44f2dbeb4dd49",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://bellingrath.org/",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "3b7ffebb4dd0ea6ca9fad7c7777c6e45a2007b7402264c802e49fbbbf20c6e6c"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q4884044"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Bernheim Forest and  Arboretum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "83ea3e87635e0c0dafb6a3ffedfa9c220f7fd414ff133b4cfe05c77c280b695c",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://bernheim.org/plan-your-visit/",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "38fc34e24a49ae70ccb5c4ce382bc4838bd0f2e55c381d636a568bfa89ddb82c"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q4894262"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Birmingham Botanical Gardens",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "e4aa19769335846a98edc321b1b96f39848502c97d160ff4331b2e5d0f0c1ff7",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://bbgardens.org/visit/",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "68f789f25d60b99e598623238bfe22f5fc611b2fd7df2b142b57c224d4c2be54"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q4916622"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Brenton Arboretum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "8ab5d1b600604c8382133455213e03b5ca1e599f700883a3b52748e99b6ff718",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q4961701"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Crosby Arboretum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f606026a54e9056841bbcba7c8d992835bd2fe2ced81e4dec08bb4c48eec2523",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://crosbyarboretum.msstate.edu/visit",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "c1332a06161aadb4a137785e4e6a09b51c9b2eaf22d8124762902274e288b681"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q5188024"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Alaska Botanical Garden",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "fd04aaf1e571975c9e37a48b189c911cb6a092035cbf6d5ed134848e5a834deb",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q1129875"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Bear Hollow Zoo",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f3409c9a0ccefb0f180857e710a6c485fa802caeab5e473d10e513d76d4c6b90",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://www.accgov.com/bearhollow",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "c7d392f41c75e0711ac1ede371e0f5d1ccabaf129b8b5a1019ecd94fb2cb1db8"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q113867110"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Georgia Aquarium",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "08a641f51c50a4202cac1056f9f3c86400663c31b02d6ffbcbf5e14334aab4ab",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q1155919"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Milwaukee County Zoo",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "4a9b5aee880e3b15e83e6508e6807794e99b6ffa93129cfd9db530db16284bc2",
+      "requirements_or_limits": [
+        {
+          "classification": "ambiguous_unscoped_delay_short_interval",
+          "proof_url": "https://milwaukeezoo.org/contact/",
+          "requirement": "Conservative export hold: top-of-file delay is not attached to a User-agent group, but must not be silently ignored. Resolve operator policy applicability and completion-to-start compliance using existing evidence; no remedial requests.",
+          "sha256": "df99a28df411f3d083c9ed1d6196126477a499e8f4b8c309fcc4159f6312178c"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q11781326"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Newport Aquarium",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "998b36d46372211bc4122a126407c4e07ebfdff103b28551295ed310793391a9",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q12859182"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "International Crane Foundation",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "ea575abe56be8a996ee07ab84efd0d3d20f3b3b23a6e8550549c69fd0c763f61",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://savingcranes.org/plan-a-visit/",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "a29bf2e8a4d72e1621002f55ab5418635ab2cb2ad5bb763f4beffc2f99ec4beb"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q1666487"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Landolt Astronomical Observatory",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "7050a1667683ac54a261e2915d6abe1c994c8d9d31e2f7af994761a573326cef",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q134734168"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Yerkes Observatory",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "d65efd80362c83abed05b5cca586eb23ec123ed1702050cbefdbee932f6e1b61",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://yerkesobservatory.org/visit/",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "4a2939f24097baaf7c6c79fbbd6078a6564c7d682f0316a5cc95ff9ae200d820"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q14310"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Melton Memorial Observatory",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "5d7c5ca039c821a1dfcf00e2009d9542c437fe3f67bad5d3f6135df7834eab4a",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q14709561"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "John J. McCarthy Observatory",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "62560ba932cc7e3bb94f5f580779f8d4e74c5be3c400d519a0fbe8245562ad25",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://www.mccarthyobservatory.org/",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "08c4d7a628ad7ae092c6c84deac8b7f411804e217c699fccb8f58be15fd03df3"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q20757604"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Cathedral Caverns State Park",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "43c4f076ae05d1b8dd0c9972758e8049fa1f751022bafe36686632db956d6f59",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://www.alapark.com/parks/cathedral-caverns-state-park",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "2eabaa85cf833b655e6a366099be39ce53df45aa8b14fe6f4ca0d48e06e5c657"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q1050851"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Carter Caves State Resort Park",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "fb056f2fb057b05d21ae3fd4d6295198b88bb4aaf544e2027a247690ad90f762",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q5047138"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_for_pacing_evidence",
+      "hold_from_combined_release": true,
+      "name": "Cave of the Mounds",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "3db2af0224b7154c7c3b903ba816fdde7f9d1c9a7de461b85fcb0729ca00ffc9",
+      "requirements_or_limits": [
+        {
+          "classification": "unknown_policy",
+          "proof_url": "https://www.caveofthemounds.com/plan-your-visit/",
+          "requirement": "No retained contemporaneous same-host robots policy receipt; absence does not establish permission or pacing compliance.",
+          "sha256": "9aca8021165e96d5d51b597e2d52496ad283231604d4245730e7bd8b1c587b82"
+        }
+      ],
+      "source_id": "catalog-pilot:wikidata:Q5054958"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Craighead Caverns",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "384ece2ff4b1775b96fd622ac122c869ed7d2703c9e196d22d9c6781dc99c4e3",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q5181674"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Natural Bridge Caverns",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "e4a294e9042b072d0880c5084e15fbc6ac0a56913e3c438441510c50f7c310c1",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q10856113"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": null,
+      "audit_group": "nature",
+      "detail_file": "details/nature-per-record.json",
+      "existing_tier": "T2",
+      "finding": "no_declared_pacing_violation_found",
+      "hold_from_combined_release": false,
+      "name": "Oregon Caves National Monument and Preserve",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "7f80365660c6b211f66c86b6f0e9b0acf258c02621810a1efd5336ab4b9ccefc",
+      "requirements_or_limits": [],
+      "source_id": "catalog-pilot:wikidata:Q1187702"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "confirmed_pacing_miss_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Connecticut State Capitol",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "947f480cdd2d19d07a481818831b33e8e1b01ebeef62cebeb6fcc0e37311d65f",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Required Capitol operator body acquired before any possible10second interval after saved LWV robots request completion; configured acquisition omitted Crawl-delay handling."
+      ],
+      "source_id": "catalog-pilot:nps-nhl:70000834"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BOMBAY HOOK NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "192f319e562d7dffcb99f693872404ce27c9bd1fb417f577d4612f9836124cd0",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:51550"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "MISSISSIPPI SANDHILL CRANE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "fb6583e5125402f9a4be814aa51f861c28de9a3e0a507aab0f95d0d0d7280eef",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:43615"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "MORGAN BRAKE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "ab4a3a44b460d08c547886cd9034789f25510dd25ffb520cacefbbe774f8d8b5",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:43582"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "CAPE MAY NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "bd5d21a6e5400a05706e4c11e608eebce5088942b2d3306c0dd92af1f94dee94",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:52515"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "EDWIN B. FORSYTHE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "63b880ecdf633b59193693c09bb9c9d333b492f008f21ea1fc1b0d83d4c2fe48",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:52510"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "OHIO RIVER ISLANDS NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "bdd281308243d0444c437db2918e20a41b462bf88bcf5bc0fa94862a0f6df2db",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:51660"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "WHITE SULPHUR SPRINGS NATIONAL FISH HATCHERY",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "28a8e6027e2badf790ed8ca12fee2046b2886feac329638449c609a56de507e4",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:51270"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "DESOTO NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "13b40e760ccbd4584977e374346f6b830e4280faafd84d047172c21f99e61f80",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:33510"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "NEAL SMITH NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "82e77f827387ba5a2fecea973c83a34a83d8a8e2b07e993181859c9d57d25519",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:33670"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BAYOU COCODRIE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "27912139784c33d7312fd32f27ff06182a78aa3095df017b2bbc9ab489356bb5",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:43530"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BAYOU TECHE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "16f5a641d3b5576fae7d78f28bb7e33dc463963643dc8d4364fa2779b5fdeacf",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:43628"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "ARROWWOOD NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "a9323fa4e063b97938d6f73f7d15bfcfc4227570af31af1b28b8605b4c6d949b",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:62510"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "AUDUBON NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "97d65ad8c05cae46820b87bc3b66210f504bd1578b81add355db0702385105fe",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:62540"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "SALT PLAINS NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "66010676d066717d31c8ea44c09511207955bd5d39e9e0ed841f481988f5d1b6",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:21630"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "SEQUOYAH NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "c96d964c19a56d64e83e5e213043b332d2eae722c51b064c35a66182afd7816b",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:21640"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "NINIGRET NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "48e3dda9e2fc3f5174f8e3cf93b68455812759e9b676c336ef6b99afd98c7eba",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:53542"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "SACHUEST POINT NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "64ab799a1dc3873780b82a84d5365b2caf239a18f4b405db005f241d897422da",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:53543"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "WHEELER NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f22cc38b663679c1eca55d3423cecef32322af2a26087eb632b1ab11690feb97",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:43660"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "FLINT HILLS NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "ac52b7f8de1fe67ad99a53b4593e81265dc7a733910d047850a24aa15d71301e",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:64580"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "KIRWIN NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "0777620e9f96c8003b65a5a89ca72d46709c7e021bd683e74cab2edfcf301606",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:64610"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "AROOSTOOK NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "0a5a82de23e1edd48f4e53baf97186eb5695382a6bb433ac51cdb9e3e8175baf",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:53630"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "ASH MEADOWS NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "5560b1241bbddce1e5171bcca507b731c7136da47a45ef8d1da36d1ddc8477a0",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:84554"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "PAHRANAGAT NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "bee9789191d1a28edd99cc94039ba7ebbe46eedbd8e89fb441699cc9af5cd577",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:84551"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BIG LAKE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "3fde3d770d8c371c643142a5b96de83798e37f7379883d33220bee574cf91b86",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:43515"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "CACHE RIVER NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "fd6be0000ac83d53048294f334752ca5ce9498f138be1516873a4b6fc734b990",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:43514"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "MUSCATATUCK NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "3e8f775da4aa67ebab9aee51d9a7d1e9031f88dd2e65719ebb2f9fa3f5b4c285",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:31530"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "PATOKA RIVER NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "46d9a0897338d4b519e4da9f777d5b8b4ca2d1aca25a7b5888d61c0614a8a5e2",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:31560"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "KEALIA POND NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "a7a3ab08dc36efc65f52fd01baf34d78d2652fe0942eb5f3279ac770d3752755",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:12531"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "KILAUEA POINT NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "91a7915c57c0f92bd3d2bfed4bb8ebcf8abecbd7aad4c5e897936e4f6f346260",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:12530"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BLACKWATER NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "058a124b706d0ef6d60318d3f87897808461dc3c579b5fd96f2a1954e70859e9",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:51531"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BACK BAY NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "163b7d78a69b8d794a994db0d9841c35826de5b73d1626316bd7753c71b5b227",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:51510"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "CHINCOTEAGUE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "1e19e95a5f45f3496818415de94e10444e68b432bc954a824f6cea2a55cdd780",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:51570"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "GREAT MEADOWS NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "1a077c6a2dbbf12bd8ac9aad0a5f1a3ef1961865df640a673ca4c04f4662c6d1",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:53511"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "OXBOW NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "b67e68b28c27db314f21f785f34656b6b5236e38a1f0894d4b18c172b55dfd21",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:53512"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "EDENTON NATIONAL FISH HATCHERY",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "5a5eed9e881cea0add49aacc85d9eadcc5fa02614f6ebbc0a1d26dc27c6d3455",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:42220"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "ERNEST F. HOLLINGS ACE BASIN NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "b5ae5ce1a43b96b7a664236998cbb33c04674a7b2bbe3373aef5bfa28f387df3",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:42511"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "HORICON NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f437712f82414cdcf022cb20ae7c19e28435aecb56c1729caed0af4c8cb1d532",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:32520"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "NECEDAH NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "fb3453ff4246c968dcfe8137a02c40f15a315bb3186cf11084159b51a73d9727",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:32530"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "UMBAGOG NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "30876025c8e78303cd9488719843d32a231b2a09f4abaf5434e4a10d7f5dcf33",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:53580"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "ARTHUR R. MARSHALL LOXAHATCHEE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "a6cc85c7f8ad7e11c9483404211b94b7666aa1d48368cb021197b72caa723b6e",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:41560"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "HOBE SOUND NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "02a43e0c31855fd9855d2b8558b0f8652ab48d8c3a258c532a5f130995dba950",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:41561"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "CHICKASAW NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "5a8ff65839b82584ac584821d5ea3181dc60d94f909178158dbc775cbba403ab",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:42526"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "CHATTAHOOCHEE FOREST NATIONAL FISH HATCHERY",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "ecef55bff986f0a3f199243c0fa917c08c06804099b7874866cdd1988063deaf",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:41210"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "OTTAWA NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "aa9bb0d220a4b80d71edcb35bd084e89ef88face234a3c62871dabc58999f276",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:31540"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "ERIE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "ec7dc40da139db9e17fcee1fa51ad565d53be2902181551a2126e34eb525f779",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:52520"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "JOHN HEINZ NATIONAL WILDLIFE REFUGE AT TINICUM",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "d266192ed6246aaf25d9385295b08c393c7854dddb5a668d36fb3fbce184161f",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:52570"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "AGASSIZ NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "257284cff278194f4522fe51c6693b3d8cb044165605f32e8302a35825fd1274",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:32510"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BIG STONE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "eed1c12f0dd9dd7c6b48af7fa773d442e1fae2f701d5ff006c0986da0e84c8fe",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:32640"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "GAVINS POINT NATIONAL FISH HATCHERY",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "fa7bea4f4e6937c1f2a72c7f294c2c038c0b5778a6da770a769d9f535966db02",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:64220"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "SAND LAKE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "185dc5561987dd5b9b2204a92086703bfb48836c0ef7c39649f0aead86b1920c",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:64570"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "ARANSAS NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "99a726425fc7f8cd2e1b892dbee1227e5af31e610fb1d0c891b717300d173082",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:21532"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BALCONES CANYONLANDS NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "398858ac38eddae437e478a870e24e65c7d6efe5655577b6d0afdb049fd88404",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:21561"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "CAMAS NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "c23a1ba7b64b5703a8aaa8164e626c3aae1a325c0f5cf92e95d8408167c8ada3",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:14611"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "DEER FLAT NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "3f506fb11241eebda1bd94bea2b8299930fb6c0aee8e603821717830a424d6bf",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:14560"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "MEREDOSIA NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f0b03d25c40b43b532713835597921b41f3d5868db2528641080e527ab90d36e",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:33652"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "TWO RIVERS NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "83493499029a8ee314bf8863c5916d0d4131ad418e3f4ee336aea61d7dfd4427",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:33621"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "DETROIT RIVER INTERNATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "a5581395620f40ee5c9b16b21b0bc6d8723eaace894b1662fa7a5549cdcde6f1",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:31521"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BITTER LAKE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "5d421839cf83c99154e70a2f5dceb36bcb690fff6536001b14cd6c239748cad8",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:22510"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BOSQUE DEL APACHE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "120a8aac201e098523d3e33a80a45041d6d0ada2b3cfc40144b63176a6f37ecc",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:22520"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BIG MUDDY NATIONAL FISH AND WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "e5914524d59cb16224f1acf91088155202eb5ace75f66e54e7bec79e7cb00d5e",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:33590"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "CLARENCE CANNON NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "d5fc26709c127b40d1325d3fa98dbbc370d34328eecc685d61c60e99d91d46dc",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:33643"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "KENAI NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "a2c1935638bef3fe98ed25c69356ced630f3057db5553d3a5db4ae867d1b25a5",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:74525"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "SEEDSKADEE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "4ba4d27c724f23eed47782a290d29f38d11dffedb0a9097ea4754c780dc63071",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:65580"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "CLARKS RIVER NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "7ef4eedc823379807d7daa9cf1fc9d13d85749d8197e01b6170ee9a3f11bf1ad",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:42622"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "WOLF CREEK NATIONAL FISH HATCHERY",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "ab6d746defc6fa5b4713de8a858ddfd3b48aca6d9eb3b36c65ba4505a85f881d",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:42280"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "OURAY NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f43ca019a558f702fe282663ef9179471a8f9a6929e77aae4a663d4c53f19998",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:65570"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "LEE METCALF NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "6aebe5014bd3fbb144946104741e936058359d74f3a55cb0e6be7b26f3936d90",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:61560"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "MEDICINE LAKE NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "67f906e9c6e57dfd073cfe12fb6053a0ab6f11b566d6654ff853bad56f77b9f1",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:61530"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BILL WILLIAMS RIVER NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "366274ea614531bdcfdacfc298a9f02f11d52ea75ffc4c549ce9508ec0d2aac1",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:22551"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BUENOS AIRES NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "9eb95d48440744b0c313f2ba8c82a803dac48e435bb680068f5c9ddb30fc88ed",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:22530"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BANDON MARSH NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "798de1dd0713ae6eaa9fb47bc1368e46e1a829b5792afb6fb23edf271343df4b",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:13596"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "TUALATIN RIVER NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "d721c5ccdecab10b5a5302072aa20b3a25b6ad8b0ae534e803350d3ccba1d0eb",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:13600"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "ELIZABETH ALEXANDRA MORTON NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "38799e5f534acbfdf68b6c37db1e7c67c5e97a357d221b0a5c30bb3686a4fa13",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:52566"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "IROQUOIS NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "d942dfaa60d79939f084111188898edc5400dff9e2ea04e4319b5496f790c740",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:52540"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "ARAPAHO NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "9e558fee84a26cf529d4b0bd2ae1a1fad7234a19981f7c07f1c59be0b7d2ede3",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:65520"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BROWNS PARK NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "fc202fd2a11b1fc250fbe47645606df5d98779cd30d27c8002e85631272670e3",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:65550"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "BILLY FRANK JR. NISQUALLY NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "244c51d783cb0878b8d6ad86205f2d7b37d94d3ae806d61bb6190763fbfcb61a",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:13529"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "COLUMBIA NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "eb192a8bf2b0c523af9d3549b743184fd76d73dfff3e75e4046fcc521e1f782c",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:13510"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "HUMBOLDT BAY NATIONAL WILDLIFE REFUGE",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "01feb046e4c3f950502089272ce64ddf98f20f188fdc0c344139765b18efda7a",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:81590"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "PRIVATE JOHN ALLEN NATIONAL FISH HATCHERY",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "7dc481735f5ca57f1d07b2585ce098d7b679ad97b1d0625992751c02112397c2",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:fws:43290"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "California Trail Interpretive Center (CTIC)",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "56db551c7d3fe6f7e4095a7116d3da36344ead0a64bf1d5fcb901dcb62cf46e3",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:blm:6357cf61-2823-4275-a3d8-2666d4d613ad"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "National Historic Trails Interpretive Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "f4e66ed92b35513d05187864bb592c31182d3b1588784fc334180f3be8469676",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:blm:a6f137a4-5b8e-4d8d-9ae2-f77923c5f33c"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "National Bighorn Sheep Interpretive Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "d5c3d24e20d1fc1d2cf53dc82de268367664eb1b74dfc856684248dc8eb5a348",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:blm:0f582150-9c94-4ff9-b73e-c5245a8e6798"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "UPPER MISSOURI RIVER BREAKS NM INTERPRETIVE CENTER",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "b03d65483064f06258142626308f6cf6e8c46aee45b17b65fe75f510d91e9901",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:blm:ff63794c-7dc5-4fd2-a29d-b516a154a64b"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "Kanab Visitor Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "bf35102537889f973ddd3e573fd7b84b26e06796b631b92820cd2396b2b87bb4",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:blm:2b3276bb-7c58-4b8d-8cb4-41a2147725af"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "Escalante Interagency Visitor Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "780dcb194432f935eebc81e99bbb9018ab697fa05076fbabd8eeb06ee7a08d0a",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:blm:1efaeecd-95d5-468d-97b9-2c90d45a3736"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "Wild Rivers Visitor Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "32c1a311c329056f5e75771ef45c042c4e382ae9792fe63dbcf131008470261c",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:blm:eccb5edc-9672-47a7-bc24-259097931fc7"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_policy_and_doi_policy_ambiguity",
+      "hold_from_combined_release": true,
+      "name": "Dripping Springs Natural Area Visitor Center",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "fa93d097a162c1edf4c2fec83b8e4b6f9a3dd0f425eebd60a4824b18a3528375",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "DOI copyright proof shares later robots snapshot with raw Crawl-delay1 but parser-grouping and historical applicability unresolved; not a no-limit conclusion.",
+        "No exact-host robots/access/rate policy retained for required agency visitor HTML or native service host. Public query/extract capability establishes a read mechanism, not all applicable request-rate terms."
+      ],
+      "source_id": "catalog-pilot:blm:17df1e38-140e-4613-b56c-b217735f9517"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Altamont Orchards Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "b9fb6b1ee72c1cf5ab5aae67b3c037c56caa94adfd48991a8a2ff17d88ed9dec",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-hkdf~9pf4~67z9"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Owen Orchards Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "14ce8897a2d75925fd081500eb7feb0c3601a255c26d5b07f6c9416ae1347003",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-gg7w-9bwe_6npw"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Bellinger's Orchard Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "7f921abe62e0801587dae24a61a11059d840604be3d47d19471d5e648b3e09cf",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-w346-txhk-29z7"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Middlefield Orchard Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "c26349e7de70ce2f704847f7054b0e81f03c08036ae7bcd69f09938f7bd2f2ec",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-afqh~qikj_nvne"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Bowman Orchards Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "fab42f91b63c1763d2196413a8e572084c3b0020f7ba92299e582bf688d08ea7",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-p6et~db7f~2sac"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Harvest Home St. Mary's Park Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "4ad828af5f4cbb8f6db88de0e3be0109cefd0eaf6ac08d9b90f1121c22fe5a34",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-wayt~eyam-qqti"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Canticle Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "420ab198627a24f2caad22610498107c43441f888225e4802f8f112dc5110125",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-pmca.9u3e-2984"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Abers Acres Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "427714798605a67a1a2badb830ff1b6a8bcdc394ef7243b5ab83214c12d95a23",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-y8jy_v43c~6a6r"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Scarecrow Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "d8bccdf0ce17a70fa7ec2df5c8e5f43f13e5c3e2dffb6f3db0977ce308d99376",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-pvg9.u8v8~hw67"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Dykeman Farm Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "773f55bbb5bb8486b678b7c2c32ce21252eb0b329638ee2dc2e8ee0fb72ee78f",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-65j6.9jaw~8eue"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "5 Loaves Farm Stand-Delavan Ave",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "cb1c050c7599dc3c97d846575d7b7381424e1d3cd53aa494697367b75c17645d",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-zhhf-qqam~4xzk"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Windswept Meadows Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "e5c409c6ad4d21295b9ab9bd608971b7aa942452649d48cd471d3d446a07690c",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-kff2-ek7q.ijv2"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_ny_automation_scope_and_missing_policy",
+      "hold_from_combined_release": true,
+      "name": "Harvest Home Brower Park Farm Stand",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "c0c3d20cebab32af9fb8e87cb21af641195771e59c3c2b8650f0460b6ea93c12",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Retained OPEN-NY terms restrict access through unauthorized automated means and incorporate other site/content terms. Official API authorization scope is not established by a retained API-specific permission/terms body; operator-host policies also absent. Hold this ambiguity without treating all API automation as categorically prohibited."
+      ],
+      "source_id": "catalog-pilot:ny-market:row-3yvc-svss-mh8h"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_operator_policy",
+      "hold_from_combined_release": true,
+      "name": "Peabody Heights Brewery",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "75e6a5ce8b6b8d230ac0745d6381468a78495d14603066e66fad7838a73f453b",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Saved source robots has no declared delay/disallow, but was observed after original source records. Three distinct visitor operator hosts have no retained robots/access policy, request headers or completion timings."
+      ],
+      "source_id": "catalog-pilot:baltimore-heritage:392"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_operator_policy",
+      "hold_from_combined_release": true,
+      "name": "Baltimore Streetcar Museum",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "8a48df64696aec0714db1728a7910c67ce6e182dbed61f472a1b36f227173814",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Saved source robots has no declared delay/disallow, but was observed after original source records. Three distinct visitor operator hosts have no retained robots/access policy, request headers or completion timings."
+      ],
+      "source_id": "catalog-pilot:baltimore-heritage:396"
+    },
+    {
+      "alternative_evidence_candidates_not_rebound": [],
+      "audit_group": "agency",
+      "detail_file": "details/agency-per-record.json",
+      "existing_tier": "T2",
+      "finding": "hold_missing_operator_policy",
+      "hold_from_combined_release": true,
+      "name": "Bromo Seltzer Tower",
+      "new_itinerary_qualification": false,
+      "original_row_sha256": "980b595e3de517f43bffae31dee4d4f0c2a5be34f3c1a56b62a5f3c8a2d414ac",
+      "requirements_or_limits": [
+        "Missing applicable saved exact-host access/pacing policy for one or more required positive proofs; public-domain or CC rights do not waive access/rate terms.",
+        "Saved source robots has no declared delay/disallow, but was observed after original source records. Three distinct visitor operator hosts have no retained robots/access policy, request headers or completion timings."
+      ],
+      "source_id": "catalog-pilot:baltimore-heritage:82"
+    }
+  ],
+  "scope": "Earlier194 T2 admissions only; no new source acquisition, source regeneration, profile mutation or itinerary qualification."
+}

@@ -328,3 +328,128 @@ def test_postgres_signature_parity_and_companion_override_exclusion(monkeypatch)
                     assert cur.fetchone()[0] is expected
     finally:
         conn.close()
+
+
+def _trait_annotation(*, state="fresh", stored=False):
+    return {
+        "identity_source": "catalog-pilot",
+        "ratings_source": "AI estimates; source records supply identity, not live verification",
+        "verified_at": None,
+        "ratings_cache": state,
+        "ratings_version": "attraction-traits-v1",
+        "ratings_created_at": "2026-11-04T12:00:00+00:00" if stored else None,
+        "ratings_provider": "offline-fixture" if stored else None,
+    }
+
+
+def _annotated_runtime(item):
+    canonical = row_for(item)
+    value = {
+        key: copy.deepcopy(content)
+        for key, content in canonical.items()
+        if key not in {"source_id", "latitude", "longitude", "region", "provenance"}
+    }
+    value.update(
+        provider_id=item["source_id"],
+        source="catalog-pilot",
+        coordinates=[canonical["latitude"], canonical["longitude"]],
+        source_provenance=canonical["provenance"],
+        provenance=_trait_annotation(),
+    )
+    return value
+
+
+@pytest.mark.parametrize(
+    "index",
+    [
+        index
+        for index, item in enumerate(h.RESOLUTIONS)
+        if any(
+            fact.get("catalog_admission", {}).get("tier") == "T3"
+            for fact in item["approved_payload"]["provenance"]
+        )
+    ],
+)
+def test_qualified_exact_rows_survive_real_candidates_with_trait_annotations(index):
+    from app.agent.persona import default_weights
+    from app.routing.sources.persona_candidates import ProposedPlace, VerifiedPlace, _candidate
+    from tests.catalog_routing_hold_resolution_tests import runtime
+
+    item = h.RESOLUTIONS[index]
+    place = VerifiedPlace.model_validate(runtime(row_for(item)))
+    proposal = ProposedPlace(
+        name=place.name, attribute_ratings=dict.fromkeys(default_weights(), 0.5)
+    )
+    candidate = _candidate(place, proposal, default_weights())
+    original_facts = copy.deepcopy(candidate["source_provenance"])
+    for annotation in (
+        _trait_annotation(),
+        _trait_annotation(state="fresh", stored=True),
+        _trait_annotation(state="hit", stored=True),
+    ):
+        candidate["provenance"].update(annotation)
+        assert h.resolved(candidate, item["resolved_held_ids"])
+        assert candidate["source_provenance"] == original_facts
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        lambda annotation: annotation.update(unreviewed_override=True),
+        lambda annotation: annotation.pop("ratings_provider"),
+        lambda annotation: annotation.update(ratings_cache="unreviewed"),
+        lambda annotation: annotation.update(ratings_cache=True),
+        lambda annotation: annotation.update(ratings_version="attraction-traits-v999"),
+        lambda annotation: annotation.update(ratings_version={}),
+        lambda annotation: annotation.update(ratings_created_at=True),
+        lambda annotation: annotation.update(ratings_created_at="not-a-timestamp"),
+        lambda annotation: annotation.update(ratings_created_at="2026-11-04T12:00:00"),
+        lambda annotation: annotation.update(ratings_provider={}),
+        lambda annotation: annotation.update(ratings_provider=""),
+        lambda annotation: annotation.update(ratings_provider=" " * 3),
+        lambda annotation: annotation.update(ratings_provider="x" * 257),
+        lambda annotation: annotation.update(ratings_created_at=None),
+        lambda annotation: annotation.update(ratings_provider=None),
+        lambda annotation: annotation.update(verified_at={}),
+    ],
+)
+def test_malformed_or_partial_trait_annotations_do_not_resolve_holds(monkeypatch, mutation):
+    item = entry()
+    monkeypatch.setattr(h, "RESOLUTIONS", (item,))
+    value = _annotated_runtime(item)
+    value["provenance"] = _trait_annotation(state="hit", stored=True)
+    assert h.resolved(value, item["resolved_held_ids"])
+    mutation(value["provenance"])
+    assert not h.resolved(value, item["resolved_held_ids"])
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        lambda value: value.update(name="Changed source identity"),
+        lambda value: value.update(url="https://changed.example"),
+        lambda value: value["coordinates"].__setitem__(0, 0.5),
+        lambda value: value["source_provenance"][0]["catalog_admission"].update(
+            expires_at_epoch=9999999999
+        ),
+        lambda value: value["source_provenance"][1].update(synthetic_boolean=0),
+        lambda value: value["provenance"].update(source_provenance=[]),
+        lambda value: value.update(ratings_cache="hit"),
+    ],
+)
+def test_valid_trait_annotations_cannot_hide_changed_or_missing_source_facts(monkeypatch, mutation):
+    item = entry()
+    monkeypatch.setattr(h, "RESOLUTIONS", (item,))
+    value = _annotated_runtime(item)
+    assert h.resolved(value, item["resolved_held_ids"])
+    mutation(value)
+    assert not h.resolved(value, item["resolved_held_ids"])
+
+
+def test_uncached_trait_annotations_require_a_complete_fresh_group(monkeypatch):
+    item = entry()
+    monkeypatch.setattr(h, "RESOLUTIONS", (item,))
+    value = _annotated_runtime(item)
+    assert h.resolved(value, item["resolved_held_ids"])
+    value["provenance"]["ratings_cache"] = "hit"
+    assert not h.resolved(value, item["resolved_held_ids"])

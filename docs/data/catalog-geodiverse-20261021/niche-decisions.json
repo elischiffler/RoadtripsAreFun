@@ -1,0 +1,88 @@
+[
+  {
+    "pilot_id": "diversity:wd:Q10856113",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q10856113",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1143763",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1143763",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1187702",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1187702",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1542539",
+    "reason": "The primary operator affirmatively offers Grand Canyon Railway trips from Williams, but native coordinate (35.7063,-112.2456) is on the broader railway corridor rather than a corroborated public depot. Hold destination-point scope; no invented station coordinate or claim that a rail corridor point is a public arrival.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4669685",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4669685",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4878261",
+    "reason": "Primary operator currently says the museum and gift shop are closed for the season; 2027 calendar is pending. December openings are described as holiday shopping, not affirmative museum/tower admission. Visitor FAQ retains appointment groups and past 2026 tower dates. Exterior state-park grounds access has not been independently resolved to the same native lighthouse scope, so hold rather than override the closure notice.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4906395",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4906395",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4913574",
+    "reason": "Previous original Biloxi operator body is not valid UTF-8 and shared proof replay cannot decode it. Retained prior hold with no reprobe, transcoding or hash substitution. Current public visitor proof remains unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4920959",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4920959",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5047138",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5047138",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5049180",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5049180",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5181674",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5181674",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5471242",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5471242",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7095191",
+    "reason": "Native Onyx Cave operator robots redirects to an unrelated nameday-calendar domain. No unrelated host was followed and no current primary physical visitor access was established. Stale/reassigned operator identity remains unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7859692",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7859692",
+    "tier": "T2"
+  }
+]

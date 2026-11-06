@@ -1,22 +1,38 @@
-import PlaceSource from './PlaceSource.jsx';
-import { placeSourceLines } from './placeSource.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import PropTypes from 'prop-types';
+import { validStopCoordinates } from '../services/tripPresentation';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './Map.css';
 
-const stopType = (type) =>
-  type === 'stop' || type === 'attraction'
-    ? 'Attraction'
-    : (type || 'Stop').replaceAll('_', ' ').replace(/^./, (letter) => letter.toUpperCase());
-
-const Map = ({ UserChatData }) => {
+const NO_SUGGESTIONS = [];
+const Map = ({
+  UserChatData,
+  suggestions = NO_SUGGESTIONS,
+  selectedSuggestion = null,
+  onSelectSuggestion,
+}) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const [selectedStop, setSelectedStop] = useState(null);
+  const [mapError, setMapError] = useState(false);
+  const geometry = useMemo(
+    () =>
+      (UserChatData.route.geometry?.coordinates || []).filter(
+        (point) => Array.isArray(point) && validStopCoordinates([point[1], point[0]])
+      ),
+    [UserChatData.route.geometry]
+  );
+  const mapToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const localPin = useRef(null);
+  const ideaButtons = useRef(new globalThis.Map());
+  const localIdeaPin = useRef(null);
+  const stopPopup = useRef(null);
+  const validSuggestions = useMemo(
+    () => suggestions.filter((idea) => idea && validStopCoordinates(idea.coordinates)),
+    [suggestions]
+  );
   const stops = useMemo(
     () =>
       (UserChatData.route.stops || []).flatMap((stop, index) => {
@@ -44,24 +60,30 @@ const Map = ({ UserChatData }) => {
   const localJourney = import.meta.env.VITE_LOCAL_JOURNEY === 'true';
 
   useEffect(() => {
-    // Don't reinitialise if the map already exists
-    if (mapRef.current) return;
-    if (localJourney) return;
-
-    mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
-    const latitude =
-      (UserChatData.startConfirmed['latitude'] + UserChatData.endConfirmed['latitude']) / 2;
-    const longitude =
-      (UserChatData.startConfirmed['longitude'] + UserChatData.endConfirmed['longitude']) / 2;
-    const zoom_factor = Math.pow(UserChatData.route['duration'], 1 / 3.5);
-
-    mapRef.current = new mapboxgl.Map({
-      container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: [longitude, latitude],
-      zoom: 100 / zoom_factor,
-      attributionControl: false,
-    });
+    if (mapRef.current || localJourney || !mapToken || geometry.length < 2) return;
+    setMapError(false);
+    mapboxgl.accessToken = mapToken;
+    const start = UserChatData.startConfirmed;
+    const end = UserChatData.endConfirmed;
+    const hasEndpoints =
+      validStopCoordinates([start?.latitude, start?.longitude]) &&
+      validStopCoordinates([end?.latitude, end?.longitude]);
+    const center = hasEndpoints
+      ? [(start.longitude + end.longitude) / 2, (start.latitude + end.latitude) / 2]
+      : geometry[0];
+    try {
+      mapRef.current = new mapboxgl.Map({
+        container: mapContainerRef.current,
+        style: 'mapbox://styles/mapbox/light-v11',
+        center,
+        zoom: 7,
+        attributionControl: false,
+      });
+    } catch {
+      setMapError(true);
+      return;
+    }
+    mapRef.current.on('error', () => setMapError(true));
 
     mapRef.current.addControl(new mapboxgl.AttributionControl({ compact: true }));
 
@@ -74,7 +96,7 @@ const Map = ({ UserChatData }) => {
             properties: {},
             geometry: {
               type: 'LineString',
-              coordinates: UserChatData.route['geometry']['coordinates'],
+              coordinates: geometry,
             },
           },
         });
@@ -90,16 +112,16 @@ const Map = ({ UserChatData }) => {
             'line-cap': 'round',
           },
           paint: {
-            'line-color': '#C4873A', // --amber-main / --forest-main
+            'line-color':
+              getComputedStyle(mapContainerRef.current)
+                .getPropertyValue('--rt-color-route')
+                .trim() || '#175bc1',
             'line-width': 6,
             'line-opacity': 0.9,
           },
         });
       }
-      const locations = [
-        ...UserChatData.route.geometry.coordinates,
-        ...stops.map((stop) => [stop.longitude, stop.latitude]),
-      ];
+      const locations = [...geometry, ...stops.map((stop) => [stop.longitude, stop.latitude])];
       const bounds = [
         [Infinity, Infinity],
         [-Infinity, -Infinity],
@@ -117,7 +139,14 @@ const Map = ({ UserChatData }) => {
       mapRef.current?.remove();
       mapRef.current = null;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    geometry,
+    localJourney,
+    mapToken,
+    stops,
+    UserChatData.startConfirmed,
+    UserChatData.endConfirmed,
+  ]);
 
   useEffect(() => {
     if (localJourney || !mapRef.current || !stops.length) return;
@@ -127,6 +156,7 @@ const Map = ({ UserChatData }) => {
       maxWidth: '240px',
       className: 'map-stop-popup',
     });
+    stopPopup.current = popup;
     let activeButton;
     popup.on('close', () => {
       if (!activeButton) return;
@@ -154,17 +184,11 @@ const Map = ({ UserChatData }) => {
         const heading = document.createElement('strong');
         heading.textContent = stop.name;
         content.append(heading);
-        for (const text of [stopType(stop.type), stop.address, ...placeSourceLines(stop)]) {
+        for (const text of [stop.address]) {
           if (!text) continue;
           const line = document.createElement('p');
           line.textContent = text;
           content.append(line);
-        }
-        if (placeSourceLines(stop).length) {
-          const attribution = document.createElement('a');
-          attribution.href = '/catalog-attribution.html';
-          attribution.textContent = 'Data licenses and attribution';
-          content.append(attribution);
         }
         popup.setDOMContent(content).setLngLat([stop.longitude, stop.latitude]).addTo(map);
         const element = popup.getElement();
@@ -192,19 +216,115 @@ const Map = ({ UserChatData }) => {
     return () => {
       activeButton = null;
       popup.remove();
+      stopPopup.current = null;
       markers.forEach((marker) => marker.remove());
     };
-  }, [stops, localJourney]);
+  }, [stops, localJourney, geometry, mapToken]);
+
+  useEffect(() => {
+    if (localJourney || !mapRef.current) return;
+    const map = mapRef.current;
+    const buttons = ideaButtons.current;
+    const markers = validSuggestions.map((idea) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'map-idea-pin';
+      button.textContent = '+';
+      button.setAttribute('aria-label', `Nearby idea: ${idea.name}`);
+      button.setAttribute('aria-pressed', 'false');
+      button.addEventListener('click', () => {
+        stopPopup.current?.remove();
+        onSelectSuggestion?.(idea);
+      });
+      buttons.set(idea.id, button);
+      const marker = new mapboxgl.Marker({ element: button })
+        .setLngLat([idea.coordinates[1], idea.coordinates[0]])
+        .addTo(map);
+      button.setAttribute('role', 'button');
+      return marker;
+    });
+    return () => {
+      buttons.clear();
+      markers.forEach((marker) => marker.remove());
+    };
+  }, [validSuggestions, localJourney, geometry, mapToken, stops, onSelectSuggestion]);
+
+  useEffect(() => {
+    for (const [id, button] of ideaButtons.current) {
+      button.setAttribute('aria-pressed', String(id === selectedSuggestion?.id));
+    }
+    if (
+      !localJourney &&
+      selectedSuggestion &&
+      validStopCoordinates(selectedSuggestion.coordinates)
+    ) {
+      mapRef.current?.easeTo?.({
+        center: [selectedSuggestion.coordinates[1], selectedSuggestion.coordinates[0]],
+        zoom: 12,
+        duration: 0,
+      });
+    }
+  }, [selectedSuggestion, localJourney, validSuggestions, geometry, stops]);
+
+  const closeIdea = () => {
+    onSelectSuggestion?.(null);
+    (localJourney
+      ? localIdeaPin.current
+      : ideaButtons.current.get(selectedSuggestion?.id)
+    )?.focus();
+  };
+  const ideaDetail = selectedSuggestion && (
+    <div
+      className="map-idea-detail"
+      role="region"
+      aria-label="Selected nearby idea"
+      aria-live="polite"
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') closeIdea();
+      }}
+    >
+      <button
+        type="button"
+        className="map-stop-close"
+        aria-label="Close nearby idea"
+        onClick={closeIdea}
+      >
+        ×
+      </button>
+      <strong>{selectedSuggestion.name}</strong>
+      <p>Unscheduled idea · opening hours, availability and detour timing need checking.</p>
+      <p>
+        Source:{' '}
+        {selectedSuggestion.source_attribution || selectedSuggestion.source || 'Place catalog'}
+      </p>
+    </div>
+  );
+
+  if (geometry.length < 2)
+    return (
+      <p className="map-unavailable" role="status">
+        A route map is not available for this saved trip.
+      </p>
+    );
+  if (!localJourney && !mapToken)
+    return (
+      <p className="map-unavailable" role="status">
+        The map is unavailable because its access token is not configured. Your itinerary is still
+        available.
+      </p>
+    );
 
   if (localJourney) {
-    const coordinates = UserChatData.route.geometry.coordinates;
+    const coordinates = geometry;
     const longitudes = [
       ...coordinates.map(([longitude]) => longitude),
       ...stops.map((stop) => stop.longitude),
+      ...validSuggestions.map((idea) => idea.coordinates[1]),
     ];
     const latitudes = [
       ...coordinates.map(([, latitude]) => latitude),
       ...stops.map((stop) => stop.latitude),
+      ...validSuggestions.map((idea) => idea.coordinates[0]),
     ];
     const west = Math.min(...longitudes);
     const east = Math.max(...longitudes);
@@ -221,6 +341,7 @@ const Map = ({ UserChatData }) => {
     const end = projected[projected.length - 1];
     return (
       <>
+        <p className="map-fixture-label">Local fixture · route schematic</p>
         <svg
           role="group"
           aria-label={`Local route map from ${UserChatData.startConfirmed?.address || 'start'} to ${UserChatData.endConfirmed?.address || 'destination'}`}
@@ -229,10 +350,15 @@ const Map = ({ UserChatData }) => {
           className="map-container"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
         >
-          <rect width="100" height="100" fill="#f8f3e9" />
-          <polyline points={points} fill="none" stroke="#C4873A" strokeWidth="2" />
-          <circle cx={start[0]} cy={start[1]} r="2" fill="#234a3c" />
-          <circle cx={end[0]} cy={end[1]} r="2" fill="#234a3c" />
+          <rect width="100" height="100" fill="var(--rt-color-page, #f4f6f3)" />
+          <polyline
+            points={points}
+            fill="none"
+            stroke="var(--rt-color-route, #175bc1)"
+            strokeWidth="2"
+          />
+          <circle cx={start[0]} cy={start[1]} r="2" fill="var(--rt-color-accent, #165b50)" />
+          <circle cx={end[0]} cy={end[1]} r="2" fill="var(--rt-color-accent, #165b50)" />
           {stops.map((stop) => {
             const [x, y] = project([stop.longitude, stop.latitude]);
             return (
@@ -256,16 +382,21 @@ const Map = ({ UserChatData }) => {
                   } else if (event.key === 'Escape') setSelectedStop(null);
                 }}
               >
+                <circle r="8" fill="transparent" />
                 <circle
                   r="4"
-                  fill={stop.type === 'hotel' ? '#234a3c' : '#a56b28'}
-                  stroke="#fbf8f3"
+                  fill={
+                    stop.type === 'hotel'
+                      ? 'var(--rt-color-accent, #165b50)'
+                      : 'var(--rt-color-route, #175bc1)'
+                  }
+                  stroke="var(--rt-color-surface, white)"
                   strokeWidth="0.7"
                 />
                 <text
                   textAnchor="middle"
                   dominantBaseline="central"
-                  fill="white"
+                  fill="var(--rt-color-on-accent, white)"
                   fontSize="4"
                   fontWeight="700"
                 >
@@ -274,7 +405,51 @@ const Map = ({ UserChatData }) => {
               </g>
             );
           })}
+          {validSuggestions.map((idea) => {
+            const [x, y] = project([idea.coordinates[1], idea.coordinates[0]]);
+            return (
+              <g
+                key={idea.id}
+                className="map-idea-svg-pin"
+                role="button"
+                tabIndex={0}
+                aria-label={`Nearby idea: ${idea.name}`}
+                aria-pressed={selectedSuggestion?.id === idea.id}
+                transform={`translate(${x}, ${y})`}
+                onClick={(event) => {
+                  localIdeaPin.current = event.currentTarget;
+                  setSelectedStop(null);
+                  onSelectSuggestion?.(idea);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    localIdeaPin.current = event.currentTarget;
+                    setSelectedStop(null);
+                    onSelectSuggestion?.(idea);
+                  }
+                }}
+              >
+                <circle r="8" fill="transparent" />
+                <circle
+                  r="4"
+                  fill="var(--rt-color-surface, white)"
+                  stroke="var(--rt-color-route, #175bc1)"
+                  strokeWidth={selectedSuggestion?.id === idea.id ? 1.2 : 0.7}
+                />
+                <text
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fill="var(--rt-color-route, #175bc1)"
+                  fontSize="5"
+                >
+                  +
+                </text>
+              </g>
+            );
+          })}
         </svg>
+        {ideaDetail}
         {selectedStop && (
           <div
             className="map-stop-local-popup"
@@ -299,9 +474,7 @@ const Map = ({ UserChatData }) => {
               ×
             </button>
             <strong>{selectedStop.name}</strong>
-            <p>{stopType(selectedStop.type)}</p>
             {selectedStop.address && <p>{selectedStop.address}</p>}
-            <PlaceSource place={selectedStop} />
           </div>
         )}
       </>
@@ -309,16 +482,27 @@ const Map = ({ UserChatData }) => {
   }
 
   return (
-    <div
-      style={{ position: 'absolute', inset: 0 }}
-      ref={mapContainerRef}
-      className="map-container"
-    ></div>
+    <>
+      <div
+        style={{ position: 'absolute', inset: 0 }}
+        ref={mapContainerRef}
+        className="map-container"
+      ></div>
+      {ideaDetail}
+      {mapError && (
+        <p className="map-unavailable map-error" role="status">
+          The map could not be loaded. Your itinerary is still available. Refresh to retry the map.
+        </p>
+      )}
+    </>
   );
 };
 
 Map.propTypes = {
   UserChatData: PropTypes.object.isRequired,
+  suggestions: PropTypes.arrayOf(PropTypes.object),
+  selectedSuggestion: PropTypes.object,
+  onSelectSuggestion: PropTypes.func,
 };
 
 export default Map;

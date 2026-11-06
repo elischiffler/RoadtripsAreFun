@@ -1,4 +1,4 @@
-"""Password-scoped visitor access to live trip planning, independent of Cognito."""
+"""Verified-owner access with separately scoped Studio histories and jobs."""
 
 import hmac
 import os
@@ -13,12 +13,18 @@ from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 from app.agent.progress_stream import stream_turn
 from app.routers import algorithm_lab as lab
+from app.routing.studio_jobs import jobs
 
 # A stable deployment secret shares sessions across workers. Local sessions expire
 # on server restart when no secret is configured.
 SESSION_SECRET = os.environ.get("STUDIO_SESSION_SECRET") or secrets.token_hex(32)
 ISSUER = "roadtrips-studio"
-router = APIRouter(prefix="/studio", tags=["studio"], route_class=lab.LabRoute)
+router = APIRouter(
+    prefix="/studio",
+    tags=["studio"],
+    route_class=lab.LabRoute,
+    dependencies=[Depends(lab.require_lab_owner)],
+)
 
 
 class AccessRequest(BaseModel):
@@ -91,7 +97,7 @@ async def result(run_id: UUID, response: Response, user_id: str = Depends(requir
 
 @router.post("/run/stream")
 async def streamed_run(payload: lab.LabRun, user_id: str = Depends(require_studio_session)):
-    # Validate inputs and visitor access before sending streaming response headers.
+    # Validate owner access, scoped session and inputs before streaming headers.
     async def execute():
         result = await lab.run(payload, Response(), user_id)
         return RootModel[dict](result)
@@ -101,3 +107,37 @@ async def streamed_run(payload: lab.LabRun, user_id: str = Depends(require_studi
         media_type="application/x-ndjson",
         headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
     )
+
+
+class JobRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    id: UUID
+    run: lab.LabRun
+
+
+@router.post("/jobs", status_code=202)
+async def start_job(
+    payload: JobRequest, response: Response, user_id: str = Depends(require_studio_session)
+):
+    response.headers["Cache-Control"] = "no-store"
+
+    async def execute():
+        return await lab.recorded_run(payload.run, Response(), user_id, job_id=payload.id)
+
+    return await jobs.start(user_id, payload.id, payload.run.model_dump(mode="json"), execute)
+
+
+@router.get("/jobs/{job_id}")
+async def job_status(
+    job_id: UUID, response: Response, user_id: str = Depends(require_studio_session)
+):
+    response.headers["Cache-Control"] = "no-store"
+    return await jobs.get(user_id, job_id)
+
+
+@router.delete("/jobs/{job_id}")
+async def cancel_job(
+    job_id: UUID, response: Response, user_id: str = Depends(require_studio_session)
+):
+    response.headers["Cache-Control"] = "no-store"
+    return await jobs.cancel(user_id, job_id)

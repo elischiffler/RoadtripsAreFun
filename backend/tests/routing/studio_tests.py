@@ -1,4 +1,4 @@
-"""Visitor password sessions cannot cross history or Cognito boundaries."""
+"""Studio session behavior after the separate verified-owner guard succeeds."""
 
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
@@ -15,6 +15,13 @@ from app.routing.lab_presets import preset_catalog
 client = TestClient(app)
 
 
+@pytest.fixture(autouse=True)
+def authorized_owner(monkeypatch):
+    # These tests isolate historical session behavior; studio_owner_tests exercises
+    # real access/identity signature verification without this scoped override.
+    monkeypatch.setitem(app.dependency_overrides, lab.require_lab_owner, lambda: "fixture-owner")
+
+
 def unlock(password="cp-sat"):
     response = client.post("/studio/access", json={"password": password})
     assert response.status_code == 200
@@ -26,7 +33,7 @@ def unlock(password="cp-sat"):
 def test_case_insensitive_visitor_access(password):
     response = client.get("/studio/presets", headers=unlock(password))
     assert response.status_code == 200
-    assert len(response.json()["presets"]) == 9
+    assert len(response.json()["presets"]) == 11
 
 
 @pytest.mark.parametrize("password", ["wrong", "cp_sat", "", "x" * 129])
@@ -83,6 +90,7 @@ def test_studio_token_cannot_authorize_owner_api(monkeypatch):
     monkeypatch.setenv("COGNITO_USER_POOL_ID", "us-east-1_Fixture")
     monkeypatch.setenv("COGNITO_APP_CLIENT_ID", "fixture-client")
     token = unlock()["X-Studio-Session"]
+    app.dependency_overrides.pop(lab.require_lab_owner)
     assert (
         client.get(
             "/algorithm-lab/presets", headers={"Authorization": f"Bearer {token}"}

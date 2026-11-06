@@ -62,7 +62,7 @@ def reviewed_bundle(root):
             source_generation="unit-generation",
             source_release="unit-release",
             source_attribution="Unit contract attribution",
-            source_provenance=[{"unit": "contract"}],
+            source_provenance=[{"unit": "contract"}, *item.get("source_provenance", [])],
             rating_capture_id="unit-ratings",
             evidence_references=[REF],
         )
@@ -304,7 +304,10 @@ def test_diagnostics_workload_visits_and_resources(tmp_path):
     write_fixture(tmp_path / "short-1d")
     row = execute(spec(tmp_path, "offline-pipeline"))
     screen = row["workload_screening"]
-    assert screen["requested_visit_seconds"] == 7200 and screen["proof_of_infeasibility"] is False
+    assert screen["requested_visit_seconds"] is None and screen["proof_of_infeasibility"] is False
+    assert screen["minimum_requested_visit_seconds"] == 900
+    assert screen["maximum_requested_visit_seconds"] == 21600
+    assert screen["legacy_policy_visit_seconds"] == 7200
     assert row["metrics"]["trip_evaluation"]["schedule"]["visit_seconds"] == 7200
     assert row["metrics"]["trip_evaluation"]["schedule"]["overnight_downtime_seconds"] == 0
     assert row["resources"]["cpu_seconds"] >= 0

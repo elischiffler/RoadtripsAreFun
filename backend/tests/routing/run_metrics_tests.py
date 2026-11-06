@@ -290,8 +290,10 @@ def test_page_cohorts_separate_versions_and_exclude_missing_measurements():
     assert groups[1]["trip_evaluation"]["quoted_hotel_total_usd"] is None
 
 
-def test_minimized_cost_excess_supports_zero_optima_without_inverting_quality():
+@pytest.mark.parametrize("version", ["balanced-route-v3", "balanced-route-v4", "balanced-route-v5"])
+def test_minimized_cost_excess_supports_zero_optima_without_inverting_quality(version):
     baseline = metric()
+    baseline["metric_version"] = version
     baseline["objective_score"] = 0
     worse = copy.deepcopy(baseline)
     worse.update(solver_status="FEASIBLE", objective_score=20)

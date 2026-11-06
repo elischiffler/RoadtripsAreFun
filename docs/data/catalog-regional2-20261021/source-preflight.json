@@ -1,0 +1,28 @@
+{
+  "comparison_artifacts": [
+    {
+      "normalized_rows_sha256": "85354a0572929c9c19fdc85467498001c7ab358c1b369bb0a26b8a1422749559",
+      "release": "catalog-pilot-geodiverse-20261021",
+      "reviewed_sha256": "f5badc26a61d908a9a6d544786ab8524e0ae28f6ad10eee3f02f2eaacf8c4eca",
+      "source_admitted_rows": 191
+    },
+    {
+      "normalized_rows_sha256": "ab1cfedfb86bb9c754779bb9f8f8ac3f17a55fea68e5c7a2ba81034c868ae46c",
+      "release": "catalog-baltimore-20261021",
+      "reviewed_sha256": "0e06b49958851c4b50df508e55bad31ba2081eb4e05c0e7cc2b6959f6276e71d",
+      "source_admitted_rows": 3
+    }
+  ],
+  "live_parent_reconciled": false,
+  "local_comparison_rows": 890,
+  "prepared_queue": {
+    "native_snapshots_checked": 53,
+    "prospects": 60,
+    "sha256": "d17344d76ab14fcc5eaf6468d86f8d580db0c25cf71715bf4a536ca40819637d"
+  },
+  "source_manifest_sha256": "48092f711f56c8efbd8bcb639be548b84765cb3fafe5074be63195ea4f164e4a",
+  "untouched_prior_source_manifests": {
+    "/workspace/catalog-geodiverse-20261021/assembled-baltimore-final/reviewed.json": "0e06b49958851c4b50df508e55bad31ba2081eb4e05c0e7cc2b6959f6276e71d",
+    "/workspace/catalog-geodiverse-20261021/assembled-main/reviewed.json": "f5badc26a61d908a9a6d544786ab8524e0ae28f6ad10eee3f02f2eaacf8c4eca"
+  }
+}

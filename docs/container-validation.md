@@ -1,5 +1,25 @@
 # Container migration evidence
 
+## Automated catalog import, October 19, 2026
+
+Develop's automated NPS/USFS importer passes synthetic source and orchestration
+tests, with 1,984 backend tests / 79.98% coverage and 63 separately run real
+PostgreSQL catalog/SQL/recovery tests. Frontend format/lint, 262 tests / 91.85%
+coverage and build pass. The guarded Compose preview passes both smoke tests;
+disposable CRUD, recreation, connection recovery and backup/restore pass with
+source/restore volumes preserved. The source dataset was not used to clear these
+local fixture gates. See [full source and release evidence](catalog-automated-import.md).
+The developer environment's narrower CORS list causes an existing 127.0.0.1
+preflight assertion failure; the passing fixture run supplies the documented
+standard local origins without editing the environment or CORS implementation.
+Hosted catalog staging/activation is recorded separately; the release owner
+confirmed the recent verified off-host backup before activation. Host freshness
+was not independently inspected. Complete live trips remain unverified.
+
+This document retains dated planning/validation history. Conversational UI and
+API references below describe the retired feature; current entry points and
+retained compatibility are in [the removal record](journeygenie-removal.md).
+
 ## Public route authorization follow-up, 2026-09-27
 
 The browser-direct API path needs an authenticated Cognito access token for
@@ -24,7 +44,7 @@ changed by this PR.
 
 ## Signed local journey follow-up, 2026-09-24
 
-The new [journey driver](../tests/journey/run.py) launched the normal API image
+The new [journey driver](https://github.com/elischiffler/RoadtripsAreFun/blob/aa41b8f10c2bd449a6bd6c17c51bae9dfb92915f/tests/journey/run.py) launched the normal API image
 with a mounted test-only fixture script and the checked-in disposable DDL. A
 fresh `roadtrips-journey-efeb0b195e` run supplied locally signed RS256 access
 tokens, seeded San Luis Obispo/Santa Barbara locations, a 160,000-meter / 7,200-
@@ -225,3 +245,26 @@ supersede the stopped-daemon blockers for the live-only Lab/preset change.
 This uses only the checked-in local test DDL and isolated test data. It does not
 verify production schema/migration history, configure a production deployment,
 or complete the outstanding live Cognito/provider/browser acceptance gates.
+
+## Studio workspace and History popup (October 19)
+
+Develop working tree after `48e3e48`, tested locally before commit:
+
+- Frontend format/lint, 262 tests across 39 files (91.85% line coverage), and
+  production build passed. Existing Vite bundle-size warning remains.
+- Backend Ruff format/lint, 1,794 tests and 128 skips passed (79.11% coverage;
+  unchanged 63% gate). Test configuration used isolated unavailable local DB and
+  gateway endpoints, plus the documented CORS allowlist.
+- Development launcher: five tests passed. Rebuilt guarded preview containers
+  were healthy; both container smoke tests passed.
+- Disposable PostgreSQL project `roadtrips-crud-c36e45e82d` passed fixed-UUID job
+  insertion, owner-scoped record reads/cancellation, completed-row protection,
+  existing CRUD/ownership, API/DB recreation, readiness/recovery, backup/restore
+  and populated-target refusal. Containers stopped; both named volumes and the
+  ignored private backup remain. No schema changes or production DB were used.
+- Isolated browser fixture on ports 5174/8004 kept exactly one execution through
+  reload and home/Studio navigation. Completed result and selected Itinerary tab
+  survived reload. History opened as a modal, Escape restored trigger focus, and
+  Open trip returned the saved result without another execution. Cards showed
+  Sources links without the removed verbose source block. This synthetic check
+  does not establish live provider or production acceptance.

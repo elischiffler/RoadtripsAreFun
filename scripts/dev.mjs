@@ -5,13 +5,13 @@ import path from "node:path";
 
 export function services(root, args = [], platform = process.platform) {
   const unknown = args.filter(
-    (arg) => !["--debug", "--backend-only", "--frontend-only"].includes(arg),
+    (arg) => !["--backend-only", "--frontend-only"].includes(arg),
   );
   if (
     unknown.length ||
     (args.includes("--backend-only") && args.includes("--frontend-only"))
   ) {
-    throw new Error("Use --debug, --backend-only, or --frontend-only.");
+    throw new Error("Use --backend-only or --frontend-only.");
   }
   const result = [];
   if (!args.includes("--frontend-only")) {
@@ -39,10 +39,7 @@ export function services(root, args = [], platform = process.platform) {
         ".",
       ],
       cwd: path.join(root, "backend", "app"),
-      env: {
-        ...process.env,
-        ...(args.includes("--debug") ? { AGENT_DEBUG: "true" } : {}),
-      },
+      env: process.env,
     });
   }
   if (!args.includes("--backend-only")) {

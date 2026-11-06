@@ -536,6 +536,48 @@ def _runtime_facts(value):
     return value
 
 
+def _rating_annotation(value):
+    """Recognize only documented rating metadata, never immutable source facts.
+
+    The original three fields remain the uncached projection. Trait discovery
+    adds a complete four-field group even when caching is disabled; partial,
+    unknown or malformed groups cannot make ambiguous provenance acceptable.
+    Version changes require an explicit compatibility review here.
+    """
+    base = {"identity_source", "ratings_source", "verified_at"}
+    cache = {"ratings_cache", "ratings_version", "ratings_created_at", "ratings_provider"}
+    if type(value) is not dict or set(value) not in (base, base | cache):
+        return False
+    if any(type(value[key]) is not str for key in ("identity_source", "ratings_source")):
+        return False
+    if value["verified_at"] is not None and type(value["verified_at"]) is not str:
+        return False
+    if set(value) == base:
+        return True
+    if (
+        value["ratings_cache"] not in ("hit", "fresh")
+        or value["ratings_version"] != "attraction-traits-v1"
+    ):
+        return False
+    created, provider = value["ratings_created_at"], value["ratings_provider"]
+    # Fresh, unstored estimates have neither cache timestamp nor provider label.
+    if created is None or provider is None:
+        return created is None and provider is None and value["ratings_cache"] == "fresh"
+    if (
+        type(created) is not str
+        or len(created) > 64
+        or type(provider) is not str
+        or not 1 <= len(provider) <= 256
+        or not provider.strip()
+    ):
+        return False
+    try:
+        stamp = datetime.fromisoformat(created.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return stamp.tzinfo is not None and stamp.utcoffset() is not None
+
+
 def _canonical(record, entry):
     if type(record) is not dict or set(record) - (set(FIELDS) | _RUNTIME_KEYS | {"generation"}):
         raise ValueError("unknown record projection")
@@ -570,13 +612,7 @@ def _canonical(record, entry):
     facts = _runtime_facts(record.get("source_provenance", record.get("provenance")))
     if "source_provenance" in record and "provenance" in record:
         ratings = record["provenance"]
-        rating_annotation = (
-            type(ratings) is dict
-            and set(ratings) == {"identity_source", "ratings_source", "verified_at"}
-            and all(type(ratings[key]) is str for key in ("identity_source", "ratings_source"))
-            and (ratings["verified_at"] is None or type(ratings["verified_at"]) is str)
-        )
-        if not rating_annotation and _json(_runtime_facts(ratings)) != _json(facts):
+        if not _rating_annotation(ratings) and _json(_runtime_facts(ratings)) != _json(facts):
             raise ValueError("ambiguous provenance projections")
     marks = [fact for fact in facts if _marker_like(fact)]
     if len(marks) != 1 or _json(marks[0]) != _json(entry["marker"]):

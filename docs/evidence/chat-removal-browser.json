@@ -1,0 +1,57 @@
+{
+  "passed": true,
+  "checks": [
+    "saved-trip list without message/composer",
+    "map selection and reload",
+    "itinerary selection and reload",
+    "old bookmark redirect",
+    "mobile overflow",
+    "Studio navigation",
+    "no conversation requests or writes",
+    "no page errors"
+  ],
+  "requests": [
+    {
+      "path": "/chats",
+      "method": "GET"
+    },
+    {
+      "path": "/chats",
+      "method": "GET"
+    },
+    {
+      "path": "/chats",
+      "method": "GET"
+    },
+    {
+      "path": "/chats",
+      "method": "GET"
+    },
+    {
+      "path": "/chats",
+      "method": "GET"
+    },
+    {
+      "path": "/chats",
+      "method": "GET"
+    },
+    {
+      "path": "/chats",
+      "method": "GET"
+    },
+    {
+      "path": "/chats",
+      "method": "GET"
+    },
+    {
+      "path": "/chats",
+      "method": "GET"
+    },
+    {
+      "path": "/chats",
+      "method": "GET"
+    }
+  ],
+  "errors": [],
+  "fixtures": "Local intercepted saved trip, synthetic UI tokens and SVG map; no live providers, authentication verification or database writes"
+}

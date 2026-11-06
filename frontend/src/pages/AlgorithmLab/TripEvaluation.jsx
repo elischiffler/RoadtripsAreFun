@@ -24,7 +24,7 @@ export default function TripEvaluation({ metrics }) {
       </p>
       <dl className="lab-metrics">
         <div>
-          <dt>Selected attraction utility · mean / min / max / median</dt>
+          <dt>Selected attraction utility score · mean / min / max / median</dt>
           <dd>
             {['mean', 'min', 'max', 'median']
               .map((key) =>
@@ -37,7 +37,7 @@ export default function TripEvaluation({ metrics }) {
           </dd>
         </div>
         <div>
-          <dt>Delivered attraction utility · mean / min / max / median</dt>
+          <dt>Delivered attraction utility score · mean / min / max / median</dt>
           <dd>
             {['mean', 'min', 'max', 'median']
               .map((key) =>

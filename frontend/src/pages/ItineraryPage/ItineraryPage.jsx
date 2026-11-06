@@ -1,44 +1,31 @@
-import ItineraryDays from '../../components/ItineraryDays';
-import { Box, Typography, Container } from '@mui/material';
-import ChatButton from '../../components/buttons/ChatButton';
-import MapButton from '../../components/buttons/MapButton';
+import { Link } from 'react-router-dom';
+import { DesignFrame, Sheet } from '../../design';
+import TripExperienceNav from '../../components/TripExperienceNav';
+import TripVisitProgress from '../../components/TripVisitProgress';
 import { useStoredTrip } from '../useStoredTrip';
 import './ItineraryPage.css';
 
 const ItineraryPage = () => {
-  // Retrieve the global instance of UserData
-  const ChatLogsData = useStoredTrip();
-  const UserChatData =
-    ChatLogsData?.chatdata?.length > 0
-      ? ChatLogsData.getChatDataById(ChatLogsData.currentId) || ChatLogsData.chatdata[0]
-      : null;
-
-  if (!UserChatData || !UserChatData.itinerary) {
-    return (
-      <Container className="itinerary-page" maxWidth={false} disableGutters>
-        <Box className="no-itinerary-message">
-          <Typography variant="h6" color="white.black">
-            No Itinerary Available
-          </Typography>
-        </Box>
-      </Container>
-    );
-  }
-
+  const logs = useStoredTrip();
+  const trip = logs?.getChatDataById(logs.currentId) || logs?.chatdata?.[0];
   return (
-    <Container className="itinerary-page" maxWidth={false} disableGutters>
-      {/* Scrollable Main Content Box */}
-      <Box className="scrollable-main-content">
-        <ItineraryDays itinerary={UserChatData.itinerary} />
-      </Box>
-
-      {/* Floating nav buttons — bottom-left, same position as chat page */}
-      <Box className="itinerary-fab-group">
-        <MapButton route={UserChatData.route} showRing={false} />
-        <ChatButton />
-      </Box>
-    </Container>
+    <DesignFrame className="trip-experience itinerary-page">
+      {!trip?.itinerary?.length ? (
+        <Sheet>
+          <h1 className="rt-display">No Itinerary Available</h1>
+          <Link to="/trips">Saved trips</Link>
+        </Sheet>
+      ) : (
+        <>
+          <header className="rt-stack">
+            <p className="rt-caption">Your road trip</p>
+            <h1 className="rt-display">A day at a time</h1>
+            <TripExperienceNav trip={trip} view="itinerary" />
+          </header>
+          <TripVisitProgress key={trip.chatId} trip={trip} />
+        </>
+      )}
+    </DesignFrame>
   );
 };
-
 export default ItineraryPage;

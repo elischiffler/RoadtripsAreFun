@@ -15,7 +15,7 @@ from app.agent.progress import reporting, stage
 HEARTBEAT_SECONDS = 10
 
 
-async def stream_turn(run, *, stage_name="agent.turn"):
+async def stream_turn(run, *, stage_name="planner.run"):
     loop = asyncio.get_running_loop()
     queue = asyncio.Queue(maxsize=256)
     stopped = threading.Event()

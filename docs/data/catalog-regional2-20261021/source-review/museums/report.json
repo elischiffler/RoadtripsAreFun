@@ -1,0 +1,67 @@
+{
+  "T1_held": 13,
+  "T2_categories": {
+    "historic_site": 5,
+    "museum": 6
+  },
+  "T2_native_contract_rights_operator_literal_replay_passed": true,
+  "T2_source_review_recommendations": 11,
+  "T2_states": {
+    "LA": 8,
+    "RI": 3
+  },
+  "T3": 0,
+  "adapter_sha256": "51bfbde2f10653bc32621652556b58796f492fa62cd8eed95bfa082c744c55c0",
+  "all24_native_field_Census_replay_passed": true,
+  "all_request_receipts": 55,
+  "comparison_count": 890,
+  "comparison_sha256": "9431758ec5d516c185e5f9349d1035a128b1f9ec078438f5ee7a02d20c3a1404",
+  "limitations": [
+    "Agent-assisted published-source review, not independent human or field verification.",
+    "Byte replay and state containment establish specific source/geometry properties; they do not establish publisher truth, surveyed accuracy or real-time public availability.",
+    "T2 recommendations are browse-only. Arrivals, compiled calendars and itinerary-ready conversions remain unverified.",
+    "Root must reconcile all60 candidates with890 local comparisons, semantic parent/component identities and the live catalog before counting net additions.",
+    "Operator evidence is restricted local audit material. Catalog structured facts derive from CC0 Wikidata; no operator photos, collection descriptions, testimonials or licensed exhibit materials are imported."
+  ],
+  "live_net_new": null,
+  "local_collision_candidates": [
+    {
+      "distance_m": 73.8,
+      "other": "culture:wd:Q4554796",
+      "other_name": "1850 House",
+      "pilot_id": "culture:wd:Q6033435"
+    }
+  ],
+  "positive_adapter_evidence_bytes": 2387280,
+  "positive_adapter_evidence_receipts": 15,
+  "rate_policy_audit": {
+    "affected_pilot_ids": [
+      "culture:wd:Q119585283",
+      "culture:wd:Q49519614"
+    ],
+    "all_affected_held": true,
+    "future_fetcher_corrected_offline": true,
+    "no_remedy_requests": true,
+    "violations": 3
+  },
+  "retained_acquired_bytes": 6989362,
+  "reviewed_dispositions": 24,
+  "source_failures": [
+    {
+      "bytes": 91,
+      "checked_at": "2026-10-21T18:19:07.515370+00:00",
+      "content_type": "text/plain",
+      "etag": null,
+      "final_url": "https://library.brown.edu/robots.txt",
+      "id": "robots-4ca00d9779221fd1",
+      "last_modified": null,
+      "location": null,
+      "max_response_bytes": 131072,
+      "method": "GET",
+      "path": "raw/robots-4ca00d9779221fd1.body",
+      "sha256": "2f85832e31ca57711e6107af6b142363351ae516adb71c69afc643fac26be7f6",
+      "status": 503,
+      "url": "https://library.brown.edu/robots.txt"
+    }
+  ]
+}

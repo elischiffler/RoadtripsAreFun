@@ -1,0 +1,31 @@
+{
+  "Census_state_matches": 20,
+  "T1_held": 12,
+  "T2_source_reviewed": 8,
+  "T3_itinerary_ready": 0,
+  "actual_GET_attempts": 49,
+  "adapter_sha256": "e73e5f001e440eb7e57b2a66107648966c3db8cf90026e9b68cd50e024ab8eaa",
+  "baseline_local_rows": 890,
+  "campus_relationship": {
+    "component": "wikidata:Q4883646",
+    "component_disposition": "T2 conservatory only",
+    "feature_distance_m": 443.93,
+    "parent": "wikidata:Q458588",
+    "parent_disposition": "T1 semantic counting hold; no category substitution"
+  },
+  "conflicts": [],
+  "limitations": [
+    "Agent-assisted retained-source review; no independent human or field inspection.",
+    "No T3 arrival/calendar or road approach verified.",
+    "Local comparison excludes no unseen live production changes; final snapshot gate remains.",
+    "Schema/hash/literal checks do not prove all source assertions true."
+  ],
+  "live_catalog_reconciled": false,
+  "native_id_name_coordinate_immutability": 20,
+  "network_disabled_in_validation": true,
+  "proof_receipts": 17,
+  "replay_idempotent": true,
+  "result": "passed",
+  "reviewed": 20,
+  "selected_positive_bytes": 2845198
+}

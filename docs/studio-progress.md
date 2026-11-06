@@ -15,23 +15,23 @@ first. A cancelled run can remain unfinished in history and is not counted as
 completed. The client cancels reads, ignores late updates and times out after
 45 seconds without data. Progress does not retry or restart a billable trip.
 
-Nine steps explain form validation, OpenCage city/timezone resolution, the
-Mapbox base route, live place verification and AI ratings, integer CP-SAT
-selection, separate hotel/visit scheduling, final road timing, itinerary and
-result persistence. Live counts report sampled points, scored candidates,
-threshold-eligible candidates, solver status, selected attractions and hotel
-searches. AI ratings remain labeled estimates. Hotel prices and timing remain
-separate checks after the attraction-subset model; the display does not claim
-joint optimization or that every requested attraction will be delivered.
+The current display shows one short activity, such as **Finding places…**, from
+actual backend events. It replaces the earlier step list, provider counters and
+explanations. The text pulses while loading and respects reduced-motion settings.
+A polite live region announces activity changes. Heartbeats and unknown events
+do not change the activity or invent a percentage. Detailed events and saved
+attempts remain available to the existing backend/history contracts.
 
-Each stage shows Waiting, In progress, Done or Failed from actual backend events.
-Completed stage summaries are retained without an unbounded event log. Generic
-nested Mapbox events cannot move a completed parent phase backward. Heartbeats
-keep the connection alive and do not advance phases or estimate a percentage.
-A polite live region announces the current activity; details disclose how each
-step supplies inputs or validates results. No raw provider request or credential
-is included in streamed errors. The final envelope still feeds the existing map,
-itinerary, evaluation and saved-result viewer.
+No raw provider request or credential is included in streamed errors. The final
+envelope still feeds the existing map, itinerary, evaluation and saved-result
+viewer. Attraction matches remain estimates; hotel prices and scheduling remain
+separate checks after attraction selection. The display does not claim joint
+optimization or guaranteed delivery of every requested attraction.
+
+Studio normally uses reconnectable jobs as documented in
+[workspace and history](studio-access.md#workspace-and-history-popup-october-19-2026).
+The request-local stream lifecycle above applies to the compatibility streaming
+endpoint; leaving the page does not cancel a reconnectable Studio job.
 
 The header link now reads **Back to home page** and navigates to `/`.
 
@@ -58,7 +58,7 @@ result persistence, recovery, recreation and backup/restore. Test containers wer
 stopped; source/restore volumes and the private backup were retained. No production
 deployment or main merge was performed. Live announcements sit outside the busy input form.
 
-## Inspecting a finished run
+## October 5 finished-run inspector (historical UI)
 
 Algorithm details now contains **Run data by stage** instead of generic completion
 messages. Collapsed rows show useful summaries; expanded rows show precise JSON

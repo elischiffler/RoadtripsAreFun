@@ -6,7 +6,7 @@ import copy
 import pytest
 from psycopg2.extras import Json, execute_values
 
-from app.catalog import admission, release_holds, repository
+from app.catalog import admission, ingest, release_holds, repository
 from app.routing.sources.persona_candidates import LivePlaceProvider
 from tests.catalog_admission_tests import NOW, POINT, record
 from tests.catalog_postgres_tests import connection as connection
@@ -86,6 +86,15 @@ def test_browse_only_and_bad_timestamps_cannot_consume_routing_sql_slots(connect
     assert [
         item.provider_id for item in asyncio.run(LivePlaceProvider().attractions_near(POINT))
     ] == [ready["provider_id"], "usfs:legacy"]
+    browse = repository.browse_nearby(POINT)
+    assert len(browse) == 60
+    assert all(admission.browse_eligible(item) for item in browse)
+    assert all(item["provider_id"].startswith("catalog-pilot:") for item in browse)
+    assert not any(item["provider_id"].startswith("catalog-pilot:bad-") for item in browse)
+    with pytest.raises(ValueError, match="categories"):
+        repository.nearby(POINT, ["catalog_browse"])
+    with pytest.raises(ValueError, match="legacy_only"):
+        repository.nearby(POINT, ["daytime"], browse_mode=True, legacy_only=True)
 
 
 @pytest.mark.parametrize(
@@ -112,19 +121,23 @@ def test_malformed_admission_is_filtered_by_sql_not_after_limit(connection, muta
     assert [item["provider_id"] for item in repository.nearby(POINT, ["daytime"], limit=1)] == [
         ready["provider_id"]
     ]
+    assert [
+        item["provider_id"] for item in repository.browse_nearby(POINT, ["daytime"], limit=1)
+    ] == [ready["provider_id"]]
 
 
-def test_unknown_hours_has_no_daytime_or_automatic_route_exposure(connection):
+def test_unknown_hours_browse_has_no_daytime_or_automatic_route_exposure(connection):
     candidate = record()
     candidate["categories"] = ["catalog_browse", "nature"]
     _insert(connection, [candidate])
     assert repository.nearby(POINT, ["daytime"]) == []
+    assert repository.browse_nearby(POINT)[0]["provider_id"] == candidate["provider_id"]
     current = repository.current_records([candidate["provider_id"]])[candidate["provider_id"]]
     assert not admission.routing_eligible({"provider_id": candidate["provider_id"], **current})
     assert current["source_provenance"][0] == candidate["source_provenance"][0]
 
 
-def test_all_audited_holds_are_excluded_before_sql_limits_and_refresh(connection):
+def test_all_audited_holds_are_excluded_before_sql_limits_and_activation(connection):
     blocked = [record(sid, tier="T3", calendar=True) for sid in sorted(release_holds.SOURCE_IDS)]
     ready = record("catalog-pilot:zz-ready", tier="T3", calendar=True)
     alias = record("catalog-pilot:aa-held-alias", tier="T3", calendar=True)
@@ -133,13 +146,16 @@ def test_all_audited_holds_are_excluded_before_sql_limits_and_refresh(connection
     for item in [*blocked, ready]:
         item["categories"].append("catalog_browse")
     _insert(connection, [*blocked, ready])
-    assert [r["provider_id"] for r in repository.nearby(POINT, ["daytime"], limit=1)] == [
-        ready["provider_id"]
-    ]
+    for lookup in [repository.nearby, repository.browse_nearby]:
+        assert [r["provider_id"] for r in lookup(POINT, ["daytime"], limit=1)] == [
+            ready["provider_id"]
+        ]
     found = repository.current_records(
         [*sorted(release_holds.SOURCE_IDS), alias["provider_id"], ready["provider_id"]]
     )
     assert list(found) == [ready["provider_id"]]
+    with pytest.raises(ValueError, match="release hold"):
+        ingest.activate(connection, "admission-fixture")
     with connection.cursor() as cur:
         cur.execute("SELECT count(*) FROM places_catalog WHERE generation='admission-fixture'")
         assert cur.fetchone()[0] == 135  # Historical facts stay intact for review/deduplication.

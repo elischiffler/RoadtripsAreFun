@@ -1,0 +1,43 @@
+{
+  "activated": {
+    "generation": "5172482508f657efb16ff8b9a2bbba2784fc121ef67ea58456314cb70438a268",
+    "previous_generation": "273873454998fbb1ec36d4b92fcc49f876c2d9dd68847647771e5c8387bf3d00"
+  },
+  "actual_repository_queries": 3,
+  "assembled": {
+    "additions": 3,
+    "bytes": 19212671,
+    "calendar_updates": 0,
+    "evidence_files": 6,
+    "generation": "5172482508f657efb16ff8b9a2bbba2784fc121ef67ea58456314cb70438a268",
+    "network_or_database_calls": false,
+    "normalized_rows_sha256": "c4c239569571f564f114ce8946b5c366dd3d0873a6a582b539f41b55155339e7",
+    "parent_generation": "273873454998fbb1ec36d4b92fcc49f876c2d9dd68847647771e5c8387bf3d00",
+    "preserved_rows": 1,
+    "retained_evidence_bytes": 19188042,
+    "retained_evidence_files": 21,
+    "rows": 4,
+    "source_scanned_rows": 952
+  },
+  "calendar_relation_bytes": 16384,
+  "database_bytes": 8156863,
+  "disposable_loopback_port": 55434,
+  "external_network_and_ai": "blocked; fixed disposable loopback database only",
+  "generation": "5172482508f657efb16ff8b9a2bbba2784fc121ef67ea58456314cb70438a268",
+  "itinerary_ready": 0,
+  "live_net_new": null,
+  "parent_content_preserved": true,
+  "places_index_bytes": 57344,
+  "places_relation_bytes_including_indexes_toast": 122880,
+  "production_writes": false,
+  "rolled_back": {
+    "generation": "273873454998fbb1ec36d4b92fcc49f876c2d9dd68847647771e5c8387bf3d00",
+    "previous_generation": "5172482508f657efb16ff8b9a2bbba2784fc121ef67ea58456314cb70438a268"
+  },
+  "scope": "Disposable synthetic-parent development proof; not production/live-parent reconciliation",
+  "source_additions_sha256": "504edf7fbe5d0b48682b60b254ad7d214e29fd4f691a86c194ec7c19b842134d",
+  "source_admitted_browse": 3,
+  "source_manifest_sha256": "0e06b49958851c4b50df508e55bad31ba2081eb4e05c0e7cc2b6959f6276e71d",
+  "stage_preserved_pointer": true,
+  "staged_twice_idempotent": true
+}

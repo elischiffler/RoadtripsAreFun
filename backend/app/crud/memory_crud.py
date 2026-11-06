@@ -515,12 +515,5 @@ class MemoryCrudStore:
 
 
 def extract_facts_from_turn(user_message: str, assistant_reply: str) -> list[MemoryFact]:
-    """Deprecated: durable-fact capture is now TOOL-DRIVEN, not extracted.
-
-    The agent persists trip/preference data by calling the ``update_trip_profile``
-    / ``remember_fact`` tools during its normal turn (see
-    ``app/agent/tool_dispatcher.py``), so there is no separate LLM extraction
-    pass — which also avoids a second gateway call per turn. This function is
-    retained as a no-op for backward compatibility and always returns ``[]``.
-    """
+    """Historical compatibility no-op; retained callers never create new facts."""
     return []

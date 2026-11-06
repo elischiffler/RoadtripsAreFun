@@ -163,6 +163,18 @@
       "default": null,
       "title": "Hotel Rating Capture"
     },
+    "duration_capture": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Duration Capture"
+    },
     "source_catalogs": {
       "additionalProperties": {
         "$ref": "#/$defs/SourceCatalog"

@@ -16,6 +16,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "backend")]
+MAX_RETAINED_BYTES = 100 * 1024 * 1024
+MAX_RETAINED_FILES = 50_000
 
 
 def read(path):
@@ -39,15 +41,26 @@ def build(config, output):
     output.mkdir(parents=True)
     (output / "evidence").mkdir()
     copied = {}
+    retained_bytes = retained_files = 0
+
+    def retain(size):
+        nonlocal retained_bytes, retained_files
+        retained_bytes += size
+        retained_files += 1
+        if retained_bytes > MAX_RETAINED_BYTES or retained_files > MAX_RETAINED_FILES:
+            raise ValueError("aggregate retained source evidence exceeds ceiling")
 
     def evidence(path, expected=None):
         path = Path(path).resolve()
+        if path.stat().st_size > MAX_RETAINED_BYTES:
+            raise ValueError("retained source evidence exceeds ceiling")
         body = path.read_bytes()
         sha = hashlib.sha256(body).hexdigest()
         if expected is not None and sha != expected:
             raise ValueError("reviewed source input checksum changed")
         target = output / "evidence" / (sha + ".bin")
         if sha not in copied:
+            retain(len(body))
             target.write_bytes(body)
             copied[sha] = {
                 "evidence_path": target.relative_to(output).as_posix(),
@@ -134,9 +147,11 @@ def build(config, output):
             if not destination.is_relative_to(target):
                 raise ValueError("source adapter output escapes the artifact")
             destination.parent.mkdir(parents=True, exist_ok=True)
+            retain(origin.stat().st_size)
             shutil.copyfile(origin, destination)
         destination = target / source_path.name
         if not destination.exists():
+            retain(source_path.stat().st_size)
             shutil.copyfile(source_path, destination)
         additions.append(
             {
@@ -144,6 +159,16 @@ def build(config, output):
                 "path": destination.relative_to(output).as_posix(),
                 "sha256": hashlib.sha256(destination.read_bytes()).hexdigest(),
                 "manifest": source["manifest"],
+                **(
+                    {"selected_source_ids": source["selected_source_ids"]}
+                    if "selected_source_ids" in source
+                    else {}
+                ),
+                **(
+                    {"calendar_bindings": source["calendar_bindings"]}
+                    if "calendar_bindings" in source
+                    else {}
+                ),
             }
         )
     payload = {
@@ -171,6 +196,8 @@ def build(config, output):
         "preserved_rows": len(rows),
         "normalized_rows_sha256": enrich.rows_digest(prepared["rows"]),
         "network_or_database_calls": False,
+        "retained_evidence_bytes": retained_bytes,
+        "retained_evidence_files": retained_files,
     }
     write(output / "completion.json", report)
     return report

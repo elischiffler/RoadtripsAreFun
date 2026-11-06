@@ -38,30 +38,29 @@ const result = {
   },
 };
 
-it('explains the minimized cost, bounded quality and sparse discovery without historical surplus', async () => {
+it('shows measured match and discovery counts without formulas or raw stages', async () => {
   render(<LabResults result={result} />);
-  await userEvent.click(screen.getByRole('tab', { name: 'Algorithm details' }));
-  expect(screen.getByText('Selection cost (seconds)')).toBeInTheDocument();
-  expect(screen.getByText(/A valid attraction selection was found/)).toBeInTheDocument();
-  expect(screen.getByText(/Sparse sections: 4/)).toBeInTheDocument();
-  await userEvent.click(screen.getByText('Constraints and objective formula'));
-  expect(
-    screen.getByText(/Gaps include origin-to-first and last-to-destination/)
-  ).toBeInTheDocument();
-  expect(screen.queryByText(/maximize sum/)).not.toBeInTheDocument();
-  expect(screen.getByText('10 percentage points')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('tab', { name: 'Trip stats' }));
+  const matches = screen.getByRole('group', { name: 'Utility scores' });
+  expect(matches).toHaveTextContent('80%');
+  expect(matches).toHaveTextContent('90%');
+  expect(screen.getByText('Usable matches').nextElementSibling).toHaveTextContent('5');
+  expect(screen.queryByText('Sections with few places')).not.toBeInTheDocument();
+  expect(screen.queryByText('Selection cost (seconds)')).not.toBeInTheDocument();
+  expect(screen.queryByText('Run data by stage')).not.toBeInTheDocument();
+  expect(screen.queryByText('Constraints and objective formula')).not.toBeInTheDocument();
 });
 
 it('retains query coverage and measured road exclusions in inspectable stage JSON', async () => {
   render(<StageRunData result={result} />);
-  await userEvent.click(screen.getByText('Verified candidates and scores'));
-  const data = screen.getByLabelText('Raw data: Verified candidates and scores');
+  await userEvent.click(screen.getByText('Verified candidates and utility scores'));
+  const data = screen.getByLabelText('Raw data: Verified candidates and utility scores');
   expect(data).toHaveTextContent('s3-q1');
   expect(data).toHaveTextContent('unsearched_gaps');
   expect(data).toHaveTextContent('detour_raw_seconds');
 });
 
-it('shows adaptive upper bounds, query sections and durable actual call counts', () => {
+it('shows only the current activity while detailed discovery events continue', () => {
   const view = render(
     <StudioProgress
       events={[
@@ -77,7 +76,8 @@ it('shows adaptive upper bounds, query sections and durable actual call counts',
       ]}
     />
   );
-  expect(screen.getByRole('status')).toHaveTextContent('of up to 60, section 4');
+  expect(screen.getByRole('status')).toHaveTextContent('Finding places');
+  expect(screen.getByRole('status')).not.toHaveTextContent('section');
   view.rerender(
     <StudioProgress
       events={[
@@ -94,9 +94,9 @@ it('shows adaptive upper bounds, query sections and durable actual call counts',
       ]}
     />
   );
-  expect(screen.getByLabelText('Provider call counts')).toHaveTextContent(
-    'nearby: 4 active / 8 completed'
-  );
+  expect(screen.getByRole('status')).toHaveTextContent('Finding places');
+  expect(screen.queryByLabelText('Provider call counts')).not.toBeInTheDocument();
+  expect(screen.queryByRole('list')).not.toBeInTheDocument();
 });
 
 it('handles nullable attempts from unfinished and historical saved rows without hiding errors', () => {

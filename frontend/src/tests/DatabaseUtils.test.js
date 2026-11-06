@@ -14,7 +14,7 @@ import {
   deleteChat,
   initializeUserData,
   updateUserData,
-} from '../pages/ChatPage/DatabaseUtils';
+} from '../services/savedTrips';
 
 // Provide a fake VITE_BACKEND_SERVER so import.meta.env works in tests
 beforeEach(() => {
@@ -88,6 +88,19 @@ describe('deleteChat', () => {
 });
 
 describe('initializeUserData', () => {
+  it('hydrates presentation fields and defaults legacy trips without data loss', async () => {
+    const presentation = { visitedStopIds: ['stable-visit'], futureField: { compact: true } };
+    axios.get.mockResolvedValueOnce({
+      data: [
+        [{ chatId: 1, presentation }, CHAT_LOG],
+        [{ chatId: 2 }, { ...CHAT_LOG, id: 2 }],
+      ],
+    });
+    const result = await initializeUserData(AUTH_TOKEN);
+    expect(result.UserData.chatlogs.getChatDataById(1).presentation).toEqual(presentation);
+    expect(result.UserData.chatlogs.getChatDataById(2).presentation).toEqual({});
+  });
+
   it('restores pending candidate IDs with the saved profile', async () => {
     const tripProfile = {
       pending_locations: {

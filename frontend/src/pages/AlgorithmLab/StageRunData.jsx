@@ -6,7 +6,7 @@ const labels = {
   inputs: 'Validated trip inputs',
   endpoints: 'Resolved cities and timezones',
   initial_route: 'Starting road route',
-  candidates: 'Verified candidates and scores',
+  candidates: 'Verified candidates and utility scores',
   selection: 'CP-SAT selection',
   scheduling: 'Scheduled visits and hotels',
   reroute: 'Final road route',

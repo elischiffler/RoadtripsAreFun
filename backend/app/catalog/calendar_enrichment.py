@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 
 from psycopg2.extras import Json, RealDictCursor, execute_values
 
-from app.catalog import ingest
+from app.catalog import ingest, release_holds
 from app.catalog.calendar_projection import project as project
 from app.catalog.mixed import distance
 from app.routing.visit_calendar import source_calendar
@@ -183,7 +183,7 @@ def _adapter_entries(value, adapter_root, artifact_root):
     return output
 
 
-def _additions(payload, reader, *, max_rows):
+def _additions(payload, reader, *, max_rows, baseline=()):
     """Only typed, replayed source adapters can add places to a parent generation."""
     inputs = payload.get("addition_inputs", [])
     if not isinstance(inputs, list) or len(inputs) > 16:
@@ -191,19 +191,26 @@ def _additions(payload, reader, *, max_rows):
     if not inputs:
         return [], [], [], 0, 0
     from app.catalog import (
+        automated_bindings,
+        automated_nps,
         kaggle_ca_markets,
         kaggle_coastal,
         kaggle_cultural,
         kaggle_ny_markets,
         kaggle_ny_markets_more,
+        pilot,
+        usfs_current,
     )
 
     adapters = {
+        "automated-nps": automated_nps.prepare,
+        "usfs-current": usfs_current.prepare,
         "kaggle-cultural": kaggle_cultural.prepare,
         "kaggle-ny-markets": kaggle_ny_markets.prepare,
         "kaggle-ca-markets": kaggle_ca_markets.prepare,
         "kaggle-coastal": kaggle_coastal.prepare,
         "kaggle-ny-markets-more": kaggle_ny_markets_more.prepare,
+        "reviewed-browse-pilot": pilot.prepare,
     }
     rows, entries, reports, scanned, size = [], [], [], 0, 0
     for item in inputs:
@@ -228,14 +235,61 @@ def _additions(payload, reader, *, max_rows):
         size += report["bytes"]
         if scanned > max_rows or reader.bytes + size > reader.max_bytes:
             raise ValueError("incremental source aggregate ceiling exceeded")
+        replayed = {row["source_id"]: row for row in added}
+        selected = item.get("selected_source_ids")
+        if selected is not None:
+            if (
+                not isinstance(selected, list)
+                or any(not isinstance(key, str) for key in selected)
+                or len(selected) != len(set(selected))
+                or set(selected) - {row["source_id"] for row in added}
+            ):
+                raise ValueError("selected source identities differ from replayed source additions")
+            added = [row for row in added if row["source_id"] in set(selected)]
         rows.extend(added)
         new_entries = _adapter_entries(
             report.get("calendar_entries", []), source.parent, reader.root
         )
+        bindings = item.get("calendar_bindings", {})
+        if (
+            not isinstance(bindings, dict)
+            or any(
+                not isinstance(key, str) or not isinstance(value, str)
+                for key, value in bindings.items()
+            )
+            or set(bindings) - replayed.keys()
+            or len(set(bindings.values())) != len(bindings)
+        ):
+            raise ValueError("calendar bindings differ from replayed native facilities")
+        parent_rows = {row["source_id"]: row for row in baseline}
+        if set(bindings.values()) - parent_rows.keys():
+            raise ValueError("calendar binding references an unknown parent identity")
+        if bindings and (selected is None or set(bindings) & set(selected)):
+            raise ValueError("a bound existing facility cannot also be a new addition")
+        if bindings and (
+            item["adapter"] not in {"automated-nps", "usfs-current"}
+            or set(bindings) - {entry["source_id"] for entry in new_entries}
+        ):
+            raise ValueError("calendar bindings require a replayed automated source calendar")
+        filtered = []
+        for entry in new_entries:
+            sid = entry["source_id"]
+            if sid in bindings:
+                filtered.append(
+                    automated_bindings.bind_calendar(
+                        replayed[sid], parent_rows[bindings[sid]], entry
+                    )
+                )
+            elif selected is None or sid in set(selected):
+                filtered.append(entry)
+        new_entries = filtered
         for entry in new_entries:
             if item.get("manifest", {}).get("attribution"):
                 entry["source_attribution"] = item["manifest"]["attribution"]
-            if item.get("manifest", {}).get("release"):
+            if (
+                item.get("manifest", {}).get("release")
+                and entry["source_id"] not in bindings.values()
+            ):
                 entry["source_release"] = item["manifest"]["release"]
         entries.extend(new_entries)
         reports.append(
@@ -312,7 +366,7 @@ def prepare(path, *, max_rows=ingest.MAX_ROWS, max_bytes=ingest.MAX_BYTES):
             evidence.get("evidence_path"), evidence.get("snapshot_sha256"), allow_empty=True
         )
     additions, new_calendars, source_reports, scanned, source_bytes = _additions(
-        payload, reader, max_rows=max_rows - len(baseline) - supplement_scanned
+        payload, reader, max_rows=max_rows - len(baseline) - supplement_scanned, baseline=baseline
     )
     rows = [*baseline, *additions]
     if len(rows) > max_rows or len({row["source_id"] for row in rows}) != len(rows):
@@ -320,7 +374,20 @@ def prepare(path, *, max_rows=ingest.MAX_ROWS, max_bytes=ingest.MAX_BYTES):
             "incremental additions duplicate preserved identities or exceed row ceiling"
         )
     _cross_source_arrivals(baseline, additions)
-    entries = validate_entries([*payload.get("entries", []), *new_calendars], reader)
+    proposed_entries = [*payload.get("entries", []), *new_calendars]
+    if not proposed_entries and additions:
+        from app.catalog import admission
+
+        # Browse-only imports deliberately have no invented calendar. This
+        # exception is confined to replayed T2 rows in the dedicated adapter;
+        # legacy calendar enrichments and routing-ready imports keep their gate.
+        browse_only = all(
+            item.get("adapter") == "reviewed-browse-pilot"
+            for item in payload.get("addition_inputs", [])
+        ) and all((admission.admission_details(row) or {}).get("tier") == "T2" for row in additions)
+        entries = [] if browse_only else validate_entries(proposed_entries, reader)
+    else:
+        entries = validate_entries(proposed_entries, reader)
     prior_ids = {row["source_id"] for row in baseline}
     if any(entry.get("source_release") and entry["source_id"] in prior_ids for entry in entries):
         raise ValueError("supplementary calendars cannot replace preserved place source credits")
@@ -442,6 +509,15 @@ def _expected(cur, prepared):
     inherited = _entries(cur, parent["generation"])
     if digest(inherited) != parent["calendar_enrichment_sha256"]:
         raise ValueError("parent calendar enrichment changed")
+    binding_targets = {
+        target
+        for source in prepared["manifest"]["addition_inputs"]
+        for target in source.get("calendar_bindings", {}).values()
+    }
+    if binding_targets & {entry["source_id"] for entry in inherited}:
+        raise ValueError(
+            "automated calendar bindings cannot overwrite prior calendar facts or holds"
+        )
     entries = {entry["source_id"]: entry for entry in inherited}
     for incoming in prepared["entries"]:
         entry = copy.deepcopy(incoming)
@@ -504,6 +580,7 @@ def _storage(cur):
 
 def stage(conn, prepared):
     """Clone a verified baseline and atomically stage an immutable companion."""
+    release_holds.reject(prepared["rows"])
     _prepared_guard(prepared)
     parent, generation = prepared["parent"], prepared["generation"]
     with conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
@@ -572,6 +649,7 @@ def stage(conn, prepared):
 
 def activate(conn, prepared, *, rollback=False):
     """Validate both generations and change only the active catalog pointer."""
+    release_holds.reject(prepared["baseline"] if rollback else prepared["rows"])
     _prepared_guard(prepared)
     parent, new = prepared["parent"]["generation"], prepared["generation"]
     target = parent if rollback else new
@@ -714,6 +792,7 @@ def rollback(conn, receipt):
         current = cur.fetchone()
         if not current or current["generation"] not in {parent, candidate}:
             raise ValueError("unexpected calendar recovery transition")
+        release_holds.check_generation(cur, parent)
         for name in ("parent", "candidate"):
             if _snapshot(cur, receipt[name]["generation"]) != receipt[name]:
                 raise ValueError("recovery generation content changed")

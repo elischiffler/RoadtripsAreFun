@@ -1,0 +1,12 @@
+{
+  "additions.preview.json": "810d7cac907e2a4eb75191034e8ef05aef4ef9adcc9161fb51b7d19a5e54faf5",
+  "coverage.json": "50831efd5b0c4c9b9fd6211d63d7698226031ac24630600cf027abad3ea6b5f2",
+  "decisions.json": "3085a934ced0a80f61d51e0c33ca22d671b3f23b6a5729ecb246c07441153aba",
+  "local-proof.json": "da12797e401b1be4ccd5fb6e40045b377fa76ab14c51e9558f5308da352ebc79",
+  "next-batches.json": "eddc26ca667b31d65a0f164578b4e38a32d691141a93482b0f780216dbb90f2e",
+  "personas.json": "ed0233b753f1a712d82ef20cc8caf376662004bc906e0c2686abecb6ee7aac84",
+  "receipts.json": "5efa355fe3aafb9b57e0b0cdd3f5625f8afea40af16cade014d482d4587df446",
+  "recovery-receipt.json": "df2430365e4815c16ac35cc8abf284db0e2af9b5d8499621b3bcfef0a97fafdc",
+  "report.json": "e2d3d03cf2035ef7726aa6c3061735588e80b29641f663813f120a2794e25b90",
+  "validation.json": "9945d5f9c10ba6d7cc0fbf19ca6f61300c83a6352da29c07594daddd2db76a09"
+}

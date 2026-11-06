@@ -77,6 +77,20 @@ def write_fixture(root, count=3, duration=3600):
             "section_id": 0,
             "source": "synthetic_unit_only",
             "categories": [],
+            "source_provenance": [
+                {
+                    "dataset": "Synthetic evaluation window; not real opening-hour evidence",
+                    "source_visit_calendar": {
+                        "schema_version": "roadtrips-source-visit-calendar/1",
+                        "weekly_windows": [
+                            {"weekdays": list(range(7)), "opens": "08:00", "closes": "20:00"}
+                        ],
+                        "source_receipts": [
+                            {"source_url": "https://operator.example/synthetic-evaluation"}
+                        ],
+                    },
+                }
+            ],
         }
         request = [coords(0), item["coordinates"], coords(1)]
         item["solo_route_key"] = route_key(request)
@@ -444,8 +458,11 @@ def test_final_timing_failure_retains_measured_route_and_raw_selection(tmp_path)
     data, manifest = write_fixture(root)
     for record in data["routes"].values():
         if len(record["request_coordinates"]) == 4:
-            for leg in record["response"]["legs"]:
-                leg["duration"] = 5 * 3600
+            # Keep both visits within their explicit fixture opening windows;
+            # only the final leg overruns the driving cutoff. A closed visit
+            # correctly triggers calendar reselection instead of this failure.
+            for leg, hours in zip(record["response"]["legs"], (1, 1, 13)):
+                leg["duration"] = hours * 3600
             record["response"]["duration"] = 15 * 3600
     save_fixture(root, data, manifest)
     request = spec(tmp_path, "offline-pipeline")
@@ -475,18 +492,6 @@ def test_itinerary_failure_keeps_route_and_missing_hotels_keep_stage(tmp_path, m
     assert row["status"] == "failed" and row["stage"] == "route.schedule"
     assert row["solver_status"] in {"OPTIMAL", "FEASIBLE"}
     assert "hotel" in row["error"].lower()
-
-
-def test_tool_schemas_advertise_the_shared_count_limit():
-    from app.agent.tool_dispatcher import AppToolDispatcher
-
-    tools = {tool.name: tool for tool in AppToolDispatcher().specs()}
-    for name in ("generate_final_route", "record_trip_details"):
-        schema = tools[name].parameters["properties"]
-        if "details" in schema:
-            schema = schema["details"]["properties"]
-        assert schema["num_stops"]["maximum"] == MAX_STOPS
-        assert schema["num_stops"]["minimum"] == 1
 
 
 def test_archive_identity_does_not_require_git_or_claim_a_clean_checkout(monkeypatch):

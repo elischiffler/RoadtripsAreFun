@@ -1,0 +1,2866 @@
+{
+  "decision_counts": {
+    "hold": 9,
+    "reviewed_no_additional_conflict_observed": 93
+  },
+  "full_review_sha256": "1cdcf3497171e8b57af14f62b8b557ecf02ecedcf7752f0c4752995deaf25f62",
+  "input_calendars_sha256": "6b861f217b18693abd2b35c3f3b65613e2723bdfb0f32b2562af65e1c13e1559",
+  "input_preview_sha256": "60e2c50f081ec4a3403e6efcf177d3a30042df7906ebe2efb46531c743ef3975",
+  "limitations": [
+    "All 102 retained projected source constraint sets were read for contradictions, arrival/parking relationship, qualifications, direction identity and explicit coordinate claims. This is not a survey of physical arrival accuracy.",
+    "No comprehensive fresh operator alerts, DOT segment restrictions or operating status review was performed for all places. A targeted official NPS road-status page was acquired for the two Beartooth approaches only; its exact segment applicability remains unresolved.",
+    "Five newer complete parent rows remain unavailable for spatial/name checks. Existing-source validation and current608-parent release rebase remain independent requirements.",
+    "Source labels and successful OSRM destination snaps do not prove unrestricted ordinary-car access, trail safety, live opening or availability."
+  ],
+  "policy": "Exclusion-only independent review. A reviewed_no_additional_conflict_observed decision does not grant admission or override any original adapter, source calendar, duplicate, road-arrival, rights or runtime eligibility check.",
+  "records": [
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "dd86eade7c1495b153c8f6fbddb9578228ec2e1112504073112bfa2882810451",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10053010393"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "41800"
+        }
+      ],
+      "name": "Icehouse Trailhead",
+      "native_coordinates_lat_lon": [
+        34.25001,
+        -117.6363889
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10053010393"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "f718ca20b2bae45d9bfffe7a19d8db2debcaef11e57c22e72c3c24a658911e40",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10261010337"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "East Gateway Information Site",
+      "native_coordinates_lat_lon": [
+        44.46038,
+        -109.52564
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10261010337"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "352aa9955e8e678a76071926b93f685268b0b967cdb47264b8d009d0a15c94fe",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10879010474"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "39496"
+        }
+      ],
+      "name": "Angel Windows Trailhead",
+      "native_coordinates_lat_lon": [
+        37.798931,
+        -83.59138607
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10879010474"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "515a06a68d9b3d54b37c509c4ae6c1206e70c607b5af677e1f453af2e1f64a6b",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10880010474"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "39476"
+        }
+      ],
+      "name": "Auxier Ridge Trailhead",
+      "native_coordinates_lat_lon": [
+        37.820024,
+        -83.680869
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10880010474"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "d0a594e2dbe2e9e0b2c9b51babf93f4cfb9524a10ad11cebe9e26b56a620829a",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10882010474"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "39488"
+        }
+      ],
+      "name": "Bison Way Trailhead",
+      "native_coordinates_lat_lon": [
+        37.83683117,
+        -83.60973282
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10882010474"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "cf73ed840e65a91259978ac1d55ee68b142e2e8cd062623e195bd9bbffc3fb44",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10884010474"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Corner Ridge Trailhead",
+      "native_coordinates_lat_lon": [
+        37.8863764,
+        -83.5935539
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10884010474"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "1e459c8c319cae8b2e1ac56aea42991542fa13c00afbe10cc5e3f2d61af569fa",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10885010474"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Martins Fork Trailhead",
+      "native_coordinates_lat_lon": [
+        37.82000624,
+        -83.66715662
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10885010474"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "0940d5000bbe44297591440e8c5733d008f0ab24f59f7a7c0d7a21452fe2d487",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10886010474"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Pinch-em-tight Trailhead Parking Lot",
+      "native_coordinates_lat_lon": [
+        37.80529033,
+        -83.65508786
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10886010474"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "18ca75dc33bd26a34100c401599a14818020d3db6b83939f573a3d737764b833",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10888010474"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "39536"
+        }
+      ],
+      "name": "Sheltowee Trace Stanton Trailhead",
+      "native_coordinates_lat_lon": [
+        37.82304754,
+        -83.62814938
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10888010474"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "047a973b8476187c450f3e32c3c5a1422e3e16a3d77e766a9c37676b9ceffaf8",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10889010474"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Swift Camp Creek, Rough Trailhead",
+      "native_coordinates_lat_lon": [
+        37.801686,
+        -83.590836
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10889010474"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "b5ca37abab470ab88ffe99ad0a476da8937ce3ab7345080ad23e7939129d96ed",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10890010474"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "39524"
+        }
+      ],
+      "name": "Whistling Arch Trailhead",
+      "native_coordinates_lat_lon": [
+        37.80806136,
+        -83.59019354
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10890010474"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "88691d44628b2644108fe56005c7c8156409b262d2c46ddfd1b73bf7114beb86",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "10891010474"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "39514"
+        }
+      ],
+      "name": "Wildcat Trailhead Parking Area",
+      "native_coordinates_lat_lon": [
+        37.791314,
+        -83.596479
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:10891010474"
+    },
+    {
+      "decision": "hold",
+      "detail": "Directions publish GPS longitude 82 degrees 06 minutes 33 seconds west; native numeric longitude is -81.109289. The published points conflict by roughly 85km. Neither point is substituted.",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "095eb7e1b611a2d81673513f7f42b040194fcfc707a496f62d011b003cf82e8f",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11001010307"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Ohio View Trailhead - S.R. 7",
+      "native_coordinates_lat_lon": [
+        39.475651,
+        -81.109289
+      ],
+      "reason": "conflicting_published_coordinate_claim",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11001010307",
+      "specific_evidence_fields": {
+        "directions": "From New Matamoras, OH, travel south on State Rt. 7 for approximately 4 miles and look for sign.  Trail is on the right and parking is on the left.  GPS Lat/Long coordinates for the area are 39 deg 28'32\" N / 82 deg 06' 33\" W.",
+        "latitude": 39.475651,
+        "longitude": -81.109289
+      }
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "83eec041949df8cee4565d1de3df57c469bf16b070928c324db472dc98c7f1f9",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11010010299"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "26822"
+        }
+      ],
+      "name": "North Country Trail Boy River Trailhead",
+      "native_coordinates_lat_lon": [
+        47.044702,
+        -94.105434
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11010010299"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "1fbedbef6e142c7d905322014cdccddd281d170021c9720394b0fb4ab05f267c",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11011010299"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "26822"
+        }
+      ],
+      "name": "North Country Trail Highway 84 Trailhead",
+      "native_coordinates_lat_lon": [
+        47.043751,
+        -94.215053
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11011010299"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "b5732387b0157c9780a32d32ef9284e8604b65f5dc0f0e3fc69c02591cb5b11c",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11022010299"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "26822"
+        }
+      ],
+      "name": "North Country Trail County Road 4 Trailh",
+      "native_coordinates_lat_lon": [
+        47.121308,
+        -93.988076
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11022010299"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "2091e34c294cbb7791d5b692ecde822a23b51cfde9f1977c99687b6da046c6b0",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11029010436"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "41662"
+        }
+      ],
+      "name": "Bass Lake Trailhead",
+      "native_coordinates_lat_lon": [
+        47.94927434,
+        -91.87479204
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11029010436"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "e5719fa04f3d5ddbfe6765f72dd240a881de21e66d994d4bd7a0dc6aa6c8ffa4",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11106010374"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "60300"
+        }
+      ],
+      "name": "Bass Overlook Trailhead",
+      "native_coordinates_lat_lon": [
+        46.5900004,
+        -114.1686111
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11106010374"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "02a2bd33bcc218a0a9c9e47e60dca6aec09ebc1ed53cf68e5ec131e70fc0d113",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11107010374"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "60318"
+        }
+      ],
+      "name": "Glen Lake Trailhead",
+      "native_coordinates_lat_lon": [
+        46.435583,
+        -114.253295
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11107010374"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "b0a936907594f700c644a439de9d65b4dde672e50560a1a2f8e4e8060c751a62",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11199010357"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "West Cady Ridge Trailhead",
+      "native_coordinates_lat_lon": [
+        47.92688889,
+        -121.2768611
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11199010357"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "2992dc5cd1de85078bc86d772ff92f358b29f614c21226d9d350f13aca09367c",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11206010357"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Necklace Valley Trailhead",
+      "native_coordinates_lat_lon": [
+        47.665556,
+        -121.287222
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11206010357"
+    },
+    {
+      "decision": "hold",
+      "detail": "Baker River and Baker Lake trailhead records share exactly identical directions, including Upper Baker Dam/FS1107 one-mile approach, despite points about 14.6km apart. Hold both until distinct arrival evidence resolves the conflict.",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "c2788da864c7567d00b90e4a23701bab81d575f153fec49eee17f7946fc352c0",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11230010357"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Baker River Trailhead",
+      "native_coordinates_lat_lon": [
+        48.75049325,
+        -121.55533331
+      ],
+      "reason": "indistinguishable_shared_driving_directions_for_distant_native_points",
+      "related_source_ids": [
+        "usfs:facility:11230010357",
+        "usfs:facility:11231010357"
+      ],
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11230010357",
+      "specific_evidence_fields": {
+        "directions": "From the Mt. Baker Ranger District office in Sedro-Woolley, WA follow State Route 20 east for 16 miles to milepost 82. Turn left (north) on the Baker Lake Highway (Forest Service road 11). Continue for 14 miles to the Baker Dam Road and turn right. Drive past the Puget Sound Energy Kulshan Campground and across the Upper Baker Dam. After crossing the dam, turn left on Forest Service road 1107. Follow FS road 1107 for 1 mile and look for the trailhead and parking area on the left side of the road.",
+        "latitude": 48.75049325,
+        "longitude": -121.55533331
+      }
+    },
+    {
+      "decision": "hold",
+      "detail": "Baker River and Baker Lake trailhead records share exactly identical directions, including Upper Baker Dam/FS1107 one-mile approach, despite points about 14.6km apart. Hold both conservatively; this review does not choose the more plausible point as verified.",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "24daa44e8d34e8089a3f7d2f5edf323675d6b5a7c25d8d990748e91870abce74",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11231010357"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Baker Lake Trailhead",
+      "native_coordinates_lat_lon": [
+        48.645669,
+        -121.674633
+      ],
+      "reason": "indistinguishable_shared_driving_directions_for_distant_native_points",
+      "related_source_ids": [
+        "usfs:facility:11230010357",
+        "usfs:facility:11231010357"
+      ],
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11231010357",
+      "specific_evidence_fields": {
+        "directions": "From the Mt. Baker Ranger District office in Sedro-Woolley, WA follow State Route 20 east for 16 miles to milepost 82. Turn left (north) on the Baker Lake Highway (Forest Service road 11). Continue for 14 miles to the Baker Dam Road and turn right. Drive past the Puget Sound Energy Kulshan Campground and across the Upper Baker Dam. After crossing the dam, turn left on Forest Service road 1107. Follow FS road 1107 for 1 mile and look for the trailhead and parking area on the left side of the road.",
+        "latitude": 48.645669,
+        "longitude": -121.674633
+      }
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "ebe2d6f3a399d8759cb4ffbeffcc924b02a3833fcae689e16112857e848b6f30",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11233010357"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Boulder Ridge Trailhead",
+      "native_coordinates_lat_lon": [
+        48.73521306,
+        -121.71026884
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11233010357"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "2d422a0ce478bc07acabd065e44babc4da7d05171ee5c69e262ec9e028b64302",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11238010282"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "49490"
+        }
+      ],
+      "name": "Lewellyn Cove Nature Trail",
+      "native_coordinates_lat_lon": [
+        35.441335,
+        -83.806382
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11238010282"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "f8efa42c29b0ea4765e423d05e0ff171280b4e3830255e2923c74ebad14ef14d",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11238010357"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Goat Mountain Trailhead",
+      "native_coordinates_lat_lon": [
+        48.897712,
+        -121.645249
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11238010357"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "01ca48460ede7cb022b932fec0a777c73ae004ce1faaab98b93d7a753e37b3fd",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11247010357"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Watson Lakes Trailhead",
+      "native_coordinates_lat_lon": [
+        48.67490098,
+        -121.61530345
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11247010357"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "df800477bd1d754b047fcaa8ca5af9ca6e84f092dd2eaa5a3f7fd4b07867e37e",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11248010357"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Welcome Pass Trailhead",
+      "native_coordinates_lat_lon": [
+        48.91352276,
+        -121.69985282
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11248010357"
+    },
+    {
+      "decision": "hold",
+      "detail": "Native approach uses US212/Beartooth Highway. A targeted current official NPS road notice reports that highway closed for the season. Exact closed segment versus this turnoff has not been independently resolved; conservatively hold rather than assume an accessible alternate approach.",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "5f7d4170e2d5c232101a6ca190ffcbbcf3b6766b4f42a99ff42314592bc6852d",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11475010337"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Clay Butte Trailhead",
+      "native_coordinates_lat_lon": [
+        44.95084,
+        -109.63307
+      ],
+      "reason": "seasonal_approach_road_restriction_unresolved",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11475010337",
+      "specific_evidence_fields": {
+        "directions": "From Cody, WY take State Highway 120 north for 16 miles. Turn left onto State Highway 296, the Chief Joseph Scenic Highway. Proceed about 46 miles to the junction with U.S. Highway 212. Turn right onto Highway 212, which is the Beartooth All-American Highway, and continue about 7 miles to the Forest Rd 142, which will be on the left, and continue up the road for another 2 miles.  The Trailhead will be to your left.",
+        "recarea_description": "Clay Butte Trailhead is located up FS Road 142 on the way to Clay Butte Fire Lookout located high in the northern part of the Shoshone along the Beartooth All-American Road (U S Highway 212) northwest of Cody, Wyoming. Clay Butte Trailhead is the primary access to Clay Butte Trail (#614), which quickly winds into Absaroka-Beartooth Wilderness and connects with a myriad of trails all leading to abundant high alpine lakes and through the high granitic peaks of the Beartooth Mountain Range.  The trailhead has limited parking and visitor information."
+      },
+      "supplemental_excerpt": "Beartooth Highway (Closed for the season)",
+      "supplemental_receipt": {
+        "bytes": 64412,
+        "path": "/workspace/catalog-expansion-20261021/research/yellowstone-road-status.html",
+        "retrieved_at": "2026-10-21T01:45:04.701796+00:00",
+        "sha256": "c273cb5fb67ffcb52be604dc418ebfa0ea553064653ddd82f6c5e87817014828",
+        "status": 200,
+        "url": "https://www.nps.gov/yell/planyourvisit/parkroads.htm"
+      }
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "77858c4ca8cf535e8ae713778e9c3df29852b4b61abadab67f761dac1ef3aee4",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11476010337"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Lodgepole Trailhead",
+      "native_coordinates_lat_lon": [
+        44.84398,
+        -109.63865
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11476010337"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "9ce60f99b1883a2e3a735b066a2bc917a626c8e3ec0b5bdbac001ccf15d16698",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11618.006441"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "10746"
+        }
+      ],
+      "name": "Billy Creek Trail",
+      "native_coordinates_lat_lon": [
+        34.6907066,
+        -94.73167
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11618.006441"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "6121c41fa991dc20d349e847b7a90211aa5f3f5a4800fff1775fc2f4abb5ca08",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11657.001771"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Cody Peak Interpretive Site",
+      "native_coordinates_lat_lon": [
+        44.4953,
+        -109.9443
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11657.001771"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "c8f15044dc03d37d500240e8526f0951f921c0b69904e7fd2de7bde2648cb54c",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11802010359"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "6867"
+        }
+      ],
+      "name": "Settler's Grove Interpretive Site",
+      "native_coordinates_lat_lon": [
+        47.70947,
+        -115.827037
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11802010359"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "fd08e5799a4b39c7d0ac4b637e696e474b21174a80551347d5b8f25d0d2e5ad4",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11877010473"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Bristlecone Pine Trailhead",
+      "native_coordinates_lat_lon": [
+        37.567315,
+        -112.848982
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11877010473"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "75712faec42f420d3855e787c363597fef4accd3d61b623fdbcdf53ee12df332",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "11980010491"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "71725"
+        }
+      ],
+      "name": "Little Bear Trailhead",
+      "native_coordinates_lat_lon": [
+        42.218131,
+        -110.555814
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:11980010491"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "8e345f398724c07442654f58328fc85a17ff0496034c09bd156088de3d1d8154",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "12485010421"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Dakota Point Trailhead",
+      "native_coordinates_lat_lon": [
+        43.985141,
+        -103.460985
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:12485010421"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "591eadb52ba94ef4cbf28bda5337b151f3c1dcfbc653fb58fff2f15a61e33207",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "13048.003141"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Twenty Mile Trailhead",
+      "native_coordinates_lat_lon": [
+        45.135607,
+        -116.011016
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:13048.003141"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "1d2c8bb2a66c7e026aa248e701f8ee652b532c28ff05336c3401b5c23943fa78",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "1415879010602"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "57100"
+        }
+      ],
+      "name": "Iron Bridge Trailhead",
+      "native_coordinates_lat_lon": [
+        41.379009,
+        -88.1231
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:1415879010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "26805839b8739dc53a12b03654b4bc161dd72fe02b7b6e8ccc2868d950ce1283",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "1415912010602"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "57104"
+        }
+      ],
+      "name": "River Road Trailhead",
+      "native_coordinates_lat_lon": [
+        41.341986,
+        -88.170177
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:1415912010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "5769ee289e2144511aa068c7f6df029f484a2b8505823ea1ddb913bb43ae07e1",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "14165010386"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Mt. Rose Trailhead",
+      "native_coordinates_lat_lon": [
+        39.31346,
+        -119.89745
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:14165010386"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "de5dcbcd39c3e0e6359fbd05b80a04ec5859024b3f757454e28235813b30ce68",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "14573010473"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Deer Creek Lake Trailhead",
+      "native_coordinates_lat_lon": [
+        38.014227,
+        -111.375999
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:14573010473"
+    },
+    {
+      "decision": "hold",
+      "detail": "Source requires a BWCAW permit before hiking. Parking and an open clock alone do not establish unconditional use of this trailhead for a hiking visit. Hold until access/permit conditions are modeled.",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "fcd5f8faa189cd2c98bf2c9cd5acffb1bc64ef53e9caf5cef0e4068845eee47e",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "14810.007601"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "41654"
+        }
+      ],
+      "name": "Pow Wow Trail Trailhead",
+      "native_coordinates_lat_lon": [
+        47.80116751,
+        -91.30648394
+      ],
+      "reason": "unmodeled_mandatory_hiking_permit",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:14810.007601",
+      "specific_evidence_fields": {
+        "recarea_description": "The Powwow Trail is a 25 mile loop trail that lies primarily within the Boundary Waters Canoe Area Wilderness.  This trail travels through a large portion of the 2011 Pagami Creek fire area and visitors can see forest regeneration occurring.  All visitors must have a BWCAW permit prior to hiking the Powwow."
+      }
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "1d2a41779887b650ac8decba9654b7e8b563dcdb1c4795c902fb762f15abf164",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "162454010602"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "4e7a5e801ddb6e0c88f982cb7b28a32479b8304e7bf7f4fac85402355c7aaf36",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "81550"
+        }
+      ],
+      "name": "Maxwell Butte Trailhead",
+      "native_coordinates_lat_lon": [
+        44.4634,
+        -121.9703
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:162454010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "6d840fecf263c374768360eeac83dc818d3135ea44b9ad7a5e60f1b61a3536aa",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "162457010602"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "4e7a5e801ddb6e0c88f982cb7b28a32479b8304e7bf7f4fac85402355c7aaf36",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "81548"
+        }
+      ],
+      "name": "Bingham Ridge Trailhead",
+      "native_coordinates_lat_lon": [
+        44.6065,
+        -121.9104
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:162457010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "aa78f4817f1f038029e44b3a1a3dd4e35ea503b06ddecc196c8253f31606bc93",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "1711399010602"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "20558"
+        }
+      ],
+      "name": "Convict Lake Trail",
+      "native_coordinates_lat_lon": [
+        37.59512,
+        -118.852744
+      ],
+      "profile_note": "Retain source warning about historical washouts/steep exposed trail sections. Arrival acceptance does not verify trail safety or uninterrupted walkability.",
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:1711399010602"
+    },
+    {
+      "decision": "hold",
+      "detail": "Sand Camp description places parking/toilet one-eighth mile from a trailhead while native type is trailhead. The review cannot establish whether the retained point represents the documented car parking or a separate trail access; hold without moving coordinates.",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "6cda37189e692b8bb2c9680a698326f9e3fb1ba072d305aecee16be8b75454ea",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "204537010602"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Sand Camp",
+      "native_coordinates_lat_lon": [
+        41.7416,
+        -123.9811
+      ],
+      "reason": "native_point_role_ambiguous_relative_to_separate_parking",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:204537010602",
+      "specific_evidence_fields": {
+        "latitude": 41.7416,
+        "longitude": -123.9811,
+        "recarea_description": "Parking and vaulted toilet 1/8 mile from a trailhead. Primitive campsites via short trail. 120' x 150' parking lot easily accommodates equestrian trailers. No overnight car camping in parking lot, but overnight parking permitted. Sand/cobble beach; large river pool with small sandy beach downstream.",
+        "site_type": "TRAILHEAD"
+      }
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "12bdea2abf2c3c0a5919d4a828cf28b7ab485a204f72853586e6453fd8391947",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "210226010602"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "80607"
+        }
+      ],
+      "name": "Sherman Cr. Trailhead",
+      "native_coordinates_lat_lon": [
+        46.345433,
+        -115.309014
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:210226010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "8b38b1314e128767b9e66dcaf81607af5f710a0a7681df6cd75ee5ee7461587a",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "236482010602"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "6790"
+        }
+      ],
+      "name": "Navigation Trailhead",
+      "native_coordinates_lat_lon": [
+        48.7391,
+        -116.8631
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:236482010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "92050c4349291113af043202928321c9f5e9a4606e29613fae10922c368750ba",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "2477932010602"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "21806"
+        }
+      ],
+      "name": "Cole Creek Trailhead",
+      "native_coordinates_lat_lon": [
+        37.669185,
+        -92.355434
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:2477932010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "180706936157eab264d486d06c88b792dbeacf763311e4e3bdbacc37b220d8cf",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "249226010602"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "80818"
+        }
+      ],
+      "name": "Ravine Loop Trailhead",
+      "native_coordinates_lat_lon": [
+        42.483953,
+        -76.813161
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:249226010602"
+    },
+    {
+      "decision": "hold",
+      "detail": "Gorge Ponds native directions explicitly lead to Ravine Trail parking on County Route2. The separately listed Ravine Loop Trailhead is about 3.1km away. No nonconflicting public parking linkage to the Gorge Ponds native point is established.",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "e2cf058bd327f75321a9fdb0efed927efc5a66a6261a434fd8b0b180f4ee59c0",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "249235010602"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Gorge Ponds Trailhead",
+      "native_coordinates_lat_lon": [
+        42.456508,
+        -76.805994
+      ],
+      "reason": "directions_name_a_different_arrival",
+      "related_source_ids": [
+        "usfs:facility:249226010602"
+      ],
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:249235010602",
+      "specific_evidence_fields": {
+        "directions": "From the North, take State Route 414 South to Hector, NY (Exit 41 off I-90). In Hector, 0.5 miles past the Dandy Mini Mart, turn left onto County Route 2.  Go 3 miles east to the Ravine Trail parking area, located on the south side of the road.",
+        "latitude": 42.456508,
+        "longitude": -76.805994,
+        "recarea_description": "GORGE PONDS TH"
+      }
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "db9b41f97a5a16cc25fa1b5674ef0346ddf29d58e5f953b32dca2f78bad73f07",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "249237010602"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "81830"
+        }
+      ],
+      "name": "South Slope Trailhead",
+      "native_coordinates_lat_lon": [
+        42.449764,
+        -76.810583
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:249237010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "8eca9f3aae95fdf9a9952491bbc2d5d8d264a37b2059d20f4f94e8855c4243de",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "32614010299"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "26822"
+        }
+      ],
+      "name": "North Country Trail Highway 50 Trailhead",
+      "native_coordinates_lat_lon": [
+        47.029124,
+        -94.59578
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:32614010299"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "0601fe2c789303da1d8583ddf25dc5a631a0a786e4a046f391bb87e60768f61c",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "38644010349"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "North Willow Creek Trailhead",
+      "native_coordinates_lat_lon": [
+        45.6394,
+        -111.9229
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:38644010349"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "8669b01ab495459fa86303b966e62a448f7960b44e567ef6924232987ab6ef33",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "4222251010602"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Homer Stone Trailhead",
+      "native_coordinates_lat_lon": [
+        43.407973,
+        -72.98988
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:4222251010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "88a481bedc4d6e4fb6889fb6a34540a64d1985ec729e5b7f3f162d742444a88f",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "4222380010602"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "AT/LT Rte. 140 Trailhead",
+      "native_coordinates_lat_lon": [
+        43.456897,
+        -72.932589
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:4222380010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "056281a14067db94a15b76ecf19531f262e5005dc1f1731f46e3c4d4ae901079",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "4295296010602"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Laurentian Divide Overlook Parking",
+      "native_coordinates_lat_lon": [
+        48.06754098,
+        -90.54454551
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:4295296010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "35f3c61e54bd0c9aaaa43b5055fb35b4a2e02c2f5475edc7e91f42f69b5054a7",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "4311033010602"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Superior Hiking Trailhead-temperance Riv",
+      "native_coordinates_lat_lon": [
+        47.56426541,
+        -90.88423953
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:4311033010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "20d0c154459fc74c2773ec816425d7132b284fdca9f4475fe42628a20f192f9c",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "4311034010602"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Superior Hiking Trailhead- Cc 6",
+      "native_coordinates_lat_lon": [
+        47.78112479,
+        -90.39322121
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:4311034010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "31aafedcee8d8d5d5292018933d969c25621ed9df46e86411b61369f3800742e",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "4362315010602"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Schroeder Trailhead",
+      "native_coordinates_lat_lon": [
+        44.081738,
+        -103.374105
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:4362315010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "64c8ffd96f4992d644eebe40795cbed9f6ef3e2b4095ffaaa7815629f6823e58",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "4379007010602"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Hayward Trailhead",
+      "native_coordinates_lat_lon": [
+        43.873365,
+        -103.345452
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:4379007010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "9ede5d4a2f361407e2b2a1ca448d4c0c22affbfbe37fa8d228a9414ab50bce73",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "4379172010602"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Shanks Trailhead",
+      "native_coordinates_lat_lon": [
+        44.069006,
+        -103.38442
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:4379172010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "98f7d38ce4bcbc9b89b2f8e632041657b6836b7075d762f06df8c38a711b9e73",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "5007.007841"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "White Rocks Picnic Area",
+      "native_coordinates_lat_lon": [
+        43.4511,
+        -72.9435
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5007.007841"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "be87f9fb277c60cd1b36fd57bf9e53adb21eb46116f39c1a71560d73d7aeb27f",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "5025.004481"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "55728"
+        }
+      ],
+      "name": "Sand Pond-Picnic/Trailhead",
+      "native_coordinates_lat_lon": [
+        39.617713,
+        -120.620923
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5025.004481"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "a808f292905155b5dc631804e49acd401c589d9f019bd56465550eb75f8b6d99",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "5036.002901"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "76210"
+        }
+      ],
+      "name": "Middle Fork Trailhead & Transfer Camp",
+      "native_coordinates_lat_lon": [
+        44.52769,
+        -115.299897
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5036.002901"
+    },
+    {
+      "decision": "hold",
+      "detail": "Native approach uses US212/Beartooth Highway. A targeted current official NPS road notice reports that highway closed for the season. Exact closed segment versus this turnoff has not been independently resolved; conservatively hold rather than assume an accessible alternate approach.",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "67d17bb35df5c49455f15352cc236356f79792494e32697451d6b33b7964242e",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "5045.001771"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Clarks Fork Overlook",
+      "native_coordinates_lat_lon": [
+        44.92479,
+        -109.69495
+      ],
+      "reason": "seasonal_approach_road_restriction_unresolved",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5045.001771",
+      "specific_evidence_fields": {
+        "directions": "From Cody, WY take State Highway 120 north for 16 miles. Turn left onto State Highway 296, the Chief Joseph Scenic Highway. Proceed about 46 miles to the junction with U.S. Highway 212. Turn right onto Highway 212, which is the Beartooth All-American Highway, and continue about 1.7 miles to the Clarks Fork Overlook, which will be on the right.",
+        "recarea_description": "Clarks Fork Overlook Observation Site is located along the Beartooth All-American Highway and provides visitors sweeping vistas of the surrounding Absaroka Mountains and the massive canyon carved out by the Clarks Fork of the Yellowstone River, a desigted Wild and Scenic River.   The observation site contains ample parking, vault toilet, and visitor information signs."
+      },
+      "supplemental_excerpt": "Beartooth Highway (Closed for the season)",
+      "supplemental_receipt": {
+        "bytes": 64412,
+        "path": "/workspace/catalog-expansion-20261021/research/yellowstone-road-status.html",
+        "retrieved_at": "2026-10-21T01:45:04.701796+00:00",
+        "sha256": "c273cb5fb67ffcb52be604dc418ebfa0ea553064653ddd82f6c5e87817014828",
+        "status": 200,
+        "url": "https://www.nps.gov/yell/planyourvisit/parkroads.htm"
+      }
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "3b5339be278cc5c26e249820789b60770a9323ab0697e1feb4244688e18e68fb",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "5055.007791"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "6139"
+        }
+      ],
+      "name": "Brush Hollow Trailhead",
+      "native_coordinates_lat_lon": [
+        41.54194444,
+        -78.78944444
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5055.007791"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-0.json",
+          "projected_fields_sha256": "f6393de2db5e8a2957007bdbb2900546a9c23fde3da2f0b643193bee1fffc424",
+          "snapshot_sha256": "df8d18874266cfc7b1c6b5937bb7c17366ebfdae49a7ed47363d5e38cbc3c445",
+          "source": "USFS construction facility",
+          "source_record_id": "5068.001771"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Sunlight Bridge Overlook",
+      "native_coordinates_lat_lon": [
+        44.76993,
+        -109.42464
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5068.001771"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "e5db495278c70157dd24e0481f48f986a99e7ce5b351f263c5fc176726a393e6",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5070.000471"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "61367"
+        }
+      ],
+      "name": "Timberline Trailhead",
+      "native_coordinates_lat_lon": [
+        45.17123,
+        -109.46421
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5070.000471"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "017413ad6ba6b00af94eef38d6a5e351e5be21c20c8b652ce15c69277f75b302",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5070.007791"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "6126"
+        }
+      ],
+      "name": "Laurel Mill Trailhead",
+      "native_coordinates_lat_lon": [
+        41.4075,
+        -78.78861111
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5070.007791"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "d4e34b051d3de017ff5a9d1b5574bb1dbc86d4e56d137233de6ef98b13a2449a",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5071.000471"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "61377"
+        }
+      ],
+      "name": "East Rosebud Trailhead",
+      "native_coordinates_lat_lon": [
+        45.19732,
+        -109.63535
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5071.000471"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "1916505ebf849c80d1c0afb03af2b3505b5c9f417a4fc8ea046afda5a1fc6733",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5071.001771"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Double D Trailhead",
+      "native_coordinates_lat_lon": [
+        43.93762,
+        -109.2122
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5071.001771"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "174dd1fba1c917dde3163e33efe12c3e9614a745c5a0ce4908b2896badd4e171",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5074.000271"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "60648"
+        }
+      ],
+      "name": "Nez Perce Pass Trailhead",
+      "native_coordinates_lat_lon": [
+        45.716882,
+        -114.502841
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5074.000271"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "06e78a12762c43e0fd9e5d8eaa3e71fdd88015f9b284be88ba9c7b9b00c91eef",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5074.007791"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "6125"
+        }
+      ],
+      "name": "Rocket John Atv Trailhead",
+      "native_coordinates_lat_lon": [
+        41.540147,
+        -78.995619
+      ],
+      "profile_note": "Source specifically describes ATV recreation. Generic hiking recommendations should not assert verified pedestrian use; maintain activity-type uncertainty.",
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5074.007791"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "7031de3771be7569a9b33f0518ffb4ac3d36c8c1b993ce71b11824866c7eb78d",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5079.000271"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "60762"
+        }
+      ],
+      "name": "Spot Mountain Trailhead",
+      "native_coordinates_lat_lon": [
+        45.77861111,
+        -114.7772222
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5079.000271"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "6f48da4f2d28227dacbacb9180256be11e72438327e1c0e9f22026ddcb37b311",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5079.007791"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "6097"
+        }
+      ],
+      "name": "Buehler Corners Atv Trailhead",
+      "native_coordinates_lat_lon": [
+        41.42138889,
+        -78.88583333
+      ],
+      "profile_note": "Source specifically describes ATV recreation. Generic hiking recommendations should not assert verified pedestrian use; maintain activity-type uncertainty.",
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5079.007791"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "f7c9bcdfce70957f4921f076529cfac1a934b35a105ff451df6621d662ee1805",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5084.007791"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "6092"
+        }
+      ],
+      "name": "Jakes Rock Trailhead And Day Use",
+      "native_coordinates_lat_lon": [
+        41.84694444,
+        -78.98166667
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5084.007791"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "f4391b8e6d3136a60c8ba880a0531769837e27125a91cfa2c9b81e1ef99c641f",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5098.004481"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "56010"
+        }
+      ],
+      "name": "Rock Creek Nature Trail",
+      "native_coordinates_lat_lon": [
+        39.299293,
+        -120.930352
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5098.004481"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "82dc0c787393ef82db91cbad04bd1b945536477e02731954f4bc1acbe2710c66",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5106.001771"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Clearwater Trailhead",
+      "native_coordinates_lat_lon": [
+        44.46394,
+        -109.66979
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5106.001771"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "edf01bf46a1046a2d393e785a245cbeb149f118eb87e5ef05f1090e52c5537ee",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5107.007841"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Battell Trailhead",
+      "native_coordinates_lat_lon": [
+        44.11253,
+        -72.9644
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5107.007841"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "1895d553e6178ec768a7edbff9e57ed7f8016c4e7734b8f64fc60e20eb4d8923",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5109.000271"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "60246"
+        }
+      ],
+      "name": "Canyon Creek Trailhead",
+      "native_coordinates_lat_lon": [
+        46.25277778,
+        -114.2472222
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5109.000271"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "3725f14542bf59ef68eb08d139bfe9b6545fd2e6e31f3d1c39d694d238d471d9",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5109.007841"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9924b1bcda4778a6a59011257f9289f9482bd62cd076130ab4532c9897ebe783",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "64925"
+        }
+      ],
+      "name": "Cooley Glen/Emily Proctor Trailhead",
+      "native_coordinates_lat_lon": [
+        44.04026,
+        -72.95361
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5109.007841"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "6a5247e64502808a7e47d8c6ed37c9a11eecd02eadb24a414aad8c9347531849",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5110.007841"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "64949"
+        }
+      ],
+      "name": "Skylight Pond Trailhead",
+      "native_coordinates_lat_lon": [
+        43.99225,
+        -72.96627
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5110.007841"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "a65c113ec8a809f4c0bbcdc8081a7e1f8599678918658ff5b78f2b74dda2f9df",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5111.000271"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "60272"
+        }
+      ],
+      "name": "Roaring Lion Trailhead",
+      "native_coordinates_lat_lon": [
+        46.19166667,
+        -114.2413889
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5111.000271"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "9de7d4d71414e0a9315cf3c95d05bd76b6990f8f845202747f60b9845db8a302",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5111.007841"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Oak Ridge Trailhead",
+      "native_coordinates_lat_lon": [
+        43.97245,
+        -73.07274
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5111.007841"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "fd2c8cb4a5e91a1c5d2949642974b42d89ac36b69f8afb94006f9b9b56c92b66",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5116.007841"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Moosalamoo/North Branch Trailhead",
+      "native_coordinates_lat_lon": [
+        43.91884,
+        -73.02514
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5116.007841"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "a6732e8f51ecb5ee58900225f532d1c8db7a3b0abac8480bb59c672cd0de38c7",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5169.006571"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "43507"
+        }
+      ],
+      "name": "Rotary Ann Overlook",
+      "native_coordinates_lat_lon": [
+        35.66932778,
+        -93.09883
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5169.006571"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "e39759abf562904e57137e6e88c56c46405e093df1801d6fbbb14e8bd8f07949",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5220.006791"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Sloan Bridge Picnic Area",
+      "native_coordinates_lat_lon": [
+        35.00351965,
+        -83.05440911
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5220.006791"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "0ed94acdcbee85da38356a2321d80dc0aaee9a1fc720ee15b8d68563dd76bebf",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5224.007961"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "74845"
+        }
+      ],
+      "name": "Fern Croft Trailhead",
+      "native_coordinates_lat_lon": [
+        43.91289972,
+        -71.35825694
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5224.007961"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "d004e283eb40f3276d9cd842bedb56a3e7615317506b934bc2fd341bee1d851c",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5242.007541"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Hidden Cove Trailhead",
+      "native_coordinates_lat_lon": [
+        37.816584,
+        -89.498467
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5242.007541"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "f5fa6ac5267e53995cbe9a92c4a38f7c0aa0d02da6b5170a0b7f38e8a8284be9",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5243.007541"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Buttermilk Hill Trailhead",
+      "native_coordinates_lat_lon": [
+        37.78722222,
+        -89.48833333
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5243.007541"
+    },
+    {
+      "decision": "hold",
+      "detail": "Source calls this a walk-in trailhead, directs parking to Sabino Canyon Visitor Center, and specifies shuttle or hiking approach. A road snap does not establish ordinary visitor-car access to the native point.",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "a84e7adcbabf5ca1598918428566f72f786c75d2d9d275450f0910fc956d3d01",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5263.002231"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "25612"
+        }
+      ],
+      "name": "Bear Canyon Trailhead",
+      "native_coordinates_lat_lon": [
+        32.30944444,
+        -110.8211111
+      ],
+      "reason": "ordinary_car_arrival_conflicts_with_walk_in_shuttle_approach",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5263.002231",
+      "specific_evidence_fields": {
+        "directions": "From Tanque Verde Road in Tucson turn north on Sabino Canyon Road and follow it 4 miles to the Sabino Canyon Recreation Area Visitor Center. From the Visitor Center, between the hours of 9 a.m. and 4 p.m., hikers can take the shuttle (for a fee) to Bear Canyon. If you prefer, or if the shuttle bus is not running, you can hike to the trailhead along the shuttle bus route. Equestrians must stay on the designated horse trails.",
+        "recarea_description": "Walk-in trailhead. Park at the Sabino Canyon Visitor Center. This trail is located in Sabino Canyon Recreation Area and offers access to the dramatic landscape of the Santa Catalina Front Range, famous for its deep canyons and soaring ridges.   The trail begins at the east end of the Sabino Canyon Visitor Center parking lot and heads east.  You can walk from the visitor center (following the trail and roads), or ride the East Fork #24A (area is unavailable) and the Sycamore Reservoir #39 trails. The East Fork Trail follows Sabino Creek 2.1 miles to the junction with Sabino Canyon Trail. From this point it is 2.5 miles back to the end of the road where hikers can catch a shuttle bus ride (for a fee) or walk back to your car to complete a 13.4 mile loop."
+      }
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "8071ef4f396159d2900dc1b279de079ff4e051ed9ba4dbe4e3ecd1c09ea5f40b",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5401.005951"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "10465"
+        }
+      ],
+      "name": "Dally Gap Trailhead",
+      "native_coordinates_lat_lon": [
+        34.93361111,
+        -84.51833334
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5401.005951"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "e7f34ae1769f71a13cac3b9739538bcd58d3f95849d2996560d408f3f14f1d0a",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5422.007961"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "74827"
+        }
+      ],
+      "name": "Davis Path Trailhead",
+      "native_coordinates_lat_lon": [
+        44.118712,
+        -71.354144
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5422.007961"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "326b5accc1684ed1e2dbffda143664cb0b25c32ee91bb389434d9ff993f7dd6b",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5496.001101"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Boulder Hill Trailhead",
+      "native_coordinates_lat_lon": [
+        43.9689514,
+        -103.3984672
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5496.001101"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "bb974e9c20b9fe834127085183b20999d8551d3ded79dcd86aec6be382bc85fd",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5497.001101"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Brush Creek Trailhead",
+      "native_coordinates_lat_lon": [
+        44.0426296,
+        -103.4515931
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5497.001101"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "cfccea6a9da9cafaf87b10bd1cf8cef4702c6095d00243e724405227ffb54439",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5508.001101"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Rapid Creek Trailhead",
+      "native_coordinates_lat_lon": [
+        44.076256,
+        -103.482406
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5508.001101"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "e12bb12a8e555d8ff74ca45021a19430f4686a01357d74b554591612b97c4111",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5614203010602"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "High Knob Trailhead",
+      "native_coordinates_lat_lon": [
+        37.60074,
+        -88.33304
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5614203010602"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "d2a3578eeff8b9d7de215a208ec8b44b2ff081a54e5af27973779dd89a1c08e1",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "5634.006041"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "9c3427a390a29f617e55bb68ea2c29a9dc2aa86357c089deb4baedae4be7cb59",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "35130"
+        }
+      ],
+      "name": "Bald River Falls",
+      "native_coordinates_lat_lon": [
+        35.3246,
+        -84.1777
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:5634.006041"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "a80380722fa32f591a95030d80ceeccebcf457a676358f945cef1183ef159daa",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "6142.002941"
+        },
+        {
+          "evidence_path": null,
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": null,
+          "source": "USFS public recreation",
+          "source_record_id": "None"
+        }
+      ],
+      "name": "Chriss Lake Trailhead",
+      "native_coordinates_lat_lon": [
+        38.009898,
+        -111.399064
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:6142.002941"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "a86fca4dc8d1e3f8f44a25a93dd09685a3616d61b41cfe880769e7cb083000a4",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "6326.005951"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "10465"
+        }
+      ],
+      "name": "Beech Bottom Trailhead",
+      "native_coordinates_lat_lon": [
+        34.99083333,
+        -84.58833333
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:6326.005951"
+    },
+    {
+      "decision": "reviewed_no_additional_conflict_observed",
+      "evidence_fields": [
+        {
+          "evidence_path": "sources/facilities-1.json",
+          "projected_fields_sha256": "3c8d015a9ee196887e65a50cfc24f2bd61d0c02baad052a7c085e8a8b4c46da4",
+          "snapshot_sha256": "84044b8357de6e3e28e1543d577950c526b20546c135eedc42ec8e75f05edca3",
+          "source": "USFS construction facility",
+          "source_record_id": "6425.006181"
+        },
+        {
+          "evidence_path": "sources/public-0.json",
+          "projected_fields_sha256": "62227550b36bdba465f50e696cde0d94fcd70d85c9b352e12d6b7f3f506ab163",
+          "snapshot_sha256": "15189256874736d57e3254187411d160bf84172262f84c5d37ea66e366931c3c",
+          "source": "USFS public recreation",
+          "source_record_id": "34839"
+        }
+      ],
+      "name": "Gum Springs Horse Trailhead",
+      "native_coordinates_lat_lon": [
+        31.9003,
+        -92.782816
+      ],
+      "reason": "no_additional_conflict_observed_in_retained_source_constraints",
+      "review_scope": "Textual source-only independent review of retained projected construction/public access constraints and native location fields; no field survey or comprehensive current operator-alert verification.",
+      "source_id": "usfs:facility:6425.006181"
+    }
+  ],
+  "reviewed_at": "2026-10-21T01:46:16.132244+00:00",
+  "reviewed_count": 102,
+  "schema_version": "roadtrips-usfs-arrival-review/1",
+  "source_bundle": {
+    "manifest_sha256": "eacd5ba6e4f0cd42a4fe6eb6a29553dba134f7450497603ef2f2796186e64591",
+    "path": "/workspace/catalog-expansion-20261021/usfs-national/bundle.json",
+    "schema_version": "roadtrips-usfs-current-facilities/1",
+    "sha256": "b0c36d6710a58dba6ebd658d3c9eff3ca2a07abb162cd5e47896dea3572b5841",
+    "source_release": "usfs-current-2026-10-21"
+  },
+  "source_bundle_sha256": "b0c36d6710a58dba6ebd658d3c9eff3ca2a07abb162cd5e47896dea3572b5841"
+}

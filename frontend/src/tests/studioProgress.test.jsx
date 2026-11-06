@@ -1,13 +1,17 @@
 import { ReadableStream } from 'node:stream/web';
 import { TextEncoder } from 'node:util';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { streamStudioRun } from '../services/studioProgress';
 import { getStudioSession } from '../services/studioSession';
+import { fixtureSession } from './sessionFixtures';
+import { backendAuthConfig } from '../services/backendAuth';
+import { signOut } from '../services/session';
 import StudioProgress from '../pages/AlgorithmLab/StudioProgress';
 
 beforeEach(() => {
   sessionStorage.clear();
+  fixtureSession('studio-owner');
   sessionStorage.setItem(
     'studioSession',
     JSON.stringify({ token: 'visitor', expires_at: Date.now() / 1000 + 600 })
@@ -57,6 +61,7 @@ it('streams split Unicode frames and heartbeats before preserving the final run 
   expect(fetch.mock.calls[0][0]).toBe('http://localhost:8000/studio/run/stream');
   expect(fetch.mock.calls[0][1].headers).toEqual({
     'Content-Type': 'application/json',
+    ...backendAuthConfig().headers,
     'X-Studio-Session': 'visitor',
   });
   expect(JSON.parse(fetch.mock.calls[0][1].body)).toEqual(request);
@@ -103,6 +108,7 @@ it('does not invalidate a newer Studio session after an old request is rejected'
     )
   );
   const pending = streamStudioRun({}, undefined, vi.fn());
+  await waitFor(() => expect(rejectOld).toBeTypeOf('function'));
   sessionStorage.setItem(
     'studioSession',
     JSON.stringify({ token: 'new-visitor', expires_at: Date.now() / 1000 + 600 })
@@ -124,6 +130,7 @@ it('forwards cancellation and does not render a late completed response', async 
   );
   vi.stubGlobal('fetch', fetch);
   const pending = streamStudioRun({}, controller.signal, vi.fn());
+  await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
   controller.abort();
   await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
   expect(fetch.mock.calls[0][1].signal.aborted).toBe(true);
@@ -146,124 +153,70 @@ it('keeps a completed result when a progress presentation callback fails', async
   ).toEqual({ route: {} });
 });
 
-it('shows actual candidate counts and explains the distinction between AI ratings and provider facts', () => {
+it('shows only the current activity and ignores heartbeat/provider noise', () => {
   const view = render(
     <StudioProgress
       events={[
-        { type: 'progress', stage: 'route.gathering', state: 'started' },
+        { type: 'progress', stage: 'route.gathering' },
+        { type: 'progress', stage: 'attractions.ratings', candidates: 4 },
+        { type: 'heartbeat' },
         {
           type: 'progress',
-          stage: 'attractions.ratings',
-          state: 'started',
-          query: 2,
-          queries: 6,
-          candidates: 4,
+          stage: 'providers.activity',
+          operation: 'unknown',
+          provider: 'language_model',
         },
       ]}
     />
   );
-  expect(screen.getByRole('status')).toHaveTextContent('Route sample 2 of 6');
-  expect(screen.getByRole('status')).toHaveTextContent('4 provider-verified places');
-  expect(screen.getByRole('list', { name: 'Live planning stages' })).toHaveTextContent(
-    'Ratings are estimates, not provider facts'
-  );
-  expect(screen.getByRole('list')).toHaveTextContent(
-    'minimizes route-gap deviation plus detour time'
-  );
+  expect(screen.getByRole('status')).toHaveTextContent('Finding places');
+  expect(screen.queryByRole('list')).not.toBeInTheDocument();
+  expect(screen.queryByText(/4 provider|language_model|CP-SAT/)).not.toBeInTheDocument();
+  view.rerender(<StudioProgress events={[{ type: 'progress', stage: 'route.model' }]} />);
+  expect(screen.getByRole('status')).toHaveTextContent('Choosing places');
+  expect(screen.queryByText('Finding places')).not.toBeInTheDocument();
+});
+
+it('does not invent later work when no matching progress has arrived', () => {
+  const view = render(<StudioProgress events={[]} />);
+  expect(screen.getByRole('status')).toHaveTextContent('Preparing your trip');
   view.rerender(
     <StudioProgress
       events={[
-        { type: 'progress', stage: 'route.gathering', state: 'completed' },
-        {
-          type: 'progress',
-          stage: 'route.model',
-          state: 'completed',
-          eligible: 3,
-          candidates: 8,
-          threshold: 0.6,
-          slots: 2,
-          requestedStops: 2,
-        },
-      ]}
-    />
-  );
-  expect(screen.getByRole('status')).toHaveTextContent('3 of 8 candidates');
-  expect(screen.getByText('Collect and score nearby places').closest('li')).toHaveAttribute(
-    'data-state',
-    'completed'
-  );
-  expect(screen.getByText('Build the dated itinerary').closest('li')).toHaveAttribute(
-    'data-state',
-    'pending'
-  );
-});
-
-it.each([
-  [{ threshold: 0, thresholdInclusive: false }, '> 0'],
-  [{ threshold: 0.6 }, '≥ 0.6'],
-])('shows the actual threshold comparison in live selection details', (policy, comparison) => {
-  render(
-    <StudioProgress
-      events={[
-        {
-          type: 'progress',
-          state: 'completed',
-          stage: 'route.model',
-          eligible: 3,
-          candidates: 8,
-          sections: 2,
-          requestedStops: 2,
-          ...policy,
-        },
-      ]}
-    />
-  );
-  expect(screen.getByRole('status')).toHaveTextContent(`match ${comparison}`);
-  expect(screen.getByRole('status')).toHaveTextContent('3 of 8 candidates');
-  expect(screen.getByRole('status')).toHaveTextContent('2 route sections. Attraction cap: 2');
-});
-
-it('does not advance phases from heartbeats or infer hotel work that has not begun', () => {
-  render(
-    <StudioProgress
-      events={[
-        { type: 'progress', stage: 'studio.initial_route', state: 'started' },
-        { type: 'progress', stage: 'mapbox.request', state: 'started' },
+        { type: 'progress', stage: 'studio.initial_route' },
+        { type: 'progress', stage: 'mapbox.request' },
         { type: 'heartbeat' },
       ]}
     />
   );
-  expect(screen.getByRole('heading')).toHaveTextContent('Get the starting road route');
-  expect(screen.getByText('Schedule visits and overnight stays').closest('li')).toHaveAttribute(
-    'data-state',
-    'pending'
-  );
+  expect(screen.getByRole('status')).toHaveTextContent('Finding the route');
+  expect(screen.queryByText('Planning stays')).not.toBeInTheDocument();
 });
 
-it('keeps endpoint completion when a nested road provider reports later', () => {
-  render(
-    <StudioProgress
-      events={[
-        { type: 'progress', stage: 'studio.endpoints', state: 'completed' },
-        { type: 'progress', stage: 'mapbox.request', state: 'completed' },
-        { type: 'progress', stage: 'studio.initial_route', state: 'completed' },
-        {
-          type: 'progress',
-          stage: 'route.samples',
-          state: 'completed',
-          queries: 6,
-          requestedStops: 2,
-        },
-        { type: 'progress', stage: 'route.gathering', state: 'started' },
-      ]}
-    />
+it.each([
+  ['studio.endpoints', 'Locating cities'],
+  ['route.overnight', 'Planning stays'],
+  ['route.validation', 'Checking the route'],
+  ['studio.itinerary', 'Building your itinerary'],
+  ['studio.storage_finish', 'Saving your trip'],
+])('updates the loading line for %s', (stage, label) => {
+  render(<StudioProgress events={[{ type: 'progress', stage }]} />);
+  expect(screen.getByRole('status')).toHaveTextContent(label);
+});
+
+it('aborts an active stream on sign out without replaying the request', async () => {
+  const fetch = vi.fn().mockImplementation(
+    (_url, options) =>
+      new Promise((_resolve, reject) => {
+        options.signal.addEventListener('abort', () =>
+          reject(new DOMException('Cancelled', 'AbortError'))
+        );
+      })
   );
-  expect(screen.getByText('Locate the cities').closest('li')).toHaveAttribute(
-    'data-state',
-    'completed'
-  );
-  expect(screen.getByText('Get the starting road route').closest('li')).toHaveAttribute(
-    'data-state',
-    'completed'
-  );
+  vi.stubGlobal('fetch', fetch);
+  const pending = streamStudioRun({}, undefined, vi.fn());
+  await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+  signOut();
+  await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+  expect(fetch).toHaveBeenCalledTimes(1);
 });

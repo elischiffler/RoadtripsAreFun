@@ -1,0 +1,149 @@
+.rt-design.trip-experience {
+  padding-top: calc(var(--header-height, 4rem) + var(--rt-space-6));
+  min-height: 100dvh;
+}
+.rt-design .trip-view-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2);
+  padding: var(--rt-space-2);
+  border-radius: var(--rt-radius-sheet);
+  background: var(--rt-color-muted);
+}
+.rt-design .trip-view-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: var(--rt-target-min);
+  padding: var(--rt-space-2) var(--rt-space-3);
+  border-radius: var(--rt-radius-control);
+  text-decoration: none;
+  color: var(--rt-color-secondary);
+  font-weight: var(--rt-weight-strong);
+  white-space: nowrap;
+}
+.rt-design .trip-view-nav a[aria-current='page'] {
+  color: var(--rt-color-accent);
+  background: var(--rt-color-surface);
+  box-shadow: var(--rt-shadow-sheet);
+}
+.rt-design .trip-view-nav a:focus-visible {
+  outline: var(--rt-focus-width) solid var(--rt-color-focus);
+  outline-offset: var(--rt-focus-offset);
+}
+.rt-design .trip-visit-summary {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-4);
+}
+.rt-design .trip-visit-summary progress {
+  width: 100%;
+  accent-color: var(--rt-color-accent);
+}
+.rt-design .trip-day {
+  padding: var(--rt-space-5);
+}
+.rt-design .trip-timeline {
+  list-style: none;
+  margin: var(--rt-space-4) 0 0;
+  padding: 0;
+}
+.rt-design .activity-box {
+  position: relative;
+  display: grid;
+  gap: var(--rt-space-3);
+  margin-left: var(--rt-space-2);
+  padding: 0 0 var(--rt-space-8) var(--rt-space-6);
+  border-left: var(--rt-border-width) solid var(--rt-color-border);
+}
+.rt-design .activity-box:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+.rt-design .trip-stop-marker {
+  position: absolute;
+  left: calc(-1 * var(--rt-space-3));
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: var(--rt-space-6);
+  height: var(--rt-space-6);
+  border: var(--rt-border-width) solid var(--rt-color-control-border);
+  border-radius: var(--rt-radius-pill);
+  background: var(--rt-color-surface);
+  color: var(--rt-color-on-accent);
+  font-size: var(--rt-text-small);
+}
+.rt-design .activity-box[data-visited='true'] .trip-stop-marker {
+  background: var(--rt-color-accent);
+}
+.rt-design .trip-stop-title {
+  margin: 0;
+  font-size: var(--rt-text-title);
+  font-weight: var(--rt-weight-strong);
+  line-height: var(--rt-leading-body);
+}
+.rt-design .activity-time {
+  margin: 0;
+  color: var(--rt-color-secondary);
+  font-size: var(--rt-text-small);
+  line-height: var(--rt-leading-body);
+}
+.rt-design .activity-box a {
+  color: var(--rt-color-accent);
+  overflow-wrap: anywhere;
+}
+.rt-design .activity-box .rt-button {
+  justify-self: start;
+}
+.rt-design .activity-box .place-timing {
+  margin: 0;
+  padding: var(--rt-space-3);
+  border-radius: var(--rt-radius-sm);
+  background: var(--rt-color-muted);
+  color: var(--rt-color-text);
+}
+.rt-design .activity-box .place-timing-context,
+.rt-design .activity-box .place-timing-clocks dt {
+  color: var(--rt-color-secondary);
+}
+
+.rt-design .trip-meal-windows {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin-top: var(--rt-space-6);
+  padding: var(--rt-space-4);
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-color-muted);
+}
+.rt-design .trip-meal-windows ul {
+  display: grid;
+  gap: var(--rt-space-4);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.rt-design.trip-itinerary-days {
+  display: grid;
+  gap: var(--rt-space-6);
+  padding: 0;
+  background: transparent;
+}
+.rt-design .activity-box .place-timing-clocks {
+  gap: var(--rt-space-2) var(--rt-space-6);
+  margin-top: var(--rt-space-1);
+}
+.rt-design .activity-box .place-timing-clocks dt,
+.rt-design .activity-box .place-timing-context {
+  font-size: var(--rt-text-caption);
+  font-weight: var(--rt-weight-regular);
+  line-height: var(--rt-leading-body);
+}
+.rt-design .activity-box .place-timing-clocks dd {
+  font-size: var(--rt-text-body);
+  font-weight: var(--rt-weight-medium);
+  line-height: var(--rt-leading-body);
+}

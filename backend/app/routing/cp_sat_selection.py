@@ -17,7 +17,7 @@ from app.routing.visit_calendar import calendar_eligible
 MAX_CANDIDATES = 60
 UTILITY_SCALE = 1_000_000
 MAX_AVERAGE_QUALITY_LOSS = 0.10
-TIME_LIMIT_SECONDS = 5.0
+TIME_LIMIT_SECONDS = 15.0
 
 
 @dataclass(frozen=True)

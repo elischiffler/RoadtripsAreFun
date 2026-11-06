@@ -1,28 +1,13 @@
-"""LLM provider interface + the Mentro gateway provider + fallback chain (§6).
+"""Shared LLM provider interface, authenticated Mentro gateway and fallback chain.
 
-The chat agent's single LLM provider is the **self-hosted Mentro gateway** — a
-separate service the user owns that fronts several inference tiers
-(Cerebras -> Groq -> Together) and streams an OpenAI-compatible completion over
-Server-Sent Events. Our backend is the *agent brain* (memory + tools + the
-loop); the gateway is just the leaf that produces text.
+Mentro is a separate service that streams completions over SSE. Planning uses
+this provider for place ratings; preference extraction and visit-duration
+estimates use the same contract. ``/api/chat/stream-full`` is the gateway's
+upstream protocol, retained independently of the retired application chat API.
 
-Two responsibilities live here:
-
-- :class:`MentroGatewayProvider` — authenticates to the gateway with a Supabase
-  JWT (minted server-side from a service account), POSTs the assembled messages
-  to ``/api/chat/stream-full``, consumes the SSE stream, and returns the final
-  aggregated ``end`` payload as a normalized :class:`LLMResponse`. Non-streaming
-  from the agent loop's point of view: we consume the whole stream server-side
-  and hand back one response, which keeps the tool loop simple.
-- :class:`FallbackChain` — a thin :class:`LLMProvider` that tries providers in
-  order, skips unconfigured ones, advances past a :class:`ProviderError`, and
-  raises :class:`ProvidersExhausted` when nothing serves. Today the chain holds
-  just the gateway, but it stays so a second provider can be added without
-  touching the loop.
-
-Auth seam: :class:`SupabaseServiceAuth` isolates *how* we obtain a token
-(service-account password grant + refresh) from the provider, so the token
-strategy can change without touching the HTTP call.
+``SupabaseServiceAuth`` owns the server-side service-account token exchange.
+``MentroGatewayProvider`` consumes the stream and returns one ``LLMResponse``.
+``FallbackChain`` skips unconfigured providers and advances on provider errors.
 """
 
 from __future__ import annotations

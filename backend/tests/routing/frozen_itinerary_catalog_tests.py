@@ -26,7 +26,13 @@ def catalog_fixture(root, namespace="boulder:", source="boulder-osmp"):
             provider_id=identities[item["provider_id"]],
             source=source,
             source_release="explicit-synthetic-frozen-release",
-            source_provenance=[{"dataset": "Explicit synthetic frozen catalog control"}],
+            # New estimated visits require a verified window. Preserve the
+            # explicit synthetic hours supplied by write_fixture so this test
+            # exercises a real visit/lookup rather than an empty itinerary.
+            source_provenance=[
+                {"dataset": "Explicit synthetic frozen catalog control"},
+                *item.get("source_provenance", []),
+            ],
         )
     for node in data["nodes"]:
         node["id"] = identities.get(node["id"], node["id"])
@@ -132,6 +138,7 @@ def test_frozen_replay_does_not_change_live_hold_enforcement(tmp_path, monkeypat
     monkeypatch.setattr(repository, "current_records", active)
     row = execute(spec(tmp_path, "offline-pipeline"))
     assert row["status"] == "completed" and calls == []
+    assert len(row["selected_ids"]) == 1
     # The same serialized route must consult active facts on an ordinary call.
     data = Itinerary_Payload.model_validate({"route": row["route"]})
     with pytest.raises(VisitCalendarConflict, match="current catalog access is unresolved"):

@@ -26,8 +26,8 @@ def _query(sql, args, *, write=False):
         _put_conn(conn)
 
 
-def begin(user_id, payload):
-    run_id = str(uuid4())
+def begin(user_id, payload, run_id=None):
+    run_id = str(run_id or uuid4())
     _query(
         "INSERT INTO algorithm_lab_runs (id,user_id,mode,preset_id,run_type,batch_id,repeat_index,input) "
         "VALUES (%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id",
@@ -96,3 +96,22 @@ def result(user_id, run_id):
         (str(run_id), user_id),
     )
     return rows[0]["result"] if rows else None
+
+
+def record(user_id, run_id):
+    rows = _query(
+        "SELECT id,status,mode,input,metrics,result FROM algorithm_lab_runs "
+        "WHERE id=%s AND user_id=%s",
+        (str(run_id), user_id),
+    )
+    return rows[0] if rows else None
+
+
+def cancel(user_id, run_id):
+    _query(
+        "UPDATE algorithm_lab_runs SET status='failed', finished_at=now(), "
+        "error_code='cancelled', result=%s WHERE id=%s AND user_id=%s "
+        "AND status='running' RETURNING id",
+        (Json({"error": {"code": "cancelled", "message": "Run cancelled."}}), str(run_id), user_id),
+        write=True,
+    )

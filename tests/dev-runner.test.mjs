@@ -20,7 +20,7 @@ function fixture(t) {
   return root;
 }
 
-test("Windows paths, debug environment and individual services", (t) => {
+test("Windows paths and individual services", (t) => {
   const root = fixture(t);
   for (const name of [
     "backend/.venv/Scripts/python.exe",
@@ -30,17 +30,16 @@ test("Windows paths, debug environment and individual services", (t) => {
     mkdirSync(path.dirname(filename), { recursive: true });
     writeFileSync(filename, "");
   }
-  const definitions = services(root, ["--debug"], "win32");
+  const definitions = services(root, [], "win32");
   assert.equal(definitions.length, 2);
   assert.equal(
     definitions[0].command,
     path.join(root, "backend/.venv/Scripts/python.exe"),
   );
-  assert.equal(definitions[0].env.AGENT_DEBUG, "true");
   assert.ok(definitions[1].args.includes("--strictPort"));
   assert.equal(services(root, ["--frontend-only"], "win32").length, 1);
   assert.equal(services(root, ["--backend-only"], "win32").length, 1);
-  assert.throws(() => services(root, ["--invalid"]), /Use --debug/);
+  assert.throws(() => services(root, ["--invalid"]), /Use --backend-only/);
 });
 
 test("missing prerequisites fail before starting either server", (t) => {

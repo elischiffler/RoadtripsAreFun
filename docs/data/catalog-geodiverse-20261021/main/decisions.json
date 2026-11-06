@@ -1,0 +1,3193 @@
+[
+  {
+    "pilot_id": "culture:wd:Q4165331",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4165331",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q5161605",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5161605",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7005718",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7005718",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q1890082",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1890082",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q5664050",
+    "reason": "nearby_independent_Mark_Twain_site_within_250m; reviewed_colocation_rule_pending",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7008533",
+    "reason": "Primary operator robots request returned HTTP 403; operator page was not fetched. Identity/location/public visitor admission remain unresolved in this pass.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q16992238",
+    "reason": "Property operator limits house visits to Memorial Day through Labor Day; October 21 is outside the published season. Appointment availability is stated for a separate research center, not confirmed house access. Hold pending current house-visit evidence.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q8047439",
+    "reason": "Yale operator expressly reports physical collection closure for renovation with projected spring 2027 reopening. Online collection access does not validate a physical visit. Do not infer reopening.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5281942",
+    "reason": "Frozen operator-domain robots request returned HTTP 503. Robots/access policy and current physical visitor eligibility remain unresolved; no alternate host was used to route around this failure.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q38250800",
+    "reason": "Municipal operator describes town social/family-service offices at the homestead, without affirmative public museum/attraction visits. A historic designation and public-service office are not sufficient tourist eligibility.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6255455",
+    "reason": "Operator corroborates Rogers Studio identity/location and a permanent display, but retained general campus hours do not affirm current public access to this particular studio. Hold property-specific visitor eligibility rather than infer it.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5098184",
+    "reason": "Frozen domain redirects to unrelated motorcycle/restaurant sites. Independently discovered Niantic operator describes the former museum name in search results, but its robots request returned HTTP 403; no operator body was fetched or admission asserted.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q15961623",
+    "reason": "Operator is a statewide network of house museums. Public visits to its member properties do not establish a distinct public attraction at the organization/headquarters point. Physical entity scope remains unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q18325686",
+    "reason": "University operator robots request returned HTTP 403; no gallery page fetched. Current physical visitor access/location corroboration remains unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6789613",
+    "reason": "Museum operator robots request returned HTTP 403; no visitor page fetched. Current physical visitor eligibility remains unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q1618645",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1618645",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q132041721",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q132041721",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7611132",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7611132",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q17109130",
+    "reason": "Archived original operator announced immediate closure on August 25, 2011 at 1410 Honeyspot Road Extension, Stratford. The frozen feature point is inconsistent with that locality; current operating status/reopening is unverified. Historical closure is not a fabricated permanent-current-status claim.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q403080",
+    "reason": "operator_robots_403; access_and_current_identity_unresolved",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4744478",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4744478",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7284063",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7284063",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q15961620",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q15961620",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q5460633",
+    "reason": "operator_page_403; current_public_access_not_corroborated",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q1568434",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1568434",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6706021",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q6706021",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6783079",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q6783079",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7722479",
+    "reason": "Current operator describes mobile programs based in Simsbury, a preschool and a separate Canton nature center; it does not affirm a public museum visit at the frozen West Hartford point. Do not replace the source point with another facility or headquarters.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7009890",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7009890",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6973032",
+    "reason": "Operator publishes a season ending mid October and contradictory Wednesday-Sunday versus Friday-Sunday hours; no current late October visit is affirmed. Hold pending updated seasonal/current access evidence.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q28874011",
+    "reason": "Robots redirect response exceeded the 128 KiB acquisition ceiling; robots policy unresolved. No operator visitor page fetched and no public-access admission inferred.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7152453",
+    "reason": "Robots response exceeded the 128 KiB acquisition ceiling; robots policy unresolved. No private-school arts-center visitor page fetched and no public gallery eligibility inferred.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6352575",
+    "reason": "The primary visit URL redirects to /closure-notice, which returned 403. No bypass or retry. Current physical visitor access and closure scope are not established.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7912179",
+    "reason": "Already admitted as catalog-pilot:wikidata:Q7912179 in the frozen 129-row checkpoint. Exact native identity duplicate; no additional place and no new source request.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5913507",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5913507",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q5761907",
+    "reason": "Primary homepage identifies the Society and Hills Academy visitor address, but does not establish a general public museum visit at this specific building rather than office/research use. Hold visitor-purpose scope; no inference from an address or unrelated walking tours.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q122945",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q122945",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q4862010",
+    "reason": "Operator currently targets a 2030 museum reopening and highlights digital exhibits/offsite walking events. Those do not affirm visits to the frozen physical museum. Closed-site hold; proposed reopening is not guaranteed.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q8024200",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q8024200",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6858332",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q6858332",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q139900416",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q139900416",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q110130950",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q110130950",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7825165",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7825165",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q22058816",
+    "reason": "Operator returned 503. Frozen Hamden identity/location lacks current primary visitor corroboration; possible closure/relocation remains unresolved. No retry or alternative-host bypass.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5471260",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5471260",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q21028346",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q21028346",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q8075609",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q8075609",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q1183941",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1183941",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q2585168",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q2585168",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q4785686",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4785686",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q4245099",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4245099",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q8022799",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q8022799",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7600744",
+    "reason": "No confirmed accessible primary museum operator was established. An unconfirmed endpoint candidate failed through proxy 403; tourism discovery also flags museum closure. Worship or a historic designation does not establish public museum access.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q116957677",
+    "reason": "Museum robots endpoint returned 503; no operator page was requested. Public visitor access remains uncorroborated; no retry.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5310011",
+    "reason": "Native DuPont Historic Corridor represents a regional umbrella, not one established visitor destination. Its sites cannot be collapsed into an invented feature/arrival or counted again. Destination identity/scope unresolved; no request necessary.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q112038023",
+    "reason": "Primary operator explicitly says Museum Temporarily Closed for unexpected maintenance. This overrides the same page\u2019s generic opening hours. No reopening date or current physical visit affirmed.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5253245",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5253245",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q5253320",
+    "reason": "operator_robots_403; access_and_current_identity_unresolved",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q18325919",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q18325919",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q84610482",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q84610482",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q14685297",
+    "reason": "State park robots endpoint returned 403. Stopped without requesting the Chambers House operator page or bypassing through another host. Current visitor identity/access remain unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q3372066",
+    "reason": "Native University Museums is an organization covering multiple separate campus buildings; frozen point is not resolved to one visitor facility. Original redirect chain exceeded the bounded ceiling; current locations-host robots returned 503. No invented campus centroid, copied child destination or source bypass.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q126325502",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q126325502",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q55610164",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q84611260",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4883470",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q106670471",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q124357859",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5161775",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5161775",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q847637",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q847637",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q931081",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q133806368",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q131340500",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q131340500",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q119585283",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q99984323",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q2383834",
+    "reason": "Primary operator robots returned HTTP 503. Policy and current physical visitor evidence remain unresolved; no operator content request or bypass.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q111352227",
+    "reason": "public_visit_affirmed_but_current_street_location_and_source_alias_need_corroboration",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7235209",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7235209",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q24898511",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6978849",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q2390897",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q2390897",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q130243688",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5316537",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5316537",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q14705803",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q99438731",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q21014382",
+    "reason": "Operator robots returned HTTP 202 challenge/non-policy response. Policy and visitor evidence remain unresolved; no bypass or repeated probe.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q130052294",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5263501",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5263501",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q55614421",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q30623769",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q2063082",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q1184855",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1184855",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q5487043",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6911646",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q2166814",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q129485809",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q467580",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q8031716",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q8031716",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6840581",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4554796",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q24063796",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q65072581",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q56249541",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q56249541",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6146278",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7185868",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q18342357",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7366760",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6365021",
+    "reason": "Operator homepage retains museum name/address but contains stray template/pop-up/holistic-news content and no affirmative current physical public-visit terms. Identity alone does not establish visitor admission.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q16974720",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q3545006",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4121358",
+    "reason": "Source entity and operator homepage cover three separate museum sites. The frozen point may refer to Morrill Hall, but this pass did not resolve institution-versus-physical-destination scope and property-specific current access. No site point or identity substituted.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6020033",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6974447",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6941000",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q6941000",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q29096385",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q113623100",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7028918",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7028918",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q30591923",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q123983060",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q14704886",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q14704886",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q16992203",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q2650982",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q138709930",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q138709930",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q96959930",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6552296",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q18152462",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4839767",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4833765",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4833765",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7493533",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7493533",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q6941084",
+    "reason": "Primary operator robots returned HTTP 503; policy unresolved and visitor content not fetched.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q14709390",
+    "reason": "Primary operator robots returned HTTP 403; stopped without fetching visitor content.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q113484007",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7525439",
+    "reason": "Primary operator robots returned HTTP 403; stopped without fetching visitor content.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q18342322",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q18342322",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7998110",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7998110",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q7569917",
+    "reason": "Frozen operator-domain homepage returned HTTP 404. Current primary operator and physical visitor access at the native point remain unresolved; no alternate domain crawl.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q121088055",
+    "reason": "Operator homepage exceeded the 1 MiB response ceiling. Acquisition stopped; no complete retained body or positive public-visit proof. Source point and identity remain unchanged.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q99352351",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7797891",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7797891",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q4769571",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q96633985",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q49537497",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4911837",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q14689712",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7720883",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q27877659",
+    "reason": "Canonical operator homepage returned HTTP 503 after ordinary redirects; no usable current visitor proof retained.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q99352547",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q1786400",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q104541801",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q30595890",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6705190",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6802595",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q3001753",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q14693338",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q131149416",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7974817",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q130052314",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4698987",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q55075478",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q15260386",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q1573286",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6693624",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q17041213",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q17041213",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q18154824",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5129847",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5129847",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:wd:Q18342361",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q111898521",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7998113",
+    "reason": "Operator explicitly states no part of its website may be downloaded or reproduced without prior written permission. Stopped after discovering restriction; body is private negative evidence and excluded from positive adapter. Native CC0 facts alone do not establish an admissible operator review.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4942613",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q28937788",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q130199035",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5070193",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q1501623",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q4731598",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q134581303",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q22671287",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5043965",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6840582",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6033435",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5599767",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q38250691",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6693192",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q49519614",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q5351668",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q110900310",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6364579",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q1477833",
+    "reason": "unresolved local identity/name/250m duplicate or co-location",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7757359",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6859159",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q14689405",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6689293",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q135375121",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q125516443",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q7083791",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6689220",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q6523409",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q56221103",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q123616088",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q3485438",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:wd:Q17108213",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:70000834",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:nps-nhl:70000834",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "culture:nris:74000602",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:70000019",
+    "reason": "NRIS_reference_entity_scope_ambiguous; district_style_native_address_may_identify_group_not_library",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:73001910",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:93000061",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:71000303",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:76000753",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:70000319",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:73002133",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:74001670",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:70000391",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:94001190",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000802",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:76000045",
+    "reason": "operator_reports_regular_season_closed; future_reopening_and_access_unverified",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:03001045",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:77000833",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:87001283",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000338",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:76001102",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:70000495",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:01000071",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:70000383",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:92000679",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:71001012",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:68000001",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:67000006",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:87000813",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:76000804",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:69000085",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:71000359",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:78002270",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:71000504",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:78000414",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:74002178",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:70000083",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:69000139",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000106",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:82002618",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:69000087",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:74000928",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000632",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:71000506",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000009",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:91002060",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:70000024",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000947",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:71000305",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:89001079",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:74001057",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:79001071",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000631",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:78001788",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000008",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:75002056",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:88002762",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000352",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:03001036",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:77000781",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:100011378",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000628",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:86003558",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:83003573",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:78002885",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:79003712",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:71000318",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:72000473",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:02001388",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:73000860",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000949",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:78001780",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:80000062",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:79002653",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:69000135",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:71000312",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000336",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:76001092",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:80001707",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:70000530",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:74001186",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000799",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:68000050",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:75000680",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:75001048",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:74000938",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:73001561",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:92000678",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:100006272",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000340",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:05000461",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:73000862",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:00000707",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:73000736",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000408",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:74002187",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:73000020",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:73000744",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:74001064",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:80001720",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:87000838",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "culture:nris:66000339",
+    "reason": "unreviewed_current_operator_identity_access_and_location; discovery_only",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q105791463",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1099139",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1099139",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q11684456",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q12060327",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q141641853",
+    "reason": "Earlier operator403 remains binding; no new request to the blocked Dothan host. Current primary public access uncorroborated.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14708625",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q14708625",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14716077",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q15207803",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q16902084",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q16902084",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1937407",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1937407",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q2028223",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q2028223",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q2066407",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q2539422",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q2585168",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q2738912",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q458588",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4865386",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4883646",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4884044",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4884044",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4894262",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4894262",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4904330",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4916622",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4916622",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4929903",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q49490187",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4961701",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4961701",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5141058",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5188024",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5188024",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5200329",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5253243",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5263507",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5302612",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q107154978",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q112283746",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1129875",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1129875",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q113129248",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q108801638",
+    "reason": "Earlier operator403 remains binding; no new request to the blocked Tanganyika host. Current primary public access uncorroborated.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q113867110",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q113867110",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1155919",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1155919",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q11781326",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q11781326",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q118278905",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q12062222",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q12859182",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q12859182",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q136031996",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q136032148",
+    "reason": "Current web research tool reports ncaquariums.com blocked by robots.txt(nonretryable). No direct fetch, alternate hostname or bypass attempted; public visit/location evidence remains held.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q136032261",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14689954",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14704943",
+    "reason": "Operator confirms visits with partial/dated closures, but its site expressly limits downloading/storing materials to personal use; retention/redistribution review required before admission.; current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14707954",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14714381",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1666487",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1666487",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q100909152",
+    "reason": "Operator describes public nights but includes 2021 anniversary copy; current dated event/access corroboration remains unresolved.; current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q117218212",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q134734168",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q134734168",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q134961870",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1392337",
+    "reason": "Original Mendenhall URL redirects to current CAS site, whose HTTP200 body is a soft404/general page rather than observatory visitor evidence. No current public-night or appointment admission established.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14310",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q14310",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14708606",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14709561",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q14709561",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14715106",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14716128",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q14716222",
+    "reason": "Robots allowed the public MSU URL, but HTTP200 body is an Incapsula Request unsuccessful access challenge. It is not operator content; no scripts/resources/alternatehost bypass requested.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1475872",
+    "reason": "Current IAS source confirms IU ownership and IAS member/public-outreach relationship, but meetings can be at the observatory OR nearby library. Events page is an unrendered calendar. No current public event or nonmember appointment admission at the physical observatory established; membership/campus access is insufficient.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q20757604",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q20757604",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q2390124",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q3303709",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1050851",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1050851",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q16895579",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q17098053",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5047138",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5047138",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5054958",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5054958",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5181674",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5181674",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5244095",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q6754342",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7095191",
+    "reason": "Native Onyx Cave operator robots redirects to an unrelated nameday-calendar domain. No unrelated host was followed and no current primary physical visitor access was established. Stale/reassigned operator identity remains unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7332011",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q778747",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q10856113",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q10856113",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1187702",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1187702",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q12061368",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1456525",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q30623769",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q15210824",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q48803945",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q48803945",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q137762677",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5093786",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7404187",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7775619",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7886992",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q97355534",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q101072488",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4906395",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4906395",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4920959",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4920959",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5049180",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5049180",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5316317",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5411232",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7106394",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7912179",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7912179",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1143763",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q1143763",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q1542539",
+    "reason": "The primary operator affirmatively offers Grand Canyon Railway trips from Williams, but native coordinate (35.7063,-112.2456) is on the broader railway corridor rather than a corroborated public depot. Hold destination-point scope; no invented station coordinate or claim that a rail corridor point is a public arrival.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q16983149",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q3308122",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4913574",
+    "reason": "Previous original Biloxi operator body is not valid UTF-8 and shared proof replay cannot decode it. Retained prior hold with no reprobe, transcoding or hash substitution. Current public visitor proof remains unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q5471242",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q5471242",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q6878674",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7371062",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q7859692",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q7859692",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q2071814",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q448450",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4669685",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:wikidata:Q4669685",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "diversity:wd:Q4878261",
+    "reason": "Primary operator currently says the museum and gift shop are closed for the season; 2027 calendar is pending. December openings are described as holiday shopping, not affirmative museum/tower admission. Visitor FAQ retains appointment groups and past 2026 tower dates. Exterior state-park grounds access has not been independently resolved to the same native lighthouse scope, so hold rather than override the closure notice.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:02eb05b5b146ea884cb5",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:033406e41b63cc2e2318",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:04c2bb3ad84eff8558a4",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:0896c478785821f98ea2",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:0d1f82b6c0e81692336f",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:12e3eebefa1baab2f82e",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:15085b9e8912bd907d40",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:160dc09875b743fc0ff9",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:190df1245a3eb91ba6f2",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:1922a142cf5566a30150",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:1a2520b9006bc20f0357",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:1a4a3bdd3b0d3b90774e",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:2502a116e587bc1ccdca",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:25fafd1afcb7bd0f8013",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:26c68341bf3d4411da1a",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:27e692a2c151b6db08de",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:3128802442e6a742d61e",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:32d2a374f4083f38edcf",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:35fe44bf00bae35e4ee2",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:3791518f4e3472004adb",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:38f3a089f86c6a38ccda",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:3b9842c0a49c37b8bb8b",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:44c221323668d0539767",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:4571b8d8affcb93fb1ea",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:461c89a02423e09c19d0",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:47576adc7eb0b8d145bd",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:4cbab88d1901f4458108",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:4e65f9724aa17d93f225",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:4fe5287dc114087b5611",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:504a94a2357fe4afad0c",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:5267a1a0240d228243c3",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:57488ddc61e176d970e2",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:579360fa695818c218b6",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:59f8b083ce341f82c68e",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:61c4197883e6d21c203c",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:672f1c0e23d10694832c",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:67b12fc8f224450080e8",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:69c3e6a059e059c0cd62",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:6abe6476090576257043",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:6bccbe9f85078d9b8960",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:6d159ff1a75aeb7c2f01",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:720b3bbebcc87cca4ed5",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:78da3861a70a6cf1f5dc",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:7b13127a77947930a82f",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:7edfd9de8904fbb02d29",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:7efbd617a702e1d4f865",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:825242b1c57a9f5ac462",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:8c34a53ec84ffae9dd2e",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:902b7721bf5b6d0378cd",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:96fe25c46d1c0780dfb3",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:a06d6c03032cfee76cf9",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:a30f20d40ef7fb604df0",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:a35d9b1d5b59683fe45c",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:a93099dd1585a65c8222",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:a9b91bddab9b8ac0aed2",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:ad27715e0667bc272e79",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:ae41daba7be41b53f30e",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:aeae97afa3e6e068e8ac",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:af4ca10a87786bd89c7b",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "diversity:sf-art-site:b078850b9592d16e3eb7",
+    "reason": "current authoritative public visitor purpose/access; operator identity/location corroboration; verified public arrival and vehicle/walk approach; date-specific calendar/constraints; official visitor destination identity and component/campus review",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-001",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:51550",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-002",
+    "reason": "FWS original agency ownership/public-use fields are unresolved",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-003",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:43615",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-004",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:43582",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-005",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:52515",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-006",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:52510",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-007",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:51660",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-008",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:51270",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-009",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:33510",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-010",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:33670",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-011",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:43530",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-012",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:43628",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-013",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:62510",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-014",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:62540",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-015",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:21630",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-016",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:21640",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-017",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:53542",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-018",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:53543",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-019",
+    "reason": "Current operator says refuge office and restrooms closed; selected feature is office/contactstation. Public wildlife drive exists, but its native current visitor feature point was not established here.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-020",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:43660",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-021",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:64580",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-022",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:64610",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-023",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:53630",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-024",
+    "reason": "Native building is Rockland complex headquarters103km from current PetitManan refuge pin; canonical destination/point association unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-025",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:84554",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-026",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:84551",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-027",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:43515",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-028",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:43514",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-029",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:31530",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-030",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:31560",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-031",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:12531",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-032",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:12530",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-033",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:51531",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-034",
+    "reason": "Operator explicitly closes the refuge to public entry on October21 and22,2026, including this review date. Identity retained; current public admission held.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-035",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:51510",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-036",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:51570",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-037",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:53511",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-038",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:53512",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-039",
+    "reason": "native name does not use the reviewed source field",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-040",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:42220",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-041",
+    "reason": "native name does not use the reviewed source field",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-042",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:42511",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-043",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:32520",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-044",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:32530",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-045",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:53580",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-046",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:41560",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-047",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:41561",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-048",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:42526",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-049",
+    "reason": "Current operator page enumerates activities but affirmative current public visit/access scope was not established in this bounded review.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-050",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:41210",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-051",
+    "reason": "Current operator says Visitor Contact station closed until further notice due staffing; selected building cannot be treated as current public visitor destination without a separately verified public feature.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-052",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:31540",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-053",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:52520",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-054",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:52570",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-055",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:32510",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-056",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:32640",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-057",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:64220",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-058",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:64570",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-059",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:21532",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-060",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:21561",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-061",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:14611",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-062",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:14560",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-063",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:33652",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-064",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:33621",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-065",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:31521",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-066",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:22510",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-067",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:22520",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-068",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:33590",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-069",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:33643",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-070",
+    "reason": "native name does not use the reviewed source field",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-071",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:74525",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-072",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:65580",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-073",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:42622",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-074",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:42280",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-075",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:65570",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-076",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:61560",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-077",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:61530",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-078",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:22551",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-079",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:22530",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-080",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:13596",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-081",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:13600",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-082",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:52566",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-083",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:52540",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-084",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:65520",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-085",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:65550",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-086",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:13529",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-087",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:13510",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-088",
+    "reason": "native name does not use the reviewed source field",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-089",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:81590",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-090",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:fws:43290",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-091",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:blm:6357cf61-2823-4275-a3d8-2666d4d613ad",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-092",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:blm:a6f137a4-5b8e-4d8d-9ae2-f77923c5f33c",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-093",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:blm:0f582150-9c94-4ff9-b73e-c5245a8e6798",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-094",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:blm:ff63794c-7dc5-4fd2-a29d-b516a154a64b",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-095",
+    "reason": "Published2026 center/vehicle season endsOctober1, before reviewdate; walk-in grounds access is described but is a different experience/arrival from selectededucationcenter. Retain seasonal hold.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-096",
+    "reason": "Current primary operator explicitly says Cannonville site closed until further notice.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "nature-097",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:blm:2b3276bb-7c58-4b8d-8cb4-41a2147725af",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-098",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:blm:1efaeecd-95d5-468d-97b9-2c90d45a3736",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-099",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:blm:eccb5edc-9672-47a7-bc24-259097931fc7",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "nature-100",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:blm:17df1e38-140e-4613-b56c-b217735f9517",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-001",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-hkdf~9pf4~67z9",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-002",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-gg7w-9bwe_6npw",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-003",
+    "reason": "Operator homepage describes wholesale grower/packer/shipper; current public farmstand visit was not affirmatively corroborated.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-004",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-w346-txhk-29z7",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-005",
+    "reason": "Operator page contains CLOSED FOR THE2026SEASON and U-pick cancellation alongside farmstand-open text; current physical visitor scope conflicted.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-006",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-afqh~qikj_nvne",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-007",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-p6et~db7f~2sac",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-008",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-wayt~eyam-qqti",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-009",
+    "reason": "Operator fetch failed or bounded receipt incomplete: 500",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-010",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-pmca.9u3e-2984",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-011",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-y8jy_v43c~6a6r",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-012",
+    "reason": "Operator source confirms products and online farmstore, not affirmative walk-in public farm visit; no pickup-only inference.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-013",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-pvg9.u8v8~hw67",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-014",
+    "reason": "Operator fetch failed or bounded receipt incomplete: URLError",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-015",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-65j6.9jaw~8eue",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-016",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-zhhf-qqam~4xzk",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-017",
+    "reason": "HTTP200 body has no reviewable visible operator content; current identity/public visit not corroborated.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-018",
+    "reason": "Operator fetch failed or bounded receipt incomplete: 200",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-019",
+    "reason": "Operator fetch failed or bounded receipt incomplete: URLError",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-020",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-kff2-ek7q.ijv2",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-021",
+    "reason": "source_review_replayed; live_parent_reconciliation_pending",
+    "source_id": "catalog-pilot:ny-market:row-3yvc-svss-mh8h",
+    "tier": "T2"
+  },
+  {
+    "pilot_id": "food-022",
+    "reason": "Operator fetch failed or bounded receipt incomplete: 503",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-023",
+    "reason": "Operator shows online produce orders and refers weekly schedule elsewhere; physical public farmstand visitor access remains unresolved.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-024",
+    "reason": "Operator landing merely redirects users toward another market website; no current physical visitor access established.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-025",
+    "reason": "Operator fetch failed or bounded receipt incomplete: 200",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-026",
+    "reason": "Operator fetch failed or bounded receipt incomplete: URLError",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-027",
+    "reason": "Operator fetch failed or bounded receipt incomplete: 503",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-028",
+    "reason": "Operator fetch failed or bounded receipt incomplete: 200",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-029",
+    "reason": "Native farm website now serves unrelated Navarras Therapy Consultation in Indonesian; operator identity conflict.",
+    "tier": "T1"
+  },
+  {
+    "pilot_id": "food-030",
+    "reason": "Operator fetch failed or bounded receipt incomplete: 503",
+    "tier": "T1"
+  }
+]

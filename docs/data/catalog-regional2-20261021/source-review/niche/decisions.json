@@ -1,0 +1,257 @@
+[
+  {
+    "decision": "T1",
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Clark's Bears",
+    "native_id": "Q15210824",
+    "operator_url": "http://www.clarksbears.com",
+    "pilot_id": "diversity:wd:Q15210824",
+    "queue_category": "roadside_attraction",
+    "reason": "Current primary operator explicitly says Closed for the season, with next reopening Memorial Day Weekend 2027. Preserve as seasonal, not permanent closure. Future reopening is not current physical admission; no invented availability for rides, bears or museums.",
+    "state": "NH"
+  },
+  {
+    "decision": "T1",
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Perry's Victory and International Peace Memorial",
+    "native_id": "Q2071814",
+    "operator_url": "https://www.nps.gov/pevi/index.htm",
+    "pilot_id": "diversity:wd:Q2071814",
+    "queue_category": "lighthouse",
+    "reason": "NPS confirms this is a memorial, not a lighthouse. Current conditions close plazas/rotunda/observation deck for 2026 and 2027 while the same page also says the memorial plaza is available, an internal scope conflict. Visitor center and grounds have separate access. Hold this native memorial-point record until the exposed visitor scope is resolved; do not silently replace it with the visitor center or offer a tower visit.",
+    "state": "OH"
+  },
+  {
+    "decision": "T2",
+    "feature_point": [
+      36.413573,
+      -93.733871
+    ],
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Eureka Springs and North Arkansas Railway",
+    "native_field_rights_proof_replayed": true,
+    "native_id": "Q5411232",
+    "operator_identity_location_public_purpose_replayed": true,
+    "pilot_id": "diversity:wd:Q5411232",
+    "point_role": "physical_feature_not_verified_arrival",
+    "queue_category": "heritage_rail",
+    "reason": "Primary railway identifies the specific Eureka Springs depot and public excursion/dining experiences, with a 2026 season through October 31. Different excursion and dining departures require separate reservation/calendar review. The native point is plausible for the North Main depot feature, not a surveyed vehicle arrival.",
+    "review_category": "heritage_rail",
+    "state": "AR"
+  },
+  {
+    "decision": "T1",
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Aloha Tower",
+    "native_id": "Q448450",
+    "operator_url": "http://www.alohatower.com",
+    "pilot_id": "diversity:wd:Q448450",
+    "queue_category": "lighthouse",
+    "reason": "Aloha Tower has conflicting retained primary access claims: marketplace says observation deck currently closed without reopening date; Hawai\u02bbi DOT dated October 12 announces a planned October 15 reopening and warns of intermittent construction closures. The later owner announcement is material new evidence, but not confirmation that opening completed or that the deck is currently accessible. Hold pending authoritative post-opening/current scope corroboration; do not equate announcement with completion or marketplace retail access with tower access.",
+    "state": "HI"
+  },
+  {
+    "decision": "T2",
+    "feature_point": [
+      44.9913,
+      -85.4795
+    ],
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Mission Point Light",
+    "native_field_rights_proof_replayed": true,
+    "native_id": "Q6878674",
+    "operator_identity_location_public_purpose_replayed": true,
+    "pilot_id": "diversity:wd:Q6878674",
+    "point_role": "physical_feature_not_verified_arrival",
+    "queue_category": "lighthouse",
+    "reason": "The current township-run lighthouse operator affirms public tours and the specific Traverse City/Old Mission Peninsula site. The native third-party directory website was replaced by this primary operator. Interior May-October/limited November access differs from year-round exterior park access; Tuesday closure, volunteer/weather exceptions and vehicle-specific parking restrictions remain unqualified for routing.",
+    "review_category": "lighthouse",
+    "state": "MI"
+  },
+  {
+    "decision": "T1",
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Uniroyal Giant Tire",
+    "native_id": "Q7886992",
+    "operator_url": null,
+    "pilot_id": "diversity:wd:Q7886992",
+    "queue_category": "roadside_attraction",
+    "reason": "Brand operator confirms the giant tire landmark in Allen Park, but the retained page only says visitors cannot miss it. That is not affirmative permission to stop on corporate grounds or evidence of a safe public viewing destination beside I-94. Hold public-visit scope and approach; landmark visibility is not an invitation to enter private property.",
+    "state": "MI"
+  },
+  {
+    "decision": "T2",
+    "feature_point": [
+      36.376667,
+      -75.830833
+    ],
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Currituck Beach Lighthouse",
+    "native_field_rights_proof_replayed": true,
+    "native_id": "Q3308122",
+    "operator_identity_location_public_purpose_replayed": true,
+    "pilot_id": "diversity:wd:Q3308122",
+    "point_role": "physical_feature_not_verified_arrival",
+    "queue_category": "lighthouse",
+    "reason": "The actual lighthouse conservator affirms the physical Corolla destination and March 21-November 30, 2026 visitor season. Weather and Thanksgiving closures, separate grounds access, age/waiver conditions and on-site ticketing are retained as evidence, not normalized practical fields. No waiver was accepted or reservation made. The 50-second robots delay was respected before the single operator request.",
+    "review_category": "lighthouse",
+    "state": "NC"
+  },
+  {
+    "decision": "T2",
+    "feature_point": [
+      46.85277778,
+      -101.42611111
+    ],
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Salem Sue",
+    "native_field_rights_proof_replayed": true,
+    "native_id": "Q7404187",
+    "operator_identity_location_public_purpose_replayed": true,
+    "pilot_id": "diversity:wd:Q7404187",
+    "point_role": "physical_feature_not_verified_arrival",
+    "queue_category": "roadside_attraction",
+    "reason": "The City of New Salem links this tourism site, whose New Salem Lions Club operator affirms the named sculpture and invites physical stops. Native hilltop feature coordinates are retained and Census confirms North Dakota. Operator provenance supports the New Salem setting; no road grade, safe vehicle approach, parking geometry or hours were verified.",
+    "review_category": "roadside_attraction",
+    "state": "ND"
+  },
+  {
+    "decision": "T1",
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Old Colony and Newport Scenic Railway",
+    "native_id": "Q16983149",
+    "operator_url": "http://www.ocnrr.com",
+    "pilot_id": "diversity:wd:Q16983149",
+    "queue_category": "heritage_rail",
+    "reason": "Native Old Colony/Newport host robots request failed through proxy tunnel 403; no operator page, alternative-host bypass or retry was attempted. Historical discovery indicates a successor/merged railway, which cannot silently be substituted for the native entity. Current primary visitor purpose, legal entity continuity and feature-point scope remain unresolved.",
+    "state": "RI"
+  },
+  {
+    "decision": "T2",
+    "feature_point": [
+      33.652568,
+      -85.829557
+    ],
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "World's Largest Office Chair",
+    "native_field_rights_proof_replayed": true,
+    "native_id": "Q97355534",
+    "operator_identity_location_public_purpose_replayed": true,
+    "pilot_id": "diversity:wd:Q97355534",
+    "point_role": "physical_feature_not_verified_arrival",
+    "queue_category": "roadside_attraction",
+    "reason": "The furniture-business operator identifies the Anniston chair at its Noble Street showroom and explicitly invites public stops to see it. The roadside landmark is distinct from an ordinary retail listing. No historical record/superlative measurements, climbing permission, retail-hour schedule or parking geometry are imported.",
+    "review_category": "roadside_attraction",
+    "state": "AL"
+  },
+  {
+    "decision": "T2",
+    "feature_point": [
+      37.28,
+      -100.337
+    ],
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Dalton Gang Hideout and Museum",
+    "native_field_rights_proof_replayed": true,
+    "native_id": "Q30623769",
+    "operator_identity_location_public_purpose_replayed": true,
+    "pilot_id": "diversity:wd:Q30623769",
+    "point_role": "physical_feature_not_verified_arrival",
+    "queue_category": "roadside_attraction",
+    "reason": "The Meade County Historical Society identifies the current physical house/museum visitor destination and its Meade address. Category is reviewed as historic_site rather than blindly inherited from a roadside query. Gang-use stories are explicitly legend and are not made verified history. Barn entrance/tunnel access and separate heritage-house scope remain unqualified; no practical values or route are invented.",
+    "review_category": "historic_site",
+    "state": "KS"
+  },
+  {
+    "decision": "T2",
+    "feature_point": [
+      30.37065,
+      -88.5559
+    ],
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Round Island Light",
+    "native_field_rights_proof_replayed": true,
+    "native_id": "Q7371062",
+    "operator_identity_location_public_purpose_replayed": true,
+    "pilot_id": "diversity:wd:Q7371062",
+    "point_role": "physical_feature_not_verified_arrival",
+    "queue_category": "lighthouse",
+    "reason": "The owning city identifies the lighthouse relocation to the mainland and public tours at its western gateway. Frozen native point (30.37065,-88.5559) is the mainland location, not the historic offshore island. This establishes the visitor destination at feature-point precision, not current tour availability or a verified approach; source times remain unnormalized.",
+    "review_category": "lighthouse",
+    "state": "MS"
+  },
+  {
+    "decision": "T1",
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Winganon Space Capsule",
+    "native_id": "Q137762677",
+    "operator_url": null,
+    "pilot_id": "diversity:wd:Q137762677",
+    "queue_category": "roadside_attraction",
+    "reason": "Bounded discovery did not establish a primary land/operator source affirming public physical visits to this roadside cement-mixer sculpture. Informal stories and regional/Reddit leads alone do not validate public land access, a safe stopping place or current condition; no operator page was fabricated.",
+    "state": "OK"
+  },
+  {
+    "decision": "T2",
+    "feature_point": [
+      45.317388888,
+      -92.708861111
+    ],
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Osceola and St. Croix Valley Railway",
+    "native_field_rights_proof_replayed": true,
+    "native_id": "Q7106394",
+    "operator_identity_location_public_purpose_replayed": true,
+    "pilot_id": "diversity:wd:Q7106394",
+    "point_role": "physical_feature_not_verified_arrival",
+    "queue_category": "heritage_rail",
+    "reason": "The native operator path is a genuine 404; its homepage redirects openly to the current trainride.org museum operator. That page separates public Wisconsin railway rides at 114 Depot Road from the Saint Paul roundhouse museum. Native point is plausible for Osceola depot, not museum headquarters or the entire rail corridor. Seasonal train experiences and departure availability require visit-date review.",
+    "review_category": "heritage_rail",
+    "state": "WI"
+  },
+  {
+    "decision": "T1",
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "The Wonder Spot",
+    "native_id": "Q7775619",
+    "operator_url": null,
+    "pilot_id": "diversity:wd:Q7775619",
+    "queue_category": "roadside_attraction",
+    "reason": "Historical discovery flags this former attraction as closed/removed in 2006-2007, and no current primary physical visitor purpose was established. A historical image or online nostalgic discussion is not a present attraction. Hold closure/retention status rather than importing a vanished attraction; no fresh operator endpoint was invented.",
+    "state": "WI"
+  },
+  {
+    "decision": "T2",
+    "feature_point": [
+      40.6161,
+      -80.5573
+    ],
+    "itinerary_ready": false,
+    "live_net_new": null,
+    "name": "Chester teapot",
+    "native_field_rights_proof_replayed": true,
+    "native_id": "Q5093786",
+    "operator_identity_location_public_purpose_replayed": true,
+    "pilot_id": "diversity:wd:Q5093786",
+    "point_role": "physical_feature_not_verified_arrival",
+    "queue_category": "roadside_attraction",
+    "reason": "The city operator identifies the Chester teapot as a physical visitor landmark. Native source name remains Chester teapot; unsupported largest-status and conflicting dimensions are omitted. The historical concession business being closed is distinct from the preserved exterior landmark. No roadside stopping/parking safety, operating hours or entrance geometry is asserted.",
+    "review_category": "roadside_attraction",
+    "state": "WV"
+  }
+]

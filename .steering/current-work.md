@@ -1,6 +1,101 @@
 # Current release and acceptance
 
-## Inspected source and delivery
+## October 22 cloud catalog reconciliation
+
+The reconciled develop tree preserves the Mac research/session-cache work and
+all twelve exported cloud commits through `5e139b5`. Historical research contains
+221 T2 browse identities, with 133 retrospective acquisition holds now enforced
+by pinned code/data across replay, browse/routing reads, staging, activation and
+recovery targets. The other 88 are not blanket cleared; zero new T3 conversions
+or live imports are claimed. Earlier 93 USFS records remain outside this audit.
+Private typed-replay originals and current live-parent reconciliation are still
+required for data release. The app continues using its configured Neon database.
+See [integration boundaries and counts](../docs/catalog-cloud-integration-20261022.md).
+
+## October 19 automated attraction imports
+
+Develop now includes command-driven NPS/USFS acquisition, automatic test-route
+capture, offline replay and conservative native-identity calendar bindings.
+The imports add five source-backed visitor arrivals along SF–Boise and
+SF–Chicago, plus missing hours for 35 existing places nationally: 608 places,
+189 calendar companions. All 603 parent rows and 149 prior companions are
+preserved. Existing calendars, including expired or held records, are not renewed.
+See [commands, source rules, measured coverage and release boundary](../docs/catalog-automated-import.md).
+The final 608-place generation is active after the release owner confirmed the recent
+verified off-host backup in this chat. That recovery confirmation is owner
+attestation, not an independent host inspection. The prior 603/607-place generations
+and frozen rollback receipts are preserved. This work does not release main or
+deploy an application.
+
+## October 20 reusable attraction traits
+
+Live attraction discovery can reuse per-place estimated attribute JSON from
+PostgreSQL across trips and restarts. It rates only misses and recalculates
+utility for the current persona. Context/version changes invalidate entries;
+estimates expire after 90 days. Source facts and live eligibility remain
+separate. The additive local migration and opt-in are enabled; deployments stay
+disabled by default. See [trait persistence](../docs/place-trait-cache.md).
+
+## October 20 research database persistence
+
+Research studies now mirror from the private local SQLite execution queue into
+additive PostgreSQL study/run tables. The local configured Neon database has the
+explicit migration and backfill; API startup sync is a separate opt-in, default
+off for deployments. Fresh browsers can open saved results after Studio access,
+without private per-study keys. Shared reads grant no run controls. CP-SAT outcomes
+show Optimal, Feasible, Infeasible and Unknown. The running worker and frozen
+protocols remain intact; SQLite and exact source archives are retained for
+recovery. See [persistence and access](../docs/studio-research.md#postgresql-results-and-cross-browser-access-october-20-2026).
+
+## October 20 standard solve limit
+
+The shared CP-SAT default is now fifteen seconds for new interactive runs and new
+Studio research plans. Existing studies keep their frozen five-second plans and
+results. The October 20 rerun is a new 6,300-case solver-only batch at fifteen
+seconds, covering the full matrix without repeating live pipeline calls. A local archive
+of the original backend source matches the active campaign's source hash and is
+preserved for recovery. See [research protocol](../docs/studio-research.md#standard-solve-limit-october-20-2026).
+
+## October 19 develop integration
+
+Studio's **Research** page now defines 30 trip/persona/stop-rate combinations,
+prioritizes 6,300 controlled CP-SAT trials and then runs 300 fresh live trips.
+The hundred-candidate solver dataset is explicitly synthetic and remains separate
+from provider-trip results. Durable local campaigns, source identities, per-run
+records, incremental charts and CSV/JSON exports are described in
+[the research protocol](../docs/studio-research.md). Batch execution is an explicit
+backend opt-in; no production mount, schema migration or release is added.
+
+PRs #56 (chat retirement), #55 (standalone guided planning) and #51 (visit
+estimates and arrival/leaving timing) are integrated into develop at their exact
+latest CI-validated heads. Combined local checks pass; this is integration
+verification, not an independent production release approval. Saved trips remain
+at `/trips`; `/chat` redirects there. `/plan` uses retained structured APIs rather
+than the removed chat dispatcher. Studio's third results tab is **Trip stats**:
+compact measurements and bars replace raw stage JSON and solver explanations.
+
+Studio History now opens a popup and restores saved trips into the workspace.
+Tab-scoped inputs/results/selected tabs survive reload and navigation; active
+visitor jobs continue in the single API process and reconnect by UUID without
+repeating provider work. API restarts interrupt active runs. See
+[workspace lifecycle and limits](../docs/studio-access.md#workspace-and-history-popup-october-19-2026).
+Place cards and map popups omit Sources links, visit-estimate tags and repeated
+place-type labels. Numbered route-list dots match the map's attraction/stay colors.
+Arrival/leaving use two compact clock columns with short dates and time zones;
+overnight dates and DST offsets remain distinguishable, with full timestamps
+available to assistive technology and on hover.
+Generation shows one animated current activity; detailed progress remains recorded.
+Trip stats keeps attraction counts, match estimates, driving comparisons, longest
+driving gap and planning/selection time. Source metadata and research measurements
+remain stored; the public attribution page and map-provider attribution remain.
+
+See [integration heads, compatibility fix and validation](../docs/studio-stats-integration.md)
+and [visit estimates](../docs/visit-duration-estimates.md). Shared AI, source
+calendar holds, frozen offline itinerary facts and historical metric meanings
+remain. Current measurements use `balanced-route-v5`; live provider/estimate
+quality and production acceptance remain separate.
+
+## Earlier inspected source and delivery
 
 October 16, 2026 (UTC): isolated task checkout based on main
 `e9129a7551ef8c07405a9bf7552f6303765365af`. This update preserves the earlier
@@ -32,10 +127,10 @@ before integration; active release work can advance main.
 | Adaptive section discovery and bounded candidate pools                               | `backend/app/routing/discovery.py`, `sources/persona_candidates.py`; `docs/adaptive-planning.md`                                           |
 | Profile contributions, measured detours, quality bound and actual solver diagnostics | `backend/app/routing/profiles.py`, `cp_sat_selection.py`, `planners/cp_sat.py`; `docs/cp-sat-explained.md`                                 |
 | Separate local scheduling, dated room quotes and final road validation               | `backend/app/routing/cp_sat_scheduler.py`, `travel_timing.py`, `sources/google_hotels.py`; `docs/travelers-and-hotel-occupancy.md`         |
-| Validated trip extraction, endpoint confirmation and completion/retry                | `backend/app/agent/extraction.py`, `trip_profile.py`, `location_confirmation.py`, `tool_dispatcher.py`                                     |
+| Shared preference extraction and validated trip models | `backend/app/agent/extraction.py`, `trip_profile.py`; conversational orchestration retired |
 | Cognito session renewal and bounded verifier-rejection replay                        | `frontend/src/services/session.js`, `protectedRequest.js`; `docs/session-refresh.md`                                                       |
 | Visitor Studio access independent of account authentication                          | `backend/app/routers/studio.py`, `frontend/src/services/studioSession.js`; `docs/studio-access.md`                                         |
-| Live-only presets, streamed progress, stage data, safe failures and attempts         | `backend/app/routers/algorithm_lab.py`, `studio.py`, `backend/app/routing/runtime.py`; `docs/studio-progress.md`, `docs/studio-retries.md` |
+| Live-only presets, streamed progress, trip statistics, safe failures and attempts         | `backend/app/routers/algorithm_lab.py`, `studio.py`, `backend/app/routing/runtime.py`; `docs/studio-progress.md`, `docs/studio-retries.md` |
 | Scoped experiment history and saved route/itinerary results                          | `backend/app/crud/lab_runs.py`, `backend/sql/algorithm_lab_runs.sql`; `docs/algorithm-run-history.md`                                      |
 | Checked main deployment, stale-run rejection and verified health response            | `.github/workflows/deploy-ec2.yml`, `scripts/check_deployment.py`, `scripts/request_deployment.py`; `docs/ec2-deployment.md`               |
 

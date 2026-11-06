@@ -1,106 +1,104 @@
-.global-header {
+.global-header.rt-design {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  inset: 0 0 auto;
   height: var(--header-height);
   z-index: 200;
-  background-color: var(--cream-light);
-  border-bottom: 1px solid var(--cream-dark);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px 0 8px;
-  box-sizing: border-box;
+  padding: var(--rt-space-2) var(--rt-space-4);
+  background: var(--rt-color-material);
+  border-bottom: var(--rt-border-width) solid var(--rt-color-border);
+  backdrop-filter: blur(var(--rt-material-blur));
 }
-
-.global-header .global-header-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  color: var(--soil-main);
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  pointer-events: none;
-  white-space: nowrap;
-}
-
 .global-header-right {
   display: flex;
   align-items: center;
-  margin-left: auto;
+  gap: var(--rt-space-2);
+  min-inline-size: 0;
 }
-
-.avatar-placeholder {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: var(--amber-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.global-header .header-nav-link,
+.global-header .header-login,
+.global-header .avatar-placeholder {
+  min-inline-size: var(--rt-target-min);
+  min-block-size: var(--rt-target-min);
+  padding: var(--rt-space-2) var(--rt-space-3);
+  border-radius: var(--rt-radius-control);
+  font: var(--rt-weight-medium) var(--rt-text-small) / var(--rt-leading-body) var(--rt-font);
+  color: var(--rt-color-text);
+  text-transform: none;
+  white-space: nowrap;
+}
+.global-header .header-login,
+.global-header .avatar-placeholder {
+  background: var(--rt-color-accent);
+  color: var(--rt-color-on-accent);
+  box-shadow: none;
+  border: 0;
   cursor: pointer;
-  border: 2px solid var(--amber-light);
-  transition: opacity 0.15s ease;
 }
-
-.avatar-placeholder:hover {
-  opacity: 0.85;
+.global-header .header-login:hover,
+.global-header .avatar-placeholder:hover {
+  background: var(--rt-color-accent-hover);
 }
-
 .avatar-placeholder .avatar-initials {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #1e1208;
-  line-height: 1;
+  font: inherit;
 }
-
-/* .header-login-btn — moved to sx prop on the Button component in GlobalHeader.jsx */
-
-/* ── Transparent variant (map page) ── */
-.global-header.global-header--transparent {
-  background-color: transparent;
-  border-bottom-color: transparent;
-  /* subtle shadow so logo/avatar read over light map tiles */
-  filter: drop-shadow(0 1px 4px rgba(58, 42, 26, 0.3));
+.header-label-compact {
+  display: none;
 }
-
-/* Profile dropdown */
-.profile-menu-paper {
-  min-width: 160px;
-  margin-top: 6px;
+.global-header .logo-btn {
+  min-block-size: var(--rt-target-min);
+  padding: 0;
+  border-radius: var(--rt-radius-sm);
 }
-
+.global-header :focus-visible,
+.profile-menu-paper :focus-visible {
+  outline: var(--rt-focus-width) solid var(--rt-color-focus);
+  outline-offset: var(--rt-focus-offset);
+}
+.profile-menu-paper.rt-design {
+  inline-size: auto;
+  padding: var(--rt-space-2);
+  margin-top: var(--rt-space-2);
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-color-surface);
+  box-shadow: var(--rt-shadow-floating);
+}
 .profile-menu-header {
-  padding: 10px 16px 6px;
+  padding: var(--rt-space-2) var(--rt-space-4);
 }
-
 .profile-menu-paper .profile-menu-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--sand-main);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: var(--rt-weight-medium) var(--rt-text-caption) / var(--rt-leading-body) var(--rt-font);
+  color: var(--rt-color-secondary);
 }
-
 .profile-menu-paper .profile-menu-item {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--soil-main);
-  gap: 10px;
-  padding: 10px 16px;
-  transition: background-color 0.15s ease;
+  gap: var(--rt-space-3);
+  min-block-size: var(--rt-target-min);
+  padding: var(--rt-space-2) var(--rt-space-4);
+  border-radius: var(--rt-radius-sm);
+  font: var(--rt-weight-medium) var(--rt-text-small) / var(--rt-leading-body) var(--rt-font);
 }
-
-.profile-menu-paper .profile-menu-item:hover {
-  background-color: var(--cream-dark);
+.profile-menu-icon {
+  color: var(--rt-color-secondary);
 }
-
-.profile-menu-paper .profile-menu-icon {
-  font-size: 18px;
-  color: var(--bark-main);
+@media (max-width: 600px) {
+  .global-header.rt-design {
+    padding-inline: var(--rt-space-2);
+  }
+  .global-header-right {
+    gap: var(--rt-space-1);
+  }
+  .header-label-wide {
+    display: none;
+  }
+  .header-label-compact {
+    display: inline;
+  }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .global-header.rt-design {
+    background: var(--rt-color-surface);
+    backdrop-filter: none;
+  }
 }

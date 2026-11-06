@@ -45,8 +45,8 @@ export function renderWithProviders(ui, { initialPath = '/', renderOptions = {} 
  * Renders a full page component at a specific route path so that
  * `useLocation`, `useNavigate`, and route-matching all work.
  *
- * @param {string} path        – route pattern, e.g. '/chat'
- * @param {ReactElement} page  – the page element, e.g. <ChatPage />
+ * @param {string} path        – route pattern, e.g. '/trips'
+ * @param {ReactElement} page  – the page element, e.g. <SavedTripsPage />
  * @param {string} [at]        – the URL to start at (defaults to path)
  */
 export function renderPage(path, page, at) {

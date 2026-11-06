@@ -40,7 +40,7 @@ CHAT_DATA = {
 CHAT_LOG = {
     "id": 1,
     "title": "Chat 1",
-    "messages": [{"text": "Hello welcome to Journey Genie", "sender": "bot", "buttons": []}],
+    "messages": [{"text": "Saved trip", "sender": "bot", "buttons": []}],
 }
 
 
@@ -142,7 +142,11 @@ def test_update_does_not_claim_success_for_another_users_chat():
     ):
         response = client.put(
             "/chats/update/3",
-            json={"PartitionKey": "fixture-token", "ChatData": CHAT_DATA, "ChatLog": CHAT_LOG},
+            json={
+                "PartitionKey": "fixture-token",
+                "ChatData": CHAT_DATA | {"chatId": 3},
+                "ChatLog": CHAT_LOG | {"id": 3},
+            },
         )
     assert response.status_code == 404
     assert response.json() == {"detail": "Chat not found"}
@@ -165,9 +169,10 @@ def test_update_chat():
     mock_pool.putconn = MagicMock()
     mock_pool.closed = False
 
-    updated_chat_data = {**CHAT_DATA, "action": "Address"}
+    updated_chat_data = {**CHAT_DATA, "chatId": 3, "action": "Address"}
     updated_chat_log = {
         **CHAT_LOG,
+        "id": 3,
         "messages": CHAT_LOG["messages"] + [{"text": "LA to NYC", "sender": "user", "buttons": []}],
     }
 

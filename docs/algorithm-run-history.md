@@ -13,8 +13,8 @@ Historical provider descriptions and measurements below retain their original
 meaning; they are not instructions for the current discovery implementation.
 
 Studio visitor and owner-authorized `/algorithm-lab/run` requests are recorded
-in their isolated identity scopes. Ordinary chat planning is excluded. The UI at `/studio` provides **Trip presets** and a
-persistent **Run history** table, with inputs and measurements in each disclosure.
+in their isolated identity scopes. Account saved-trip records remain separate. The UI at `/studio` provides **Trip presets** and a
+**History** popup, with saved trips, inputs and measurements in each disclosure.
 The nine presets include coastal nature, culture, overnight, short, medium, long,
 dense, sparse and tight hotel budget trips. Driving times and overnight counts
 are targets to measure, not guarantees. Adaptive solver capacity ranges from 18 to 60 across trip sizes.
@@ -29,9 +29,10 @@ the ordinary routing and itinerary pipeline. Hotel and evening discovery follow
 the trip needs. There is no replay or candidate-fixture option. Historical replay
 and benchmark records remain labeled in history.
 
-Successful saved routes have a **View map and itinerary** button. It loads the
-stored route geometry and itinerary in a modal without making another provider
-run. Older records saved before route persistence have no viewer button.
+Successful saved routes have an **Open trip** button in Studio History. It loads
+the stored route geometry and itinerary into the persistent workspace without
+making another provider run. Older records saved before route persistence have
+no viewer button. See [workspace and job lifecycle](studio-access.md#workspace-and-history-popup-october-19-2026).
 
 ## Record lifecycle and ownership
 
@@ -46,8 +47,9 @@ returns 503 without starting the experiment. Finalization records `completed` or
 `failed`. A failed final save is explicitly shown to the user.
 Interrupted processes can leave `running` rows: these are unfinished, never
 successes or zero-latency samples. Invalid/auth-rejected HTTP requests are not
-experiments. Each explicit request creates a new run; no automatic deduplication
-is claimed for manually repeated requests after a lost network response.
+experiments. Each explicit legacy `/run` request creates a new run. Studio job requests
+deduplicate reconnects by a stored client UUID; interrupted provider work is never
+automatically repeated.
 
 The backend derives owner identity from verified Cognito claims and visitor identity
 from the signed Studio session, never body fields.
@@ -79,15 +81,15 @@ snapshotted. Stable SHA-256 hashes ignore provider timestamps and run UUIDs.
 The input cohort groups matching inputs/mode/scoring version/revision, so changing
 live discovery still contributes to observed spread. The narrower comparison key
 also requires the same candidate model/query points. An `OPTIMAL` reference must use the identical candidate model and scoring version.
-For `balanced-route-v3`, report extra selection cost over that reference in seconds
+For `balanced-route-v3/v4/v5`, report extra selection cost over that reference in seconds
 (including a zero optimum); percentage excess is assessed only for a positive
 reference. Do not use `100 × score/reference` as match quality for minimized costs.
 Historical surplus versions retain their maximized-score ratios. Match quality
 and the ten-point loss bound are separate selection measurements. Means, population
 standard deviations, assessed denominators and repeat counts are backend-owned.
 
-New metrics use `balanced-route-v3`; historical `selection-surplus-v1/v2` keep
-their original meanings. Provider measurements separate wall elapsed time,
+New metrics use `balanced-route-v5`; v3/v4 measurements remain versioned, and
+historical `selection-surplus-v1/v2` retain their original meanings. Provider measurements separate wall elapsed time,
 accumulated call duration, queue wait, active/peak calls, actual API attempts and
 within-run distinct requests. Parallel/nested durations must not be summed as wall
 time. Discovery and road-check explanations persist in existing result JSONB;

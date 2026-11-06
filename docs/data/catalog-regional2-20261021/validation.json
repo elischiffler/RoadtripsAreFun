@@ -1,0 +1,41 @@
+{
+  "acquisition_audit": {
+    "all_affected_positive_bodies_excluded_or_separately_compliant_positive_selected": true,
+    "confirmed_below_delay_intervals": 8,
+    "corrected_fetcher_tests": "offline, per-group artifacts",
+    "museum": 3,
+    "nature": 5,
+    "niche": 0,
+    "no_remedy_requests": true
+  },
+  "backend": {
+    "coverage_percent": 80.73,
+    "log": "/workspace/catalog-regional2-20261021/backend-final-tests.log",
+    "minimum_unchanged": 63,
+    "passed": 2124,
+    "skipped": 138
+  },
+  "byte_identical_socket_disabled_replay_files": 4,
+  "database_proof": {
+    "actual_repository_queries": 27,
+    "calendars": 0,
+    "parent": "one synthetic row, not the live parent",
+    "rollback": true,
+    "staged_twice": true
+  },
+  "external_AI_requests": 0,
+  "focused_source_assembly_tests": 30,
+  "frontend": "No frontend changes; previous checkpoint278 tests/format/lint/build retained, not rerun in this checkpoint.",
+  "live_parent_reconciled": false,
+  "no_new_NC_admissions": true,
+  "postgres": {
+    "external_network": "blocked; fixed disposable loopback catalog_test only",
+    "passed": 71,
+    "split_suites": [
+      63,
+      8
+    ]
+  },
+  "prior_NC_partition_sha256": "3e42e9f8dea4b886ee54bcca817597891ec401ab72ebec36d21371c427877379",
+  "production_writes": false
+}

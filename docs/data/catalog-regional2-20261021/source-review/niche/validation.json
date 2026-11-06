@@ -1,0 +1,29 @@
+{
+  "T1_holds": 7,
+  "T2_source_contract_passes": 9,
+  "T3_conversions": 0,
+  "adapter_sha256": "c0486d0a81fa4d53b2f5b67668a564052bf0b52a257812148e465e270c8c4135",
+  "checks": [
+    "Exact16 queue denominator, identity and order",
+    "Measured9T2/7T1/0T3; no final-net claim",
+    "Original byte hashes and lengths for every retained HTTP/native response",
+    "Bounded41 requests,1MiB response ceilings,2,281,993-byte used evidence",
+    "Adapter evidence is successful and internal to owned group",
+    "Original native bindings, rights pin, internal proof references and unknown practical fields",
+    "Nine deterministic14-attribute profiles label inferences and unknowns",
+    "All applicable current-group crawl delays and request-rate intervals honored",
+    "Fetcher pure pacing guard tests first-content, cached-robots and elapsed delay",
+    "ImmutableURL cache returns retained body without a request or ledger mutation",
+    "Fetcher60-attempt hard gate enforced before network",
+    "All20 staged attempt dispositions retained; denied OldColony content never fetched",
+    "Sockets-blocked source-contract replay is idempotent and review timestamps unchanged",
+    "Only clearedCC0 native facts; operator prose/NC rights not presumed"
+  ],
+  "checks_passed": 14,
+  "final_combined_or_live_net_additions": null,
+  "original_response_hashes_checked": 44,
+  "queue_reviewed": 16,
+  "robots_delay_misses": 0,
+  "scope": "Agent-assisted primary reading and offline byte/field/rights replay. Not independent human or field verification; root combined dedup and live reconciliation pending.",
+  "used_evidence_bytes": 2281993
+}

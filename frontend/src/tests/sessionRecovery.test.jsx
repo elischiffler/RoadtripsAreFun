@@ -8,7 +8,6 @@ import { cognitoClient } from '../services/cognito';
 import { ensureSession, getSession, signOut } from '../services/session';
 import { fixtureSession, fixtureToken } from './sessionFixtures';
 import AuthWrapper from '../components/AuthWrapper';
-import ChatInput from '../pages/ChatPage/ChatInput';
 import LoginPage from '../pages/AuthPages/LoginPage';
 import { ChatData, Data, ChatLogs, UserDataContext } from '../states/UserDataContext';
 
@@ -47,7 +46,6 @@ function ProtectedTrip() {
         {trip?.route?.name ?? 'No route'}; {chats.length} chats;{' '}
         {trip?.agentChatId ?? 'No conversation'}
       </output>
-      <ChatInput draftKey="conversation" onSubmit={vi.fn()} />
       <button
         onClick={() =>
           void ensureSession({ rejectedToken: getSession().accessToken }).catch(() => {})
@@ -62,7 +60,7 @@ function renderRecovery() {
   return renderWithProviders(
     <Routes>
       <Route
-        path="/chat"
+        path="/trips"
         element={
           <AuthWrapper>
             <ProtectedTrip />
@@ -71,7 +69,7 @@ function renderRecovery() {
       />
       <Route path="/login" element={<LoginPage />} />
     </Routes>,
-    { initialPath: '/chat' }
+    { initialPath: '/trips' }
   );
 }
 
@@ -87,41 +85,32 @@ it('waits for restoration before mounting protected children', async () => {
   );
   renderRecovery();
   expect(screen.getByText('Restoring your session...')).toBeInTheDocument();
-  expect(screen.queryByRole('textbox', { name: 'Chat message' })).not.toBeInTheDocument();
+  expect(screen.queryByText('Seed trip')).not.toBeInTheDocument();
   await act(async () => resolve(reply()));
-  expect(await screen.findByRole('textbox', { name: 'Chat message' })).toBeInTheDocument();
+  expect(await screen.findByText('Seed trip')).toBeInTheDocument();
 });
-it.each(['user', 'other'])(
-  'preserves the trip and unsent draft only when signing back in as %s',
-  async (owner) => {
-    fixtureSession('user', undefined, 'refresh');
-    const user = userEvent.setup();
-    renderRecovery();
-    await user.click(await screen.findByText('Seed trip'));
-    await user.type(
-      screen.getByRole('textbox', { name: 'Chat message' }),
-      'Keep my unsent message'
-    );
-    cognitoClient.send.mockRejectedValueOnce({ name: 'NotAuthorizedException' });
-    await user.click(screen.getByText('Expire session'));
-    expect(await screen.findByText(/Your session expired/)).toBeInTheDocument();
-    expect(screen.queryByRole('textbox', { name: 'Chat message' })).not.toBeInTheDocument();
-    cognitoClient.send.mockResolvedValueOnce(reply(owner));
-    await user.type(screen.getByLabelText(/Email/), 'test@example.com');
-    await user.type(document.querySelector('input[type=password]'), 'password');
-    await user.click(screen.getByRole('button', { name: 'Log In' }));
-    const input = await screen.findByRole('textbox', { name: 'Chat message' });
-    if (owner === 'user') {
-      expect(input).toHaveValue('Keep my unsent message');
-      expect(screen.getByText('Coastal route; 1 chats; conversation')).toBeInTheDocument();
-      expect(sessionStorage.getItem('selectedChatId')).toBe('4');
-    } else {
-      expect(input).toHaveValue('');
-      expect(screen.getByText('No route; 0 chats; No conversation')).toBeInTheDocument();
-      expect(sessionStorage.getItem('selectedChatId')).toBeNull();
-    }
+it.each(['user', 'other'])('preserves the trip only when signing back in as %s', async (owner) => {
+  fixtureSession('user', undefined, 'refresh');
+  const user = userEvent.setup();
+  renderRecovery();
+  await user.click(await screen.findByText('Seed trip'));
+  cognitoClient.send.mockRejectedValueOnce({ name: 'NotAuthorizedException' });
+  await user.click(screen.getByText('Expire session'));
+  expect(await screen.findByText(/Your session expired/)).toBeInTheDocument();
+  expect(screen.queryByText('Seed trip')).not.toBeInTheDocument();
+  cognitoClient.send.mockResolvedValueOnce(reply(owner));
+  await user.type(screen.getByLabelText(/Email/), 'test@example.com');
+  await user.type(document.querySelector('input[type=password]'), 'password');
+  await user.click(screen.getByRole('button', { name: 'Log In' }));
+  await screen.findByText('Seed trip');
+  if (owner === 'user') {
+    expect(screen.getByText('Coastal route; 1 chats; conversation')).toBeInTheDocument();
+    expect(sessionStorage.getItem('selectedChatId')).toBe('4');
+  } else {
+    expect(screen.getByText('No route; 0 chats; No conversation')).toBeInTheDocument();
+    expect(sessionStorage.getItem('selectedChatId')).toBeNull();
   }
-);
+});
 it('keeps an outage on the protected route and recovers through the retry action', async () => {
   fixtureSession('user', undefined, 'refresh');
   sessionStorage.removeItem('accessToken');
@@ -134,7 +123,5 @@ it('keeps an outage on the protected route and recovers through the retry action
   vi.spyOn(Date, 'now').mockReturnValue(now + 6000);
   cognitoClient.send.mockResolvedValue(reply());
   await userEvent.setup().click(screen.getByRole('button', { name: 'Retry' }));
-  await waitFor(() =>
-    expect(screen.getByRole('textbox', { name: 'Chat message' })).toBeInTheDocument()
-  );
+  await waitFor(() => expect(screen.getByText('Seed trip')).toBeInTheDocument());
 });

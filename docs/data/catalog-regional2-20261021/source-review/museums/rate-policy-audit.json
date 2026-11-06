@@ -1,0 +1,249 @@
+{
+  "affected_pilot_ids": [
+    "culture:wd:Q119585283",
+    "culture:wd:Q49519614"
+  ],
+  "affected_positive_evidence": [
+    "operator-Q49519614-0"
+  ],
+  "applicable_policies": [
+    {
+      "delay_seconds": 10,
+      "host": "www.gloucestercountynj.gov",
+      "receipt_id": "robots-c70cb97f481b0ef8",
+      "url": "https://www.gloucestercountynj.gov/robots.txt"
+    },
+    {
+      "delay_seconds": 30,
+      "host": "audubonnatureinstitute.org",
+      "receipt_id": "robots-42bd65a79f2b83cf",
+      "url": "https://audubonnatureinstitute.org/robots.txt"
+    },
+    {
+      "delay_seconds": 1,
+      "host": "noma.org",
+      "receipt_id": "robots-e81431b3cf8b5b71",
+      "url": "https://noma.org/robots.txt"
+    }
+  ],
+  "checks": [
+    {
+      "actual_start_gap_seconds": 1.826977,
+      "compliant": false,
+      "policy_receipt_id": "robots-c70cb97f481b0ef8",
+      "policy_url": "https://www.gloucestercountynj.gov/robots.txt",
+      "previous_receipt_id": "robots-c70cb97f481b0ef8",
+      "previous_url": "https://www.gloucestercountynj.gov/robots.txt",
+      "receipt_id": "operator-Q119585283-0",
+      "required_crawl_delay_seconds": 10,
+      "url": "https://www.gloucestercountynj.gov/671/Red-Bank-Battlefield"
+    },
+    {
+      "actual_start_gap_seconds": 1.527716,
+      "compliant": false,
+      "policy_receipt_id": "robots-42bd65a79f2b83cf",
+      "policy_url": "https://audubonnatureinstitute.org/robots.txt",
+      "previous_receipt_id": "robots-42bd65a79f2b83cf",
+      "previous_url": "https://audubonnatureinstitute.org/robots.txt",
+      "receipt_id": "operator-Q49519614-0",
+      "required_crawl_delay_seconds": 30,
+      "url": "https://audubonnatureinstitute.org/nature-center"
+    },
+    {
+      "actual_start_gap_seconds": 3.583169,
+      "compliant": true,
+      "policy_receipt_id": "robots-e81431b3cf8b5b71",
+      "policy_url": "https://noma.org/robots.txt",
+      "previous_receipt_id": "robots-e81431b3cf8b5b71",
+      "previous_url": "https://noma.org/robots.txt",
+      "receipt_id": "operator-Q2063082-1",
+      "required_crawl_delay_seconds": 1,
+      "url": "https://noma.org/"
+    },
+    {
+      "actual_start_gap_seconds": 83.654755,
+      "compliant": true,
+      "policy_receipt_id": "robots-c70cb97f481b0ef8",
+      "policy_url": "https://www.gloucestercountynj.gov/robots.txt",
+      "previous_receipt_id": "operator-Q119585283-0",
+      "previous_url": "https://www.gloucestercountynj.gov/671/Red-Bank-Battlefield",
+      "receipt_id": "followup2-Q119585283-0",
+      "required_crawl_delay_seconds": 10,
+      "url": "https://www.gloucestercountynj.gov/facilities/facility/details/James-and-Ann-Whitall-House-15"
+    },
+    {
+      "actual_start_gap_seconds": 2.219479,
+      "compliant": false,
+      "policy_receipt_id": "robots-c70cb97f481b0ef8",
+      "policy_url": "https://www.gloucestercountynj.gov/robots.txt",
+      "previous_receipt_id": "followup2-Q119585283-0",
+      "previous_url": "https://www.gloucestercountynj.gov/facilities/facility/details/James-and-Ann-Whitall-House-15",
+      "receipt_id": "followup3-Q119585283-0",
+      "required_crawl_delay_seconds": 10,
+      "url": "https://www.gloucestercountynj.gov/copyright"
+    },
+    {
+      "actual_start_gap_seconds": 63.906757,
+      "compliant": true,
+      "policy_receipt_id": "robots-e81431b3cf8b5b71",
+      "policy_url": "https://noma.org/robots.txt",
+      "previous_receipt_id": "operator-Q2063082-1",
+      "previous_url": "https://noma.org/",
+      "receipt_id": "final2-Q2063082-0",
+      "required_crawl_delay_seconds": 1,
+      "url": "https://noma.org/noma-collection/rights-reproductions/"
+    }
+  ],
+  "disposition": "All affected destinations held. No further acquisition or timing-remedy requests. Reusable fetcher corrected offline; future review requires a separately authorized compliant acquisition.",
+  "method": "Chronological request-start timestamps, by exact host, including robots-to-first-content and redirect hops; applicable user-agent robots policies become known only after their retained response. Request completion timestamps were not recorded, so start gaps cannot certify completion-to-start intervals.",
+  "request_receipts_audited": 55,
+  "robots_policy_inspections": [
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "www.newportmansions.org",
+      "receipt_id": "robots-308a3b9a90448768",
+      "url": "https://www.newportmansions.org/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "www.museepata.org",
+      "receipt_id": "robots-90e4e9eb795a28be",
+      "url": "https://www.museepata.org/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "americanillustration.org",
+      "receipt_id": "robots-653ba31560a59f5e",
+      "url": "https://americanillustration.org/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "www.historicnewengland.org",
+      "receipt_id": "robots-b5d41e5d0ce439f3",
+      "url": "https://www.historicnewengland.org/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": 10,
+      "host": "www.gloucestercountynj.gov",
+      "receipt_id": "robots-c70cb97f481b0ef8",
+      "url": "https://www.gloucestercountynj.gov/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "louisianastatemuseum.org",
+      "receipt_id": "robots-4b829d1262db9ece",
+      "url": "https://louisianastatemuseum.org/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "themuseum.org",
+      "receipt_id": "robots-0128fd0b545ba64c",
+      "url": "https://themuseum.org/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": 30,
+      "host": "audubonnatureinstitute.org",
+      "receipt_id": "robots-42bd65a79f2b83cf",
+      "url": "https://audubonnatureinstitute.org/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "www.backstreetmuseum.org",
+      "receipt_id": "robots-542be5c03d65a943",
+      "url": "https://www.backstreetmuseum.org/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "jamnola.com",
+      "receipt_id": "robots-5d0c2c4bacf9f54a",
+      "url": "https://jamnola.com/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "www.lastateparks.com",
+      "receipt_id": "robots-8227bd6d67c6b1cc",
+      "url": "https://www.lastateparks.com/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "www.louisianahistorymuseum.org",
+      "receipt_id": "robots-02c4094b2a024902",
+      "url": "https://www.louisianahistorymuseum.org/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "liberalarts.tulane.edu",
+      "receipt_id": "robots-5be20a9cc1c6f7a0",
+      "url": "https://liberalarts.tulane.edu/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "voodoomuseum.com",
+      "receipt_id": "robots-96a99a73d002596b",
+      "url": "https://voodoomuseum.com/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": 1,
+      "host": "noma.org",
+      "receipt_id": "robots-e81431b3cf8b5b71",
+      "url": "https://noma.org/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    },
+    {
+      "applicable_crawl_delay_seconds": null,
+      "host": "newcombartmuseum.tulane.edu",
+      "receipt_id": "robots-67e3d4e605869201",
+      "url": "https://newcombartmuseum.tulane.edu/robots.txt",
+      "user_agent": "RoadtripsAreFun-CatalogReview/1.0 (bounded public source research)"
+    }
+  ],
+  "violations": [
+    {
+      "actual_start_gap_seconds": 1.826977,
+      "compliant": false,
+      "policy_receipt_id": "robots-c70cb97f481b0ef8",
+      "policy_url": "https://www.gloucestercountynj.gov/robots.txt",
+      "previous_receipt_id": "robots-c70cb97f481b0ef8",
+      "previous_url": "https://www.gloucestercountynj.gov/robots.txt",
+      "receipt_id": "operator-Q119585283-0",
+      "required_crawl_delay_seconds": 10,
+      "url": "https://www.gloucestercountynj.gov/671/Red-Bank-Battlefield"
+    },
+    {
+      "actual_start_gap_seconds": 1.527716,
+      "compliant": false,
+      "policy_receipt_id": "robots-42bd65a79f2b83cf",
+      "policy_url": "https://audubonnatureinstitute.org/robots.txt",
+      "previous_receipt_id": "robots-42bd65a79f2b83cf",
+      "previous_url": "https://audubonnatureinstitute.org/robots.txt",
+      "receipt_id": "operator-Q49519614-0",
+      "required_crawl_delay_seconds": 30,
+      "url": "https://audubonnatureinstitute.org/nature-center"
+    },
+    {
+      "actual_start_gap_seconds": 2.219479,
+      "compliant": false,
+      "policy_receipt_id": "robots-c70cb97f481b0ef8",
+      "policy_url": "https://www.gloucestercountynj.gov/robots.txt",
+      "previous_receipt_id": "followup2-Q119585283-0",
+      "previous_url": "https://www.gloucestercountynj.gov/facilities/facility/details/James-and-Ann-Whitall-House-15",
+      "receipt_id": "followup3-Q119585283-0",
+      "required_crawl_delay_seconds": 10,
+      "url": "https://www.gloucestercountynj.gov/copyright"
+    }
+  ]
+}

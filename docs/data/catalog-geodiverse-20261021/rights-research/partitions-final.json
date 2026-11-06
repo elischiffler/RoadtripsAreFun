@@ -1,0 +1,353 @@
+{
+  "candidates_sha256": "9aed0e78ae835b0f258424381ae6d5dd4b3ef7ce619612a47d8282aa4439f483",
+  "counts": {
+    "noncommercial_only": 4,
+    "permissive_discovery": 4,
+    "unclear_rights": 0
+  },
+  "itinerary_ready": 0,
+  "main_catalog_admissions": 0,
+  "partitions": {
+    "noncommercial_only": [
+      {
+        "access_terms": "Public documents accessible. Robots disallows admin/dev, query URLs and several action paths; sampled public pages have no queries. Initial guessed copyright path returned404; correct linked terms then read.",
+        "adaptation": "Noncommercial adaptations require ShareAlike; exact version/compatible-license obligation unresolved because primary policy label and URL disagree.",
+        "attribution": "At minimum credit named author(s) and link original; full citation recommended. Preserve copyright/license notices.",
+        "browse_eligible": false,
+        "candidate_id": "serc-roadlog:stop-3",
+        "commercial_definition": "Not primarily intended for or directed towards commercial advantage or monetary compensation. Zero app revenue alone does not establish qualification.",
+        "coordinates_or_null": null,
+        "evidence_refs": [
+          {
+            "path": "raw/serc-roadlog.html",
+            "receipt_id": "serc-roadlog",
+            "sha256": "8190bcdb956fb61657f86cb6bdc97b695b066bb06daedfd8588ddafabefa23d6",
+            "status": 200,
+            "url": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/Red_Lodge_Beartooth_Pass_Cooke_City.html"
+          }
+        ],
+        "future_monetization_excluded": true,
+        "license_identifier": "CC-BY-NC-SA (version conflict: displayed 4.0; linked 3.0)",
+        "license_url": "https://serc.carleton.edu/serc/terms_of_use.html",
+        "license_version": "ambiguous: terms anchor text says 4.0 but href is http://creativecommons.org/licenses/by-nc-sa/3.0/",
+        "name": "Rock Creek Vista",
+        "native_id_kind": "page URL plus explicit stop number; fragment is local identifier, not verified HTML anchor",
+        "native_source_id": "serc-montana-geoheritage",
+        "partition": "noncommercial_only",
+        "precise_question": "Which CC BY-NC-SA version governs default text (displayed4.0 versus linked3.0)? Does trip planner qualify as NC and can separated transformed profiles comply with the resolved ShareAlike grant? Current access/location/arrival/dedup still unresolved.",
+        "primary_operator_url_or_null": null,
+        "profile": null,
+        "reason": "Primary license version conflict (displayed4.0 links3.0), NC target context and ShareAlike unresolved; no native coordinate/arrival, current operator or duplicate clearance.",
+        "redistribution": "Noncommercial sharing with attribution, original link, license and notices.",
+        "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+        "reuse_partition": "noncommercial_only",
+        "review_status": "quarantined",
+        "rights_scope": "Default original page text NC/SA grant has version conflict: displayed Attribution-NonCommercial-ShareAlike 4.0 links to BY-NC-SA 3.0. Author retains copyright. Individual media may carry different terms; all media excluded.",
+        "routing_eligible": false,
+        "source_id": "catalog-pilot:quarantine:serc-roadlog:stop-3",
+        "status": "quarantined",
+        "tier": "T1"
+      },
+      {
+        "access_terms": "Public documents accessible. Robots disallows admin/dev, query URLs and several action paths; sampled public pages have no queries. Initial guessed copyright path returned404; correct linked terms then read.",
+        "adaptation": "Noncommercial adaptations require ShareAlike; exact version/compatible-license obligation unresolved because primary policy label and URL disagree.",
+        "attribution": "At minimum credit named author(s) and link original; full citation recommended. Preserve copyright/license notices.",
+        "browse_eligible": false,
+        "candidate_id": "serc-roadlog:stop-8",
+        "commercial_definition": "Not primarily intended for or directed towards commercial advantage or monetary compensation. Zero app revenue alone does not establish qualification.",
+        "coordinates_or_null": null,
+        "evidence_refs": [
+          {
+            "path": "raw/serc-roadlog.html",
+            "receipt_id": "serc-roadlog",
+            "sha256": "8190bcdb956fb61657f86cb6bdc97b695b066bb06daedfd8588ddafabefa23d6",
+            "status": 200,
+            "url": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/Red_Lodge_Beartooth_Pass_Cooke_City.html"
+          }
+        ],
+        "future_monetization_excluded": true,
+        "license_identifier": "CC-BY-NC-SA (version conflict: displayed 4.0; linked 3.0)",
+        "license_url": "https://serc.carleton.edu/serc/terms_of_use.html",
+        "license_version": "ambiguous: terms anchor text says 4.0 but href is http://creativecommons.org/licenses/by-nc-sa/3.0/",
+        "name": "Beartooth Lake Campground",
+        "native_id_kind": "page URL plus explicit stop number; fragment is local identifier, not verified HTML anchor",
+        "native_source_id": "serc-montana-geoheritage",
+        "partition": "noncommercial_only",
+        "precise_question": "Which CC BY-NC-SA version governs default text (displayed4.0 versus linked3.0)? Does trip planner qualify as NC and can separated transformed profiles comply with the resolved ShareAlike grant? Current access/location/arrival/dedup still unresolved.",
+        "primary_operator_url_or_null": null,
+        "profile": null,
+        "reason": "Primary license version conflict (displayed4.0 links3.0), NC target context and ShareAlike unresolved; no native coordinate/arrival, current operator or duplicate clearance.",
+        "redistribution": "Noncommercial sharing with attribution, original link, license and notices.",
+        "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+        "reuse_partition": "noncommercial_only",
+        "review_status": "quarantined",
+        "rights_scope": "Default original page text NC/SA grant has version conflict: displayed Attribution-NonCommercial-ShareAlike 4.0 links to BY-NC-SA 3.0. Author retains copyright. Individual media may carry different terms; all media excluded.",
+        "routing_eligible": false,
+        "source_id": "catalog-pilot:quarantine:serc-roadlog:stop-8",
+        "status": "quarantined",
+        "tier": "T1"
+      },
+      {
+        "access_terms": "No framing/hotlinking individual graphics/tables; deep links must remain verified; image publication needs separate one-time written permission. No permission requested.",
+        "adaptation": "General use grant is not explicit about transformed profiles; image alteration prohibited absent permission. No images used.",
+        "attribution": "Credit Texas Historical Commission; preserve relevant third-party credits.",
+        "browse_eligible": false,
+        "candidate_id": "thc:french-legation",
+        "commercial_definition": "Noncommercial not further defined in inspected policy; no assumption from zero revenue.",
+        "coordinates_or_null": null,
+        "evidence_refs": [
+          {
+            "path": "raw/texas-french-legation.html",
+            "receipt_id": "texas-french-legation",
+            "sha256": "2aa4d865c9589843f971bbcd570de30aa9f29025471634aee34a79304b4f5d53",
+            "status": 200,
+            "url": "https://thc.texas.gov/state-historic-sites/french-legation/plan-your-visit-french-legation"
+          },
+          {
+            "path": "raw/texas-policy.html",
+            "receipt_id": "texas-policy",
+            "sha256": "772ec1ff8760e8f864cea782ce1fe283e191cb429f1c2a1adaec56ea31098966",
+            "status": 200,
+            "url": "https://thc.texas.gov/policies"
+          }
+        ],
+        "future_monetization_excluded": true,
+        "license_identifier": "LicenseRef-THC-Noncommercial",
+        "license_url": "https://thc.texas.gov/policies",
+        "license_version": "unknown; 2026 copyright notice",
+        "name": "French Legation State Historic Site",
+        "native_id_kind": "original agency page URI; no numeric native ID observed",
+        "native_source_id": "texas-historical-commission",
+        "partition": "noncommercial_only",
+        "precise_question": "Does NC trip planning qualify under THC policy, and does general use in part permit normalized records/derived profiles? Need exact location, arrival, duplicate and current access review.",
+        "primary_operator_url_or_null": "https://thc.texas.gov/state-historic-sites/french-legation/plan-your-visit-french-legation",
+        "profile": null,
+        "reason": "Operator visitor proof retained, but NC reuse transformation scope/target qualification and location/arrival/dedup gates unresolved.",
+        "redistribution": "Policy permits copy, distribute or use in whole/part for any noncommercial purpose without fee with THC credit, subject to exceptions.",
+        "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+        "reuse_partition": "noncommercial_only",
+        "review_status": "quarantined",
+        "rights_scope": "Agency material general NC copy/distribution/use grant; third-party and image-specific rights reserved. Images, graphics and logos excluded.",
+        "routing_eligible": false,
+        "source_id": "catalog-pilot:quarantine:thc:french-legation",
+        "status": "quarantined",
+        "tier": "T1"
+      },
+      {
+        "access_terms": "Public robots file contains User-agent:* with no disallow. Native per-item JSON explicitly linked in original item figure data-json-source. Four individual objects retained; no bulk crawl.",
+        "adaptation": "BY4 adapted factual/profile selection may be shared with attribution/change notice; photo transformations not evaluated.",
+        "asset_type": "photo_reference_only",
+        "attribution": "Preserve each original author/title/itemURL, Baltimore Heritage, BY4 URL and changes notice. Sample photo would need Steve Earley/file-specific credit if ever used.",
+        "browse_eligible": false,
+        "candidate_id": "baltimore-photo1551",
+        "commercial_definition": "CC-BY4 factual partition has no commercial restriction; NC2 photo scope commercial definition not evaluated.",
+        "coordinates_or_null": null,
+        "evidence_refs": [
+          {
+            "path": "raw/baltimore-file-license.html",
+            "receipt_id": "baltimore-file-license",
+            "sha256": "c0edcd185952715efdcd680408e6c114bf36dd8eac8a7b5693d9a477856dddfc",
+            "status": 200,
+            "url": "https://explore.baltimoreheritage.org/files/show/1551"
+          }
+        ],
+        "future_monetization_excluded": true,
+        "license_identifier": "CC-BY-NC-2.0",
+        "license_url": "https://creativecommons.org/licenses/by-nc/2.0/",
+        "license_version": "2.0",
+        "name": "Peabody Heights Brewery photograph1551",
+        "native_source_id": "baltimore-heritage-photo1551",
+        "precise_question": "Would the exact noncommercial grant cover proposed photo use, including author attribution and app purpose? No photo use is implemented.",
+        "profile": null,
+        "reason": "No photo downloaded; separate NC asset scope and intended-use eligibility remain unreviewed.",
+        "redistribution": "Proposed factual record subset has permissive BY4 attribution grant. NC photo redistribution has separate obligations and is excluded.",
+        "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+        "reuse_partition": "noncommercial_only",
+        "review_status": "quarantined",
+        "rights_scope": "Only Steve Earley photograph1551, not item factual fields or text; no photo downloaded or imported.",
+        "routing_eligible": false,
+        "source_id": "catalog-pilot:quarantine:baltimore-photo1551",
+        "status": "quarantined",
+        "tier": "T1"
+      }
+    ],
+    "permissive_discovery": [
+      {
+        "access_terms": "Public robots file contains User-agent:* with no disallow. Native per-item JSON explicitly linked in original item figure data-json-source. Four individual objects retained; no bulk crawl.",
+        "adaptation": "BY4 adapted factual/profile selection may be shared with attribution/change notice; photo transformations not evaluated.",
+        "attribution": "Preserve each original author/title/itemURL, Baltimore Heritage, BY4 URL and changes notice. Sample photo would need Steve Earley/file-specific credit if ever used.",
+        "browse_eligible": false,
+        "candidate_id": "baltimore-heritage:392",
+        "candidate_license_identifier": "CC-BY-4.0",
+        "commercial_definition": "CC-BY4 factual partition has no commercial restriction; NC2 photo scope commercial definition not evaluated.",
+        "coordinates_or_null": [
+          39.324338,
+          -76.61042199999997
+        ],
+        "evidence_refs": [
+          {
+            "path": "raw/baltimore-392-native.txt",
+            "receipt_id": "baltimore-392-native",
+            "sha256": "c506e1bc77d48e2dea82b8922b860e02d460217e1f0fcbda1b378242ab3416ee",
+            "status": 200,
+            "url": "https://explore.baltimoreheritage.org/items/show/392?output=mobile-json"
+          }
+        ],
+        "future_monetization_excluded": false,
+        "license_identifier": "CC-BY-4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "license_version": "4.0",
+        "name": "Peabody Heights Brewery",
+        "native_source_id": "baltimore-heritage-facts",
+        "partition": "permissive_discovery",
+        "partition_note": "Conservative research staging only; factual records are permissive BY4, not NC licensed. Photo excluded.",
+        "precise_question": "NC media use is not required or proposed. Four permissive factual records supplied separately to typed adapter; three visitor/address review recommendations and one explicit closure hold require parent gate replay.",
+        "primary_operator_url_or_null": "https://www.peabodyheightsbrewery.com/",
+        "profile": null,
+        "reason": "Permissive BY4 alternative supplied separately for typed adapter; no admission by research agent. Native feature point is not arrival.",
+        "redistribution": "Proposed factual record subset has permissive BY4 attribution grant. NC photo redistribution has separate obligations and is excluded.",
+        "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+        "reuse_partition": "permissive_discovery",
+        "review_status": "quarantined",
+        "rights_scope": "Homepage global CC-BY4 grant applies source work; file1551 separately credits Steve Earley and CC-BY-NC2. Do not treat media NC license as applying to factual source records. No photos/article prose imported.",
+        "routing_eligible": false,
+        "source_id": "catalog-pilot:quarantine:baltimore-heritage:392",
+        "status": "quarantined",
+        "tier": "T1"
+      },
+      {
+        "access_terms": "Public robots file contains User-agent:* with no disallow. Native per-item JSON explicitly linked in original item figure data-json-source. Four individual objects retained; no bulk crawl.",
+        "adaptation": "BY4 adapted factual/profile selection may be shared with attribution/change notice; photo transformations not evaluated.",
+        "attribution": "Preserve each original author/title/itemURL, Baltimore Heritage, BY4 URL and changes notice. Sample photo would need Steve Earley/file-specific credit if ever used.",
+        "browse_eligible": false,
+        "candidate_id": "baltimore-heritage:396",
+        "candidate_license_identifier": "CC-BY-4.0",
+        "commercial_definition": "CC-BY4 factual partition has no commercial restriction; NC2 photo scope commercial definition not evaluated.",
+        "coordinates_or_null": [
+          39.3117426,
+          -76.62032440000002
+        ],
+        "evidence_refs": [
+          {
+            "path": "raw/baltimore-396-native.txt",
+            "receipt_id": "baltimore-396-native",
+            "sha256": "42996259c6c33e346eb5226fee5477ad752ac20f3925a7c3411c3b4f08e15d7c",
+            "status": 200,
+            "url": "https://explore.baltimoreheritage.org/items/show/396?output=mobile-json"
+          }
+        ],
+        "future_monetization_excluded": false,
+        "license_identifier": "CC-BY-4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "license_version": "4.0",
+        "name": "Baltimore Streetcar Museum",
+        "native_source_id": "baltimore-heritage-facts",
+        "partition": "permissive_discovery",
+        "partition_note": "Conservative research staging only; factual records are permissive BY4, not NC licensed. Photo excluded.",
+        "precise_question": "NC media use is not required or proposed. Four permissive factual records supplied separately to typed adapter; three visitor/address review recommendations and one explicit closure hold require parent gate replay.",
+        "primary_operator_url_or_null": "https://www.baltimorestreetcarmuseum.org/",
+        "profile": null,
+        "reason": "Permissive BY4 alternative supplied separately for typed adapter; no admission by research agent. Native feature point is not arrival.",
+        "redistribution": "Proposed factual record subset has permissive BY4 attribution grant. NC photo redistribution has separate obligations and is excluded.",
+        "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+        "reuse_partition": "permissive_discovery",
+        "review_status": "quarantined",
+        "rights_scope": "Homepage global CC-BY4 grant applies source work; file1551 separately credits Steve Earley and CC-BY-NC2. Do not treat media NC license as applying to factual source records. No photos/article prose imported.",
+        "routing_eligible": false,
+        "source_id": "catalog-pilot:quarantine:baltimore-heritage:396",
+        "status": "quarantined",
+        "tier": "T1"
+      },
+      {
+        "access_terms": "Public robots file contains User-agent:* with no disallow. Native per-item JSON explicitly linked in original item figure data-json-source. Four individual objects retained; no bulk crawl.",
+        "adaptation": "BY4 adapted factual/profile selection may be shared with attribution/change notice; photo transformations not evaluated.",
+        "attribution": "Preserve each original author/title/itemURL, Baltimore Heritage, BY4 URL and changes notice. Sample photo would need Steve Earley/file-specific credit if ever used.",
+        "browse_eligible": false,
+        "candidate_id": "baltimore-heritage:82",
+        "candidate_license_identifier": "CC-BY-4.0",
+        "commercial_definition": "CC-BY4 factual partition has no commercial restriction; NC2 photo scope commercial definition not evaluated.",
+        "coordinates_or_null": [
+          39.2876495,
+          -76.62061089999997
+        ],
+        "evidence_refs": [
+          {
+            "path": "raw/baltimore-82-native.txt",
+            "receipt_id": "baltimore-82-native",
+            "sha256": "851359184e64ca8742477ce47ad8dd4dc4bef477a14a052168e9b829f55d8889",
+            "status": 200,
+            "url": "https://explore.baltimoreheritage.org/items/show/82?output=mobile-json"
+          }
+        ],
+        "future_monetization_excluded": false,
+        "license_identifier": "CC-BY-4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "license_version": "4.0",
+        "name": "Bromo Seltzer Tower",
+        "native_source_id": "baltimore-heritage-facts",
+        "partition": "permissive_discovery",
+        "partition_note": "Conservative research staging only; factual records are permissive BY4, not NC licensed. Photo excluded.",
+        "precise_question": "NC media use is not required or proposed. Four permissive factual records supplied separately to typed adapter; three visitor/address review recommendations and one explicit closure hold require parent gate replay.",
+        "primary_operator_url_or_null": "https://www.bromoseltzertower.com/",
+        "profile": null,
+        "reason": "Permissive BY4 alternative supplied separately for typed adapter; no admission by research agent. Native feature point is not arrival.",
+        "redistribution": "Proposed factual record subset has permissive BY4 attribution grant. NC photo redistribution has separate obligations and is excluded.",
+        "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+        "reuse_partition": "permissive_discovery",
+        "review_status": "quarantined",
+        "rights_scope": "Homepage global CC-BY4 grant applies source work; file1551 separately credits Steve Earley and CC-BY-NC2. Do not treat media NC license as applying to factual source records. No photos/article prose imported.",
+        "routing_eligible": false,
+        "source_id": "catalog-pilot:quarantine:baltimore-heritage:82",
+        "status": "quarantined",
+        "tier": "T1"
+      },
+      {
+        "access_terms": "Public robots file contains User-agent:* with no disallow. Native per-item JSON explicitly linked in original item figure data-json-source. Four individual objects retained; no bulk crawl.",
+        "adaptation": "BY4 adapted factual/profile selection may be shared with attribution/change notice; photo transformations not evaluated.",
+        "attribution": "Preserve each original author/title/itemURL, Baltimore Heritage, BY4 URL and changes notice. Sample photo would need Steve Earley/file-specific credit if ever used.",
+        "browse_eligible": false,
+        "candidate_id": "baltimore-heritage:200",
+        "candidate_license_identifier": "CC-BY-4.0",
+        "commercial_definition": "CC-BY4 factual partition has no commercial restriction; NC2 photo scope commercial definition not evaluated.",
+        "coordinates_or_null": [
+          39.290709292867,
+          -76.60539150238003
+        ],
+        "evidence_refs": [
+          {
+            "path": "raw/baltimore-200-native.txt",
+            "receipt_id": "baltimore-200-native",
+            "sha256": "b5796a0fb27c4c0ef41eb6fc89c51ccabb67861465860040dd7115e74c796e28",
+            "status": 200,
+            "url": "https://explore.baltimoreheritage.org/items/show/200?output=mobile-json"
+          }
+        ],
+        "future_monetization_excluded": false,
+        "license_identifier": "CC-BY-4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "license_version": "4.0",
+        "name": "Phoenix Shot Tower",
+        "native_source_id": "baltimore-heritage-facts",
+        "partition": "permissive_discovery",
+        "partition_note": "Conservative research staging only; factual records are permissive BY4, not NC licensed. Photo excluded.",
+        "precise_question": "NC media use is not required or proposed. Four permissive factual records supplied separately to typed adapter; three visitor/address review recommendations and one explicit closure hold require parent gate replay.",
+        "primary_operator_url_or_null": "https://carrollmuseums.org/",
+        "profile": null,
+        "reason": "operator_explicitly_temporarily_closed; operator redirects to separate Carroll Mansion page; never substitute its address/hours",
+        "redistribution": "Proposed factual record subset has permissive BY4 attribution grant. NC photo redistribution has separate obligations and is excluded.",
+        "retention": "No explicit retention duration found in inspected source terms; original evidence retained locally for reproducibility; no media downloaded.",
+        "reuse_partition": "permissive_discovery",
+        "review_status": "quarantined",
+        "rights_scope": "Homepage global CC-BY4 grant applies source work; file1551 separately credits Steve Earley and CC-BY-NC2. Do not treat media NC license as applying to factual source records. No photos/article prose imported.",
+        "routing_eligible": false,
+        "source_id": "catalog-pilot:quarantine:baltimore-heritage:200",
+        "status": "quarantined",
+        "tier": "T1"
+      }
+    ],
+    "unclear_rights": []
+  },
+  "schema_version": "roadtrips-rights-discovery-partitions/1",
+  "scope": "Discovery/quarantine only; license labels do not prove rights or noncommercial eligibility",
+  "source_ledger_sha256": "e1ca1759ac333bcecd8b1f0bb91e67b8f74e38eb346f564a76ccde20555307e4"
+}

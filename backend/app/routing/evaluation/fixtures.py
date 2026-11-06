@@ -24,6 +24,7 @@ from app.routing.evaluation.evidence import (
 )
 from app.routing.profiles import AttributeRatings
 from app.routing.run_metrics import fingerprint
+from app.routing.visit_duration import VisitDuration
 
 EVIDENCE_TYPES = {
     "synthetic_unit_only",
@@ -58,6 +59,7 @@ class Manifest(BaseModel):
     limitations: list[str] = []
     access_review_file: str | None = None
     hotel_rating_capture: dict | None = None
+    duration_capture: dict | None = None
     source_catalogs: dict[str, SourceCatalog] = {}
 
 
@@ -74,6 +76,15 @@ class RealManifest(Manifest):
     rating_capture: RatingCapture
     routing_capture: RoutingCapture
     hotel_rating_capture: RatingCapture | None = None
+    duration_capture: RatingCapture | None = None
+
+
+class CapturedVisitDuration(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    provider_id: str = Field(min_length=1)
+    context_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    capture_id: str = Field(min_length=1)
+    visit_duration: VisitDuration
 
 
 def finite(value):
@@ -288,6 +299,30 @@ class Fixture:
                 raise EvidenceError("captured solo road evidence missing")
         if len(ids) != m.attraction_count:
             raise EvidenceError("manifest attraction count mismatch")
+        captured_durations = data.get("visit_duration_estimates", [])
+        if not isinstance(captured_durations, list) or len(captured_durations) > 5000:
+            raise EvidenceError("invalid captured duration list or capture limit")
+        duration_capture = None
+        if captured_durations and real:
+            if m.duration_capture is None:
+                raise EvidenceError("captured visit durations require duration capture provenance")
+            duration_capture = RatingCapture.model_validate(m.duration_capture)
+            if duration_capture.captured_at > clock:
+                raise EvidenceError("duration capture must predate evaluation clock")
+        self.duration_estimates = {}
+        for raw in captured_durations:
+            entry = CapturedVisitDuration.model_validate(raw)
+            key = (entry.provider_id, entry.context_hash)
+            if entry.provider_id not in ids or key in self.duration_estimates:
+                raise EvidenceError("unknown or duplicate captured duration identity/context")
+            if duration_capture and entry.capture_id != duration_capture.capture_id:
+                raise EvidenceError("duration capture identity mismatch")
+            if (
+                entry.visit_duration.source != "ai_estimate"
+                or entry.visit_duration.reason != "estimated"
+            ):
+                raise EvidenceError("captured AI duration must be labeled as an estimate")
+            self.duration_estimates[key] = entry.visit_duration.model_dump()
         nodes = data["nodes"]
         node_ids = [node["id"] for node in nodes]
         if len(node_ids) != len(set(node_ids)) or not ids.issubset(node_ids):

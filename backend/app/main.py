@@ -1,7 +1,8 @@
+import asyncio
 import logging
 import os
 import time
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 
 import psycopg2
 from fastapi import FastAPI
@@ -11,7 +12,6 @@ from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.ops_events import format_http_event
 from app.routers import (
-    agent_api,
     algorithm_lab,
     car_api,
     chat_api,
@@ -19,21 +19,14 @@ from app.routers import (
     location_api,
     routing_api,
     studio,
+    studio_research,
 )
 
 logger = logging.getLogger(__name__)
 
 
 def _configure_app_logging() -> None:
-    """Make ``app.*`` logs (including the AGENT_DEBUG turn trace) visible.
-
-    Uvicorn only configures its own ``uvicorn*`` loggers plus the root logger at
-    WARNING, so application ``logger.info(...)`` calls — notably the per-turn
-    agent trace in ``app.agent.debug`` — are silently dropped. We attach a
-    stream handler to the ``app`` logger namespace at INFO (overridable via
-    ``LOG_LEVEL``) so the console shows the trace during local debugging. Scoped
-    to ``app`` so uvicorn's access/error logging is left untouched.
-    """
+    """Expose application logs at the configured level."""
     level = getattr(logging, os.getenv("LOG_LEVEL", "INFO").upper(), logging.INFO)
     app_logger = logging.getLogger("app")
     app_logger.setLevel(level)
@@ -65,7 +58,17 @@ async def lifespan(app: FastAPI):
         logger.info("Database connection pool warmed up.")
     except Exception as e:
         logger.warning(f"DB warm-up failed (non-fatal): {e}")
+    from app.research import database as research_database
+
+    replication = (
+        asyncio.create_task(research_database.replicate()) if research_database.enabled() else None
+    )
     yield
+    if replication:
+        replication.cancel()
+        with suppress(asyncio.CancelledError):
+            await replication
+    await studio.jobs.shutdown()
     from app.crud import chat_crud
 
     if chat_crud._pool is not None and not chat_crud._pool.closed:
@@ -128,11 +131,11 @@ async def operational_http_event(request, call_next):
 app.include_router(routing_api.router)
 app.include_router(algorithm_lab.router)
 app.include_router(studio.router)
+app.include_router(studio_research.router)
 app.include_router(location_api.router)
 app.include_router(itinerary_api.router)
 app.include_router(car_api.router)
 app.include_router(chat_api.router)
-app.include_router(agent_api.router)
 
 
 @app.get("/")

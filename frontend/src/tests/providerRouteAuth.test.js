@@ -1,7 +1,7 @@
 import { fixtureSession } from './sessionFixtures';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import axios from 'axios';
-import { getInitialRoute, getFinalRoute, getRoutingAlgorithm } from '../pages/ChatPage/getRoute';
+import { getInitialRoute, getFinalRoute, getRoutingAlgorithm } from '../services/routes';
 
 vi.mock('axios', () => ({
   default: { get: vi.fn(), post: vi.fn() },

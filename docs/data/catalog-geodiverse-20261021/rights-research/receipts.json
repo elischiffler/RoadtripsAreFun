@@ -1,0 +1,333 @@
+[
+  {
+    "id": "serc-beartooth",
+    "url": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/beartooth_mountains/index.html",
+    "checked_at": "2026-10-21T17:46:33.373680+00:00",
+    "status": 200,
+    "bytes": 136526,
+    "sha256": "4c0815f80488dfb43a87133e24b6fd95d45c9c2f29de8d1196ae4ab8da6a79ec",
+    "path": "raw/serc-beartooth.html",
+    "final_url": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/beartooth_mountains/index.html"
+  },
+  {
+    "id": "serc-policy",
+    "url": "https://serc.carleton.edu/serc/copyright.html",
+    "checked_at": "2026-10-21T17:46:33.374508+00:00",
+    "status": "blocked_or_failed",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "id": "clio-about",
+    "url": "https://theclio.com/about",
+    "checked_at": "2026-10-21T17:46:33.375224+00:00",
+    "status": 200,
+    "bytes": 113482,
+    "sha256": "642b2b01441116bfe7a1a77ab65bcec775b7046b7081de348e57f0666cf39bf9",
+    "path": "raw/clio-about.html",
+    "final_url": "https://theclio.com/about"
+  },
+  {
+    "id": "clio-sample",
+    "url": "https://theclio.com/entry/127994",
+    "checked_at": "2026-10-21T17:46:33.375756+00:00",
+    "status": 200,
+    "bytes": 140923,
+    "sha256": "afa8a230d7981a22109040e37ddb6e4e0a57e64ed311032aa5c9c40f6b25e9fd",
+    "path": "raw/clio-sample.html",
+    "final_url": "https://theclio.com/entry/127994"
+  },
+  {
+    "id": "cleveland-home",
+    "url": "https://clevelandhistorical.org/",
+    "checked_at": "2026-10-21T17:46:34.076098+00:00",
+    "status": 200,
+    "bytes": 50345,
+    "sha256": "7fd961967e25ae26e4ad924927414660286e0a5824f05d73fb412c9004a1d7c9",
+    "path": "raw/cleveland-home.html",
+    "final_url": "https://clevelandhistorical.org/"
+  },
+  {
+    "id": "baltimore-home",
+    "url": "https://explore.baltimoreheritage.org/",
+    "checked_at": "2026-10-21T17:46:34.207136+00:00",
+    "status": 200,
+    "bytes": 30005,
+    "sha256": "534efb5e95b0ce925e904fa0f4276c3ffef3ace06eddef8fbbdb120e9a8397a7",
+    "path": "raw/baltimore-home.html",
+    "final_url": "https://explore.baltimoreheritage.org/"
+  },
+  {
+    "id": "baltimore-file-license",
+    "url": "https://explore.baltimoreheritage.org/files/show/1551",
+    "checked_at": "2026-10-21T17:46:34.974707+00:00",
+    "status": 200,
+    "bytes": 14717,
+    "sha256": "c0edcd185952715efdcd680408e6c114bf36dd8eac8a7b5693d9a477856dddfc",
+    "path": "raw/baltimore-file-license.html",
+    "final_url": "https://explore.baltimoreheritage.org/files/show/1551"
+  },
+  {
+    "id": "texas-policy",
+    "url": "https://thc.texas.gov/policies",
+    "checked_at": "2026-10-21T17:46:35.163594+00:00",
+    "status": 200,
+    "bytes": 109178,
+    "sha256": "772ec1ff8760e8f864cea782ce1fe283e191cb429f1c2a1adaec56ea31098966",
+    "path": "raw/texas-policy.html",
+    "final_url": "https://thc.texas.gov/policies"
+  },
+  {
+    "id": "historicbridges-policy",
+    "url": "https://historicbridges.org/info/about/index.php",
+    "checked_at": "2026-10-21T17:46:35.385014+00:00",
+    "status": 200,
+    "bytes": 250511,
+    "sha256": "5abedcef506ac054ae2be98cadc11625cc890c6f9d83f0f807e082f56b015659",
+    "path": "raw/historicbridges-policy.html",
+    "final_url": "https://historicbridges.org/info/about/index.php"
+  },
+  {
+    "id": "newdeal-terms",
+    "url": "https://livingnewdeal.org/about/copyright-information/",
+    "checked_at": "2026-10-21T17:46:35.623396+00:00",
+    "status": "blocked_or_failed",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "id": "baltimore-392",
+    "url": "https://explore.baltimoreheritage.org/items/show/392",
+    "checked_at": "2026-10-21T17:48:18.817734+00:00",
+    "status": 200,
+    "bytes": 21814,
+    "sha256": "cbd148755b1fe281d2d6b6a1637843a915e61cdaf9160703df51efe2614aaec0",
+    "path": "raw/baltimore-392.html",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/392"
+  },
+  {
+    "id": "baltimore-396",
+    "url": "https://explore.baltimoreheritage.org/items/show/396",
+    "checked_at": "2026-10-21T17:48:18.818604+00:00",
+    "status": 200,
+    "bytes": 27463,
+    "sha256": "8576edf557cea503eb45cc43401b3b53c5c6fb7f62fed821f2f56c27c581595c",
+    "path": "raw/baltimore-396.html",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/396"
+  },
+  {
+    "id": "baltimore-200",
+    "url": "https://explore.baltimoreheritage.org/items/show/200",
+    "checked_at": "2026-10-21T17:48:18.819230+00:00",
+    "status": 200,
+    "bytes": 21144,
+    "sha256": "67cca50a5f8ba851ac89a9cd22a24c7a7d15619757fb5459943be6bb3385e94b",
+    "path": "raw/baltimore-200.html",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/200"
+  },
+  {
+    "id": "baltimore-82",
+    "url": "https://explore.baltimoreheritage.org/items/show/82",
+    "checked_at": "2026-10-21T17:48:18.819918+00:00",
+    "status": 200,
+    "bytes": 29028,
+    "sha256": "12b8c9a9c365c1f7556b1b6fb6e25e3dc3e3f0d73b5665ca62ba8b0f53f2c22a",
+    "path": "raw/baltimore-82.html",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/82"
+  },
+  {
+    "id": "serc-terms",
+    "url": "https://serc.carleton.edu/serc/terms_of_use.html",
+    "checked_at": "2026-10-21T17:48:19.456505+00:00",
+    "status": 200,
+    "bytes": 22152,
+    "sha256": "63edca974aaa965954a4bff9a0dd0fa3defce6623c505f4fa01c5d8afff9d0e8",
+    "path": "raw/serc-terms.html",
+    "final_url": "https://serc.carleton.edu/serc/terms_of_use.html"
+  },
+  {
+    "id": "serc-roadlog",
+    "url": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/Red_Lodge_Beartooth_Pass_Cooke_City.html",
+    "checked_at": "2026-10-21T17:48:19.648050+00:00",
+    "status": 200,
+    "bytes": 75560,
+    "sha256": "8190bcdb956fb61657f86cb6bdc97b695b066bb06daedfd8588ddafabefa23d6",
+    "path": "raw/serc-roadlog.html",
+    "final_url": "https://serc.carleton.edu/research_education/mt_geoheritage/sites/beartooth_mountains/Red_Lodge_Beartooth_Pass_Cooke_City.html"
+  },
+  {
+    "id": "texas-french-legation",
+    "url": "https://thc.texas.gov/state-historic-sites/french-legation/plan-your-visit-french-legation",
+    "checked_at": "2026-10-21T17:48:19.859569+00:00",
+    "status": 200,
+    "bytes": 60206,
+    "sha256": "2aa4d865c9589843f971bbcd570de30aa9f29025471634aee34a79304b4f5d53",
+    "path": "raw/texas-french-legation.html",
+    "final_url": "https://thc.texas.gov/state-historic-sites/french-legation/plan-your-visit-french-legation"
+  },
+  {
+    "id": "newdeal-disclaimer",
+    "url": "https://livingnewdeal.org/disclaimer/",
+    "checked_at": "2026-10-21T17:48:19.883686+00:00",
+    "status": 200,
+    "bytes": 331189,
+    "sha256": "0e905714e34a92e0f9a19546b3cc397806c192b204df36fc0233df6d80ccb9cc",
+    "path": "raw/newdeal-disclaimer.html",
+    "final_url": "https://livingnewdeal.org/disclaimer/"
+  },
+  {
+    "id": "gfz-worldatlas",
+    "url": "https://dataservices.gfz-potsdam.de/contact/showshort.php?contactform=&id=escidoc%3A1541893",
+    "checked_at": "2026-10-21T17:48:20.303917+00:00",
+    "status": "blocked_or_failed",
+    "error": "HTTP Error 503: Service Unavailable"
+  },
+  {
+    "id": "cc-ncsa4",
+    "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en",
+    "checked_at": "2026-10-21T17:48:21.359887+00:00",
+    "status": 200,
+    "bytes": 52858,
+    "sha256": "527c4e0e75a7aafe819a9ed481c227f27645736fa800f25d6d94ed37a362afd7",
+    "path": "raw/cc-ncsa4.html",
+    "final_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en"
+  },
+  {
+    "id": "cc-nc4",
+    "url": "https://creativecommons.org/licenses/by-nc/4.0/legalcode.en",
+    "checked_at": "2026-10-21T17:48:21.365810+00:00",
+    "status": 200,
+    "bytes": 49995,
+    "sha256": "3307f50ad87c95b551b6a9c4e30c7fc4408f15e5b0e957542b2883f24df74474",
+    "path": "raw/cc-nc4.html",
+    "final_url": "https://creativecommons.org/licenses/by-nc/4.0/legalcode.en"
+  },
+  {
+    "id": "cc-ncnd4",
+    "url": "https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode.en",
+    "checked_at": "2026-10-21T17:48:21.523077+00:00",
+    "status": 200,
+    "bytes": 49896,
+    "sha256": "e4acba200a8b8139aebcffffca4a7fcc41b357d7a5acbe9e639b6e960cbb97cb",
+    "path": "raw/cc-ncnd4.html",
+    "final_url": "https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode.en"
+  },
+  {
+    "id": "baltimore-392-native",
+    "url": "https://explore.baltimoreheritage.org/items/show/392?output=mobile-json",
+    "checked_at": "2026-10-21T17:49:33.911991+00:00",
+    "status": 200,
+    "bytes": 2452,
+    "sha256": "c506e1bc77d48e2dea82b8922b860e02d460217e1f0fcbda1b378242ab3416ee",
+    "path": "raw/baltimore-392-native.txt",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/392?output=mobile-json"
+  },
+  {
+    "id": "baltimore-396-native",
+    "url": "https://explore.baltimoreheritage.org/items/show/396?output=mobile-json",
+    "checked_at": "2026-10-21T17:49:33.912898+00:00",
+    "status": 200,
+    "bytes": 5059,
+    "sha256": "42996259c6c33e346eb5226fee5477ad752ac20f3925a7c3411c3b4f08e15d7c",
+    "path": "raw/baltimore-396-native.txt",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/396?output=mobile-json"
+  },
+  {
+    "id": "baltimore-200-native",
+    "url": "https://explore.baltimoreheritage.org/items/show/200?output=mobile-json",
+    "checked_at": "2026-10-21T17:49:33.913508+00:00",
+    "status": 200,
+    "bytes": 2729,
+    "sha256": "b5796a0fb27c4c0ef41eb6fc89c51ccabb67861465860040dd7115e74c796e28",
+    "path": "raw/baltimore-200-native.txt",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/200?output=mobile-json"
+  },
+  {
+    "id": "baltimore-82-native",
+    "url": "https://explore.baltimoreheritage.org/items/show/82?output=mobile-json",
+    "checked_at": "2026-10-21T17:49:33.914128+00:00",
+    "status": 200,
+    "bytes": 5444,
+    "sha256": "851359184e64ca8742477ce47ad8dd4dc4bef477a14a052168e9b829f55d8889",
+    "path": "raw/baltimore-82-native.txt",
+    "final_url": "https://explore.baltimoreheritage.org/items/show/82?output=mobile-json"
+  },
+  {
+    "id": "operator-peabody",
+    "url": "https://www.peabodyheightsbrewery.com/",
+    "checked_at": "2026-10-21T17:49:34.581255+00:00",
+    "status": 200,
+    "bytes": 118235,
+    "sha256": "6aad30c6d0cea358ae140462fe3ed5b450a7cd07418415de0ce2225f79e2ca3d",
+    "path": "raw/operator-peabody.txt",
+    "final_url": "https://peabodyheightsbrewery.com/"
+  },
+  {
+    "id": "operator-streetcar",
+    "url": "https://www.baltimorestreetcarmuseum.org/",
+    "checked_at": "2026-10-21T17:49:34.766939+00:00",
+    "status": 200,
+    "bytes": 197845,
+    "sha256": "696e9f87b54fed7736317e2de8e8ba6713097a94d7617150d546084814e08f7f",
+    "path": "raw/operator-streetcar.txt",
+    "final_url": "https://baltimorestreetcarmuseum.org/"
+  },
+  {
+    "id": "operator-shot-tower",
+    "url": "https://carrollmuseums.org/",
+    "checked_at": "2026-10-21T17:49:34.939304+00:00",
+    "status": 200,
+    "bytes": 101782,
+    "sha256": "de91662decf5e2929e15fd90faca685816021d85d198ab039142f94248df5124",
+    "path": "raw/operator-shot-tower.txt",
+    "final_url": "https://www.poeinbaltimore.org/home/poe-death-exhibit-carroll-mansion/"
+  },
+  {
+    "id": "operator-bromo",
+    "url": "https://www.bromoseltzertower.com/",
+    "checked_at": "2026-10-21T17:49:35.187530+00:00",
+    "status": 200,
+    "bytes": 26047,
+    "sha256": "44da5dbfbf69de9d897d79853408ad8c657750dc3f263603fedcdbf6cc59f5cc",
+    "path": "raw/operator-bromo.txt",
+    "final_url": "https://www.bromoseltzertower.com/"
+  },
+  {
+    "id": "baltimore-robots",
+    "url": "https://explore.baltimoreheritage.org/robots.txt",
+    "checked_at": "2026-10-21T17:49:35.419559+00:00",
+    "status": 200,
+    "bytes": 14,
+    "sha256": "fd89345af6aca5dab85f2aa6a830e270a362b1fa6b5f19607ddd773a081ed651",
+    "path": "raw/baltimore-robots.txt",
+    "final_url": "https://explore.baltimoreheritage.org/robots.txt"
+  },
+  {
+    "id": "serc-robots",
+    "url": "https://serc.carleton.edu/robots.txt",
+    "checked_at": "2026-10-21T17:49:35.659785+00:00",
+    "status": 200,
+    "bytes": 199,
+    "sha256": "d6470fb2a6627830782bd426ecd3b37ae27ddff62680d42ba0061618ee97829c",
+    "path": "raw/serc-robots.txt",
+    "final_url": "https://serc.carleton.edu/files/robots.txt"
+  },
+  {
+    "id": "texas-robots",
+    "url": "https://thc.texas.gov/robots.txt",
+    "checked_at": "2026-10-21T17:49:35.953133+00:00",
+    "status": 200,
+    "bytes": 2005,
+    "sha256": "17f7b0b22f4a02e7b9d4b252bf47b78870c738d7f35dcfdb043b02470e347603",
+    "path": "raw/texas-robots.txt",
+    "final_url": "https://thc.texas.gov/robots.txt"
+  },
+  {
+    "id": "newdeal-robots",
+    "url": "https://livingnewdeal.org/robots.txt",
+    "checked_at": "2026-10-21T17:49:37.055866+00:00",
+    "status": 200,
+    "bytes": 720,
+    "sha256": "ba8fc6e66645a34e5ef7480b9d3c0e5359de6a35ad8595207c74ed2b033fdb03",
+    "path": "raw/newdeal-robots.txt",
+    "final_url": "https://livingnewdeal.org/robots.txt"
+  }
+]

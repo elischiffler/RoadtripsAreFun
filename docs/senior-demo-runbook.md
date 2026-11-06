@@ -1,5 +1,9 @@
 # Public demonstration and MacBook rehearsal
 
+This document retains dated planning/validation history. Conversational UI and
+API references below describe the retired feature; current entry points and
+retained compatibility are in [the removal record](journeygenie-removal.md).
+
 Presentation: Tuesday, October 6, 2026. Primary target: the public
 RoadtripsAreFun website from the presenter's MacBook. The `/algorithm` page is
 owner-only; API routes remain `/algorithm-lab/presets` and `/algorithm-lab/run`.

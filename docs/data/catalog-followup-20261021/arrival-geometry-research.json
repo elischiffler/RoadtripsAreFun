@@ -1,0 +1,224 @@
+{
+  "admission_changes": 0,
+  "amc": {
+    "approach": "Operator requires its separate Route9/Kitts Hummock Road approach via exit91; no Dover AFB entry",
+    "arrival_coordinate_lat_lon": null,
+    "limits": [
+      "DelDOT public context contains Bayside Drive and multiple72-AirForce roads",
+      "Military road geometry does not identify the public museum gate, parking or fence boundary",
+      "No road endpoint or venue pin was promoted to a public arrival"
+    ],
+    "source_id": "catalog-pilot:wikidata:Q21028346",
+    "status": "held_public_gate_or_parking_point_unknown"
+  },
+  "evidence": [
+    {
+      "checked_at": "2026-10-21T15:45:01.861118+00:00",
+      "error": "HTTPError",
+      "id": "robots-gis-portal-townofchapelhill-org",
+      "reason": "HTTP Error 404: Not Found",
+      "status": 404,
+      "url": "https://gis-portal.townofchapelhill.org/robots.txt"
+    },
+    {
+      "bytes": 4208,
+      "checked_at": "2026-10-21T15:45:02.861471+00:00",
+      "content_type": "application/json; charset=UTF-8",
+      "final_url": "https://gis-portal.townofchapelhill.org/server/rest/services/OpenData/Streets/FeatureServer?f=json",
+      "id": "chapelhill-streets-metadata",
+      "last_modified": null,
+      "path": "chapelhill-streets-metadata.body",
+      "sha256": "67304a730598e119c34d95396c8a2f4793893669e232482a3fef29d1fcebc18c",
+      "status": 200,
+      "url": "https://gis-portal.townofchapelhill.org/server/rest/services/OpenData/Streets/FeatureServer?f=json"
+    },
+    {
+      "bytes": 61,
+      "checked_at": "2026-10-21T15:45:03.649018+00:00",
+      "content_type": "text/plain",
+      "final_url": "https://www.arcgis.com/robots.txt",
+      "id": "robots-www-arcgis-com",
+      "last_modified": "Fri, 26 Jun 2026 03:38:50 GMT",
+      "path": "robots-www-arcgis-com.body",
+      "sha256": "d9da31493f06281ceebc4eaff54a0ba0cd4bc00f01217e6dbec7f084b263730d",
+      "status": 200,
+      "url": "https://www.arcgis.com/robots.txt"
+    },
+    {
+      "bytes": 1145,
+      "checked_at": "2026-10-21T15:45:05.208250+00:00",
+      "content_type": "application/json;charset=utf-8",
+      "final_url": "https://www.arcgis.com/sharing/rest/content/items/55baa425b86846b5958a27a33303aa03?f=json",
+      "id": "unc-sidewalks-item",
+      "last_modified": null,
+      "path": "unc-sidewalks-item.body",
+      "sha256": "6edc663857d4402b0d61cd4c74edf81f40454e56bba7d4727e3dbd91fe9ed6a9",
+      "status": 200,
+      "url": "https://www.arcgis.com/sharing/rest/content/items/55baa425b86846b5958a27a33303aa03?f=json"
+    },
+    {
+      "bytes": 60473,
+      "checked_at": "2026-10-21T15:45:31.310377+00:00",
+      "content_type": "application/json; charset=UTF-8",
+      "final_url": "https://gis-portal.townofchapelhill.org/server/rest/services/OpenData/Streets/FeatureServer/0?f=json",
+      "id": "chapelhill-streets-layer",
+      "last_modified": null,
+      "path": "chapelhill-streets-layer.body",
+      "sha256": "2bec7e90a81c1ccae73777db6ae7415c24db0a0c9e0a6219bc720f321d60e200",
+      "status": 200,
+      "url": "https://gis-portal.townofchapelhill.org/server/rest/services/OpenData/Streets/FeatureServer/0?f=json"
+    },
+    {
+      "bytes": 123,
+      "checked_at": "2026-10-21T15:45:31.900221+00:00",
+      "content_type": "text/plain",
+      "final_url": "https://gismaps.unc.edu/robots.txt",
+      "id": "robots-gismaps-unc-edu",
+      "last_modified": "Wed, 28 Feb 2018 19:07:53 GMT",
+      "path": "robots-gismaps-unc-edu.body",
+      "sha256": "6c140e4e28bf96957af818852159b49af97cc9251424709bfbe2da8cdba8f0a8",
+      "status": 200,
+      "url": "https://gismaps.unc.edu/robots.txt"
+    },
+    {
+      "bytes": 5494,
+      "checked_at": "2026-10-21T15:45:32.900400+00:00",
+      "content_type": "application/json; charset=UTF-8",
+      "final_url": "https://gismaps.unc.edu/arcgis/rest/services/UNCOpenData/UNCOpenData/FeatureServer?f=json",
+      "id": "unc-open-data-metadata",
+      "last_modified": null,
+      "path": "unc-open-data-metadata.body",
+      "sha256": "73a7c9a4af9807bf6d117f6ca1901902347e335912eb06ba608aa14fc514c84e",
+      "status": 200,
+      "url": "https://gismaps.unc.edu/arcgis/rest/services/UNCOpenData/UNCOpenData/FeatureServer?f=json"
+    },
+    {
+      "bytes": 7488,
+      "checked_at": "2026-10-21T15:46:16.370229+00:00",
+      "content_type": "application/json; charset=UTF-8",
+      "final_url": "https://gismaps.unc.edu/arcgis/rest/services/UNCOpenData/UNCOpenData/FeatureServer/7?f=json",
+      "id": "unc-parking-layer",
+      "last_modified": null,
+      "path": "unc-parking-layer.body",
+      "sha256": "f3a30667aeb60de742c94d64558972c086b153985e1e0e5abd5ce234e380bb25",
+      "status": 200,
+      "url": "https://gismaps.unc.edu/arcgis/rest/services/UNCOpenData/UNCOpenData/FeatureServer/7?f=json"
+    },
+    {
+      "bytes": 254204,
+      "checked_at": "2026-10-21T15:46:17.371713+00:00",
+      "content_type": "application/json; charset=UTF-8",
+      "final_url": "https://gismaps.unc.edu/arcgis/rest/services/UNCOpenData/UNCOpenData/FeatureServer/7/query?geometry=-79.038%2C35.897%2C-79.028%2C35.904&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=json&resultRecordCount=30&where=1%3D1&outFields=%2A",
+      "id": "unc-parking-near-ncbg",
+      "last_modified": null,
+      "path": "unc-parking-near-ncbg.body",
+      "sha256": "4511c71221229313eb57c87f9e2b74d6b2e814b8f2bb41e3e1c4b177161d6cad",
+      "status": 200,
+      "url": "https://gismaps.unc.edu/arcgis/rest/services/UNCOpenData/UNCOpenData/FeatureServer/7/query?geometry=-79.038%2C35.897%2C-79.028%2C35.904&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=json&resultRecordCount=30&where=1%3D1&outFields=%2A"
+    },
+    {
+      "bytes": 27275,
+      "checked_at": "2026-10-21T15:46:18.173806+00:00",
+      "content_type": "application/json; charset=UTF-8",
+      "final_url": "https://gis-portal.townofchapelhill.org/server/rest/services/OpenData/Streets/FeatureServer/0/query?geometry=-79.038%2C35.897%2C-79.028%2C35.904&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=json&resultRecordCount=30&where=1%3D1&outFields=OBJECTID%2CFullName%2CMaint%2CSurface%2CDirection%2CClass%2CCross1%2CCross2",
+      "id": "chapelhill-roads-near-ncbg",
+      "last_modified": null,
+      "path": "chapelhill-roads-near-ncbg.body",
+      "sha256": "3be021b4344505ccb67b4afd492dd5e3a33bb775c4afb2501f6ca95eff6fc1d0",
+      "status": 200,
+      "url": "https://gis-portal.townofchapelhill.org/server/rest/services/OpenData/Streets/FeatureServer/0/query?geometry=-79.038%2C35.897%2C-79.028%2C35.904&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=json&resultRecordCount=30&where=1%3D1&outFields=OBJECTID%2CFullName%2CMaint%2CSurface%2CDirection%2CClass%2CCross1%2CCross2"
+    },
+    {
+      "bytes": 7127,
+      "checked_at": "2026-10-21T15:47:13.741792+00:00",
+      "content_type": "application/json; charset=UTF-8",
+      "final_url": "https://gis-portal.townofchapelhill.org/server/rest/services/OpenData/Streets/FeatureServer/0/query?geometry=-79.034%2C35.899%2C-79.028%2C35.903&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=json&resultRecordCount=30&where=FullName+IN+%28%27OLD+MASON+FARM+RD%27%2C%27PARKING+LOT%27%29&outFields=OBJECTID%2CFullName%2CMaint%2CSurface%2CDirection%2CClass%2CCross1%2CCross2",
+      "id": "chapelhill-front-parking-approaches",
+      "last_modified": null,
+      "path": "chapelhill-front-parking-approaches.body",
+      "sha256": "5d8c4e645e8cbe6e9a1d11c00ac8bd6f45e031383ab1a1a498a4fbedb6bc95f2",
+      "status": 200,
+      "url": "https://gis-portal.townofchapelhill.org/server/rest/services/OpenData/Streets/FeatureServer/0/query?geometry=-79.034%2C35.899%2C-79.028%2C35.903&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=json&resultRecordCount=30&where=FullName+IN+%28%27OLD+MASON+FARM+RD%27%2C%27PARKING+LOT%27%29&outFields=OBJECTID%2CFullName%2CMaint%2CSurface%2CDirection%2CClass%2CCross1%2CCross2"
+    },
+    {
+      "checked_at": "2026-10-21T15:48:02.555207+00:00",
+      "error": "HTTPError",
+      "id": "robots-enterprise-firstmaptest-delaware-gov",
+      "reason": "HTTP Error 404: Not Found",
+      "status": 404,
+      "url": "https://enterprise.firstmaptest.delaware.gov/robots.txt"
+    },
+    {
+      "bytes": 5929,
+      "checked_at": "2026-10-21T15:48:03.555314+00:00",
+      "content_type": "application/json; charset=UTF-8",
+      "final_url": "https://enterprise.firstmaptest.delaware.gov/arcgis/rest/services/Transportation/DE_Roadways_Main/MapServer/1?f=json",
+      "id": "deldot-centerline-layer",
+      "last_modified": null,
+      "path": "deldot-centerline-layer.body",
+      "sha256": "a60adb2ca58380651a37e02bcc2c60ba20278c086a59c20ac1b345d45ee12378",
+      "status": 200,
+      "url": "https://enterprise.firstmaptest.delaware.gov/arcgis/rest/services/Transportation/DE_Roadways_Main/MapServer/1?f=json"
+    },
+    {
+      "bytes": 22853,
+      "checked_at": "2026-10-21T15:48:04.555690+00:00",
+      "content_type": "application/json; charset=UTF-8",
+      "final_url": "https://enterprise.firstmaptest.delaware.gov/arcgis/rest/services/Transportation/DE_Roadways_Main/MapServer/1/query?geometry=-75.461%2C39.114%2C-75.449%2C39.122&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=json&resultRecordCount=40&where=1%3D1&outFields=%2A",
+      "id": "deldot-roads-near-amc",
+      "last_modified": null,
+      "path": "deldot-roads-near-amc.body",
+      "sha256": "f000c4fcc6046eb2dee15fdc16438bff0062a90d62f10cd33dec8732551c7b5e",
+      "status": 200,
+      "url": "https://enterprise.firstmaptest.delaware.gov/arcgis/rest/services/Transportation/DE_Roadways_Main/MapServer/1/query?geometry=-75.461%2C39.114%2C-75.449%2C39.122&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=json&resultRecordCount=40&where=1%3D1&outFields=%2A"
+    },
+    {
+      "bytes": 20599,
+      "checked_at": "2026-10-21T15:50:11.281761+00:00",
+      "content_type": "application/json; charset=UTF-8",
+      "final_url": "https://enterprise.firstmaptest.delaware.gov/arcgis/rest/services/Transportation/DE_Roadways_Main/MapServer/1/query?geometry=-75.458%2C39.112%2C-75.443%2C39.120&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=json&resultRecordCount=40&where=1%3D1&outFields=OBJECTID%2CRDWAY_ID%2CSTREET_NAME%2CSTREET_TYPE%2CDIR_FLAG%2CMAINT_RD%2CGEOM_MODIFY_DATE%2CUPDATEDATE",
+      "id": "deldot-public-approach-context",
+      "last_modified": null,
+      "path": "deldot-public-approach-context.body",
+      "sha256": "e909d089ad5aaa9cd3ee8e8d62ba23e1dd41ebad580982077f724d0d986d9a1f",
+      "status": 200,
+      "url": "https://enterprise.firstmaptest.delaware.gov/arcgis/rest/services/Transportation/DE_Roadways_Main/MapServer/1/query?geometry=-75.458%2C39.112%2C-75.443%2C39.120&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&returnGeometry=true&f=json&resultRecordCount=40&where=1%3D1&outFields=OBJECTID%2CRDWAY_ID%2CSTREET_NAME%2CSTREET_TYPE%2CDIR_FLAG%2CMAINT_RD%2CGEOM_MODIFY_DATE%2CUPDATEDATE"
+    }
+  ],
+  "itinerary_ready": 0,
+  "ncbg": {
+    "approach": "Old Mason Farm Road front lot, corroborated by the operator visitor page and2025 map",
+    "coordinate_encoding": "Agency-transformed EPSG4326; full native returned precision retained",
+    "display_precision": "Round to5decimals for display; decimal resolution is not positional accuracy",
+    "forbidden_visitor_vehicle_approach": "Laurel Hill Road service/back entrance remains closed",
+    "front_driveway_coordinate_lat_lon": [
+      35.90118901912264,
+      -79.03188589262142
+    ],
+    "horizontal_accuracy_metres": null,
+    "inside_parking_junction_lat_lon": [
+      35.900862841012426,
+      -79.0322722318174
+    ],
+    "limits": [
+      "Not operator-published latitude/longitude or a surveyed gate",
+      "UNC lot observation date and current driveway/gate position unverified",
+      "Separate geometry reuse/redistribution rights review remains unresolved",
+      "No driving leg, pedestrian connection or full calendar qualification"
+    ],
+    "method": "Chapel Hill streets8202/9286 share an exact endpoint;8202 leads into UNC parking3864/P256",
+    "point_role": "Original shared road/driveway endpoint; not centroid or routing snap",
+    "source_id": "catalog-pilot:wikidata:Q1099139",
+    "status": "source_geometry_candidate_not_admitted"
+  },
+  "operator_sources": [
+    "https://amcmuseum.org/visit/",
+    "https://amcmuseum.org/faq/",
+    "https://ncbg.unc.edu/visit/visitor-information/",
+    "https://ncbg.unc.edu/2025/07/08/storm-recovery-updates/",
+    "https://ncbg.unc.edu/wp-content/uploads/sites/963/2025/04/NCBG-Master-Map-2025_web.pdf"
+  ],
+  "qualified_arrivals": 0,
+  "schema_version": "roadtrips-arrival-geometry-research/1",
+  "scope": "Government geometry corroboration plus separate operator map review; research only"
+}

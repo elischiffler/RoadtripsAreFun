@@ -21,6 +21,10 @@ _pool: psycopg2.pool.ThreadedConnectionPool | None = None
 _pool_lock = Lock()
 
 
+class ChatIdentityConflict(ValueError):
+    """A trip number already belongs to another planning operation."""
+
+
 def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
     global _pool
     with _pool_lock:
@@ -81,7 +85,12 @@ def _store_legs(conn, auth_token: str, chat_id: str, route_id: str, legs: list):
 def create_chat(
     auth_token: str, chat_id: str, chat_data: dict[str, Any], chat_logs: dict[str, Any]
 ):
-    """Create a new chat instance in the database."""
+    """Create a trip, allowing repeated creates only for the same planning ID.
+
+    The conflict predicate is part of the upsert and checked while PostgreSQL
+    locks the conflicting row. A separate existence read would race across tabs.
+    Missing/null legacy planning IDs remain compatible with one another.
+    """
     conn = _get_conn()
     try:
         with conn.cursor() as cur:
@@ -92,14 +101,16 @@ def create_chat(
                 ON CONFLICT (user_id, chat_id) DO UPDATE
                   SET chat_data = EXCLUDED.chat_data,
                       chat_log  = EXCLUDED.chat_log
+                  WHERE chats.chat_data->>'agentChatId'
+                    IS NOT DISTINCT FROM EXCLUDED.chat_data->>'agentChatId'
                 RETURNING *
                 """,
                 (auth_token, chat_id, json.dumps(chat_data), json.dumps(chat_logs)),
             )
             row = cur.fetchone()
+            if row is None:
+                raise ChatIdentityConflict("Trip ID belongs to a different planning request")
         conn.commit()
-        if row is None:
-            logger.warning("create_chat INSERT RETURNING returned no row — chat_id=%s", chat_id)
         return row
     except Exception as exc:
         logger.error("create_chat DB error chat_id=%s: %s", chat_id, exc)
@@ -166,6 +177,9 @@ def get_segments(user_id: str, chat_id: str, route_id: str):
 def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
     """Update a component of a user's chat in the database."""
     comp_dict = chat_schema.model_dump()
+    if prefix == "ChatData" and "presentation" not in chat_schema.model_fields_set:
+        # An older client cannot clear UI metadata it never sent or understood.
+        comp_dict.pop("presentation", None)
 
     _ALLOWED_PREFIXES = {
         "ChatData": "chat_data",
@@ -199,6 +213,11 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
             route_id = f"{auth_token}-{chat_id}"
 
             for key, value in comp_dict.items():
+                if prefix == "ChatData" and key == "presentation":
+                    # Unlike legacy optional fields, an explicitly supplied empty
+                    # object/null is an intentional reset of this UI-only state.
+                    current_val[key] = value
+                    continue
                 route = None
                 if value not in empty_vals:
                     if key == "initial":

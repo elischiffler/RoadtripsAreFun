@@ -1,0 +1,380 @@
+{
+  "scope": "Bounded read-only niche-source planning, US attraction expansion",
+  "as_of": "2026-10-21",
+  "accepted_places": 0,
+  "net_new_live_verified": 0,
+  "rights_policy": "Directory listings and Reddit are discovery only. Rights and operator fact review precede implementation. No bulk copying or commercial license inference.",
+  "range_warning": "All conditional ranges are analyst planning assumptions, not measured yields or additive forecasts. Overlap and rights can reduce every range to zero. No contribution to guaranteed5000 arithmetic.",
+  "sources": [
+    {
+      "id": "historyhunter",
+      "steward": "HistoryHunter; Society for Industrial Archeology originated directory",
+      "urls": [
+        "https://historyhunter.org/",
+        "https://historyhunter.org/listView/"
+      ],
+      "candidate_count": {
+        "kind": "measured_one_static_HTML_table",
+        "all_rows": 652,
+        "explicit_US_state_rows": 613,
+        "tourable_yes": 467,
+        "by_arrangement": 29,
+        "tourable_no": 111,
+        "blank": 6,
+        "NY_rows": 266
+      },
+      "sample_inspection": "Inspected first seven rows: maritime museum, aqueduct, two non-tourable bridges, fenced power building, guided steam roundhouse and radio museum. No coordinate columns. Tourable is a publisher label, not operator verification.",
+      "rights": "No reusable-data grant found. Do not bulk import the table or prose. Independently investigate a small lead set on operators or seek an explicit commercial reuse agreement.",
+      "geography": "US broad, heavily NY weighted; CT6, VT3; malformed DE19807 excluded from explicit-state count.",
+      "categories": [
+        "industrial heritage",
+        "rail",
+        "canals",
+        "bridges",
+        "maritime",
+        "small museums"
+      ],
+      "freshness": "No per-record verification timestamps found; volunteer-maintained; old industrial structures may be inaccessible.",
+      "guaranteed_net_accepted": 0,
+      "conditional_net_range": [150, 300],
+      "conditional_range_is_measured": false,
+      "acquisition_effort": "Conditional planning budget: 45-90 human hours after rights/source workflow resolved. Assume 467 Yes x 0.65 current-public x 0.70 unique-net =212; 150-300 is an unmeasured sensitivity range.",
+      "incremental_api_cost_usd": 0,
+      "blockers": [
+        "Rights unresolved",
+        "Operator public access",
+        "Independent arrival coordinates",
+        "Campus duplicates",
+        "Live overlap unknown"
+      ],
+      "overlap": "Cross-match live catalog and every other source; no live reconciliation performed.",
+      "observation_date": "2026-10-21"
+    },
+    {
+      "id": "loc-hdp",
+      "steward": "Library of Congress / NPS Heritage Documentation Programs",
+      "urls": [
+        "https://www.loc.gov/collections/historic-american-buildings-landscapes-and-engineering-records/about-this-collection/",
+        "https://www.loc.gov/collections/historic-american-buildings-landscapes-and-engineering-records/?fo=json&c=5",
+        "https://www.nps.gov/subjects/heritagedocumentation/copyright-guidance.htm"
+      ],
+      "candidate_count": {
+        "kind": "publisher_claim",
+        "structures_sites_more_than": 43000,
+        "media_items_more_than": 581000,
+        "sample_results": 5
+      },
+      "sample_inspection": "Five API results include barn, athletic club, house, Alaska historic house and Coast Guard base building. Only 1/5 exposes latlong; none has a current visitor-access/schedule field. Pagination metadata has multiple differently named totals; do not equate API/media hits to visitable sites.",
+      "rights": "NPS says formal HDP documentation at LOC is public domain; inspect item rights/third-party attachments separately. LOC general hosting is not blanket permission. Keep original short factual summaries and links, never assume every media attachment is PD.",
+      "geography": "National, strong industrial/architectural history including rural sites.",
+      "categories": [
+        "industrial heritage",
+        "architecture",
+        "historic buildings",
+        "landscapes"
+      ],
+      "freshness": "Collection adds documentation annually; historic survey date is not current opening verification. Rights guidance updated Jan12,2026.",
+      "guaranteed_net_accepted": 0,
+      "conditional_net_range": [50, 200],
+      "conditional_range_is_measured": false,
+      "acquisition_effort": "Planning-only 30-80 hours for a bounded 300-600 candidate public-museum/visitor-facility subset; not all43k. Assume 20-40% public current attractions then dedup; calibrate a stratified50 pilot first.",
+      "incremental_api_cost_usd": 0,
+      "blockers": [
+        "Historical/demolished/private property",
+        "Missing entrance coordinates",
+        "Item-level rights",
+        "No visitor calendars",
+        "Large overlap with other heritage catalogs"
+      ],
+      "overlap": "Cross-match live catalog and every other source; no live reconciliation performed.",
+      "observation_date": "2026-10-21"
+    },
+    {
+      "id": "heritagerail",
+      "steward": "Heritage Rail Alliance",
+      "urls": ["https://heritagerail.org/visit/member-directory/"],
+      "candidate_count": {
+        "kind": "unknown_eligible_count",
+        "publisher_wording": "dozens of organizations, vendors, museums, tourist lines and operating railways"
+      },
+      "sample_inspection": "Single static directory mixes museums/tourist railways with commercial suppliers, individual members, corporate headquarters and PO boxes. Multiple operations of a corporate parent can be valid distinct sites; repeated campus entries are not.",
+      "rights": "No open data or API reuse grant located. Use limited discovery then operators; seek partnership for any bulk membership data.",
+      "geography": "North America including CT/DE operators.",
+      "categories": ["heritage rail", "small museums", "transportation"],
+      "freshness": "No record-level update dates; current excursion calendar must come from railway operator.",
+      "guaranteed_net_accepted": 0,
+      "conditional_net_range": [50, 120],
+      "conditional_range_is_measured": false,
+      "acquisition_effort": "Planning-only 25-55 human hours, about 10-25 minutes per candidate plus schedule/arrival review; no directory count/yield measured.",
+      "incremental_api_cost_usd": 0,
+      "blockers": [
+        "Mixed non-attractions",
+        "Seasonal booked departures",
+        "Departure station vs office",
+        "Rights",
+        "Live overlap"
+      ],
+      "overlap": "Cross-match live catalog and every other source; no live reconciliation performed.",
+      "observation_date": "2026-10-21"
+    },
+    {
+      "id": "hnsa",
+      "steward": "Historic Naval Ships Association",
+      "urls": [
+        "https://www.hnsa.org/ships-list",
+        "https://www.hnsa.org/our-history"
+      ],
+      "candidate_count": {
+        "kind": "dated_publisher_claim",
+        "as_of": "start2023",
+        "organizations_more_than": 100,
+        "vessels_more_than": 120,
+        "nations": 12
+      },
+      "sample_inspection": "Ships-list includes members and nonmembers, a construction/search warning and grouped vessels sharing one visitor campus. Historical article content is not current access evidence.",
+      "rights": "No reusable bulk license/API located. Operator reconstruction or explicit agreement only; do not copy articles/photos.",
+      "geography": "International including US coastal/river cities.",
+      "categories": [
+        "maritime museums",
+        "historic ships",
+        "industrial heritage"
+      ],
+      "freshness": "Claim is from2023; ships may move, close for work or have restricted boarding.",
+      "guaranteed_net_accepted": 0,
+      "conditional_net_range": [25, 60],
+      "conditional_range_is_measured": false,
+      "acquisition_effort": "Planning-only 15-35 human hours; dedup three or four vessels at one admission campus to a campus with child experiences.",
+      "incremental_api_cost_usd": 0,
+      "blockers": [
+        "International entries",
+        "Ship vs campus counting",
+        "Physical access and boarding",
+        "Rights",
+        "Closures"
+      ],
+      "overlap": "Cross-match live catalog and every other source; no live reconciliation performed.",
+      "observation_date": "2026-10-21"
+    },
+    {
+      "id": "apga",
+      "steward": "American Public Gardens Association",
+      "urls": [
+        "https://www.publicgardens.org/go-public-gardens/",
+        "https://www.publicgardens.org/garden-finder/",
+        "https://www.publicgardens.org/terms-service/"
+      ],
+      "candidate_count": {
+        "kind": "publisher_claim",
+        "member_organizations_nearly": 600,
+        "scope": "North America and international; not600 US visitor gardens"
+      },
+      "sample_inspection": "Garden finder is interactive; no static garden inventory returned in single HTML inspection. Terms assert all-rights-reserved and contain no data reuse grant.",
+      "rights": "No commercial bulk reuse license found. Member-directory access is not redistribution permission. Use operator sources or request a licensed member export.",
+      "geography": "North America and international.",
+      "categories": ["botanical gardens", "arboreta", "conservatories"],
+      "freshness": "Terms page dated2022; no commitment to update site information.",
+      "guaranteed_net_accepted": 0,
+      "conditional_net_range": [100, 250],
+      "conditional_range_is_measured": false,
+      "acquisition_effort": "Planning-only 45-100 human hours; assumes a licensed/independently sourced US subset and30-50% final net yield, not a measured yield.",
+      "incremental_api_cost_usd": 0,
+      "blockers": [
+        "US subset unknown",
+        "Multiple member types",
+        "Seasonal hours",
+        "Rights",
+        "Garden campus duplicates"
+      ],
+      "overlap": "Cross-match live catalog and every other source; no live reconciliation performed.",
+      "observation_date": "2026-10-21"
+    },
+    {
+      "id": "goastronomy",
+      "steward": "GO ASTRONOMY independent directory",
+      "urls": [
+        "https://www.go-astronomy.com/observatories.htm",
+        "https://www.go-astronomy.com/observatories-state.php?State=CT",
+        "https://www.go-astronomy.com/observatories-state.php?State=DE",
+        "https://www.go-astronomy.com/observatories-state.php?State=VT",
+        "https://www.go-astronomy.com/disclosure.htm"
+      ],
+      "candidate_count": {
+        "kind": "publisher_claim_and_measured_state_rows",
+        "US_research_observatories_more_than": 350,
+        "CT_rows": 9,
+        "DE_rows": 1,
+        "VT_rows": 2
+      },
+      "sample_inspection": "State pages list names/cities, explicitly warn not all observatories are public. CT includes Leitner/Bowman/Rolnick; DE Mt.Cuba; VT NorthernSkies/Stellafane. No operator/calendar/arrival verification for these leads in this pass.",
+      "rights": "Disclosure reserves website contents. No open database/API grant. Independently source operators, never bulk copy directory.",
+      "geography": "US national; useful CT/DE/VT gaps.",
+      "categories": [
+        "astronomy",
+        "observatories",
+        "science",
+        "night activities"
+      ],
+      "freshness": "No row verification dates. Public nights depend on calendar, weather, school term and reservations.",
+      "guaranteed_net_accepted": 0,
+      "conditional_net_range": [25, 80],
+      "conditional_range_is_measured": false,
+      "acquisition_effort": "Planning-only20-50 human hours for an initial100-200 operator outreach/calendar candidates; assumed20-40% route-ready net yield. Observatory count is not public-access count.",
+      "incremental_api_cost_usd": 0,
+      "blockers": [
+        "Public calendar",
+        "Weather cancellation",
+        "Night routing policy",
+        "Research-only institutions",
+        "Rights"
+      ],
+      "overlap": "Cross-match live catalog and every other source; no live reconciliation performed.",
+      "observation_date": "2026-10-21"
+    },
+    {
+      "id": "nationalcaves",
+      "steward": "National Caves Association",
+      "urls": ["https://cavern.com/", "https://cavern.com/about-the-nca/"],
+      "candidate_count": {
+        "kind": "publisher_claim",
+        "show_cave_members_nearly": 100,
+        "scope": "US plus Barbados/Bermuda/Caymans; not100 US sites"
+      },
+      "sample_inspection": "Public destination directory/association page; directory request uses a form not submitted. CaveoftheMounds operator independently inspected.",
+      "rights": "No bulk commercial grant found. No form submission or member-only access. Use operators for individual factual evidence and obtain permission for any bulk export.",
+      "geography": "US broad, international members.",
+      "categories": ["show caves", "geology", "guided tours"],
+      "freshness": "No per-record freshness. Last tour, duration, flood/maintenance closures are distinct from grounds hours.",
+      "guaranteed_net_accepted": 0,
+      "conditional_net_range": [30, 65],
+      "conditional_range_is_measured": false,
+      "acquisition_effort": "Planning-only15-30 human hours. Assume US visitor subset after duplicates/current operations, not an observed acceptance rate.",
+      "incremental_api_cost_usd": 0,
+      "blockers": [
+        "US count",
+        "Scheduled tours",
+        "Arrival/booking",
+        "Rights",
+        "Current closures"
+      ],
+      "overlap": "Cross-match live catalog and every other source; no live reconciliation performed.",
+      "observation_date": "2026-10-21"
+    },
+    {
+      "id": "geogems",
+      "steward": "California Geological Survey / California State Parks",
+      "urls": [
+        "https://gis.conservation.ca.gov/server/rest/services/CGS/GeoGems/MapServer",
+        "https://gis.conservation.ca.gov/server/rest/services/CGS/GeoGems/MapServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+        "https://gis.conservation.ca.gov/server/rest/services/CGS/GeoGems/MapServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=5&f=json",
+        "https://www.parks.ca.gov/pages/734/files/GeoGems_All.pdf"
+      ],
+      "candidate_count": {
+        "kind": "measured_API_count",
+        "park_point_features": 39,
+        "sample": 5
+      },
+      "sample_inspection": "Five samples: SchoonerGulch, Picacho, AnzaBorrego, DelNorteCoastRedwoods, EmeraldBay. Native3857/outSR4326 supported. Points are park indexes, not proven entrances. One park can link multiple geology notes; note count is not place count.",
+      "rights": "Blank copyrightText is not a license. 2015 joint publication reserves rights and permits flyer distribution for visitor centers; not blanket commercial text/data redistribution. Resolve GIS-specific rights; do not ingest popup prose.",
+      "geography": "California only.",
+      "categories": ["geology", "coastal scenery", "desert landscapes"],
+      "freshness": "2015 publication; service11.5 does not establish observation freshness. Broken ftp links present in sample.",
+      "guaranteed_net_accepted": 0,
+      "conditional_net_range": [5, 15],
+      "conditional_range_is_measured": false,
+      "acquisition_effort": "Planning-only5-12 human hours. Expect heavy state-park overlap; first audit39 primary park pages, license and unique arrival sites.",
+      "incremental_api_cost_usd": 0,
+      "blockers": [
+        "GIS rights unresolved",
+        "Park overlap",
+        "Centroids/index points",
+        "Current trail/park closures"
+      ],
+      "overlap": "Cross-match live catalog and every other source; no live reconciliation performed.",
+      "observation_date": "2026-10-21"
+    },
+    {
+      "id": "hmdb",
+      "steward": "Historical Marker Database",
+      "urls": ["https://www.hmdb.org/", "https://www.hmdb.org/copyright.asp"],
+      "candidate_count": {
+        "kind": "publisher_claim_at_probe",
+        "US_markers": 241018,
+        "freshness_label": "as of last night"
+      },
+      "sample_inspection": "Read homepage and copyright terms only; no marker crawl. Marker inventory is not an inventory of distinct visitor destinations.",
+      "rights": "Primary copyright terms reserve commercial use and require written permission; attribution/link duties and separate photo conditions. Third-party claims of free use do not override primary terms.",
+      "geography": "US national and beyond.",
+      "categories": ["historical markers", "local history"],
+      "freshness": "Publisher reports daily additions; individual markers may move or be inaccessible.",
+      "guaranteed_net_accepted": 0,
+      "conditional_net_range": [0, 0],
+      "conditional_range_is_measured": false,
+      "acquisition_effort": "No acquisition work before license; licensing cost unknown. Possible operator discovery must be scoped separately.",
+      "incremental_api_cost_usd": 0,
+      "blockers": [
+        "Explicit commercial permission",
+        "Marker cluster dedup",
+        "Safe legal stopping",
+        "Current existence"
+      ],
+      "overlap": "Cross-match live catalog and every other source; no live reconciliation performed.",
+      "observation_date": "2026-10-21"
+    },
+    {
+      "id": "atlasobscura",
+      "steward": "Atlas Obscura",
+      "urls": [
+        "https://www.atlasobscura.com/terms",
+        "https://www.atlasobscura.com/things-to-do/united-states/roadside-attractions"
+      ],
+      "candidate_count": {
+        "kind": "publisher_search_landing_claim",
+        "US_roadside_places": 404,
+        "not_measured_or_licensed": true
+      },
+      "sample_inspection": "Terms read; no place-page crawl. Wisconsin Reddit discussion points to directory as a discovery resource.",
+      "rights": "Personal/noncommercial use; no copying/distribution without prior written authorization. Do not bulk acquire coordinates or prose. Independent operator research cannot become an unapproved reconstruction of this database.",
+      "geography": "Worldwide with US roadside collection.",
+      "categories": ["oddities", "public art", "small museums"],
+      "freshness": "Terms updatedMay20,2021; visitor info not continuously updated and listing is not access permission.",
+      "guaranteed_net_accepted": 0,
+      "conditional_net_range": [0, 0],
+      "conditional_range_is_measured": false,
+      "acquisition_effort": "License cost unknown;0 approved intake. Use a few user/community-supplied leads, verified at operators.",
+      "incremental_api_cost_usd": 0,
+      "blockers": [
+        "Commercial rights",
+        "Freshness",
+        "Private access",
+        "Duplicate landmark/campus"
+      ],
+      "overlap": "Cross-match live catalog and every other source; no live reconciliation performed.",
+      "observation_date": "2026-10-21"
+    },
+    {
+      "id": "roadsideamerica",
+      "steward": "Roadside America",
+      "urls": ["https://www.roadsideamerica.com/terms/"],
+      "candidate_count": {
+        "kind": "unknown_no_crawl"
+      },
+      "sample_inspection": "Read terms only; no venue inventory downloaded.",
+      "rights": "Personal-use tools; text, descriptions and location data copyrighted. No blanket commercial reuse grant. No bulk ingestion or database copying.",
+      "geography": "US road-trip destinations.",
+      "categories": ["roadside oddities", "giants", "folk art"],
+      "freshness": "Visitor reports can be stale; operator confirmation required.",
+      "guaranteed_net_accepted": 0,
+      "conditional_net_range": [0, 0],
+      "conditional_range_is_measured": false,
+      "acquisition_effort": "License cost unknown;0 approved intake. Independently trace a bounded lead list from community/user/operator sources.",
+      "incremental_api_cost_usd": 0,
+      "blockers": [
+        "Commercial rights",
+        "Location-data rights",
+        "Public vs private access"
+      ],
+      "overlap": "Cross-match live catalog and every other source; no live reconciliation performed.",
+      "observation_date": "2026-10-21"
+    }
+  ]
+}

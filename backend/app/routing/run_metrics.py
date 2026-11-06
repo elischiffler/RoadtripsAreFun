@@ -14,7 +14,7 @@ from time import perf_counter
 
 from app.agent.persona import ATTRIBUTE_KEYS
 
-METRIC_VERSION = "balanced-route-v4"
+METRIC_VERSION = "balanced-route-v5"
 _active = ContextVar("lab_measurements", default=None)
 
 
@@ -379,10 +379,28 @@ def trip_evaluation(envelope):
         daily_counts.setdefault(day, 0)
         daily_counts[day] += int(stop.get("type") == "stop")
         duration = _number(stop.get("duration"))
-        if duration is not None:
-            daily_active[day] = (
-                daily_active.get(day, 0) + duration + (7200 if stop.get("type") == "stop" else 0)
+        components = [duration]
+        if stop.get("type") == "stop":
+            arrived, left = _instant(stop.get("arrival_time")), _instant(stop.get("departure_time"))
+            dwell = (left - arrived).total_seconds() if arrived and left else None
+            road_arrived = _instant(stop.get("road_arrival_time"))
+            wait = (
+                (arrived - road_arrived).total_seconds()
+                if arrived and road_arrived
+                else _number(stop.get("wait_seconds"))
             )
+            supplied_wait = _number(stop.get("wait_seconds"))
+            if stop.get("wait_seconds") is not None and (
+                supplied_wait is None
+                or wait is None
+                or not math.isclose(supplied_wait, wait, abs_tol=1e-6)
+            ):
+                wait = None
+            components.extend([dwell, wait])
+        if any(value is None or value < 0 for value in components):
+            daily_active[day] = None
+        elif day not in daily_active or daily_active[day] is not None:
+            daily_active[day] = daily_active.get(day, 0) + sum(components)
     target = envelope.get("scenario_target") or {}
     target_assessed = bool(target) and schedule["itinerary_days"] is not None and bool(daily_counts)
     target_metrics = {
@@ -390,7 +408,14 @@ def trip_evaluation(envelope):
         "target_stops_per_day": target.get("stops_per_day"),
         "daily_attractions": daily_counts,
         "daily_active_seconds": daily_active,
-        "maximum_daily_active_seconds": max(daily_active.values(), default=None),
+        "maximum_daily_active_seconds": max(daily_active.values(), default=None)
+        if all(value is not None for value in daily_active.values())
+        else None,
+        "active_time_assessment_reason": reason
+        if not assessed
+        else "active_time_evidence_incomplete"
+        if not daily_active or any(value is None for value in daily_active.values())
+        else None,
         "days_met": schedule["itinerary_days"] == target.get("days") if target_assessed else None,
         "density_met": len(daily_counts) == target.get("days")
         and all(n == target.get("stops_per_day") for n in daily_counts.values())
@@ -708,7 +733,7 @@ def aggregate_runs(rows):
                 and m["objective_score"] is not None
             ):
                 references[m["comparison_key"]] = m["objective_score"]
-        minimized = version in {"balanced-route-v3", "balanced-route-v4"}
+        minimized = version in {"balanced-route-v3", "balanced-route-v4", "balanced-route-v5"}
         quality = (
             []
             if minimized

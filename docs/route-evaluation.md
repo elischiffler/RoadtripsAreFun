@@ -23,7 +23,7 @@ fixed, with origin-local departure at 08:00 on October 17, 2026. Scenario target
 remain evaluation fields, separate from `LabInputs`; the solver does not constrain
 trip days or attractions per day.
 
-`MAX_TRIP_ATTRACTIONS` defaults to 20 and must be an integer in 1–30. Chat,
+`MAX_TRIP_ATTRACTIONS` defaults to 20 and must be an integer in 1–30. Shared trip profiles,
 updates, tool schemas, direct HTTP input, Lab and Studio share it. The UI consumes
 the server-advertised limit. Public normal trips require at least one attraction;
 internal `PlanOptions` tests still exercise zero-stop scheduling. Existing saved
@@ -145,7 +145,11 @@ there is no live/capture CLI mode.
 
 ## Measurements and comparisons
 
-`balanced-route-v4` extends existing Lab metrics. Selected/delivered utility each
+`balanced-route-v5` extends existing Lab metrics. Daily active time uses measured
+driving, elapsed variable visits and opening waits, excluding hotel rest. A day
+with incomplete/conflicting evidence and the maximum daily total are unassessed.
+Preselection workload screening shows bounded visit-time ranges, not a fixed
+two-hour visit total or an infeasibility proof. Selected/delivered utility each
 has count, sum, mean, minimum, maximum and median. Missing delivered scored IDs
 make delivered utility unassessed. Unsolved utility is null. Gaps include all
 baseline endpoint gaps, actual longest final driving leg with its distance,

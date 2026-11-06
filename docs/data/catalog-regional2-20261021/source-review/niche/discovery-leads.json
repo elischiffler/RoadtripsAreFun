@@ -1,0 +1,31 @@
+[
+  {
+    "native_id": "Q448450",
+    "next_gate": "Authoritative current/post-opening access scope; no assumed completion.",
+    "type": "conflicting primary access claims",
+    "urls": [
+      "https://www.alohatower.com/visit/index.html",
+      "https://hidot.hawaii.gov/blog/2026/10/12/aloha-tower-celebrates-centennial-with-anchored-in-aloha-community-events-oct-15-16/"
+    ]
+  },
+  {
+    "native_id": "Q7775619",
+    "next_gate": "No current public physical destination established. Historical sources/discussion are not admission or copying permission.",
+    "type": "historical discovery only",
+    "urls": [
+      "https://www.reddit.com/r/UtterlyUniquePhotos/comments/1lf8rm4/the_wonder_spot_an_old_shack_south_of_wisconsin/",
+      "https://www.wisconsinhistory.org/record/image/W0140AB/four-women-posing-at-the-wonder-spot",
+      "https://www.dells.com/retro-attractions-wonder-spot/"
+    ]
+  },
+  {
+    "native_id": "Q5093786",
+    "next_gate": "City source supports visitor identity; roadside parking/arrival still unverified. Reddit content was not used as factual proof or copied.",
+    "type": "Reddit discovery independently traced to city operator",
+    "urls": [
+      "https://www.reddit.com/r/googlemapsshenanigans/comments/1c1k08h/worlds_largest_teapot_in_chester_wv_man_america/",
+      "https://www.chesterwv.org/",
+      "https://www.chesterwv.org/world-s-largest-teapot"
+    ]
+  }
+]

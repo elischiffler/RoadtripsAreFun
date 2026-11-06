@@ -1,0 +1,251 @@
+{
+  "access": {
+    "denied_requests": [],
+    "new_county_robots": "stclair-robots:404; no robots resource",
+    "robots_reused": [
+      "retained-robots-www-phmuseum-org",
+      "retained-robots-www-tybeelighthouse-org"
+    ],
+    "skipped_large_files": [
+      {
+        "bytes": 2728239,
+        "id": "tybee-brochure-size",
+        "url": "https://www.tybeelighthouse.org/_files/ugd/f985d7_15fcfed44194459c99d3a373e4ec0be3.pdf"
+      },
+      {
+        "bytes": 1167086,
+        "id": "gratiot-brochure-size",
+        "url": "https://www.stclaircounty.org/Uploads/ParksAndRecreation/forms/Brochures/FGLS%20Brochure%202025%20NEW%20WEB.pdf"
+      }
+    ],
+    "terms_scope": "Official visitor/directions pages used as bounded factual evidence only. Operator prose and imagery not licensed for redistributed profile copy by this review. No accounts/agreements/contact or live AI requests."
+  },
+  "counts": {
+    "destinations_reviewed": 2,
+    "held": 2,
+    "new_gets": 7,
+    "new_heads": 3,
+    "new_response_body_bytes": 3374704,
+    "reused_original_bodies": 4,
+    "t3_qualified": 0
+  },
+  "limitations": [
+    "Source-only review of current retained official pages; not exhaustive operator-alert clearance.",
+    "Addresses, feature points and schematic maps do not establish public vehicle arrival geometry.",
+    "No place, schedule or evidence approval promoted; T3 qualification remains root existing pipeline only.",
+    "No repository edits, database changes, push or deployment."
+  ],
+  "prior_checks": {
+    "earlier_arrivals_receipts": "/workspace/catalog-followup-20261021/arrivals/receipts.json",
+    "earlier_geospatial_receipts": "/workspace/catalog-followup-20261021/geospatial/receipts.json",
+    "niche_readme": "/workspace/catalog-geodiverse-20261021/niche/README.md",
+    "niche_report": "/workspace/catalog-geodiverse-20261021/niche/report.json",
+    "outcome": "No prior denied FortGratiot/Tybee host or URL found in reviewed ledgers; no denied host reprobed.",
+    "prior_block_ledger": "/workspace/catalog-geodiverse-20261021/niche/prior-blocks.json"
+  },
+  "records": [
+    {
+      "arrival": {
+        "coordinate_source": null,
+        "evidence_ids": [
+          "stclair-light",
+          "gratiot-directions",
+          "stclair-map"
+        ],
+        "forbidden_gate_assessment": "unknown; official description says adjacent new Coast Guard station. No military/private-road/gate geometry established. Do not direct into adjacent Coast Guard property.",
+        "map_geometry_assessment": {
+          "document_date": "unknown",
+          "exact_point_source": false,
+          "last_modified_http": "Thu, 12 Feb 2026 15:57:45 GMT",
+          "sha256": "db766f43ed57cb926ef34a3712b5cb37f292cbe223851c805b6c0cec421c4948",
+          "source_url": "https://www.stclaircounty.org/Uploads/ParksAndRecreation/forms/FGLS%20map%20inset.pdf",
+          "visual_review": "One-page schematic street locator with regional inset; no coordinate grid, georeference, scale, parking symbol or explicit entrance point. No geographic point digitized."
+        },
+        "map_link_issue": "County light page Map This Park href /Offices/15 leads to county GIS page; h1 GIS and county administration map iframe, not lighthouse arrival geometry.",
+        "point_observed_at": null,
+        "precision_meters": null,
+        "public_vehicle_arrival_coordinate": null,
+        "route_to_point": null,
+        "supported_scope": "Official county schematic directions identify local road context including Omar Street, Gratiot Avenue, Garfield Street and Hancock Street; not public parking/entrance geometry."
+      },
+      "calendar": {
+        "activity_scope": "Tower climb only as part of guided tour. Independent county grounds daily7am\u201310pm must not be substituted for tower access.",
+        "exception_gaps": [
+          "December20 listed in both open period and closed period.",
+          "No source statement that holiday/special-event exceptions are complete for the date window.",
+          "Severe weather suspends tower climb; no live or visit-date weather clearance.",
+          "Group tours year-round require advance appointment and are not normal walk-in inventory.",
+          "Spring2027 end of seasonal closure is undefined."
+        ],
+        "exceptions_complete": false,
+        "proofs": [
+          {
+            "checked_at": "2026-10-21T17:47:25.091576+00:00",
+            "evidence_id": "retained-operator-Q5471242",
+            "literal": "September 12th - December 20th, 2026",
+            "sha256": "2713f52e8d9fca4d5ba80de736c943856fb3f2a7e8759408b29145b196a0ce25",
+            "url": "https://www.phmuseum.org/fort-gratiot-lighthouse/"
+          },
+          {
+            "checked_at": "2026-10-21T17:47:25.091576+00:00",
+            "evidence_id": "retained-operator-Q5471242",
+            "literal": "December 20th - Spring 2027 Closed for the Season",
+            "sha256": "2713f52e8d9fca4d5ba80de736c943856fb3f2a7e8759408b29145b196a0ce25",
+            "url": "https://www.phmuseum.org/fort-gratiot-lighthouse/"
+          },
+          {
+            "checked_at": "2026-10-21T17:47:25.091576+00:00",
+            "evidence_id": "retained-operator-Q5471242",
+            "literal": "Tower climb is only available as part of the guided tour.",
+            "sha256": "2713f52e8d9fca4d5ba80de736c943856fb3f2a7e8759408b29145b196a0ce25",
+            "url": "https://www.phmuseum.org/fort-gratiot-lighthouse/"
+          },
+          {
+            "checked_at": "2026-10-21T17:47:25.091576+00:00",
+            "evidence_id": "retained-operator-Q5471242",
+            "literal": "no tower climbs in severe weather for safety reasons.",
+            "sha256": "2713f52e8d9fca4d5ba80de736c943856fb3f2a7e8759408b29145b196a0ce25",
+            "url": "https://www.phmuseum.org/fort-gratiot-lighthouse/"
+          },
+          {
+            "checked_at": "2026-10-21T18:22:28.330804+00:00",
+            "evidence_id": "stclair-light",
+            "literal": "The Park is open daily from 7:00am to 10:00pm.",
+            "sha256": "2ab2c15198aaab8cd248366c34e8a3ef9d57d5c2b706474cd01f1f1466603833",
+            "url": "https://www.stclaircounty.org/Offices/178"
+          }
+        ],
+        "qualified": false,
+        "season_validity": "Operator explicitly labels September12\u2013December20,2026; December20\u2013Spring2027 closure also stated. Endpoint conflict unresolved; no2027 reopening date.",
+        "supported_weekly_text": "Saturday\u2013Sunday10am\u20135pm; last tour entry4pm; museum store until5pm. This is source text, not admitted normalized hours.",
+        "timezone": null
+      },
+      "name": "Fort Gratiot Light",
+      "native_id": "Q5471242",
+      "qualification_decision": "hold",
+      "source_tier_preserved": "T2",
+      "t3_ready": false,
+      "unresolved_gates": [
+        "source-backed exact public vehicle arrival and walk approach",
+        "gates/private Coast Guard approach exclusion",
+        "date-specific exceptional calendar completeness and season boundary"
+      ]
+    },
+    {
+      "arrival": {
+        "brochure_size_hold": {
+          "content_length": 2728239,
+          "downloaded": false,
+          "limit": 1048576,
+          "reason": "HEAD size exceeds authorized1MiB response ceiling; no partial download/range/bypass attempted.",
+          "url": "https://www.tybeelighthouse.org/_files/ugd/f985d7_15fcfed44194459c99d3a373e4ec0be3.pdf"
+        },
+        "coordinate_source": null,
+        "coordinate_warning": "Operator address-linked Google destination query is an address, not authoritative parking/entrance geometry. No geocoder/snap point substituted.",
+        "point_observed_at": null,
+        "precision_meters": null,
+        "proofs": [
+          {
+            "checked_at": "2026-10-21T18:21:39.049040+00:00",
+            "evidence_id": "tybee-general",
+            "literal": "Turn left onto N Campbell Ave Turn left onto Van Horne Ave Turn right at the 1st cross street onto Meddin Dr Continue onto Meddin Dr Destination will be on the left",
+            "sha256": "82b02acf2a6e5c0f43ac2709f49ca487d408ff502de4848cdd121fd99bc7262a",
+            "url": "https://www.tybeelighthouse.org/visitor-general-info"
+          },
+          {
+            "checked_at": "2026-10-21T18:21:39.049040+00:00",
+            "evidence_id": "tybee-general",
+            "literal": "Free parking is available at the lighthouse for those purchasing tickets. Parking limit is 2 hours maximum.",
+            "sha256": "82b02acf2a6e5c0f43ac2709f49ca487d408ff502de4848cdd121fd99bc7262a",
+            "url": "https://www.tybeelighthouse.org/visitor-general-info"
+          }
+        ],
+        "public_parking_constraints": [
+          "Lighthouse lot for ticket purchasers only; maximum2hours.",
+          "Move vehicle to public lot across street after tour to make room for incoming guests.",
+          "Exact driveway, lot boundaries, entrance/walk point and forbidden-gate geometry unknown."
+        ],
+        "public_vehicle_arrival_coordinate": null,
+        "route_to_point": null,
+        "supported_road_approach": [
+          "US80E",
+          "N Campbell Avenue",
+          "Van Horne Avenue",
+          "Meddin Drive; destination on left"
+        ]
+      },
+      "calendar": {
+        "exception_gaps": [
+          "Homepage says New Years Eve & Christmas Eve half-days; General says Christmas Eve & Christmas Day half-days while separately closing Christmas Day.",
+          "Savannah StPatricks Parade Day closure requires actual applicable-year date; no independent dated official parade calendar acquired.",
+          "NewYearsDay/Easter/Thanksgiving/Christmas closures named, but conflicting holiday half-days remain unresolved.",
+          "Weather can close lighthouse/catwalk without warning; other closures may occur without warning. No visit-date operating assurance.",
+          "Capacity queues possible and no pre-sold online tickets; cannot assert departure/visit-window inventory.",
+          "Combined ticket includes BatteryGarland museum, but component-specific calendar equivalence not established."
+        ],
+        "exceptions_complete": false,
+        "proofs": [
+          {
+            "checked_at": "2026-10-21T17:47:30.294751+00:00",
+            "evidence_id": "retained-operator-Q7859692",
+            "literal": "On New Years' Eve & Christmas Eve the last ticket is sold at 12PM & grounds close by 1PM.",
+            "sha256": "0829384f010fbf4546dd0d6c384a1dd0d442ff986102aaea973357cd81e2eda3",
+            "url": "https://www.tybeelighthouse.org/"
+          },
+          {
+            "checked_at": "2026-10-21T18:21:39.049040+00:00",
+            "evidence_id": "tybee-general",
+            "literal": "On Christmas Eve & Christmas Day last ticket is sold at 12PM & grounds close by 1PM.",
+            "sha256": "82b02acf2a6e5c0f43ac2709f49ca487d408ff502de4848cdd121fd99bc7262a",
+            "url": "https://www.tybeelighthouse.org/visitor-general-info"
+          },
+          {
+            "checked_at": "2026-10-21T18:21:39.049040+00:00",
+            "evidence_id": "tybee-general",
+            "literal": "Closed Savannah's St. Patrick's Parade Day, Easter , Thanksgiving Day , Christmas Day , & New Years Day .",
+            "sha256": "82b02acf2a6e5c0f43ac2709f49ca487d408ff502de4848cdd121fd99bc7262a",
+            "url": "https://www.tybeelighthouse.org/visitor-general-info"
+          },
+          {
+            "checked_at": "2026-10-21T17:47:30.294751+00:00",
+            "evidence_id": "retained-operator-Q7859692",
+            "literal": "Other closures may occur without warning.",
+            "sha256": "0829384f010fbf4546dd0d6c384a1dd0d442ff986102aaea973357cd81e2eda3",
+            "url": "https://www.tybeelighthouse.org/"
+          },
+          {
+            "checked_at": "2026-10-21T18:21:39.049040+00:00",
+            "evidence_id": "tybee-general",
+            "literal": "For safety purposes we must limit the amount of people allowed in the lighthouse at one time.",
+            "sha256": "82b02acf2a6e5c0f43ac2709f49ca487d408ff502de4848cdd121fd99bc7262a",
+            "url": "https://www.tybeelighthouse.org/visitor-general-info"
+          }
+        ],
+        "qualified": false,
+        "season_validity": "Generic weekly visitor hours; no explicit applicable-year/season bounds. General page contains2024/2025 prices and no visible updated-at stamp. Retrieval date is not publisher freshness.",
+        "supported_weekly_text": "Monday and Wednesday\u2013Sunday9am\u20134:30pm tickets; Tuesday closed. Saved homepage says lighthouse closes5pm and grounds by5:30pm.",
+        "timezone": null
+      },
+      "name": "Tybee Island Lighthouse and Museum",
+      "native_id": "Q7859692",
+      "qualification_decision": "hold",
+      "source_tier_preserved": "T2",
+      "t3_ready": false,
+      "unresolved_gates": [
+        "source-backed exact public ticket-holder lot entrance/parking and walk arrival",
+        "date-specific complete consistent holiday calendar and season validity",
+        "per-activity tower/museum timing and current weather/closure constraints"
+      ]
+    }
+  ],
+  "reviewed_at": "2026-10-21T18:25:06.386116+00:00",
+  "schema_version": "roadtrips-arrival-calendar-source-review/1",
+  "scope_native_ids": [
+    "Q5471242",
+    "Q7859692"
+  ],
+  "storage": {
+    "footprint_bytes": 4528294,
+    "free_bytes_at_report": 24993914880
+  }
+}

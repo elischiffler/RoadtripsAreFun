@@ -1,0 +1,15 @@
+{
+  "T3": 0,
+  "agent_assisted_review_not_human_verified": true,
+  "all_rate_affected_destinations_held": true,
+  "all_retained_receipt_hashes_passed": true,
+  "checked_receipt_bodies": 59,
+  "future_timing_policy_test_passed": true,
+  "held": 13,
+  "idempotent_adapter_sha256": "51bfbde2f10653bc32621652556b58796f492fa62cd8eed95bfa082c744c55c0",
+  "offline_socket_blocked_rebuild": true,
+  "production_or_live_parent_checked": false,
+  "queue_dispositions": 24,
+  "rate_policy_violations": 3,
+  "source_T2_recommendations": 11
+}

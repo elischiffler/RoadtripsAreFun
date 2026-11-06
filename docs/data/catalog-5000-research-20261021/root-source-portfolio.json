@@ -1,0 +1,270 @@
+{
+  "as_of": "2026-10-21",
+  "range_warning": "Conditional unmeasured nonadditive analyst allowances; every guaranteed net=0; tier proposal not approved.",
+  "sources": [
+    {
+      "id": "wikidata",
+      "steward": "Wikimedia Foundation/community",
+      "urls": [
+        "https://query.wikidata.org/sparql",
+        "https://www.wikidata.org/wiki/Wikidata:Copyright"
+      ],
+      "coverage": "50-state/DC filtering still required; museums, gardens, observatories, lighthouses, zoos",
+      "candidate_counts": {
+        "measured_US_P17_museums": 7100,
+        "measured_museums_with_coordinate_and_website": 4115,
+        "measured_gardens": 815,
+        "measured_gardens_with_coordinate_and_website": 275,
+        "measured_observatories": 857,
+        "measured_lighthouses": 992,
+        "measured_zoos": 440,
+        "additive": false
+      },
+      "sample_inspection": "First20 rows/type: museums18uniqueQIDs,17coordinate-bearing rows,16website-bearing; gardens20unique/20coordinates/6websites; observatories20unique/20coordinates/0websites; lighthouse19unique/20coordinates/0websites. Rows can repeat locations. Museum subclass includes Disney railway components and closed Waterfront Red Car; Saipan observatory is outside scope. Three museum operator pages checked identity/address, no full admissions.",
+      "rights": "Structured Wikidata CC0; linked articles/operator text/media have separate rights; no wholesale website copying.",
+      "freshness": "Live SPARQL checked2026-10-21; per-statement source/last-revision is not current visitor status.",
+      "arrival_quality": "P625 often building/area reference; multiple values, territories and missing arrivals must resolve.",
+      "overlap": "Very high with NHL/NPS/Overture/OSM; count one canonical destination, not QID class totals.",
+      "conditional_net_range": [1700, 3000],
+      "range_is_measured": false,
+      "guaranteed_net": 0,
+      "acquisition_effort": "First pilot150 hash-sampled distinct entities by class/state; narrow class queries and cacheIDs, then bounded batches<=250 with primary operator checks. National broad aggregate timed out25sec; stopped.",
+      "api_cost": "No fees incurred in public probes; no paid services or new accounts. Future labor/cloud/permission costs not priced.",
+      "blockers": [
+        "Class semantics",
+        "Current public access",
+        "Entrance and calendar evidence",
+        "Live duplicate reconciliation"
+      ]
+    },
+    {
+      "id": "hf-wikimedia",
+      "steward": "Official Wikimedia dataset",
+      "urls": [
+        "https://huggingface.co/datasets/wikimedia/linked-openstreetmap-wikidata-wikipedia-wikivoyage",
+        "https://datasets-server.huggingface.co/rows?dataset=wikimedia%2Flinked-openstreetmap-wikidata-wikipedia-wikivoyage&config=wikidata&split=train&offset=0&length=5"
+      ],
+      "coverage": "Global entity linking; useful crosswalk, not a curated attraction dataset",
+      "candidate_counts": {
+        "CC0_links_bytes": 173746346,
+        "CC0_wikidata_bytes": 435496681,
+        "CC0_wikidata_locations_bytes": 956794947,
+        "pinned_revision": "52211cd980c87e42273913627f92d080f54d492f"
+      },
+      "sample_inspection": "Five rows/config inspected. wikidata includes country/person/concept entities; locations includes birth/burial qualifiers (P19/P119), not necessarily direct entity coordinate P625; links are relationships, not destinations.",
+      "rights": "Three files explicitly CC0; OSM35GB ODbL, articles CC-BY-SA separate. Select files/columns and retain upstream notice per file. pvv5385 city embedding mirror collapses upstream provenance; hold.",
+      "freshness": "Sept15 snapshot; repo modifiedOct6,2026; pin exact revision.",
+      "arrival_quality": "Do not interpret every location row as attraction coordinate.",
+      "overlap": "Not additive to direct Wikidata; entity-resolution utility.",
+      "conditional_net_range": [0, 0],
+      "range_is_measured": false,
+      "guaranteed_net": 0,
+      "acquisition_effort": "Prefer small anonymous viewer samples or SPARQL; no full files downloaded under100MiB batch cap. Viewer mirror sample500 stopped.",
+      "api_cost": "No fees incurred in public probes; no paid services or new accounts. Future labor/cloud/permission costs not priced.",
+      "blockers": [
+        "Large source footprint",
+        "Qualifier traps",
+        "No arrival/access/calendar guarantee"
+      ]
+    },
+    {
+      "id": "overture-primary",
+      "steward": "Overture Maps Foundation",
+      "urls": [
+        "https://stac.overturemaps.org/2026-09-23.1/places/place/collection.json",
+        "https://docs.overturemaps.org/guides/places/",
+        "https://docs.overturemaps.org/attribution/",
+        "https://docs.overturemaps.org/getting-data/cloud-sources/"
+      ],
+      "coverage": "Global places; filter US museums/art/gardens/attractions/visitor experiences, exclude ordinary retail",
+      "candidate_counts": {
+        "measured_release_metadata_global_rows": 81455423,
+        "parquet_files": 16,
+        "release": "2026-09-23.1",
+        "measured_US_attraction_rows": null
+      },
+      "sample_inspection": "STAC collection/schema/source rights inspected; no new parquet rows downloaded. HF city mirror advertises1,619,134POIs in13cities, not attraction count; combined/per-city views duplicate counts, viewer500. Existing repo extractor available but optional pyarrow/overture/shapely/duckdb absent.",
+      "rights": "Collection license other; resolve per sources: CDLA-Permissive2.0 for Meta/Microsoft portions, Apache2.0+NOTICE Foursquare, CC0 AllThePlaces. Transportation and OSM layers have separate ODbL; joining may affect downstream obligations. Preserve all sources/license/NOTICE; no mirror label override.",
+      "freshness": "Monthly release; metadata latestSept23.1 as checkedOct21. Source operating_status and confidence are claims, not independent current proof.",
+      "arrival_quality": "Point not certified entrance; operating_status not replacement for operator.",
+      "overlap": "High WD/OSM/ATPlaces overlap; GERS crosswalk useful, snapshotIDs may change.",
+      "conditional_net_range": [500, 1500],
+      "range_is_measured": false,
+      "guaranteed_net": 0,
+      "acquisition_effort": "Use existing bounded STAC/bbox<=4deg² column/predicate projection; inspect transfer metadata/bytes before approved optional dependencies or files. No national download.",
+      "api_cost": "No fees incurred in public probes; no paid services or new accounts. Future labor/cloud/permission costs not priced.",
+      "blockers": [
+        "US/category count unmeasured",
+        "Optional dependencies",
+        "Field-level attribution",
+        "Current access/arrivals"
+      ]
+    },
+    {
+      "id": "osm",
+      "steward": "OpenStreetMap contributors; Geofabrik / Esri replicas",
+      "urls": [
+        "https://www.openstreetmap.org/copyright",
+        "https://download.geofabrik.de/north-america/us/delaware.html",
+        "https://download.geofabrik.de/north-america/us/connecticut.html",
+        "https://services6.arcgis.com/Do88DoK2xjTUCXd1/arcgis/rest/services/OSM_NA_Tourism/FeatureServer/0"
+      ],
+      "coverage": "National tourism nodes/ways/relations; strong small/local visitor venue discovery",
+      "candidate_counts": {
+        "measured_DE_PBF_advertised_bytes_approx": 21200000,
+        "measured_CT_PBF_advertised_bytes_approx": 207000000,
+        "measured_replica_US_addr_country_filtered_selected_tourism_rows": 203,
+        "country_filter_is_complete_US_census": false
+      },
+      "sample_inspection": "Replica CTboundingboxfirst10 allfinite but4named; allstate/countrytagsnull, MontaukNY insidebbox. Points-only replica omits way/relation venues. addr_country US severely undercounts; no national eligible count. No PBF downloaded.",
+      "rights": "ODbL attribution and applicable derivative-database sharealike; keep separate licensed collection and distribution artifacts until combination obligations explicitly reviewed. Factual tags not permission for copied descriptions/photos.",
+      "freshness": "Geofabrik extract advertised data2026-10-20T20:23:47Z; individual edits and hours can be stale.",
+      "arrival_quality": "Building centroid, feature node and mapped entrance different; require operator/reference/motor arrival corroboration.",
+      "overlap": "Very high with Overture/WD/ATPlaces; names/distance alone unsafe.",
+      "conditional_net_range": [300, 1000],
+      "range_is_measured": false,
+      "guaranteed_net": 0,
+      "acquisition_effort": "Smallstate PBF/offline filtering or policy-compliant bounded official replica pages; no mass public Overpass backend, no endpoint rotation. CT207MB exceeds current100MiB batch; choose DE21.2MB pilot.",
+      "api_cost": "No fees incurred in public probes; no paid services or new accounts. Future labor/cloud/permission costs not priced.",
+      "blockers": [
+        "ODbL combined-data policy",
+        "Missing names and state tags",
+        "Public arrival/current access",
+        "Unmeasured whole-US yield"
+      ]
+    },
+    {
+      "id": "alltheplaces",
+      "steward": "AllThePlaces/OpenAddresses community",
+      "urls": [
+        "https://alltheplaces.xyz/",
+        "https://data.alltheplaces.xyz/runs/latest.json",
+        "https://data.alltheplaces.xyz/runs/latest/output/brewdog.geojson",
+        "https://github.com/alltheplaces/alltheplaces/blob/master/LICENSE",
+        "https://github.com/alltheplaces/alltheplaces/blob/master/API.md"
+      ],
+      "coverage": "Global operator-location extraction; use destination breweries/factories/experiences only",
+      "candidate_counts": {
+        "metadata_global_records": 41066413,
+        "metadata_spiders": 5641,
+        "metadata_full_ZIP_bytes": 2756702590,
+        "run": "2026-10-10-13-32-41",
+        "measured_BrewDog_US": 3,
+        "measured_BrewDog_global": 13
+      },
+      "sample_inspection": "BrewDog13rows/3US; all3US finitecoords/address/website/sourceURL, zeroopeninghours. Generic pubs not necessarily roadtrip worthy. Spider code derivescoords from Googlemaps links; field origin needs terms review. GitHub spider list1000 is truncated, not fullcount.",
+      "rights": "Dataset declaredCC0/codeMIT, but inspect upstream field origin/terms, especially coordinate extraction; retain branchoperator sourceURI and original spider/version. No copied prose/photos.",
+      "freshness": "Weekly output; latestrunOct10completedOct14; individual origin update unknown.",
+      "arrival_quality": "Candidate location, not validated entrance; no sample calendars.",
+      "overlap": "Included in Overture; direct union not additional sourcequota.",
+      "conditional_net_range": [50, 200],
+      "range_is_measured": false,
+      "guaranteed_net": 0,
+      "acquisition_effort": "Download only selected per-spider files, then operator visitor/tour proof. Full2.76GBZIP avoided.",
+      "api_cost": "No fees incurred in public probes; no paid services or new accounts. Future labor/cloud/permission costs not priced.",
+      "blockers": [
+        "Retail/chain inflation",
+        "Source coordinate rights",
+        "Tour schedules",
+        "No measured attraction subset"
+      ]
+    },
+    {
+      "id": "kaggle",
+      "steward": "Independent uploaders; Kaggle platform",
+      "urls": [
+        "https://www.kaggle.com/datasets/leadsdeposit/museums-dataset",
+        "https://www.kaggle.com/api/v1/datasets/view/leadsdeposit/museums-dataset",
+        "https://www.kaggle.com/datasets/emilianoalvz/usa-museums-ds",
+        "https://www.kaggle.com/datasets/annecool37/museum-data",
+        "https://www.kaggle.com/datasets/brkurzawa/us-breweries"
+      ],
+      "coverage": "US museums/breweries and many irrelevant art-object datasets",
+      "candidate_counts": {
+        "uploader_9600_claim_not_measured_rows": 9600,
+        "museum_metadata_version": 2,
+        "museum_metadata_view_total_bytes": 780642,
+        "museum_metadata_search_total_bytes": 338327
+      },
+      "sample_inspection": "New anonymous museum search and two dataset cards inspected. 9,600museumcard ODC-By, June2023, no origin/acquisition source and files arrayempty. Search/view bytes disagree. 2013museumdata Unknownlicense, IMLS/IRS/foundation/Codecademy lineage; Tripadvisorreviews Unknownlicense; Met/MoMA art-object files do not add venuecounts. Existing2019brewerycardGPL2 does not clear upstream scrape rights.",
+      "rights": "Quarantine9,600mirror pending original provenance and license-authority evidence. Unknown/NC/review data excluded. Hosting, usabilityscore and uploaderassertion not rights proof. Existing reviewed source-specific Kaggle adapters remain unchanged.",
+      "freshness": "Museumclaims2023/2013, brewery2019; not current status.",
+      "arrival_quality": "No new raw record inspection, no native arrival/currentaccess guarantee.",
+      "overlap": "Likely overlapsWD/OSM/IMLS; cannot add9600 toforecast.",
+      "conditional_net_range": [0, 0],
+      "range_is_measured": false,
+      "guaranteed_net": 0,
+      "acquisition_effort": "Small metadata only; no auth/download/new account. Prefer primary IMLS or current operators with clearedfields.",
+      "api_cost": "No fees incurred in public probes; no paid services or new accounts. Future labor/cloud/permission costs not priced.",
+      "blockers": [
+        "No upstream grant",
+        "Old data",
+        "No inspected records",
+        "Contradictorybytes"
+      ]
+    },
+    {
+      "id": "imls-museum-files",
+      "steward": "Institute of Museum and Library Services",
+      "urls": [
+        "https://www.imls.gov/research-evaluation/data/museum-data-files",
+        "https://www.imls.gov/sites/default/files/museum_data_file_documentation_and_users_guide.pdf"
+      ],
+      "coverage": "50states/DC museums and museum-related organizations, including naturecenters/planetariums/societies",
+      "candidate_counts": {
+        "publisher_approx_establishments": 30000,
+        "files": 3,
+        "field_count_per_file": 50,
+        "exact_record_count_measured": false
+      },
+      "sample_inspection": "Primarylanding and605431byteNov2018PDF acquired. Retired program, no updatesplanned; no rawCSVrows acquired. Guide explicitly uses commercial vendor geocoding, physicaladdress whereavailable but admin/IRS addressfallback; co-locatedresources flags, organizationnotdestination.",
+      "rights": "Federal administrative facts promising but compilation includes private association/commercial sources. Need download/file-specific rights and coordinate-origin grant before retention/import; independently source operator geometry if unresolved. No assumption federal hosting clears everyfield.",
+      "freshness": "Final2018release; retired, no updates. Mirror2021/2026publicationdates do not refresh2013/2015/2018facts.",
+      "arrival_quality": "Geocoded admin/IRS address can bewrongarrival.",
+      "overlap": "Veryhighmuseum/WD/NY/NHL overlap; a historical completion list not independentquota.",
+      "conditional_net_range": [0, 500],
+      "range_is_measured": false,
+      "guaranteed_net": 0,
+      "acquisition_effort": "Inspect guide/CSVdownloadrights first, then bounded100source-flagged publicmuseum leads; highrefreshreview cost.",
+      "api_cost": "No fees incurred in public probes; no paid services or new accounts. Future labor/cloud/permission costs not priced.",
+      "blockers": [
+        "Retired",
+        "Third-party geocoding/lineage",
+        "Organizations/co-location",
+        "Currentpublicaccessunknown"
+      ]
+    },
+    {
+      "id": "prior-usfs",
+      "steward": "USDA Forest Service",
+      "urls": [
+        "https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_RecInfraRecreationSites_02/MapServer/0",
+        "https://apps.fs.usda.gov/arcx/rest/services/EDW/EDW_RecreationOpportunities_01/MapServer/0"
+      ],
+      "coverage": "National constructed recreation arrivals; mostly western/outdoor",
+      "candidate_counts": {
+        "prior_inventory": 7776,
+        "prior_prequalified_sample": 150,
+        "prior_source_admitted": 93,
+        "prior_held": 57,
+        "new_research_admissions": 0
+      },
+      "sample_inspection": "Priorstronglyselected150->93 after9independentreviewholds. Initial102corridor->0. Notrandomyield; do notmultiply62percentbynationalinventory. 82of93trailheads.",
+      "rights": "Existingpinned agencyfactualnotice, provenance and OSMroutingattribution; unchanged adapters.",
+      "freshness": "PrioracquiredOct21; each source/calendar has boundedtimestamps, no lifetimeguarantee.",
+      "arrival_quality": "Strictnativearrival/OSRM/Census/calendar gatesalreadyimplemented.",
+      "overlap": "93unreleased mustdedup alongsidecurrentparent; parentcorporateparkcomponents mayoverlap.",
+      "conditional_net_range": [0, 500],
+      "range_is_measured": false,
+      "guaranteed_net": 0,
+      "acquisition_effort": "Reuse currentadapter only targetedgapfills; cap newtrailheads10percent of5000 and allgenericnaturebudget.",
+      "api_cost": "No fees incurred in public probes; no paid services or new accounts. Future labor/cloud/permission costs not priced.",
+      "blockers": [
+        "Sourcefreshness/currentaccess",
+        "Unknownclockwindows",
+        "Diversitycap",
+        "Liveparent"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import mapboxgl from 'mapbox-gl';
 import Map from '../components/Map';
@@ -16,6 +16,7 @@ vi.mock('mapbox-gl', () => ({
       this.addSource = vi.fn();
       this.addLayer = vi.fn();
       this.fitBounds = vi.fn();
+      this.easeTo = vi.fn();
     }),
     AttributionControl: vi.fn(),
     Marker: vi.fn(function ({ element }) {
@@ -86,6 +87,7 @@ function trip(nextStops = stops) {
 beforeEach(() => {
   vi.clearAllMocks();
   vi.stubEnv('VITE_LOCAL_JOURNEY', 'false');
+  vi.stubEnv('VITE_MAPBOX_TOKEN', 'fixture-map-token');
 });
 afterEach(() => vi.unstubAllEnvs());
 
@@ -104,13 +106,14 @@ it('uses numbered, accessible pins at converted stop coordinates with one safe p
   expect(mapboxgl.Marker.mock.results[0].value.setLngLat).toHaveBeenCalledWith([-122.1, 37.4]);
   const first = screen.getByRole('button', { name: 'Stop 1: Forest walk' });
   await userEvent.click(first);
-  expect(screen.getByRole('dialog')).toHaveTextContent('Forest walkAttractionTrailhead road');
-  expect(screen.getByRole('dialog')).toHaveTextContent('Source release: 2026-09-23.1');
-  expect(screen.getByRole('dialog')).toHaveTextContent('Source: Overture Maps Foundation');
+  expect(screen.getByRole('dialog')).toHaveTextContent('Forest walkTrailhead road');
+  expect(screen.getByRole('dialog')).not.toHaveTextContent('Source release: 2026-09-23.1');
+  expect(screen.queryByRole('link', { name: 'Sources' })).not.toBeInTheDocument();
+  expect(screen.getByRole('dialog')).not.toHaveTextContent('Source: Overture Maps Foundation');
   expect(first).toHaveAttribute('aria-expanded', 'true');
   await userEvent.click(screen.getByRole('button', { name: 'Stop 2: Coastal hotel' }));
   expect(screen.getAllByRole('dialog')).toHaveLength(1);
-  expect(screen.getByRole('dialog')).toHaveTextContent('Coastal hotelHotel');
+  expect(screen.getByRole('dialog')).toHaveTextContent('Coastal hotel');
   expect(first).toHaveAttribute('aria-expanded', 'false');
   const hostile = screen.getByRole('button', { name: 'Stop 4: <img src=x onerror=alert(1)>' });
   hostile.focus();
@@ -150,6 +153,7 @@ it('supports clickable and keyboard pins in the local map without opening Mapbox
   vi.stubEnv('VITE_LOCAL_JOURNEY', 'true');
   render(<Map UserChatData={trip()} />);
   expect(mapboxgl.Map).not.toHaveBeenCalled();
+  expect(screen.getByText('Local fixture · route schematic')).toBeInTheDocument();
   const pin = screen.getByRole('button', { name: 'Stop 1: Forest walk' });
   pin.focus();
   await userEvent.keyboard(' ');
@@ -160,5 +164,70 @@ it('supports clickable and keyboard pins in the local map without opening Mapbox
   fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Stop 2: Coastal hotel' }));
-  expect(screen.getByRole('dialog')).toHaveTextContent('Hotel');
+  expect(screen.getByRole('dialog')).toHaveTextContent('Coastal hotel');
+});
+
+it('shows a clear map configuration fallback without creating a provider map', () => {
+  vi.stubEnv('VITE_MAPBOX_TOKEN', '');
+  render(<Map UserChatData={trip()} />);
+  expect(mapboxgl.Map).not.toHaveBeenCalled();
+  expect(screen.getByRole('status')).toHaveTextContent('access token is not configured');
+});
+
+it('shows a provider load error and retains a clear itinerary path', () => {
+  render(<Map UserChatData={trip()} />);
+  const map = mapboxgl.Map.mock.results[0].value;
+  fireEvent.error(screen.getByRole('button', { name: 'Stop 1: Forest walk' }));
+  act(() => map.on.mock.calls.find(([event]) => event === 'error')[1]());
+  expect(screen.getByRole('status')).toHaveTextContent('map could not be loaded');
+});
+
+it('adds distinct nearby pins and centers a selected actual idea without changing scheduled stops', async () => {
+  const idea = {
+    id: 'idea:1',
+    name: 'Gallery',
+    coordinates: [37.5, -122.2],
+    source_attribution: 'Fixture catalog',
+  };
+  const select = vi.fn();
+  const data = trip();
+  const suggestions = [idea];
+  const view = render(
+    <Map UserChatData={data} suggestions={suggestions} onSelectSuggestion={select} />
+  );
+  const pin = screen.getByRole('button', { name: 'Nearby idea: Gallery' });
+  await userEvent.click(pin);
+  expect(select).toHaveBeenCalledWith(idea);
+  expect(mapboxgl.Marker.mock.results.at(-1).value.setLngLat).toHaveBeenCalledWith([-122.2, 37.5]);
+  view.rerender(
+    <Map
+      UserChatData={data}
+      suggestions={suggestions}
+      selectedSuggestion={idea}
+      onSelectSuggestion={select}
+    />
+  );
+  expect(mapboxgl.Map.mock.results[0].value.easeTo).toHaveBeenCalledWith({
+    center: [-122.2, 37.5],
+    zoom: 12,
+    duration: 0,
+  });
+  expect(screen.getByRole('region', { name: 'Selected nearby idea' })).toHaveTextContent(
+    'Unscheduled idea'
+  );
+  expect(screen.getByRole('region', { name: 'Selected nearby idea' })).toHaveTextContent(
+    'Fixture catalog'
+  );
+  expect(screen.getAllByRole('button', { name: /^Stop / })).toHaveLength(3);
+  expect(data.route.stops).toEqual(stops);
+});
+it('renders local fixture nearby pins with keyboard selection', async () => {
+  vi.stubEnv('VITE_LOCAL_JOURNEY', 'true');
+  const idea = { id: 'idea:1', name: 'Gallery', coordinates: [37.5, -122.2] };
+  const select = vi.fn();
+  render(<Map UserChatData={trip()} suggestions={[idea]} onSelectSuggestion={select} />);
+  screen.getByRole('button', { name: 'Nearby idea: Gallery' }).focus();
+  await userEvent.keyboard('{Enter}');
+  expect(select).toHaveBeenCalledWith(idea);
+  expect(mapboxgl.Map).not.toHaveBeenCalled();
 });

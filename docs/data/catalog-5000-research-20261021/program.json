@@ -1,0 +1,105 @@
+{
+  "as_of": "2026-10-21",
+  "stage": "research_plan_only",
+  "measured_new_research_admissions": 0,
+  "live_count": null,
+  "target_net_beyond_live_and_prior_93": 5000,
+  "objective_buffer": 600,
+  "assumptions_not_measured_yields": true,
+  "distinct_prospect_queue_not_yet_assembled": true,
+  "families": [
+    {
+      "id": "museum_science",
+      "distinct_review_queue_to_assemble": 5000,
+      "net_work_objective": 2200,
+      "implied_objective_yield": 0.44,
+      "downside_sensitivity_not_confidence_bound": 1200,
+      "upper_sensitivity_not_confidence_bound": 2700
+    },
+    {
+      "id": "public_heritage",
+      "distinct_review_queue_to_assemble": 2500,
+      "net_work_objective": 1000,
+      "implied_objective_yield": 0.4,
+      "downside_sensitivity_not_confidence_bound": 500,
+      "upper_sensitivity_not_confidence_bound": 1300
+    },
+    {
+      "id": "gardens_zoos_observatories_caves",
+      "distinct_review_queue_to_assemble": 1000,
+      "net_work_objective": 450,
+      "implied_objective_yield": 0.45,
+      "downside_sensitivity_not_confidence_bound": 200,
+      "upper_sensitivity_not_confidence_bound": 650
+    },
+    {
+      "id": "public_art_destinations",
+      "distinct_review_queue_to_assemble": 1800,
+      "net_work_objective": 600,
+      "implied_objective_yield": 0.3333333333333333,
+      "downside_sensitivity_not_confidence_bound": 250,
+      "upper_sensitivity_not_confidence_bound": 850
+    },
+    {
+      "id": "scenic_geology_wildlife_recreation",
+      "distinct_review_queue_to_assemble": 2200,
+      "net_work_objective": 850,
+      "implied_objective_yield": 0.38636363636363635,
+      "downside_sensitivity_not_confidence_bound": 500,
+      "upper_sensitivity_not_confidence_bound": 1100
+    },
+    {
+      "id": "food_farm_craft_experiences",
+      "distinct_review_queue_to_assemble": 1000,
+      "net_work_objective": 300,
+      "implied_objective_yield": 0.3,
+      "downside_sensitivity_not_confidence_bound": 100,
+      "upper_sensitivity_not_confidence_bound": 450
+    },
+    {
+      "id": "remaining_niche_industrial_maritime_roadside",
+      "distinct_review_queue_to_assemble": 600,
+      "net_work_objective": 200,
+      "implied_objective_yield": 0.3333333333333333,
+      "downside_sensitivity_not_confidence_bound": 100,
+      "upper_sensitivity_not_confidence_bound": 300
+    }
+  ],
+  "queue_total": 14100,
+  "net_work_objective_total": 5600,
+  "downside_total": 2850,
+  "upper_total": 7350,
+  "tier_proposal": {
+    "T1": "Private discovery/quarantine; not public or counted",
+    "T2": "Verified identity/location/public visitor eligibility and cleared field rights; browse only after approved implementation, not routing",
+    "T3": "T2 subset with verified appropriate arrival and source calendar/access/activity constraints; date-specific routing gate"
+  },
+  "pilot_review_denominator": 600,
+  "pilot_families": {
+    "museum_science": 200,
+    "public_heritage": 100,
+    "garden_zoo_observatory_cave": 80,
+    "art_sites": 60,
+    "nature_scenic": 100,
+    "food": 30,
+    "remaining_niche": 30
+  },
+  "development_net_milestones": [250, 1000, 2500, 5000],
+  "permissions": {
+    "production_writes": false,
+    "push_deploy": false,
+    "accounts_access_changes": false,
+    "paid_apis_ai": false,
+    "mentro_calls": false,
+    "desktop_use": false
+  },
+  "remaining_gates": [
+    "T2browse vs5000T3definition",
+    "ODbLcollectiondistribution policy",
+    "source-specific rights and operator review",
+    "complete cloud-readable live parent and inherited companions",
+    "measured pilot net yields and labor",
+    "actual full-generation capacity and unchanged aggregate evidence caps",
+    "explicit release-owner review before any shared write"
+  ]
+}

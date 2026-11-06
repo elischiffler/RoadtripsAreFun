@@ -213,7 +213,7 @@ async def test_current_t2_replaces_stale_or_stripped_t3_and_removes_optional_sug
 
 
 @pytest.mark.asyncio
-async def test_custom_provider_browse_records_do_not_consume_rating_budget():
+async def test_custom_provider_browse_records_do_not_consume_rating_or_duration_budget():
     from app.agent.persona import default_weights
     from tests.routing.persona_candidates_tests import FakeAI, FakePlaces, _ratings, discover
 
@@ -221,14 +221,22 @@ async def test_custom_provider_browse_records_do_not_consume_rating_budget():
     ready["name"] = "Ready synthetic fixture"
     blocked = [record(f"catalog-pilot:blocked-{index}") for index in range(61)]
     ai = FakeAI([{"name": ready["name"], "attribute_ratings": _ratings()}])
+    duration_calls = []
+
+    async def durations(records, *_args):
+        duration_calls.append([item["provider_id"] for item in records])
+        return records
+
     found = await discover(
         None,
         [POINT],
         default_weights(),
         places=FakePlaces(attractions=[*blocked, ready]),
         ai=ai,
+        duration_estimator=durations,
     )
     assert [item["provider_id"] for item in found] == [ready["provider_id"]]
+    assert duration_calls == [[ready["provider_id"]]]
     assert ai.calls == 1
 
 

@@ -1,0 +1,85 @@
+{
+  "$defs": {
+    "CapturedVisitDuration": {
+      "additionalProperties": false,
+      "properties": {
+        "provider_id": {
+          "minLength": 1,
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "context_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Context Hash",
+          "type": "string"
+        },
+        "capture_id": {
+          "minLength": 1,
+          "title": "Capture Id",
+          "type": "string"
+        },
+        "visit_duration": {
+          "$ref": "#/$defs/VisitDuration"
+        }
+      },
+      "required": [
+        "provider_id",
+        "context_hash",
+        "capture_id",
+        "visit_duration"
+      ],
+      "title": "CapturedVisitDuration",
+      "type": "object"
+    },
+    "VisitDuration": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "roadtrips-visit-duration/1",
+          "default": "roadtrips-visit-duration/1",
+          "enum": [
+            "roadtrips-visit-duration/1"
+          ],
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "seconds": {
+          "maximum": 21600,
+          "minimum": 900,
+          "title": "Seconds",
+          "type": "integer"
+        },
+        "source": {
+          "enum": [
+            "ai_estimate",
+            "conservative_fallback"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "estimated",
+            "invalid_output",
+            "provider_failure",
+            "missing_estimate"
+          ],
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "seconds",
+        "source",
+        "reason"
+      ],
+      "title": "VisitDuration",
+      "type": "object"
+    }
+  },
+  "items": {
+    "$ref": "#/$defs/CapturedVisitDuration"
+  },
+  "type": "array",
+  "maxItems": 5000
+}

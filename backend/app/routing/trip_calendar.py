@@ -17,7 +17,6 @@ from app.routing.base import MAX_TRIP_OVERNIGHTS
 from app.routing.runtime import singleflight
 from app.routing.visit_calendar import (
     _TICKS,
-    VISIT_SECONDS,
     _allowed_day,
     _at,
     calendar_eligible,
@@ -25,15 +24,17 @@ from app.routing.visit_calendar import (
     requires_calendar,
     source_calendar,
 )
+from app.routing.visit_duration import visit_seconds
 
 
-def possible_visit(record, departure: datetime, zone: ZoneInfo) -> bool:
+def possible_visit(record, departure: datetime, zone: ZoneInfo, *, dwell=None) -> bool:
     """Require one full dwell in a source window on a permissible trip day.
 
     Use the same attributed windows, season/closure rules, DST localization and
     elapsed-time arithmetic as solve_visit. Never treat a fixed event start as
     proof of its end. No source facts or unknown values are rewritten.
     """
+    dwell = visit_seconds(record) if dwell is None else dwell
     if not calendar_eligible(record):
         return False
     if not requires_calendar(record):
@@ -59,7 +60,7 @@ def possible_visit(record, departure: datetime, zone: ZoneInfo) -> bool:
                     continue
                 closes = min(closes, deadline)
             lower = max(0, math.ceil(seconds_until(earliest, opens) * _TICKS))
-            upper = math.floor(seconds_until(earliest, closes) * _TICKS) - VISIT_SECONDS * _TICKS
+            upper = math.floor(seconds_until(earliest, closes) * _TICKS) - dwell * _TICKS
             if calendar.fixed_starts:
                 if any(
                     _allowed_day(calendar, value.astimezone(zone).date())
@@ -85,10 +86,11 @@ class TripCalendar:
             "scope": "necessary_full_dwell_window; final_itinerary_validation_required",
         }
 
-    async def eligible(self, record):
+    async def eligible(self, record, *, dwell=None):
         if not calendar_eligible(record):
             return False
         if not requires_calendar(record):
+            visit_seconds(record)  # Validate estimates without inventing outdoor hours.
             return True
         if self.timezone_at is None:
             return False
@@ -99,4 +101,4 @@ class TripCalendar:
 
         zone = await singleflight(("calendar_timezone", tuple(coordinates)), resolve)
         # The candidate's resolved zone is required even when departure is aware.
-        return possible_visit(record, self.departure, zone)
+        return possible_visit(record, self.departure, zone, dwell=dwell)

@@ -13,8 +13,7 @@ import {
   chooseRoutingAlgorithm,
   getRoutingAlgorithm,
 } from '../services/routingSettings';
-import { getFinalRoute } from '../pages/ChatPage/getRoute';
-import { sendAgentMessage } from '../pages/ChatPage/agentChat';
+import { getFinalRoute } from '../services/routes';
 
 vi.mock('axios', () => ({ default: { get: vi.fn(), post: vi.fn() } }));
 
@@ -141,7 +140,7 @@ describe('owner routing settings', () => {
     expect(getRoutingAlgorithm()).toBeNull();
   });
 
-  it('ignores tampered storage and request context for non-owners in both request paths', async () => {
+  it('ignores tampered storage and request context for non-owners in direct route requests', async () => {
     login('other');
     localStorage.setItem('devRoutingAlgorithm', 'test_alternate');
     axios.get.mockResolvedValue({ data: { can_select_algorithm: false } });
@@ -149,18 +148,11 @@ describe('owner routing settings', () => {
     await refreshRoutingSettings();
     chooseRoutingAlgorithm('test_alternate');
     await getFinalRoute({}, 100, 0);
-    await sendAgentMessage({
-      accessToken: sessionStorage.getItem('accessToken'),
-      chatId: 'chat',
-      message: 'plan',
-      clientContext: { algorithm: 'test_alternate', hasRoute: true },
-    });
     expect(axios.post.mock.calls[0][1]).not.toHaveProperty('algorithm');
-    expect(axios.post.mock.calls[1][1].clientContext).toEqual({ hasRoute: true });
     expect(localStorage.getItem('devRoutingAlgorithm')).toBeNull();
   });
 
-  it('sends only an explicit registered owner selection in direct and chat requests', async () => {
+  it('sends only an explicit registered owner selection in direct route requests', async () => {
     login();
     axios.get.mockResolvedValue(capability());
     axios.post.mockResolvedValue({ data: {} });
@@ -170,17 +162,7 @@ describe('owner routing settings', () => {
     expect(getRoutingAlgorithm()).toBeNull();
     chooseRoutingAlgorithm('test_alternate');
     await getFinalRoute({}, 100, 0);
-    await sendAgentMessage({
-      accessToken: sessionStorage.getItem('accessToken'),
-      chatId: 'chat',
-      message: 'plan',
-      clientContext: {},
-    });
     expect(axios.post.mock.calls[0][1].algorithm).toBe('test_alternate');
-    expect(axios.post.mock.calls[1][1].clientContext.algorithm).toBe('test_alternate');
-    expect(axios.post.mock.calls[1][2].headers['X-Cognito-Id-Token']).toBe(
-      sessionStorage.getItem('idToken')
-    );
     login('other');
     expect(getRoutingAlgorithm()).toBeNull();
   });

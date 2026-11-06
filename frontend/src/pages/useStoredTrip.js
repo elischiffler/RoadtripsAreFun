@@ -1,12 +1,12 @@
 import { getSession, isCurrentSession } from '../services/session';
 import { useContext, useEffect } from 'react';
 import { UserDataContext } from '../states/UserDataContext';
-import { initializeUserData } from './ChatPage/DatabaseUtils';
+import { initializeUserData } from '../services/savedTrips';
 
 // Map and itinerary can be opened directly after a browser reload. Rehydrate
 // the selected saved trip when the in-memory context starts empty.
 export function useStoredTrip() {
-  const { UserData, setUserData } = useContext(UserDataContext);
+  const { UserData, setUserData, setChats } = useContext(UserDataContext);
 
   useEffect(() => {
     const session = getSession();
@@ -19,12 +19,13 @@ export function useStoredTrip() {
       const logs = result.UserData.chatlogs;
       const selectedId = Number(sessionStorage.getItem('selectedChatId'));
       logs.currentId = logs.getChatDataById(selectedId) ? selectedId : logs.chatdata[0].chatId;
+      setChats(result.chats);
       setUserData(result.UserData);
     });
     return () => {
       cancelled = true;
     };
-  }, [UserData, setUserData]);
+  }, [UserData, setUserData, setChats]);
 
   return UserData.chatlogs;
 }
