@@ -107,3 +107,48 @@ The harness verifies legacy car load, edit/reload, theme persistence, profile
 creation/deletion and confirms only three expected fixture mutations. Report and
 mobile screenshots are in `docs/evidence/stage2-settings/`. This is browser-fixture
 acceptance; live Cognito, provider trips and production writes remain untested.
+
+## Final follow-up validation and PR #62 coordination
+
+Draft PR: https://github.com/elischiffler/RoadtripsAreFun/pull/65 (base develop).
+Final full backend: 2,521 passed, 150 skipped, one warning; 80.99% coverage.
+Final full frontend (one worker): 55 files, 418 passed; 92.43% lines/statements,
+87.85% branches, 87.87% functions. Format, lint and production build pass.
+An overloaded simultaneous frontend/backend/browser run produced seven 5-second
+frontend timeouts; the isolated one-worker rerun passes without changing test
+limits or application code. The three explicit disposable PostgreSQL cases pass
+separately; they skip by default in the ordinary backend suite.
+
+PR #62 head inspected: `7c5fb5f7c8052dc3af74c4695683811e140cb788`.
+A temporary merge worktree has one content conflict, `TripSetup.jsx`; all other
+files merge automatically. The resolution keeps PR #62's compact percentage
+flow, optional comparisons and car-question removal, then restores this branch's
+profile-picker import, picker in step 1 and final review save notice. It keeps
+existing provided car values and the post-creation settings editor. The 33-line
+patch at `docs/evidence/stage2-settings/pr62-trip-setup.patch` applies to that
+exact PR #62 TripSetup source. Use it after choosing the PR #62 version of the
+conflicted file; it is a resolution aid, not a replacement for the other settings
+commits. No PR #62, develop or main branch was changed by this trial.
+
+Live Cognito/account acceptance, provider trip creation and parent-coordinated
+integration/release remain outstanding. There were no production writes, model
+calls, denied-operation retries or deployment in this follow-up.
+
+The resolved PR #62 trial passes all 44 focused frontend tests. Its existing
+onboarding browser harness passes all 20 stage/viewport combinations with zero
+browser exceptions or axe violations. Evidence and representative integrated
+mobile/desktop screenshots are adjacent to the resolution patch. Settings itself
+was also checked on the combined source; its result is recorded below.
+
+GitHub CI on code commit `03e14c537c1165b5497fd9c3e589704db239f493`
+passes Backend CI, Frontend CI tests/build, Local containers and Disposable
+PostgreSQL CRUD/recreate/backup/restore. This includes the newly registered
+settings PostgreSQL tests. `code-commit-ci.json` preserves exact run links and
+commit scope; subsequent evidence-only commits have separate CI status.
+
+Combined Settings source also passes all eight viewport/theme audits, including
+legacy car/edit/reload, profile create/delete and theme persistence; zero axe
+violations, overflow or browser errors. `pr62-settings-report.json` records that
+result. The combined trial therefore covers 44 focused tests and 28 browser
+audits. It is not merged or deployed. The initial simultaneous-load trial timing
+failures were resolved by sequential runs without code or timeout changes.
