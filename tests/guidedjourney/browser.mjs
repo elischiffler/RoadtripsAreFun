@@ -182,6 +182,44 @@ try {
     ),
     true,
   );
+  await page.goto(frontend + "/settings");
+  await page.getByRole("heading", { name: "Settings", exact: true }).waitFor();
+  assert.equal(
+    await page
+      .getByRole("link", { name: /^(AI Studio|Trip research)/ })
+      .count(),
+    0,
+  );
+  const researchStatus = await page.evaluate(async (api) => {
+    // These are this disposable fixture's synthetic tokens. Return only status;
+    // never export headers or browser authentication state into evidence.
+    const response = await fetch(api + "/studio/presets", {
+      headers: {
+        Authorization: "Bearer " + sessionStorage.getItem("accessToken"),
+        "X-Cognito-Id-Token": sessionStorage.getItem("idToken"),
+      },
+    });
+    return response.status;
+  }, backend);
+  assert.equal(
+    researchStatus,
+    403,
+    "The actual API must reject verified non-owner research access",
+  );
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      true,
+    );
+  }
+  await page.goto(frontend + "/itinerary");
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Mark visited: " + visitedName, exact: true })
+    .waitFor();
   const happyReport = await (await fetch(backend + "/fixture/report")).json();
   assert.equal(happyReport.stored_trips, 1);
   assert.equal(happyReport.solver, 1);

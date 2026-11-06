@@ -83,6 +83,18 @@ does not get indexed. No check or assertion was removed. The corrected wrapper
 must pass CI on the final candidate before release; native success alone does not
 establish that container execution.
 
+[The following run on head `90817465`](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/42313074948)
+passed that bootstrap point and warmed the actual API database pool. Its retained
+`/ready` check correctly returned 503 because schema-only initialization had no
+active nonempty catalog generation. Initialization now also applies the existing
+`tests/postgres/catalog-fixture.sql` inside the same fresh disposable database:
+one explicitly synthetic import, one place and the active pointer. No readiness
+override or application health change was made. A fresh local rerun returned
+actual `/ready` HTTP 200 with `status:ready`; the active generation's declared
+and actual row counts were both one. The entire strict static-browser positive
+and expired-departure journey passed again against that seeded database. The
+next container CI execution remains required.
+
 Node syntax, Python compile/Ruff, Compose configuration and whitespace checks
 pass. Independent review checked the fixture isolation, real execution seams,
 native progress assertions, persisted visit/undo assertions, database target

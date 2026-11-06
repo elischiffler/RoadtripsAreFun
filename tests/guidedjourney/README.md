@@ -12,7 +12,10 @@ processing, AI-rating/visit-duration prompt construction and parsing, CP-SAT,
 estimated scheduling, actual-leg timing validation, itinerary construction and
 saved-trip CRUD. Storage is a new synthetic PostgreSQL instance in an internal
 Docker network. Browser reload, visit/undo persistence, and opening the saved
-itinerary must work. An expired departure must expose an actionable error and
+itinerary must work. Settings navigation must hide research tools for the
+verified non-owner, and the actual research API must return 403. The itinerary
+must still reload after Settings; phone/desktop widths must not overflow.
+An expired departure must expose an actionable error and
 must not save another trip or falsely complete planning.
 
 Only external boundaries are synthetic: Cognito login/JWK delivery, catalog rows,
@@ -22,6 +25,21 @@ The gateway fixture validates message/body limits and returns deterministic
 ratings and durations. It is not the actual Mentro server or model, and does not
 prove live provider behavior, current Cognito accounts, production data/schema,
 or network availability.
+
+Location text search/confirmation and the initial driving estimate execute
+through actual HTTP APIs in this gate. Mapbox map rendering and nearby-idea UI
+are covered separately by the existing component/service/API suites; this gate
+does not call a live map provider or enable a different map build mode. Visit
+and undo test saved presentation edits, not an unsupported route-editing feature.
+
+| Area | Evidence | Boundary |
+| --- | --- | --- |
+| Create, save and visit edits | This signed browser/API/CP-SAT/timing/CRUD/PostgreSQL gate; serialization and persistence regressions | Catalog and remote provider responses are synthetic |
+| Errors, auth and Settings | Strict expired-date and non-owner API/Settings checks; existing session, stream, access and race suites | Most outage/account-switch tests use fixtures; no real Cognito acceptance |
+| Search and maps | Browser location confirmation/driving estimate; existing location, map and nearby component/API suites | No live Mapbox rendering, geocoding or roads; arbitrary saved-route replanning is not exercised |
+| Responsive layout | Browser 390px and 1440px overflow checks | Not physical-device or manual screen-reader acceptance |
+| Recovery and ownership | Separate Disposable PostgreSQL CRUD workflow | Real CRUD/recovery there complements this browser lane |
+| Catalog safeguards | Full offline admission/hold/tamper/refresh suites; unchanged 133 holds, 170 exact versions and seven parking decisions | Optional catalog PostgreSQL SQL-parity tests need their dedicated disposable database; readiness is not that test |
 
 ## Run
 
@@ -46,6 +64,12 @@ a random isolated fixture project and removes that project's tmpfs database at
 the end. It never accepts a hosted database target, account credential, general
 Docker prune or production URL. Build dependencies with normal verified TLS;
 use the managed environment's documented proxy CA mount when required.
+
+Initialization uses the existing disposable schema and
+`tests/postgres/catalog-fixture.sql`: one explicitly synthetic catalog import,
+one place and its active pointer. This lets the actual `/ready` dependency check
+pass without overriding readiness or using a production catalog. The synthetic
+generation's declared row count and actual place count are both one.
 
 The browser permits only the three loopback app/API/identity origins. PostgreSQL
 uses only an internal network. The API additionally uses a local access bridge

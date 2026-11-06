@@ -149,6 +149,8 @@ try {
     {
       input:
         readFileSync(join(root, "tests/postgres/schema.sql"), "utf8") +
+        "\n" +
+        readFileSync(join(root, "tests/postgres/catalog-fixture.sql"), "utf8") +
         "\nCREATE TABLE guided_journey_fixture_marker(marker text PRIMARY KEY);\nINSERT INTO guided_journey_fixture_marker VALUES ('disposable-local-only');\n",
       stdio: ["pipe", "inherit", "inherit"],
     },
