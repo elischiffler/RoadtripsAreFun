@@ -115,6 +115,27 @@ it('does not return a late route if the owner changes while consuming a chunk', 
   ).rejects.toMatchObject({ code: 'session-changed' });
   expect(fetch).toHaveBeenCalledOnce();
 });
+it('preserves a dedicated meal conflict explanation without exposing arbitrary provider details or replaying', async () => {
+  const detail = 'Lunch cannot fit before your driving cutoff. Edit your schedule.';
+  fetch.mockResolvedValueOnce(
+    streamed([{ type: 'error', status: 422, code: 'meal_schedule_conflict', detail }])
+  );
+  await expect(streamTripRoute({}, new AbortController().signal)).rejects.toMatchObject({
+    response: { status: 422, data: { detail } },
+  });
+  expect(fetch).toHaveBeenCalledOnce();
+  expect(cognitoClient.send).not.toHaveBeenCalled();
+
+  fetch
+    .mockReset()
+    .mockResolvedValueOnce(
+      streamed([{ type: 'error', status: 503, detail: 'Private provider diagnostics' }])
+    );
+  await expect(streamTripRoute({}, new AbortController().signal)).rejects.toMatchObject({
+    response: { status: 503, data: undefined },
+  });
+  expect(fetch).toHaveBeenCalledOnce();
+});
 it.each([
   [() => streamed([{ type: 'heartbeat' }]), /without a result/],
   [

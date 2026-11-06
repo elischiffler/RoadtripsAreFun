@@ -48,6 +48,7 @@ from app.routing.catalog_calendars import refresh_for_timing
 from app.routing.config import geolocator  # shared reverse-geocoder
 from app.routing.explanation import record_stage
 from app.routing.geometry import find_position as _find_position  # noqa: F401
+from app.routing.meal_reservations import MealScheduleConflict, MealScheduleHTTPError
 from app.routing.occupancy import require_occupancy
 from app.routing.pricing import get_price_range as _get_price_range  # noqa: F401
 from app.routing.registry import DEFAULT_ALGORITHM
@@ -221,6 +222,8 @@ async def _plan_for_http(payload, *, user_id, can_select_algorithm):
         )
     except CandidateRatingError as exception:
         raise HTTPException(status_code=502, detail=exception.public_message) from None
+    except MealScheduleConflict:
+        raise MealScheduleHTTPError() from None
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail) from None
     except RequestException as exception:
@@ -346,6 +349,7 @@ async def plan_final_route(
         start=start,
         weights=weights,
         scheduling_policy=payload.scheduling_policy,
+        reserve_meal_slots=payload.reserve_meal_slots,
         traveler_count=payload.traveler_count,
         hotel_rooms=payload.hotel_rooms,
     )
@@ -420,7 +424,13 @@ async def plan_final_route(
                         start_timezone = await services.timezone_at([start_lat, start_lon])
                         for stop in stopping_points:
                             stop["timezone"] = await services.timezone_at(stop["coordinates"])
-                    apply_timing(stopping_points, start, payload.scheduling_policy, start_timezone)
+                    apply_timing(
+                        stopping_points,
+                        start,
+                        payload.scheduling_policy,
+                        start_timezone,
+                        reserve_meal_slots=payload.reserve_meal_slots,
+                    )
                 record_stage(
                     "reroute", "complete", "Mapbox actual legs passed local timing checks."
                 )
@@ -440,6 +450,7 @@ async def plan_final_route(
                 scheduling_policy=payload.scheduling_policy,
                 start_timezone=start_timezone,
                 departure_time=start,
+                reserve_meal_slots=payload.reserve_meal_slots,
                 traveler_count=payload.traveler_count,
                 hotel_rooms=payload.hotel_rooms,
                 warnings=[stop["warning"] for stop in stopping_points if stop.get("warning")]

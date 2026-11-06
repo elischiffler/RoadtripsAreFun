@@ -131,8 +131,8 @@ describe('accessible trip setup', () => {
     renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
     await userEvent.click(screen.getByText('Edit interest amounts'));
     const details = screen.getByText('Edit interest amounts').closest('details');
-    expect(within(details).getByLabelText('Food')).toHaveValue(
-      Number((preferenceProfiles(draft).stated.food * 100).toFixed(3))
+    expect(Number(within(details).getByRole('slider', { name: 'Food' }).value)).toBe(
+      preferenceProfiles(draft).stated.food * 100
     );
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
@@ -223,5 +223,62 @@ describe('accessible trip setup', () => {
       fireEvent.change(within(details).getByLabelText(label), { target: { value: '0' } });
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('alert')).toHaveTextContent('above zero');
+  });
+
+  it('preserves exact saved manual amounts until an explicit action and keeps the existing profile blend', async () => {
+    const customWeights = Object.fromEntries(
+      Object.keys(INTERESTS).map((key, index) => [key, index === 0 ? 12000.123456789 : 0.123456789])
+    );
+    const draft = {
+      ...validDraft(),
+      customWeights,
+      comparisonAnswers: { [COMPARISONS[0].id]: 'left' },
+    };
+    seed(draft, 2);
+    renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
+    await userEvent.click(screen.getByText('Edit interest amounts'));
+    const stored = () => JSON.parse(sessionStorage.getItem(key())).draft;
+    expect(stored().customWeights).toEqual(customWeights);
+    expect(preferenceWeights(stored())).toEqual(preferenceWeights(draft));
+    const food = screen.getByRole('slider', { name: 'Food' });
+    expect(Number(food.value)).toBe(customWeights.food);
+    expect(Number(food.max)).toBeGreaterThan(Math.max(...Object.values(customWeights)));
+    await userEvent.click(screen.getByRole('button', { name: 'More Food' }));
+    const changed = stored();
+    expect(changed.customWeights.food).toBeGreaterThan(customWeights.food);
+    for (const interest of Object.keys(INTERESTS).filter((interest) => interest !== 'food'))
+      expect(changed.customWeights[interest]).toBe(customWeights[interest]);
+    expect(changed.comparisonAnswers).toEqual(draft.comparisonAnswers);
+    const profiles = preferenceProfiles(changed);
+    for (const interest of Object.keys(INTERESTS))
+      expect(preferenceWeights(changed)[interest]).toBeCloseTo(
+        (profiles.stated[interest] + profiles.comparisons[interest]) / 2,
+        14
+      );
+    expect(screen.getByRole('heading', { name: 'What you enjoy' })).toBeInTheDocument();
+    expect(screen.queryByRole('figure')).not.toBeInTheDocument();
+  });
+
+  it('seeds untouched interests at full precision on the first drag without submitting', async () => {
+    const submit = vi.fn();
+    const draft = { ...validDraft(), interests: ['food'] };
+    seed(draft, 2);
+    renderWithProviders(<TripSetup onSubmit={submit} />);
+    await userEvent.click(screen.getByText('Edit interest amounts'));
+    const amounts = Object.fromEntries(
+      Object.entries(preferenceProfiles(draft).stated).map(([interest, value]) => [
+        interest,
+        value * 100,
+      ])
+    );
+    fireEvent.change(screen.getByRole('slider', { name: 'Food' }), {
+      target: { value: '12.3456789' },
+    });
+    const changed = JSON.parse(sessionStorage.getItem(key())).draft;
+    expect(changed.customWeights.food).toBe(12.3456789);
+    for (const interest of Object.keys(INTERESTS).filter((interest) => interest !== 'food'))
+      expect(changed.customWeights[interest]).toBe(amounts[interest]);
+    expect(submit).not.toHaveBeenCalled();
+    expect(screen.getByRole('heading', { name: 'What you enjoy' })).toBeInTheDocument();
   });
 });

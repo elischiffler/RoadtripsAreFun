@@ -165,3 +165,49 @@ it('uses account streaming with the blended vector when progress is requested', 
   );
   expect(axios.post).not.toHaveBeenCalled();
 });
+
+it('requests confirmed meal reservations during both streamed and ordinary route scheduling', async () => {
+  const initial = {
+    duration: 3600,
+    distance: 50000,
+    geometry: {
+      coordinates: [
+        [-105, 40],
+        [-104.9, 39.7],
+      ],
+    },
+  };
+  const route = {
+    ...initial,
+    coordinates: [
+      [40, -105],
+      [39.7, -104.9],
+    ],
+    reserve_meal_slots: true,
+  };
+  const draft = newSetupDraft();
+  const signal = new AbortController().signal;
+  axios.get.mockResolvedValue({ data: initial });
+  axios.post.mockResolvedValueOnce({ data: route });
+  await expect(
+    planStructuredRoute(draft, address, destination, signal, { reserveMealSlots: true })
+  ).resolves.toEqual(route);
+  expect(axios.post.mock.calls[0][1].reserve_meal_slots).toBe(true);
+
+  streamTripRoute.mockResolvedValueOnce(route);
+  await expect(
+    planStructuredRoute(draft, address, destination, signal, {
+      reserveMealSlots: true,
+      onProgress: vi.fn(),
+    })
+  ).resolves.toEqual(route);
+  expect(streamTripRoute.mock.calls[0][0].reserve_meal_slots).toBe(true);
+
+  streamTripRoute.mockResolvedValueOnce({ ...route, reserve_meal_slots: false });
+  await expect(
+    planStructuredRoute(draft, address, destination, signal, {
+      reserveMealSlots: true,
+      onProgress: vi.fn(),
+    })
+  ).rejects.toThrow('did not confirm meal breaks');
+});

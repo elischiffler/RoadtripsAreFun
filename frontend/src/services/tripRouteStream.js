@@ -74,7 +74,17 @@ export async function streamTripRoute(payload, signal, onProgress) {
       check();
       const event = JSON.parse(line);
       if (!event || typeof event !== 'object') throw new Error('Invalid trip progress event.');
-      if (event.type === 'error') throw streamError(event.status ?? 503);
+      if (event.type === 'error') {
+        // Only dedicated scheduling conflicts have a public explanation. Provider
+        // errors retain the shared stream's redacted response contract.
+        const detail =
+          event.code === 'meal_schedule_conflict' &&
+          typeof event.detail === 'string' &&
+          event.detail.length <= 1000
+            ? event.detail
+            : undefined;
+        throw streamError(event.status ?? 503, detail);
+      }
       if (!['progress', 'heartbeat', 'result'].includes(event.type))
         throw new Error('Unexpected trip progress event.');
       if (event.type === 'progress' && typeof event.stage !== 'string')

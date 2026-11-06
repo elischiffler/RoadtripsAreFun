@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -78,6 +78,16 @@ async def _build_itinerary(
     Raises:
         HTTPException: if the route is incomplete or the data can't be processed.
     """
+    if data.route.reserve_meal_slots and (
+        data.route.scheduling_policy is None
+        or not data.route.stops
+        or data.route.stops[-1].get("type") != "end"
+        or (data.start_time is None and data.route.departure_time is None)
+    ):
+        raise PlanningError(
+            "Meal reservations require a complete dated route with a scheduling policy; replan this trip",
+            422,
+        )
     await refresh_for_timing(data.route.stops or [], catalog_lookup=catalog_lookup)
     if data.route.scheduling_policy is None and any(
         requires_calendar(stop) for stop in data.route.stops or []
@@ -106,6 +116,7 @@ async def _build_itinerary(
             current_time,
             data.route.scheduling_policy,
             data.route.start_timezone,
+            reserve_meal_slots=data.route.reserve_meal_slots,
         )
     departure = current_time if known_departure else None
     trip_end = None
@@ -113,6 +124,7 @@ async def _build_itinerary(
     # initialize a list of stops with a generic message and specified start time
     stop_list = [
         {
+            "_sort_time": current_time.isoformat(),
             "date": current_time.strftime("%A, %B %d %Y"),
             "time": current_time.strftime("%I:%M %p"),
             "name": "Depart from your starting location",
@@ -120,6 +132,16 @@ async def _build_itinerary(
     ]
     # loop through the stops and get the time for each
     for stop in data.route.stops:
+        if data.route.reserve_meal_slots:
+            for meal in stop.get("meal_breaks", []):
+                beginning = datetime.fromisoformat(meal["arrival_time"])
+                stop_list.append(
+                    {
+                        **meal,
+                        "date": beginning.strftime("%A, %B %d %Y"),
+                        "time": beginning.strftime("%I:%M %p"),
+                    }
+                )
         # Add the time to get to the stop to the current time
         current_time = (
             datetime.fromisoformat(stop["arrival_time"])
@@ -127,6 +149,7 @@ async def _build_itinerary(
             else advance(current_time, stop["duration"])
         )
         destination = {
+            "_sort_time": current_time.isoformat(),
             "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
             "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
             "name": stop["name"],
@@ -184,6 +207,7 @@ async def _build_itinerary(
                 )
                 stop_list.append(
                     {
+                        "_sort_time": visit.isoformat(),
                         "date": visit.strftime("%A, %B %d %Y"),
                         "time": visit.strftime("%I:%M %p")
                         if suggestion.get("visit_time")
@@ -221,6 +245,7 @@ async def _build_itinerary(
                 )
             stop_list.append(
                 {
+                    "_sort_time": current_time.isoformat(),
                     "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
                     "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
                     "name": "Depart from your hotel",
@@ -237,6 +262,7 @@ async def _build_itinerary(
             )
             stop_list.append(
                 {
+                    "_sort_time": current_time.isoformat(),
                     "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
                     "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
                     "name": "Depart from the stop",
@@ -247,8 +273,16 @@ async def _build_itinerary(
             )
     if len(stop_list) >= 2:
         # Organize the stops by date
+        if data.route.reserve_meal_slots:
+            # A hotel's breakfast is attached to its prior arrival record. Sort
+            # presentation only; physical route stop order remains untouched.
+            stop_list.sort(
+                key=lambda row: datetime.fromisoformat(
+                    row.get("arrival_time") or row["_sort_time"]
+                ).astimezone(UTC)
+            )
         days = await _day_itinerary(stop_list)
-        if data.include_meal_slots:
+        if data.include_meal_slots and not data.route.reserve_meal_slots:
             return add_meal_windows(
                 days,
                 departure=departure,
@@ -279,6 +313,11 @@ async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]
         # iterate through all stops
         for stop in itinerary:
             point = {
+                "id": stop.get("id"),
+                "meal_type": stop.get("meal_type"),
+                "window_start": stop.get("window_start"),
+                "window_end": stop.get("window_end"),
+                "duration_seconds": stop.get("duration_seconds"),
                 "name": stop["name"],
                 "type": stop.get("type"),
                 "arrival_time": stop.get("arrival_time"),
