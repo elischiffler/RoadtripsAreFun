@@ -8,7 +8,7 @@ from psycopg2.extras import RealDictCursor
 
 from app.catalog import admission, release_holds
 from app.catalog.attribution import combine
-from app.catalog.calendar_enrichment import project
+from app.catalog.calendar_projection import project
 from app.catalog.identity import identity
 from app.catalog.personas import facts as persona_facts
 from app.core.config import settings
@@ -97,7 +97,7 @@ def current_records(source_ids):
             cur.execute("SET LOCAL statement_timeout='2000ms'")
             cur.execute(
                 f"""
-                SELECT p.source_id,p.latitude,p.longitude,p.categories,p.provenance,p.generation,p.source_updated_at,
+                SELECT p.source_id,p.name,p.region,p.address,p.url,p.latitude,p.longitude,p.categories,p.provenance,p.generation,p.source_updated_at,
                     e.entry AS calendar_enrichment,i.release,
                     i.manifest->>'attribution' AS attribution,
                     i.manifest->'source_catalogs' AS source_catalogs
@@ -113,6 +113,11 @@ def current_records(source_ids):
             rows = cur.fetchall()
         return {
             row["source_id"]: {
+                "provider_id": identity(row["source_id"])[0],
+                "name": row["name"],
+                "region": row["region"],
+                "address": row["address"],
+                "url": row["url"],
                 "categories": row["categories"],
                 "coordinates": [row["latitude"], row["longitude"]],
                 "source_provenance": project(row["provenance"], row["calendar_enrichment"])

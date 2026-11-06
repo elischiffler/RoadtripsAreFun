@@ -1,4 +1,4 @@
-"""Studio research API; private results use a per-study read/control capability."""
+"""Verified-owner research API retaining per-study read/control capabilities."""
 
 import csv
 import io
@@ -13,10 +13,15 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 
 from app.research import database, store
 from app.research.design import PERSONAS, TRIPS, Design, plan
+from app.routers import algorithm_lab as lab
 from app.routers.studio import require_studio_session
 from app.routing.evaluation.runner import identity
 
-router = APIRouter(prefix="/studio/research", tags=["studio research"])
+router = APIRouter(
+    prefix="/studio/research",
+    tags=["studio research"],
+    dependencies=[Depends(lab.require_lab_owner)],
+)
 _workers = {}
 
 

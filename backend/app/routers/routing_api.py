@@ -24,19 +24,26 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import requests  # noqa: F401  (re-exported: tests patch app.routers.routing_api.requests.get)
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import StreamingResponse
+from fastapi.routing import APIRoute
 from pydantic import ValidationError
 from requests.exceptions import RequestException
+from starlette.concurrency import run_in_threadpool
 
 from app.agent.departure import is_upcoming_departure
 from app.agent.persona import effective_weights
 from app.agent.progress import stage
+from app.agent.progress_stream import stream_turn
 from app.agent.provider_diagnostics import retry_async
 from app.agent.trip_dates import timezone_from_location
 from app.crud.memory_crud import load_account_persona
+from app.models.guided_planning import RouteAlternativesRequest, RouteAlternativesResponse
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
 from app.models.scheduling_policy import local_time
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
 from app.routing import PlanningError, PlanOptions, RoutingServices, get_planner
+from app.routing.alternatives import browse_alternatives
 from app.routing.catalog_calendars import refresh_for_timing
 from app.routing.config import geolocator  # shared reverse-geocoder
 from app.routing.explanation import record_stage
@@ -65,12 +72,35 @@ from app.utils.geolocation_helpers import get_location  # noqa: F401  (patched i
 # Setup logging (for debugging)
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
+logger = logging.getLogger(__name__)
 
 # Type aliases kept for convenience / backwards compatibility.
 Mapbox_step = MapBox.MapBox_Route.Mapbox_leg.Mapbox_step
 MapBox_route = MapBox.MapBox_Route
 
 router = APIRouter()
+
+
+class _GuidedRoute(APIRoute):
+    """Reject invalid browse input without echoing non-JSON finite values."""
+
+    def get_route_handler(self):
+        handler = super().get_route_handler()
+
+        async def validated(request):
+            try:
+                return await handler(request)
+            except RequestValidationError as exception:
+                detail = [
+                    {key: error[key] for key in ("loc", "msg", "type")}
+                    for error in exception.errors()
+                ]
+                raise HTTPException(status_code=422, detail=detail) from None
+
+        return validated
+
+
+guided_router = APIRouter(route_class=_GuidedRoute)
 
 
 def _build_services() -> RoutingServices:
@@ -163,7 +193,7 @@ async def get_final_route(
         # Validate provided payload and delegate to the shared planning core.
         json_data = await request.json()
         payload = Route_Payload.model_validate(json_data)
-        return await plan_final_route(
+        return await _plan_for_http(
             payload,
             user_id=user_id,
             can_select_algorithm=owner_routing_claims(user_id, x_cognito_id_token) is not None,
@@ -181,6 +211,79 @@ async def get_final_route(
         raise HTTPException(status_code=422, detail=f"Invalid route request: {str(exception)}")
     except (KeyError, ValueError) as exception:
         raise HTTPException(status_code=502, detail=f"Unexpected value or key: {str(exception)}")
+
+
+async def _plan_for_http(payload, *, user_id, can_select_algorithm):
+    """Share the existing HTTP failure mapping across both planning transports."""
+    try:
+        return await plan_final_route(
+            payload, user_id=user_id, can_select_algorithm=can_select_algorithm
+        )
+    except CandidateRatingError as exception:
+        raise HTTPException(status_code=502, detail=exception.public_message) from None
+    except PlanningError as exception:
+        raise HTTPException(status_code=exception.status_code, detail=exception.detail) from None
+    except RequestException as exception:
+        raise HTTPException(
+            status_code=500, detail=f"Mapbox request failed: {str(exception)}"
+        ) from None
+    except ValidationError as exception:
+        raise HTTPException(
+            status_code=422, detail=f"Invalid route request: {str(exception)}"
+        ) from None
+    except (KeyError, ValueError) as exception:
+        raise HTTPException(
+            status_code=502, detail=f"Unexpected value or key: {str(exception)}"
+        ) from None
+
+
+@guided_router.post("/generate-final-route/stream")
+async def stream_final_route(
+    request: Request,
+    user_id: str = Depends(require_authenticated_user),
+    x_cognito_id_token: str | None = Header(default=None),
+):
+    """Stream real account-owned planning stages; Studio sessions grant no access.
+
+    Request validation and algorithm eligibility happen before a worker starts.
+    Runtime errors use stream_turn's scrubbed status-only envelope and cannot be
+    replayed as another planning request by the transport.
+    """
+    try:
+        payload = Route_Payload.model_validate(await request.json())
+    except (ValidationError, ValueError) as exception:
+        raise HTTPException(
+            status_code=422, detail=f"Invalid route request: {str(exception)}"
+        ) from None
+    can_select = owner_routing_claims(user_id, x_cognito_id_token) is not None
+
+    async def run():
+        return await _plan_for_http(payload, user_id=user_id, can_select_algorithm=can_select)
+
+    return StreamingResponse(
+        stream_turn(run, stage_name="route.planning"),
+        media_type="application/x-ndjson",
+        headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+    )
+
+
+@guided_router.post(
+    "/route-alternatives",
+    response_model=RouteAlternativesResponse,
+    dependencies=[Depends(require_authenticated_user)],
+)
+async def route_alternatives(payload: RouteAlternativesRequest):
+    """Browse bounded admitted catalog facts; do not schedule or modify a trip."""
+    try:
+        return await run_in_threadpool(browse_alternatives, payload)
+    except Exception:
+        logger.warning("Nearby catalog browsing is unavailable")
+        raise HTTPException(
+            status_code=503, detail="Nearby places could not be loaded. Your route is unchanged."
+        ) from None
+
+
+router.include_router(guided_router)
 
 
 @in_run

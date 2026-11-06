@@ -9,6 +9,7 @@ class ChatDataSchema(BaseModel):
     chatId: int
     agentChatId: str | None = None
     tripProfile: dict | None = None  # Saved trip snapshot; retained for storage compatibility.
+    presentation: dict[str, Any] | None = None  # Trip-level UI state, including visited stops.
     action: str | None = None
     locationType: str
     startCoords: list[float] | None = None

@@ -12,6 +12,7 @@ import SignUpPage from './pages/AuthPages/SignUpPage';
 import NotFoundPage from './pages/NotFoundPage';
 import TripSetupPage from './pages/TripSetup/TripSetupPage';
 import ResearchRoute from './pages/StudioResearch/ResearchRoute';
+import ResearchAccess from './components/ResearchAccess';
 
 const router = createBrowserRouter([
   {
@@ -51,11 +52,23 @@ const router = createBrowserRouter([
       },
       {
         path: 'studio',
-        element: <AlgorithmLab />,
+        element: (
+          <AuthWrapper>
+            <ResearchAccess>
+              <AlgorithmLab />
+            </ResearchAccess>
+          </AuthWrapper>
+        ),
       },
       {
         path: 'studio/research',
-        element: <ResearchRoute />,
+        element: (
+          <AuthWrapper>
+            <ResearchAccess>
+              <ResearchRoute />
+            </ResearchAccess>
+          </AuthWrapper>
+        ),
       },
       { path: 'algorithm', element: <Navigate to="/studio" replace /> },
       {

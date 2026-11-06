@@ -1,3 +1,10 @@
+import comparisonPlaces from './comparisonPlaces.json';
+
+// Pinned examples retain the reviewed source vectors and their evidence. They
+// express taste only: source holds and trip feasibility remain server-owned.
+export const COMPARISONS = comparisonPlaces.pairs;
+export const COMPARISON_ANSWERS = ['left', 'right', 'either', 'neither', 'unsure'];
+
 export const INTERESTS = {
   scenery: 'Scenic views',
   nature: 'Nature',
@@ -55,6 +62,7 @@ export function newSetupDraft() {
     interests: [],
     ratings: {},
     customWeights: null,
+    comparisonAnswers: {},
     carStatus: 'unanswered',
     year: '',
     make: '',
@@ -86,7 +94,7 @@ export function normalizeWeights(values) {
   return Object.fromEntries(keys.map((key) => [key, values[key] / total]));
 }
 
-export function preferenceWeights(draft) {
+function statedPreferenceWeights(draft) {
   if (draft.customWeights) return normalizeWeights(draft.customWeights);
   const raw = Object.fromEntries(
     Object.keys(INTERESTS).map((key) => [key, draft.interests.includes(key) ? 4 : 1])
@@ -100,6 +108,90 @@ export function preferenceWeights(draft) {
     }
   }
   return normalizeWeights(raw);
+}
+
+const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+
+function validatedComparisonAnswers(answers) {
+  if (!isObject(answers)) throw new Error('Choose valid place comparison answers.');
+  const ids = new Set(COMPARISONS.map((pair) => pair.id));
+  if (
+    Object.entries(answers).some(
+      ([id, answer]) => !ids.has(id) || !COMPARISON_ANSWERS.includes(answer)
+    )
+  )
+    throw new Error('Choose valid place comparison answers.');
+  return answers;
+}
+
+function reviewedRatings(place) {
+  const values = place.attribute_ratings;
+  // Source ratings use [0, 1]; checking the complete vector prevents a future
+  // asset mistake from silently changing the meaning of a traveler profile.
+  normalizeWeights(values);
+  if (Object.values(values).some((value) => value > 1))
+    throw new Error('A place comparison profile is unavailable.');
+  return values;
+}
+
+/**
+ * Keep two profiles separate until their final per-trip 50/50 blend.
+ *
+ * A left/right answer contributes that reviewed place's attribute vector.
+ * Either contributes the mean of both vectors; neither contributes its
+ * complement (1 - mean), lowering their supported interests while retaining
+ * neutral 0.5 priors on unknown traits. The second profile normalizes the mean
+ * of actionable answers. Unsure contributes no evidence. With no evidence we
+ * use the stated profile as the second profile, preserving legacy preferences
+ * exactly rather than diluting them with an invented balanced preference.
+ */
+export function preferenceProfiles(draft) {
+  const stated = statedPreferenceWeights(draft);
+  const answers = validatedComparisonAnswers(
+    draft.comparisonAnswers === undefined ? {} : draft.comparisonAnswers
+  );
+  const vectors = [];
+  for (const pair of COMPARISONS) {
+    const answer = answers[pair.id];
+    if (!answer || answer === 'unsure') continue;
+    const left = reviewedRatings(pair.left);
+    const right = reviewedRatings(pair.right);
+    vectors.push(
+      Object.fromEntries(
+        Object.keys(INTERESTS).map((key) => {
+          const mean = (left[key] + right[key]) / 2;
+          return [
+            key,
+            answer === 'left'
+              ? left[key]
+              : answer === 'right'
+                ? right[key]
+                : answer === 'either'
+                  ? mean
+                  : 1 - mean,
+          ];
+        })
+      )
+    );
+  }
+  if (!vectors.length)
+    return { stated, comparisons: { ...stated }, combined: { ...stated }, hasComparisons: false };
+  const comparisons = normalizeWeights(
+    Object.fromEntries(
+      Object.keys(INTERESTS).map((key) => [
+        key,
+        vectors.reduce((sum, vector) => sum + vector[key], 0) / vectors.length,
+      ])
+    )
+  );
+  const combined = Object.fromEntries(
+    Object.keys(INTERESTS).map((key) => [key, (stated[key] + comparisons[key]) / 2])
+  );
+  return { stated, comparisons, combined, hasComparisons: true };
+}
+
+export function preferenceWeights(draft) {
+  return preferenceProfiles(draft).combined;
 }
 
 export function roomInputs(draft) {
@@ -192,7 +284,12 @@ export function restoreDraft(value) {
   try {
     const { version, draft, step } = JSON.parse(value);
     const initial = newSetupDraft();
-    if (version !== 1 || !draft || Object.keys(initial).some((key) => !(key in draft))) return null;
+    if (
+      version !== 1 ||
+      !isObject(draft) ||
+      Object.keys(initial).some((key) => key !== 'comparisonAnswers' && !(key in draft))
+    )
+      return null;
     for (const [key, baseline] of Object.entries(initial)) {
       if (
         typeof baseline === 'string' &&
@@ -207,9 +304,8 @@ export function restoreDraft(value) {
       draft.rooms.some((r) => typeof r.adults !== 'string' || typeof r.children !== 'string') ||
       !Array.isArray(draft.interests) ||
       draft.interests.some((k) => !(k in INTERESTS)) ||
-      !draft.ratings ||
-      typeof draft.ratings !== 'object' ||
-      !draft.schedule ||
+      !isObject(draft.ratings) ||
+      !isObject(draft.schedule) ||
       Object.keys(initial.schedule).some(
         (key) => typeof draft.schedule[key] !== typeof initial.schedule[key]
       )
@@ -235,7 +331,20 @@ export function restoreDraft(value) {
         ))
     )
       return null;
-    return { draft, step: Number.isInteger(step) && step >= 0 && step < STEPS.length ? step : 0 };
+    // Version 1 drafts predate paired comparisons. Add only the new field so
+    // all existing answers, explicit manual values and the current step survive.
+    // Corrupt new comparison state is discarded independently of a valid legacy
+    // draft, while preferenceProfiles still rejects malformed direct inputs.
+    let comparisonAnswers = {};
+    try {
+      comparisonAnswers = { ...validatedComparisonAnswers(draft.comparisonAnswers ?? {}) };
+    } catch {
+      // Keep the older, valid trip answers available for correction and review.
+    }
+    return {
+      draft: { ...draft, comparisonAnswers },
+      step: Number.isInteger(step) && step >= 0 && step < STEPS.length ? step : 0,
+    };
   } catch {
     return null;
   }

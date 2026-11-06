@@ -12,6 +12,13 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.research import database, store
 from app.research.design import Design, plan
+from app.routers import algorithm_lab as lab
+
+
+@pytest.fixture(autouse=True)
+def authorized_owner(monkeypatch):
+    # These optional disposable-DB tests retain session/capability coverage.
+    monkeypatch.setitem(app.dependency_overrides, lab.require_lab_owner, lambda: "fixture-owner")
 
 
 @pytest.fixture

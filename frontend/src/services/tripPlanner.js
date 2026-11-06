@@ -3,6 +3,7 @@ import { backendAuthConfig } from './backendAuth';
 import { getFreshRoutingAlgorithm } from './routingSettings';
 import { getSession, isCurrentSession, SessionError } from './session';
 import { preferenceWeights, roomInputs } from '../pages/TripSetup/setupModel';
+import { streamTripRoute } from './tripRouteStream';
 
 export function plannerError(error) {
   const detail = error.response?.data?.detail;
@@ -61,11 +62,50 @@ export function structuredTripInputs(draft) {
   };
 }
 
-export async function planStructuredRoute(draft, origin, destination, signal) {
+const validCoordinates = (points, latitudeFirst = false) =>
+  Array.isArray(points) &&
+  points.length >= 2 &&
+  points.every(
+    (point) =>
+      Array.isArray(point) &&
+      point.length === 2 &&
+      point.every(Number.isFinite) &&
+      Math.abs(point[latitudeFirst ? 0 : 1]) <= 90 &&
+      Math.abs(point[latitudeFirst ? 1 : 0]) <= 180
+  );
+
+export async function estimateStructuredRoute(origin, destination, signal) {
+  const { data } = await axios.get(import.meta.env.VITE_BACKEND_SERVER + 'get-initial-route', {
+    ...backendAuthConfig(),
+    signal,
+    params: {
+      start_lat: origin.latitude,
+      start_lon: origin.longitude,
+      end_lat: destination.latitude,
+      end_lon: destination.longitude,
+    },
+  });
+  if (
+    !data ||
+    !Number.isFinite(data.duration) ||
+    data.duration < 0 ||
+    !Number.isFinite(data.distance) ||
+    data.distance < 0 ||
+    !validCoordinates(data.geometry?.coordinates)
+  )
+    throw new Error('A usable driving estimate was not returned.');
+  return data;
+}
+
+export async function planStructuredRoute(draft, origin, destination, signal, { onProgress } = {}) {
   const started = getSession();
-  const { data: initial_route } = await axios.get(
-    import.meta.env.VITE_BACKEND_SERVER + 'get-initial-route',
-    {
+  let initial_route;
+  if (onProgress) {
+    initial_route = await estimateStructuredRoute(origin, destination, signal);
+    onProgress({ type: 'progress', stage: 'route.initial', state: 'completed' });
+  } else {
+    // Keep the ordinary four-argument API compatible with existing callers.
+    const response = await axios.get(import.meta.env.VITE_BACKEND_SERVER + 'get-initial-route', {
       ...backendAuthConfig(),
       signal,
       params: {
@@ -74,36 +114,43 @@ export async function planStructuredRoute(draft, origin, destination, signal) {
         end_lat: destination.latitude,
         end_lon: destination.longitude,
       },
-    }
-  );
+    });
+    initial_route = response.data;
+  }
   const algorithm = await getFreshRoutingAlgorithm();
-  if (!isCurrentSession(started) || signal.aborted) throw new SessionError('session-changed');
+  if (!isCurrentSession(started) || signal?.aborted) throw new SessionError('session-changed');
   const payload = {
     initial_route,
     ...structuredTripInputs(draft),
     ...(algorithm ? { algorithm } : {}),
   };
-  const { data: route } = await axios.post(
-    import.meta.env.VITE_BACKEND_SERVER + 'generate-final-route',
-    payload,
-    { ...backendAuthConfig(), signal }
-  );
+  let route;
+  if (onProgress) route = await streamTripRoute(payload, signal, onProgress);
+  else {
+    const response = await axios.post(
+      import.meta.env.VITE_BACKEND_SERVER + 'generate-final-route',
+      payload,
+      { ...backendAuthConfig(), signal }
+    );
+    route = response.data;
+  }
   if (
     !route ||
-    !Array.isArray(route.coordinates) ||
-    route.coordinates.length < 2 ||
-    !route.geometry ||
+    !validCoordinates(route.coordinates, true) ||
+    !validCoordinates(route.geometry?.coordinates) ||
     !Number.isFinite(route.distance) ||
-    !Number.isFinite(route.duration)
+    route.distance < 0 ||
+    !Number.isFinite(route.duration) ||
+    route.duration < 0
   )
     throw new Error('The planning service did not return a complete route.');
   return route;
 }
 
-export async function planStructuredItinerary(route, signal) {
+export async function planStructuredItinerary(route, signal, { includeMealSlots = false } = {}) {
   const { data } = await axios.post(
     import.meta.env.VITE_BACKEND_SERVER + 'generate-itinerary',
-    { route },
+    { route, ...(includeMealSlots ? { include_meal_slots: true } : {}) },
     { ...backendAuthConfig(), signal }
   );
   if (!Array.isArray(data) || !data.length) throw new Error('No completed itinerary was returned.');

@@ -1,31 +1,30 @@
 .map-container .map-stop-pin {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  min-height: 0;
+  width: var(--rt-target-min, 44px);
+  height: var(--rt-target-min, 44px);
   padding: 0;
-  border: 2px solid #fbf8f3;
-  border-radius: 50%;
-  background: #a56b28;
-  color: white;
-  font:
-    700 12px / 1 system-ui,
-    sans-serif;
-  box-shadow: 0 2px 6px #3b2a1a55;
+  border: var(--rt-border-width, 1px) solid var(--rt-color-surface, white);
+  border-radius: var(--rt-radius-pill, 999rem);
+  background: var(--rt-color-route, #175bc1);
+  color: var(--rt-color-on-accent, white);
+  font-family: var(--rt-font, system-ui);
+  font-size: var(--rt-text-small, 0.875rem);
+  font-weight: var(--rt-weight-strong, 650);
+  box-shadow: var(--rt-shadow-floating, 0 0.25rem 1rem #172b2524);
   cursor: pointer;
 }
 .map-container .map-stop-pin[data-type='hotel'] {
-  background: #234a3c;
+  background: var(--rt-color-accent, #165b50);
 }
 .map-container .map-stop-pin:hover,
 .map-container .map-stop-pin[aria-expanded='true'] {
-  box-shadow: 0 0 0 3px #3b2a1a55;
+  background: var(--rt-color-accent-hover, #10483f);
 }
 .map-container .map-stop-pin:focus-visible,
 .map-stop-svg-pin:focus-visible {
-  outline: 3px solid #a56b28;
-  outline-offset: 3px;
+  outline: var(--rt-focus-width, 3px) solid var(--rt-color-focus, #175bc1);
+  outline-offset: var(--rt-focus-offset, 3px);
 }
 .map-stop-svg-pin {
   cursor: pointer;
@@ -35,36 +34,116 @@
 }
 .map-stop-popup .mapboxgl-popup-content,
 .map-stop-local-popup {
-  background: #fbf8f3;
-  color: #3b2a1a;
-  font:
-    13px / 1.5 system-ui,
-    sans-serif;
-  border-radius: 8px;
-  padding: 16px 28px 12px 12px;
+  background: var(--rt-color-surface, white);
+  color: var(--rt-color-text, #172b25);
+  font-family: var(--rt-font, system-ui);
+  font-size: var(--rt-text-small, 0.875rem);
+  line-height: var(--rt-leading-body, 1.5);
+  border-radius: var(--rt-radius-control, 1rem);
+  padding: var(--rt-space-4, 1rem) var(--rt-space-12, 3rem) var(--rt-space-4, 1rem)
+    var(--rt-space-4, 1rem);
   overflow-wrap: anywhere;
 }
 .map-stop-popup p,
 .map-stop-local-popup p {
-  margin: 4px 0 0;
+  margin: var(--rt-space-1, 0.25rem) 0 0;
   text-transform: none;
 }
 .map-stop-local-popup {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
+  top: var(--rt-space-2, 0.5rem);
+  left: var(--rt-space-2, 0.5rem);
+  right: var(--rt-space-2, 0.5rem);
   z-index: 3;
-  box-shadow: 0 2px 12px #3b2a1a33;
+  box-shadow: var(--rt-shadow-floating, 0 0.25rem 1rem #172b2524);
+}
+.map-stop-local-popup .map-stop-close,
+.map-stop-popup .mapboxgl-popup-close-button {
+  min-width: var(--rt-target-min, 44px);
+  min-height: var(--rt-target-min, 44px);
+  color: var(--rt-color-text, #172b25);
+  border-radius: var(--rt-radius-control, 1rem);
 }
 .map-stop-local-popup .map-stop-close {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  padding: 2px 6px;
+  top: 0;
+  right: 0;
   border: 0;
   background: transparent;
-  color: #3b2a1a;
-  font-size: 20px;
+  cursor: pointer;
+}
+.map-fixture-label {
+  position: absolute;
+  bottom: var(--rt-space-2, 0.5rem);
+  left: var(--rt-space-2, 0.5rem);
+  z-index: 1;
+  padding: var(--rt-space-2, 0.5rem);
+  border-radius: var(--rt-radius-sm, 0.75rem);
+  background: var(--rt-color-surface, white);
+  color: var(--rt-color-text, #172b25);
+  font-size: var(--rt-text-caption, 0.8125rem);
+}
+.map-unavailable {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  padding: var(--rt-space-6, 1.5rem);
+  background: var(--rt-color-surface, white);
+  color: var(--rt-color-secondary, #50635a);
+}
+
+.map-idea-pin {
+  width: var(--rt-target-min, 44px);
+  height: var(--rt-target-min, 44px);
+  display: grid;
+  place-items: center;
+  border: var(--rt-border-width, 1px) solid var(--rt-color-route, #175bc1);
+  border-radius: var(--rt-radius-pill, 999rem);
+  background: var(--rt-color-surface, white);
+  color: var(--rt-color-route, #175bc1);
+  font-size: var(--rt-text-title, 1.25rem);
+  cursor: pointer;
+}
+.map-idea-pin[aria-pressed='true'] {
+  background: var(--rt-color-route-surface, #e9f1ff);
+  outline: var(--rt-focus-width, 3px) solid var(--rt-color-route, #175bc1);
+}
+.map-idea-pin:focus-visible,
+.map-idea-svg-pin:focus-visible {
+  outline: var(--rt-focus-width, 3px) solid var(--rt-color-focus, #175bc1);
+  outline-offset: var(--rt-focus-offset, 3px);
+}
+.map-idea-svg-pin {
+  cursor: pointer;
+}
+.map-idea-svg-pin text {
+  pointer-events: none;
+}
+.map-idea-detail {
+  position: absolute;
+  z-index: 2;
+  top: var(--rt-space-3, 0.75rem);
+  left: var(--rt-space-3, 0.75rem);
+  right: var(--rt-space-3, 0.75rem);
+  padding: var(--rt-space-4, 1rem) var(--rt-space-12, 3rem) var(--rt-space-4, 1rem)
+    var(--rt-space-4, 1rem);
+  background: var(--rt-color-surface, white);
+  color: var(--rt-color-text, #172b25);
+  border-radius: var(--rt-radius-control, 1rem);
+  box-shadow: var(--rt-shadow-floating, 0 0.25rem 1rem #172b2524);
+  font-size: var(--rt-text-small, 0.875rem);
+}
+.map-idea-detail p {
+  margin: var(--rt-space-2, 0.5rem) 0 0;
+}
+.map-idea-detail .map-stop-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: var(--rt-target-min, 44px);
+  min-height: var(--rt-target-min, 44px);
+  background: transparent;
+  border: 0;
+  color: inherit;
   cursor: pointer;
 }

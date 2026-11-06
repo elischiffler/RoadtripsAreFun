@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -8,12 +9,17 @@ from app.models.routing_models.routing_models import Route
 class Itinerary_Payload(BaseModel):
     route: Route
     start_time: datetime | None = None
+    include_meal_slots: bool = False
 
 
 class Itinerary_Day(BaseModel):
     date: str
 
     class Itinerary_Stop(BaseModel):
+        id: str | None = None
+        meal_type: Literal["breakfast", "lunch", "dinner"] | None = None
+        window_start: str | None = None
+        window_end: str | None = None
         provider_id: str | None = None
         source: str | None = None
         source_release: str | None = None

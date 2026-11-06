@@ -1,127 +1,96 @@
-.home-page {
-  min-height: 100%;
-  padding: calc(var(--header-height) + 5rem) max(1.25rem, calc((100% - 68rem) / 2)) 3rem;
-  background: #f7f8fa;
-  color: #1d2430;
-  font:
-    100%/1.5 system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
+.rt-design.home-page {
+  min-block-size: 100vh;
+  padding-block-start: calc(var(--header-height) + var(--rt-space-10));
 }
 .home-copy {
-  max-width: 46rem;
-  margin-bottom: 3rem;
+  display: grid;
+  gap: var(--rt-space-4);
+}
+.home-copy p {
+  margin: 0;
+  color: var(--rt-color-secondary);
 }
 .home-eyebrow {
-  font-size: 0.85rem;
-  letter-spacing: 0.035em;
-  font-weight: 650;
-  color: #525e6c;
+  font-size: var(--rt-text-caption);
+  font-weight: var(--rt-weight-strong);
+  letter-spacing: var(--rt-tracking-caption);
 }
 .home-copy h1 {
-  font-size: clamp(2.5rem, 6vw, 4.7rem);
-  font-weight: 650;
-  line-height: 1.07;
-  letter-spacing: -0.045em;
-  margin: 1.25rem 0;
-  max-width: 13ch;
-}
-.home-copy > p:last-child {
-  color: #525e6c;
-  font-size: 1.1rem;
-  max-width: 34ch;
+  margin: 0;
+  font-size: var(--rt-text-display);
+  line-height: var(--rt-leading-tight);
+  font-weight: var(--rt-weight-strong);
+  letter-spacing: var(--rt-tracking-display);
+  max-inline-size: 15ch;
 }
 .home-destinations {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
+  gap: var(--rt-space-4);
 }
 .home-destination {
   display: flex;
   flex-direction: column;
-  padding: 2rem;
-  background: #fff;
-  border: 1px solid #dce1e6;
-  border-radius: 1.2rem;
-  color: #1d2430;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-6);
+  background: var(--rt-color-surface);
+  border: var(--rt-border-width) solid var(--rt-color-border);
+  border-radius: var(--rt-radius-sheet);
+  color: var(--rt-color-text);
   text-decoration: none;
-  transition:
-    background-color 120ms,
-    border-color 120ms;
+  box-shadow: var(--rt-shadow-sheet);
+  transition: background-color var(--rt-duration-color) var(--rt-ease);
 }
 .home-destination--plan {
-  background: #eaf2ee;
-  border-color: #c5d8ce;
+  background: var(--rt-color-selected);
 }
 .home-destination:hover {
-  background: #f0f4f2;
-  border-color: #79978b;
+  background: var(--rt-color-muted);
 }
 .home-destination:active {
-  background: #dbe9e2;
+  transform: scale(var(--rt-press-scale));
 }
 .home-destination:focus-visible,
 .home-saved a:focus-visible {
-  outline: 3px solid #286bc4;
-  outline-offset: 4px;
+  outline: var(--rt-focus-width) solid var(--rt-color-focus);
+  outline-offset: var(--rt-focus-offset);
 }
 .home-card-number {
+  font-size: var(--rt-text-caption);
   font-variant-numeric: tabular-nums;
-  color: #52665c;
-  font-size: 0.8rem;
-  margin-bottom: 2rem;
+  color: var(--rt-color-secondary);
 }
 .home-destination h2 {
-  margin: 0 0 0.6rem;
-  font-size: 1.6rem;
-  font-weight: 650;
-  letter-spacing: -0.025em;
+  margin: 0;
+  font-size: var(--rt-text-title);
+  font-weight: var(--rt-weight-strong);
+  letter-spacing: var(--rt-tracking-title);
 }
 .home-destination p {
-  margin: 0 0 2rem;
-  max-width: 32ch;
-  color: #525e6c;
+  margin: 0;
+  color: var(--rt-color-secondary);
 }
 .home-card-action {
-  margin-top: auto;
-  font-weight: 600;
-  color: #235c4b;
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--rt-space-4);
+  color: var(--rt-color-accent);
+  font-weight: var(--rt-weight-strong);
+  margin-block-start: var(--rt-space-2);
 }
 .home-saved {
-  margin-top: 2rem;
-  font-size: 0.85rem;
-  color: #525e6c;
+  margin: 0;
+  font-size: var(--rt-text-small);
+  color: var(--rt-color-secondary);
 }
 .home-saved a {
-  color: #235c4b;
-  text-underline-offset: 0.2em;
-}
-@media (max-width: 600px) {
-  .home-page {
-    padding-top: calc(var(--header-height) + 2.5rem);
-  }
-  .home-destinations {
-    grid-template-columns: 1fr;
-  }
-  .home-destination {
-    padding: 1.5rem;
-  }
-  .home-card-number {
-    margin-bottom: 1rem;
-  }
+  color: var(--rt-color-accent);
+  text-underline-offset: var(--rt-space-1);
 }
 @media (prefers-reduced-motion: reduce) {
   .home-destination {
     transition: none;
   }
-}
-@media (prefers-contrast: more) {
-  .home-destination {
-    border-color: currentColor;
+  .home-destination:active {
+    transform: none;
   }
 }

@@ -5,6 +5,7 @@ import LogoButton from './LogoButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { UserDataContext } from '../states/UserDataContext';
 import { isAuthenticated } from '../services/authService';
+import '../design/index.css';
 import './GlobalHeader.css';
 import { signOut } from '../services/session';
 import { useSessionStatus } from '../services/useSessionStatus';
@@ -38,18 +39,21 @@ export default function GlobalHeader() {
   const logoProgress = onMapPage || location.pathname === '/itinerary' ? 1 : 0;
 
   return (
-    <Box className={`global-header${onMapPage ? ' global-header--transparent' : ''}`}>
+    <Box className={`rt-design global-header${onMapPage ? ' global-header--transparent' : ''}`}>
       <LogoButton progress={logoProgress} />
 
       <Box className="global-header-right">
-        <Button component={Link} to="/plan" sx={{ color: 'text.primary', px: 1 }}>
-          Plan a trip
+        <Button component={Link} to="/plan" aria-label="Plan a trip" className="header-nav-link">
+          <span className="header-label-wide">Plan a trip</span>
+          <span className="header-label-compact" aria-hidden="true">
+            Plan
+          </span>
         </Button>
-        <Button component={Link} to="/trips" sx={{ color: 'text.primary', px: 1 }}>
-          Saved trips
-        </Button>
-        <Button component={Link} to="/studio" sx={{ color: 'text.primary', px: 1 }}>
-          AI Studio
+        <Button component={Link} to="/trips" aria-label="Saved trips" className="header-nav-link">
+          <span className="header-label-wide">Saved trips</span>
+          <span className="header-label-compact" aria-hidden="true">
+            Trips
+          </span>
         </Button>
         {authed ? (
           <>
@@ -74,13 +78,8 @@ export default function GlobalHeader() {
               onClick={handleClose}
               slotProps={{
                 paper: {
-                  className: 'profile-menu-paper',
+                  className: 'rt-design profile-menu-paper',
                   elevation: 3,
-                  sx: {
-                    backgroundColor: 'var(--cream-light)',
-                    border: '1px solid var(--cream-dark)',
-                    borderRadius: '10px',
-                  },
                 },
               }}
               transformOrigin={{ horizontal: 'right', vertical: 'top' }}
@@ -89,7 +88,10 @@ export default function GlobalHeader() {
               <Box className="profile-menu-header">
                 <Typography className="profile-menu-label">Account</Typography>
               </Box>
-              <Divider sx={{ borderColor: 'var(--cream-dark)' }} />
+              <Divider />
+              <MenuItem component={Link} to="/settings" className="profile-menu-item">
+                Settings
+              </MenuItem>
               <MenuItem onClick={handleSignOut} className="profile-menu-item">
                 <LogoutIcon className="profile-menu-icon" />
                 Sign out
@@ -97,24 +99,7 @@ export default function GlobalHeader() {
             </Menu>
           </>
         ) : (
-          <Button
-            variant="contained"
-            component={Link}
-            to="/login"
-            sx={{
-              backgroundColor: 'var(--amber-main)',
-              color: '#1e1208',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              padding: '6px 18px',
-              borderRadius: '8px',
-              boxShadow: 'none',
-              '&:hover': {
-                backgroundColor: 'var(--amber-light)',
-                boxShadow: 'none',
-              },
-            }}
-          >
+          <Button variant="contained" component={Link} to="/login" className="header-login">
             Login
           </Button>
         )}

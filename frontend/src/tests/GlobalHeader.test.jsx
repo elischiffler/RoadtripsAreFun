@@ -29,10 +29,11 @@ function TripStateProbe() {
 }
 
 describe('GlobalHeader', () => {
-  it('links setup and research independently', () => {
+  it('links trip planning without exposing research navigation', () => {
     renderWithProviders(<GlobalHeader />);
     expect(screen.getByRole('link', { name: 'Plan a trip' })).toHaveAttribute('href', '/plan');
-    expect(screen.getByRole('link', { name: 'AI Studio' })).toHaveAttribute('href', '/studio');
+    expect(screen.getByRole('link', { name: 'Saved trips' })).toHaveAttribute('href', '/trips');
+    expect(screen.queryByRole('link', { name: /Studio|research/i })).not.toBeInTheDocument();
   });
   beforeEach(() => sessionStorage.clear());
   afterEach(() => sessionStorage.clear());
@@ -68,6 +69,8 @@ describe('GlobalHeader', () => {
 
     // Open profile menu
     await user.click(screen.getByText('U'));
+    expect(screen.getByRole('menuitem', { name: 'Settings' })).toHaveAttribute('href', '/settings');
+    expect(screen.queryByRole('menuitem', { name: /Studio|research/i })).not.toBeInTheDocument();
     // Click Sign out
     await user.click(screen.getByText(/sign out/i));
 

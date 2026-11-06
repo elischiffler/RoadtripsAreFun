@@ -161,3 +161,104 @@ def test_all_audited_holds_are_excluded_before_sql_limits_and_activation(connect
         assert cur.fetchone()[0] == 135  # Historical facts stay intact for review/deduplication.
         cur.execute("SELECT generation FROM places_catalog_active")
         assert cur.fetchone()[0] == "admission-fixture"
+
+
+def test_all_170_registry_versions_match_independent_postgres_hash_and_admission(connection):
+    from app.catalog import hold_resolution as h
+    from tests.catalog_routing_hold_resolution_tests import row_for
+
+    rows = [dict(row_for(item), generation="a" * 64) for item in h.RESOLUTIONS]
+    with connection.cursor() as cur:
+        cur.execute(
+            "SELECT p.source_id, md5(("
+            + h.payload_sql()
+            + ")::text), "
+            + release_holds.SQL_ALLOWED
+            + ", "
+            + admission.sql_predicate()
+            + " FROM jsonb_populate_recordset(NULL::public.places_catalog,%s) p "
+            + admission.SQL_JOINS,
+            (NOW, NOW, Json(rows)),
+        )
+        result = cur.fetchall()
+        assert len(result) == len(rows) == 170
+        for item, row, (sid, pg_md5, allowed, routes) in zip(
+            h.RESOLUTIONS, rows, result, strict=True
+        ):
+            assert sid == item["source_id"]
+            assert pg_md5 == item["payload_pg_md5"]
+            assert allowed and not release_holds.blocked(row)
+            assert routes == admission.routing_eligible(row, now_epoch=NOW)
+
+
+def test_tampered_exact_payloads_fail_sql_and_python_without_global_unhold(connection):
+    from app.catalog import hold_resolution as h
+    from tests.catalog_routing_hold_resolution_tests import row_for
+
+    rows = []
+    for item in h.RESOLUTIONS:
+        value = dict(row_for(item), generation="a" * 64)
+        value["name"] += " unreviewed change"
+        rows.append(value)
+    with connection.cursor() as cur:
+        cur.execute(
+            "SELECT "
+            + release_holds.SQL_ALLOWED
+            + " FROM jsonb_populate_recordset(NULL::public.places_catalog,%s) p",
+            (Json(rows),),
+        )
+        assert all(allowed is False for (allowed,) in cur.fetchall())
+    assert all(release_holds.blocked(row) for row in rows)
+
+
+def test_current_exact_routing_record_keeps_admission_and_full_identity(connection, monkeypatch):
+    from app.catalog import hold_resolution as h
+    from app.routing.catalog_calendars import refresh_for_timing
+    from app.routing.visit_calendar import calendar_eligible
+    from tests.catalog_routing_hold_resolution_tests import row_for
+
+    item = next(
+        e
+        for e in h.RESOLUTIONS
+        if any(
+            f.get("catalog_admission", {}).get("tier") == "T3"
+            for f in e["approved_payload"]["provenance"]
+        )
+    )
+    row = row_for(item)
+    contract = next(f["catalog_admission"] for f in row["provenance"] if "catalog_admission" in f)
+    monkeypatch.setattr(admission.time, "time", lambda: contract["reviewed_at_epoch"] + 1)
+    with connection, connection.cursor() as cur:
+        cur.execute(
+            "INSERT INTO places_catalog_imports(generation,release,manifest,row_count) VALUES (%s,%s,%s,1)",
+            ("a" * 64, "synthetic-review-projection", Json({"attribution": "Fixture only"})),
+        )
+        cur.execute(
+            "INSERT INTO places_catalog SELECT * FROM jsonb_populate_record(NULL::public.places_catalog,%s)",
+            (Json(dict(row, generation="a" * 64)),),
+        )
+        cur.execute("INSERT INTO places_catalog_active VALUES(true,%s)", ("a" * 64,))
+    fresh = repository.current_records([row["source_id"]])[row["source_id"]]
+    assert fresh["name"] == row["name"] and fresh["region"] == row["region"]
+    assert not release_holds.blocked(fresh) and calendar_eligible(fresh)
+    stale = dict(
+        fresh,
+        name="Old serialized name",
+        address="Old address",
+        url="https://stale.example",
+        type="stop",
+    )
+    asyncio.run(refresh_for_timing([stale]))
+    assert stale["name"] == row["name"] and stale["address"] == row["address"]
+    assert calendar_eligible(stale)
+    # A companion must never override the exact source calendar pinned in the exception.
+    companion = {
+        "source_id": row["source_id"],
+        "source_visit_calendar": {"schema_version": "roadtrips-source-visit-calendar/1"},
+    }
+    with connection, connection.cursor() as cur:
+        cur.execute(
+            "INSERT INTO places_catalog_calendars VALUES(%s,%s,%s)",
+            ("a" * 64, row["source_id"], Json(companion)),
+        )
+    assert repository.current_records([row["source_id"]]) == {}

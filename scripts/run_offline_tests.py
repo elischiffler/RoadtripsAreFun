@@ -92,13 +92,15 @@ def install(*, loopback=False):
 
 
 def main():
+    root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--allow-loopback", action="store_true")
+    parser.add_argument("--backend-dir", type=Path, default=root / "backend")
     args, pytest_args = parser.parse_known_args()
     install(loopback=args.allow_loopback)
-    root = Path(__file__).resolve().parents[1]
-    sys.path[:0] = [str(root), str(root / "backend")]
-    os.chdir(root / "backend")
+    backend = args.backend_dir.resolve()
+    sys.path[:0] = [str(root), str(backend)]
+    os.chdir(backend)
     import pytest
 
     return pytest.main(pytest_args)

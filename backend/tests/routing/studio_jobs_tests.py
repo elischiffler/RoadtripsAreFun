@@ -198,10 +198,13 @@ async def test_job_http_routes_authenticate_and_scope_all_operations(monkeypatch
     import httpx
 
     from app.main import app
+    from app.routers import algorithm_lab as lab
     from app.routers import studio
     from app.routing.lab_presets import preset_catalog
 
     monkeypatch.setattr(studio, "jobs", manager)
+    # Isolate job-session ownership after the separate owner guard passes.
+    monkeypatch.setitem(app.dependency_overrides, lab.require_lab_owner, lambda: "fixture-owner")
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="http://fixture"
     ) as client:
