@@ -115,6 +115,48 @@ it('does not return a late route if the owner changes while consuming a chunk', 
   ).rejects.toMatchObject({ code: 'session-changed' });
   expect(fetch).toHaveBeenCalledOnce();
 });
+it('shows fixed departure guidance for the exact typed422 without replaying or trusting server detail', async () => {
+  fetch.mockResolvedValue(
+    streamed([
+      { type: 'progress', stage: 'route.initial', state: 'completed' },
+      {
+        type: 'error',
+        status: 422,
+        code: 'departure_not_upcoming',
+        detail: 'Private provider diagnostics must not be shown.',
+      },
+    ])
+  );
+  await expect(streamTripRoute({}, new AbortController().signal)).rejects.toMatchObject({
+    response: {
+      status: 422,
+      data: { detail: 'Choose a departure date and time in the future.' },
+    },
+  });
+  expect(fetch).toHaveBeenCalledOnce();
+  expect(cognitoClient.send).not.toHaveBeenCalled();
+});
+
+it.each([
+  { status: 422, code: 'provider_validation' },
+  { status: 422, code: '__proto__' },
+  { status: 422 },
+  { status: 401, code: 'departure_not_upcoming' },
+  { status: 500, code: 'departure_not_upcoming' },
+  { code: 'departure_not_upcoming' },
+])(
+  'keeps unknown error codes, wrong statuses and arbitrary details redacted without replay',
+  async (event) => {
+    fetch.mockResolvedValue(
+      streamed([{ type: 'error', ...event, detail: 'Private provider diagnostics' }])
+    );
+    const failure = await streamTripRoute({}, new AbortController().signal).catch((error) => error);
+    expect(failure.response.data).toBeUndefined();
+    expect(failure.message).not.toContain('Private');
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(cognitoClient.send).not.toHaveBeenCalled();
+  }
+);
 it.each([
   [() => streamed([{ type: 'heartbeat' }]), /without a result/],
   [

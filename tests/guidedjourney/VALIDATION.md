@@ -1,7 +1,8 @@
 # Incident gate evidence — November 6, 2026
 
 This records local synthetic verification, not a live provider/account test or a
-production deployment. The required Local containers wrapper still needs its
+production deployment. The latest complete native run passes the positive and
+negative cases below. The corrected container wrapper still needs its next
 GitHub CI execution after integration. No hosted database or live Mentro request
 was made.
 
@@ -42,7 +43,7 @@ Ignored evidence: `.artifacts/happy-result.json`, `.artifacts/saved-trip.png` an
 `.artifacts/reloaded-itinerary.png`. The fixture is deliberately synthetic at the
 external provider/catalog boundary and does not prove live provider correctness.
 
-## Known failing negative case
+## Previously failing negative case
 
 The subsequent expired-departure attempt produced the actual NDJSON error status
 422, did not execute the solver again and left the trip count at one. The UI
@@ -50,14 +51,40 @@ remained below completion (70%) and did not show a saved result. However, its
 message was still the generic “The planning service could not finish. Your draft
 is kept. Please try again.” rather than an actionable departure rejection.
 
-The full gate therefore remains **failing**, intentionally, at its assertion that
+The first full gate therefore remained **failing**, intentionally, at its assertion that
 the expired departure explains the need for a future date/time. Fix the actual
 stream/client error contract before claiming the full gate passed. Do not inject
 a message in the fixture or relax that assertion. `.artifacts/failure.json` and
 `.artifacts/failure.png` record this later failure.
 
+## Strict positive and negative follow-up: passed
+
+After the application introduced its typed `departure_not_upcoming` contract and
+the frontend's matching status/code allowlist, the actual static-browser journey
+was rebuilt into a separate output directory and rerun against a fresh marked
+disposable PostgreSQL database. The full browser command exited zero. Creation,
+save/reload, persisted visit/undo and saved-itinerary reopening passed again.
+The expired attempt returned the actual NDJSON event with status 422 and code
+`departure_not_upcoming`; the browser displayed exactly “Choose a departure date
+and time in the future.” The solver still ran once, the database still contained
+one trip, and the failed attempt had no saved result or 100% progress. The fixture
+did not inject or replace the error message. Unexpected browser/network attempts
+and page errors were empty. `.artifacts/result.json` records the passing run.
+
+## Container wrapper follow-up
+
+[The first PR64 container run](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/42312379976)
+passed image building, smoke tests and the isolated Python suite. It passed the
+journey's image checks and fresh PostgreSQL initialization, then correctly failed
+the required workflow because `/journey/fixture.py` evaluated a native-only
+`parents[2]` path before selecting the Docker `/app` source root. The bootstrap
+now selects the existing Docker source root first, so the shallow mounted path
+does not get indexed. No check or assertion was removed. The corrected wrapper
+must pass CI on the final candidate before release; native success alone does not
+establish that container execution.
+
 Node syntax, Python compile/Ruff, Compose configuration and whitespace checks
 pass. Independent review checked the fixture isolation, real execution seams,
 native progress assertions, persisted visit/undo assertions, database target
-guards and image revision checks. These checks do not replace the outstanding
-full container-wrapper and fixed negative-case runs.
+guards and image revision checks. Those checks and the full native pass do not
+replace the outstanding corrected container-wrapper run.

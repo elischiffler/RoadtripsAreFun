@@ -256,11 +256,15 @@ try {
     report.stream_events.filter((event) => event.type === "error").length,
     1,
   );
+  assert.deepEqual(
+    report.stream_events.filter((event) => event.type === "error"),
+    [{ type: "error", status: 422, code: "departure_not_upcoming" }],
+  );
   assert.deepEqual(blocked, []);
   assert.deepEqual(errors, []);
-  assert.match(
+  assert.equal(
     departureError,
-    /upcoming|future|later date|later.*time/i,
+    "Choose a departure date and time in the future.",
     "An expired departure must explain the real rejection rather than hide its reason",
   );
   await writeFile(

@@ -8,6 +8,7 @@ import {
 import { isAuthRejection, sessionRequest } from './protectedRequest';
 
 const abortError = () => new DOMException('Trip planning was stopped.', 'AbortError');
+const DEPARTURE_NOT_UPCOMING = 'Choose a departure date and time in the future.';
 const streamError = (status, detail) =>
   Object.assign(new Error('The planning service could not finish.'), {
     response: { status, data: detail ? { detail } : undefined },
@@ -74,7 +75,15 @@ export async function streamTripRoute(payload, signal, onProgress) {
       check();
       const event = JSON.parse(line);
       if (!event || typeof event !== 'object') throw new Error('Invalid trip progress event.');
-      if (event.type === 'error') throw streamError(event.status ?? 503);
+      if (event.type === 'error') {
+        // Public guidance comes from an exact application-owned contract, never
+        // provider details carried by an arbitrary streamed error.
+        const detail =
+          event.status === 422 && event.code === 'departure_not_upcoming'
+            ? DEPARTURE_NOT_UPCOMING
+            : undefined;
+        throw streamError(event.status ?? 503, detail);
+      }
       if (!['progress', 'heartbeat', 'result'].includes(event.type))
         throw new Error('Unexpected trip progress event.');
       if (event.type === 'progress' && typeof event.stage !== 'string')

@@ -86,9 +86,12 @@ def local_connect_ex(sock, address):
 
 
 socket.socket.connect_ex = local_connect_ex
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "backend"))
-if Path("/app/app").exists():
-    sys.path.insert(0, "/app")
+backend_root = (
+    Path("/app")
+    if Path("/app/app/main.py").is_file()
+    else Path(__file__).resolve().parents[2] / "backend"
+)
+sys.path.insert(0, str(backend_root))
 
 import dotenv
 
@@ -255,7 +258,11 @@ async def record_requests(request, call_next):
                     if line.strip():
                         event = json.loads(line)
                         counts["stream_events"].append(
-                            {"type": event.get("type"), "status": event.get("status")}
+                            {
+                                "type": event.get("type"),
+                                "status": event.get("status"),
+                                "code": event.get("code"),
+                            }
                         )
                 yield chunk
 
