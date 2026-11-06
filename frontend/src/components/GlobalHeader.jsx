@@ -36,11 +36,10 @@ export default function GlobalHeader() {
     return null;
 
   const onMapPage = location.pathname === '/map';
-  const logoProgress = onMapPage || location.pathname === '/itinerary' ? 1 : 0;
 
   return (
     <Box className={`rt-design global-header${onMapPage ? ' global-header--transparent' : ''}`}>
-      <LogoButton progress={logoProgress} />
+      <LogoButton />
 
       <Box className="global-header-right">
         <Button component={Link} to="/plan" aria-label="Plan a trip" className="header-nav-link">
