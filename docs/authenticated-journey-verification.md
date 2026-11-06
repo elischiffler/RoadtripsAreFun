@@ -35,7 +35,8 @@ From repository root, with dependencies already installed:
 ```sh
 backend/.venv/bin/python scripts/run_offline_tests.py \
   tests/auth_tests.py tests/provider_route_auth_tests.py \
-  tests/routing_api/guided_flow_tests.py tests/chat_persistence_tests.py
+  tests/routing_api/guided_flow_tests.py tests/chat_persistence_tests.py \
+  tests/reserved_meal_tests.py tests/routing/cp_sat_planner_tests.py
 
 NODE_OPTIONS="--require=$(pwd)/scripts/offline_node_guard.cjs" \
   npm --prefix frontend test -- \

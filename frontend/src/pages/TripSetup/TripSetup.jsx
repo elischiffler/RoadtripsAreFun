@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import useSetupDraft from './useSetupDraft';
-import { ActionButton, ChoiceGroup, DesignFrame, Field, Sheet } from '../../design';
+import { ActionButton, AmountControl, ChoiceGroup, DesignFrame, Field, Sheet } from '../../design';
 import {
   INTERESTS,
   COMPARISONS,
@@ -22,6 +22,7 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
   const [resetOpen, setResetOpen] = useState(false);
   const [visited, setVisited] = useState(step);
   const [comparisonIndex, setComparisonIndex] = useState(0);
+  const [amountReset, setAmountReset] = useState(0);
   const heading = useRef(null);
   const errorSummary = useRef(null);
   const alive = useRef(true);
@@ -33,6 +34,12 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
   } catch {
     profiles = preferenceProfiles(newSetupDraft());
   }
+  const interestAmounts =
+    draft.customWeights ??
+    Object.fromEntries(Object.entries(profiles.stated).map(([key, value]) => [key, value * 100]));
+  const largestAmount = Math.max(...Object.values(interestAmounts));
+  const initialAmountMax =
+    largestAmount > Number.MAX_VALUE / 2 ? Number.MAX_VALUE : largestAmount * 2 || 1;
 
   const comparison = COMPARISONS[comparisonIndex];
 
@@ -113,6 +120,7 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
       draft.rooms.map((room, i) => (i === index ? { ...room, [key]: value } : room))
     );
   const toggleInterest = (key) => {
+    setAmountReset((previous) => previous + 1);
     setDraft((old) => ({
       ...old,
       customWeights: null,
@@ -402,37 +410,28 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                     </p>
                     <details className="setup-explanation">
                       <summary>Edit interest amounts</summary>
-                      <p>
-                        Edit your chosen interests with non-negative amounts. At least one must be
-                        above zero. Changing an interest checkbox replaces manual amounts;
-                        comparison choices keep them.
+                      <p id="setup-interest-amount-hint">
+                        Drag or tap − / +. Higher amounts give an interest more influence. At least
+                        one must stay above zero.
                       </p>
-                      <div className="setup-grid">
+                      <p className="setup-hint">
+                        Selecting interests above resets these amounts; comparison choices keep
+                        them.
+                      </p>
+                      <div className="rt-amount-grid">
                         {Object.entries(INTERESTS).map(([key, label]) => (
-                          <label className="setup-field" key={key}>
-                            {label}
-                            <input
-                              type="number"
-                              min="0"
-                              step="any"
-                              value={
-                                draft.customWeights?.[key] ??
-                                Number((profiles.stated[key] * 100).toFixed(3))
-                              }
-                              onChange={(e) =>
-                                set('customWeights', {
-                                  ...(draft.customWeights ??
-                                    Object.fromEntries(
-                                      Object.entries(profiles.stated).map(([k, v]) => [
-                                        k,
-                                        Number((v * 100).toFixed(3)),
-                                      ])
-                                    )),
-                                  [key]: e.target.value === '' ? 0 : Number(e.target.value),
-                                })
-                              }
-                            />
-                          </label>
+                          <AmountControl
+                            key={`${key}:${amountReset}`}
+                            id={`setup-interest-${key}`}
+                            label={label}
+                            value={interestAmounts[key]}
+                            initialMax={initialAmountMax}
+                            disabled={locked}
+                            describedBy="setup-interest-amount-hint"
+                            onChange={(value) =>
+                              set('customWeights', { ...interestAmounts, [key]: value })
+                            }
+                          />
                         ))}
                       </div>
                     </details>
@@ -441,6 +440,7 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                       type="button"
                       className="setup-text-button"
                       onClick={() => {
+                        setAmountReset((previous) => previous + 1);
                         setDraft((old) => ({
                           ...old,
                           interests: [],
