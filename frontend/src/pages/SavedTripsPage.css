@@ -40,3 +40,20 @@
   outline: var(--rt-focus-width) solid var(--rt-color-focus);
   outline-offset: var(--rt-focus-offset);
 }
+.saved-trip-endpoints {
+  overflow-wrap: anywhere;
+}
+.saved-trip-card .saved-trip-date {
+  margin-block: var(--rt-space-3);
+  color: var(--rt-color-secondary);
+}
+.saved-trip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+}
+@media (max-width: 600px) {
+  .saved-trip-card {
+    padding: var(--rt-space-4);
+  }
+}

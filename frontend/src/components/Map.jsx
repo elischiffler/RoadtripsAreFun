@@ -8,6 +8,7 @@ import './Map.css';
 
 const NO_SUGGESTIONS = [];
 const Map = ({
+  preview = false,
   UserChatData,
   suggestions = NO_SUGGESTIONS,
   selectedSuggestion = null,
@@ -78,6 +79,7 @@ const Map = ({
         center,
         zoom: 7,
         attributionControl: false,
+        interactive: !preview,
       });
     } catch {
       setMapError(true);
@@ -141,6 +143,7 @@ const Map = ({
     };
   }, [
     geometry,
+    preview,
     localJourney,
     mapToken,
     stops,
@@ -149,7 +152,7 @@ const Map = ({
   ]);
 
   useEffect(() => {
-    if (localJourney || !mapRef.current || !stops.length) return;
+    if (preview || localJourney || !mapRef.current || !stops.length) return;
     const map = mapRef.current;
     const popup = new mapboxgl.Popup({
       offset: 18,
@@ -219,7 +222,7 @@ const Map = ({
       stopPopup.current = null;
       markers.forEach((marker) => marker.remove());
     };
-  }, [stops, localJourney, geometry, mapToken]);
+  }, [stops, localJourney, geometry, mapToken, preview]);
 
   useEffect(() => {
     if (localJourney || !mapRef.current) return;
@@ -499,6 +502,7 @@ const Map = ({
 };
 
 Map.propTypes = {
+  preview: PropTypes.bool,
   UserChatData: PropTypes.object.isRequired,
   suggestions: PropTypes.arrayOf(PropTypes.object),
   selectedSuggestion: PropTypes.object,

@@ -27,3 +27,10 @@
   min-height: var(--rt-target-min);
   color: var(--rt-color-accent);
 }
+.rt-design.map-page .rt-design__content {
+  max-inline-size: 72rem;
+}
+.rt-design.map-page .trip-map-viewport {
+  height: calc(100dvh - var(--header-height) - 12rem);
+  min-height: 24rem;
+}

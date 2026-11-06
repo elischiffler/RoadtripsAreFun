@@ -1,33 +1,48 @@
 import request from './protectedRequest';
 import { validStopCoordinates } from './tripPresentation';
 
-/** Sample the actual GeoJSON route, converting [longitude, latitude] at this boundary only. */
+/** Preserve the full GeoJSON line; the backend samples it by distance. */
 export function alternativeRequest(route) {
-  const geometry = (route?.geometry?.coordinates || [])
-    .map((point) => (Array.isArray(point) ? [point[1], point[0]] : null))
-    .filter(validStopCoordinates);
-  const available = geometry.length
-    ? geometry
-    : (route?.stops || []).map((stop) => stop?.coordinates).filter(validStopCoordinates);
-  const unique = [...new Map(available.map((point) => [point.join(','), point])).values()];
-  const count = Math.min(8, unique.length);
-  const points = Array.from(
-    { length: count },
-    (_, index) => unique[Math.round((index * (unique.length - 1)) / Math.max(1, count - 1))]
-  );
+  const rawGeometry = route?.geometry?.coordinates;
+  const geometry = Array.isArray(rawGeometry) && rawGeometry.length ? rawGeometry : null;
+  if (geometry && (geometry.length > 10000 || geometry.length < 2))
+    throw new Error('This route geometry cannot be searched.');
+  if (
+    geometry &&
+    geometry.some(
+      (point) =>
+        !Array.isArray(point) || point.length !== 2 || !validStopCoordinates([point[1], point[0]])
+    )
+  )
+    throw new Error('This route has invalid geometry.');
+  const stops = route?.stops || [];
+  const exclude_coordinates = [
+    ...new Map(
+      stops
+        .map((stop) => stop?.coordinates)
+        .filter(validStopCoordinates)
+        .map((point) => [point.join(','), point])
+    ).values(),
+  ];
   const exclude_ids = [
     ...new Set(
-      (route?.stops || [])
-        .map((stop) => stop?.provider_id || stop?.id)
-        .filter((id) => typeof id === 'string')
+      stops
+        .flatMap((stop) => [stop?.provider_id, stop?.id])
+        .filter((id) => typeof id === 'string' && id.length)
     ),
-  ].slice(0, 100);
-  return { points, exclude_ids };
+  ];
+  if (exclude_coordinates.length > 100 || exclude_ids.length > 100)
+    throw new Error('This route has too many stops to search safely.');
+  if (geometry) return { geometry, exclude_ids, exclude_coordinates };
+  // Legacy saved routes without geometry can only search their known stop positions.
+  const points = exclude_coordinates.slice(0, 8);
+  return { points, exclude_ids, exclude_coordinates };
 }
 
 export async function loadRouteAlternatives(route, signal) {
   const body = alternativeRequest(route);
-  if (!body.points.length) throw new Error('This route has no locations to search around.');
+  if (!body.geometry?.length && !body.points?.length)
+    throw new Error('This route has no locations to search around.');
   const response = await request.post(
     `${import.meta.env.VITE_BACKEND_SERVER}route-alternatives`,
     body,
@@ -44,5 +59,6 @@ export async function loadRouteAlternatives(route, signal) {
         validStopCoordinates(place.coordinates)
     ),
     notice: typeof response.data.notice === 'string' ? response.data.notice : '',
+    ...(response.data.coverage ? { coverage: response.data.coverage } : {}),
   };
 }

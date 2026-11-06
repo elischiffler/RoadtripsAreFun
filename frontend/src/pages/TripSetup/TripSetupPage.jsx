@@ -457,8 +457,8 @@ export default function TripSetupPage() {
               )}
               {result.saved && (
                 <nav className="connected-links" aria-label="Open your trip">
-                  <Link className="rt-button rt-button--secondary" to="/map">
-                    View map
+                  <Link className="rt-button rt-button--secondary" to="/trip">
+                    Open trip
                   </Link>
                   {result.itinerary && (
                     <Link className="rt-button rt-button--secondary" to="/itinerary">
