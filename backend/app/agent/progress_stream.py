@@ -11,6 +11,11 @@ import threading
 from fastapi import HTTPException
 
 from app.agent.progress import reporting, stage
+from app.core.departure_errors import (
+    DEPARTURE_NOT_UPCOMING_CODE,
+    DEPARTURE_NOT_UPCOMING_MESSAGE,
+    DepartureNotUpcomingHTTPError,
+)
 
 HEARTBEAT_SECONDS = 10
 
@@ -40,6 +45,15 @@ async def stream_turn(run, *, stage_name="planner.run"):
             with reporting(publish), stage(stage_name):
                 result = await run()
             publish({"type": "result", "response": result.model_dump(mode="json")})
+        except DepartureNotUpcomingHTTPError:
+            publish(
+                {
+                    "type": "error",
+                    "status": 422,
+                    "code": DEPARTURE_NOT_UPCOMING_CODE,
+                    "detail": DEPARTURE_NOT_UPCOMING_MESSAGE,
+                }
+            )
         except HTTPException as exc:
             publish({"type": "error", "status": exc.status_code})
         except Exception:

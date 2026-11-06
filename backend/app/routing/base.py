@@ -65,6 +65,13 @@ class PlanningError(Exception):
         self.status_code = status_code
 
 
+class DepartureNotUpcoming(PlanningError):
+    """The supplied CP-SAT departure is missing, null or no longer in the future."""
+
+    def __init__(self):
+        super().__init__("CP-SAT requires an upcoming trip start date", 422)
+
+
 @dataclass
 class PlanOptions:
     """Everything a planner needs about *what* trip to build.
