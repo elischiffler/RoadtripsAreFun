@@ -1,0 +1,11 @@
+{
+  "name": "roadtrips-offline-guided-journey",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node browser.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.58.2"
+  }
+}

@@ -37,6 +37,7 @@ from app.agent.progress import stage
 from app.agent.progress_stream import stream_turn
 from app.agent.provider_diagnostics import retry_async
 from app.agent.trip_dates import timezone_from_location
+from app.core.departure_errors import DepartureNotUpcomingHTTPError
 from app.crud.memory_crud import load_account_persona
 from app.models.guided_planning import RouteAlternativesRequest, RouteAlternativesResponse
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
@@ -44,6 +45,7 @@ from app.models.scheduling_policy import local_time
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
 from app.routing import PlanningError, PlanOptions, RoutingServices, get_planner
 from app.routing.alternatives import browse_alternatives
+from app.routing.base import DepartureNotUpcoming
 from app.routing.catalog_calendars import refresh_for_timing
 from app.routing.config import geolocator  # shared reverse-geocoder
 from app.routing.explanation import record_stage
@@ -221,6 +223,8 @@ async def _plan_for_http(payload, *, user_id, can_select_algorithm):
         )
     except CandidateRatingError as exception:
         raise HTTPException(status_code=502, detail=exception.public_message) from None
+    except DepartureNotUpcoming:
+        raise DepartureNotUpcomingHTTPError() from None
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail) from None
     except RequestException as exception:
@@ -321,7 +325,7 @@ async def plan_final_route(
         if user_id is None:
             raise PlanningError("Authenticated identity is required for CP-SAT", 401)
         if "start" not in payload.model_fields_set or start is None:
-            raise PlanningError("CP-SAT requires an upcoming trip start date", 422)
+            raise DepartureNotUpcoming()
         if start.tzinfo is None:
             if services.timezone_at is None:
                 raise PlanningError("The starting location timezone could not be verified", 503)
@@ -337,7 +341,7 @@ async def plan_final_route(
             except ValueError as exc:
                 raise PlanningError(str(exc), 422) from exc
         if not is_upcoming_departure(start):
-            raise PlanningError("CP-SAT requires an upcoming trip start date", 422)
+            raise DepartureNotUpcoming()
         account = load_account_persona(user_id)
         weights = effective_weights(account.weights, payload.persona_weights)
     options = PlanOptions(

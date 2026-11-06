@@ -175,6 +175,33 @@ it('discards a late planning result after account sign-out', async () => {
   expect(ensureChatCreated).not.toHaveBeenCalled();
 });
 
+it('shows departure guidance without saving a trip or falsely completing planning', async () => {
+  planStructuredRoute.mockImplementationOnce(
+    (_draft, _origin, _destination, _signal, { onProgress }) => {
+      onProgress({ type: 'progress', stage: 'route.initial', state: 'completed' });
+      return Promise.reject({
+        response: {
+          status: 422,
+          data: { detail: 'Choose a departure date and time in the future.' },
+        },
+      });
+    }
+  );
+  await confirm();
+  expect(await screen.findByRole('alert')).toHaveTextContent(
+    'Choose a departure date and time in the future.'
+  );
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '70'
+  );
+  expect(ensureChatCreated).not.toHaveBeenCalled();
+  expect(updateUserData).not.toHaveBeenCalled();
+  expect(planStructuredItinerary).not.toHaveBeenCalled();
+  expect(screen.queryByText('Trip saved.')).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'View itinerary' })).not.toBeInTheDocument();
+});
+
 it('saves a fractional nightly target without rounding into the legacy integer slot', async () => {
   const fractional = { ...draft, budget: '150.25' };
   sessionStorage.setItem(

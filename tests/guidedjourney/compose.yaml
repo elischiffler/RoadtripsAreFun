@@ -1,0 +1,50 @@
+name: roadtrips-guided-journey
+services:
+  postgres:
+    image: postgres:18.6-bookworm@sha256:3725f4e2499eef5134592b3b4ab79a543ed7f8e533b05b5b637af926630f6650
+    environment:
+      POSTGRES_DB: roadtrips
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: disposable-guided-only
+    networks: [isolated]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U postgres -d roadtrips"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    tmpfs: [/var/lib/postgresql]
+  api:
+    image: roadtrips-tests-local
+    command: [python, /journey/fixture.py]
+    environment:
+      PYTHON_DOTENV_DISABLED: "1"
+      DATABASE_URL: postgresql://postgres:disposable-guided-only@postgres/roadtrips
+      DATABASE_SSLMODE: disable
+      GUIDED_JOURNEY_FIXTURE: disposable-local-only
+      COGNITO_USER_POOL_ID: us-west-1_fixture
+      COGNITO_APP_CLIENT_ID: localfixture
+      CORS_ORIGINS: http://127.0.0.1:8082
+      STUDIO_RESEARCH_DATABASE: "false"
+      PLACE_TRAITS_CACHE_ENABLED: "false"
+    volumes:
+      - .:/journey:ro
+    ports: ["127.0.0.1:8002:8002", "127.0.0.1:8999:8999"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [isolated, access]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8002/ready',timeout=2)"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+networks:
+  isolated:
+    internal: true
+  access:
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: "false"

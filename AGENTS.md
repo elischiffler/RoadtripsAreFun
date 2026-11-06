@@ -14,6 +14,12 @@ then `ruff format --check .`, `ruff check .`, and
 `pytest --cov=app --cov-report=term-missing --cov-fail-under=63`.
 From root: `node --test tests/container-smoke.test.mjs` tests running containers;
 `node tests/postgres/run.mjs` runs disposable real PostgreSQL CRUD and recovery.
+Before every production push/release, run the actual authenticated trip-creation
+flow gate in `tests/guidedjourney/README.md`. The required Local containers
+workflow runs it before deployment: browser, HTTP API, signed synthetic identity,
+CP-SAT/timing, itinerary and disposable PostgreSQL save/reload. Do not replace
+that gate with unit mocks or treat its synthetic providers as live acceptance.
+Ask separately before making live Mentro requests, including verification trips.
 
 [Container runbook](docs/container-runbook.md) owns local config and commands;
 [PostgreSQL notes](docs/self-hosted-postgres.md) own TLS behavior. The exact
