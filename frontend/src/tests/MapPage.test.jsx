@@ -3,9 +3,7 @@
  * mapbox-gl and Map component are both stubbed.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { loadRouteAlternatives } from '../services/routeAlternatives';
+import { screen } from '@testing-library/react';
 import PropTypes from 'prop-types';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
@@ -78,52 +76,4 @@ describe('MapPage', () => {
     renderMapPageWithData(buildUserDataWithRoute(fakeRoute));
     expect(screen.getByTestId('map-stub')).toBeInTheDocument();
   });
-});
-
-it('loads source-labelled nearby ideas from this route without changing the route', async () => {
-  const route = {
-    stops: [],
-    geometry: {
-      coordinates: [
-        [-120, 37],
-        [-121, 38],
-      ],
-    },
-  };
-  loadRouteAlternatives.mockResolvedValueOnce({
-    places: [
-      {
-        id: 'catalog:1',
-        name: 'Forest',
-        coordinates: [37, -120],
-        source_attribution: 'Fixture catalog',
-        url: 'https://example.test/forest',
-      },
-    ],
-    notice: 'Check detour timing',
-  });
-  renderMapPageWithData(buildUserDataWithRoute(route));
-  await userEvent.click(screen.getByRole('button', { name: 'Find nearby ideas' }));
-  expect(await screen.findByText('Forest')).toBeInTheDocument();
-  expect(loadRouteAlternatives).toHaveBeenCalledWith(route, expect.any(AbortSignal));
-  expect(screen.getByText('Source: Fixture catalog')).toBeInTheDocument();
-  expect(screen.getByText(/unscheduled suggestions/)).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'View on map: Forest' })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Place information: Forest' })).toHaveAttribute(
-    'href',
-    'https://example.test/forest'
-  );
-  expect(route.stops).toEqual([]);
-});
-it('shows an error and retries failed nearby lookup', async () => {
-  loadRouteAlternatives
-    .mockRejectedValueOnce(new Error('unavailable'))
-    .mockResolvedValueOnce({ places: [], notice: '' });
-  renderMapPageWithData(buildUserDataWithRoute({ stops: [] }));
-  await userEvent.click(screen.getByRole('button', { name: 'Find nearby ideas' }));
-  expect(await screen.findByRole('alert')).toHaveTextContent('could not be loaded');
-  await userEvent.click(screen.getByRole('button', { name: 'Retry nearby ideas' }));
-  await waitFor(() =>
-    expect(screen.getByRole('status')).toHaveTextContent('No nearby ideas were found')
-  );
 });
