@@ -11,6 +11,8 @@ import re
 from collections.abc import Mapping
 from pathlib import Path
 
+from app.catalog import hold_resolution
+
 AUDIT_SHA256 = "0d29c5d527be6d08f018e4ee1cd9598dc8048b944e1c67aa42f2c29c190bb2ec"
 _raw = Path(__file__).with_name("release_holds.json").read_bytes()
 if hashlib.sha256(_raw).hexdigest() != AUDIT_SHA256:
@@ -32,7 +34,7 @@ if (
 SOURCE_IDS = frozenset(_ids)
 # Validated, pinned source IDs only; this fragment has no caller-controlled SQL.
 _SQL_IDS = ",".join("'" + sid + "'" for sid in sorted(SOURCE_IDS))
-SQL_ALLOWED = f"""NOT EXISTS (
+SQL_ALLOWED = f"""(NOT EXISTS (
     SELECT 1 FROM (
         SELECT p.source_id AS sid
         UNION ALL
@@ -45,7 +47,7 @@ SQL_ALLOWED = f"""NOT EXISTS (
         FROM jsonb_array_elements(CASE WHEN jsonb_typeof(p.provenance)='array'
             THEN p.provenance ELSE '[]'::jsonb END) fact
     ) held_identity WHERE sid IN ({_SQL_IDS})
-)"""
+) OR ({hold_resolution.SQL_RESOLVED}))"""
 
 
 def blocked(record):
@@ -68,7 +70,8 @@ def blocked(record):
             aliases = fact.get("aliases")
             if isinstance(aliases, list):
                 identities.extend(aliases)
-    return any(isinstance(sid, str) and sid in SOURCE_IDS for sid in identities)
+    held = {sid for sid in identities if isinstance(sid, str) and sid in SOURCE_IDS}
+    return bool(held) and not hold_resolution.resolved(record, held)
 
 
 def reject(rows):

@@ -467,6 +467,8 @@ async def attraction_candidates(
         return output, calendar_excluded
 
     async def calendar_ok(record, *, before_estimate=False):
+        if not admission.routing_eligible(record):
+            return False
         fits = (
             await plan.trip_calendar.eligible(
                 record, dwell=MIN_VISIT_SECONDS if before_estimate else None
@@ -894,6 +896,7 @@ class LivePlaceProvider:
                 if (
                     "daytime" in place.categories
                     and _distance_miles(point, place.coordinates) <= _ATTRACTION_RADIUS_MI
+                    and admission.routing_eligible(place.model_dump())
                     and (
                         (
                             not require_visit_calendar

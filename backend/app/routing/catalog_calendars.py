@@ -19,9 +19,13 @@ def _explicit_calendar(record):
 
 
 def explicit_calendar_ineligible(record):
-    return not isinstance(record.get("source_provenance", []), list) or (
-        (admission.requires_admission(record) or _explicit_calendar(record))
-        and not calendar_eligible(record)
+    return (
+        not admission.routing_eligible(record)
+        or not isinstance(record.get("source_provenance", []), list)
+        or (
+            (admission.requires_admission(record) or _explicit_calendar(record))
+            and not calendar_eligible(record)
+        )
     )
 
 

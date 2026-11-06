@@ -45,4 +45,4 @@ jobs:
         env:
           DATABASE_URL: postgresql://fixture:fixture@127.0.0.1:1/roadtrips
           DATABASE_SSLMODE: disable
-        run: pytest --cov=app --cov-report=term-missing --cov-fail-under=63
+        run: python ../scripts/run_offline_tests.py --cov=app --cov-report=term-missing --cov-fail-under=63
