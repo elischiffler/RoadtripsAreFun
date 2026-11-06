@@ -97,7 +97,13 @@ export async function estimateStructuredRoute(origin, destination, signal) {
   return data;
 }
 
-export async function planStructuredRoute(draft, origin, destination, signal, { onProgress } = {}) {
+export async function planStructuredRoute(
+  draft,
+  origin,
+  destination,
+  signal,
+  { onProgress, reserveMealSlots = false } = {}
+) {
   const started = getSession();
   let initial_route;
   if (onProgress) {
@@ -122,6 +128,7 @@ export async function planStructuredRoute(draft, origin, destination, signal, { 
   const payload = {
     initial_route,
     ...structuredTripInputs(draft),
+    ...(reserveMealSlots ? { reserve_meal_slots: true } : {}),
     ...(algorithm ? { algorithm } : {}),
   };
   let route;
@@ -144,6 +151,8 @@ export async function planStructuredRoute(draft, origin, destination, signal, { 
     route.duration < 0
   )
     throw new Error('The planning service did not return a complete route.');
+  if (reserveMealSlots && route.reserve_meal_slots !== true)
+    throw new Error('The planning service did not confirm meal breaks. Your draft is kept.');
   return route;
 }
 

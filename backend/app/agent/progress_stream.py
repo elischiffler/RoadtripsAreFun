@@ -11,6 +11,7 @@ import threading
 from fastapi import HTTPException
 
 from app.agent.progress import reporting, stage
+from app.routing.meal_reservations import MealScheduleHTTPError
 
 HEARTBEAT_SECONDS = 10
 
@@ -40,6 +41,8 @@ async def stream_turn(run, *, stage_name="planner.run"):
             with reporting(publish), stage(stage_name):
                 result = await run()
             publish({"type": "result", "response": result.model_dump(mode="json")})
+        except MealScheduleHTTPError as exc:
+            publish({"type": "error", "status": 422, "code": exc.code, "detail": exc.detail})
         except HTTPException as exc:
             publish({"type": "error", "status": exc.status_code})
         except Exception:

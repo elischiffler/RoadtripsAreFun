@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, StrictBool, field_validator
 
 from app.agent.persona import validate_weight_update
 from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
@@ -34,6 +34,7 @@ class Route(BaseModel):
     scheduling_policy: SchedulingPolicy | None = None
     start_timezone: str | None = None
     departure_time: datetime | None = None
+    reserve_meal_slots: StrictBool = False
     traveler_count: TravelerCount | None = None
     hotel_rooms: HotelRooms | None = None
 
@@ -123,6 +124,7 @@ class Route_Payload(BaseModel):
     scheduling_policy: SchedulingPolicy = Field(default_factory=SchedulingPolicy)
     start_timezone: str | None = None
     evening_interests: list[EveningInterest] | None = None
+    reserve_meal_slots: StrictBool = False
     traveler_count: TravelerCount | None = None
     hotel_rooms: HotelRooms | None = None
 
