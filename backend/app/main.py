@@ -21,6 +21,7 @@ from app.routers import (
     routing_api,
     studio,
     studio_research,
+    trip_car,
 )
 
 logger = logging.getLogger(__name__)
@@ -138,6 +139,7 @@ app.include_router(itinerary_api.router)
 app.include_router(car_api.router)
 app.include_router(chat_api.router)
 app.include_router(preference_profiles.router)
+app.include_router(trip_car.router)
 
 
 @app.get("/")

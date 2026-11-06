@@ -14,10 +14,12 @@ import {
   saveNewTripPreferences,
 } from '../services/preferenceProfiles';
 import SettingsPage from '../pages/SettingsPage';
+import { initializeUserData } from '../services/savedTrips';
 import PreferenceProfilePicker from '../components/PreferenceProfilePicker';
 import AppTheme from '../components/AppTheme';
 import { setThemeMode } from '../services/themeMode';
 
+vi.mock('../services/savedTrips', () => ({ initializeUserData: vi.fn(async () => null) }));
 vi.mock('../services/protectedRequest', () => ({
   default: { get: vi.fn(), put: vi.fn(), delete: vi.fn() },
 }));
@@ -39,6 +41,7 @@ const profile = () => ({
 });
 beforeEach(() => {
   vi.resetAllMocks();
+  initializeUserData.mockResolvedValue(null);
   sessionStorage.clear();
   fixtureSession('account-a');
   import.meta.env.VITE_BACKEND_SERVER = 'http://localhost:8000/';

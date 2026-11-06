@@ -33,7 +33,7 @@ function replayable(url, method) {
   return {
     get: /^(preference-profiles|chats|routing-settings|get-initial-route|get-car-details|get-gas-price|get-location|algorithm-lab\/presets)$/,
     post: /^(chats\/create\/[^/]+|generate-final-route|generate-itinerary|route-alternatives|algorithm-lab\/run)$/,
-    put: /^(chats\/update\/[^/]+|preference-profiles\/[^/]+)$/,
+    put: /^(chats\/update\/[^/]+|chats\/\d+\/car|preference-profiles\/[^/]+)$/,
     delete: /^(chats\/delete\/[^/]+|preference-profiles\/[^/]+)$/,
   }[method]?.test(path);
 }

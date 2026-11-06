@@ -8,6 +8,7 @@ import { useThemeMode, setThemeMode } from '../services/themeMode';
 import usePreferenceProfiles from '../services/usePreferenceProfiles';
 import { savePreferenceProfile, deletePreferenceProfile } from '../services/preferenceProfiles';
 import PreferenceProfileEditor from '../components/PreferenceProfileEditor';
+import TripCarSettings from '../components/TripCarSettings';
 import './SettingsPage.css';
 
 export default function SettingsPage() {
@@ -180,6 +181,7 @@ export default function SettingsPage() {
             </ActionButton>
           )}
         </Sheet>
+        <TripCarSettings key={owner} />
         {canSelect && (
           <Sheet aria-labelledby="settings-research">
             <h2 id="settings-research" className="rt-title">

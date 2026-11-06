@@ -9,6 +9,7 @@ import SettingsPage from '../pages/SettingsPage';
 import ResearchAccess from '../components/ResearchAccess';
 import AuthWrapper from '../components/AuthWrapper';
 
+vi.mock('../services/savedTrips', () => ({ initializeUserData: vi.fn(async () => null) }));
 vi.mock('../services/preferenceProfiles', () => ({
   loadPreferenceProfiles: vi.fn(async () => []),
   savePreferenceProfile: vi.fn(),

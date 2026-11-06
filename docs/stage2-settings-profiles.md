@@ -32,10 +32,15 @@ Payloads forbid unrelated fields and validate complete canonical finite interest
 weights, car consistency and the existing authoritative scheduling model.
 
 Storage reuses the existing `chat_memory` JSONB table and pool with a new row kind.
-There is no schema migration, runtime DDL, production connection or database write
-in this task. Deployment must verify the existing generic table/primary key and
-that any deployed discriminator checks permit `preference_profile`; the production
-schema has not been inspected. Profile storage stays separate from `fact`, `trip`
+There is no schema migration, runtime DDL or production write in this task.
+The integration follow-up used read-only PostgreSQL system-catalog metadata on
+project `misty-mouse-24917066`, branch `br-noisy-forest-aqidrq92`, database
+`neondb` (November 6, 2026). `chat_memory` has the expected text/JSONB columns,
+composite primary key `(user_id, chat_id, mem_type, mem_key)`, `confidence=1.0`
+and `updated_at=now()` defaults, no discriminator CHECK, no user triggers and no
+row policies. Thus `preference_profile` needs no schema change. `chats` also has
+the expected `(user_id,chat_id)` primary key and JSONB columns. No user rows were
+queried. Application subject scoping remains authoritative for isolation. Profile storage stays separate from `fact`, `trip`
 and `summary` rows, so inferred account memory and existing trips are untouched.
 
 Frontend `protectedRequest` allows bounded verifier-rejection retries for these
@@ -53,8 +58,9 @@ cards/deletion, maps and itinerary editing; this branch does not alter those.
 
 Deploy backend before frontend so the profile API is available. Frontend deployment
 is separate from the EC2 API deployment. Missing profile service is recoverable:
-users can still enter new trip choices and save trips. No live Mentro or provider
-calls, production mutations, prior denied Neon test, or deployment were performed.
+users can still enter new trip choices and save trips. No live Mentro or provider calls, production mutations, prior denied Neon test
+retries, or deployment were performed. Only authorized read-only production
+metadata was inspected during the integration follow-up.
 
 ## Offline verification
 
@@ -70,3 +76,34 @@ changes also pass the focused 22 frontend tests and the production build.
 
 These are offline unit/fixture results, not production two-account acceptance,
 real-database validation, responsive screenshot approval or live trip acceptance.
+
+## Post-creation trip car settings
+
+Settings now provides a trip selector and car editor after creation. It reads
+structured `tripProfile.car` and legacy `carDetails`; explicit skip takes priority.
+`PUT /chats/{chat_id}/car` validates the car server-side and updates only
+`carDetails`, `tripProfile.car`, `tripProfile.car_status` and clears `carBudget`.
+The SQL statement preserves all other trip fields, route geometry references,
+itinerary, visit state and chat log. Owner and expected `agentChatId` are part of
+the atomic update predicate; stale/deleted/replaced trips return 404. This editor
+does not invoke a model, car provider or route regeneration. Reusable profiles
+remain unchanged. Existing route totals are not represented as fuel estimates.
+
+The dedicated disposable PostgreSQL 18.6 test uses the pinned local image and
+checked-in schema. All three tests pass: discriminator/profile CRUD round-trip,
+same-UUID account isolation, idempotent profile operations, and legacy/structured
+trip-car updates with owner/identity rejection and unrelated data preservation.
+`tests/settings_postgres_tests.py` never falls back to DATABASE_URL: its explicit
+URL gate permits only the known local disposable credentials/hosts. The existing
+`tests/postgres/run.mjs` runner now includes it for future CI validation.
+
+Browser fixture harness: `tests/ui-settings/browser-check.mjs`. Run Vite on 5189
+with `VITE_BACKEND_SERVER=http://127.0.0.1:18999/` and VITE_LOCAL_JOURNEY=true.
+Install playwright-core and @axe-core/playwright under `/tmp/roadtrips-ui-browser`
+and use Chromium. All non-local traffic is intercepted or blocked. Eight audits
+(390x844, 320x568, 1365x900, 390x844 at 200% root text; each in light/dark) pass
+with zero axe WCAG A/AA violations, horizontal overflow or browser exceptions.
+The harness verifies legacy car load, edit/reload, theme persistence, profile
+creation/deletion and confirms only three expected fixture mutations. Report and
+mobile screenshots are in `docs/evidence/stage2-settings/`. This is browser-fixture
+acceptance; live Cognito, provider trips and production writes remain untested.
