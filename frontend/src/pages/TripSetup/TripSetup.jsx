@@ -13,6 +13,7 @@ import {
   setupErrors,
 } from './setupModel';
 import './TripSetup.css';
+import PreferenceProfilePicker from '../../components/PreferenceProfilePicker';
 
 export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
   const { draft, setDraft, step, setStep, stored, reset } = useSetupDraft();
@@ -181,8 +182,22 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
               )}
               <fieldset disabled={locked} className="setup-fields">
                 <legend className="setup-visually-hidden">{STEPS[step]} details</legend>
+                {step === 4 && (
+                  <p className="rt-caption">
+                    Your car, timing and chosen interests will be saved as reusable preferences when
+                    this trip is saved.
+                  </p>
+                )}
                 {step === 0 && (
                   <>
+                    <PreferenceProfilePicker
+                      setDraft={(updater) => {
+                        setDraft(updater);
+                        setErrors({});
+                        setReceipt(null);
+                      }}
+                      disabled={locked}
+                    />
                     <p>Where are you heading?</p>
                     {field('start', 'Starting city or address', 'text', {
                       autoComplete: 'off',

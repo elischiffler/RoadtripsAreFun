@@ -14,6 +14,11 @@ import {
 import { SETUP_DRAFT_PREFIX } from '../pages/TripSetup/useSetupDraft';
 import { getSession, signOut } from '../services/session';
 
+vi.mock('../services/preferenceProfiles', async (original) => ({
+  ...(await original()),
+  loadPreferenceProfiles: vi.fn(async () => []),
+  saveNewTripPreferences: vi.fn(async () => undefined),
+}));
 const key = () => SETUP_DRAFT_PREFIX + encodeURIComponent(getSession().owner);
 const fill = (name, value) => fireEvent.change(screen.getByLabelText(name), { target: { value } });
 function seed(draft, step) {

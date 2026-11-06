@@ -31,10 +31,10 @@ function replayable(url, method) {
   if (!base || !url.startsWith(base)) return false;
   const path = url.slice(base.length).split('?')[0];
   return {
-    get: /^(chats|routing-settings|get-initial-route|get-car-details|get-gas-price|get-location|algorithm-lab\/presets)$/,
+    get: /^(preference-profiles|chats|routing-settings|get-initial-route|get-car-details|get-gas-price|get-location|algorithm-lab\/presets)$/,
     post: /^(chats\/create\/[^/]+|generate-final-route|generate-itinerary|route-alternatives|algorithm-lab\/run)$/,
-    put: /^chats\/update\/[^/]+$/,
-    delete: /^chats\/delete\/[^/]+$/,
+    put: /^(chats\/update\/[^/]+|chats\/\d+\/car|preference-profiles\/[^/]+)$/,
+    delete: /^(chats\/delete\/[^/]+|preference-profiles\/[^/]+)$/,
   }[method]?.test(path);
 }
 
