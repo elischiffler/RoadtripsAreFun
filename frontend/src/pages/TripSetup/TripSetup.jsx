@@ -548,9 +548,7 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                         ],
                         [
                           'Daily timing',
-                          draft.carStatus === 'provided'
-                            ? [draft.year, draft.make, draft.model].join(' ')
-                            : 'Car details skipped',
+                          draft.schedule.late_driving ? 'Later evenings' : 'Standard evenings',
                           'Hotel: prefer ' +
                             draft.schedule.preferred_hotel_arrival +
                             ', latest ' +
