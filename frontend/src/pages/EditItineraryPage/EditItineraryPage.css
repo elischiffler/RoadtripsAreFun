@@ -27,3 +27,39 @@
   min-height: var(--rt-target-min);
   color: var(--rt-color-accent);
 }
+
+.rt-design.edit-itinerary-page select {
+  display: block;
+  width: 100%;
+  min-height: var(--rt-target-min);
+  margin-top: var(--rt-space-2);
+  padding: var(--rt-space-2);
+  color: var(--rt-color-text);
+  background: var(--rt-color-surface);
+  border: var(--rt-border-width) solid var(--rt-color-control-border);
+  border-radius: var(--rt-radius-control);
+  font: inherit;
+}
+.rt-design.edit-itinerary-page fieldset {
+  min-width: 0;
+  border: 0;
+  padding: 0;
+}
+.rt-design.edit-itinerary-page label {
+  display: block;
+}
+.rt-design.edit-itinerary-page .trip-edit-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--rt-space-2);
+  margin: 0;
+}
+.rt-design.edit-itinerary-page .trip-edit-comparison dd {
+  margin: 0;
+}
+.rt-design.edit-itinerary-page header > a {
+  display: flex;
+  align-items: center;
+  min-height: var(--rt-target-min);
+  color: var(--rt-color-accent);
+}
