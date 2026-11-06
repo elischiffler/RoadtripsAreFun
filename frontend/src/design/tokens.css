@@ -66,3 +66,25 @@
   --rt-duration-color: 160ms;
   --rt-ease: ease-out;
 }
+
+:root[data-theme='dark'] .rt-design {
+  --rt-color-page: #111c18;
+  --rt-color-surface: #1c2c25;
+  --rt-color-muted: #283d32;
+  --rt-color-text: #f1f6f2;
+  --rt-color-secondary: #b9cac0;
+  --rt-color-border: #526b5c;
+  --rt-color-control-border: #8ca797;
+  --rt-color-accent: #9bdcc7;
+  --rt-color-accent-hover: #bae9d9;
+  --rt-color-on-accent: #102b22;
+  --rt-color-selected: #284d3e;
+  --rt-color-error: #ffb5b7;
+  --rt-color-error-surface: #49262b;
+  --rt-color-focus: #a9ceff;
+  --rt-color-route: #a9ceff;
+  --rt-color-route-surface: #233c58;
+  --rt-color-material: rgb(28 44 37 / 94%);
+  --rt-shadow-sheet: 0 0.5rem 2rem rgb(0 0 0 / 20%);
+  --rt-shadow-floating: 0 0.25rem 1rem rgb(0 0 0 / 30%);
+}

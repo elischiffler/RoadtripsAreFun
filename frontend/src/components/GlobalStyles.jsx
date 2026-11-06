@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import customTheme from './Theme';
+import { useTheme } from '@mui/material/styles';
 
 // Globally setting the css variables
 const GlobalStyles = () => {
+  const customTheme = useTheme();
   useEffect(() => {
     const root = document.documentElement;
     // legacy aliases (all existing CSS uses these)
@@ -26,7 +27,7 @@ const GlobalStyles = () => {
     root.style.setProperty('--forest-dark', customTheme.palette.forest.dark);
     root.style.setProperty('--amber-main', customTheme.palette.amber.main);
     root.style.setProperty('--amber-light', customTheme.palette.amber.light);
-  }, []);
+  }, [customTheme]);
 
   return null;
 };

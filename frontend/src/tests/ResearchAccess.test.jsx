@@ -9,6 +9,11 @@ import SettingsPage from '../pages/SettingsPage';
 import ResearchAccess from '../components/ResearchAccess';
 import AuthWrapper from '../components/AuthWrapper';
 
+vi.mock('../services/preferenceProfiles', () => ({
+  loadPreferenceProfiles: vi.fn(async () => []),
+  savePreferenceProfile: vi.fn(),
+  deletePreferenceProfile: vi.fn(),
+}));
 vi.mock('axios', () => ({ default: { get: vi.fn(), post: vi.fn() } }));
 const capability = (allowed) => ({
   data: {
@@ -40,7 +45,8 @@ it('keeps regular settings available while owner capability is pending, then add
   );
   renderWithProviders(<SettingsPage />, { initialPath: '/settings' });
   expect(screen.getByRole('heading', { name: 'Settings' })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Plan a trip' })).toHaveAttribute('href', '/plan');
+  expect(screen.queryByRole('link', { name: 'Plan a trip' })).not.toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Trip preferences' })).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'AI Studio' })).not.toBeInTheDocument();
   await waitFor(() => expect(resolve).toBeTypeOf('function'));
   await act(async () => resolve(capability(true)));
