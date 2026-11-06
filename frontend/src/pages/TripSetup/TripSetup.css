@@ -497,3 +497,165 @@
     outline: var(--rt-focus-width) solid Highlight;
   }
 }
+
+/* Keep setup a compact app workspace at every viewport size. */
+.setup-design {
+  padding-block-start: calc(var(--header-height) + var(--rt-space-3));
+  padding-block-end: max(var(--rt-space-4), env(safe-area-inset-bottom));
+}
+.setup-wayfinding {
+  margin-block-end: var(--rt-space-3);
+}
+.setup-progress {
+  margin-block-end: var(--rt-space-4);
+  padding-block-end: var(--rt-space-3);
+}
+.setup-progress progress {
+  display: block;
+  inline-size: 100%;
+  block-size: var(--rt-space-2);
+  accent-color: var(--rt-color-accent);
+}
+.setup-section,
+.setup-fields {
+  gap: var(--rt-space-3);
+}
+.setup-section {
+  animation: setup-enter var(--rt-duration-color) var(--rt-ease);
+}
+.setup-choice,
+.setup-secondary {
+  background: var(--rt-color-surface);
+  box-shadow: var(--rt-shadow-sheet);
+  transition:
+    background-color var(--rt-duration-color) var(--rt-ease),
+    transform var(--rt-duration-feedback) var(--rt-ease);
+}
+.setup-choice:active,
+.setup-secondary:active {
+  transform: scale(0.98);
+}
+.setup-field input[type='range'] {
+  padding-inline: 0;
+  accent-color: var(--rt-color-accent);
+}
+.setup-footer {
+  margin-block-start: var(--rt-space-4);
+  padding-block-start: var(--rt-space-3);
+}
+.setup-estimate-map {
+  block-size: 12rem;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--rt-radius-control);
+}
+@keyframes setup-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--rt-space-2));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .setup-section {
+    animation: none;
+  }
+  .setup-choice,
+  .setup-secondary {
+    transition: none;
+    transform: none;
+  }
+}
+@media (max-width: 30rem) {
+  .rt-design .setup-card {
+    padding: var(--rt-space-4);
+  }
+  .setup-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+/* Preserve document scrolling for large text and short screens. */
+@media (max-width: 22rem) {
+  .setup-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 24rem) {
+  .setup-interest-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Keep the actions visible on ordinary screens; short screens use document scroll. */
+@media (min-width: 24rem) and (min-height: 44rem) {
+  .setup-design {
+    block-size: 100dvh;
+    min-block-size: 0;
+  }
+  .setup-design > .rt-design__content,
+  .trip-setup {
+    block-size: 100%;
+    min-block-size: 0;
+  }
+  .trip-setup {
+    display: flex;
+    flex-direction: column;
+  }
+  .setup-wayfinding {
+    flex-shrink: 0;
+  }
+  .rt-design .setup-card {
+    flex: 1;
+    min-block-size: 0;
+  }
+  .setup-card form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-block-size: 0;
+  }
+  .setup-section {
+    overflow-y: auto;
+    padding: var(--rt-space-1);
+    min-block-size: 0;
+  }
+  .setup-progress,
+  .setup-footer,
+  .setup-bottom-actions {
+    flex-shrink: 0;
+  }
+}
+
+.setup-text-probe {
+  position: absolute;
+  visibility: hidden;
+  inline-size: 1rem;
+  block-size: 1rem;
+  pointer-events: none;
+}
+.setup-wayfinding {
+  justify-content: space-between;
+}
+.setup-design--large-text {
+  block-size: auto;
+  min-block-size: 100dvh;
+}
+.setup-design--large-text > .rt-design__content,
+.setup-design--large-text .trip-setup {
+  block-size: auto;
+}
+.setup-design--large-text .setup-section {
+  overflow: visible;
+}
+.setup-design--large-text .setup-grid,
+.setup-design--large-text .setup-interest-grid {
+  grid-template-columns: 1fr;
+}
+.setup-design--large-text input[type='date'],
+.setup-design--large-text input[type='time'] {
+  padding-inline: var(--rt-space-1);
+}

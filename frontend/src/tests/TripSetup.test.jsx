@@ -36,6 +36,11 @@ describe('accessible trip setup', () => {
     const user = userEvent.setup();
     const submit = vi.fn();
     const view = renderWithProviders(<TripSetup onSubmit={submit} />);
+    expect(screen.getByRole('progressbar', { name: 'Trip setup completion' })).toHaveAttribute(
+      'value',
+      '0'
+    );
+    expect(screen.queryByRole('button', { name: /Step 1:/ })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('alert')).toHaveFocus();
     expect(screen.getByLabelText('Starting city or address')).toHaveAttribute(
@@ -50,9 +55,10 @@ describe('accessible trip setup', () => {
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('heading', { name: 'What you enjoy' })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Back' }));
-    await user.click(screen.getByRole('button', { name: /Step 1:/ }));
+    await user.click(screen.getByRole('button', { name: 'Back' }));
     expect(screen.getByLabelText('Starting city or address')).toHaveValue('Boulder');
-    await user.click(screen.getByRole('button', { name: /Step 3:/ }));
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+    await user.click(screen.getByRole('button', { name: 'Next' }));
     view.unmount();
     renderWithProviders(<TripSetup onSubmit={submit} />);
     expect(screen.getByRole('heading', { name: 'What you enjoy' })).toBeInTheDocument();
@@ -68,6 +74,7 @@ describe('accessible trip setup', () => {
     seed(draft, 2);
     const user = userEvent.setup();
     renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
+    await user.click(screen.getByText('Refine with place comparisons'));
     const pair = COMPARISONS[0];
     const stored = () => JSON.parse(sessionStorage.getItem(key())).draft;
     expect(screen.getAllByRole('article')).toHaveLength(2);
@@ -108,7 +115,7 @@ describe('accessible trip setup', () => {
     ).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Skip interests and use a balanced mix' }));
     expect(stored().comparisonAnswers).toEqual({});
-    expect(screen.getByRole('heading', { name: 'Car and timing' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Daily timing' })).toBeInTheDocument();
   });
   it('renders the route estimate after location inputs without submitting answers', () => {
     const submit = vi.fn();
@@ -132,7 +139,7 @@ describe('accessible trip setup', () => {
     await userEvent.click(screen.getByText('Edit interest amounts'));
     const details = screen.getByText('Edit interest amounts').closest('details');
     expect(within(details).getByLabelText('Food')).toHaveValue(
-      Number((preferenceProfiles(draft).stated.food * 100).toFixed(3))
+      String(Number((preferenceProfiles(draft).stated.food * 100).toFixed(3)))
     );
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
@@ -140,7 +147,7 @@ describe('accessible trip setup', () => {
     expect(within(review).getByText('Food')).toBeInTheDocument();
     expect(screen.queryByRole('figure')).not.toBeInTheDocument();
   });
-  it('validates rooms, supports car/timing inputs and requires explicit final submission', async () => {
+  it('validates rooms, keeps car in settings and supports timing and requires explicit final submission', async () => {
     seed(validDraft(), 1);
     const user = userEvent.setup(),
       submit = vi.fn();
@@ -151,17 +158,7 @@ describe('accessible trip setup', () => {
     await user.click(screen.getByRole('button', { name: 'Remove room 2' }));
     await user.click(screen.getByRole('button', { name: 'Next' }));
     await user.click(screen.getByRole('button', { name: 'Skip interests and use a balanced mix' }));
-    const carLabel = screen.getByText('Would you like to add your car?', { exact: true });
-    expect(carLabel).toHaveAttribute('for', 'setup-carStatus');
-    expect(carLabel.textContent).toBe('Would you like to add your car?');
-    expect(carLabel).not.toContainElement(screen.getByRole('combobox'));
-    await user.selectOptions(
-      screen.getByLabelText('Would you like to add your car?', { exact: true }),
-      'provided'
-    );
-    fill('Car year', '2020');
-    fill('Car make', 'Toyota');
-    fill('Car model', 'Corolla');
+    expect(screen.queryByLabelText('Would you like to add your car?')).not.toBeInTheDocument();
     await user.click(screen.getByLabelText('Allow driving later into the evening'));
     expect(screen.getByLabelText(/Stop late driving by/)).toHaveValue('24:00');
     await user.click(screen.getByRole('button', { name: 'Next' }));

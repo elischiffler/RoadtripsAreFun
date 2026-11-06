@@ -7,6 +7,7 @@ import {
   resolveTripLocation,
 } from '../../services/tripPlanner';
 import { getSession, isCurrentSession } from '../../services/session';
+import Map from '../../components/Map';
 import './ConnectedPlanning.css';
 
 /** Read-only driving estimate; ambiguity is resolved explicitly before routing. */
@@ -86,10 +87,7 @@ export default function RouteEstimate({ start, destination }) {
     }
   };
   return (
-    <QuestionGroup
-      legend="Get a feel for the drive"
-      description="A driving estimate can help you choose how much time to allow."
-    >
+    <QuestionGroup legend="Preview route">
       <ActionButton
         variant="secondary"
         disabled={busy || !start.trim() || !destination.trim()}
@@ -123,6 +121,22 @@ export default function RouteEstimate({ start, destination }) {
       )}
       {estimate && (
         <div className="connected-estimate" role="status">
+          <p className="rt-copy">
+            {candidates.origin[Number(selected.origin)].address} →{' '}
+            {candidates.destination[Number(selected.destination)].address}
+          </p>
+          <p className="rt-caption">Edit Start or Destination above to change this route.</p>
+          {estimate.geometry?.coordinates?.length > 1 && (
+            <div className="setup-estimate-map" aria-label="Estimated route map">
+              <Map
+                UserChatData={{
+                  route: estimate,
+                  startConfirmed: candidates.origin[Number(selected.origin)],
+                  endConfirmed: candidates.destination[Number(selected.destination)],
+                }}
+              />
+            </div>
+          )}
           <p className="rt-title">About {(estimate.duration / 3600).toFixed(1)} hours driving</p>
           <p className="rt-copy">
             {(estimate.distance / 1609.344).toFixed(1)} miles before adding stops
