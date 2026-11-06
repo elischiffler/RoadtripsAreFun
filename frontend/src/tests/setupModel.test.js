@@ -80,6 +80,21 @@ describe('trip setup contract', () => {
     draft.schedule.morning_restart = '';
     expect(setupErrors(draft, 3).schedule).toMatch(/valid/);
   });
+  it('preserves provided car data when restoring an onboarding draft', () => {
+    const draft = {
+      ...newSetupDraft(),
+      carStatus: 'provided',
+      year: '2020',
+      make: 'Toyota',
+      model: 'Corolla',
+    };
+    expect(restoreDraft(JSON.stringify({ version: 1, draft, step: 3 })).draft).toEqual(draft);
+    expect(
+      restoreDraft(
+        JSON.stringify({ version: 1, draft: { ...draft, carStatus: 'unanswered' }, step: 3 })
+      ).draft
+    ).toEqual({ ...draft, carStatus: 'skipped' });
+  });
   it('restores versioned drafts and rejects corrupt storage', () => {
     const draft = newSetupDraft();
     const encode = (changes = {}) => JSON.stringify({ version: 1, draft, step: 2, ...changes });

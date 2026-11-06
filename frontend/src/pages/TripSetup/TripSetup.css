@@ -583,3 +583,79 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (min-width: 24rem) {
+  .setup-interest-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Keep the actions visible on ordinary screens; short screens use document scroll. */
+@media (min-width: 24rem) and (min-height: 44rem) {
+  .setup-design {
+    block-size: 100dvh;
+    min-block-size: 0;
+  }
+  .setup-design > .rt-design__content,
+  .trip-setup {
+    block-size: 100%;
+    min-block-size: 0;
+  }
+  .trip-setup {
+    display: flex;
+    flex-direction: column;
+  }
+  .setup-wayfinding {
+    flex-shrink: 0;
+  }
+  .rt-design .setup-card {
+    flex: 1;
+    min-block-size: 0;
+  }
+  .setup-card form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-block-size: 0;
+  }
+  .setup-section {
+    overflow-y: auto;
+    padding: var(--rt-space-1);
+    min-block-size: 0;
+  }
+  .setup-progress,
+  .setup-footer,
+  .setup-bottom-actions {
+    flex-shrink: 0;
+  }
+}
+
+.setup-text-probe {
+  position: absolute;
+  visibility: hidden;
+  inline-size: 1rem;
+  block-size: 1rem;
+  pointer-events: none;
+}
+.setup-wayfinding {
+  justify-content: space-between;
+}
+.setup-design--large-text {
+  block-size: auto;
+  min-block-size: 100dvh;
+}
+.setup-design--large-text > .rt-design__content,
+.setup-design--large-text .trip-setup {
+  block-size: auto;
+}
+.setup-design--large-text .setup-section {
+  overflow: visible;
+}
+.setup-design--large-text .setup-grid,
+.setup-design--large-text .setup-interest-grid {
+  grid-template-columns: 1fr;
+}
+.setup-design--large-text input[type='date'],
+.setup-design--large-text input[type='time'] {
+  padding-inline: var(--rt-space-1);
+}

@@ -20,6 +20,8 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
   const [receipt, setReceipt] = useState(null);
   const [sending, setSending] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
+  const [largeText, setLargeText] = useState(false);
+  const textProbe = useRef(null);
   const [comparisonIndex, setComparisonIndex] = useState(0);
   const heading = useRef(null);
   const errorSummary = useRef(null);
@@ -35,6 +37,14 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
 
   const comparison = COMPARISONS[comparisonIndex];
 
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() =>
+      setLargeText(textProbe.current.getBoundingClientRect().width > 24)
+    );
+    observer.observe(textProbe.current);
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
     if (previousStep.current !== step)
@@ -126,17 +136,16 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
   };
 
   return (
-    <DesignFrame className="setup-design">
+    <DesignFrame className={'setup-design' + (largeText ? ' setup-design--large-text' : '')}>
+      <span ref={textProbe} className="setup-text-probe" aria-hidden="true" />
       <main className="trip-setup">
         <div className="setup-wayfinding">
           <Link to="/">Home</Link>
-          <span>Plan a trip</span>
           <Link to="/trips">Saved trips</Link>
         </div>
         <Sheet className="setup-card" aria-label="Plan your trip">
           <nav aria-label="Trip setup progress" className="setup-progress">
             <p>
-              <span>Plan a trip</span>
               <span>{Math.round((step / (STEPS.length - 1)) * 100)}%</span>
             </p>
             <progress aria-label="Trip setup completion" value={step} max={STEPS.length - 1} />
@@ -448,7 +457,7 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                 {step === 3 && (
                   <>
                     <p>Set a comfortable rhythm for your days.</p>
-                    <p className="setup-hint">Car details are available in trip settings.</p>
+                    <p className="setup-hint">Car details can be added later.</p>
                     <div
                       className="setup-grid"
                       id="setup-schedule"

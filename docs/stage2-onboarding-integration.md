@@ -36,7 +36,43 @@ expanded details, large text and short screens.
   start/destination text fields and confirmed provider matches remain authoritative.
 - The requested Apple design skill was absent from local files and available skill
   catalogs. This patch uses repository tokens and does not claim skill review.
-- Browser visual acceptance remains outstanding. `/plan` can be inspected directly
+- Local fixture browser acceptance is recorded below. `/plan` is the real app
   in DevTools device mode; a separate mobile-only URL is not added.
 - No production, database or live Mentro calls were made. Release remains with the
   parent, after integration, review and complete-trip acceptance.
+
+## Follow-up acceptance and branch coordination
+
+The local browser harness is `tests/ui-stage2/browser-check.mjs`. Run Vite on
+5187 with `VITE_BACKEND_SERVER=http://127.0.0.1:18999/` and
+`VITE_LOCAL_JOURNEY=true`; install playwright-core and @axe-core/playwright under
+`/tmp/roadtrips-ui-browser` and provide Chromium. Every non-local request is
+intercepted or blocked. This verifies UI fixtures, not real trip feasibility.
+
+All five stages are checked at 390×844, 320×568, 1365×900 and 390×844 with 200%
+root text. The harness checks horizontal overflow, axe WCAG A/AA issues, reachable
+actions, reduced motion, browser errors and preservation of provided car data.
+Normal screens keep actions visible with an internally scrolling question panel;
+short screens and enlarged text use natural document scrolling.
+
+Inspected meal branch `cb8600a`: its documented `Route.duration` excludes visits,
+meals and overnight rest. Room occupancy and the verified hotel provider remain
+required even without overnight stops. Therefore no safe client-only one-day
+switch exists. Server work must carry an explicit selected trip mode, compute the
+complete candidate from aware timestamps with meals, waits, visits, final road
+legs and local cutoffs, reject infeasible one-day candidates, and condition hotel
+provider/occupancy requirements on that explicit mode. No such contract was
+silently added to the concurrently edited scheduler.
+
+That branch also introduces `AmountControl` in TripSetup, overlapping this PR's
+native sliders. During integration prefer the shared accessible AmountControl
+while retaining this PR's optional comparisons and compact layout. Do not merge
+the old car question back into onboarding or drop existing provided car fields.
+At inspection, available remote settings snapshots had no new car editor; the
+parent must supply the settings worker branch for end-to-end editing acceptance.
+
+November 6 follow-up: all 20 browser stage/viewport combinations passed with zero
+axe violations, zero horizontal overflow and zero browser exceptions. All ten
+ordinary desktop/mobile stages fit the viewport without document scrolling.
+See `docs/evidence/stage2-onboarding/browser-report.json` and adjacent screenshots.
+This is isolated fixture acceptance, not live-provider or database acceptance.
