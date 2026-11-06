@@ -84,3 +84,27 @@ measured long legs, hotel restart variants, final cutoffs, zero-duration final
 legs, source-free wait notices, DST/timezone changes, stale or forged intervals,
 legacy behavior, evening conflicts and allowlisted streamed errors. Hosted
 Neon, live Mentro and live provider trips are excluded from these tests.
+
+## Integration contracts
+
+`Route.duration` and each physical stop's `duration` continue to mean measured
+driving seconds. They exclude visits, meal breaks and overnight rest. Elapsed
+trip time comes from the aware departure and final arrival timestamps. Overnight
+decisions still use the scheduling policy's local arrival cutoffs and restart,
+with dated hotel stops; this change adds no fixed road-duration threshold for
+requiring a hotel. Meal time can reduce the driving progress available before a
+cutoff and therefore change the selected overnight layout.
+
+Room occupancy and the verified hotel provider are still required by the current
+backend even when the resulting trip has no overnight. This change does not add
+a skip-hotels flow. Any later conditional hotel flow must revise those backend
+requirements and use the meal-aware elapsed schedule, waits, visits and local
+cutoffs to decide day fit; driving time below 24 hours is insufficient.
+
+Planning milestone names, percentages and progress event fields are unchanged.
+The only new stream error shape is `type: error`, `status: 422`,
+`code: meal_schedule_conflict`, with a fixed public `detail`. A successful route
+persists `reserve_meal_slots` and recomputed per-stop `meal_breaks`; itinerary rows
+use `kind: meal`, `status: reserved` and actual start/end instants. Consumers must
+not count meals as visited attractions, infer a venue from them, or treat an
+itinerary-only advisory window as a reservation.
