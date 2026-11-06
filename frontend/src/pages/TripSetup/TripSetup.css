@@ -497,3 +497,89 @@
     outline: var(--rt-focus-width) solid Highlight;
   }
 }
+
+/* Keep setup a compact app workspace at every viewport size. */
+.setup-design {
+  padding-block-start: calc(var(--header-height) + var(--rt-space-3));
+  padding-block-end: max(var(--rt-space-4), env(safe-area-inset-bottom));
+}
+.setup-wayfinding {
+  margin-block-end: var(--rt-space-3);
+}
+.setup-progress {
+  margin-block-end: var(--rt-space-4);
+  padding-block-end: var(--rt-space-3);
+}
+.setup-progress progress {
+  display: block;
+  inline-size: 100%;
+  block-size: var(--rt-space-2);
+  accent-color: var(--rt-color-accent);
+}
+.setup-section,
+.setup-fields {
+  gap: var(--rt-space-3);
+}
+.setup-section {
+  animation: setup-enter var(--rt-duration-color) var(--rt-ease);
+}
+.setup-choice,
+.setup-secondary {
+  background: var(--rt-color-surface);
+  box-shadow: var(--rt-shadow-sheet);
+  transition:
+    background-color var(--rt-duration-color) var(--rt-ease),
+    transform var(--rt-duration-feedback) var(--rt-ease);
+}
+.setup-choice:active,
+.setup-secondary:active {
+  transform: scale(0.98);
+}
+.setup-field input[type='range'] {
+  padding-inline: 0;
+  accent-color: var(--rt-color-accent);
+}
+.setup-footer {
+  margin-block-start: var(--rt-space-4);
+  padding-block-start: var(--rt-space-3);
+}
+.setup-estimate-map {
+  block-size: 12rem;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--rt-radius-control);
+}
+@keyframes setup-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--rt-space-2));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .setup-section {
+    animation: none;
+  }
+  .setup-choice,
+  .setup-secondary {
+    transition: none;
+    transform: none;
+  }
+}
+@media (max-width: 30rem) {
+  .rt-design .setup-card {
+    padding: var(--rt-space-4);
+  }
+  .setup-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+/* Preserve document scrolling for large text and short screens. */
+@media (max-width: 22rem) {
+  .setup-grid {
+    grid-template-columns: 1fr;
+  }
+}

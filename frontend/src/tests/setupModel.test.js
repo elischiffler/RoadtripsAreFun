@@ -68,6 +68,8 @@ describe('trip setup contract', () => {
     draft.budget = '-1';
     draft.travelers = '0';
     expect(Object.keys(setupErrors(draft, 1))).toEqual(['travelers', 'budget', 'rooms']);
+    expect(setupErrors(draft, 3).carStatus).toBeUndefined();
+    draft.carStatus = 'invalid';
     expect(setupErrors(draft, 3).carStatus).toBeDefined();
     draft.carStatus = 'provided';
     expect(Object.keys(setupErrors(draft, 3))).toEqual(['make', 'model', 'year']);

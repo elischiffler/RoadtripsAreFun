@@ -235,7 +235,7 @@ describe('version 1 setup draft migration', () => {
       'Where and when',
       'People and rooms',
       'What you enjoy',
-      'Car and timing',
+      'Daily timing',
       'Review',
     ]);
   });

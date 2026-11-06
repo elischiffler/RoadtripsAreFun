@@ -20,7 +20,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
   const [receipt, setReceipt] = useState(null);
   const [sending, setSending] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
-  const [visited, setVisited] = useState(step);
   const [comparisonIndex, setComparisonIndex] = useState(0);
   const heading = useRef(null);
   const errorSummary = useRef(null);
@@ -58,7 +57,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
   };
   const go = (next) => {
     setErrors({});
-    setVisited((previous) => Math.max(previous, next));
     setStep(next);
   };
   const next = () => {
@@ -135,32 +133,13 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
           <span>Plan a trip</span>
           <Link to="/trips">Saved trips</Link>
         </div>
-        <header className="setup-intro">
-          <p className="setup-eyebrow">A road trip, your way</p>
-          <h1>Make room for the good stops.</h1>
-          <p>A few details, a little inspiration. We’ll help you shape the trip.</p>
-        </header>
         <Sheet className="setup-card" aria-label="Plan your trip">
           <nav aria-label="Trip setup progress" className="setup-progress">
             <p>
-              Step {step + 1} of {STEPS.length} <span>{STEPS[step]}</span>
+              <span>Plan a trip</span>
+              <span>{Math.round((step / (STEPS.length - 1)) * 100)}%</span>
             </p>
-            <ol>
-              {STEPS.map((name, index) => (
-                <li key={name}>
-                  <button
-                    type="button"
-                    aria-current={index === step ? 'step' : undefined}
-                    disabled={locked || index > visited}
-                    onClick={() => go(index)}
-                    aria-label={'Step ' + (index + 1) + ': ' + name}
-                  >
-                    <span aria-hidden="true">{index < step ? '✓' : index + 1}</span>
-                    <span className="setup-step-name">{name}</span>
-                  </button>
-                </li>
-              ))}
-            </ol>
+            <progress aria-label="Trip setup completion" value={step} max={STEPS.length - 1} />
           </nav>
           <form onSubmit={send} noValidate aria-busy={locked}>
             <div className="setup-section" key={step}>
@@ -183,7 +162,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                 <legend className="setup-visually-hidden">{STEPS[step]} details</legend>
                 {step === 0 && (
                   <>
-                    <p>Where are you heading?</p>
                     {field('start', 'Starting city or address', 'text', {
                       autoComplete: 'off',
                       maxLength: 256,
@@ -210,7 +188,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                 )}
                 {step === 1 && (
                   <>
-                    <p>Who’s coming along?</p>
                     {field('travelers', 'Total people, including you', 'number', {
                       min: 1,
                       step: 1,
@@ -289,7 +266,7 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                 )}
                 {step === 2 && (
                   <>
-                    <p>What would make this trip enjoyable? Choose any, or keep a balanced mix.</p>
+                    <p>Choose your interests, or keep a balanced mix.</p>
                     <div className="setup-interest-grid" id="setup-interests">
                       {Object.entries(INTERESTS).map(([key, label]) => (
                         <label
@@ -307,114 +284,111 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                         </label>
                       ))}
                     </div>
-                    <section className="setup-comparisons" aria-labelledby="comparison-heading">
-                      <div className="setup-group-heading">
-                        <p className="setup-eyebrow">
-                          Optional · {COMPARISONS.length} quick comparisons
+                    <details className="setup-explanation">
+                      <summary>Refine with place comparisons</summary>
+                      <section className="setup-comparisons" aria-labelledby="comparison-heading">
+                        <div className="setup-group-heading">
+                          <p className="setup-eyebrow">
+                            Optional · {COMPARISONS.length} quick comparisons
+                          </p>
+                          <h3 id="comparison-heading">Which stop feels more like you?</h3>
+                          <p className="setup-hint">
+                            Compare real places to add a second perspective. These examples aren’t
+                            route recommendations.
+                          </p>
+                        </div>
+                        <p className="setup-hint" aria-live="polite">
+                          Comparison {comparisonIndex + 1} of {COMPARISONS.length}
                         </p>
-                        <h3 id="comparison-heading">Which stop feels more like you?</h3>
-                        <p className="setup-hint">
-                          Compare real places to add a second perspective. These examples aren’t
-                          route recommendations.
-                        </p>
-                      </div>
-                      <p className="setup-hint" aria-live="polite">
-                        Comparison {comparisonIndex + 1} of {COMPARISONS.length}
-                      </p>
-                      <div className="setup-comparison-places">
-                        {[comparison.left, comparison.right].map((place, index) => (
-                          <article className="setup-place" key={place.id}>
-                            <span className="setup-place-marker" aria-hidden="true">
-                              {index === 0 ? 'A' : 'B'}
-                            </span>
-                            <h4>{place.name}</h4>
-                            <p>{place.character ?? place.description}</p>
-                            <details className="setup-source">
-                              <summary>Place source</summary>
-                              <p>{place.source_attribution}</p>
-                              <a href={place.url} target="_blank" rel="noreferrer">
-                                Visitor information
-                                <span className="setup-visually-hidden">
-                                  {' '}
-                                  for {place.name} (new tab)
-                                </span>
-                              </a>
-                            </details>
-                          </article>
-                        ))}
-                      </div>
-                      <ChoiceGroup
-                        legend="Which would you choose?"
-                        name={comparison.id}
-                        value={draft.comparisonAnswers?.[comparison.id]}
-                        onChange={answerComparison}
-                        options={[
-                          { value: 'left', label: comparison.left.name },
-                          { value: 'right', label: comparison.right.name },
-                          { value: 'either', label: 'Either place' },
-                          { value: 'neither', label: 'Neither place' },
-                          { value: 'unsure', label: 'Not sure' },
-                        ]}
-                      />
-                      <div className="setup-inline-actions">
-                        <ActionButton
-                          variant="secondary"
-                          disabled={comparisonIndex === 0}
-                          onClick={() => setComparisonIndex((index) => index - 1)}
-                        >
-                          Previous comparison
-                        </ActionButton>
-                        <ActionButton
-                          variant="secondary"
-                          disabled={comparisonIndex === COMPARISONS.length - 1}
-                          onClick={() => setComparisonIndex((index) => index + 1)}
-                        >
-                          Next comparison
-                        </ActionButton>
-                      </div>
-                      <div className="setup-inline-actions">
-                        <button
-                          type="button"
-                          className="setup-text-button"
-                          onClick={() => {
-                            answerComparison('unsure');
-                            setComparisonIndex((index) =>
-                              Math.min(index + 1, COMPARISONS.length - 1)
-                            );
-                          }}
-                        >
-                          Skip this comparison
-                        </button>
-                        <button
-                          type="button"
-                          className="setup-text-button"
-                          onClick={() => {
-                            set('comparisonAnswers', {});
-                            setComparisonIndex(0);
-                          }}
-                        >
-                          Reset comparisons
-                        </button>
-                      </div>
-                    </section>
-                    <p className="setup-hint">
-                      Your choices help tailor the stops. Skip any comparison you’re unsure about.
-                    </p>
+                        <div className="setup-comparison-places">
+                          {[comparison.left, comparison.right].map((place, index) => (
+                            <article className="setup-place" key={place.id}>
+                              <span className="setup-place-marker" aria-hidden="true">
+                                {index === 0 ? 'A' : 'B'}
+                              </span>
+                              <h4>{place.name}</h4>
+                              <p>{place.character ?? place.description}</p>
+                              <details className="setup-source">
+                                <summary>Place source</summary>
+                                <p>{place.source_attribution}</p>
+                                <a href={place.url} target="_blank" rel="noreferrer">
+                                  Visitor information
+                                  <span className="setup-visually-hidden">
+                                    {' '}
+                                    for {place.name} (new tab)
+                                  </span>
+                                </a>
+                              </details>
+                            </article>
+                          ))}
+                        </div>
+                        <ChoiceGroup
+                          legend="Which would you choose?"
+                          name={comparison.id}
+                          value={draft.comparisonAnswers?.[comparison.id]}
+                          onChange={answerComparison}
+                          options={[
+                            { value: 'left', label: comparison.left.name },
+                            { value: 'right', label: comparison.right.name },
+                            { value: 'either', label: 'Either place' },
+                            { value: 'neither', label: 'Neither place' },
+                            { value: 'unsure', label: 'Not sure' },
+                          ]}
+                        />
+                        <div className="setup-inline-actions">
+                          <ActionButton
+                            variant="secondary"
+                            disabled={comparisonIndex === 0}
+                            onClick={() => setComparisonIndex((index) => index - 1)}
+                          >
+                            Previous comparison
+                          </ActionButton>
+                          <ActionButton
+                            variant="secondary"
+                            disabled={comparisonIndex === COMPARISONS.length - 1}
+                            onClick={() => setComparisonIndex((index) => index + 1)}
+                          >
+                            Next comparison
+                          </ActionButton>
+                        </div>
+                        <div className="setup-inline-actions">
+                          <button
+                            type="button"
+                            className="setup-text-button"
+                            onClick={() => {
+                              answerComparison('unsure');
+                              setComparisonIndex((index) =>
+                                Math.min(index + 1, COMPARISONS.length - 1)
+                              );
+                            }}
+                          >
+                            Skip this comparison
+                          </button>
+                          <button
+                            type="button"
+                            className="setup-text-button"
+                            onClick={() => {
+                              set('comparisonAnswers', {});
+                              setComparisonIndex(0);
+                            }}
+                          >
+                            Reset comparisons
+                          </button>
+                        </div>
+                      </section>
+                    </details>
                     <details className="setup-explanation">
                       <summary>Edit interest amounts</summary>
-                      <p>
-                        Edit your chosen interests with non-negative amounts. At least one must be
-                        above zero. Changing an interest checkbox replaces manual amounts;
-                        comparison choices keep them.
-                      </p>
+                      <p>Drag or use arrow keys to adjust each interest.</p>
                       <div className="setup-grid">
                         {Object.entries(INTERESTS).map(([key, label]) => (
                           <label className="setup-field" key={key}>
                             {label}
                             <input
-                              type="number"
+                              type="range"
                               min="0"
-                              step="any"
+                              max={Math.max(100, ...Object.values(draft.customWeights ?? {}))}
+                              step="1"
                               value={
                                 draft.customWeights?.[key] ??
                                 Number((profiles.stated[key] * 100).toFixed(3))
@@ -474,32 +448,7 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                 {step === 3 && (
                   <>
                     <p>Set a comfortable rhythm for your days.</p>
-                    <div className="setup-field">
-                      <label htmlFor="setup-carStatus">Would you like to add your car?</label>
-                      <select
-                        id="setup-carStatus"
-                        value={draft.carStatus}
-                        onChange={(e) => set('carStatus', e.target.value)}
-                        aria-invalid={!!errors.carStatus}
-                        aria-describedby={errors.carStatus ? 'setup-carStatus-error' : undefined}
-                      >
-                        <option value="unanswered">Choose an option</option>
-                        <option value="skipped">Skip car details</option>
-                        <option value="provided">Add my car</option>
-                      </select>
-                      {errors.carStatus && (
-                        <small id="setup-carStatus-error" className="setup-error">
-                          {errors.carStatus}
-                        </small>
-                      )}
-                    </div>
-                    {draft.carStatus === 'provided' && (
-                      <div className="setup-grid">
-                        {field('year', 'Car year', 'number')}
-                        {field('make', 'Car make')}
-                        {field('model', 'Car model')}
-                      </div>
-                    )}
+                    <p className="setup-hint">Car details are available in trip settings.</p>
                     <div
                       className="setup-grid"
                       id="setup-schedule"
@@ -558,7 +507,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                 )}
                 {step === 4 && (
                   <>
-                    <p>Take a moment to check your answers. Nothing is sent until you continue.</p>
                     <div className="setup-review">
                       {[
                         [
@@ -596,10 +544,10 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                             : draft.interests.length
                               ? draft.interests.map((key) => INTERESTS[key]).join(', ')
                               : 'A balanced mix across all interests',
-                          'Trip-only interests; account preferences stay separate',
+                          '',
                         ],
                         [
-                          'Car and timing',
+                          'Daily timing',
                           draft.carStatus === 'provided'
                             ? [draft.year, draft.make, draft.model].join(' ')
                             : 'Car details skipped',
@@ -656,9 +604,7 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
               >
                 Back
               </ActionButton>
-              <span>
-                {stored ? 'Draft saved in this browser tab' : 'Draft kept on this screen'}
-              </span>
+              <span>{stored ? 'Draft saved' : 'Draft kept'}</span>
               <ActionButton type="submit" disabled={locked}>
                 {locked ? 'Checking locations…' : step === 4 ? 'Check locations' : 'Next'}
               </ActionButton>
@@ -685,7 +631,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                 className="setup-secondary"
                 onClick={() => {
                   reset();
-                  setVisited(0);
                   setErrors({});
                   setReceipt(null);
                   setResetOpen(false);
