@@ -1,13 +1,17 @@
 import { ReadableStream } from 'node:stream/web';
 import { TextEncoder } from 'node:util';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { streamStudioRun } from '../services/studioProgress';
 import { getStudioSession } from '../services/studioSession';
+import { fixtureSession } from './sessionFixtures';
+import { backendAuthConfig } from '../services/backendAuth';
+import { signOut } from '../services/session';
 import StudioProgress from '../pages/AlgorithmLab/StudioProgress';
 
 beforeEach(() => {
   sessionStorage.clear();
+  fixtureSession('studio-owner');
   sessionStorage.setItem(
     'studioSession',
     JSON.stringify({ token: 'visitor', expires_at: Date.now() / 1000 + 600 })
@@ -57,6 +61,7 @@ it('streams split Unicode frames and heartbeats before preserving the final run 
   expect(fetch.mock.calls[0][0]).toBe('http://localhost:8000/studio/run/stream');
   expect(fetch.mock.calls[0][1].headers).toEqual({
     'Content-Type': 'application/json',
+    ...backendAuthConfig().headers,
     'X-Studio-Session': 'visitor',
   });
   expect(JSON.parse(fetch.mock.calls[0][1].body)).toEqual(request);
@@ -103,6 +108,7 @@ it('does not invalidate a newer Studio session after an old request is rejected'
     )
   );
   const pending = streamStudioRun({}, undefined, vi.fn());
+  await waitFor(() => expect(rejectOld).toBeTypeOf('function'));
   sessionStorage.setItem(
     'studioSession',
     JSON.stringify({ token: 'new-visitor', expires_at: Date.now() / 1000 + 600 })
@@ -124,6 +130,7 @@ it('forwards cancellation and does not render a late completed response', async 
   );
   vi.stubGlobal('fetch', fetch);
   const pending = streamStudioRun({}, controller.signal, vi.fn());
+  await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
   controller.abort();
   await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
   expect(fetch.mock.calls[0][1].signal.aborted).toBe(true);
@@ -195,4 +202,21 @@ it.each([
 ])('updates the loading line for %s', (stage, label) => {
   render(<StudioProgress events={[{ type: 'progress', stage }]} />);
   expect(screen.getByRole('status')).toHaveTextContent(label);
+});
+
+it('aborts an active stream on sign out without replaying the request', async () => {
+  const fetch = vi.fn().mockImplementation(
+    (_url, options) =>
+      new Promise((_resolve, reject) => {
+        options.signal.addEventListener('abort', () =>
+          reject(new DOMException('Cancelled', 'AbortError'))
+        );
+      })
+  );
+  vi.stubGlobal('fetch', fetch);
+  const pending = streamStudioRun({}, undefined, vi.fn());
+  await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+  signOut();
+  await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+  expect(fetch).toHaveBeenCalledTimes(1);
 });

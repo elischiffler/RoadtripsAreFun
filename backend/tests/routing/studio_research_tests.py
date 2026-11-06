@@ -15,12 +15,15 @@ from app.main import app
 from app.research import store, worker
 from app.research.design import Design, plan
 from app.research.metrics import observation
+from app.routers import algorithm_lab as lab
 from app.routers import studio_research as api
 from app.routing.cp_sat_selection import SelectionConfig
 
 
 @pytest.fixture(autouse=True)
 def local_store(tmp_path, monkeypatch):
+    # Capability/store semantics are independent of the real owner-JWT tests.
+    monkeypatch.setitem(app.dependency_overrides, lab.require_lab_owner, lambda: "fixture-owner")
     monkeypatch.setenv("STUDIO_RESEARCH_DIR", str(tmp_path))
     monkeypatch.setenv("STUDIO_RESEARCH_ENABLED", "true")
     monkeypatch.setenv("ROADTRIPS_REVISION", "fixture-revision")

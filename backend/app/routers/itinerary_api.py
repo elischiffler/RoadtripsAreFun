@@ -10,6 +10,7 @@ from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time
 from app.routing.base import PlanningError
 from app.routing.catalog_calendars import CatalogLookup, refresh_for_timing
+from app.routing.meal_slots import add_meal_windows
 from app.routing.sources.evenings import current_suggestions
 from app.routing.travel_timing import apply_timing
 from app.routing.visit_calendar import requires_calendar
@@ -95,6 +96,7 @@ async def _build_itinerary(
                 datetime.fromisoformat(first.get("road_arrival_time") or first["arrival_time"]),
                 -first["duration"],
             )
+    known_departure = current_time is not None
     current_time = current_time or datetime(2024, 9, 21, 9)
     if data.route.scheduling_policy is not None:
         if data.route.start_timezone:
@@ -105,6 +107,8 @@ async def _build_itinerary(
             data.route.scheduling_policy,
             data.route.start_timezone,
         )
+    departure = current_time if known_departure else None
+    trip_end = None
 
     # initialize a list of stops with a generic message and specified start time
     stop_list = [
@@ -167,6 +171,8 @@ async def _build_itinerary(
             )
             or None,
         }
+        if stop["type"] == "end":
+            trip_end = current_time
         # Add the stop to stop_list
         stop_list.append(destination)
         if stop["type"] == "hotel":  # If the stop is a hotel
@@ -241,7 +247,15 @@ async def _build_itinerary(
             )
     if len(stop_list) >= 2:
         # Organize the stops by date
-        return await _day_itinerary(stop_list)
+        days = await _day_itinerary(stop_list)
+        if data.include_meal_slots:
+            return add_meal_windows(
+                days,
+                departure=departure,
+                trip_end=trip_end,
+                start_timezone=data.route.start_timezone,
+            )
+        return days
     raise HTTPException(status_code=400, detail="Incomplete route provided")
 
 

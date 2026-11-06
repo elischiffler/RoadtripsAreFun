@@ -11,12 +11,17 @@ import {
   savedStudyVersion,
   rememberStudyVersion,
   researchCatalog,
+  readStudySnapshot,
 } from '../services/studioResearch';
+import * as researchCache from '../services/studioResearchCache';
 import {
   clearResearchCache,
   readResearchCache,
   saveResearchCache,
 } from '../services/studioResearchCache';
+import { fixtureSession } from './sessionFixtures';
+import { signOut } from '../services/session';
+import { backendAuthConfig } from '../services/backendAuth';
 import { clearStudioSession } from '../services/studioSession';
 
 vi.mock('axios', () => ({ default: { get: vi.fn(), post: vi.fn() } }));
@@ -29,6 +34,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   localStorage.clear();
   sessionStorage.clear();
+  fixtureSession('research-owner');
   clearResearchCache();
   exported = null;
   vi.stubGlobal('URL', {
@@ -155,7 +161,10 @@ it('discovers database studies without browser keys and uses session-scoped read
   const library = await loadStudyLibrary();
   expect(library.current).toEqual([{ id: 'current', database: true }]);
   expect(library.archived).toEqual([{ id: 'previous', database: true }]);
-  expect(axios.get.mock.calls[0][1].headers).toEqual({ 'X-Studio-Session': 'fixture-session' });
+  expect(axios.get.mock.calls[0][1].headers).toEqual({
+    ...backendAuthConfig().headers,
+    'X-Studio-Session': 'fixture-session',
+  });
   axios.get.mockResolvedValueOnce({ data: { rows: [] } });
   await studyRequest(library.current[0], '', 'get', undefined, 123);
   expect(axios.get.mock.calls[1][0]).toContain('research/saved/current');
@@ -282,4 +291,36 @@ it('invalidates saved snapshots after a successful control action', async () => 
   await studyRequest(sources[0], 'pause', 'post');
   await studyRequest(sources[0]);
   expect(axios.get).toHaveBeenCalledTimes(2);
+});
+
+it('does not return cached research after sign out and sends both owner and visitor credentials', async () => {
+  sessionStorage.setItem(
+    'studioSession',
+    JSON.stringify({ token: 'visitor', expires_at: Date.now() / 1000 + 600 })
+  );
+  axios.get.mockResolvedValue({ data: { trips: [], personas: [] } });
+  await researchCatalog();
+  expect(axios.get.mock.calls[0][1].headers).toEqual({
+    ...backendAuthConfig().headers,
+    'X-Studio-Session': 'visitor',
+  });
+  signOut();
+  await expect(researchCatalog()).rejects.toBeDefined();
+  expect(axios.get).toHaveBeenCalledTimes(1);
+});
+
+it('discards cached results when the account signs out during an asynchronous cache read', async () => {
+  let completeRead;
+  vi.spyOn(researchCache, 'readResearchCache').mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        completeRead = resolve;
+      })
+  );
+  const pending = readStudySnapshot(sources[0]);
+  await vi.waitFor(() => expect(completeRead).toBeTypeOf('function'));
+  signOut();
+  completeRead(snapshot());
+  await expect(pending).rejects.toMatchObject({ code: 'session-changed' });
+  expect(axios.get).not.toHaveBeenCalled();
 });

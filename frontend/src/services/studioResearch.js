@@ -1,18 +1,25 @@
-import axios from 'axios';
-import { getStudioSession, studioRequest } from './studioSession';
+import axios from './protectedRequest';
+import { ensureSession, getSession, isCurrentSession, SessionError } from './session';
+import { getStudioSession, studioConfig, studioRequest } from './studioSession';
 import { clearResearchCache, readResearchCache, saveResearchCache } from './studioResearchCache';
 
 const scope = (study) =>
   JSON.stringify([
     import.meta.env.VITE_BACKEND_SERVER,
     getStudioSession()?.token ?? null,
+    getSession().owner,
     study?.database ? 'database' : (study?.key ?? 'public'),
   ]);
 const checkAborted = (signal) => {
   if (signal?.aborted) throw new DOMException('Request aborted', 'AbortError');
 };
+const checkSession = (session) => {
+  if (!isCurrentSession(session)) throw new SessionError('session-changed');
+};
 export async function readStudySnapshot(study) {
+  const session = await ensureSession();
   const value = await readResearchCache(`study:${study.id}`, scope(study));
+  checkSession(session);
   return Array.isArray(value?.rows) &&
     Array.isArray(value.variants) &&
     value.counts &&
@@ -98,11 +105,14 @@ export async function studyVersions(currentStudies, signal, archive = archivedSt
 }
 // Database references grant read access through Studio; control capabilities stay browser-local.
 export async function loadStudyLibrary(signal) {
+  const session = await ensureSession();
   const owner = scope();
   const cached = await readResearchCache('library', owner);
+  checkSession(session);
   checkAborted(signal);
   if (Array.isArray(cached?.current) && Array.isArray(cached?.archived)) return cached;
   const { data } = await studioRequest('get', 'research/saved', undefined, signal);
+  checkSession(session);
   const local = new Map(
     [...archivedStudies(), ...savedStudies()].map((study) => [study.id, study])
   );
@@ -113,29 +123,38 @@ export async function loadStudyLibrary(signal) {
   return library;
 }
 export async function researchCatalog(signal) {
+  const session = await ensureSession();
   const owner = scope();
   const cached = await readResearchCache('catalog', owner);
+  checkSession(session);
   checkAborted(signal);
   if (Array.isArray(cached?.trips) && Array.isArray(cached?.personas)) return cached;
   const data = (
-    await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}studio/research/catalog`, { signal })
+    await axios.get(
+      `${import.meta.env.VITE_BACKEND_SERVER}studio/research/catalog`,
+      studioConfig(signal)
+    )
   ).data;
+  checkSession(session);
   checkAborted(signal);
   await saveResearchCache('catalog', owner, data);
   return data;
 }
 export async function studyRequest(study, action = '', method = 'get', signal, after) {
+  const session = await ensureSession();
   const owner = scope(study);
   const cacheKey = `study:${study.id}`;
   const metadataKey = `metadata:${study.id}`;
   const metadataOnly = after === Number.MAX_SAFE_INTEGER;
   const cacheable = method === 'get' && !action;
   const cached = cacheable ? await readStudySnapshot(study) : null;
+  checkSession(session);
   checkAborted(signal);
   if (cached?.state === 'complete' && Array.isArray(cached.rows))
     return metadataOnly ? { ...cached, rows: [] } : cached;
   if (cacheable && metadataOnly) {
     const metadata = await readResearchCache(metadataKey, owner);
+    checkSession(session);
     checkAborted(signal);
     if (metadata?.variants && metadata?.counts) return metadata;
   }
@@ -145,6 +164,7 @@ export async function studyRequest(study, action = '', method = 'get', signal, a
       ? cached.cursor
       : after;
   const data = await requestStudy(study, action, method, signal, cursor);
+  checkSession(session);
   checkAborted(signal);
   if (!cacheable) {
     if (method !== 'get') {
@@ -183,7 +203,7 @@ async function requestStudy(study, action, method, signal, after) {
   const url = `${import.meta.env.VITE_BACKEND_SERVER}studio/research/batches/${study.id}${action ? `/${action}` : ''}`;
   const config = {
     signal,
-    headers: { 'X-Studio-Batch-Key': study.key },
+    headers: { ...studioConfig(signal).headers, 'X-Studio-Batch-Key': study.key },
     params: after == null ? undefined : { after },
   };
   return (method === 'post' ? await axios.post(url, {}, config) : await axios.get(url, config))
@@ -220,7 +240,7 @@ export async function rerunStudy(study, previousStudies) {
   const { data } = await axios.post(
     `${import.meta.env.VITE_BACKEND_SERVER}studio/research/batches/${study.id}/rerun`,
     { id: crypto.randomUUID() },
-    { headers: { 'X-Studio-Batch-Key': study.key } }
+    { headers: { ...studioConfig().headers, 'X-Studio-Batch-Key': study.key } }
   );
   if (typeof data.id !== 'string' || typeof data.key !== 'string')
     throw new Error('Invalid rerun response');

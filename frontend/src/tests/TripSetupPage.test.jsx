@@ -1,10 +1,11 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { useContext } from 'react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from './testUtils';
 import { fixtureSession } from './sessionFixtures';
 import { getSession, signOut } from '../services/session';
-import { Data, ChatData, ChatLogs } from '../states/UserDataContext';
+import { Data, ChatData, ChatLogs, UserDataContext } from '../states/UserDataContext';
 import { newSetupDraft, preferenceWeights } from '../pages/TripSetup/setupModel';
 import TripSetupPage from '../pages/TripSetup/TripSetupPage';
 import { initializeUserData, ensureChatCreated, updateUserData } from '../services/savedTrips';
@@ -185,4 +186,206 @@ it('saves a fractional nightly target without rounding into the legacy integer s
   const snapshot = ensureChatCreated.mock.calls[0][1];
   expect(snapshot.hotelBudget).toBeNull();
   expect(snapshot.tripProfile.budget).toBe(150.25);
+});
+
+it('waits for explicit selection when a location has several provider matches', async () => {
+  resolveTripLocation.mockImplementation(async (query) =>
+    query === 'Boulder' ? [origin, { ...origin, address: 'Boulder, Wyoming' }] : [destination]
+  );
+  renderWithProviders(<TripSetupPage />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Check locations' }));
+  const confirmButton = await screen.findByRole('button', {
+    name: 'Confirm locations and plan route',
+  });
+  expect(confirmButton).toBeDisabled();
+  expect(planStructuredRoute).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('radio', { name: 'Boulder, Colorado' }));
+  await userEvent.click(confirmButton);
+  await screen.findByText('Trip saved.');
+  expect(planStructuredRoute.mock.calls[0][1]).toEqual(origin);
+  expect(screen.queryByText('Interests sent to the planner')).not.toBeInTheDocument();
+});
+
+it('reaches70 with an actual base route, waits for itinerary and saving, and opts into open meal slots', async () => {
+  let finishRoute, finishItinerary, finishSave;
+  planStructuredRoute.mockImplementationOnce(
+    (_draft, _origin, _destination, _signal, { onProgress }) => {
+      onProgress({ type: 'progress', stage: 'route.initial', state: 'completed' });
+      return new Promise((resolve) => {
+        finishRoute = resolve;
+      });
+    }
+  );
+  planStructuredItinerary.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finishItinerary = resolve;
+      })
+  );
+  ensureChatCreated.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finishSave = resolve;
+      })
+  );
+  await confirm();
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '70'
+  );
+  finishRoute(route);
+  await waitFor(() => expect(planStructuredItinerary).toHaveBeenCalled());
+  expect(planStructuredItinerary.mock.calls[0][2]).toEqual({ includeMealSlots: true });
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '92'
+  );
+  finishItinerary([{ date: 'Tuesday', stops: route.stops }]);
+  await waitFor(() => expect(ensureChatCreated).toHaveBeenCalled());
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '96'
+  );
+  expect(screen.queryByText('Trip saved.')).not.toBeInTheDocument();
+  finishSave(true);
+  await screen.findByText('Trip saved.');
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '100'
+  );
+});
+
+it('discards a stopped itinerary retry before it can publish progress or save', async () => {
+  let finishRetry;
+  planStructuredItinerary.mockRejectedValueOnce(new Error('temporary')).mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finishRetry = resolve;
+      })
+  );
+  await confirm();
+  await screen.findByText('Trip saved.');
+  await userEvent.click(screen.getByRole('button', { name: 'Retry itinerary' }));
+  await waitFor(() => expect(planStructuredItinerary).toHaveBeenCalledTimes(2));
+  const retrySignal = planStructuredItinerary.mock.calls[1][1];
+  await userEvent.click(screen.getByRole('button', { name: 'Stop waiting' }));
+  expect(retrySignal.aborted).toBe(true);
+  await act(async () => finishRetry([{ date: 'Late result', stops: route.stops }]));
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '92'
+  );
+  expect(screen.queryByRole('link', { name: 'View itinerary' })).not.toBeInTheDocument();
+  expect(updateUserData).not.toHaveBeenCalled();
+  expect(screen.getByRole('button', { name: 'Retry itinerary' })).toBeEnabled();
+});
+
+it('keeps a newer retry active when a cancelled retry resolves out of order', async () => {
+  let finishOld, finishNew;
+  planStructuredItinerary
+    .mockRejectedValueOnce(new Error('temporary'))
+    .mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finishOld = resolve;
+        })
+    )
+    .mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finishNew = resolve;
+        })
+    );
+  await confirm();
+  await screen.findByText('Trip saved.');
+  await userEvent.click(screen.getByRole('button', { name: 'Retry itinerary' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Stop waiting' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Retry itinerary' }));
+  await waitFor(() => expect(planStructuredItinerary).toHaveBeenCalledTimes(3));
+  await act(async () => finishOld([{ date: 'Old retry', stops: route.stops }]));
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '92'
+  );
+  expect(updateUserData).not.toHaveBeenCalled();
+  expect(screen.getByRole('button', { name: 'Retry itinerary' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Stop waiting' })).toBeEnabled();
+  const latest = [{ date: 'New retry', stops: route.stops }];
+  await act(async () => finishNew(latest));
+  await screen.findByRole('link', { name: 'View itinerary' });
+  expect(updateUserData).toHaveBeenCalledTimes(1);
+  expect(updateUserData.mock.calls[0][1].itinerary).toEqual(latest);
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '100'
+  );
+});
+
+it('does not publish saving completion or select a trip after the account signs out', async () => {
+  let finishSave;
+  ensureChatCreated.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finishSave = resolve;
+      })
+  );
+  await confirm();
+  await waitFor(() => expect(ensureChatCreated).toHaveBeenCalled());
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '96'
+  );
+  act(() => signOut());
+  await act(async () => finishSave(true));
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '96'
+  );
+  expect(screen.queryByText('Trip saved.')).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'View itinerary' })).not.toBeInTheDocument();
+  expect(sessionStorage.getItem('selectedChatId')).toBeNull();
+});
+
+function NavigationProbe() {
+  const { UserData, setUserData } = useContext(UserDataContext);
+  return (
+    <div>
+      <p>Selected trip context: {UserData.chatlogs.currentId}</p>
+      <button
+        onClick={() => {
+          const other = new ChatData(99);
+          setUserData(new Data(new ChatLogs([other], 99)));
+          sessionStorage.setItem('selectedChatId', '99');
+        }}
+      >
+        Open another saved trip
+      </button>
+    </div>
+  );
+}
+it('does not overwrite another trip selection when an unmounted save finishes', async () => {
+  let finishSave;
+  ensureChatCreated.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finishSave = resolve;
+      })
+  );
+  const view = renderWithProviders(
+    <>
+      <TripSetupPage key="setup" />
+      <NavigationProbe key="navigation" />
+    </>
+  );
+  await userEvent.click(await screen.findByRole('button', { name: 'Check locations' }));
+  await userEvent.click(
+    await screen.findByRole('button', { name: 'Confirm locations and plan route' })
+  );
+  await waitFor(() => expect(ensureChatCreated).toHaveBeenCalled());
+  view.rerender(<NavigationProbe key="navigation" />);
+  await userEvent.click(screen.getByRole('button', { name: 'Open another saved trip' }));
+  expect(screen.getByText('Selected trip context: 99')).toBeInTheDocument();
+  await act(async () => finishSave(true));
+  expect(sessionStorage.getItem('selectedChatId')).toBe('99');
+  expect(screen.getByText('Selected trip context: 99')).toBeInTheDocument();
 });

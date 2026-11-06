@@ -10,62 +10,163 @@ const lifecycleFor = (owner, token) => {
   const account = accountKey(token);
   let lifecycle = lifecycles.get(owner);
   if (!lifecycle || lifecycle.account !== account) {
-    lifecycle = { account, ready: new Set(), pending: new Map() };
+    lifecycle = {
+      account,
+      ready: new Set(),
+      identities: new Map(),
+      guidedIds: new Map(),
+      pending: new Map(),
+    };
     lifecycles.set(owner, lifecycle);
   }
   return lifecycle;
 };
+
+const planningIdentity = (data) =>
+  typeof data.agentChatId === 'string' && data.agentChatId.trim() ? data.agentChatId : null;
+const IDENTITY_CONFLICT = 'Trip ID belongs to a different planning request';
+
+function freshTripId(reserved) {
+  if (typeof crypto?.getRandomValues !== 'function') return null;
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    let words;
+    try {
+      words = crypto.getRandomValues(new Uint32Array(2));
+    } catch {
+      return null;
+    }
+    // 48 bits leave room for future sequential max-loaded-ID + 1 allocation.
+    const id = (words[0] & 0xffff) * 0x100000000 + words[1];
+    if (Number.isSafeInteger(id) && id > 0 && id < Number.MAX_SAFE_INTEGER && !reserved.has(id))
+      return id;
+  }
+  return null;
+}
+
+function alignCreatedId(data, chats, id) {
+  const originals = chats.filter((item) => item.id === data.chatId);
+  const targets = chats.filter((item) => item.id === id);
+  if (originals.length > 1 || targets.length > 1) return false;
+  const record = originals[0] || targets[0];
+  if (!record || (targets[0] && targets[0] !== record)) return false;
+  data.chatId = id;
+  record.id = id;
+  return true;
+}
 
 export const ensureChatCreated = async (token, data, chats, owner) => {
   const session = getSession();
   if (tokenOwner(token) && tokenOwner(token) !== session.owner)
     throw new SessionError('session-changed');
   const lifecycle = lifecycleFor(owner, token);
-  if (lifecycle.ready.has(data.chatId)) return true;
-  if (!lifecycle.pending.has(data.chatId)) {
-    const chat = chats.find((item) => item.id === data.chatId);
-    if (!token || !chat) return false;
-    const promise = createChat(token, data, chat).then((created) => {
-      if (created) lifecycle.ready.add(data.chatId);
-      lifecycle.pending.delete(data.chatId);
-      return created;
-    });
-    lifecycle.pending.set(data.chatId, promise);
+  const identity = planningIdentity(data);
+  const active = () => isCurrentSession(session) && lifecycles.get(owner) === lifecycle;
+  const knownId = identity ? lifecycle.guidedIds.get(identity) : undefined;
+  if (
+    knownId !== undefined &&
+    lifecycle.ready.has(knownId) &&
+    lifecycle.identities.get(knownId) === identity
+  ) {
+    return active() && alignCreatedId(data, chats, knownId);
   }
-  const created = await lifecycle.pending.get(data.chatId);
-  return created && isCurrentSession(session) && lifecycles.get(owner) === lifecycle;
+  const restored = owner?.chatdata?.find((item) => item.chatId === data.chatId);
+  const readyIdentity = lifecycle.identities.has(data.chatId)
+    ? lifecycle.identities.get(data.chatId)
+    : restored
+      ? planningIdentity(restored)
+      : null;
+  if (lifecycle.ready.has(data.chatId) && readyIdentity === identity) return true;
+  const pendingKey = identity ? `guided:${identity}` : data.chatId;
+  if (!lifecycle.pending.has(pendingKey)) {
+    const matching = chats.filter((item) => item.id === data.chatId);
+    if (!token || matching.length !== 1) return false;
+    const chat = matching[0];
+    const operation = { data, promise: null };
+    operation.promise = createChat(token, data, chat, {
+      retryIdentityConflicts: identity !== null,
+      reservedIds: new Set([
+        ...chats.map((item) => item.id),
+        ...(owner?.chatdata ?? []).map((item) => item.chatId),
+      ]),
+    })
+      .then((created) => {
+        if (created && active()) {
+          lifecycle.ready.add(data.chatId);
+          lifecycle.identities.set(data.chatId, identity);
+          if (identity) lifecycle.guidedIds.set(identity, data.chatId);
+        }
+        return created;
+      })
+      .finally(() => {
+        if (lifecycle.pending.get(pendingKey) === operation) lifecycle.pending.delete(pendingKey);
+      });
+    lifecycle.pending.set(pendingKey, operation);
+  }
+  const operation = lifecycle.pending.get(pendingKey);
+  const created = await operation.promise;
+  if (!created || !active()) return false;
+  return (
+    data.chatId === operation.data.chatId || alignCreatedId(data, chats, operation.data.chatId)
+  );
 };
 
-export const createChat = async (auth_token, UserChatData, ChatLog) => {
-  try {
-    // Sanitize the chat log — loading bubbles have no text/sender and fail backend validation
-    const sanitizedLog = ChatLog
-      ? { ...ChatLog, messages: (ChatLog.messages ?? []).filter((m) => m.type !== 'loading-chat') }
-      : ChatLog;
-    const data = {
-      PartitionKey: auth_token,
-      ChatData: UserChatData,
-      ChatLog: sanitizedLog,
-    };
-    console.debug('[DB] createChat chatId=%s', UserChatData.chatId);
-    const response = await axios.post(
-      `${import.meta.env.VITE_BACKEND_SERVER}chats/create/${UserChatData.chatId}`,
-      data
-    );
-    console.debug(
-      '[DB] createChat success chatId=%s status=%s',
-      UserChatData.chatId,
-      response.status
-    );
-    return true;
-  } catch (error) {
-    console.error(
-      '[DB] createChat failed chatId=%s status=%s',
-      UserChatData.chatId,
-      error.response?.status ?? 'network'
-    );
-    return false;
+// Only the guided ensure-created path opts into collision recovery. Legacy
+// direct creates and a missing-row update retain their original single attempt.
+export const createChat = async (auth_token, UserChatData, ChatLog, options = {}) => {
+  const session = getSession();
+  const identity = planningIdentity(UserChatData);
+  const reserved = new Set(options.reservedIds ?? []);
+  reserved.add(UserChatData.chatId);
+  const maxAttempts = options.retryIdentityConflicts && identity ? 3 : 1;
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    if (!isCurrentSession(session)) return false;
+    try {
+      const sanitizedLog = ChatLog
+        ? {
+            ...ChatLog,
+            messages: (ChatLog.messages ?? []).filter((m) => m.type !== 'loading-chat'),
+          }
+        : ChatLog;
+      const data = {
+        PartitionKey: auth_token,
+        // Snapshot IDs per dispatch; a later safe retry must not mutate a
+        // previously dispatched request or its diagnostic/mock representation.
+        ChatData: { ...UserChatData },
+        ChatLog: sanitizedLog,
+      };
+      console.debug('[DB] createChat chatId=%s', UserChatData.chatId);
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_SERVER}chats/create/${UserChatData.chatId}`,
+        data
+      );
+      if (!isCurrentSession(session)) return false;
+      console.debug(
+        '[DB] createChat success chatId=%s status=%s',
+        UserChatData.chatId,
+        response.status
+      );
+      return true;
+    } catch (error) {
+      console.error(
+        '[DB] createChat failed chatId=%s status=%s',
+        UserChatData.chatId,
+        error.response?.status ?? 'network'
+      );
+      if (
+        !isCurrentSession(session) ||
+        attempt + 1 >= maxAttempts ||
+        error.response?.status !== 409 ||
+        error.response?.data?.detail !== IDENTITY_CONFLICT
+      )
+        return false;
+      const id = freshTripId(reserved);
+      if (id === null) return false;
+      reserved.add(id);
+      UserChatData.chatId = id;
+      ChatLog.id = id;
+    }
   }
+  return false;
 };
 
 export const deleteChat = async (auth_token, chatId, owner) => {
@@ -120,6 +221,12 @@ export const initializeUserData = async (auth_token) => {
         chat_d['agentChatId'] || null
       );
       restored.tripProfile = chat_d.tripProfile ?? {};
+      restored.presentation =
+        chat_d.presentation &&
+        typeof chat_d.presentation === 'object' &&
+        !Array.isArray(chat_d.presentation)
+          ? chat_d.presentation
+          : {};
       chatdata.push(restored);
     }
     const logs = new ChatLogs(chatdata);

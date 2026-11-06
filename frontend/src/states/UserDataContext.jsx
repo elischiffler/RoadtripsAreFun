@@ -97,6 +97,7 @@ class ChatData {
     this.budget = budget;
     this.isComplete = isComplete;
     this.agentChatId = agentChatId;
+    this.presentation = {};
   }
 }
 

@@ -1,3 +1,4 @@
+import { backendAuthConfig } from '../services/backendAuth';
 import { fixtureSession } from './sessionFixtures';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
@@ -227,8 +228,8 @@ describe('Trip Planning Studio access and lifecycle', () => {
     expect(axios.get).not.toHaveBeenCalled();
   });
 
-  it('lets a visitor unlock through the backend and retries incorrect passwords', async () => {
-    sessionStorage.clear();
+  it('lets a signed-in owner unlock through the backend and retries incorrect passwords', async () => {
+    sessionStorage.removeItem('studioSession');
     axios.post
       .mockRejectedValueOnce({ response: { status: 401 } })
       .mockResolvedValueOnce({ data: { token: 'visitor', expires_at: Date.now() / 1000 + 600 } });
@@ -242,7 +243,10 @@ describe('Trip Planning Studio access and lifecycle', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Enter Studio' }));
     expect(await screen.findByRole('button', { name: 'Run live route' })).toBeInTheDocument();
     expect(axios.post.mock.calls[1][1]).toEqual({ password: 'CP-SAT' });
-    expect(axios.get.mock.calls[0][1].headers).toEqual({ 'X-Studio-Session': 'visitor' });
+    expect(axios.get.mock.calls[0][1].headers).toEqual({
+      ...backendAuthConfig().headers,
+      'X-Studio-Session': 'visitor',
+    });
   });
 
   it('relocks when the backend rejects a Studio session', async () => {
@@ -253,16 +257,13 @@ describe('Trip Planning Studio access and lifecycle', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows the visitor navigation link without algorithm options', async () => {
+  it('keeps research links out of visitor navigation', async () => {
     sessionStorage.clear();
     renderWithProviders(<GlobalHeader />);
     expect(
       screen.queryByRole('button', { name: 'routing algorithm settings' })
     ).not.toBeInTheDocument();
-    expect(await screen.findByRole('link', { name: 'AI Studio' })).toHaveAttribute(
-      'href',
-      '/studio'
-    );
+    expect(screen.queryByRole('link', { name: 'AI Studio' })).not.toBeInTheDocument();
   });
 
   it('keeps the presentation page free of the global header', async () => {
@@ -433,7 +434,10 @@ describe('Trip Planning Studio experiments', () => {
       preset_id: 'coast',
       inputs: { num_stops: 3, persona_weights: { nature: 0.6 } },
     });
-    expect(config.headers).toEqual({ 'X-Studio-Session': 'studio-test' });
+    expect(config.headers).toEqual({
+      ...backendAuthConfig().headers,
+      'X-Studio-Session': 'studio-test',
+    });
     expect(screen.queryByText('Replay · frozen candidate fixture')).not.toBeInTheDocument();
     expect(request).not.toHaveProperty('snapshot_id');
     expect(screen.queryByLabelText('Run mode')).not.toBeInTheDocument();

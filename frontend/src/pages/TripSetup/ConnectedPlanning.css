@@ -1,0 +1,46 @@
+.rt-design .connected-progress {
+  padding: var(--rt-space-4);
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-color-muted);
+  gap: var(--rt-space-3);
+}
+.rt-design .connected-progress progress {
+  inline-size: 100%;
+  block-size: var(--rt-space-2);
+  accent-color: var(--rt-color-accent);
+}
+.rt-design .connected-estimate {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rt-space-2);
+  background: var(--rt-color-route-surface);
+  padding: var(--rt-space-4);
+  border-radius: var(--rt-radius-control);
+}
+.rt-design .connected-error {
+  color: var(--rt-color-error);
+}
+.rt-design .connected-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-3);
+}
+.rt-design .connected-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--rt-space-2) var(--rt-space-4);
+  margin: 0;
+}
+.rt-design .connected-summary dd {
+  margin: 0;
+  font-weight: var(--rt-weight-strong);
+}
+.rt-design .connected-summary dt {
+  color: var(--rt-color-secondary);
+}
+
+.rt-design .connected-links > a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--rt-target-min);
+}

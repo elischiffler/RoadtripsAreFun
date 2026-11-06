@@ -1,4 +1,4 @@
-"""Password-scoped visitor access to live trip planning, independent of Cognito."""
+"""Verified-owner access with separately scoped Studio histories and jobs."""
 
 import hmac
 import os
@@ -19,7 +19,12 @@ from app.routing.studio_jobs import jobs
 # on server restart when no secret is configured.
 SESSION_SECRET = os.environ.get("STUDIO_SESSION_SECRET") or secrets.token_hex(32)
 ISSUER = "roadtrips-studio"
-router = APIRouter(prefix="/studio", tags=["studio"], route_class=lab.LabRoute)
+router = APIRouter(
+    prefix="/studio",
+    tags=["studio"],
+    route_class=lab.LabRoute,
+    dependencies=[Depends(lab.require_lab_owner)],
+)
 
 
 class AccessRequest(BaseModel):
@@ -92,7 +97,7 @@ async def result(run_id: UUID, response: Response, user_id: str = Depends(requir
 
 @router.post("/run/stream")
 async def streamed_run(payload: lab.LabRun, user_id: str = Depends(require_studio_session)):
-    # Validate inputs and visitor access before sending streaming response headers.
+    # Validate owner access, scoped session and inputs before streaming headers.
     async def execute():
         result = await lab.run(payload, Response(), user_id)
         return RootModel[dict](result)

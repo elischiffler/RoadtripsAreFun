@@ -1,0 +1,297 @@
+{
+  "schema_version": "roadtrips-preference-comparisons/1",
+  "purpose": "Preference examples only; not route recommendations or current availability claims. Ratings are reviewed category-based estimates, not measured visitor opinions.",
+  "pairs": [
+    {
+      "id": "garden-or-museum",
+      "left": {
+        "id": "catalog-pilot:wikidata:Q1099139",
+        "name": "North Carolina Botanical Garden",
+        "description": "North Carolina Botanical Garden is review-classified as a botanical garden in NC. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+        "character": "Garden visit",
+        "url": "https://ncbg.unc.edu/visit/",
+        "attribute_ratings": {
+          "adventure": 0.5,
+          "beaches_water": 0.5,
+          "crowd_avoidance": 0.5,
+          "culture_arts": 0.5,
+          "family_friendliness": 0.5,
+          "food": 0.5,
+          "hiking_outdoors": 0.5,
+          "history": 0.5,
+          "nature": 0.8,
+          "nightlife": 0.5,
+          "relaxation": 0.5,
+          "scenery": 0.5,
+          "shopping": 0.5,
+          "unique_local_experiences": 0.5
+        },
+        "source_attribution": "wikidata original factual identity/feature fields, CC0-1.0; operator public-visit facts reviewed separately. State classification: U.S. Census Bureau ACS2025. No endorsement or live availability claim.",
+        "source_release": "catalog-pilot-600-20261021",
+        "profile_source": "docs/data/catalog-pilot-600-20261021/personas.json",
+        "profile_sha256": "ed0233b753f1a712d82ef20cc8caf376662004bc906e0c2686abecb6ee7aac84",
+        "profile_schema": "roadtrips-pilot-persona/1",
+        "ratings_source": "roadtrips-pilot-persona/1: category inferences; unknown attributes use 0.5 priors",
+        "profile_basis": "Reviewed source category; recommendations are not measured visitor facts.",
+        "source_receipts": [
+          {
+            "source_url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ167346%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+130&format=json",
+            "snapshot_sha256": "a21e583732f39a5728239c5f23d8b0daab256e5528c0d2a5b9049d2470d7e849",
+            "checked_at": "2026-10-21T14:31:47.007034+00:00"
+          },
+          {
+            "source_url": "https://ncbg.unc.edu/visit/",
+            "snapshot_sha256": "7170a7169a0690efb58d99e1b6d03ccaf5eb9b81f80015485b3a771c13b92d95",
+            "checked_at": "2026-10-21T14:37:10.044322+00:00"
+          },
+          {
+            "source_url": "https://www.wikidata.org/wiki/Wikidata:Copyright",
+            "snapshot_sha256": "e0744a22fe6ed5e46fa537e41625f26f560c9eb1a34cb28db4ef52b03a2f618e",
+            "checked_at": "2026-10-21T14:33:02.301533+00:00"
+          }
+        ]
+      },
+      "right": {
+        "id": "catalog-pilot:wikidata:Q4165331",
+        "name": "Mark Twain House",
+        "description": "Mark Twain House is review-classified as a museum in CT. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+        "character": "Museum visit",
+        "url": "https://marktwainhouse.org/visit/",
+        "attribute_ratings": {
+          "adventure": 0.5,
+          "beaches_water": 0.5,
+          "crowd_avoidance": 0.5,
+          "culture_arts": 0.8,
+          "family_friendliness": 0.5,
+          "food": 0.5,
+          "hiking_outdoors": 0.5,
+          "history": 0.5,
+          "nature": 0.5,
+          "nightlife": 0.5,
+          "relaxation": 0.5,
+          "scenery": 0.5,
+          "shopping": 0.5,
+          "unique_local_experiences": 0.5
+        },
+        "source_attribution": "wikidata original factual identity/feature fields, CC0-1.0; operator public-visit facts reviewed separately. State classification: U.S. Census Bureau ACS2025. No endorsement or live availability claim.",
+        "source_release": "catalog-pilot-600-20261021",
+        "profile_source": "docs/data/catalog-pilot-600-20261021/personas.json",
+        "profile_sha256": "ed0233b753f1a712d82ef20cc8caf376662004bc906e0c2686abecb6ee7aac84",
+        "profile_schema": "roadtrips-pilot-persona/1",
+        "ratings_source": "roadtrips-pilot-persona/1: category inferences; unknown attributes use 0.5 priors",
+        "profile_basis": "Reviewed source category; recommendations are not measured visitor facts.",
+        "source_receipts": [
+          {
+            "source_url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+SERVICE+wikibase%3Abox+%7B+%3Fitem+wdt%3AP625+%3Fcoord.+bd%3AserviceParam+wikibase%3AcornerWest+%22Point%28-73.73+40.95%29%22%5E%5Egeo%3AwktLiteral%3B+wikibase%3AcornerEast+%22Point%28-71.78+42.06%29%22%5E%5Egeo%3AwktLiteral.+%7D+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ33506%3B+wdt%3AP17+wd%3AQ30.+OPTIONAL+%7B+%3Fitem+wdt%3AP856+%3Fwebsite.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+60&format=json",
+            "snapshot_sha256": "9ac92c127695b2ecccf433f390ef315574049fd4c9d23e90d7d7de1747f98263",
+            "checked_at": "2026-10-21T14:32:59.283361+00:00"
+          },
+          {
+            "source_url": "https://marktwainhouse.org/visit/",
+            "snapshot_sha256": "0abdd54771c92ab13aba9d8700cd044b1c9f68f27c595327276ffaaa302a1bbb",
+            "checked_at": "2026-10-21T14:34:59.832829+00:00"
+          },
+          {
+            "source_url": "https://www.wikidata.org/wiki/Wikidata:Copyright",
+            "snapshot_sha256": "3e5d1bc82606c2ca57c41baaaa254a6b2de948fea61b8ef6ae1fe050d4c9416d",
+            "checked_at": "2026-10-21T05:00:38.667446+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "id": "food-or-history",
+      "left": {
+        "id": "catalog-pilot:ny-market:row-hkdf~9pf4~67z9",
+        "name": "Altamont Orchards Farm Stand",
+        "description": "Altamont Orchards Farm Stand is review-classified as a food experience in NY. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+        "character": "Visitor food experience",
+        "url": "https://altamontorchards.com/",
+        "attribute_ratings": {
+          "adventure": 0.5,
+          "beaches_water": 0.5,
+          "crowd_avoidance": 0.5,
+          "culture_arts": 0.5,
+          "family_friendliness": 0.5,
+          "food": 0.8,
+          "hiking_outdoors": 0.5,
+          "history": 0.5,
+          "nature": 0.5,
+          "nightlife": 0.5,
+          "relaxation": 0.5,
+          "scenery": 0.5,
+          "shopping": 0.5,
+          "unique_local_experiences": 0.5
+        },
+        "source_attribution": "ny-market original factual identity/feature fields, LicenseRef-NY-Open-Data; operator public-visit facts reviewed separately. State classification: U.S. Census Bureau ACS2025. No endorsement or live availability claim.",
+        "source_release": "catalog-pilot-600-20261021",
+        "profile_source": "docs/data/catalog-pilot-600-20261021/personas.json",
+        "profile_sha256": "ed0233b753f1a712d82ef20cc8caf376662004bc906e0c2686abecb6ee7aac84",
+        "profile_schema": "roadtrips-pilot-persona/1",
+        "ratings_source": "roadtrips-pilot-persona/1: category inferences; unknown attributes use 0.5 priors",
+        "profile_basis": "Reviewed source category; recommendations are not measured visitor facts.",
+        "source_receipts": [
+          {
+            "source_url": "https://data.ny.gov/resource/qq4h-8p86.json?%24limit=100&%24order=county%2Cmarket_name&%24select=%3Aid%2Ccounty%2Cmarket_name%2Cmarket_location%2Caddress_line_1%2Ccity%2Cstate%2Czip%2Cmarket_link%2Coperation_hours%2Coperation_season%2Clatitude%2Clongitude&%24where=market_name+IN+%28%27Altamont+Orchards+Farm+Stand%27%2C%27Owen+Orchards+Farm+Stand%27%2C%27Northern+Orchard+Farm+Stand%27%2C%27Bellinger%27%27s+Orchard+Farm+Stand%27%2C%27Sleepy+Hills+Orchard+Farm+Stand%27%2C%27Middlefield+Orchard+Farm+Stand%27%2C%27Bowman+Orchards+Farm+Stand%27%2C%27Harvest+Home+St.+Mary%27%27s+Park+Farm+Stand%27%2C%27Russell+Farms+Farm+Stand%27%2C%27Canticle+Farm+Stand%27%2C%27Abers+Acres+Farm+Stand%27%2C%27Greene+Pasture+Ranch+Farm+Stand%27%2C%27Scarecrow+Farm+Stand%27%2C%27Catskill+Cattle+Company+Farm+Stand%27%2C%27Dykeman+Farm+Farm+Stand%27%2C%275+Loaves+Farm+Stand-Delavan+Ave%27%2C%27Gray%27%27s+Garden+%26+Greenhouse+Farm+Stand%27%2C%27Black+Horse+Farms+Farm+Stand%27%2C%27Northshire+Farm+Farm+Stand%27%2C%27Windswept+Meadows+Farm+Stand%27%2C%27Harvest+Home+Brower+Park+Farm+Stand%27%2C%27Colwell%27%27s+Farm+Stand%27%2C%27Dizzy+Lizzie%27%27s+Farm+Farm+Stand%27%2C%27Brightlys+Farms+Farm+Stand%27%2C%27Crossroads+Farm+Farm+Stand%27%2C%27Fleckenstein+Farms+Farm+Stand%27%2C%27Horn%27%27s+Family+Farm+Stand%27%2C%27Brady+Farm+Ford+Ave+Farm+Stand%27%2C%27Navarras+Farm+%26+Greenhouse+Farm+Stand%27%2C%27Guppy%27%27s+Berry+Farm+Farm+Stand%27%29",
+            "snapshot_sha256": "c58cc8f93282894b4f2e5af715aed56b58a26bb92dc24793277cbd97ebe82bcb",
+            "checked_at": "2026-10-21T14:41:45.940778+00:00"
+          },
+          {
+            "source_url": "https://www.altamontorchards.com",
+            "snapshot_sha256": "fd41ab4f95f199cd7a6afb42f57e479570517616630ef178787e3d01c956749b",
+            "checked_at": "2026-10-21T14:36:34.881021+00:00"
+          },
+          {
+            "source_url": "https://data.ny.gov/api/views/77gx-ii52/files/ef0c1840-ad54-4240-92fd-6397c49fde46?download=true&filename=OPEN-NY_20Terms_20of_20Use.pdf",
+            "snapshot_sha256": "9437c849705d58df008f01fc23f404444becce6b86676adc3974f9160a4cb650",
+            "checked_at": "2026-10-21T14:37:30.149234+00:00"
+          }
+        ]
+      },
+      "right": {
+        "id": "catalog-pilot:nps-nhl:70000834",
+        "name": "Connecticut State Capitol",
+        "description": "Connecticut State Capitol is review-classified as a historic site in CT. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+        "character": "Public heritage visit",
+        "url": "https://my.lwv.org/connecticut/capitol-information-and-tours",
+        "attribute_ratings": {
+          "adventure": 0.5,
+          "beaches_water": 0.5,
+          "crowd_avoidance": 0.5,
+          "culture_arts": 0.5,
+          "family_friendliness": 0.5,
+          "food": 0.5,
+          "hiking_outdoors": 0.5,
+          "history": 0.8,
+          "nature": 0.5,
+          "nightlife": 0.5,
+          "relaxation": 0.5,
+          "scenery": 0.5,
+          "shopping": 0.5,
+          "unique_local_experiences": 0.5
+        },
+        "source_attribution": "nps-nhl original factual identity/feature fields, LicenseRef-US-Agency-Factual-Data; operator public-visit facts reviewed separately. State classification: U.S. Census Bureau ACS2025. No endorsement or live availability claim.",
+        "source_release": "catalog-pilot-600-20261021",
+        "profile_source": "docs/data/catalog-pilot-600-20261021/personas.json",
+        "profile_sha256": "ed0233b753f1a712d82ef20cc8caf376662004bc906e0c2686abecb6ee7aac84",
+        "profile_schema": "roadtrips-pilot-persona/1",
+        "ratings_source": "roadtrips-pilot-persona/1: category inferences; unknown attributes use 0.5 priors",
+        "profile_basis": "Reviewed source category; recommendations are not measured visitor facts.",
+        "source_receipts": [
+          {
+            "source_url": "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/0/query?f=json&where=Is_NHL%3D%27X%27+AND+STATUS%3D%27Listed%27+AND+State+IN+%28%27CONNECTICUT%27%2C%27DELAWARE%27%2C%27RHODE+ISLAND%27%2C%27WEST+VIRGINIA%27%2C%27NEBRASKA%27%2C%27KANSAS%27%2C%27IOWA%27%2C%27MISSISSIPPI%27%2C%27LOUISIANA%27%2C%27OKLAHOMA%27%2C%27NEW+JERSEY%27%2C%27INDIANA%27%29&outFields=OBJECTID%2CNRIS_Refnum%2CRESNAME%2CState%2CSTATUS%2CIS_EXTANT%2CIs_NHL%2CCONSTRANT%2CAddress%2CCity&returnGeometry=true&outSR=4326&resultRecordCount=500",
+            "snapshot_sha256": "94d8024f7cdf6eb950144991504acd7040482ca000356dc3227a22cd97a08d2c",
+            "checked_at": "2026-10-21T14:33:45.498057+00:00"
+          },
+          {
+            "source_url": "https://my.lwv.org/connecticut/capitol-information-and-tours",
+            "snapshot_sha256": "0512152eccea2b967b50a2c8347731b29413c93ddbe3fc0b3e6dabf5a7e21a17",
+            "checked_at": "2026-10-21T14:41:33.472791+00:00"
+          },
+          {
+            "source_url": "https://www.nps.gov/aboutus/disclaimer.htm",
+            "snapshot_sha256": "1b3b523964301d1c30ec8d6243cc551e99cac340b187c8883b356d93bea5e363",
+            "checked_at": "2026-10-21T05:00:00.297924+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "id": "roadside-or-science",
+      "left": {
+        "id": "catalog-pilot:wikidata:Q48803945",
+        "name": "Prehistoric Gardens",
+        "description": "Prehistoric Gardens is review-classified as a roadside attraction in OR. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+        "character": "Roadside visitor stop",
+        "url": "https://www.prehistoricgardens.com/",
+        "attribute_ratings": {
+          "adventure": 0.5,
+          "beaches_water": 0.5,
+          "crowd_avoidance": 0.5,
+          "culture_arts": 0.5,
+          "family_friendliness": 0.5,
+          "food": 0.5,
+          "hiking_outdoors": 0.5,
+          "history": 0.5,
+          "nature": 0.5,
+          "nightlife": 0.5,
+          "relaxation": 0.5,
+          "scenery": 0.5,
+          "shopping": 0.5,
+          "unique_local_experiences": 0.7
+        },
+        "source_attribution": "wikidata original factual identity/feature fields, CC0-1.0; operator public-visit facts reviewed separately. State classification: U.S. Census Bureau ACS2025. No endorsement or live availability claim.",
+        "source_release": "catalog-pilot-600-20261021",
+        "profile_source": "docs/data/catalog-pilot-600-20261021/personas.json",
+        "profile_sha256": "ed0233b753f1a712d82ef20cc8caf376662004bc906e0c2686abecb6ee7aac84",
+        "profile_schema": "roadtrips-pilot-persona/1",
+        "ratings_source": "roadtrips-pilot-persona/1: category inferences; unknown attributes use 0.5 priors",
+        "profile_basis": "Reviewed source category; recommendations are not measured visitor facts.",
+        "source_receipts": [
+          {
+            "source_url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ14915208%3Bwdt%3AP17+wd%3AQ30%3Bwdt%3AP625+%3Fcoord.+OPTIONAL+%7B%3Fitem+wdt%3AP856+%3Fwebsite.%7D+SERVICE+wikibase%3Alabel+%7Bbd%3AserviceParam+wikibase%3Alanguage+%22en%22.%7D+%7D+ORDER+BY+DESC%28BOUND%28%3Fwebsite%29%29+STR%28%3Fitem%29+LIMIT+80&format=json",
+            "snapshot_sha256": "3eeeeeb787a396b51b9da2fcd464797df8f206b3fcdeebb601c5b46fb2161bca",
+            "checked_at": "2026-10-21T14:33:06.471379+00:00"
+          },
+          {
+            "source_url": "https://www.prehistoricgardens.com/",
+            "snapshot_sha256": "ec8210a7103474471a40dee35567c9cbd006a0f06cef931fa0c867da097faef8",
+            "checked_at": "2026-10-21T14:38:46.056499+00:00"
+          },
+          {
+            "source_url": "https://www.wikidata.org/wiki/Wikidata:Copyright",
+            "snapshot_sha256": "e0744a22fe6ed5e46fa537e41625f26f560c9eb1a34cb28db4ef52b03a2f618e",
+            "checked_at": "2026-10-21T14:33:02.301533+00:00"
+          }
+        ]
+      },
+      "right": {
+        "id": "catalog-pilot:wikidata:Q5161605",
+        "name": "Connecticut Science Center",
+        "description": "Connecticut Science Center is review-classified as a science center in CT. Public visitor identity was reviewed against retained operator evidence. Arrival and visit timing require separate verification.",
+        "character": "Science interpretation visit",
+        "url": "https://ctsciencecenter.org/visit/",
+        "attribute_ratings": {
+          "adventure": 0.5,
+          "beaches_water": 0.5,
+          "crowd_avoidance": 0.5,
+          "culture_arts": 0.8,
+          "family_friendliness": 0.5,
+          "food": 0.5,
+          "hiking_outdoors": 0.5,
+          "history": 0.5,
+          "nature": 0.5,
+          "nightlife": 0.5,
+          "relaxation": 0.5,
+          "scenery": 0.5,
+          "shopping": 0.5,
+          "unique_local_experiences": 0.5
+        },
+        "source_attribution": "wikidata original factual identity/feature fields, CC0-1.0; operator public-visit facts reviewed separately. State classification: U.S. Census Bureau ACS2025. No endorsement or live availability claim.",
+        "source_release": "catalog-pilot-600-20261021",
+        "profile_source": "docs/data/catalog-pilot-600-20261021/personas.json",
+        "profile_sha256": "ed0233b753f1a712d82ef20cc8caf376662004bc906e0c2686abecb6ee7aac84",
+        "profile_schema": "roadtrips-pilot-persona/1",
+        "ratings_source": "roadtrips-pilot-persona/1: category inferences; unknown attributes use 0.5 priors",
+        "profile_basis": "Reviewed source category; recommendations are not measured visitor facts.",
+        "source_receipts": [
+          {
+            "source_url": "https://query.wikidata.org/sparql?query=SELECT+DISTINCT+%3Fitem+%3FitemLabel+%3Fcoord+%3Fwebsite+WHERE+%7B+SERVICE+wikibase%3Abox+%7B+%3Fitem+wdt%3AP625+%3Fcoord.+bd%3AserviceParam+wikibase%3AcornerWest+%22Point%28-73.73+40.95%29%22%5E%5Egeo%3AwktLiteral%3B+wikibase%3AcornerEast+%22Point%28-71.78+42.06%29%22%5E%5Egeo%3AwktLiteral.+%7D+%3Fitem+wdt%3AP31%2Fwdt%3AP279%2A+wd%3AQ33506%3B+wdt%3AP17+wd%3AQ30.+OPTIONAL+%7B+%3Fitem+wdt%3AP856+%3Fwebsite.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+60&format=json",
+            "snapshot_sha256": "9ac92c127695b2ecccf433f390ef315574049fd4c9d23e90d7d7de1747f98263",
+            "checked_at": "2026-10-21T14:32:59.283361+00:00"
+          },
+          {
+            "source_url": "https://ctsciencecenter.org/visit/",
+            "snapshot_sha256": "0272a42de40b28e4b28cc9c0ad5c25398933419d2fb2cffbb6674f4e27e5c5df",
+            "checked_at": "2026-10-21T14:34:48.532310+00:00"
+          },
+          {
+            "source_url": "https://www.wikidata.org/wiki/Wikidata:Copyright",
+            "snapshot_sha256": "3e5d1bc82606c2ca57c41baaaa254a6b2de948fea61b8ef6ae1fe050d4c9416d",
+            "checked_at": "2026-10-21T05:00:38.667446+00:00"
+          }
+        ]
+      }
+    }
+  ]
+}

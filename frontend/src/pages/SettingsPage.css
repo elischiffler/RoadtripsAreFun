@@ -1,0 +1,27 @@
+.rt-design.settings-page {
+  min-block-size: 100vh;
+  padding-block-start: calc(var(--header-height) + var(--rt-space-8));
+}
+.settings-page header {
+  display: grid;
+  gap: var(--rt-space-2);
+}
+.settings-page .settings-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rt-space-4);
+  min-block-size: var(--rt-target-min);
+  color: var(--rt-color-accent);
+  font-weight: var(--rt-weight-medium);
+  text-decoration: none;
+  border-radius: var(--rt-radius-sm);
+}
+.settings-page .settings-link:hover {
+  text-decoration: underline;
+}
+.settings-page a:focus-visible,
+.settings-page button:focus-visible {
+  outline: var(--rt-focus-width) solid var(--rt-color-focus);
+  outline-offset: var(--rt-focus-offset);
+}

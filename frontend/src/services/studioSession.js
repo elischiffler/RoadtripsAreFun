@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios, { isAuthRejection } from './protectedRequest';
+import { backendAuthConfig } from './backendAuth';
 import { clearStudioWorkspace } from './studioWorkspace';
 import { clearResearchCache } from './studioResearchCache';
 
@@ -18,16 +19,24 @@ export function clearStudioSession() {
   window.dispatchEvent(new Event('studio-access-changed'));
 }
 export async function unlockStudio(password) {
-  const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}studio/access`, {
-    password,
-  });
+  const { data } = await axios.post(
+    `${import.meta.env.VITE_BACKEND_SERVER}studio/access`,
+    { password },
+    backendAuthConfig()
+  );
   if (typeof data.token !== 'string' || !(data.expires_at > Date.now() / 1000))
     throw new Error('Invalid Studio session response');
   sessionStorage.setItem(KEY, JSON.stringify(data));
   window.dispatchEvent(new Event('studio-access-changed'));
 }
 export function studioConfig(signal) {
-  return { signal, headers: { 'X-Studio-Session': getStudioSession()?.token || '' } };
+  return {
+    signal,
+    headers: {
+      ...backendAuthConfig().headers,
+      'X-Studio-Session': getStudioSession()?.token || '',
+    },
+  };
 }
 export async function studioRequest(method, path, payload, signal, params) {
   const config = { ...studioConfig(signal), params };
@@ -39,6 +48,7 @@ export async function studioRequest(method, path, payload, signal, params) {
   } catch (error) {
     if (
       error.response?.status === 401 &&
+      !isAuthRejection(error.response) &&
       getStudioSession()?.token === config.headers['X-Studio-Session']
     )
       clearStudioSession();

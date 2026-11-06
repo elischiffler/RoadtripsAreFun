@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from app.crud.chat_crud import (
+    ChatIdentityConflict,
     create_chat,
     delete_chat,
     get_all_chats,
@@ -18,6 +19,11 @@ from app.utils.auth import bearer_token, get_user_id_from_token
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+def _require_consistent_trip_ids(chat_id, chat_data, chat_log):
+    if str(chat_data.chatId) != str(chat_id) or chat_log.id != chat_data.chatId:
+        raise HTTPException(status_code=422, detail="Trip IDs must match the request path")
 
 
 @router.get("/chats")
@@ -79,17 +85,20 @@ async def chat_add(chat_id: str, request: ChatSchema):
     chat_data = request.ChatData
     chat_log = request.ChatLog
     user_id = get_user_id_from_token(request.PartitionKey)
+    _require_consistent_trip_ids(chat_id, chat_data, chat_log)
     logger.info("CREATE chat_id=%s user_id=%s", chat_id, user_id)
     try:
         # Create a new item in the database for the given chat data and log
         response = create_chat(user_id, chat_id, chat_data.model_dump(), chat_log.model_dump())
         if response is None:
-            logger.warning(
-                "CREATE returned None for chat_id=%s — row may not have been inserted", chat_id
-            )
+            raise ChatIdentityConflict("Trip ID belongs to a different planning request")
         else:
             logger.info("CREATE success chat_id=%s", chat_id)
         return response
+    except ChatIdentityConflict:
+        raise HTTPException(
+            status_code=409, detail="Trip ID belongs to a different planning request"
+        ) from None
     except ValidationError as exception:
         logger.error("CREATE validation error chat_id=%s: %s", chat_id, exception)
         raise HTTPException(status_code=500, detail=f"Error validating request: {exception}")
@@ -106,6 +115,7 @@ async def chat_update(chat_id: int, request: ChatSchema):
     chat_data = request.ChatData
     chat_log = request.ChatLog
     user_id = get_user_id_from_token(request.PartitionKey)
+    _require_consistent_trip_ids(chat_id, chat_data, chat_log)
     logger.info(
         "UPDATE chat_id=%s user_id=%s has_data=%s has_log=%s",
         chat_id,
