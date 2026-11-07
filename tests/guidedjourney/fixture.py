@@ -249,12 +249,46 @@ OVERNIGHT_EDIT_PLACE = {
     "name": "Synthetic overnight edit stop",
     "coordinates": [45.0, -104.444444],
 }
+OVERNIGHT_SAFE_EDIT_PLACE = {
+    **EDIT_PLACE,
+    "provider_id": "overture:guided-overnight-safe-edit",
+    "name": "Synthetic late-night edit stop",
+    "coordinates": [48.4, -104.066667],
+    "timezone": "America/Denver",
+    "source_provenance": [
+        {
+            "source_visit_calendar": {
+                "schema_version": "roadtrips-source-visit-calendar/1",
+                "weekly_windows": [
+                    {
+                        "weekdays": list(range(7)),
+                        "opens": "20:00",
+                        "closes": "06:00",
+                        "end_day_offset": 1,
+                    }
+                ],
+                "source_receipts": [
+                    {
+                        "source": "synthetic-guided-journey-fixture",
+                        "literal": "Synthetic test-only night access 20:00–06:00; not a real venue.",
+                    }
+                ],
+            },
+        }
+    ],
+}
 
 
 def nearby(*args, **kwargs):
     counts["browse"] += 1
     point = args[0] if args else kwargs.get("point", [40, -105])
-    return [deepcopy(OVERNIGHT_EDIT_PLACE if point[0] > 40.6 else EDIT_PLACE)]
+    # Add/edit facts only; generation still uses catalog_page unchanged. The
+    # second night place fits a conservative two-hour visit after the last hotel.
+    return deepcopy(
+        [OVERNIGHT_EDIT_PLACE, OVERNIGHT_SAFE_EDIT_PLACE]
+        if point[0] > 40.6
+        else [EDIT_PLACE]
+    )
 
 
 def current_records(source_ids, *args, **kwargs):
@@ -262,6 +296,7 @@ def current_records(source_ids, *args, **kwargs):
     places = {
         "guided-edit": EDIT_PLACE,
         "guided-overnight-edit": OVERNIGHT_EDIT_PLACE,
+        "guided-overnight-safe-edit": OVERNIGHT_SAFE_EDIT_PLACE,
     }
     return {sid: deepcopy(places[sid]) for sid in source_ids if sid in places}
 

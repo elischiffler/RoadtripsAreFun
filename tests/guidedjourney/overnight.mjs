@@ -393,6 +393,44 @@ export async function runOvernightJourney({
     await page
       .getByRole("combobox", { name: /^Replace/ })
       .selectOption(String(target.index));
+    const rejectedEdit = page.waitForResponse(
+      (response) =>
+        response.request().method() === "POST" &&
+        new URL(response.url()).pathname === "/route-edit",
+    );
+    await page
+      .getByRole("button", { name: "Recalculate trip", exact: true })
+      .click();
+    assert.equal((await rejectedEdit).status(), 422);
+    const rejectedMessage = await page.getByRole("alert").innerText();
+    assert.match(rejectedMessage, /meal/i);
+    assert.match(rejectedMessage, /saved trip is unchanged/i);
+    assert.deepEqual(
+      (await fixtureReport()).overnight_trips,
+      created.overnight_trips,
+    );
+
+    // The conservative two-hour fallback cannot replace a 45-minute estimate
+    // before a tightly planned hotel. Keep that rejection above, then exercise
+    // a separate feasible addition after the last hotel, using real source
+    // calendar refresh and the same fallback/cutoff/quote/meal policies.
+    await page
+      .getByRole("button", {
+        name: "Choose Synthetic late-night edit stop",
+        exact: true,
+      })
+      .click();
+    await page.getByRole("combobox", { name: /^Action/ }).selectOption("add");
+    const endIndex = reloaded.route.stops.findIndex(
+      (stop) => stop.type === "end",
+    );
+    assert.ok(
+      endIndex >
+        reloaded.route.stops.findLastIndex((stop) => stop.type === "hotel"),
+    );
+    await page
+      .getByRole("combobox", { name: /^Add before/ })
+      .selectOption(String(endIndex));
     await page
       .getByRole("button", { name: "Recalculate trip", exact: true })
       .click();
@@ -417,8 +455,20 @@ export async function runOvernightJourney({
     assertOvernight(edited.data[0][0], created.hotel_quotes);
     assert.ok(
       edited.data[0][0].route.stops.some(
+        (stop) => stop.provider_id === "overture:guided-overnight-safe-edit",
+      ),
+    );
+    const added = edited.data[0][0].route.stops.find(
+      (stop) => stop.provider_id === "overture:guided-overnight-safe-edit",
+    );
+    assert.equal(added.visit_duration.seconds, 7200);
+    assert.equal(added.visit_duration.source, "conservative_fallback");
+    assert.equal(added.availability.status, "within_published_window");
+    assert.equal(
+      edited.data[0][0].route.stops.some(
         (stop) => stop.provider_id === "overture:guided-overnight-edit",
       ),
+      false,
     );
     await page.screenshot({
       path: join(output, "overnight-reloaded.png"),
@@ -427,6 +477,8 @@ export async function runOvernightJourney({
     const final = await fixtureReport();
     assert.deepEqual(final.trips, baseline.trips);
     assert.deepEqual(final.blocked_network, []);
+    assert.equal(final.gateway_requests, created.gateway_requests);
+    assert.equal(final.hotel_requests, created.hotel_requests);
     const ownPreviews = final.preview_events.slice(
       baseline.preview_events.length,
     );
@@ -449,6 +501,8 @@ export async function runOvernightJourney({
           scope:
             "Actual browser/API/solver/timing/dated-hotel validation/room intersection/CRUD/disposable PostgreSQL; synthetic remote provider records and gateway replies, no real availability claim.",
           mealCollisionStatus: collision.status,
+          rejectedEditStatus: 422,
+          successfulEdit: "add_after_last_hotel_with_two_hour_fallback",
           preparationSections: 6,
           ownCandidatePreviewPhases: [
             ...new Set(ownPreviews.map((event) => event.phase)),
