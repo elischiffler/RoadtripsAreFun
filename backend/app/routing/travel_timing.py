@@ -5,9 +5,12 @@ from copy import deepcopy
 from datetime import datetime
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from app.models.daily_schedule import DailyRhythmClockError
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time, seconds_until
 from app.routing.base import PlanningError
+from app.routing.daily_rhythm import rest_blocks
 from app.routing.meal_reservations import MealClock, MealScheduleConflict
+from app.routing.trip_modes import RhythmAvailabilityConflict, RhythmClockConflict
 from app.routing.visit_calendar import VisitCalendarConflict, requires_calendar, solve_visit
 from app.routing.visit_duration import visit_seconds
 
@@ -39,7 +42,10 @@ def apply_timing(
         apply_timing(nominal, start, policy, start_timezone)
         departure = local_time(start, ZoneInfo(start_timezone)) if start_timezone else start
         clock = MealClock(departure, datetime.fromisoformat(nominal[-1]["arrival_time"]))
-    _apply_timing(stops, start, policy, start_timezone, clock)
+    try:
+        _apply_timing(stops, start, policy, start_timezone, clock)
+    except DailyRhythmClockError:
+        raise RhythmClockConflict() from None
 
 
 def _apply_timing(stops, start, policy, start_timezone, clock):
@@ -47,7 +53,10 @@ def _apply_timing(stops, start, policy, start_timezone, clock):
     if start_timezone:
         zone = ZoneInfo(start_timezone)
         now = local_time(start, zone)
-    travel_day = now.date()
+    try:
+        travel_day = policy.travel_day_for(now)
+    except ValueError as exc:
+        raise PlanningError(str(exc), 422) from None
     for stop in stops:
         meal_index = len(clock.breaks) if clock else 0
         duration = stop["duration"]
@@ -58,6 +67,12 @@ def _apply_timing(stops, start, policy, start_timezone, clock):
                 stop.get("provider_id", "unknown"), "arrival IANA timezone is unknown"
             )
         zone = ZoneInfo(stop["timezone"]) if stop.get("timezone") else now.tzinfo
+        if policy.daily_schedule and duration > 1e-6:
+            local_departure = now.astimezone(zone) if zone else now
+            if not policy.daily_schedule.available(local_departure):
+                # A timezone change can move the next leg's local clock back into
+                # rest/sleep. Do not fabricate a safe roadside wait location.
+                raise RhythmAvailabilityConflict()
         arrival = clock.drive(now, duration, zone) if clock else advance(now, duration)
         if zone is not None:
             arrival = arrival.astimezone(zone)
@@ -126,7 +141,12 @@ def _apply_timing(stops, start, policy, start_timezone, clock):
                 stop["late_check_in_notice"] = "Confirm late check-in with the hotel"
             if clock:
                 clock.rest(arrival, departure, zone)
-            travel_day = departure.date()
+            if policy.daily_schedule:
+                stop["daily_rhythm_blocks"] = rest_blocks(arrival, departure, policy.daily_schedule)
+                stop["check_in_timing_notice"] = (
+                    "Planned rest; confirm hotel check-in and checkout times."
+                )
+            travel_day = policy.travel_day_for(departure)
         if clock:
             stop["meal_breaks"] = deepcopy(clock.breaks[meal_index:])
         stop["departure_time"] = departure.isoformat()

@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 from pydantic import BaseModel, ConfigDict, StrictBool, field_validator, model_validator
 
 from app.agent.trip_dates import _localize, normalize_departure_time
+from app.models.daily_schedule import DailyRhythmClockError, DailySchedule
 
 EveningInterest = Literal["food", "culture", "nightlife"]
 
@@ -14,6 +15,7 @@ EveningInterest = Literal["food", "culture", "nightlife"]
 class SchedulingPolicy(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    daily_schedule: DailySchedule | None = None
     preferred_hotel_arrival: str = "18:00"
     latest_hotel_arrival: str = "20:00"
     latest_destination_arrival: str | None = None
@@ -43,6 +45,16 @@ class SchedulingPolicy(BaseModel):
 
     @model_validator(mode="after")
     def _ordered(self):
+        if self.daily_schedule is not None:
+            defaults = type(self).model_fields
+            conflicting = [
+                name
+                for name in self.model_fields_set
+                if name != "daily_schedule" and getattr(self, name) != defaults[name].default
+            ]
+            if conflicting:
+                raise ValueError("Use the daily rhythm or individual timing overrides, not both")
+            return self
         if (
             not self.morning_restart
             < self.preferred_hotel_arrival
@@ -55,18 +67,49 @@ class SchedulingPolicy(BaseModel):
         return self
 
     @property
+    def preferred_arrival_clock(self) -> str:
+        return (
+            self.daily_schedule.drive_end if self.daily_schedule else self.preferred_hotel_arrival
+        )
+
+    @property
     def cutoff(self) -> str:
+        if self.daily_schedule:
+            return self.daily_schedule.drive_end
         return self.late_cutoff if self.late_driving else self.latest_hotel_arrival
+
+    def travel_day_for(self, value: datetime) -> date:
+        if not self.daily_schedule:
+            return value.date()
+        if not self.daily_schedule.available(value):
+            raise ValueError(
+                "Departure is outside your driving availability; choose an available hour or edit your daily rhythm"
+            )
+        start, end = self.daily_schedule.bounds("drive")
+        return value.date() - timedelta(days=int(end > 24 and value.hour < start))
 
     def at(self, travel_day: date, clock: str, zone) -> datetime:
         hour, minute = map(int, clock.split(":"))
         if hour == 24:
             travel_day += timedelta(days=1)
             hour = 0
+        elif self.daily_schedule and hour < self.daily_schedule.bounds("drive")[0]:
+            travel_day += timedelta(days=1)
         naive = datetime.combine(travel_day, datetime.min.time()).replace(hour=hour, minute=minute)
-        return _localize(naive, zone) if isinstance(zone, ZoneInfo) else naive.replace(tzinfo=zone)
+        try:
+            return (
+                _localize(naive, zone) if isinstance(zone, ZoneInfo) else naive.replace(tzinfo=zone)
+            )
+        except ValueError:
+            if self.daily_schedule:
+                raise DailyRhythmClockError(
+                    "The daily rhythm boundary has no unique local time"
+                ) from None
+            raise
 
     def arrival_cutoff(self, *, final: bool = False) -> str:
+        if self.daily_schedule:
+            return self.daily_schedule.drive_end
         if not final:
             return self.cutoff
         destination = self.latest_destination_arrival
@@ -85,7 +128,8 @@ class SchedulingPolicy(BaseModel):
 
     def restart(self, travel_day: date, zone) -> datetime:
         # travel_day identifies the preceding booking night, even at exact midnight.
-        return self.at(travel_day + timedelta(days=1), self.morning_restart, zone)
+        clock = self.daily_schedule.drive_start if self.daily_schedule else self.morning_restart
+        return self.at(travel_day + timedelta(days=1), clock, zone)
 
 
 def advance(value: datetime, seconds: float) -> datetime:

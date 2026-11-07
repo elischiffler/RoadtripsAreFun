@@ -39,7 +39,9 @@ class CPSatPlanner(RoutePlanner):
         Returns scheduled attraction/hotel stops and their hotel quote total.
         The caller recalculates the complete road route and validates final timing.
         """
-        if services.cp_sat_hotels is None or services.cp_sat_candidates is None:
+        if services.cp_sat_candidates is None or (
+            options.trip_mode != "one_day" and services.cp_sat_hotels is None
+        ):
             raise PlanningError("CP-SAT verified candidate services are not configured", 503)
         if options.num_stops < 0:
             raise PlanningError("num_stops must be nonnegative", 400)

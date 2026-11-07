@@ -1,11 +1,12 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, StrictBool, field_validator
 
 from app.agent.persona import validate_weight_update
 from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
 from app.models.trip_limits import MAX_STOPS, MIN_STOPS
+from app.models.trip_mode import OneDayProof
 from app.routing.occupancy import HotelRooms, TravelerCount
 
 
@@ -35,6 +36,8 @@ class Route(BaseModel):
     start_timezone: str | None = None
     departure_time: datetime | None = None
     reserve_meal_slots: StrictBool = False
+    trip_mode: Literal["overnight", "one_day"] = "overnight"
+    one_day_proof: OneDayProof | None = None
     traveler_count: TravelerCount | None = None
     hotel_rooms: HotelRooms | None = None
 
@@ -125,6 +128,7 @@ class Route_Payload(BaseModel):
     start_timezone: str | None = None
     evening_interests: list[EveningInterest] | None = None
     reserve_meal_slots: StrictBool = False
+    trip_mode: Literal["overnight", "one_day"] = "overnight"
     traveler_count: TravelerCount | None = None
     hotel_rooms: HotelRooms | None = None
 

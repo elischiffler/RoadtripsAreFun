@@ -82,6 +82,26 @@ async def schedule_cp_sat_route(
     Initial driving times use solo-detour estimates; final Mapbox legs must pass
     the same local deadlines before the plan is returned to the traveler.
     """
+    if options.trip_mode == "one_day":
+        # Do not use estimated leg time as eligibility. The router obtains the
+        # complete actual road route and validates visits/waits/meals afterward.
+        fields = (
+            "provider_id",
+            "name",
+            "source",
+            "source_release",
+            "source_attribution",
+            "source_updated_at",
+            "source_provenance",
+            "coordinates",
+            "address",
+            "url",
+            "visit_duration",
+        )
+        return [
+            {**{key: candidate[key] for key in fields if key in candidate}, "type": "stop"}
+            for _, candidate in sorted(selected, key=lambda item: (item[0], item[1]["provider_id"]))
+        ], 0.0
     policy = options.scheduling_policy
     now = options.start
     coordinates = route.geometry.coordinates
@@ -96,7 +116,7 @@ async def schedule_cp_sat_route(
 
     start_zone = await zone_at([coordinates[0][1], coordinates[0][0]])
     now = local_time(now, start_zone)
-    travel_day = now.date()
+    travel_day = policy.travel_day_for(now)
     if seconds_until(now, policy.deadline(travel_day, start_zone)) <= 0:
         raise PlanningError("Departure must precede the chosen local driving cutoff", 400)
     hotel_rooms = require_occupancy(options.traveler_count, options.hotel_rooms)
@@ -180,7 +200,7 @@ async def schedule_cp_sat_route(
             event_limit = (
                 policy.deadline(travel_day, event_zone, final=attraction is None)
                 if can_finish
-                else policy.at(travel_day, policy.preferred_hotel_arrival, event_zone)
+                else policy.at(travel_day, policy.preferred_arrival_clock, event_zone)
             )
             candidate_clock = meal_clock.copy() if meal_clock else None
             arrival = (
@@ -248,7 +268,7 @@ async def schedule_cp_sat_route(
             preferred_drive = max(
                 0.0,
                 seconds_until(
-                    now, policy.at(travel_day, policy.preferred_hotel_arrival, now.tzinfo)
+                    now, policy.at(travel_day, policy.preferred_arrival_clock, now.tzinfo)
                 ),
             )
             for _ in range(3):
@@ -256,7 +276,7 @@ async def schedule_cp_sat_route(
                 position = estimated_position(elapsed + trial)
                 zone = await zone_at(position)
                 preferred_drive = drive_capacity(
-                    policy.at(travel_day, policy.preferred_hotel_arrival, zone), zone, drive_left
+                    policy.at(travel_day, policy.preferred_arrival_clock, zone), zone, drive_left
                 )
             base_drive = min(drive_left, preferred_drive)
             # The target is per room per night, not a balance for the whole trip.
