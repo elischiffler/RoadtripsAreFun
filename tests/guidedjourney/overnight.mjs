@@ -181,6 +181,7 @@ export async function runOvernightJourney({
   api,
   fixtureReport,
   assertWidths,
+  assertOrdinarySetupFit,
   output,
 }) {
   const baseline = await fixtureReport();
@@ -195,11 +196,17 @@ export async function runOvernightJourney({
       .fill("Synthetic overnight destination");
     await page.getByLabel("Departure date", { exact: true }).fill(date);
     await page.getByLabel("Departure time", { exact: true }).fill("20:00");
+    await assertOrdinarySetupFit(page, "overnight where and when");
     await page.getByRole("button", { name: "Next", exact: true }).click();
     await page
       .getByLabel("Total people, including you", { exact: true })
       .fill("3");
+    await page
+      .getByLabel("How many attractions would you like?", { exact: true })
+      .fill("3");
+    await assertOrdinarySetupFit(page, "overnight people");
     await page.getByRole("button", { name: "Next", exact: true }).click();
+    await assertOrdinarySetupFit(page, "overnight interests");
     await page.getByRole("button", { name: "Next", exact: true }).click();
     for (const [name, value] of [
       ["Start driving", 20],
@@ -213,7 +220,14 @@ export async function runOvernightJourney({
       for (let step = 0; step < value; step++) await slider.press("ArrowRight");
       assert.equal(await slider.inputValue(), String(value));
     }
+    await assertOrdinarySetupFit(page, "overnight daily timing");
     await page.getByRole("button", { name: "Next", exact: true }).click();
+    await assertOrdinarySetupFit(
+      page,
+      "overnight review",
+      "Check trip options",
+    );
+    await page.getByText(/^View route · About/).click();
     await page
       .getByRole("button", { name: /^Tentative stay search area:/ })
       .first()
@@ -245,7 +259,7 @@ export async function runOvernightJourney({
       .getByRole("img", { name: "Draft route geometry", exact: true })
       .waitFor();
     await page
-      .getByText(/^Preparing catalog ideas ·/)
+      .getByText("Finding route ideas…", { exact: true })
       .waitFor({ state: "detached" });
     assert.equal(
       await page
@@ -279,6 +293,9 @@ export async function runOvernightJourney({
     const prepared = await fixtureReport();
     assert.equal(prepared.gateway_requests, baseline.gateway_requests);
     assert.deepEqual(prepared.overnight_trips, []);
+    await page
+      .getByRole("button", { name: "Done viewing route", exact: true })
+      .click();
     await page
       .getByRole("button", { name: "Check trip options", exact: true })
       .click();

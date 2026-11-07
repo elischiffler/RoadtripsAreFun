@@ -89,6 +89,61 @@ const counterKeys = [
 ];
 const workCounters = (report) =>
   Object.fromEntries(counterKeys.map((key) => [key, report[key]]));
+const ordinarySetupFits = [];
+async function assertOrdinarySetupFit(page, group, action = "Next") {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator(".setup-section").waitFor({ state: "visible" });
+  const next = page.getByRole("button", { name: action, exact: true });
+  await next.waitFor({ state: "visible" });
+  // Observe settled layout without scrolling a control into view. Expanded
+  // reviews, errors, small screens and large-text fallbacks are separate cases.
+  await page.evaluate(
+    () =>
+      new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve)),
+      ),
+  );
+  const fit = await next.evaluate((button) => {
+    const section = document.querySelector(".setup-section");
+    const bounds = button.getBoundingClientRect();
+    return {
+      width: innerWidth,
+      height: innerHeight,
+      documentHeight: Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight,
+      ),
+      sectionHeight: section.clientHeight,
+      sectionScrollHeight: section.scrollHeight,
+      nextTop: bounds.top,
+      nextBottom: bounds.bottom,
+      nextLeft: bounds.left,
+      nextRight: bounds.right,
+      routeOpen: Boolean(document.querySelector(".setup-route-map[open]")),
+    };
+  });
+  assert.equal(
+    fit.routeOpen,
+    false,
+    `${group}: close the optional route review before checking fit`,
+  );
+  assert.ok(
+    fit.documentHeight <= fit.height + 1,
+    `${group}: ordinary page needs vertical scrolling: ${JSON.stringify(fit)}`,
+  );
+  assert.ok(
+    fit.sectionScrollHeight <= fit.sectionHeight + 1,
+    `${group}: questions overflow their own panel: ${JSON.stringify(fit)}`,
+  );
+  assert.ok(
+    fit.nextTop >= 0 &&
+      fit.nextBottom <= fit.height + 1 &&
+      fit.nextLeft >= 0 &&
+      fit.nextRight <= fit.width + 1,
+    `${group}: the next action must be visible without scrolling: ${JSON.stringify(fit)}`,
+  );
+  ordinarySetupFits.push({ group, action, ...fit });
+}
 async function enterTrip(page, date, { expectFailure = false } = {}) {
   const before = await fixtureReport();
   await page.goto(frontend + "/plan");
@@ -98,8 +153,22 @@ async function enterTrip(page, date, { expectFailure = false } = {}) {
   await page.getByLabel("Destination", { exact: true }).fill("Fort Morgan");
   await page.getByLabel("Departure date", { exact: true }).fill(date);
   await page.getByLabel("Departure time", { exact: true }).fill("09:00");
-  for (let step = 0; step < 4; step++)
+  for (let step = 0; step < 4; step++) {
+    if (step === 1)
+      await page
+        .getByLabel("How many attractions would you like?", { exact: true })
+        .fill("3");
+    await assertOrdinarySetupFit(
+      page,
+      `primary ${expectFailure ? "expired" : "future"} group ${step}`,
+    );
     await page.getByRole("button", { name: "Next", exact: true }).click();
+  }
+  await assertOrdinarySetupFit(
+    page,
+    `primary ${expectFailure ? "expired" : "future"} review`,
+    "Check trip options",
+  );
   const prepared = await fixtureReport();
   assert.deepEqual(
     workCounters(prepared),
@@ -117,6 +186,7 @@ async function enterTrip(page, date, { expectFailure = false } = {}) {
     .click();
   const payload = (await actualRequest).postDataJSON();
   assert.match(payload.request_id, /^[0-9a-f-]{36}$/i);
+  assert.equal(payload.num_stops, 3);
   assert.equal(Object.hasOwn(payload, "budget"), false);
   assert.equal(Object.hasOwn(payload, "hotel_rooms"), false);
   assert.equal(payload.reserve_meal_slots, true);
@@ -863,20 +933,45 @@ try {
   await page.goto(frontend + "/plan");
   for (let step = 0; step < 4; step++)
     await page.getByRole("button", { name: "Back", exact: true }).click();
+  const tripFields = [
+    "Starting city or address",
+    "Destination",
+    "Departure date",
+    "Departure time",
+  ];
+  const beforePreferences = await Promise.all(
+    tripFields.map((label) =>
+      page.getByLabel(label, { exact: true }).inputValue(),
+    ),
+  );
+  await page.getByText("Use saved preferences", { exact: true }).click();
   await page
     .getByLabel("Saved preferences", { exact: true })
     .selectOption(profile.id);
   await page
     .getByRole("button", { name: "Load preferences", exact: true })
     .click();
-  await page
-    .getByText(
-      "Preferences loaded. Your trip locations, date and stops are unchanged.",
-      { exact: true },
-    )
-    .waitFor();
-  for (let step = 0; step < 3; step++)
+  await page.getByText("Preferences loaded.", { exact: true }).waitFor();
+  assert.deepEqual(
+    await Promise.all(
+      tripFields.map((label) =>
+        page.getByLabel(label, { exact: true }).inputValue(),
+      ),
+    ),
+    beforePreferences,
+    "Loading preferences must preserve this trip's locations and departure",
+  );
+  for (let step = 0; step < 3; step++) {
     await page.getByRole("button", { name: "Next", exact: true }).click();
+    if (step === 0)
+      assert.equal(
+        await page
+          .getByLabel("How many attractions would you like?", { exact: true })
+          .inputValue(),
+        "3",
+        "Loading preferences must preserve this trip's stop count",
+      );
+  }
   assert.equal(
     await page
       .getByRole("slider", { name: "Start driving", exact: true })
@@ -1036,9 +1131,14 @@ try {
     api,
     fixtureReport,
     assertWidths,
+    assertOrdinarySetupFit,
     frontend,
     output,
   });
+  await writeFile(
+    join(output, "ordinary-phone-setup-fit.json"),
+    JSON.stringify(ordinarySetupFits, null, 2) + "\n",
+  );
   assert.deepEqual(blocked, []);
   assert.deepEqual(errors, []);
 } catch (error) {
