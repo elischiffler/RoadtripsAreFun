@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from app.agent.memory import ConversationMemory, MemoryFact
 from app.agent.trip_dates import PendingDeparture
 from app.agent.trip_profile import TripProfile
-from app.crud import chat_crud, lab_runs, memory_crud
+from app.crud import chat_crud, lab_runs, memory_crud, trip_sharing
 from app.models.scheduling_policy import SchedulingPolicy
 from app.schemas.chat_schemas import ChatLogSchema
 from app.utils.location_resolution import LocationCandidate, PendingLocation
@@ -71,6 +71,7 @@ STEP_CHAT = f"dbtest-{RUN_ID}-step-conflict"
 DELETE_CHAT = f"dbtest-{RUN_ID}-delete"
 ROUTE_A = f"{OWNER_A}-{CHAT_ID}"
 FINAL_ROUTE_A = f"{ROUTE_A}-final"
+SHARED_CHAT = f"dbtest-{RUN_ID}-shared"
 GOOD_COORDS = [[-122.4, 37.7], [-121.9, 37.3]]
 GOOD_STEPS = [[-122.4, 37.7], [-122.2, 37.5]]
 
@@ -341,6 +342,15 @@ def seed():
         raise AssertionError("foreign step key was overwritten")
     except PermissionError:
         pass
+    shared_data = {
+        "route": {"geometry": {"coordinates": GOOD_COORDS}},
+        "itinerary": [{"date": "2030-01-01", "stops": [{"name": "Shared visit", "time": "10:00"}]}],
+        "presentation": {"visitedStopIds": ["private"]},
+    }
+    chat_crud.create_chat(OWNER_A, SHARED_CHAT, shared_data, {"private": "not shared"})
+    link = trip_sharing.create_link(OWNER_A, SHARED_CHAT, chat_crud.chat_data_revision(shared_data))
+    trip_sharing.connect(OWNER_B, link["token"], "Synthetic reader")
+    assert trip_sharing.view(token=link["token"])["route"]["coordinates"] == GOOD_COORDS
     verify()
     print("seed: real CRUD, geometry, memory, two-owner isolation and conflicts PASS")
 
@@ -431,7 +441,14 @@ def verify():
             "SELECT chat_data FROM chats WHERE user_id=%s AND chat_id=%s", (OWNER_A, STEP_CHAT)
         )
         assert cur.fetchone()[0] == {}
-    print("verify: persisted CRUD and ownership state PASS")
+    access = trip_sharing.owner_status(OWNER_A, SHARED_CHAT)
+    assert access["link_enabled"] and len(access["members"]) == 1
+    assert access["members"][0]["display_name"] == "Synthetic reader"
+    connected = trip_sharing.view(user_id=OWNER_B, share_id=access["share_id"])
+    assert connected["route"]["coordinates"] == GOOD_COORDS
+    assert connected["itinerary"][0]["stops"][0]["name"] == "Shared visit"
+    assert "private" not in str(connected)
+    print("verify: persisted CRUD, sharing membership and ownership state PASS")
 
 
 if __name__ == "__main__":

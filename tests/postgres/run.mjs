@@ -30,13 +30,14 @@ function assertSchemaMatchesSources() {
   const memory = readFileSync(join(repositoryRoot, "backend/app/crud/memory_crud.py"), "utf8");
   const labDdl = readFileSync(join(repositoryRoot, "backend/sql/algorithm_lab_runs.sql"), "utf8");
   const catalogDdl = readFileSync(join(repositoryRoot, "backend/sql/places_catalog.sql"), "utf8");
+  const sharingDdl = readFileSync(join(repositoryRoot, "backend/sql/trip_sharing.sql"), "utf8");
   const schema = readFileSync(join(directory, "schema.sql"), "utf8");
   const readmeDdl = /## Database Schema[\s\S]*?```sql\s*([\s\S]*?)```/.exec(readme)?.[1];
   const memoryDdl = /_CREATE_TABLE_SQL = """([\s\S]*?)"""/.exec(memory)?.[1];
   if (!readmeDdl || !memoryDdl) throw new Error("Authoritative schema source missing");
   const canonical = (value) =>
     value.replace(/--[^\n]*/g, "").replace(/[\s;]/g, "").toLowerCase();
-  if (canonical(schema) !== canonical(`${readmeDdl}\n${memoryDdl}\n${labDdl}\n${catalogDdl}`)) {
+  if (canonical(schema) !== canonical(`${readmeDdl}\n${memoryDdl}\n${labDdl}\n${catalogDdl}\n${sharingDdl}`)) {
     throw new Error("Disposable schema drifted from README, memory, Lab or catalog DDL");
   }
   console.log("Schema matches checked-in README, memory, Lab and catalog DDL");
@@ -87,7 +88,7 @@ function probeSettingsDatabase() {
   docker([
     "run", "--rm", "--no-deps", "-e",
     "SETTINGS_TEST_DATABASE_URL=postgresql://postgres:disposable-local-only@postgres/roadtrips",
-    "test", "python", "-m", "pytest", "tests/settings_postgres_tests.py", "-q",
+    "test", "python", "-m", "pytest", "tests/settings_postgres_tests.py", "tests/trip_sharing_postgres_tests.py", "-q",
   ], { stdio: "inherit", timeout: 120_000 });
 }
 

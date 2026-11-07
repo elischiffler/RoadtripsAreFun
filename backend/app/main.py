@@ -23,6 +23,7 @@ from app.routers import (
     studio,
     studio_research,
     trip_car,
+    trip_sharing,
 )
 
 logger = logging.getLogger(__name__)
@@ -143,6 +144,7 @@ app.include_router(car_api.router)
 app.include_router(chat_api.router)
 app.include_router(preference_profiles.router)
 app.include_router(trip_car.router)
+app.include_router(trip_sharing.router)
 
 
 @app.get("/")

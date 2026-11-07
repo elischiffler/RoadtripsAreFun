@@ -83,6 +83,9 @@ export default function SavedTripsPage() {
         <Button component={Link} to="/plan" variant="contained" className="saved-trips-plan">
           Plan a trip
         </Button>
+        <Button component={Link} to="/shared-trips">
+          Shared with me
+        </Button>
         {status === 'loading' && <Typography role="status">Loading saved trips…</Typography>}
         {status === 'error' && (
           <Box role="alert">
