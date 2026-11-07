@@ -65,7 +65,7 @@ build mode. No actual catalog SQL parity or live source freshness is claimed.
 
 | Area | Evidence | Boundary |
 | --- | --- | --- |
-| Candidate choice, meals and saved edits | This signed browser/API/CP-SAT/timing/CRUD/PostgreSQL gate; actual registered candidate assessment/confirmation/cache/cancel; route preview/save/reload; visit revisions and stale 409 | Catalog and remote provider responses are synthetic; the short fixture exercises lunch and zero-hotel flexible mode, not an actual overnight stay or every multi-day meal/window conflict |
+| Candidate choice, meals and saved edits | This signed browser/API/CP-SAT/timing/CRUD/PostgreSQL gate; actual registered candidate assessment/confirmation/cache/cancel; route preview/save/reload; visit revisions and stale 409 | Catalog/provider responses are synthetic; the separate long case schedules actual multi-day hotel rests, but proves no live availability or every meal/window conflict |
 | Errors, auth and Settings | Strict expired-date and non-owner checks; real profile create/edit/reload/reuse and trip car persistence | Most outage/account-switch tests use fixtures; no real Cognito acceptance; additional CAS races remain API/unit regressions |
 | Search and maps | Browser location confirmation/driving estimate, along-route alternatives and an explicit attraction replacement; existing map/API suites | No live Mapbox rendering, geocoding or roads; not every edit/overnight/infeasibility path is exercised |
 | Responsive layout | Browser 390px and 1440px overflow checks | Not physical-device or manual screen-reader acceptance |
@@ -121,10 +121,10 @@ part of the production image or app configuration. Do not point the fixture
 browser at production or disable authentication/network protections to pass.
 
 
-## Overnight extension under development
+## True overnight and daytime-sleep journey
 
 The mandatory browser entry also invokes `overnight.mjs` sequentially after all
-prior strict cases. This separate fourth synthetic account drives a longer
+prior strict cases. A separate fixed synthetic account drives a longer
 synthetic corridor through actual candidate assessment, explicit stay choice,
 room occupancy, actual hotel candidate validation/rating/intersection, CP-SAT,
 clock, itinerary and disposable PostgreSQL. Only the remote hotel-record leaf
@@ -134,19 +134,35 @@ No real hotel availability or check-in guarantee is established. This lane does
 not exercise Google HTML/date-control parsing; the backend provider tests cover
 that distinct seam.
 
-The pending case uses driving 20:00–06:00 and sleep 08:00–16:00, requires actual
-lodging and date rollover, checks the prior-date → following-date two-night booking range, full-stay total
-and room occupancy, wake-relative meal windows/full durations with no sleep/visit overlap, then saves/reloads and previews/saves/reloads an edit
-without losing the rhythm. A separate short awake cycle must fail the actual
-itinerary clock without changing storage. Source preparation is not evidence
-that this extension passed; it awaits the corresponding application branches
-and a fresh combined native run. Existing prior assertions remain required.
+The long case uses driving 20:00–06:00 and sleep 08:00–16:00. It requires
+actual lodging and date rollover, full two-night booking ranges/totals and exact
+room occupancy. Wake-relative full meals must remain outside sleep and visits.
+The trip saves/reloads before an infeasible awake cycle returns 422 without a
+storage change. A replacement that cannot fit its conservative two-hour visit
+must also return 422 and leave storage unchanged. A separate admitted synthetic
+night-calendar place is then added near the final segment, after the last hotel,
+through actual preview/save/reload. No fallback duration, cutoff, quote or meal
+policy is shortened to make an edit fit. Generation and the original short
+corridor's source facts remain unchanged.
+
+The complete native journey passed at `6de80a4cba2e1e1a37b1ed718f294525bbc1365a`;
+see `VALIDATION.md` for exact application trees, artifacts and limitations. This
+local result does not replace mandatory CI on the final integrated commit.
 
 The extension also observes the actual read-only preparation HTTP stream for its
 final rhythm: tentative areas must declare that quotes and availability were
 not checked, followed by six bounded catalog-section events and a real result.
 The map must render tentative markers, and the primary completed assessment
-must render its candidate geometry. Actual planner preview events must identify
-considering, selected and checking phases as preview-only. Browser enforcement
+must render its candidate geometry. The primary planner stream must identify considering, selected and checking
+phases as preview-only. The overnight case slices its own run's receipts and
+requires considering/selected; its recorded successful run also emitted checking. Browser enforcement
 of stale/out-of-order cancellation remains the focused preparation/UI tests;
 this release journey does not inject fake late events to claim that coverage.
+
+A bounded passive ASGI tee records the actual preparation request policy and
+NDJSON after successful sends, without altering bytes, timing or cancellation.
+It is server receipt evidence, paired with independent browser marker/ready-map
+and no-fallback assertions. It does not pretend Chromium retained a cancelled
+fetch body. Seven standalone transparency/cancellation/bounds tests run as a
+required preflight in the already revision-checked Python image with no network
+or app startup before the journey fixture starts.
