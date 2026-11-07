@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from app.models.daily_schedule import DailyRhythmClockError
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time, seconds_until
 from app.routing.base import PlanningError
-from app.routing.daily_rhythm import rest_blocks
+from app.routing.daily_rhythm import clear_rhythm_metadata, rest_blocks
 from app.routing.lodging import validate_stored_stay
 from app.routing.meal_reservations import MealClock, MealScheduleConflict
 from app.routing.trip_modes import (
@@ -140,7 +140,7 @@ def _apply_timing(stops, start, policy, start_timezone, clock, *, validate_quote
                 if validate_quotes:
                     validate_stored_stay(stop, arrival, departure)
             else:
-                stop.pop("lodging", None)
+                clear_rhythm_metadata(stop)
                 booked = stop.get("check_in_date")
                 if booked and booked != travel_day.isoformat():
                     raise PlanningError(

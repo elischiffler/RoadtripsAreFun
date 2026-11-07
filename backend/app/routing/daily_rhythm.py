@@ -49,3 +49,9 @@ def rest_blocks(arrival, departure, rhythm):
             }
         )
     return result
+
+
+def clear_rhythm_metadata(stop):
+    """A legacy policy cannot reuse copied derived rhythm display state."""
+    for key in ("lodging", "daily_rhythm_blocks", "check_in_timing_notice"):
+        stop.pop(key, None)

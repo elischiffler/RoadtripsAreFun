@@ -363,3 +363,127 @@ def test_http_edit_revalidates_actual_quote_dates_without_persistence(monkeypatc
         assert hotel["lodging"]["check_out_date"] == "2030-06-02"
     assert value.model_dump(mode="json") == original
     save.assert_not_called()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("edited", [False, True])
+async def test_switch_to_legacy_removes_copied_sleep_rows_and_notices_but_preserves_booked_data(
+    edited,
+):
+    from app.models.scheduling_policy import SchedulingPolicy
+
+    saved = with_hotel()
+    saved["departure_time"] = "2030-06-01T15:00:00+00:00"
+    saved["reserve_meal_slots"] = True
+    saved["scheduling_policy"] = SchedulingPolicy().model_dump()
+    hotel = saved["stops"][1]
+    hotel["check_out_date"] = "2030-06-02"
+    booking = quoted(date(2030, 6, 1), date(2030, 6, 2), price=hotel["price"])
+    for key in ("hotel_rooms", "room_offers", "price_scope"):
+        hotel[key] = booking[key]
+    hotel["daily_rhythm_blocks"] = [
+        {
+            "name": "STALE SLEEP",
+            "kind": "sleep",
+            "arrival_time": "2030-06-02T07:00:00+00:00",
+            "departure_time": "2030-06-02T08:00:00+00:00",
+        }
+    ]
+    hotel["check_in_timing_notice"] = "STALE RHYTHM NOTICE"
+    hotel["lodging"] = {"notice": "STALE LODGING", "access_status": "confirmation_required"}
+    original = deepcopy(saved)
+    if edited:
+        payload = request(route=saved, action="replace", stop_index=0)
+        response = road(3, 0)
+        response.legs[1].duration = response.legs[2].duration = 3600
+        response.duration = 7200
+        result, _ = await run(payload, response=response)
+        updated, days = result.route, result.itinerary
+    else:
+        for stop in saved["stops"]:
+            stop["timezone"] = "UTC"
+        saved["stops"][0]["duration"] = 0
+        saved["stops"][1]["duration"] = saved["stops"][2]["duration"] = 3600
+        planned = Route.model_validate(saved)
+        # Trusted frozen catalog facts for the physical attraction are unchanged.
+        from tests.routing_api.route_edit_tests import catalog
+
+        days = await build_itinerary(Itinerary_Payload(route=planned), catalog_lookup=catalog)
+        updated = planned
+    updated_hotel = updated.stops[1]
+    assert updated_hotel["check_in_date"] == original["stops"][1]["check_in_date"]
+    assert updated_hotel["check_out_date"] == original["stops"][1]["check_out_date"]
+    assert updated_hotel["price"] == original["stops"][1]["price"]
+    assert updated_hotel["room_offers"] == original["stops"][1]["room_offers"]
+    assert updated_hotel["hotel_rooms"] == original["stops"][1]["hotel_rooms"]
+    assert all(
+        key not in updated_hotel
+        for key in ("daily_rhythm_blocks", "check_in_timing_notice", "lodging")
+    )
+    assert "STALE" not in str([day.model_dump() for day in days])
+    breakfast = next(s for d in days for s in d.stops if s.kind == "meal" and s.name == "Breakfast")
+    assert breakfast.arrival_time == "2030-06-02T07:00:00+00:00"
+    assert breakfast.departure_time == "2030-06-02T07:30:00+00:00"
+
+
+def test_http_itinerary_cannot_enable_internal_nominal_quote_bypass():
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from app.routers import itinerary_api
+    from app.utils.auth import require_authenticated_user
+
+    selected = policy((9, 20), (22, 7))
+    hotel = hotel_for(moment("18:15", "2030-06-01"), moment("09:00", "2030-06-02"), 7.5 * 3600)
+    hotel["check_out_date"] = "2030-06-03"
+    hotel["_nominal"] = True
+    planned = Route(
+        coordinates=[[40, -105], [39, -104]],
+        distance=100,
+        duration=8.5 * 3600,
+        steps=[],
+        geometry={"coordinates": [[-105, 40], [-104, 39]]},
+        cost=201.37,
+        stops=[hotel, endpoint(3600)],
+        departure_time=moment("10:00", "2030-06-01"),
+        start_timezone=ZONE,
+        scheduling_policy=selected,
+        reserve_meal_slots=True,
+    )
+    application = FastAPI()
+    application.include_router(itinerary_api.router)
+    application.dependency_overrides[require_authenticated_user] = lambda: "fixture-owner"
+    body = {"route": {**planned.model_dump(mode="json"), "_nominal": True}, "_nominal": True}
+    result = TestClient(application).post("/generate-itinerary", json=body)
+    assert result.status_code == 422
+    assert "dated hotel quote" in result.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_legacy_absent_policy_also_discards_only_derived_rhythm_display_state():
+    from tests.routing_api.route_edit_tests import catalog
+
+    saved = with_hotel()
+    saved["scheduling_policy"] = None
+    saved["reserve_meal_slots"] = False
+    hotel = saved["stops"][1]
+    hotel["daily_rhythm_blocks"] = [
+        {
+            "name": "STALE SLEEP",
+            "kind": "sleep",
+            "arrival_time": "2030-06-02T07:00:00+00:00",
+            "departure_time": "2030-06-02T08:00:00+00:00",
+        }
+    ]
+    hotel["check_in_timing_notice"] = "STALE NOTICE"
+    hotel["lodging"] = {"notice": "STALE LODGING"}
+    original = deepcopy(hotel)
+    planned = Route.model_validate(saved)
+    days = await build_itinerary(Itinerary_Payload(route=planned), catalog_lookup=catalog)
+    assert "STALE" not in str([day.model_dump() for day in days])
+    assert all(
+        key not in planned.stops[1]
+        for key in ("lodging", "daily_rhythm_blocks", "check_in_timing_notice")
+    )
+    assert planned.stops[1]["check_in_date"] == original["check_in_date"]
+    assert planned.stops[1]["price"] == original["price"]

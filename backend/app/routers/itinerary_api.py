@@ -11,6 +11,7 @@ from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time
 from app.routing.base import PlanningError
 from app.routing.catalog_calendars import CatalogLookup, refresh_for_timing
+from app.routing.daily_rhythm import clear_rhythm_metadata
 from app.routing.meal_slots import add_meal_windows
 from app.routing.sources.evenings import current_suggestions
 from app.routing.travel_timing import apply_timing
@@ -101,6 +102,10 @@ async def _build_itinerary(
     await refresh_for_timing(data.route.stops or [], catalog_lookup=catalog_lookup)
     # Recompute from freshly admitted facts; ignore serialized/client display claims.
     data.route.place_context = route_place_context(data.route.stops)
+    if data.route.scheduling_policy is None or data.route.scheduling_policy.daily_schedule is None:
+        for stop in data.route.stops or []:
+            if stop.get("type") == "hotel":
+                clear_rhythm_metadata(stop)
     if data.route.scheduling_policy is None and any(
         requires_calendar(stop) for stop in data.route.stops or []
     ):

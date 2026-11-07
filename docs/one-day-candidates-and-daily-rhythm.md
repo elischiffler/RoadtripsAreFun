@@ -1,6 +1,6 @@
 # Complete one-day candidates and daily rhythm
 
-This backend branch starts at reviewed PR67 head
+The original implementation started at reviewed PR67 head
 `3a5494d5e7b1d7121982d86522e66045b2af3cb9`. It adds an explicit account-owned
 assessment/choice flow. Existing route generation stays in `overnight` mode by
 default, and policies without a daily rhythm retain their existing timing.
@@ -138,19 +138,27 @@ sleep, the server rejects it instead of inventing a safe roadside waiting place.
 As with the existing meal clock, this is a next-known-stop planning clock; it is
 not a timezone survey of every point along the road geometry.
 
-Supported overnight rhythms use a non-wrapping driving block ending between
-18:00 and 24:00 and a sleep block containing the midnight slot. Rest and sleep
-outside driving availability are accounted for inside the dated hotel idle
-interval until the next drive block starts. Hotel rows carry one concise reminder
-to confirm hotel times; derived rest/sleep rows do not repeat disclaimers.
+Overnight planning supports wrapped driving, daytime sleep and repeated travel
+cycles. Physical rest lasts from actual hotel arrival to the next driving
+block, with full rest/sleep intervals shown on their actual local dates. Meal
+breaks follow the sleep schedule: explicit rhythms shift the defaults relative
+to local wake-up time, keep their full durations, and never overlap sleep.
+Short awake cycles or conflicting visits/roads can still be infeasible; valid
+rhythms are not rejected merely because of time of day.
 
-Wrapped all-night driving followed by daytime sleep, earlier daytime hotel
-arrival, or other unrepresentable booking-night arrangements return an actionable
-`unsupported_overnight_rhythm` 422. The nightly hotel source does not verify
-arbitrary daytime or after-midnight check-in availability. Such schedules are not
-silently approximated or advertised as bookable. Supporting these overnight
-patterns remains a product/provider boundary. Normal quoted stays and any
-late-check-in notice keep their existing unconfirmed-booking meaning.
+Hotel booking dates are separate from physical rest times. The planner requests
+real quotes for the full conservative check-in/check-out range, which can include
+a prior night or additional nights for daytime rest. Every room's dated occupancy
+and full-stay total must match; a one-night rate is never multiplied into a
+multi-night offer. The advisory budget remains per room/night while the saved
+cost is the sum of whole quotes. Actual rerouting, rebuild and edit revalidate
+coverage. Hotel rows show distinct quote dates and planned arrival/departure with
+a concise reminder to confirm check-in, checkout and continuous access. These
+are quoted options, not bookings or a guarantee of daytime hotel access.
+
+See [recurring driving, awake-relative meals and full dated hotel quotes](unrestricted-daily-rhythm.md)
+for the coverage convention, midnight/DST behavior, preserved legacy defaults,
+remaining shape constraints and live-provider acceptance boundary.
 
 All durations use UTC-aware elapsed arithmetic across DST; local deadlines retain
 IANA zones and booking/rest dates. Actual ambiguous/nonexistent drive or sleep
@@ -168,7 +176,7 @@ authorize a hotel or a longer edit; failures return conflicts and cannot be save
 as a successful preview. Public sharing projection must preserve the mode and
 rhythm meaning when integrated, while retaining its separate privacy allowlist.
 
-## Verification
+## Historical implementation verification
 
 At the first implementation checkpoint, 65 offline focused regressions pass:
 21 rhythm/one-day clock tests, 18 candidate API/cache tests, and 26 retained

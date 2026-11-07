@@ -43,6 +43,9 @@ No-rhythm and sleep-end 07 defaults preserve their prior meal windows and keys.
 No-rhythm policy serialization and frozen research/evaluation inputs remain
 unchanged. Viewing existing saved content does not rewrite it; explicit rebuilds
 and edit previews always recompute clocks instead of trusting stored meal rows.
+Switching back to a legacy policy also discards copied derived rhythm blocks,
+lodging display metadata and rhythm notices; booked dates and room offers are
+retained rather than silently rewritten.
 
 ## Full dated hotel quotes
 
