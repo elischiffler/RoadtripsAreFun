@@ -20,6 +20,7 @@ explicit synthetic endpoint configuration, and refuses a busy port 5187. Run:
 node tests/ui-stage2/layout-check.mjs
 node tests/ui-stage2/auth-check.mjs
 node tests/ui-stage2/material-check.mjs
+node tests/ui-stage2/location-check.mjs
 ```
 
 `CHROMIUM_PATH` defaults to `/usr/bin/chromium`. `UI_BROWSER_TOOLS_DIR` may point
@@ -43,6 +44,11 @@ created. The Material check opens and cancels the actual saved-trip delete
 dialog, checks recognizable endpoints/dates and verifies rendered MUI primary,
 dialog surface and text colors against the shared CSS tokens in both themes.
 It rejects every data write.
+
+The separate location check exercises two ambiguous matches for each endpoint
+at both ordinary phone sizes and desktop. All choices must fit without scrolling;
+the selected coordinates must drive the initial route, and the typed draft/date
+must remain intact. Its geocoding and road responses are intercepted fixtures.
 
 These checks do not prove physical-device behavior, live map rendering, actual
 provider acceptance, native iOS behavior or manual screen-reader usability.
