@@ -25,6 +25,12 @@ const audits = [],
   errors = [],
   blocked = [],
   requests = [];
+const baseline = process.env.UI_LAYOUT_BASELINE === "true";
+const acceptance = {
+  baseline,
+  ordinary_no_scroll_assertions_enforced: !baseline,
+};
+let completed = false;
 const routeData = {
   duration: 7200,
   distance: 150000,
@@ -88,7 +94,7 @@ async function inspectPanel(page, name, done, ordinary) {
     metrics.scrollWidth <= metrics.width,
     name + " horizontal overflow",
   );
-  if (ordinary && process.env.UI_LAYOUT_BASELINE !== "true") {
+  if (ordinary && !baseline) {
     assert.ok(
       metrics.scrollHeight <= metrics.height + 2,
       name + " document scrolling",
@@ -291,11 +297,7 @@ try {
         true,
         name + " keyboard focus",
       );
-      if (
-        scale === 1 &&
-        width >= 390 &&
-        process.env.UI_LAYOUT_BASELINE !== "true"
-      ) {
+      if (scale === 1 && width >= 390 && !baseline) {
         assert.ok(
           metrics.scrollHeight <= height + 2,
           name + " document scrolling",
@@ -423,7 +425,17 @@ try {
   }
   assert.deepEqual(errors, [], "browser errors");
   assert.deepEqual(blocked, [], "unexpected external requests");
-  console.log(JSON.stringify({ screens: audits.length, out, errors, blocked }));
+  completed = true;
+  console.log(
+    JSON.stringify({
+      passed: !baseline,
+      ...acceptance,
+      screens: audits.length,
+      out,
+      errors,
+      blocked,
+    }),
+  );
 } finally {
   await writeFile(
     join(out, "layout-report.json"),
@@ -431,6 +443,8 @@ try {
       {
         scope:
           "Intercepted browser presentation; no actual backend/auth/providers/database",
+        passed: completed && !baseline,
+        ...acceptance,
         audits,
         errors,
         blocked,
