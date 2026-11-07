@@ -170,15 +170,17 @@ export const createChat = async (auth_token, UserChatData, ChatLog, options = {}
 };
 
 export const deleteChat = async (auth_token, chatId, owner) => {
-  if (owner) lifecycleFor(owner, auth_token).ready.delete(chatId);
+  const session = getSession();
   try {
     await axios.delete(`${import.meta.env.VITE_BACKEND_SERVER}chats/delete/${chatId}`, {
       headers: { Authorization: `Bearer ${auth_token}` },
     });
-    return null;
+    if (!isCurrentSession(session)) return false;
+    if (owner) lifecycleFor(owner, auth_token).ready.delete(chatId);
+    return true;
   } catch (error) {
     console.error('Failed to delete chat; status=%s', error.response?.status ?? 'network');
-    return null;
+    return false;
   }
 };
 

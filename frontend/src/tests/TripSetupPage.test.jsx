@@ -105,7 +105,7 @@ it('plans only after explicit provider-address confirmation and creates a new sa
   expect(ensureChatCreated.mock.calls[0][2].find((r) => r.id === 8).messages).toEqual([]);
   expect(existing.route).toEqual({ name: 'Original saved route' });
   expect(sessionStorage.getItem('selectedChatId')).toBe('8');
-  expect(screen.getByRole('link', { name: 'View map' })).toHaveAttribute('href', '/map');
+  expect(screen.getByRole('link', { name: 'Open trip' })).toHaveAttribute('href', '/trip');
   expect(screen.getByRole('link', { name: 'View itinerary' })).toHaveAttribute(
     'href',
     '/itinerary'
@@ -144,7 +144,7 @@ it('preserves results when creating a row fails and retries saving without anoth
   ensureChatCreated.mockResolvedValueOnce(false).mockResolvedValueOnce(true);
   await confirm();
   await screen.findByText('Trip is not saved yet.');
-  expect(screen.queryByRole('link', { name: 'View map' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Open trip' })).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Retry saving trip' }));
   await screen.findByText('Trip saved.');
   expect(planStructuredRoute).toHaveBeenCalledTimes(1);

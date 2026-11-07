@@ -40,6 +40,7 @@ from app.agent.trip_dates import timezone_from_location
 from app.core.departure_errors import DepartureNotUpcomingHTTPError
 from app.crud.memory_crud import load_account_persona
 from app.models.guided_planning import RouteAlternativesRequest, RouteAlternativesResponse
+from app.models.route_edit import RouteEditRequest, RouteEditResponse
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
 from app.models.scheduling_policy import local_time
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
@@ -54,6 +55,7 @@ from app.routing.meal_reservations import MealScheduleConflict, MealScheduleHTTP
 from app.routing.occupancy import require_occupancy
 from app.routing.pricing import get_price_range as _get_price_range  # noqa: F401
 from app.routing.registry import DEFAULT_ALGORITHM
+from app.routing.route_edit import preview_route_edit
 from app.routing.runtime import in_run, singleflight, threaded
 from app.routing.selection import owner_routing_claims, select_algorithm
 from app.routing.sources.attractions import find_stop as _find_stop  # noqa: F401
@@ -287,6 +289,27 @@ async def route_alternatives(payload: RouteAlternativesRequest):
         logger.warning("Nearby catalog browsing is unavailable")
         raise HTTPException(
             status_code=503, detail="Nearby places could not be loaded. Your route is unchanged."
+        ) from None
+
+
+@guided_router.post(
+    "/route-edit",
+    response_model=RouteEditResponse,
+    dependencies=[Depends(require_authenticated_user)],
+)
+async def route_edit(payload: RouteEditRequest):
+    """Preview an explicit catalog stop change; saved trips are untouched."""
+    try:
+        return await preview_route_edit(
+            payload, route_call=_call_route, timezone_at=_build_services().timezone_at
+        )
+    except PlanningError as error:
+        raise HTTPException(status_code=error.status_code, detail=error.detail) from None
+    except Exception:
+        logger.warning("Route edit preview is unavailable")
+        raise HTTPException(
+            status_code=503,
+            detail="The edited route could not be verified. Your saved trip is unchanged.",
         ) from None
 
 

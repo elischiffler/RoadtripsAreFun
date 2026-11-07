@@ -104,6 +104,6 @@ it('ignores a completion after the account session changes', async () => {
 });
 it('switches saved trip views without losing the selected trip identity', async () => {
   render(<Fixture />);
-  await userEvent.click(screen.getByRole('link', { name: 'Map' }));
+  await userEvent.click(screen.getByRole('link', { name: 'View map' }));
   expect(sessionStorage.getItem('selectedChatId')).toBe('42');
 });

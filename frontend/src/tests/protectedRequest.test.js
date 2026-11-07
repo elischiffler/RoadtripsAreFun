@@ -171,18 +171,21 @@ describe('protected dispatch and bounded replay', () => {
   });
 });
 
-it('replays bounded read-only route exploration only on the exact initial verifier rejection', async () => {
-  axios.post.mockRejectedValueOnce(rejection()).mockResolvedValueOnce({ data: { places: [] } });
-  cognitoClient.send.mockResolvedValueOnce(renewed());
-  await expect(
-    client.post(base + 'route-alternatives', { points: [[40, -105]], exclude_ids: [] })
-  ).resolves.toMatchObject({ data: { places: [] } });
-  expect(axios.post).toHaveBeenCalledTimes(2);
-  axios.post
-    .mockReset()
-    .mockRejectedValue({ response: { status: 401, data: { detail: 'Catalog unavailable' } } });
-  await expect(
-    client.post(base + 'route-alternatives', { points: [[40, -105]] })
-  ).rejects.toMatchObject({ response: { status: 401 } });
-  expect(axios.post).toHaveBeenCalledTimes(1);
-});
+it.each(['route-alternatives', 'route-edit'])(
+  'replays %s preview only on the exact initial verifier rejection',
+  async (endpoint) => {
+    axios.post.mockRejectedValueOnce(rejection()).mockResolvedValueOnce({ data: { places: [] } });
+    cognitoClient.send.mockResolvedValueOnce(renewed());
+    await expect(
+      client.post(base + endpoint, { points: [[40, -105]], exclude_ids: [] })
+    ).resolves.toMatchObject({ data: { places: [] } });
+    expect(axios.post).toHaveBeenCalledTimes(2);
+    axios.post
+      .mockReset()
+      .mockRejectedValue({ response: { status: 401, data: { detail: 'Catalog unavailable' } } });
+    await expect(client.post(base + endpoint, { points: [[40, -105]] })).rejects.toMatchObject({
+      response: { status: 401 },
+    });
+    expect(axios.post).toHaveBeenCalledTimes(1);
+  }
+);
