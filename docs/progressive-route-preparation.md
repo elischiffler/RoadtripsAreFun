@@ -90,3 +90,12 @@ formatting, lint and production build passed. Build retains the existing large
 bundle warning. Backend full-suite and actual native overnight coverage are left
 to the combined integration gate to avoid competing with the rhythm backend lane.
 No live provider, model, hosted database or production request was made.
+
+The first combined backend run exposed a preview-only compatibility regression:
+legacy planner geometries can provide coordinates without a Pydantic serializer.
+The follow-up projects only known type/coordinates from mapping or attribute
+containers; malformed display geometry is omitted, and no private serializer or
+metadata is used. Actual planning geometry and the frozen regression fixtures are
+unchanged. Both previously failing files plus preparation, CP planner, candidate
+and guided-flow suites now pass together: 96 tests in 3.01 seconds. Ruff and diff
+checks pass. Final combined full coverage remains an integration gate.

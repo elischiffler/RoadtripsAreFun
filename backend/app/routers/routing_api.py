@@ -488,9 +488,7 @@ async def plan_final_route(
             if candidate_context is not None:
                 emit(
                     "route.preview",
-                    **preview_details(
-                        "checking", geometry.model_dump() if geometry else None, stopping_points
-                    ),
+                    **preview_details("checking", geometry, stopping_points),
                 )
             start_timezone = payload.start_timezone
             # Final timing validation

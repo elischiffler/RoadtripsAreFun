@@ -94,9 +94,7 @@ async def _assess(payload, owner, *, can_select=False, request=None):
     areas = candidate_stay_areas(payload.initial_route, payload.start, payload.scheduling_policy)
     emit(
         "preparation.areas",
-        **preview_details(
-            "preparing", payload.initial_route.geometry.model_dump(), [], areas=areas
-        ),
+        **preview_details("preparing", payload.initial_route.geometry, [], areas=areas),
     )
     try:
         route = await routing_api.plan_final_route(

@@ -3,6 +3,7 @@
 import asyncio
 import json
 from copy import deepcopy
+from types import MappingProxyType, SimpleNamespace
 
 import pytest
 from fastapi import FastAPI
@@ -187,3 +188,38 @@ def test_account_guard_precedes_read_and_authenticated_stream_returns_real_progr
     assert response.headers["cache-control"] == "no-store"
     assert events[-1]["type"] == "result" and len(calls) == 6
     assert events[-1]["response"]["catalog_status"] == "ready"
+
+
+@pytest.mark.parametrize(
+    "wrap", [lambda value: value, MappingProxyType, lambda value: SimpleNamespace(**value)]
+)
+def test_preview_geometry_accepts_known_mapping_and_attribute_containers_without_serializers(wrap):
+    original = {
+        "type": "LineString",
+        "coordinates": [[179, 10], [-179, 11]],
+        "private_token": "PRIVATE",
+        "model_dump": lambda: pytest.fail("Do not serialize private geometry fields"),
+    }
+    assert prep.preview_geometry(wrap(original)) == {
+        "type": "LineString",
+        "coordinates": [[179, 10], [-179, 11]],
+    }
+    assert "PRIVATE" not in str(prep.preview_details("considering", wrap(original), []))
+    assert original["coordinates"] == [[179, 10], [-179, 11]]
+
+
+@pytest.mark.parametrize(
+    "geometry",
+    [
+        None,
+        {},
+        SimpleNamespace(),
+        SimpleNamespace(coordinates=None),
+        {"type": "Polygon", "coordinates": [[0, 0], [1, 1]]},
+        {"coordinates": [[0, 0], [True, 1]]},
+        {"coordinates": [[0, 0], [float("nan"), 1]]},
+    ],
+)
+def test_malformed_optional_geometry_is_omitted_without_exposing_other_fields(geometry):
+    scene = prep.preview_details("selected", geometry, [])
+    assert scene["geometry"] is None and scene["preview_only"] is True

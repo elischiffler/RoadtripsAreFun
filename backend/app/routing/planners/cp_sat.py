@@ -84,9 +84,7 @@ class CPSatPlanner(RoutePlanner):
                 record_explanation(discovery=discovery.explanation)
                 emit(
                     "route.preview",
-                    **preview_details(
-                        "considering", initial_route.geometry.model_dump(), candidates
-                    ),
+                    **preview_details("considering", initial_route.geometry, candidates),
                 )
             with stage("route.detours", candidates=len(candidates)):
                 if options._verified_cp_sat_candidates is None:
@@ -139,7 +137,7 @@ class CPSatPlanner(RoutePlanner):
                         "route.preview",
                         **preview_details(
                             "selected",
-                            initial_route.geometry.model_dump(),
+                            initial_route.geometry,
                             [item.candidate for item in selected],
                         ),
                     )

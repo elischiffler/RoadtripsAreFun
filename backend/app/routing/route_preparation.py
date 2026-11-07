@@ -6,6 +6,7 @@ All clocks remain departure-wall-clock estimates, not local arrival proofs.
 """
 
 import math
+from collections.abc import Mapping
 
 from pydantic import ValidationError
 
@@ -134,25 +135,38 @@ def estimate_stay_areas(payload: RoutePreparationRequest):
     return areas
 
 
+def preview_geometry(geometry):
+    """Project only known line coordinates from typed, mapping or legacy objects.
+
+    Progress must not require a serializer on the geometry used by a planner.
+    Invalid display geometry is omitted without changing planning input/results.
+    """
+    if isinstance(geometry, Mapping):
+        kind, raw = geometry.get("type", "LineString"), geometry.get("coordinates")
+    else:
+        kind = getattr(geometry, "type", "LineString")
+        raw = getattr(geometry, "coordinates", None)
+    if kind != "LineString" or not isinstance(raw, (list, tuple)) or len(raw) < 2:
+        return None
+    points = []
+    for point in raw:
+        if (
+            not isinstance(point, (list, tuple))
+            or len(point) != 2
+            or any(type(value) not in (int, float) or not math.isfinite(value) for value in point)
+            or abs(point[0]) > 180
+            or abs(point[1]) > 90
+        ):
+            return None
+        points.append(list(point))
+    if len(points) > 10000:
+        points = [points[round(i * (len(points) - 1) / 9999)] for i in range(10000)]
+    return {"type": "LineString", "coordinates": points}
+
+
 def preview_details(phase, geometry, stops, *, areas=None):
     """Public, bounded provisional scene; omit ratings, profiles and source blobs."""
-    raw = geometry.get("coordinates", []) if isinstance(geometry, dict) else []
-    raw = raw if isinstance(raw, (list, tuple)) else []
-    points = [
-        p
-        for p in raw
-        if isinstance(p, (list, tuple))
-        and len(p) == 2
-        and all(type(v) in (int, float) and math.isfinite(v) for v in p)
-        and abs(p[0]) <= 180
-        and abs(p[1]) <= 90
-    ]
-    if len(points) != len(raw) or len(points) < 2:
-        geometry = None
-    else:
-        if len(points) > 10000:
-            points = [points[round(i * (len(points) - 1) / 9999)] for i in range(10000)]
-        geometry = {"type": "LineString", "coordinates": points}
+    geometry = preview_geometry(geometry)
     valid = []
     for stop in stops:
         if not isinstance(stop, dict) or not isinstance(stop.get("name"), str):
@@ -261,7 +275,7 @@ def candidate_stay_areas(route, start, policy):
     if start is None:
         return []
     try:
-        scene = preview_details("preparing", route.geometry.model_dump(), [])
+        scene = preview_details("preparing", route.geometry, [])
         if scene["geometry"] is None:
             return []
         return estimate_stay_areas(

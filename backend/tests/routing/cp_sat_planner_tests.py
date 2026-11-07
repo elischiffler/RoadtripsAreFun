@@ -1,6 +1,7 @@
 """CP-SAT selection and scheduling with provider-verified fake records."""
 
 from datetime import date
+from types import SimpleNamespace
 
 import pytest
 from ortools.sat.python import cp_model
@@ -456,10 +457,13 @@ async def test_estimated_hotel_meals_obey_opted_in_sleep(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("legacy_geometry", [False, True])
 async def test_provisional_map_scenes_follow_real_discovery_and_solver_selection(
-    route, start_date, fake_services
+    route, start_date, fake_services, legacy_geometry
 ):
     short_route(route, 3600)
+    if legacy_geometry:
+        route.geometry = SimpleNamespace(coordinates=route.geometry.coordinates)
     services, _ = configure(fake_services, [attraction("verified", [0, 0], 0.9)])
     events = []
     with reporting(events.append):
