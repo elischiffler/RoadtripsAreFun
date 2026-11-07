@@ -9,6 +9,26 @@ from pathlib import Path
 OWNER_MARKER = "roadtrips-native-preview-v1\n"
 
 
+def _native_state_path():
+    module = Path(__file__).resolve()
+    # The default CI mount is /journey/local_config.py, not a native checkout.
+    # Validate the layout before indexing parents; never search elsewhere or
+    # accept an environment-supplied state directory.
+    if (
+        len(module.parents) < 3
+        or module.parent.name != "guidedjourney"
+        or module.parent.parent.name != "tests"
+    ):
+        raise RuntimeError("Native fixture requires a complete local checkout")
+    root = module.parents[2]
+    if (
+        not (root / "scripts" / "dev-offline.mjs").is_file()
+        or not (root / "backend" / "app" / "main.py").is_file()
+    ):
+        raise RuntimeError("Native fixture requires a complete local checkout")
+    return root / ".artifacts" / "native-preview"
+
+
 def _private_path(path, *, directory=False):
     info = path.lstat()
     if (
@@ -87,10 +107,7 @@ class FixtureConfig:
 
     def signing_key(self):
         if self.native:
-            state = (
-                Path(__file__).resolve().parents[2] / ".artifacts" / "native-preview"
-            )
-            return _native_signing_key(state)
+            return _native_signing_key(_native_state_path())
         from cryptography.hazmat.primitives.asymmetric import rsa
 
         return rsa.generate_private_key(public_exponent=65537, key_size=2048)

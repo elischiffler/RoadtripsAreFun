@@ -118,20 +118,61 @@ class NativeSigningStateTests(unittest.TestCase):
         from pathlib import Path
         from unittest.mock import patch
 
-        import local_config
-
+        checkout = Path(self.temporary.name)
+        module = checkout / "tests" / "guidedjourney" / "local_config.py"
+        for path in (
+            module,
+            checkout / "scripts" / "dev-offline.mjs",
+            checkout / "backend" / "app" / "main.py",
+        ):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("# owned fake full checkout for locator test\n")
         with (
+            patch("local_config.__file__", str(module)),
             patch.dict(
                 os.environ, {"GUIDED_JOURNEY_NATIVE_STATE": "/outside/not-a-preview"}
             ),
             patch("local_config._native_signing_key") as load,
         ):
             FixtureConfig(True).signing_key()
-        load.assert_called_once_with(
-            Path(local_config.__file__).resolve().parents[2]
-            / ".artifacts"
-            / "native-preview"
+        load.assert_called_once_with(self.state)
+
+    def test_shallow_mount_rejects_native_before_state_access_but_default_stays_ephemeral(
+        self,
+    ):
+        from unittest.mock import patch
+
+        with (
+            patch("local_config.__file__", "/journey/local_config.py"),
+            patch("local_config._native_signing_key") as load,
+        ):
+            with self.assertRaisesRegex(
+                RuntimeError, "requires a complete local checkout"
+            ):
+                FixtureConfig(True).signing_key()
+            first = FixtureConfig().signing_key()
+            second = FixtureConfig().signing_key()
+        load.assert_not_called()
+        self.assertNotEqual(
+            first.public_key().public_numbers(), second.public_key().public_numbers()
         )
+
+    def test_incomplete_checkout_rejects_native_without_fallback(self):
+        from pathlib import Path
+        from unittest.mock import patch
+
+        module = (
+            Path(self.temporary.name) / "tests" / "guidedjourney" / "local_config.py"
+        )
+        module.parent.mkdir(parents=True)
+        module.write_text("# incomplete test fixture only\n")
+        with (
+            patch("local_config.__file__", str(module)),
+            patch("local_config._native_signing_key") as load,
+            self.assertRaisesRegex(RuntimeError, "requires a complete local checkout"),
+        ):
+            FixtureConfig(True).signing_key()
+        load.assert_not_called()
 
     def test_hostile_ambient_origins_are_replaced_in_both_modes(self):
         import os

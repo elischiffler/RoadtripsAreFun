@@ -71,7 +71,7 @@ PostgreSQL upgrade or recovery of production data is performed.
 
 ## Verification and limits
 
-The required journey driver runs four cheap Node lifecycle probes and 20 Python
+The required journey driver runs four cheap Node lifecycle probes and 22 Python
 configuration/observer tests before fixture startup. The lifecycle probes use
 only temporary fake foreground-process helpers: concurrent-start refusal after
 port reservation release, foreign-postmaster survival on failed startup,
