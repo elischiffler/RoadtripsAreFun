@@ -533,7 +533,7 @@
 }
 .setup-choice:active,
 .setup-secondary:active {
-  transform: scale(0.98);
+  transform: scale(var(--rt-press-scale));
 }
 .setup-field input[type='range'] {
   padding-inline: 0;
@@ -544,7 +544,7 @@
   padding-block-start: var(--rt-space-3);
 }
 .setup-estimate-map {
-  block-size: 12rem;
+  block-size: var(--rt-map-preview-height);
   position: relative;
   overflow: hidden;
   border-radius: var(--rt-radius-control);
@@ -564,7 +564,9 @@
     animation: none;
   }
   .setup-choice,
-  .setup-secondary {
+  .setup-secondary,
+  .setup-choice:active,
+  .setup-secondary:active {
     transition: none;
     transform: none;
   }
@@ -633,8 +635,8 @@
 .setup-text-probe {
   position: absolute;
   visibility: hidden;
-  inline-size: 1rem;
-  block-size: 1rem;
+  inline-size: var(--rt-text-body);
+  block-size: var(--rt-text-body);
   pointer-events: none;
 }
 .setup-wayfinding {

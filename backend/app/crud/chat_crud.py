@@ -1,7 +1,9 @@
+import hashlib
 import json
 import logging
 from threading import Lock
 from typing import Any
+from uuid import uuid4
 
 import psycopg2
 import psycopg2.extras
@@ -23,6 +25,16 @@ _pool_lock = Lock()
 
 class ChatIdentityConflict(ValueError):
     """A trip number already belongs to another planning operation."""
+
+
+class ChatSnapshotConflict(ValueError):
+    """The saved trip changed after the editor loaded its snapshot."""
+
+
+def chat_data_revision(data: dict[str, Any]) -> str:
+    """Opaque revision of exact durable JSON, before geometry hydration."""
+    payload = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
@@ -89,7 +101,8 @@ def create_chat(
 
     The conflict predicate is part of the upsert and checked while PostgreSQL
     locks the conflicting row. A separate existence read would race across tabs.
-    Missing/null legacy planning IDs remain compatible with one another.
+    Modern repeated creates return their existing durable snapshot unchanged.
+    Missing/null legacy planning IDs retain their prior upsert behavior.
     """
     conn = _get_conn()
     try:
@@ -99,8 +112,10 @@ def create_chat(
                 INSERT INTO chats (user_id, chat_id, chat_data, chat_log)
                 VALUES (%s, %s, %s, %s)
                 ON CONFLICT (user_id, chat_id) DO UPDATE
-                  SET chat_data = EXCLUDED.chat_data,
-                      chat_log  = EXCLUDED.chat_log
+                  SET chat_data = CASE WHEN chats.chat_data->>'agentChatId' IS NULL
+                        THEN EXCLUDED.chat_data ELSE chats.chat_data END,
+                      chat_log = CASE WHEN chats.chat_data->>'agentChatId' IS NULL
+                        THEN EXCLUDED.chat_log ELSE chats.chat_log END
                   WHERE chats.chat_data->>'agentChatId'
                     IS NOT DISTINCT FROM EXCLUDED.chat_data->>'agentChatId'
                 RETURNING *
@@ -174,7 +189,15 @@ def get_segments(user_id: str, chat_id: str, route_id: str):
         _put_conn(conn)
 
 
-def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
+def update_chat_component(
+    auth_token: str,
+    chat_id: str,
+    chat_schema: BaseModel,
+    prefix: str,
+    *,
+    expected_revision: str | None = None,
+    update_scope: str = "route",
+):
     """Update a component of a user's chat in the database."""
     # Durable JSON must contain ISO timestamps, not Pydantic datetime objects.
     comp_dict = chat_schema.model_dump(mode="json")
@@ -196,7 +219,7 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
-                f"SELECT {col_name} FROM chats WHERE user_id = %s AND chat_id = %s",
+                f"SELECT {col_name} FROM chats WHERE user_id = %s AND chat_id = %s FOR UPDATE",
                 (auth_token, chat_id),
             )
             row = cur.fetchone()
@@ -207,9 +230,26 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                     chat_id,
                     prefix,
                 )
+                conn.rollback()
                 return None
 
             current_val = row[col_name] or {}
+            if expected_revision is not None:
+                if prefix != "ChatData" or chat_data_revision(current_val) != expected_revision:
+                    raise ChatSnapshotConflict("Saved trip changed; reload before editing")
+                if update_scope == "presentation":
+                    comp_dict = {"presentation": comp_dict.get("presentation")}
+                elif update_scope == "route":
+                    # Route edits cannot replace unrelated car, account or log state.
+                    comp_dict = {key: comp_dict[key] for key in ("route", "itinerary", "stops")}
+                    comp_dict["tripProfile"] = {
+                        **(current_val.get("tripProfile") or {}),
+                        "num_stops": comp_dict["stops"],
+                    }
+                    comp_dict["presentation"] = {
+                        **(current_val.get("presentation") or {}),
+                        "visitedStopIds": [],
+                    }
             empty_vals = [[], {}, None, False, ""]
             route_id = f"{auth_token}-{chat_id}"
 
@@ -228,6 +268,9 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                             conn, auth_token, chat_id, route_id, value["legs"]
                         )
                     if key == "route":
+                        # New final routes use their own storage identity, preserving
+                        # legacy initial geometry that may share the old identifier.
+                        route_id = f"{auth_token}-{chat_id}-final"
                         route = value["geometry"]["coordinates"]
                         value["geometry"]["coordinates"] = route_id
                     if route:
@@ -249,8 +292,17 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                                 raise PermissionError(
                                     "Route segment identifier belongs to a different chat"
                                 )
+                        cur.execute(
+                            """DELETE FROM route_segments
+                               WHERE user_id = %s AND chat_id = %s AND route_id = %s
+                                 AND NOT (segment_id = ANY(%s))""",
+                            (auth_token, chat_id, route_id, [str(i) for i in range(len(segments))]),
+                        )
                     current_val[key] = value
 
+            if prefix == "ChatData":
+                # Invalidate snapshots even when only segmented coordinates changed.
+                current_val["_storageRevision"] = str(uuid4())
             cur.execute(
                 f"UPDATE chats SET {col_name} = %s WHERE user_id = %s AND chat_id = %s RETURNING *",
                 (json.dumps(current_val), auth_token, chat_id),

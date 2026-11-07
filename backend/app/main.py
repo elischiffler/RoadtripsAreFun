@@ -112,6 +112,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],  # Allows all HTTP methods
     allow_headers=["*"],  # Allows all headers
+    expose_headers=["X-Trip-Revision"],
 )
 
 

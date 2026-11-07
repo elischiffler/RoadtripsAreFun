@@ -5,6 +5,7 @@ import { CssBaseline } from '@mui/material';
 import customTheme from './Theme';
 import GlobalStyles from './GlobalStyles';
 import { useThemeMode } from '../services/themeMode';
+import { MATERIAL_DARK_COLORS as dark } from '../design/materialPalette';
 
 export default function AppTheme({ children }) {
   const mode = useThemeMode();
@@ -15,19 +16,28 @@ export default function AppTheme({ children }) {
         : createTheme(customTheme, {
             palette: {
               mode: 'dark',
-              background: { default: '#111c18', paper: '#1c2c25' },
-              text: { primary: '#f1f6f2', secondary: '#b9cac0', disabled: '#8b9d92' },
-              cream: { main: '#1c2c25', light: '#111c18', dark: '#40584b' },
-              soil: { main: '#f1f6f2' },
-              bark: { main: '#b9cac0', dark: '#d3e0d7' },
-              sand: { main: '#a5b9ac', light: '#2b4035', dark: '#8b9d92' },
-              white: { main: '#1c2c25', light: '#111c18', dark: '#40584b', black: '#f1f6f2' },
+              background: { default: dark.page, paper: dark.surface },
+              text: {
+                primary: dark.textPrimary,
+                secondary: dark.textSecondary,
+                disabled: dark.textDisabled,
+              },
+              cream: { main: dark.surface, light: dark.page, dark: dark.surfaceRaised },
+              soil: { main: dark.textPrimary },
+              bark: { main: dark.textSecondary, dark: dark.textSubtle },
+              sand: { main: dark.border, light: dark.surfaceInset, dark: dark.textDisabled },
+              white: {
+                main: dark.surface,
+                light: dark.page,
+                dark: dark.surfaceRaised,
+                black: dark.textPrimary,
+              },
             },
             components: {
-              MuiPaper: { styleOverrides: { root: { backgroundColor: '#1c2c25' } } },
+              MuiPaper: { styleOverrides: { root: { backgroundColor: dark.surface } } },
               MuiTextField: {
                 styleOverrides: {
-                  root: { '& .MuiOutlinedInput-root': { backgroundColor: '#111c18' } },
+                  root: { '& .MuiOutlinedInput-root': { backgroundColor: dark.page } },
                 },
               },
             },

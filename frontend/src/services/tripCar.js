@@ -25,7 +25,7 @@ export function tripCarChoices(trip) {
     : { car_status: 'skipped', car: null };
 }
 export async function saveTripCar(trip, choices) {
-  const { data } = await axios.put(
+  const response = await axios.put(
     import.meta.env.VITE_BACKEND_SERVER + `chats/${trip.chatId}/car`,
     {
       ...choices,
@@ -33,12 +33,13 @@ export async function saveTripCar(trip, choices) {
     },
     { ...backendAuthConfig(), timeout: 15000 }
   );
-  return data;
+  return { ...response.data, savedRevision: response.headers?.['x-trip-revision'] ?? null };
 }
 export function applyTripCar(trip, choices) {
   const car = choices.car;
   return {
     ...trip,
+    savedRevision: choices.savedRevision ?? null,
     carDetails: car ? [String(car.year), car.make, car.model] : ['', '', ''],
     carBudget: null,
     tripProfile: { ...trip.tripProfile, car_status: choices.car_status, car },

@@ -28,9 +28,9 @@
   color: var(--rt-color-accent);
 }
 .rt-design.map-page .rt-design__content {
-  max-inline-size: 72rem;
+  max-inline-size: var(--rt-map-content-width);
 }
 .rt-design.map-page .trip-map-viewport {
-  height: calc(100dvh - var(--header-height) - 12rem);
-  min-height: 24rem;
+  height: calc(100dvh - var(--header-height) - var(--rt-map-header-clearance));
+  min-height: var(--rt-map-min-height);
 }

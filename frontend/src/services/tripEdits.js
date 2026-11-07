@@ -29,6 +29,8 @@ const persistedFields = (trip) =>
     presentation: trip.presentation ?? {},
     stops: trip.stops,
     tripProfile: trip.tripProfile ?? {},
+    carDetails: trip.carDetails ?? [],
+    carBudget: trip.carBudget ?? null,
   });
 const matches = (left, right) =>
   JSON.stringify(persistedFields(left)) === JSON.stringify(persistedFields(right));
@@ -79,7 +81,10 @@ export async function reconcileTripEdit(logs, id, session = getSession()) {
   const saved = loaded?.UserData?.chatlogs?.getChatDataById(id);
   if (saved && matches(saved, operation.snapshot)) {
     remember(logs, id, null);
-    return { status: 'saved', snapshot: operation.snapshot };
+    return {
+      status: 'saved',
+      snapshot: { ...operation.snapshot, savedRevision: saved.savedRevision },
+    };
   }
   return { status: 'uncertain' };
 }
@@ -96,7 +101,13 @@ export async function persistTripEdit(original, snapshot, chats, logs, session =
   if (!isCurrentSession(session)) return { status: 'stale' };
   const latest = current?.UserData?.chatlogs?.getChatDataById(original.chatId);
   if (!current) return { status: 'unavailable' };
-  if (!latest || !matches(latest, original)) return { status: 'conflict' };
+  if (
+    !latest ||
+    !matches(latest, original) ||
+    (original.savedRevision && original.savedRevision !== latest.savedRevision)
+  )
+    return { status: 'conflict' };
+  if (!/^[0-9a-f]{64}$/.test(latest.savedRevision ?? '')) return { status: 'unavailable' };
   const chat =
     current.chats.find((item) => item.id === original.chatId) ||
     chats.find((item) => item.id === original.chatId);
@@ -105,16 +116,25 @@ export async function persistTripEdit(original, snapshot, chats, logs, session =
   remember(logs, original.chatId, { original, snapshot });
   let saved = false;
   try {
-    await request.put(`${import.meta.env.VITE_BACKEND_SERVER}chats/update/${original.chatId}`, {
-      PartitionKey: session.accessToken,
-      ChatData: snapshot,
-      ChatLog: {
-        ...chat,
-        messages: (chat.messages || []).filter((message) => message.type !== 'loading-chat'),
-      },
-    });
+    const response = await request.put(
+      `${import.meta.env.VITE_BACKEND_SERVER}chats/update/${original.chatId}`,
+      {
+        PartitionKey: session.accessToken,
+        ExpectedRevision: latest.savedRevision,
+        ChatData: snapshot,
+        ChatLog: {
+          ...chat,
+          messages: (chat.messages || []).filter((message) => message.type !== 'loading-chat'),
+        },
+      }
+    );
+    snapshot = { ...snapshot, savedRevision: response.data?.savedRevision ?? null };
     saved = true;
-  } catch {
+  } catch (error) {
+    if (isCurrentSession(session) && [404, 409].includes(error.response?.status)) {
+      remember(logs, original.chatId, null);
+      return { status: 'conflict' };
+    }
     /* Read back before any retry. Never recreate a missing trip. */
   }
   if (!isCurrentSession(session)) return { status: 'stale' };

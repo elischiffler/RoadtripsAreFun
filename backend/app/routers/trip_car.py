@@ -19,10 +19,12 @@ def save_trip_car(
 ):
     response.headers["Cache-Control"] = "no-store"
     try:
-        if not update_trip_car(user_id, chat_id, value):
+        revision = update_trip_car(user_id, chat_id, value)
+        if not revision:
             raise HTTPException(
                 status_code=404, detail="Trip no longer available. Reload before editing."
             )
+        response.headers["X-Trip-Revision"] = revision
         return TripCarChoices(car_status=value.car_status, car=value.car)
     except psycopg2.Error:
         raise HTTPException(

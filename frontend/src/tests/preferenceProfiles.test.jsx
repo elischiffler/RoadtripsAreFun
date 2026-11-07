@@ -1,12 +1,18 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 import { useState } from 'react';
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import axios from '../services/protectedRequest';
 import { renderWithProviders } from './testUtils';
 import { fixtureSession } from './sessionFixtures';
 import { signOut } from '../services/session';
-import { newSetupDraft, preferenceWeights } from '../pages/TripSetup/setupModel';
+import {
+  COMPARISONS,
+  INTERESTS,
+  newSetupDraft,
+  preferenceProfiles,
+  preferenceWeights,
+} from '../pages/TripSetup/setupModel';
 import {
   applyPreferenceChoices,
   choicesFromDraft,
@@ -16,6 +22,7 @@ import {
 import SettingsPage from '../pages/SettingsPage';
 import { initializeUserData } from '../services/savedTrips';
 import PreferenceProfilePicker from '../components/PreferenceProfilePicker';
+import PreferenceProfileEditor from '../components/PreferenceProfileEditor';
 import AppTheme from '../components/AppTheme';
 import { setThemeMode } from '../services/themeMode';
 
@@ -100,6 +107,96 @@ it('saves each distinct set and reuses matching sets, including normalization ro
   const reordered = JSON.parse(JSON.stringify(profile().choices));
   reordered.persona_weights.nature += 1e-16;
   expect(samePreferenceChoices(profile().choices, reordered)).toBe(true);
+});
+
+it('keeps comparison inference private when saving reusable choices and generating profile names', async () => {
+  const left = {
+    ...draft(),
+    interests: ['food'],
+    comparisonAnswers: { [COMPARISONS[0].id]: 'left' },
+  };
+  const right = { ...left, comparisonAnswers: { [COMPARISONS[0].id]: 'right' } };
+  const profiles = preferenceProfiles(left);
+  expect(choicesFromDraft(left).persona_weights).toEqual(profiles.stated);
+  expect(choicesFromDraft(left).persona_weights).not.toEqual(profiles.combined);
+  expect(preferenceWeights(left)).not.toEqual(preferenceWeights(right));
+  for (const interest of Object.keys(INTERESTS))
+    expect(preferenceWeights(left)[interest]).toBeCloseTo(
+      (profiles.stated[interest] + profiles.comparisons[interest]) / 2,
+      14
+    );
+  await saveNewTripPreferences(left, crypto.randomUUID());
+  await saveNewTripPreferences(right, crypto.randomUUID());
+  const first = axios.put.mock.calls[0][1];
+  const second = axios.put.mock.calls[1][1];
+  expect(first.name).toBe(second.name);
+  expect(first.choices.persona_weights).toEqual(profiles.stated);
+  expect(second.choices.persona_weights).toEqual(profiles.stated);
+  expect(first.choices).not.toHaveProperty('comparisonAnswers');
+  expect(first.choices).not.toHaveProperty('preference_profiles');
+  const reused = applyPreferenceChoices(newSetupDraft(), first.choices);
+  expect(reused.comparisonAnswers).toEqual({});
+  for (const interest of Object.keys(INTERESTS))
+    expect(preferenceWeights(reused)[interest]).toBeCloseTo(profiles.stated[interest], 14);
+});
+
+it('edits saved interest amounts with shared actions without coercing precise raw values on render', async () => {
+  const amounts = Object.fromEntries(
+    Object.keys(INTERESTS).map((interest) => [
+      interest,
+      interest === 'food' ? 12345.123456789 : 0.1234567897,
+    ])
+  );
+  const saved = {
+    ...profile(),
+    choices: { ...profile().choices, car_status: 'skipped', car: null, persona_weights: amounts },
+  };
+  const onSave = vi.fn();
+  renderWithProviders(
+    <PreferenceProfileEditor profile={saved} onSave={onSave} onCancel={vi.fn()} />
+  );
+  await userEvent.click(screen.getByText('Interests', { selector: 'summary' }));
+  const food = screen.getByRole('slider', { name: 'Food' });
+  expect(Number(food.value)).toBe(amounts.food);
+  expect(food).toHaveAttribute('step', 'any');
+  expect(screen.queryByRole('spinbutton', { name: 'Food' })).not.toBeInTheDocument();
+  for (const [interest, label] of Object.entries(INTERESTS))
+    expect(Number(screen.getByRole('slider', { name: label }).value)).toBe(amounts[interest]);
+  expect(onSave).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: 'More Food' }));
+  expect(Number(food.value)).toBeGreaterThan(amounts.food);
+  for (const [interest, label] of Object.entries(INTERESTS).filter(
+    ([interest]) => interest !== 'food'
+  ))
+    expect(Number(screen.getByRole('slider', { name: label }).value)).toBe(amounts[interest]);
+  expect(saved.choices.persona_weights).toEqual(amounts);
+  await userEvent.click(screen.getByRole('button', { name: 'Save preferences' }));
+  expect(onSave).toHaveBeenCalledOnce();
+  expect(onSave.mock.calls[0][0].choices.persona_weights).toEqual(
+    preferenceProfiles({
+      ...newSetupDraft(),
+      customWeights: { ...amounts, food: Number(food.value) },
+    }).stated
+  );
+});
+
+it('retains authoritative all-zero interest validation in the saved preference editor', async () => {
+  const amounts = Object.fromEntries(
+    Object.keys(INTERESTS).map((interest) => [interest, interest === 'food' ? 1 : 0])
+  );
+  const onSave = vi.fn();
+  renderWithProviders(
+    <PreferenceProfileEditor
+      profile={{ ...profile(), choices: { ...profile().choices, persona_weights: amounts } }}
+      onSave={onSave}
+      onCancel={vi.fn()}
+    />
+  );
+  await userEvent.click(screen.getByText('Interests', { selector: 'summary' }));
+  fireEvent.change(screen.getByRole('slider', { name: 'Food' }), { target: { value: '0' } });
+  await userEvent.click(screen.getByRole('button', { name: 'Save preferences' }));
+  expect(screen.getByRole('alert')).toHaveTextContent('above zero');
+  expect(onSave).not.toHaveBeenCalled();
 });
 
 it('does not save old preferences to a new account after an asynchronous lookup', async () => {

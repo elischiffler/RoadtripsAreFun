@@ -131,3 +131,121 @@ def test_trip_car_patch_preserves_saved_trip_and_checks_owner_and_identity(datab
             (owner,),
         )
         assert cur.fetchone() == (None, ["", "", ""])
+
+
+def test_long_route_shortening_keeps_exact_geometry_initial_and_scoped_rollback(
+    database, monkeypatch
+):
+    """Exercise the real segment-table transaction, not a cursor simulation."""
+    import copy
+
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from app.routers import chat_api
+    from app.schemas.chat_schemas import ChatDataSchema
+    from tests.chat_json_serialization_tests import timed_body
+
+    conn, prefix = database
+    owner, other = prefix + "-route-owner", prefix + "-other-owner"
+    body = timed_body()
+    chat_crud.create_chat(owner, "1", body["ChatData"], body["ChatLog"])
+    initial_id = owner + "-1"
+    initial = [[-110, 40], [-109, 41]]
+    foreign_id = other + "-route"
+    with conn.cursor() as cur:
+        cur.execute(
+            "UPDATE chats SET chat_data=jsonb_set(chat_data,'{initial}',%s::jsonb) WHERE user_id=%s AND chat_id='1'",
+            (Json({"geometry": initial_id, "legs": []}), owner),
+        )
+        cur.execute(
+            "INSERT INTO route_segments (user_id,chat_id,route_id,segment_id,coords) VALUES (%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s)",
+            (
+                owner,
+                "1",
+                initial_id,
+                "0",
+                Json(initial),
+                other,
+                "9",
+                foreign_id,
+                "1",
+                Json([[1, 2]]),
+            ),
+        )
+    conn.commit()
+    app = FastAPI()
+    app.include_router(chat_api.router)
+    monkeypatch.setattr(chat_api, "get_user_id_from_token", lambda _: owner)
+    client = TestClient(app)
+    try:
+        long_geometry = [[-105 + i / 100000, 40] for i in range(10001)]
+        body["ChatData"]["route"]["geometry"]["coordinates"] = long_geometry
+        body["ExpectedRevision"] = client.get(
+            "/chats", headers={"Authorization": "Bearer fixture"}
+        ).json()[0][0]["savedRevision"]
+        first = client.put("/chats/update/1", json=body)
+        assert first.status_code == 200
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT count(*) FROM route_segments WHERE user_id=%s AND chat_id=%s AND route_id=%s",
+                (owner, "1", owner + "-1-final"),
+            )
+            assert cur.fetchone()[0] == 2
+        conn.rollback()
+        shortened = [[-105, 40], [-104, 40]]
+        body["ChatData"]["route"]["geometry"]["coordinates"] = shortened
+        body["ExpectedRevision"] = first.json()["savedRevision"]
+        second = client.put("/chats/update/1", json=body)
+        assert second.status_code == 200
+        restored = client.get("/chats", headers={"Authorization": "Bearer fixture"}).json()[0][0]
+        assert restored["route"]["geometry"]["coordinates"] == shortened
+        assert restored["initial"]["geometry"]["coordinates"] == initial
+        assert restored["savedRevision"] != first.json()["savedRevision"]
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT count(*) FROM route_segments WHERE user_id=%s AND chat_id=%s AND route_id=%s",
+                (owner, "1", owner + "-1-final"),
+            )
+            assert cur.fetchone()[0] == 1
+            cur.execute(
+                "SELECT coords FROM route_segments WHERE user_id=%s AND route_id=%s",
+                (other, foreign_id),
+            )
+            assert cur.fetchone()[0] == [[1, 2]]
+        conn.rollback()
+
+        # A foreign identifier conflict after an earlier insert rolls back both
+        # route JSON and already-written segment rows on the same connection.
+        failed = copy.deepcopy(body["ChatData"])
+        failed["chatId"] = 2
+        failed["route"]["geometry"]["coordinates"] = long_geometry
+        chat_crud.create_chat(owner, "2", failed, {"id": 2, "title": "Keep", "messages": []})
+        before = chat_crud.get_chat(owner, "2")["chat_data"]
+        poisoned = owner + "-2-final"
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO route_segments (user_id,chat_id,route_id,segment_id,coords) VALUES (%s,%s,%s,%s,%s)",
+                (other, "9", poisoned, "1", Json([[3, 4]])),
+            )
+        conn.commit()
+        with pytest.raises(PermissionError, match="different chat"):
+            chat_crud.update_chat_component(
+                owner,
+                "2",
+                ChatDataSchema.model_validate(failed),
+                "ChatData",
+                expected_revision=chat_crud.chat_data_revision(before),
+            )
+        assert chat_crud.get_chat(owner, "2")["chat_data"] == before
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT user_id,segment_id,coords FROM route_segments WHERE route_id=%s",
+                (poisoned,),
+            )
+            assert cur.fetchall() == [(other, "1", [[3, 4]])]
+        conn.rollback()
+    finally:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM route_segments WHERE user_id IN (%s,%s)", (owner, other))
+        conn.commit()

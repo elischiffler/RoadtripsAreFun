@@ -19,6 +19,8 @@ legacy pages. Change a token once to update every adopting component.
 | `--rt-target-min`, `--rt-control-height`                            | At least 44px hit targets, comfortable 52px inputs                                       |
 | `--rt-slider-thumb-size`, `--rt-opacity-disabled`                   | Slider thumb appearance and shared disabled opacity                                     |
 | `--rt-content-width`, `--rt-page-padding`                           | Centered 30rem column with fluid outer gutters                                           |
+| `--rt-trip-content-width`, `--rt-map-content-width`, `--rt-map-*-height`, `--rt-map-header-clearance` | Workspace widths, shared map previews and full-map sizing |
+| `--rt-checkbox-size`                                               | Checkbox visuals; labels retain 44px minimum hit targets                                  |
 | `--rt-text-*`, `--rt-weight-*`, `--rt-leading-*`, `--rt-tracking-*` | System type hierarchy; tighter titles and comfortable body copy                          |
 | `--rt-color-*`                                                      | Semantic page/surface/text/selection/error/focus and route colors                        |
 | `--rt-shadow-*`, `--rt-material-*`                                  | Quiet surface depth and optional floating material                                       |
@@ -30,6 +32,13 @@ actions and choices. [`patterns.css`](../frontend/src/design/patterns.css) owns 
 progress and timelines. [`index.js`](../frontend/src/design/index.js) imports all
 supporting CSS and exports the public React API. Use that entry point rather than
 importing individual files so styles arrive with components.
+
+[`materialPalette.js`](../frontend/src/design/materialPalette.js) is the focused
+bridge for the legacy Material UI 5 theme. Material's color calculations need
+concrete color values, so the adapter names and reuses its existing dark palette
+instead of passing scoped CSS variables into those calculations. Native controls
+continue to use the CSS master. Keep matching semantic colors aligned when changing
+the palette; do not introduce separate literals in individual Material overrides.
 
 Structural values such as `0`, `100%`, `auto`, grid fractions, local timeline
 stacking, and system colors in forced-color mode are intentionally not visual

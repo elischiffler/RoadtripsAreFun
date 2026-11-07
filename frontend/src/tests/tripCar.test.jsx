@@ -46,6 +46,7 @@ beforeEach(() => {
   }));
   axios.put.mockImplementation(async (_, payload) => ({
     data: { car_status: payload.car_status, car: payload.car },
+    headers: { 'x-trip-revision': 'b'.repeat(64) },
   }));
 });
 function Probe() {
@@ -85,6 +86,7 @@ it('loads an existing car and saves only that trip without changing route, itine
     expect.any(Object)
   );
   const state = JSON.parse(screen.getByTestId('trip-state').textContent);
+  expect(state[0].savedRevision).toBe('b'.repeat(64));
   expect(state[0].carDetails).toEqual(['2018', 'Honda', 'Corolla']);
   expect(state[0].route).toEqual(trips[0].route);
   expect(state[0].itinerary).toEqual(trips[0].itinerary);
@@ -162,4 +164,14 @@ it('passes the original trip identity without route data', async () => {
     'car_status',
     'expected_agent_chat_id',
   ]);
+});
+
+it('propagates the committed car revision to the snapshot used by visit and route editors', async () => {
+  const original = { ...makeTrip(), savedRevision: 'a'.repeat(64) };
+  const choices = await saveTripCar(original, { car_status: 'skipped', car: null });
+  const saved = applyTripCar(original, choices);
+  expect(saved.savedRevision).toBe('b'.repeat(64));
+  expect(saved.savedRevision).not.toBe(original.savedRevision);
+  expect(saved.route).toBe(original.route);
+  expect(saved.itinerary).toBe(original.itinerary);
 });

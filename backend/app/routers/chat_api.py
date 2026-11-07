@@ -1,12 +1,14 @@
 import logging
 
 import psycopg2
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Header, HTTPException, Response
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from app.crud.chat_crud import (
     ChatIdentityConflict,
+    ChatSnapshotConflict,
+    chat_data_revision,
     create_chat,
     delete_chat,
     get_all_chats,
@@ -39,6 +41,8 @@ async def initialize_chats(authorization: str | None = Header(default=None)):
         if items and len(items) > 0:
             # Iterate through all the items returned
             for item in items:
+                # Hash raw persisted JSON; coordinate hydration changes its shape.
+                item["ChatData"]["savedRevision"] = chat_data_revision(item["ChatData"])
                 sorted_segments = None
                 if item["ChatData"]["initial"]:
                     sorted_segments = get_segments(
@@ -79,7 +83,7 @@ async def initialize_chats(authorization: str | None = Header(default=None)):
 
 
 @router.post("/chats/create/{chat_id}")
-async def chat_add(chat_id: str, request: ChatSchema):
+async def chat_add(chat_id: str, request: ChatSchema, response: Response):
     """Add a new chat to the database."""
     # Get pertinent data from the request payload
     chat_data = request.ChatData
@@ -89,14 +93,24 @@ async def chat_add(chat_id: str, request: ChatSchema):
     logger.info("CREATE chat_id=%s user_id=%s", chat_id, user_id)
     try:
         # Create a new item in the database for the given chat data and log
-        response = create_chat(
+        stored = create_chat(
             user_id, chat_id, chat_data.model_dump(mode="json"), chat_log.model_dump(mode="json")
         )
-        if response is None:
+        if stored is None:
             raise ChatIdentityConflict("Trip ID belongs to a different planning request")
         else:
             logger.info("CREATE success chat_id=%s", chat_id)
-        return response
+        stored_data = stored["chat_data"] if isinstance(stored, dict) else stored[2]
+        stored_log = stored["chat_log"] if isinstance(stored, dict) else stored[3]
+        if chat_data.agentChatId is not None and (
+            stored_data != chat_data.model_dump(mode="json")
+            or stored_log != chat_log.model_dump(mode="json")
+        ):
+            raise HTTPException(
+                status_code=409, detail="Trip already saved; reload before continuing"
+            )
+        response.headers["X-Trip-Revision"] = chat_data_revision(stored_data)
+        return stored
     except ChatIdentityConflict:
         raise HTTPException(
             status_code=409, detail="Trip ID belongs to a different planning request"
@@ -125,11 +139,37 @@ async def chat_update(chat_id: int, request: ChatSchema):
         chat_data is not None,
         chat_log is not None,
     )
+    if request.ExpectedRevision is None and (
+        {"ExpectedRevision", "UpdateScope"} & request.model_fields_set
+    ):
+        raise HTTPException(
+            status_code=422, detail="Conditional updates require a saved trip revision"
+        )
+    if (
+        request.ExpectedRevision is not None
+        and request.UpdateScope == "presentation"
+        and "presentation" not in chat_data.model_fields_set
+    ):
+        raise HTTPException(
+            status_code=422, detail="Presentation updates require presentation data"
+        )
     responses = []
     try:
         # Ensure there is data to add
         if chat_data is None and chat_log is None:
             raise ValueError("Chat data or logs data is required")
+        if request.ExpectedRevision is not None:
+            result = update_chat_component(
+                user_id,
+                str(chat_id),
+                chat_data,
+                "ChatData",
+                expected_revision=request.ExpectedRevision,
+                update_scope=request.UpdateScope,
+            )
+            if result is None:
+                raise HTTPException(status_code=404, detail="Chat not found")
+            return {"savedRevision": chat_data_revision(result[0]["chat_data"])}
         # Check if chat data was sent to be updated in the database
         if chat_data:
             result = update_chat_component(user_id, str(chat_id), chat_data, "ChatData")
@@ -147,6 +187,10 @@ async def chat_update(chat_id: int, request: ChatSchema):
                 logger.info("UPDATE chat_log success chat_id=%s", chat_id)
             responses.append(result)
         return responses
+    except ChatSnapshotConflict:
+        raise HTTPException(
+            status_code=409, detail="Saved trip changed; reload before editing"
+        ) from None
     except HTTPException:
         raise
     except psycopg2.Error:

@@ -21,6 +21,12 @@
   --rt-control-height: 3.25rem;
   --rt-choice-min-width: 9rem;
   --rt-content-width: 30rem;
+  --rt-trip-content-width: 56rem;
+  --rt-map-content-width: 72rem;
+  --rt-map-preview-height: 12rem;
+  --rt-map-min-height: 24rem;
+  --rt-map-header-clearance: 12rem;
+  --rt-checkbox-size: 1.25rem;
   --rt-page-padding: clamp(1rem, 4vw, 2rem);
   --rt-marker-size: 0.75rem;
   --rt-slider-thumb-size: 1.5rem;

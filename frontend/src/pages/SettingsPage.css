@@ -32,7 +32,7 @@
 }
 .settings-profiles > li {
   padding-block: var(--rt-space-4);
-  border-block-end: 1px solid var(--rt-color-border);
+  border-block-end: var(--rt-border-width) solid var(--rt-color-border);
 }
 .settings-actions {
   display: flex;
@@ -54,8 +54,8 @@
 }
 .settings-check input {
   accent-color: var(--rt-color-accent);
-  inline-size: 1.25rem;
-  block-size: 1.25rem;
+  inline-size: var(--rt-checkbox-size);
+  block-size: var(--rt-checkbox-size);
 }
 .settings-page summary {
   min-block-size: var(--rt-target-min);

@@ -32,26 +32,29 @@ export default function TripVisitProgress({ trip }) {
   const ids = itineraryEntries(trip.itinerary).flatMap((day) => day.stops.map((item) => item.id));
   const count = ids.filter((id) => visited.has(id)).length;
   const save = async (snapshot) => {
-    if (states.get(trip.chatId) === 'saving') return;
+    if (['saving', 'conflict'].includes(states.get(trip.chatId))) return;
     const session = getSession();
     states.set(trip.chatId, 'saving');
     setStatus('saving');
     let saved = false;
     try {
       saved = Boolean(
-        session.accessToken && (await updateUserData(session.accessToken, snapshot, chats, logs))
+        session.accessToken &&
+          (await updateUserData(session.accessToken, snapshot, chats, logs, {
+            presentationOnly: true,
+          }))
       );
     } catch {
       /* Keep the local presentation and offer retry. */
     }
     if (!isCurrentSession(session)) return;
-    const nextStatus = saved ? 'saved' : 'error';
+    const nextStatus = saved ? 'saved' : snapshot.saveConflict ? 'conflict' : 'error';
     states.set(trip.chatId, nextStatus);
     window.dispatchEvent(new Event('trip-visits-changed'));
     if (mounted.current) setStatus(nextStatus);
   };
   const toggle = (id) => {
-    if (states.get(trip.chatId) === 'saving') return;
+    if (['saving', 'conflict'].includes(states.get(trip.chatId))) return;
     const snapshot = { ...trip, presentation: toggleVisited(trip.presentation, id) };
     logs.chatdata = logs.chatdata.map((item) => (item.chatId === trip.chatId ? snapshot : item));
     setUserData((current) => (current.chatlogs === logs ? new Data(logs) : current));
@@ -69,9 +72,11 @@ export default function TripVisitProgress({ trip }) {
             ? 'Saving visit updates…'
             : status === 'saved'
               ? 'Visit updates saved.'
-              : status === 'error'
-                ? 'Visit updates are kept here, but could not be saved. Retry before leaving or refreshing.'
-                : 'Mark each stop when you visit. Your schedule does not mark it for you.'}
+              : status === 'conflict'
+                ? 'This saved trip changed. Open Saved trips and reload it before marking more visits.'
+                : status === 'error'
+                  ? 'Visit updates are kept here, but could not be saved. Retry before leaving or refreshing.'
+                  : 'Mark each stop when you visit. Your schedule does not mark it for you.'}
         </p>
         {status === 'error' && (
           <ActionButton variant="secondary" onClick={() => void save(trip)}>
@@ -83,7 +88,7 @@ export default function TripVisitProgress({ trip }) {
         itinerary={trip.itinerary}
         presentation={trip.presentation}
         onToggleVisited={toggle}
-        saving={status === 'saving'}
+        saving={status === 'saving' || status === 'conflict'}
       />
     </>
   );

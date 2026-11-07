@@ -483,3 +483,15 @@ it('keeps the trip saved when profile saving fails and retries only the profile 
   expect(planStructuredRoute).toHaveBeenCalledTimes(1);
   expect(planStructuredItinerary).toHaveBeenCalledTimes(1);
 });
+
+it('requires reloading a newer saved trip after a late create retry conflict without offering another blind retry', async () => {
+  ensureChatCreated.mockImplementationOnce(async (_token, snapshot) => {
+    snapshot.saveConflict = true;
+    return false;
+  });
+  await confirm();
+  expect(await screen.findByText('Saved trip changed; reload required.')).toBeInTheDocument();
+  expect(screen.getByRole('alert')).toHaveTextContent('Open Saved trips to reload');
+  expect(screen.queryByRole('button', { name: 'Retry saving trip' })).not.toBeInTheDocument();
+  expect(screen.queryByText('Trip saved.')).not.toBeInTheDocument();
+});

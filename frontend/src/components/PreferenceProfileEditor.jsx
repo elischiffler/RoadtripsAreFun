@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { ActionButton, ChoiceGroup, Field } from '../design';
+import { ActionButton, AmountControl, ChoiceGroup, Field } from '../design';
 import { INTERESTS, newSetupDraft, setupErrors } from '../pages/TripSetup/setupModel';
 import { applyPreferenceChoices, choicesFromDraft } from '../services/preferenceProfiles';
 
@@ -16,10 +16,18 @@ export default function PreferenceProfileEditor({ profile, onSave, onCancel, bus
   const [name, setName] = useState(profile?.name ?? '');
   const [draft, setDraft] = useState(() =>
     profile
-      ? applyPreferenceChoices(newSetupDraft(), profile.choices)
+      ? {
+          ...applyPreferenceChoices(newSetupDraft(), profile.choices),
+          // Validate through the shared loader, but do not round or rescale
+          // an existing relative amount merely by opening the editor.
+          customWeights: { ...profile.choices.persona_weights },
+        }
       : { ...newSetupDraft(), carStatus: 'skipped' }
   );
   const [error, setError] = useState('');
+  const largestAmount = draft.customWeights ? Math.max(...Object.values(draft.customWeights)) : 0;
+  const initialAmountMax =
+    largestAmount > Number.MAX_VALUE / 2 ? Number.MAX_VALUE : largestAmount * 2 || 1;
   const set = (key, value) => setDraft((old) => ({ ...old, [key]: value }));
   return (
     <form
@@ -129,23 +137,21 @@ export default function PreferenceProfileEditor({ profile, onSave, onCancel, bus
         <details>
           <summary>Interests</summary>
           <p className="rt-caption">
-            Editable weights from your chosen trip preferences. No inferred account personality is
-            included.
+            Your chosen interests only. Drag or tap − / + to adjust an amount.
           </p>
           {draft.customWeights ? (
-            <div className="rt-stack">
+            <div className="rt-amount-grid">
               {Object.entries(INTERESTS).map(([key, label]) => (
-                <Field
+                <AmountControl
                   key={key}
                   label={label}
-                  type="number"
-                  min={0}
-                  step="any"
                   value={draft.customWeights[key]}
-                  onChange={(event) =>
+                  initialMax={initialAmountMax}
+                  disabled={busy}
+                  onChange={(value) =>
                     set('customWeights', {
                       ...draft.customWeights,
-                      [key]: Number(event.target.value),
+                      [key]: value,
                     })
                   }
                 />

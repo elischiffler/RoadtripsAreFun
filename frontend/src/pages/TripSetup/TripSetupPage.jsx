@@ -97,7 +97,10 @@ export default function TripSetupPage() {
       ? await updateUserData(session.accessToken, current.snapshot, records, logs)
       : await ensureChatCreated(session.accessToken, current.snapshot, records, logs);
     if (!isActive(controller, session)) return false;
-    if (!saved) return false;
+    if (!saved) {
+      current.saveConflict = Boolean(current.snapshot.saveConflict);
+      return false;
+    }
     if (!current.preferencesSaved) {
       try {
         await saveNewTripPreferences(current.draft, current.preferenceId);
@@ -236,7 +239,11 @@ export default function TripSetupPage() {
       if (!isActive(controller, session)) return;
       setResult(current);
       if (!current.saved)
-        setError('The route is available, but it could not be saved. Retry saving before leaving.');
+        setError(
+          current.saveConflict
+            ? 'A newer version of this trip is already saved. Open Saved trips to reload it before editing.'
+            : 'The route is available, but it could not be saved. Retry saving before leaving.'
+        );
     } catch (failure) {
       if (isActive(controller, session)) {
         setError(plannerError(failure));
@@ -285,7 +292,12 @@ export default function TripSetupPage() {
       setSaving(false);
       if (!isActive(controller, session)) return;
       setResult(next);
-      if (!next.saved) setError('This trip could not be saved. Please retry before leaving.');
+      if (!next.saved)
+        setError(
+          next.saveConflict
+            ? 'A newer version of this trip is already saved. Open Saved trips to reload it before editing.'
+            : 'This trip could not be saved. Please retry before leaving.'
+        );
     } catch (failure) {
       if (isActive(controller, session)) {
         setError(plannerError(failure));
@@ -455,7 +467,11 @@ export default function TripSetupPage() {
           {result && (
             <>
               <p role="status" className="rt-copy">
-                {result.saved ? 'Trip saved.' : 'Trip is not saved yet.'}
+                {result.saved
+                  ? 'Trip saved.'
+                  : result.saveConflict
+                    ? 'Saved trip changed; reload required.'
+                    : 'Trip is not saved yet.'}
               </p>
               <dl className="connected-summary">
                 <dt>Driving distance</dt>
@@ -511,7 +527,7 @@ export default function TripSetupPage() {
                   </ActionButton>
                 </div>
               )}
-              {!result.saved && result.itinerary && (
+              {!result.saved && !result.saveConflict && result.itinerary && (
                 <ActionButton disabled={busy} onClick={() => retry(false)}>
                   Retry saving trip
                 </ActionButton>

@@ -29,11 +29,12 @@ def test_auth_required(monkeypatch):
 
 
 def test_verified_owner_and_validated_response(allow_provider_auth, monkeypatch):
-    write = MagicMock(return_value=True)
+    write = MagicMock(return_value="a" * 64)
     monkeypatch.setattr(api, "update_trip_car", write)
     response = TestClient(app).put("/chats/3/car", json=payload())
     assert response.status_code == 200
     assert response.headers["cache-control"] == "no-store"
+    assert response.headers["X-Trip-Revision"] == "a" * 64
     assert response.json() == {"car_status": "provided", "car": payload()["car"]}
     owner, chat_id, value = write.call_args.args
     assert owner == "fixture-user" and chat_id == 3
@@ -71,7 +72,7 @@ def test_deleted_or_reused_trip_and_storage_error(allow_provider_auth, monkeypat
 def test_atomic_car_update_is_scoped_and_rolls_back(monkeypatch):
     conn = MagicMock()
     cursor = conn.cursor.return_value.__enter__.return_value
-    cursor.fetchone.return_value = ("3",)
+    cursor.fetchone.return_value = ({"carDetails": ["2020", "Honda", "Civic"]},)
     monkeypatch.setattr(chat_crud, "_get_conn", lambda: conn)
     release = MagicMock()
     monkeypatch.setattr(chat_crud, "_put_conn", release)

@@ -17,6 +17,7 @@ vi.mock('../services/session', () => ({
 }));
 const original = () => ({
   chatId: 1,
+  savedRevision: 'a'.repeat(64),
   agentChatId: 'guid',
   stops: 1,
   tripProfile: { num_stops: 1, traveler_count: 2 },
@@ -85,11 +86,15 @@ it('preflights current saved state then writes exactly once without create fallb
   const logs = {};
   const next = editedTripSnapshot(trip, preview);
   initializeUserData.mockResolvedValue(loaded(trip));
-  request.put.mockResolvedValue({});
+  request.put.mockResolvedValue({ data: { savedRevision: 'a'.repeat(64) } });
   expect(await persistTripEdit(trip, next, [], logs)).toEqual({ status: 'saved', snapshot: next });
   expect(request.put).toHaveBeenCalledWith(
     'http://fixture/chats/update/1',
-    expect.objectContaining({ ChatData: next, ChatLog: { id: 1, messages: [{ text: 'kept' }] } })
+    expect.objectContaining({
+      ExpectedRevision: 'a'.repeat(64),
+      ChatData: next,
+      ChatLog: { id: 1, messages: [{ text: 'kept' }] },
+    })
   );
   expect(request.post).not.toHaveBeenCalled();
   expect(pendingTripEdit(logs, 1)).toBeUndefined();
@@ -154,6 +159,30 @@ it('prevents two preflights from dispatching concurrent writes', async () => {
   const second = persistTripEdit(trip, next, [], logs);
   expect(await second).toEqual({ status: 'uncertain' });
   expect(request.put).toHaveBeenCalledTimes(1);
-  finish({});
+  finish({ data: { savedRevision: 'a'.repeat(64) } });
   expect(await first).toEqual({ status: 'saved', snapshot: next });
+});
+
+it.each([404, 409])(
+  'treats atomic save rejection %s as conflict without retry or uncertain state',
+  async (status) => {
+    const trip = original();
+    const logs = {};
+    initializeUserData.mockResolvedValue(loaded(trip));
+    request.put.mockRejectedValue({ response: { status } });
+    expect(await persistTripEdit(trip, editedTripSnapshot(trip, preview), [], logs)).toEqual({
+      status: 'conflict',
+    });
+    expect(pendingTripEdit(logs, 1)).toBeUndefined();
+    expect(request.put).toHaveBeenCalledTimes(1);
+    expect(initializeUserData).toHaveBeenCalledTimes(1);
+  }
+);
+it('rejects a changed server revision even when displayed route fields match', async () => {
+  const trip = original();
+  initializeUserData.mockResolvedValue(loaded({ ...trip, savedRevision: 'b'.repeat(64) }));
+  expect(await persistTripEdit(trip, editedTripSnapshot(trip, preview), [], {})).toEqual({
+    status: 'conflict',
+  });
+  expect(request.put).not.toHaveBeenCalled();
 });

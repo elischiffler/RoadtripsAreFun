@@ -86,7 +86,7 @@ export async function streamTripRoute(payload, signal, onProgress) {
                 typeof event.detail === 'string' &&
                 event.detail.length <= 1000
               ? event.detail
-            : undefined;
+              : undefined;
         throw streamError(event.status ?? 503, detail);
       }
       if (!['progress', 'heartbeat', 'result'].includes(event.type))

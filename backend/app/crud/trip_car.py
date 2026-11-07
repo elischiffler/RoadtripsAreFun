@@ -6,7 +6,7 @@ from app.crud import chat_crud
 from app.schemas.trip_car import TripCarUpdate
 
 
-def update_trip_car(user_id: str, chat_id: int, value: TripCarUpdate) -> bool:
+def update_trip_car(user_id: str, chat_id: int, value: TripCarUpdate) -> str | None:
     car = value.car
     details = [str(car.year), car.make, car.model] if car else ["", "", ""]
     profile_patch = {"car_status": value.car_status, "car": car.model_dump() if car else None}
@@ -23,7 +23,7 @@ def update_trip_car(user_id: str, chat_id: int, value: TripCarUpdate) -> bool:
                 ) || '{"carBudget":null}'::jsonb
                 WHERE user_id = %s AND chat_id = %s
                   AND NULLIF(chat_data->>'agentChatId', '') IS NOT DISTINCT FROM %s
-                RETURNING chat_id""",
+                RETURNING chat_data""",
                 (
                     json.dumps(details),
                     json.dumps(profile_patch),
@@ -32,9 +32,10 @@ def update_trip_car(user_id: str, chat_id: int, value: TripCarUpdate) -> bool:
                     value.expected_agent_chat_id,
                 ),
             )
-            updated = cur.fetchone() is not None
+            row = cur.fetchone()
+            revision = chat_crud.chat_data_revision(row[0]) if row else None
         conn.commit()
-        return updated
+        return revision
     except Exception:
         conn.rollback()
         raise

@@ -19,7 +19,7 @@
   position: relative;
   display: grid;
   place-items: center;
-  height: 12rem;
+  height: var(--rt-map-preview-height);
   overflow: hidden;
   border-radius: var(--rt-radius-control);
   background: var(--rt-color-route-surface);
@@ -65,7 +65,7 @@
 }
 @media (min-width: 48rem) {
   .rt-design.trip-page .rt-design__content {
-    max-inline-size: 56rem;
+    max-inline-size: var(--rt-trip-content-width);
   }
   .rt-design .trip-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -74,7 +74,7 @@
 .rt-design .trip-map-preview-link {
   z-index: 2;
   position: absolute;
-  inset: 0 0 2rem;
+  inset: 0 0 var(--rt-space-8);
   display: grid;
   place-items: center;
   color: inherit;

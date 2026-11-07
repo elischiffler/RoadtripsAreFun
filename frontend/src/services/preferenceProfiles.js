@@ -5,7 +5,7 @@ import {
   INTERESTS,
   newSetupDraft,
   normalizeWeights,
-  preferenceWeights,
+  preferenceProfiles,
 } from '../pages/TripSetup/setupModel';
 
 const endpoint = () => import.meta.env.VITE_BACKEND_SERVER + 'preference-profiles';
@@ -31,7 +31,8 @@ export async function deletePreferenceProfile(id) {
 }
 
 // Deliberate allowlist: route, date, stops, budget, rooms and account memory
-// cannot leak into a reusable set. Weights are those reviewed for this trip.
+// cannot leak into a reusable set. Only stated/manual interests are reusable;
+// the comparison-derived profile and its trip-only blend remain private.
 export function choicesFromDraft(draft) {
   if (!['skipped', 'provided'].includes(draft.carStatus))
     throw new Error('Choose whether to include a car.');
@@ -42,7 +43,7 @@ export function choicesFromDraft(draft) {
         ? { year: Number(draft.year), make: draft.make.trim(), model: draft.model.trim() }
         : null,
     scheduling_policy: { ...draft.schedule },
-    persona_weights: preferenceWeights(draft),
+    persona_weights: preferenceProfiles(draft).stated,
   };
 }
 

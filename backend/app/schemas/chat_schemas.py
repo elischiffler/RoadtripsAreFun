@@ -1,6 +1,6 @@
-from typing import Any
+from typing import Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.models.routing_models.routing_models import MapBox, Route
 
@@ -49,5 +49,7 @@ class ChatLogSchema(BaseModel):
 
 class ChatSchema(BaseModel):
     PartitionKey: str
+    ExpectedRevision: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    UpdateScope: Literal["route", "presentation", "full"] = "route"
     ChatData: ChatDataSchema
     ChatLog: ChatLogSchema
