@@ -57,6 +57,10 @@ describe('accessible trip setup', () => {
     fill('Departure date', '2027-06-01');
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('heading', { name: 'People' })).toHaveFocus();
+    expect(screen.getByRole('progressbar', { name: 'Trip setup completion' })).toHaveAttribute(
+      'value',
+      '25'
+    );
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('heading', { name: 'What you enjoy' })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Back' }));
@@ -79,7 +83,7 @@ describe('accessible trip setup', () => {
     seed(draft, 2);
     const user = userEvent.setup();
     renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
-    await user.click(screen.getByText('Refine with place comparisons'));
+    await user.click(screen.getByText('Compare places'));
     const pair = COMPARISONS[0];
     const stored = () => JSON.parse(sessionStorage.getItem(key())).draft;
     expect(screen.getAllByRole('article')).toHaveLength(2);
@@ -109,6 +113,9 @@ describe('accessible trip setup', () => {
     expect(stored().customWeights).toEqual(draft.customWeights);
     await user.click(screen.getByRole('button', { name: 'Skip this comparison' }));
     expect(stored().comparisonAnswers[pair.id]).toBe('unsure');
+    expect(screen.queryByRole('checkbox', { name: 'Food', exact: true })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Done adjusting interests' }));
+    expect(screen.getByText('Compare places')).toHaveFocus();
     await user.click(screen.getByRole('checkbox', { name: 'Food', exact: true }));
     await user.click(screen.getByRole('button', { name: 'Reset interests' }));
     expect(screen.getByRole('checkbox', { name: 'Food', exact: true })).not.toBeChecked();
@@ -140,11 +147,12 @@ describe('accessible trip setup', () => {
     };
     seed(draft, 2);
     renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
-    await userEvent.click(screen.getByText('Edit interest amounts'));
-    const details = screen.getByText('Edit interest amounts').closest('details');
+    await userEvent.click(screen.getByText('Adjust amounts'));
+    const details = screen.getByText('Adjust amounts').closest('details');
     expect(Number(within(details).getByRole('slider', { name: 'Food' }).value)).toBe(
       preferenceProfiles(draft).stated.food * 100
     );
+    await userEvent.click(screen.getByRole('button', { name: 'Done adjusting interests' }));
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     const review = screen.getByRole('heading', { name: 'What you enjoy' }).closest('section');
@@ -163,6 +171,10 @@ describe('accessible trip setup', () => {
     expect(screen.getByRole('slider', { name: 'Start driving' })).toHaveValue('9');
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('heading', { name: 'Review', exact: true })).toHaveFocus();
+    expect(screen.getByRole('progressbar', { name: 'Trip setup completion' })).toHaveAttribute(
+      'value',
+      '40'
+    );
     expect(submit).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Edit People' })).toBeEnabled();
     await user.click(screen.getByRole('button', { name: 'Reset draft', exact: true }));
@@ -214,10 +226,19 @@ describe('accessible trip setup', () => {
   it('prevents an all-zero manually edited profile from progressing', async () => {
     seed(validDraft(), 2);
     renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
-    await userEvent.click(screen.getByText('Edit interest amounts'));
-    const details = screen.getByText('Edit interest amounts').closest('details');
-    for (const label of Object.values(INTERESTS))
-      fireEvent.change(within(details).getByLabelText(label), { target: { value: '0' } });
+    await userEvent.click(screen.getByText('Adjust amounts'));
+    const details = screen.getByText('Adjust amounts').closest('details');
+    for (const [key, label] of Object.entries(INTERESTS)) {
+      await userEvent.selectOptions(
+        within(details).getByRole('combobox', { name: 'Interest to adjust' }),
+        key
+      );
+      expect(within(details).getAllByRole('slider')).toHaveLength(1);
+      fireEvent.change(within(details).getByRole('slider', { name: label }), {
+        target: { value: '0' },
+      });
+    }
+    await userEvent.click(screen.getByRole('button', { name: 'Done adjusting interests' }));
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('alert')).toHaveTextContent('above zero');
   });
@@ -233,7 +254,7 @@ describe('accessible trip setup', () => {
     };
     seed(draft, 2);
     renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
-    await userEvent.click(screen.getByText('Edit interest amounts'));
+    await userEvent.click(screen.getByText('Adjust amounts'));
     const stored = () => JSON.parse(sessionStorage.getItem(key())).draft;
     expect(stored().customWeights).toEqual(customWeights);
     expect(preferenceWeights(stored())).toEqual(preferenceWeights(draft));
@@ -261,7 +282,7 @@ describe('accessible trip setup', () => {
     const draft = { ...validDraft(), interests: ['food'] };
     seed(draft, 2);
     renderWithProviders(<TripSetup onSubmit={submit} />);
-    await userEvent.click(screen.getByText('Edit interest amounts'));
+    await userEvent.click(screen.getByText('Adjust amounts'));
     const amounts = Object.fromEntries(
       Object.entries(preferenceProfiles(draft).stated).map(([interest, value]) => [
         interest,
@@ -290,4 +311,33 @@ it('requires valid road preparation before the first Next and retains the action
   await userEvent.click(screen.getByRole('button', { name: 'Next' }));
   expect(await screen.findByRole('heading', { name: 'People' })).toBeInTheDocument();
   expect(prepare).toHaveBeenCalledTimes(2);
+});
+
+it('groups attraction count with people and validates it before leaving that group', async () => {
+  seed({ ...validDraft(), stops: '0' }, 1);
+  renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
+  expect(screen.getByLabelText('How many attractions would you like?')).toHaveValue(0);
+  await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+  expect(screen.getByRole('alert')).toHaveFocus();
+  expect(screen.getByRole('alert')).toHaveTextContent('Choose at least one attraction');
+  fill('How many attractions would you like?', '4');
+  await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+  expect(screen.getByRole('heading', { name: 'What you enjoy' })).toHaveFocus();
+  expect(JSON.parse(sessionStorage.getItem(key())).draft.stops).toBe('4');
+});
+
+it('keeps compact visible interest names in their accessible names and preserves canonical keys', async () => {
+  seed(validDraft(), 2);
+  renderWithProviders(<TripSetup onSubmit={vi.fn()} />);
+  for (const [visible, canonical, keyName] of [
+    ['Scenery', 'Scenic views', 'scenery'],
+    ['Arts', 'Art and culture', 'culture_arts'],
+    ['Local places', 'Local discoveries', 'unique_local_experiences'],
+    ['Quiet places', 'Quieter places', 'crowd_avoidance'],
+  ]) {
+    const control = screen.getByRole('checkbox', { name: `${visible} · ${canonical}` });
+    expect(control.closest('label')).toHaveTextContent(visible);
+    await userEvent.click(control);
+    expect(JSON.parse(sessionStorage.getItem(key())).draft.interests).toContain(keyName);
+  }
 });

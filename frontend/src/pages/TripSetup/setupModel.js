@@ -245,10 +245,10 @@ export function setupErrors(draft, step) {
       errors.destination = 'Choose a different destination.';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(draft.date)) errors.date = 'Choose a departure date.';
     if (!/^\d{2}:\d{2}$/.test(draft.time)) errors.time = 'Choose a departure time.';
-    if (!draft.stops || !Number.isInteger(Number(draft.stops)) || Number(draft.stops) < 1)
-      errors.stops = 'Choose at least one attraction.';
   }
   if (step === 1) {
+    if (!draft.stops || !Number.isInteger(Number(draft.stops)) || Number(draft.stops) < 1)
+      errors.stops = 'Choose at least one attraction.';
     if (
       !draft.travelers ||
       !Number.isInteger(Number(draft.travelers)) ||

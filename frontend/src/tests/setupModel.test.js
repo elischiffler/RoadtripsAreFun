@@ -55,8 +55,10 @@ describe('trip setup contract', () => {
     });
     expect(setupErrors(draft, 0)).toHaveProperty('destination');
     expect(setupErrors(draft, 0)).toHaveProperty('time');
-    expect(setupErrors(draft, 0)).toHaveProperty('stops');
+    expect(setupErrors(draft, 0)).not.toHaveProperty('stops');
+    expect(setupErrors(draft, 1)).toHaveProperty('stops');
     draft.rooms = [{ adults: '2', children: '5, 8' }];
+    draft.stops = '3';
     draft.travelers = '4';
     expect(roomInputs(draft)).toEqual([{ adults: 2, child_ages: [5, 8] }]);
     expect(setupErrors(draft, 1)).toEqual({});

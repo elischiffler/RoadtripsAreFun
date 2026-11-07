@@ -22,6 +22,8 @@ const RouteEstimate = forwardRef(function RouteEstimate(
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const request = useRef(null);
+  const preview = useRef(null);
+  const previewTrigger = useRef(null);
   const notify = useRef(onPrepared);
   notify.current = onPrepared;
   const queryKey = JSON.stringify([start.trim(), destination.trim()]);
@@ -111,6 +113,9 @@ const RouteEstimate = forwardRef(function RouteEstimate(
       }
     }
   };
+  useEffect(() => {
+    if (preview.current) preview.current.open = false;
+  }, [stage]);
   useImperativeHandle(ref, () => ({
     prepare: async () => {
       const value = await run(false);
@@ -128,16 +133,51 @@ const RouteEstimate = forwardRef(function RouteEstimate(
 
   return (
     <div className="setup-route-preparation">
-      <OnboardingMap
-        origin={currentData?.origin ?? { address: start }}
-        destination={currentData?.destination ?? { address: destination }}
-        route={currentData?.initialRoute}
-        ideas={catalog.places}
-        stayAreas={catalog.areas}
-        stage={stage}
-        phase={busy ? 'checking' : catalog.status === 'loading' ? 'preparing' : 'draft'}
-      />
-      {stage === 0 && (
+      {currentData && (
+        <details className="setup-route-map" ref={preview}>
+          <summary ref={previewTrigger}>
+            View route · About {(currentData.initialRoute.duration / 3600).toFixed(1)} hours driving
+          </summary>
+          <OnboardingMap
+            origin={currentData?.origin ?? { address: start }}
+            destination={currentData?.destination ?? { address: destination }}
+            route={currentData?.initialRoute}
+            ideas={catalog.places}
+            stayAreas={catalog.areas}
+            stage={stage}
+            phase={busy ? 'checking' : catalog.status === 'loading' ? 'preparing' : 'draft'}
+          />
+          <p className="rt-caption">Driving only, before stops and meals.</p>
+          {(catalog.places.length > 0 || catalog.areas.length > 0) && (
+            <details className="setup-preview-notes">
+              <summary>About these ideas</summary>
+              {catalog.places.length > 0 && (
+                <p className="rt-caption">
+                  Catalog ideas may be missing. Opening hours for your travel date are checked with
+                  trip options.
+                </p>
+              )}
+              {catalog.areas.length > 0 && (
+                <p className="rt-caption">
+                  Stay areas use approximate departure-clock timing, driving hours and meal
+                  allowances. Visits, detours and local clocks may move them. No hotel availability
+                  checked.
+                </p>
+              )}
+            </details>
+          )}
+          <ActionButton
+            variant="secondary"
+            onClick={() => {
+              preview.current.open = false;
+              previewTrigger.current?.focus({ preventScroll: true });
+            }}
+          >
+            Done viewing route
+          </ActionButton>
+        </details>
+      )}
+      {stage === 0 && !currentData && (
         <ActionButton
           variant="secondary"
           disabled={busy || !start.trim() || !destination.trim()}
@@ -170,32 +210,14 @@ const RouteEstimate = forwardRef(function RouteEstimate(
           </ActionButton>
         </div>
       )}
-      {currentData && (
-        <p className="rt-caption">
-          About {(currentData.initialRoute.duration / 3600).toFixed(1)} hours driving · driving
-          only, before stops and meals.
-        </p>
-      )}
-      {catalog.places.length > 0 && (
-        <p className="rt-caption">
-          Catalog ideas may be missing. Opening hours for your travel date are checked with trip
-          options.
-        </p>
-      )}
       {catalog.status === 'loading' && (
         <p className="rt-caption" role="status">
-          Preparing catalog ideas · {catalog.sections} of 6 route sections checked…
+          Finding route ideas…
         </p>
       )}
       {['partial', 'unavailable'].includes(catalog.status) && (
         <p className="rt-caption" role="status">
           Some catalog ideas could not be checked. You can continue planning.
-        </p>
-      )}
-      {catalog.areas.length > 0 && (
-        <p className="rt-caption">
-          Stay areas use approximate departure-clock timing, driving hours and meal allowances.
-          Visits, detours and local clocks may move them. No hotel availability checked.
         </p>
       )}
       {busy && (

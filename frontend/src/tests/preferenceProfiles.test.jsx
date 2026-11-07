@@ -290,6 +290,7 @@ function Picker() {
 it('offers explicit profile loading while preserving trip input', async () => {
   axios.get.mockResolvedValue({ data: [profile()] });
   renderWithProviders(<Picker />);
+  await userEvent.click(await screen.findByText('Use saved preferences'));
   await screen.findByLabelText('Saved preferences');
   await waitFor(() =>
     expect(screen.getByRole('option', { name: 'Weekend car' })).toBeInTheDocument()
@@ -297,6 +298,9 @@ it('offers explicit profile loading while preserving trip input', async () => {
   await userEvent.selectOptions(screen.getByLabelText('Saved preferences'), profile().id);
   await userEvent.click(screen.getByRole('button', { name: 'Load preferences' }));
   expect(screen.getByText('Boulder / 4 / Civic')).toBeInTheDocument();
+  expect(screen.getByText('Use saved preferences')).toHaveFocus();
+  expect(screen.getByRole('status')).toHaveTextContent('Preferences loaded.');
+  expect(screen.getByText('Use saved preferences').closest('details')).not.toHaveAttribute('open');
 });
 
 it('updates both the document theme and browser preference through settings', async () => {

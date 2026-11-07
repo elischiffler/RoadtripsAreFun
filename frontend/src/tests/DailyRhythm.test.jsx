@@ -25,7 +25,7 @@ it('labels midnight crossings without restricting night driving or daytime sleep
   expect(screen.getByText('+1 day')).toBeInTheDocument();
   expect(screen.queryByText(/unsupported|one-day only/i)).not.toBeInTheDocument();
   expect(change).not.toHaveBeenCalled();
-  expect(screen.getByText('Meal breaks follow your sleep schedule.')).toBeInTheDocument();
+  expect(screen.getByText(/Meals follow sleep/)).toBeInTheDocument();
   for (const slider of screen.getAllByRole('slider')) expect(slider).toBeEnabled();
 });
 it('tracks each changed hour directly and keeps overlap errors actionable', async () => {
@@ -70,7 +70,7 @@ it('leaves saved legacy timing untouched until explicit conversion', async () =>
   const change = vi.fn();
   render(<DailyRhythm value={null} onChange={change} />);
   expect(screen.getByText(/Existing timing stays in use/)).toBeInTheDocument();
-  expect(screen.queryByText('Meal breaks follow your sleep schedule.')).not.toBeInTheDocument();
+  expect(screen.queryByText(/Meals follow sleep/)).not.toBeInTheDocument();
   expect(change).not.toHaveBeenCalled();
   await userEvent.click(screen.getByRole('button', { name: 'Use this rhythm' }));
   expect(change).toHaveBeenCalledTimes(1);

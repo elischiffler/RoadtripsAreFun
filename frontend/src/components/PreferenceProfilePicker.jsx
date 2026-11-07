@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ActionButton } from '../design';
 import usePreferenceProfiles from '../services/usePreferenceProfiles';
@@ -8,71 +8,98 @@ export default function PreferenceProfilePicker({ setDraft, disabled = false }) 
   const { profiles, loading, error, refresh } = usePreferenceProfiles();
   const [selected, setSelected] = useState('');
   const [message, setMessage] = useState('');
-  return (
-    <div className="rt-stack">
-      <label className="rt-field__label" htmlFor="reuse-preferences">
-        Saved preferences
-      </label>
-      <p className="rt-caption">
-        Reuse your car, timing and interests. Review them before planning.
+  const [loaded, setLoaded] = useState(false);
+  const panel = useRef(null);
+  const trigger = useRef(null);
+  if (loading)
+    return (
+      <p role="status" className="rt-caption">
+        Loading preferences…
       </p>
-      {loading ? (
-        <p role="status">Loading preferences…</p>
-      ) : error ? (
-        <div>
-          <p role="status">{error} You can enter new choices.</p>
-          <ActionButton variant="secondary" onClick={refresh}>
-            Retry preferences
-          </ActionButton>
-        </div>
-      ) : profiles.length ? (
-        <>
-          <select
-            id="reuse-preferences"
-            className="rt-input"
-            value={selected}
-            disabled={disabled}
-            onChange={(event) => {
-              setSelected(event.target.value);
-              setMessage('');
-            }}
-          >
-            <option value="">Choose a profile</option>
-            {profiles.map((profile) => (
-              <option key={profile.id} value={profile.id}>
-                {profile.name}
-              </option>
-            ))}
-          </select>
+    );
+  if (error)
+    return (
+      <div>
+        <p role="status" className="rt-caption">
+          {error} You can enter new choices.
+        </p>
+        <ActionButton variant="secondary" onClick={refresh}>
+          Retry preferences
+        </ActionButton>
+      </div>
+    );
+  if (!profiles.length && !message) return null;
+  return (
+    <>
+      <details className="setup-preference-picker" ref={panel}>
+        <summary ref={trigger}>Use saved preferences</summary>
+        <div className="rt-stack">
+          <label className="rt-field__label" htmlFor="reuse-preferences">
+            Saved preferences
+          </label>
+          {profiles.length ? (
+            <>
+              <select
+                id="reuse-preferences"
+                className="rt-input"
+                value={selected}
+                disabled={disabled}
+                onChange={(event) => {
+                  setSelected(event.target.value);
+                  setMessage('');
+                }}
+              >
+                <option value="">Choose a profile</option>
+                {profiles.map((profile) => (
+                  <option key={profile.id} value={profile.id}>
+                    {profile.name}
+                  </option>
+                ))}
+              </select>
+              <ActionButton
+                variant="secondary"
+                disabled={disabled || !profiles.some((profile) => profile.id === selected)}
+                onClick={() => {
+                  try {
+                    const profile = profiles.find((item) => item.id === selected);
+                    setDraft((draft) => applyPreferenceChoices(draft, profile.choices));
+                    setMessage('');
+                    setLoaded(true);
+                    panel.current.open = false;
+                    trigger.current?.focus({ preventScroll: true });
+                  } catch {
+                    setMessage(
+                      'This profile could not be loaded. Enter new choices or choose another.'
+                    );
+                  }
+                }}
+              >
+                Load preferences
+              </ActionButton>
+            </>
+          ) : null}
           <ActionButton
             variant="secondary"
-            disabled={disabled || !profiles.some((profile) => profile.id === selected)}
             onClick={() => {
-              try {
-                const profile = profiles.find((item) => item.id === selected);
-                setDraft((draft) => applyPreferenceChoices(draft, profile.choices));
-                setMessage(
-                  'Preferences loaded. Your trip locations, date and stops are unchanged.'
-                );
-              } catch {
-                setMessage(
-                  'This profile could not be loaded. Enter new choices or choose another.'
-                );
-              }
+              panel.current.open = false;
+              trigger.current?.focus({ preventScroll: true });
             }}
           >
-            Load preferences
+            Done choosing preferences
           </ActionButton>
-        </>
-      ) : (
-        <p className="rt-caption">New preference sets are saved when you save a trip.</p>
-      )}
-      {message && (
+          {message && (
+            <p role="status" className="rt-caption">
+              {message}
+            </p>
+          )}
+        </div>
+      </details>
+      {loaded && (
         <p role="status" className="rt-caption">
-          {message}
+          Preferences loaded.
         </p>
       )}
-    </div>
+    </>
   );
 }
 PreferenceProfilePicker.propTypes = {

@@ -31,8 +31,7 @@ export default function DailyRhythm({ value, onChange, disabled = false, error }
         <h3 id={`${id}-heading`} className="rt-title">
           Your 24 hours
         </h3>
-        <p className="rt-caption">These windows repeat daily, in each stop’s local time.</p>
-        {value && <p className="rt-caption">Meal breaks follow your sleep schedule.</p>}
+        <p className="rt-caption">Local time at each stop.{value ? ' Meals follow sleep.' : ''}</p>
       </header>
       <div
         className="setup-rhythm-bar"

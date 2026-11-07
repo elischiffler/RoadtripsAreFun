@@ -46,8 +46,16 @@ it('does not guess ambiguous provider locations and estimates only confirmed cho
   await userEvent.click(confirm);
   expect(await screen.findByText(/About 1.0 hours driving/)).toBeInTheDocument();
   expect(estimateStructuredRoute.mock.calls[0].slice(0, 2)).toEqual([start, end]);
+  const summary = screen.getByText(/View route · About 1.0 hours driving/);
+  expect(summary.closest('details')).not.toHaveAttribute('open');
+  await userEvent.click(summary);
   expect(screen.getByLabelText('Trip preview')).toBeInTheDocument();
-  expect(screen.getByText(/driving only, before stops and meals/)).toBeInTheDocument();
+  expect(screen.getByText(/A · Denver, Colorado/)).toBeInTheDocument();
+  expect(screen.getByText(/B · Boulder, Colorado/)).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Done viewing route' }));
+  expect(summary).toHaveFocus();
+  expect(summary.closest('details')).not.toHaveAttribute('open');
+  expect(screen.getByText(/Driving only, before stops and meals/)).toBeInTheDocument();
 });
 it('clears estimates on changed text and discards late results after sign out', async () => {
   resolveTripLocation.mockResolvedValueOnce([start]).mockResolvedValueOnce([end]);
