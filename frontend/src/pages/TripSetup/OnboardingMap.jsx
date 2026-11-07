@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { validStopCoordinates } from '../../services/tripPresentation';
 import './OnboardingMap.css';
+import { tentativeAreas } from '../../services/routePreparation';
 
 const validLine = (line) =>
   Array.isArray(line) &&
@@ -77,9 +78,11 @@ export default function OnboardingMap({
   const canvas = useRef(null);
   const [size, setSize] = useState({ width: 360, height: 160, target: 44, gap: 0 });
   const line = validLine(route?.geometry?.coordinates) ? route.geometry.coordinates : [];
-  const realStops = (Array.isArray(route?.stops) ? route.stops : []).filter(
-    (stop) => ['stop', 'hotel'].includes(stop?.type) && validStopCoordinates(stop.coordinates)
-  );
+  const realStops = (Array.isArray(route?.stops) ? route.stops : [])
+    .filter(
+      (stop) => ['stop', 'hotel'].includes(stop?.type) && validStopCoordinates(stop.coordinates)
+    )
+    .slice(0, 12);
   const markers = [
     endpoint(origin, 'origin', 'A'),
     endpoint(destination, 'destination', 'B'),
@@ -87,7 +90,7 @@ export default function OnboardingMap({
       id: stop.provider_id || `stop:${index}`,
       point: [stop.coordinates[1], stop.coordinates[0]],
       label: stop.name,
-      kind: stop.type === 'hotel' ? 'hotel' : 'stop',
+      kind: phase === 'considering' ? 'idea' : stop.type === 'hotel' ? 'hotel' : 'stop',
       symbol: stop.type === 'hotel' ? 'H' : String(index + 1),
       context: route?.place_context?.[stop.provider_id] ?? stop.place_context,
     })),
@@ -104,15 +107,14 @@ export default function OnboardingMap({
             symbol: '·',
             context: place.place_context,
           }))),
-    ...stayAreas
-      .filter((area) => validStopCoordinates(area.coordinates))
-      .map((area, index) => ({
-        id: `area:${index}`,
-        point: [area.coordinates[1], area.coordinates[0]],
-        label: area.label || 'Possible rest region',
-        kind: 'area',
-        symbol: '◌',
-      })),
+    ...tentativeAreas(stayAreas).map((area, index) => ({
+      id: `area:${index}`,
+      point: [area.coordinates[1], area.coordinates[0]],
+      label: area.label,
+      notice: area.notice,
+      kind: 'area',
+      symbol: '◌',
+    })),
   ].filter(Boolean);
   useEffect(() => {
     if (!canvas.current || typeof ResizeObserver === 'undefined') return;
@@ -138,9 +140,15 @@ export default function OnboardingMap({
   const projected = plot(line, markers, size);
   const selected = markers.find((marker) => marker.id === selection);
   const state =
-    { draft: 'Draft', checking: 'Checking', candidate: 'Trip option', confirmed: 'Checked route' }[
-      phase
-    ] || 'Draft';
+    {
+      draft: 'Draft',
+      preparing: 'Preparing route',
+      considering: 'Considering places',
+      selected: 'Proposed stops',
+      checking: 'Checking',
+      candidate: 'Trip option',
+      confirmed: 'Checked route',
+    }[phase] || 'Draft';
   return (
     <section className="setup-map" aria-label="Trip preview" data-phase={phase} data-stage={stage}>
       <header className="setup-map-heading">
@@ -172,7 +180,7 @@ export default function OnboardingMap({
             style={{ left: `${marker.position[0] / 3.6}%`, top: `${marker.position[1] / 1.6}%` }}
             onClick={() => setSelection(selection === marker.id ? null : marker.id)}
             aria-expanded={selection === marker.id}
-            aria-label={`${marker.kind === 'idea' ? 'Unscheduled idea' : marker.kind === 'area' ? 'Approximate rest region' : marker.kind === 'hotel' ? 'Hotel option' : marker.confirmed ? 'Confirmed location' : 'Draft location'}: ${marker.label}`}
+            aria-label={`${marker.kind === 'idea' ? 'Unscheduled idea' : marker.kind === 'area' ? 'Tentative stay search area' : marker.kind === 'hotel' ? 'Hotel option' : marker.kind === 'stop' ? 'Proposed stop' : marker.confirmed ? 'Confirmed location' : 'Draft location'}: ${marker.label}`}
           >
             <span aria-hidden="true">{marker.symbol}</span>
           </button>
@@ -198,7 +206,7 @@ export default function OnboardingMap({
           {selected.kind === 'idea'
             ? ' · not scheduled'
             : selected.kind === 'area'
-              ? ' · estimated area, not a hotel or availability check'
+              ? ' · tentative area, not a hotel or availability check. Departure-clock estimate; visits, detours and local clock changes may move it.'
               : selected.kind === 'hotel'
                 ? ' · not booked'
                 : ''}
@@ -207,7 +215,9 @@ export default function OnboardingMap({
       {!selected && (ideas.length > 0 || stayAreas.length > 0) && (
         <p className="rt-caption">
           {ideas.length ? 'Catalog ideas, not scheduled stops.' : ''}
-          {stayAreas.length ? ' Rest regions are approximate; no hotels checked.' : ''}
+          {stayAreas.length
+            ? ' Stay areas are tentative departure-clock estimates; no hotels checked.'
+            : ''}
         </p>
       )}
     </section>

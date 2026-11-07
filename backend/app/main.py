@@ -19,6 +19,7 @@ from app.routers import (
     location_api,
     planning_candidates,
     preference_profiles,
+    route_preparation,
     routing_api,
     studio,
     studio_research,
@@ -135,6 +136,7 @@ async def operational_http_event(request, call_next):
 
 app.include_router(routing_api.router)
 app.include_router(planning_candidates.router)
+app.include_router(route_preparation.router)
 app.include_router(algorithm_lab.router)
 app.include_router(studio.router)
 app.include_router(studio_research.router)

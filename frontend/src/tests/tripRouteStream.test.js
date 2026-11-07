@@ -250,3 +250,21 @@ it('consumes candidate preview as unverified progress and redacts arbitrary type
   expect(progress.mock.calls[0][0].preview_only).toBe(true);
   expect(cognitoClient.send).not.toHaveBeenCalled();
 });
+
+it('streams bounded preparation through account auth without changing planner retry rules', async () => {
+  const { streamRoutePreparation } = await import('../services/tripRouteStream');
+  const progress = vi.fn();
+  fetch.mockResolvedValue(
+    streamed([
+      { type: 'progress', stage: 'preparation.catalog', sections_checked: 1, places: [] },
+      { type: 'result', response: { catalog_status: 'ready', places: [] } },
+    ])
+  );
+  await expect(
+    streamRoutePreparation({ departure_clock: '09:00' }, new AbortController().signal, progress)
+  ).resolves.toEqual({ catalog_status: 'ready', places: [] });
+  expect(fetch.mock.calls[0][0]).toBe('https://api.example.test/route-preparation/stream');
+  expect(fetch.mock.calls[0][1].headers.Authorization).toBe('Bearer ' + getSession().accessToken);
+  expect(progress).toHaveBeenCalledTimes(1);
+  expect(fetch).toHaveBeenCalledTimes(1);
+});

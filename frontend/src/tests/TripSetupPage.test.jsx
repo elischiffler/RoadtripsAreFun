@@ -1,4 +1,4 @@
-import { loadRouteAlternatives } from '../services/routeAlternatives';
+import { loadRoutePreparation } from '../services/routePreparation';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { useContext } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
@@ -47,8 +47,9 @@ vi.mock('../services/planningCandidates', () => ({
   confirmPlanningCandidate: vi.fn(),
   registerCandidateRequest: vi.fn(),
 }));
-vi.mock('../services/routeAlternatives', () => ({
-  loadRouteAlternatives: vi.fn(async () => ({ places: [] })),
+vi.mock('../services/routePreparation', async (importOriginal) => ({
+  ...(await importOriginal()),
+  loadRoutePreparation: vi.fn(async () => ({ places: [], catalog_status: 'ready' })),
 }));
 const origin = { address: 'Boulder, Colorado', latitude: 40, longitude: -105 };
 const destination = { address: 'Denver, Colorado', latitude: 39.7, longitude: -104.9 };
@@ -89,7 +90,7 @@ let existing;
 beforeEach(() => {
   vi.resetAllMocks();
   loadPreferenceProfiles.mockResolvedValue([]);
-  loadRouteAlternatives.mockResolvedValue({ places: [] });
+  loadRoutePreparation.mockResolvedValue({ places: [] });
   sessionStorage.clear();
   fixtureSession();
   sessionStorage.setItem(
@@ -652,5 +653,67 @@ it('starts a new explicit generation after a definitive typed terminal503 while 
   await screen.findByRole('button', { name: 'Finish in one day' });
   expect(registerCandidateRequest).toHaveBeenCalledTimes(2);
   expect(assessPlanningCandidate.mock.calls[1][2]).not.toBe(failedId);
+  expect(ensureChatCreated).not.toHaveBeenCalled();
+});
+
+it('shows actual progressive map scenes as tentative without saving or claiming completion', async () => {
+  let progress;
+  assessPlanningCandidate.mockImplementationOnce((_draft, _route, _id, _signal, onProgress) => {
+    progress = onProgress;
+    return new Promise(() => {});
+  });
+  await confirm(false);
+  const scene = {
+    type: 'progress',
+    stage: 'preparation.areas',
+    state: 'completed',
+    phase: 'preparing',
+    preview_only: true,
+    geometry: route.geometry,
+    stops: [],
+    possible_overnight_areas: [
+      {
+        id: 'a',
+        label: 'Stay search area',
+        coordinates: [39.8, -104.95],
+        tentative: true,
+        hotel_quotes_checked: false,
+        availability_checked: false,
+        clock_basis: 'departure_wall_clock_estimate',
+      },
+    ],
+  };
+  act(() => progress(scene));
+  expect(screen.getByText('Preparing route')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Tentative stay search area/ })).toBeInTheDocument();
+  act(() =>
+    progress({
+      ...scene,
+      stage: 'route.preview',
+      phase: 'considering',
+      possible_overnight_areas: undefined,
+      stops: [{ name: 'Admitted idea', type: 'stop', coordinates: [39.9, -104.9] }],
+    })
+  );
+  expect(
+    screen.getByRole('button', { name: 'Unscheduled idea: Admitted idea' })
+  ).toBeInTheDocument();
+  act(() =>
+    progress({
+      ...scene,
+      stage: 'route.preview',
+      phase: 'selected',
+      possible_overnight_areas: undefined,
+      stops: [{ name: 'Selected place', type: 'stop', coordinates: [39.9, -104.9] }],
+    })
+  );
+  expect(screen.getByText('Proposed stops')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Proposed stop: Selected place' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Tentative stay search area/ })).toBeInTheDocument();
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).not.toHaveAttribute(
+    'value',
+    '100'
+  );
+  expect(confirmPlanningCandidate).not.toHaveBeenCalled();
   expect(ensureChatCreated).not.toHaveBeenCalled();
 });

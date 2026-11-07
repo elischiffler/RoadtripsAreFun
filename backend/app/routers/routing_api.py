@@ -58,6 +58,7 @@ from app.routing.occupancy import require_occupancy
 from app.routing.pricing import get_price_range as _get_price_range  # noqa: F401
 from app.routing.registry import DEFAULT_ALGORITHM
 from app.routing.route_edit import preview_route_edit
+from app.routing.route_preparation import preview_details
 from app.routing.runtime import in_run, singleflight, threaded
 from app.routing.selection import owner_routing_claims, select_algorithm
 from app.routing.sources.attractions import find_stop as _find_stop  # noqa: F401
@@ -481,13 +482,9 @@ async def plan_final_route(
             if candidate_context is not None:
                 emit(
                     "route.preview",
-                    phase="checking",
-                    preview_only=True,
-                    geometry=geometry.model_dump() if geometry else None,
-                    stops=[
-                        {key: stop[key] for key in ("name", "coordinates", "type") if key in stop}
-                        for stop in stopping_points
-                    ],
+                    **preview_details(
+                        "checking", geometry.model_dump() if geometry else None, stopping_points
+                    ),
                 )
             start_timezone = payload.start_timezone
             # Final timing validation

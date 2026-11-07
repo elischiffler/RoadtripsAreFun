@@ -452,3 +452,22 @@ def test_party_inputs_are_bound_to_candidate_even_when_hotel_choice_changes(runt
     )
     assert response.status_code == 409 and response.json()["code"] == "candidate_inputs_changed"
     assert state.calls == 1
+
+
+def test_candidate_retains_tentative_road_areas_separate_from_checked_timing(runtime):
+    client, _, _, _ = runtime
+    body = payload()
+    body["initial_route"]["duration"] = 20 * 3600
+    result = check(client, body)
+    assert result.status_code == 200
+    response = result.json()
+    assert 0 < len(response["possible_overnight_areas"]) <= 3
+    assert all(
+        area["tentative"]
+        and not area["hotel_quotes_checked"]
+        and not area["availability_checked"]
+        and area["clock_basis"] == "departure_wall_clock_estimate"
+        for area in response["possible_overnight_areas"]
+    )
+    # The actual road/timing fixture remains the authority, independently of hints.
+    assert response["one_day"]["eligible"] is True

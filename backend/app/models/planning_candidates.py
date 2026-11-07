@@ -6,6 +6,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.models.route_preparation import TentativeStayArea
 from app.models.routing_models.routing_models import Route, Route_Payload
 from app.routing.occupancy import HotelRooms, TravelerCount, require_occupancy
 
@@ -35,7 +36,7 @@ class CandidateResponse(BaseModel):
     expires_at: datetime
     one_day: OneDayAssessment
     candidate_route: Route | None = None
-    possible_overnight_areas: list[dict] = Field(default_factory=list)
+    possible_overnight_areas: list[TentativeStayArea] = Field(default_factory=list, max_length=3)
 
 
 class CandidateConfirmation(BaseModel):

@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.routing import APIRoute
 
 from app.agent.departure import is_upcoming_departure
+from app.agent.progress import emit
 from app.agent.progress_stream import stream_turn
 from app.core.candidate_errors import CandidateHTTPError, public_candidate_error
 from app.core.departure_errors import DepartureNotUpcomingHTTPError
@@ -23,6 +24,7 @@ from app.routers import routing_api
 from app.routing.base import DepartureNotUpcoming, PlanningError
 from app.routing.catalog_calendars import refresh_for_timing
 from app.routing.planning_candidates import store
+from app.routing.route_preparation import candidate_stay_areas, preview_details
 from app.routing.travel_timing import apply_timing
 from app.routing.trip_modes import (
     ONE_DAY_SECONDS,
@@ -84,6 +86,15 @@ async def _assess(payload, owner, *, can_select=False, request=None):
         update={"trip_mode": "one_day", "hotel_rooms": None, "budget": 0}, deep=True
     )
     route = None
+    # Road-only hints never decide eligibility. Actual candidate timing remains
+    # authoritative for one-day feasibility, visits, local clocks and meals.
+    areas = candidate_stay_areas(payload.initial_route, payload.start, payload.scheduling_policy)
+    emit(
+        "preparation.areas",
+        **preview_details(
+            "preparing", payload.initial_route.geometry.model_dump(), [], areas=areas
+        ),
+    )
     try:
         route = await routing_api.plan_final_route(
             candidate,
@@ -119,7 +130,7 @@ async def _assess(payload, owner, *, can_select=False, request=None):
         public_failure(error)
     if request is not None and await request.is_disconnected():
         raise CandidateHTTPError("candidate_cancelled")
-    return store.add(owner, payload, context, assessment, route)
+    return store.add(owner, payload, context, assessment, route, areas=areas)
 
 
 async def assess(payload, owner, *, can_select=False, request=None):

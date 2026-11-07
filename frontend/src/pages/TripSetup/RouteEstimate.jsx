@@ -9,7 +9,6 @@ import {
 import { getSession, isCurrentSession } from '../../services/session';
 import OnboardingMap from './OnboardingMap';
 import useCatalogPreparation from './useCatalogPreparation';
-import { approximateRestRegions } from './tripPreparation';
 import './ConnectedPlanning.css';
 
 /** User-triggered road preparation, then admitted database ideas. No AI runs here. */
@@ -56,8 +55,7 @@ const RouteEstimate = forwardRef(function RouteEstimate(
 
   const currentData =
     prepared?.queryKey === queryKey && isCurrentSession(prepared.session) ? prepared : null;
-  const catalog = useCatalogPreparation(currentData?.initialRoute, currentData?.cacheKey);
-  const areas = currentData && draft ? approximateRestRegions(currentData.initialRoute, draft) : [];
+  const catalog = useCatalogPreparation(currentData?.initialRoute, currentData?.cacheKey, draft);
 
   const run = async (confirmed = false) => {
     if (!confirmed && currentData) return { ok: true, ...currentData };
@@ -135,9 +133,9 @@ const RouteEstimate = forwardRef(function RouteEstimate(
         destination={currentData?.destination ?? { address: destination }}
         route={currentData?.initialRoute}
         ideas={catalog.places}
-        stayAreas={areas}
+        stayAreas={catalog.areas}
         stage={stage}
-        phase={busy ? 'checking' : 'draft'}
+        phase={busy ? 'checking' : catalog.status === 'loading' ? 'preparing' : 'draft'}
       />
       {stage === 0 && (
         <ActionButton
@@ -178,9 +176,26 @@ const RouteEstimate = forwardRef(function RouteEstimate(
           only, before stops and meals.
         </p>
       )}
+      {catalog.places.length > 0 && (
+        <p className="rt-caption">
+          Catalog ideas may be missing. Opening hours for your travel date are checked with trip
+          options.
+        </p>
+      )}
       {catalog.status === 'loading' && (
         <p className="rt-caption" role="status">
-          Checking the local catalog…
+          Preparing catalog ideas · {catalog.sections} of 6 route sections checked…
+        </p>
+      )}
+      {['partial', 'unavailable'].includes(catalog.status) && (
+        <p className="rt-caption" role="status">
+          Some catalog ideas could not be checked. You can continue planning.
+        </p>
+      )}
+      {catalog.areas.length > 0 && (
+        <p className="rt-caption">
+          Stay areas use approximate departure-clock timing, driving hours and meal allowances.
+          Visits, detours and local clocks may move them. No hotel availability checked.
         </p>
       )}
       {busy && (

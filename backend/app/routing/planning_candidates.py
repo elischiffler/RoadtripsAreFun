@@ -145,7 +145,7 @@ class CandidateStore:
                 self.entries.pop(response.candidate_id, None)
             self._stop(record)
 
-    def add(self, owner, payload, context, assessment: OneDayAssessment, route):
+    def add(self, owner, payload, context, assessment: OneDayAssessment, route, *, areas=None):
         with self.lock:
             self._prune()
             request = self.requests.get((owner, str(payload.request_id)))
@@ -160,6 +160,7 @@ class CandidateStore:
                 expires_at=self.now() + timedelta(seconds=self.ttl),
                 one_day=assessment,
                 candidate_route=route,
+                possible_overnight_areas=areas or [],
             )
             stored_payload = deepcopy(payload)
             if context.get("resolved_start") is not None:

@@ -146,3 +146,6 @@ export const streamTripRoute = (payload, signal, onProgress) =>
 
 export const streamPlanningCandidate = (payload, signal, onProgress) =>
   streamPlanningRequest('planning-candidates/stream', payload, signal, onProgress);
+
+export const streamRoutePreparation = (payload, signal, onProgress) =>
+  streamPlanningRequest('route-preparation/stream', payload, signal, onProgress);

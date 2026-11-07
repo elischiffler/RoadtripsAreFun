@@ -17,6 +17,7 @@ from app.routing.cp_sat_selection import select_attractions
 from app.routing.discovery import DiscoveryResult, SelectedAttraction, make_discovery_plan
 from app.routing.explanation import record_explanation, record_stage
 from app.routing.registry import register_planner
+from app.routing.route_preparation import preview_details
 from app.routing.runtime import in_run, joined, threaded
 from app.routing.services import RoutingServices
 from app.routing.sources.mapbox import UnusableRoadRoute
@@ -81,6 +82,12 @@ class CPSatPlanner(RoutePlanner):
                     if await discovery_plan.trip_calendar.eligible(item)
                 ]
                 record_explanation(discovery=discovery.explanation)
+                emit(
+                    "route.preview",
+                    **preview_details(
+                        "considering", initial_route.geometry.model_dump(), candidates
+                    ),
+                )
             with stage("route.detours", candidates=len(candidates)):
                 if options._verified_cp_sat_candidates is None:
                     candidates = await self._verify_detours(initial_route, candidates, services)
@@ -128,6 +135,14 @@ class CPSatPlanner(RoutePlanner):
                         f"Selected {len(selected)} attractions; see actual solver status.",
                     )
                     emit("route.selected", selected=len(selected))
+                    emit(
+                        "route.preview",
+                        **preview_details(
+                            "selected",
+                            initial_route.geometry.model_dump(),
+                            [item.candidate for item in selected],
+                        ),
+                    )
                     with stage("route.schedule"):
                         stops, cost = await schedule_cp_sat_route(
                             initial_route, selected, options, services

@@ -1,4 +1,4 @@
-import { loadRouteAlternatives } from '../services/routeAlternatives';
+import { loadRoutePreparation } from '../services/routePreparation';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -36,8 +36,9 @@ vi.mock('../services/planningCandidates', () => ({
   confirmPlanningCandidate: vi.fn(),
   registerCandidateRequest: vi.fn(),
 }));
-vi.mock('../services/routeAlternatives', () => ({
-  loadRouteAlternatives: vi.fn(async () => ({ places: [] })),
+vi.mock('../services/routePreparation', async (importOriginal) => ({
+  ...(await importOriginal()),
+  loadRoutePreparation: vi.fn(async () => ({ places: [], catalog_status: 'ready' })),
 }));
 const origin = { address: 'Boulder, Colorado', latitude: 40, longitude: -105 };
 const destination = { address: 'Fort Morgan, Colorado', latitude: 40.2, longitude: -103.8 };
@@ -63,7 +64,7 @@ const route = {
 
 beforeEach(() => {
   vi.resetAllMocks();
-  loadRouteAlternatives.mockResolvedValue({ places: [] });
+  loadRoutePreparation.mockResolvedValue({ places: [] });
   sessionStorage.clear();
   fixtureSession();
   import.meta.env.VITE_BACKEND_SERVER = 'http://fixture/';

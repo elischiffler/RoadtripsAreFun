@@ -22,6 +22,7 @@ import {
 import { candidateErrorMessage } from '../../services/planningCandidateErrors';
 import HotelQuestions from './HotelQuestions';
 import OnboardingMap from './OnboardingMap';
+import { tentativeAreas } from '../../services/routePreparation';
 import RouteEstimate from './RouteEstimate';
 import PlanningProgress from './PlanningProgress';
 import './ConnectedPlanning.css';
@@ -235,12 +236,19 @@ export default function TripSetupPage() {
         (event) => {
           if (!isActive(controller, session)) return;
           if (
-            event.stage === 'route.preview' &&
+            ['route.preview', 'preparation.areas'].includes(event.stage) &&
             event.preview_only === true &&
-            event.phase === 'checking' &&
+            ['preparing', 'considering', 'selected', 'checking'].includes(event.phase) &&
             event.geometry?.type === 'LineString'
           )
-            setPreview({ geometry: event.geometry, stops: event.stops ?? [] });
+            setPreview((old) => ({
+              geometry: event.geometry,
+              stops: event.stops ?? [],
+              phase: event.phase,
+              areas: event.possible_overnight_areas
+                ? tentativeAreas(event.possible_overnight_areas)
+                : (old?.areas ?? []),
+            }));
           report(event);
         },
         current.payload
@@ -562,7 +570,12 @@ export default function TripSetupPage() {
                 origin={proposal.origin[0]}
                 destination={proposal.destination[0]}
                 route={candidate?.candidate_route ?? preview ?? proposal.initialRoute}
-                phase={candidate?.candidate_route ? 'candidate' : preview ? 'checking' : 'draft'}
+                phase={candidate?.candidate_route ? 'candidate' : (preview?.phase ?? 'draft')}
+                stayAreas={
+                  candidate
+                    ? tentativeAreas(candidate.possible_overnight_areas)
+                    : (preview?.areas ?? [])
+                }
                 stage={4}
               />
               <p className="rt-caption">

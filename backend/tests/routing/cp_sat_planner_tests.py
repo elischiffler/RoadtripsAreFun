@@ -5,6 +5,7 @@ from datetime import date
 import pytest
 from ortools.sat.python import cp_model
 
+from app.agent.progress import reporting
 from app.routing.base import PlanningError, PlanOptions
 from app.routing.cp_sat_scheduler import schedule_cp_sat_route
 from app.routing.discovery import DiscoveryResult
@@ -447,3 +448,32 @@ async def test_estimated_hotel_meals_obey_opted_in_sleep(
     else:
         stops, _ = await schedule_cp_sat_route(*args)
         assert stops and all(s["type"] == "hotel" for s in stops)
+
+
+@pytest.mark.asyncio
+async def test_provisional_map_scenes_follow_real_discovery_and_solver_selection(
+    route, start_date, fake_services
+):
+    short_route(route, 3600)
+    services, _ = configure(fake_services, [attraction("verified", [0, 0], 0.9)])
+    events = []
+    with reporting(events.append):
+        result = await CPSatPlanner().plan(
+            route,
+            PlanOptions(
+                1,
+                100,
+                start_date,
+                traveler_count=2,
+                hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+            ),
+            services,
+        )
+    scenes = [e for e in events if e.get("stage") == "route.preview"]
+    assert [e["phase"] for e in scenes] == ["considering", "selected"]
+    assert all(e["preview_only"] is True for e in scenes)
+    assert scenes[0]["stops"][0]["provider_id"] == "verified"
+    assert [s["name"] for s in scenes[1]["stops"]] == [
+        s["name"] for s in result.stopping_points if s["type"] == "stop"
+    ]
+    assert "attribute_ratings" not in str(scenes) and "source_provenance" not in str(scenes)

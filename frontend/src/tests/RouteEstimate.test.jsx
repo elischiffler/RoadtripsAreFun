@@ -1,4 +1,4 @@
-import { loadRouteAlternatives } from '../services/routeAlternatives';
+import { loadRoutePreparation } from '../services/routePreparation';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, it, vi } from 'vitest';
@@ -11,14 +11,15 @@ vi.mock('../services/tripPlanner', () => ({
   resolveTripLocation: vi.fn(),
   plannerError: () => 'Could not check this drive.',
 }));
-vi.mock('../services/routeAlternatives', () => ({
-  loadRouteAlternatives: vi.fn(async () => ({ places: [] })),
+vi.mock('../services/routePreparation', async (importOriginal) => ({
+  ...(await importOriginal()),
+  loadRoutePreparation: vi.fn(async () => ({ places: [], catalog_status: 'ready' })),
 }));
 const start = { address: 'Denver, Colorado', latitude: 39.7, longitude: -105 };
 const end = { address: 'Boulder, Colorado', latitude: 40, longitude: -105.2 };
 beforeEach(() => {
   vi.resetAllMocks();
-  loadRouteAlternatives.mockResolvedValue({ places: [] });
+  loadRoutePreparation.mockResolvedValue({ places: [] });
   sessionStorage.clear();
   fixtureSession();
   estimateStructuredRoute.mockResolvedValue({

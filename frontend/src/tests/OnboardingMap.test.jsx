@@ -35,13 +35,23 @@ it('distinguishes database ideas and approximate regions from scheduled and chec
           place_context: { summary: 'Reviewed trail context' },
         },
       ]}
-      stayAreas={[{ label: 'Possible rest region', coordinates: [40, -104.3] }]}
+      stayAreas={[
+        {
+          id: 'stay:1',
+          label: 'Tentative area',
+          coordinates: [40, -104.3],
+          tentative: true,
+          hotel_quotes_checked: false,
+          availability_checked: false,
+          clock_basis: 'departure_wall_clock_estimate',
+        },
+      ]}
     />
   );
   fireEvent.click(screen.getByRole('button', { name: 'Unscheduled idea: Catalog trail' }));
   expect(screen.getByRole('status')).toHaveTextContent('Reviewed trail context');
   expect(screen.getByRole('status')).toHaveTextContent('not scheduled');
-  fireEvent.click(screen.getByRole('button', { name: /Approximate rest region/ }));
+  fireEvent.click(screen.getByRole('button', { name: /Tentative stay search area/ }));
   expect(screen.getByRole('status')).toHaveTextContent('not a hotel or availability check');
   expect(screen.queryByText('Checked route')).not.toBeInTheDocument();
 });
@@ -72,4 +82,28 @@ it('uses reviewed route context by provider identity and labels actual hotel opt
   fireEvent.click(screen.getByRole('button', { name: 'Hotel option: Actual hotel option' }));
   expect(screen.getByRole('status')).toHaveTextContent('Reviewed context');
   expect(screen.getByRole('status')).toHaveTextContent('not booked');
+});
+
+it('labels admitted and solver-selected scenes as provisional and bounds rendered pins', () => {
+  const route = {
+    geometry: {
+      coordinates: [
+        [-105, 40],
+        [-104, 41],
+      ],
+    },
+    stops: Array.from({ length: 40 }, (_, i) => ({
+      name: `Place ${i}`,
+      type: 'stop',
+      coordinates: [40, -104.5],
+      provider_id: `id:${i}`,
+    })),
+  };
+  const view = render(<OnboardingMap route={route} phase="considering" />);
+  expect(screen.getByText('Considering places')).toBeInTheDocument();
+  expect(screen.getAllByRole('button', { name: /Unscheduled idea/ })).toHaveLength(12);
+  view.rerender(<OnboardingMap route={route} phase="selected" />);
+  expect(screen.getByText('Proposed stops')).toBeInTheDocument();
+  expect(screen.queryByText('Checked route')).not.toBeInTheDocument();
+  expect(screen.getAllByRole('button', { name: /Proposed stop/ })).toHaveLength(12);
 });
