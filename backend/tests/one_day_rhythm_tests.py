@@ -1,5 +1,6 @@
 """Full candidate clocks and explicit recurring availability; no providers or DB."""
 
+from copy import deepcopy
 from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 from zoneinfo import ZoneInfo
@@ -141,7 +142,7 @@ def test_overlapping_or_multiple_blocks_and_conflicting_legacy_overrides_reject(
             DailySchedule(slots=slots)
     with pytest.raises(ValidationError, match="not both"):
         SchedulingPolicy(daily_schedule=rhythm(), morning_restart="10:00")
-    assert SchedulingPolicy().model_dump()["daily_schedule"] is None
+    assert "daily_schedule" not in SchedulingPolicy().model_dump()
     assert SchedulingPolicy(late_driving=True).arrival_cutoff(final=True) == "24:00"
 
 
@@ -301,3 +302,53 @@ def test_spring_forward_night_proof_can_fit_12_wall_hours_but11_actual_hours_wit
     assert stops[-1]["arrival_time"] == "2027-03-14T08:00:00-07:00"
     assert stops[-1]["meal_breaks"][0]["meal_type"] == "breakfast"
     assert require_one_day(route(stops, start, selected)) == 11 * 3600
+
+
+def test_absent_rhythm_preserves_legacy_policy_wire_shape_in_nested_models():
+    from app.models.routing_models.routing_models import Route_Payload
+    from tests.routing_api.guided_flow_tests import _payload
+
+    expected = {
+        "preferred_hotel_arrival": "18:00",
+        "latest_hotel_arrival": "20:00",
+        "latest_destination_arrival": None,
+        "morning_restart": "09:00",
+        "late_driving": False,
+        "late_cutoff": "24:00",
+    }
+    assert SchedulingPolicy().model_dump() == expected
+    from app.routing.run_metrics import fingerprint
+
+    assert (
+        fingerprint(SchedulingPolicy().model_dump())
+        == "221b934c1c1157c0e5407227fa8be84a8e60b86ad21cb861423d42c93ecc5d21"
+    )
+    assert Route_Payload.model_validate(_payload()).model_dump()["scheduling_policy"] == expected
+    custom = policy()
+    assert custom.model_dump()["daily_schedule"] == custom.daily_schedule.model_dump()
+
+
+@pytest.mark.asyncio
+async def test_direct_saved_overnight_rebuild_cannot_bypass_unsupported_daytime_stay(monkeypatch):
+    from app.routers import itinerary_api
+
+    monkeypatch.setattr(itinerary_api, "refresh_for_timing", AsyncMock())
+    stops = [
+        {
+            "name": "Nightly quote",
+            "type": "hotel",
+            "duration": 8 * 3600,
+            "timezone": ZONE,
+            "check_in_date": "2035-06-01",
+        },
+        endpoint(3600),
+    ]
+    selected = policy((20, 8), (9, 17))
+    with pytest.raises(UnsupportedOvernightRhythm):
+        apply_timing(
+            deepcopy(stops), moment("20:00", "2035-06-01"), selected, ZONE, reserve_meal_slots=True
+        )
+    planned = route(stops, moment("20:00", "2035-06-01"), selected)
+    planned.trip_mode = "overnight"
+    with pytest.raises(UnsupportedOvernightRhythm):
+        await build_itinerary(Itinerary_Payload(route=planned))

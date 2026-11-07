@@ -10,7 +10,11 @@ from app.models.scheduling_policy import SchedulingPolicy, advance, local_time, 
 from app.routing.base import PlanningError
 from app.routing.daily_rhythm import rest_blocks
 from app.routing.meal_reservations import MealClock, MealScheduleConflict
-from app.routing.trip_modes import RhythmAvailabilityConflict, RhythmClockConflict
+from app.routing.trip_modes import (
+    RhythmAvailabilityConflict,
+    RhythmClockConflict,
+    require_overnight_rhythm,
+)
 from app.routing.visit_calendar import VisitCalendarConflict, requires_calendar, solve_visit
 from app.routing.visit_duration import visit_seconds
 
@@ -24,6 +28,10 @@ def apply_timing(
     reserve_meal_slots: bool = False,
 ):
     """Recompute all timing, including place-free breaks; ignore supplied break metadata."""
+    if policy.daily_schedule and any(stop.get("type") == "hotel" for stop in stops):
+        # Rebuild/edit callers must honor the same accommodation limitation as
+        # candidate confirmation, even for previously supplied route JSON.
+        require_overnight_rhythm(policy)
     clock = None
     if reserve_meal_slots:
         try:

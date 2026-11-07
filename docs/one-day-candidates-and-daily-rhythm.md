@@ -176,6 +176,19 @@ reserved-meal/edit regressions. They include strict threshold boundaries,
 opening waits/meals, actual versus initial roads, midnight/DST, timezone lower
 bounds, source refresh, persisted edit/rebuild enforcement, conditional hotels,
 owner/Studio rejection, capacity/expiry/restart, duplicate single-flight,
-cancellation and provider-error redaction. Full Ruff checks pass. Full backend
-validation and integration with the new frontend remain pending at this checkpoint.
-No test calls Mentro, live provider endpoints or a hosted database.
+cancellation and provider-error redaction. Full Ruff checks pass. Subsequent full backend validation passed **2,848 tests, 151 skipped**, with
+**81.83% coverage** (63% required), plus full Ruff formatting/lint. The full run
+found and fixed an absent-rhythm serialization regression: only the new
+`daily_schedule` field is omitted when None; all old None fields and the frozen
+legacy policy fingerprint `221b934c1c1157c0e5407227fa8be84a8e60b86ad21cb861423d42c93ecc5d21`
+remain intact. No frozen fixture was rewritten.
+
+After that full run, a small independently reviewed shared-clock guard also closes
+unsupported overnight rhythms on direct saved itinerary rebuild/edit, rather than
+only on candidate confirmation. The final focused run passes **109 tests**:
+42 frozen evaluation, 23 rhythm/mode, 18 candidate orchestration and 26 retained
+meal/edit checks. The full run predates only this bounded guard and its regression.
+
+Both implementation and final deltas were independently source-reviewed. Frontend
+and combined integration acceptance remain separate gates. No test calls Mentro,
+live provider endpoints or a hosted database.

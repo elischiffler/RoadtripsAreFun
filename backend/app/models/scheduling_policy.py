@@ -4,7 +4,14 @@ from datetime import UTC, date, datetime, timedelta
 from typing import Literal
 from zoneinfo import ZoneInfo
 
-from pydantic import BaseModel, ConfigDict, StrictBool, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    StrictBool,
+    field_validator,
+    model_serializer,
+    model_validator,
+)
 
 from app.agent.trip_dates import _localize, normalize_departure_time
 from app.models.daily_schedule import DailyRhythmClockError, DailySchedule
@@ -65,6 +72,15 @@ class SchedulingPolicy(BaseModel):
                 "Morning restart must precede preferred arrival; preferred <= latest <= late cutoff (at most 24:00)."
             )
         return self
+
+    @model_serializer(mode="wrap")
+    def _serialize_optional_rhythm(self, handler):
+        data = handler(self)
+        if self.daily_schedule is None:
+            # Legacy policies feed frozen research/evaluation canonical inputs.
+            # An absent opt-in must keep their existing wire/hash shape exactly.
+            data.pop("daily_schedule", None)
+        return data
 
     @property
     def preferred_arrival_clock(self) -> str:
