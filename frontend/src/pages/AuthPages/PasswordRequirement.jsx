@@ -5,11 +5,11 @@ import './AuthPage.css';
 import PropTypes from 'prop-types';
 
 const PasswordRequirement = ({ fulfilled, text }) => (
-  <Box className="requirement">
+  <Box className={`requirement${fulfilled ? ' requirement--fulfilled' : ''}`}>
     {fulfilled ? (
-      <CheckIcon data-testid="password-requirement-check" sx={{ color: 'green' }} />
+      <CheckIcon data-testid="password-requirement-check" />
     ) : (
-      <CloseIcon data-testid="password-requirement-close" sx={{ color: 'gray' }} />
+      <CloseIcon data-testid="password-requirement-close" />
     )}
     <Typography variant="body2">{text}</Typography>
   </Box>

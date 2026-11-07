@@ -39,7 +39,7 @@ export default function GlobalHeader() {
 
   return (
     <Box className={`rt-design global-header${onMapPage ? ' global-header--transparent' : ''}`}>
-      <LogoButton />
+      <LogoButton wordmark />
 
       <Box className="global-header-right">
         <Button component={Link} to="/plan" aria-label="Plan a trip" className="header-nav-link">

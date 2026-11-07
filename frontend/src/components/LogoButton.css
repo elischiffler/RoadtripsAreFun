@@ -2,12 +2,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: 48px;
-  block-size: 48px;
-  min-inline-size: 44px;
-  min-block-size: 44px;
+  inline-size: var(--rt-space-12, 48px);
+  block-size: var(--rt-space-12, 48px);
+  min-inline-size: var(--rt-target-min, 44px);
+  min-block-size: var(--rt-target-min, 44px);
   flex-shrink: 0;
-  padding: 4px;
+  padding: var(--rt-space-1, 4px);
   border: 1px solid transparent;
   border-radius: var(--rt-radius-sm, 12px);
   background: transparent;
@@ -27,8 +27,8 @@
 
 .logo-image {
   display: block;
-  inline-size: 40px;
-  block-size: 40px;
+  inline-size: var(--rt-space-10, 40px);
+  block-size: var(--rt-space-10, 40px);
   flex-shrink: 0;
 }
 
@@ -42,4 +42,9 @@
   .logo-btn {
     border-color: ButtonText;
   }
+}
+
+.logo-btn--wordmark {
+  inline-size: auto;
+  gap: var(--rt-space-2);
 }

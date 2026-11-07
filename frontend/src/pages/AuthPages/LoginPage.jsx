@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { signIn } from '../../services/authService';
-import { Box, Container, TextField, Button, Typography } from '@mui/material';
+import { TextField, Button, Typography } from '@mui/material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import LogoButton from '../../components/LogoButton';
+import AuthLayout from './AuthLayout';
 import './AuthPage.css';
 import PasswordField from './PasswordField';
 import { safeReturnPath } from '../../services/session';
@@ -39,63 +39,52 @@ const LoginPage = () => {
   };
 
   return (
-    <Box className="auth-container">
-      {/* Form Container */}
-      <Box className="form-container">
-        <Container maxWidth="sm">
-          <Box className="form-header">
-            <Typography variant="h4" gutterBottom>
-              Log In
-            </Typography>
-            <LogoButton />
-          </Box>
-          {location.state?.sessionExpired && (
-            <Typography role="status">
-              Your session expired. Sign in again to continue. Your unsent message is kept for this
-              account.
-            </Typography>
-          )}
-          {/* Actual form components design and functionality */}
-          <form onSubmit={handleSubmit}>
-            <TextField
-              label="Email"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="text-field"
-            />
-            <PasswordField
-              label="Password"
-              password={password}
-              onChange={(e) => setPassword(e.target.value)}
-              showPassword={showPassword}
-              onTogglePasswordVisibility={handleTogglePasswordVisibility}
-              className="text-field"
-            />
-            {error && (
-              <Typography color="error" variant="body2" className="error-message">
-                {error}
-              </Typography>
-            )}
-            <Button type="submit" variant="contained" fullWidth className="submit-button">
-              Log In
-            </Button>
-          </form>
-          {/* Sign up redirection */}
-          <Typography variant="body2" align="center" className="link-text">
-            Don&apos;t have an account?{' '}
-            <Link to="/signup" style={{ textDecoration: 'underline' }}>
-              Sign up
-            </Link>
+    <AuthLayout title="Log In">
+      {location.state?.sessionExpired && (
+        <Typography role="status">
+          Your session expired. Sign in again to continue. Your unsent message is kept for this
+          account.
+        </Typography>
+      )}
+      {/* Actual form components design and functionality */}
+      <form onSubmit={handleSubmit}>
+        <TextField
+          label="Email"
+          autoComplete="username"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          required
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="text-field"
+        />
+        <PasswordField
+          label="Password"
+          autoComplete="current-password"
+          password={password}
+          onChange={(e) => setPassword(e.target.value)}
+          showPassword={showPassword}
+          onTogglePasswordVisibility={handleTogglePasswordVisibility}
+          className="text-field"
+        />
+        {error && (
+          <Typography color="error" variant="body2" className="error-message">
+            {error}
           </Typography>
-        </Container>
-      </Box>
-      {/* Banner Image */}
-      <Box className="banner" />
-    </Box>
+        )}
+        <Button type="submit" variant="contained" fullWidth className="submit-button">
+          Log In
+        </Button>
+      </form>
+      {/* Sign up redirection */}
+      <Typography variant="body2" align="center" className="link-text">
+        Don&apos;t have an account?{' '}
+        <Link to="/signup" style={{ textDecoration: 'underline' }}>
+          Sign up
+        </Link>
+      </Typography>
+    </AuthLayout>
   );
 };
 

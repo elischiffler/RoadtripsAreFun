@@ -1,83 +1,180 @@
-/* AuthPage.css */
-
-/* Container for the whole authentication page */
-.auth-container {
-  display: flex;
-  flex-direction: row;
-  min-height: 100vh;
-  background-color: var(--white-main); /* Background color for the page */
+.auth-container.rt-design {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-block-size: 100svh;
+  padding: var(--rt-page-padding);
+  background: var(--rt-color-page);
 }
-
-/* Form Container Styles */
-.form-container {
-  flex: 1;
+.auth-container.rt-design .form-container {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 16px;
-  background-color: var(--white-main);
+  padding-block: var(--rt-space-8);
 }
-
-/* Header Styles */
-.form-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
+.auth-form-content {
+  inline-size: 100%;
+  max-inline-size: var(--rt-content-width);
+  padding: var(--rt-space-6);
+  border: var(--rt-border-width) solid var(--rt-color-border);
+  border-radius: var(--rt-radius-sheet);
+  background: var(--rt-color-surface);
+  box-shadow: var(--rt-shadow-sheet);
 }
-
-.form-header .MuiTypography-h4 {
-  margin: 0; /* Remove default margin for better alignment */
-}
-
-.form-header .logo-button {
-  display: flex;
-  align-items: center;
-}
-
-/* Submit Button Styles */
-.submit-button {
-  background-color: var(--green-main) !important; /* Ensure green background for button */
-  color: var(--white-light);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition:
-    box-shadow 0.3s ease,
-    background-color 0.3s ease;
-  margin-top: 16px !important;
-}
-
-.submit-button:hover {
-  background-color: var(--green-main); /* Keep background color the same */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
-}
-
-/* Password Requirements Section */
-.password-requirements {
+.auth-container.rt-design .form-header {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 16px;
+  align-items: flex-start;
+  gap: var(--rt-space-8);
+  margin-block-end: var(--rt-space-5);
 }
-
-.requirement {
+.auth-container.rt-design .form-header h1 {
+  margin: 0;
+  color: var(--rt-color-text);
+  font: var(--rt-weight-strong) var(--rt-text-display) / var(--rt-leading-tight) var(--rt-font);
+  letter-spacing: var(--rt-tracking-display);
+}
+.auth-container.rt-design .MuiFormControl-root {
+  margin-block: var(--rt-space-2);
+}
+.auth-container.rt-design .MuiOutlinedInput-root {
+  min-block-size: var(--rt-control-height);
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-color-surface);
+  color: var(--rt-color-text);
+  font: var(--rt-weight-regular) var(--rt-text-body) / var(--rt-leading-body) var(--rt-font);
+}
+.auth-container.rt-design .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: var(--rt-color-control-border);
+}
+.auth-container.rt-design .MuiInputLabel-root,
+.auth-container.rt-design .MuiIconButton-root {
+  color: var(--rt-color-secondary);
+}
+.auth-container.rt-design .MuiInputLabel-root.Mui-focused {
+  color: var(--rt-color-accent);
+}
+.auth-container.rt-design .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--rt-color-accent);
+}
+.auth-container.rt-design .MuiIconButton-root {
+  min-inline-size: var(--rt-target-min);
+  min-block-size: var(--rt-target-min);
+}
+.auth-container.rt-design .submit-button.MuiButton-root {
+  min-block-size: var(--rt-control-height);
+  margin-block-start: var(--rt-space-5);
+  padding: var(--rt-space-3) var(--rt-space-4);
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-color-accent);
+  color: var(--rt-color-on-accent);
+  box-shadow: none;
+  font: var(--rt-weight-strong) var(--rt-text-body) / var(--rt-leading-body) var(--rt-font);
+  text-transform: none;
+}
+.auth-container.rt-design .submit-button.MuiButton-root:hover {
+  background: var(--rt-color-accent-hover);
+}
+.auth-container.rt-design .submit-button.Mui-disabled {
+  opacity: var(--rt-opacity-disabled);
+}
+.auth-container :focus-visible {
+  outline: var(--rt-focus-width) solid var(--rt-color-focus);
+  outline-offset: var(--rt-focus-offset);
+}
+.auth-container.rt-design .link-text {
+  margin-block: var(--rt-space-6) 0;
+  color: var(--rt-color-secondary);
+  font: var(--rt-weight-regular) var(--rt-text-small) / var(--rt-leading-body) var(--rt-font);
+}
+.auth-container a {
+  color: var(--rt-color-accent);
+  text-underline-offset: var(--rt-space-1);
+}
+.auth-container.rt-design .error-message {
+  margin-block: var(--rt-space-3);
+  color: var(--rt-color-error);
+}
+.auth-container.rt-design .password-requirements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rt-space-2);
+  margin-block-start: var(--rt-space-4);
+}
+.auth-container.rt-design .requirement {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--rt-space-2);
+  color: var(--rt-color-secondary);
 }
-
-/* Banner styling */
-.banner {
-  flex: 1; /* Occupies the remaining space */
-  background-image: url('../../assets/LoginBanner.jpg'); /* Update the image path if necessary */
-  background-size: cover;
-  background-position: center;
-  height: 100vh; /* Full viewport height */
-  background-repeat: no-repeat; /* Ensure the image doesn't repeat */
+.auth-container.rt-design .requirement--fulfilled {
+  color: var(--rt-color-accent);
 }
-
-/* Styles for Typography components */
-.link-text {
-  margin-top: 16px !important; /* Adjust margin for spacing */
-  text-align: center;
-  font-size: 0.875rem; /* Adjust font size if needed */
+.auth-container.rt-design .requirement svg {
+  color: inherit;
+}
+.auth-landscape {
+  display: none;
+}
+@media (min-width: 960px) {
+  .auth-container.rt-design {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--rt-space-8);
+  }
+  .auth-landscape {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-block-size: var(--rt-content-width);
+    overflow: hidden;
+    border-radius: var(--rt-radius-sheet);
+    background: var(--rt-color-selected);
+  }
+  .auth-landscape__route {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    stroke: var(--rt-color-border);
+    stroke-width: 2;
+  }
+  .auth-landscape__route circle {
+    fill: var(--rt-color-surface);
+    stroke: var(--rt-color-accent);
+    stroke-width: 4;
+  }
+  .auth-landscape__route .auth-landscape__journey {
+    stroke: var(--rt-color-accent);
+    stroke-width: 4;
+    stroke-dasharray: 4 10;
+    stroke-linecap: round;
+  }
+  .auth-landscape > .rt-brand {
+    padding: var(--rt-space-8);
+    border-radius: var(--rt-radius-sheet);
+    background: var(--rt-color-surface);
+    box-shadow: var(--rt-shadow-floating);
+    transform: rotate(-8deg);
+  }
+  .auth-landscape .logo-image {
+    inline-size: var(--rt-space-12);
+    block-size: var(--rt-space-12);
+  }
+}
+@media (max-width: 360px) {
+  .auth-form-content {
+    padding: var(--rt-space-4);
+  }
+}
+.auth-container.rt-design .logo-btn {
+  max-inline-size: 100%;
+}
+.auth-container.rt-design .rt-brand {
+  max-inline-size: 100%;
+  flex-shrink: 1;
+  flex-wrap: wrap;
+}
+.auth-container.rt-design .form-container,
+.auth-form-content,
+.auth-container form {
+  min-inline-size: 0;
 }

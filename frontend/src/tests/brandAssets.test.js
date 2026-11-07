@@ -44,8 +44,8 @@ describe('route-pin brand assets', () => {
 
   it('keeps a 44px target, visible focus and reduced-motion support without a moving mark', () => {
     const css = text('src/components/LogoButton.css');
-    expect(css).toMatch(/min-inline-size:\s*44px/);
-    expect(css).toMatch(/min-block-size:\s*44px/);
+    expect(css).toMatch(/min-inline-size:\s*var\(--rt-target-min,\s*44px\)/);
+    expect(css).toMatch(/min-block-size:\s*var\(--rt-target-min,\s*44px\)/);
     expect(css).toContain(':focus-visible');
     expect(css).toContain('@media (prefers-reduced-motion: reduce)');
     expect(css).not.toMatch(/@keyframes|animation:|transform:/);
