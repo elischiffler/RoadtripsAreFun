@@ -266,6 +266,10 @@ def _project(cur, row):
     end = _text(_mapping(data.get("endConfirmed")).get("address"))
     result = {
         "share_id": str(row["id"]),
+        # A saved plan label, never evidence of eligibility or a trusted proof.
+        "trip_mode": route.get("trip_mode")
+        if route.get("trip_mode") in ("one_day", "overnight")
+        else None,
         "start": start,
         "destination": end,
         "title": f"{start} → {end}" if start and end else "Shared trip",

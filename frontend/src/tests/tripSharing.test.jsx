@@ -206,3 +206,41 @@ it('does not falsely claim stale member removal and refreshes to the current con
   );
   expect(api.changeSharing).toHaveBeenLastCalledWith(trip, id, 'member', 'new-member');
 });
+it('labels the saved plan and renders scheduled rest/sleep times without proof or owner controls', async () => {
+  api.viewConnectedTrip.mockResolvedValueOnce({
+    ...shared,
+    trip_mode: 'one_day',
+    itinerary: [
+      {
+        date: '2027-01-01',
+        stops: [
+          {
+            name: 'Rest time',
+            kind: 'rest',
+            time: '20:00',
+            arrival_time: '2027-01-01T20:00:00-07:00',
+            departure_time: '2027-01-01T22:00:00-07:00',
+            timezone: 'America/Denver',
+          },
+          {
+            name: 'Sleep time',
+            kind: 'sleep',
+            time: '22:00',
+            arrival_time: '2027-01-01T22:00:00-07:00',
+            departure_time: '2027-01-02T07:00:00-07:00',
+            timezone: 'America/Denver',
+          },
+        ],
+      },
+    ],
+  });
+  renderPage('/shared-trips/:shareId', <SharedTripPage />, '/shared-trips/' + id);
+  await screen.findByText('One-day plan');
+  expect(screen.getByText('Rest time')).toBeInTheDocument();
+  expect(screen.getByText('Sleep time')).toBeInTheDocument();
+  expect(screen.getAllByLabelText(/Jan 1, 2027, 10:00 PM/)).toHaveLength(2);
+  expect(screen.getByLabelText(/Jan 2, 2027, 7:00 AM/)).toBeInTheDocument();
+  expect(screen.queryByText(/validated|eligibility|proof|guarantee/i)).not.toBeInTheDocument();
+  expect(api.createShareLink).not.toHaveBeenCalled();
+  expect(api.changeSharing).not.toHaveBeenCalled();
+});

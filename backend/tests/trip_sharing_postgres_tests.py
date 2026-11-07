@@ -76,6 +76,7 @@ def test_actual_signed_auth_minimal_projection_member_read_only_and_owner_isolat
     assert hidden not in anonymous.text
     assert set(anonymous.json()) == {
         "share_id",
+        "trip_mode",
         "revision",
         "start",
         "destination",

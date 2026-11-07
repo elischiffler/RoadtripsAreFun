@@ -59,8 +59,12 @@ credentials. Authenticated operations retain the existing narrowly bounded retry
 for the verifier's exact initial rejection; transport errors or application errors
 never replay mutations automatically. Account switches discard late account data.
 
-Shared payloads explicitly allow only endpoint display labels, route coordinates,
-driving totals, and bounded itinerary names/times/types/meal windows. They exclude
+Shared payloads explicitly allow only a literal saved plan mode (`one_day` or
+`overnight`), endpoint display labels, route coordinates,
+driving totals, and bounded itinerary names/times/types/meal windows. Actual
+scheduled rest/sleep rows keep their times and time zones. A mode label expresses
+the saved plan; it is not a guarantee or a trusted eligibility proof. Recurring
+`daily_schedule`, profile contents and `one_day_proof` are never passed through. They exclude
 ChatLog, private trip profile/inferred weights, source/rating blobs, car/budget/
 price/room details, visit presentation, live or historical user position, member
 identifiers and owner identifiers. A shared content revision hashes only that

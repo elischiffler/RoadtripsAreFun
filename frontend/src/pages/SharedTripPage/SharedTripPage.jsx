@@ -132,6 +132,11 @@ export default function SharedTripPage() {
         <>
           <Sheet>
             <h2 className="rt-title">{view.title}</h2>
+            {view.trip_mode && (
+              <p className="rt-caption">
+                {view.trip_mode === 'one_day' ? 'One-day plan' : 'Overnight planning'}
+              </p>
+            )}
             {!!coordinates.length && (
               <svg
                 className="shared-route-outline"

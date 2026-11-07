@@ -87,9 +87,18 @@ and application of the prepared migration. The release owner coordinates this
 as a separate concrete approval. Existing `/ready` does not prove sharing schema
 readiness; sharing endpoints return a fixed 503 if it is absent.
 
-Parallel one-day work introduces `trip_mode` and `scheduling_policy.daily_schedule`
-after this exact base. Current sharing correctly omits unknown metadata and never
-uses `one_day_proof` as authority. Final integration should add an explicit public
-mode/rhythm allowlist and read-only display using that new validated contract,
-with tests; do not pass arbitrary policy/profile/proof JSON through. This is a
-cross-branch integration requirement, not a schema or authorization expansion.
+A separate bounded integration delta follows this fully reviewed checkpoint after
+reading one-day schema `b945c827`. It allowlists only saved `trip_mode` literals as
+a plan label and preserves actual scheduled rest/sleep rows through existing
+safe itinerary fields. It omits the entire recurring `daily_schedule`/policy,
+profile, cached tokens and `one_day_proof`; no proof is trusted or recomputed by
+a read. Unknown/malformed modes are omitted. Focused backend projection and
+frontend read-only rendering tests verify the delta; final combined full suites
+remain the integrator's gate while the one-day worker owns the heavy-test slot.
+
+
+Integration delta verification: **14 focused backend cases and 13 frontend
+sharing/transport cases pass**. Changed-file Ruff, ESLint, Prettier and whitespace
+checks pass. The full-suite figures above pin the reviewed core sharing checkpoint
+`8094f4fb45b0d49360e177a15dd9ecea6f5e954a`; no additional full suites were run during
+the one-day worker's exclusive slot. The final combined candidate must run them.

@@ -138,6 +138,7 @@ def test_projection_drops_private_nested_fields_and_owner_scopes_geometry():
     assert hidden not in json.dumps(projected)
     assert set(projected) == {
         "share_id",
+        "trip_mode",
         "revision",
         "start",
         "destination",
@@ -198,3 +199,63 @@ def test_public_outline_bounds_large_geometry_without_changing_endpoints():
     }
     outline = store._project(MagicMock(), row)["route"]["coordinates"]
     assert len(outline) <= 4096 and outline[0] == points[0] and outline[-1] == points[-1]
+
+
+@pytest.mark.parametrize(
+    "mode,expected",
+    [
+        ("one_day", "one_day"),
+        ("overnight", "overnight"),
+        ("unknown", None),
+        ({"garbage": "DO_NOT_SHARE"}, None),
+        (None, None),
+    ],
+)
+def test_shared_mode_is_only_a_plan_label_and_scheduled_rest_sleep_rows_remain(mode, expected):
+    row = {
+        "id": SHARE,
+        "owner_id": "owner",
+        "chat_id": "7",
+        "chat_data": {
+            "route": {
+                "trip_mode": mode,
+                "one_day_proof": {
+                    "status": "validated",
+                    "elapsed_seconds": 1,
+                    "private": "DO_NOT_SHARE",
+                },
+                "scheduling_policy": {"daily_schedule": {"slots": ["DO_NOT_SHARE"] * 24}},
+            },
+            "itinerary": [
+                {
+                    "date": "2027-01-01",
+                    "stops": [
+                        {
+                            "name": "Rest time",
+                            "kind": "rest",
+                            "status": "planned",
+                            "time": "20:00",
+                            "arrival_time": "2027-01-01T20:00:00-07:00",
+                            "departure_time": "2027-01-01T22:00:00-07:00",
+                            "timezone": "America/Denver",
+                        },
+                        {
+                            "name": "Sleep time",
+                            "kind": "sleep",
+                            "status": "planned",
+                            "time": "22:00",
+                            "arrival_time": "2027-01-01T22:00:00-07:00",
+                            "departure_time": "2027-01-02T07:00:00-07:00",
+                            "timezone": "America/Denver",
+                        },
+                    ],
+                }
+            ],
+        },
+    }
+    result = store._project(MagicMock(), row)
+    assert result["trip_mode"] == expected
+    assert [s["kind"] for s in result["itinerary"][0]["stops"]] == ["rest", "sleep"]
+    assert result["itinerary"][0]["stops"][1]["departure_time"] == "2027-01-02T07:00:00-07:00"
+    assert "DO_NOT_SHARE" not in json.dumps(result)
+    assert "one_day_proof" not in result and "scheduling_policy" not in result
