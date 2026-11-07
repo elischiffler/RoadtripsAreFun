@@ -129,6 +129,8 @@ from app.models.routing_models.routing_models import MapBox
 from app.routers import location_api, routing_api
 from app.routing import alternatives
 from app.routing.planners import cp_sat
+from app.routing.sources import persona_candidates
+from app.routing.sources.google_hotels import GoogleHotelProvider
 
 counts = {
     "login": 0,
@@ -140,19 +142,34 @@ counts = {
     "gateway_requests": 0,
     "solver": 0,
     "hotel_requests": 0,
+    "hotel_quotes": [],
     "browse": 0,
     "current_facts": 0,
     "requests": [],
     "stream_events": [],
+    "preview_events": [],
 }
 
 
 def location(*, coords=None, address=None, exactly_one=True, **kwargs):
     del kwargs
     start = address is None or "Boulder" in address
-    lat, lon = coords if coords else ([40.0, -105.0] if start else [40.4, -104.0])
+    overnight = address is not None and "Synthetic overnight" in address
+    lat, lon = (
+        coords
+        if coords
+        else (
+            [49.0, -104.0]
+            if overnight
+            else ([40.0, -105.0] if start else [40.4, -104.0])
+        )
+    )
     result = SimpleNamespace(
-        address="Boulder, Colorado" if start else "Fort Morgan, Colorado",
+        address=(
+            "Synthetic overnight destination"
+            if overnight
+            else ("Boulder, Colorado" if start else "Fort Morgan, Colorado")
+        ),
         latitude=lat,
         longitude=lon,
         raw={"annotations": {"timezone": {"name": "America/Denver"}}},
@@ -223,23 +240,69 @@ EDIT_PLACE = {
     "source_attribution": "Synthetic catalog fixture",
     "source_provenance": [],
 }
+OVERNIGHT_EDIT_PLACE = {
+    **EDIT_PLACE,
+    "provider_id": "overture:guided-overnight-edit",
+    "name": "Synthetic overnight edit stop",
+    "coordinates": [45.0, -104.444444],
+}
 
 
 def nearby(*args, **kwargs):
     counts["browse"] += 1
-    return [deepcopy(EDIT_PLACE)]
+    point = args[0] if args else kwargs.get("point", [40, -105])
+    return [deepcopy(OVERNIGHT_EDIT_PLACE if point[0] > 40.6 else EDIT_PLACE)]
 
 
 def current_records(source_ids, *args, **kwargs):
     counts["current_facts"] += 1
-    return {sid: deepcopy(EDIT_PLACE) for sid in source_ids if sid == "guided-edit"}
+    places = {
+        "guided-edit": EDIT_PLACE,
+        "guided-overnight-edit": OVERNIGHT_EDIT_PLACE,
+    }
+    return {sid: deepcopy(places[sid]) for sid in source_ids if sid in places}
 
 
 async def hotels(*args, **kwargs):
     counts["hotel_requests"] += 1
-    raise AssertionError(
-        "Short guided fixture unexpectedly requested an overnight hotel"
-    )
+    if args[0][0] <= 40.6:
+        raise AssertionError(
+            "Short guided fixture unexpectedly requested an overnight hotel"
+        )
+    # Keep real dated-quote validation, model parsing, matching and room
+    # intersection. Only the remote provider-record leaf below is synthetic.
+    return await persona_candidates.hotel_candidates(*args, **kwargs)
+
+
+async def hotel_records(self, point, check_in, room, *, check_out_date=None):
+    del self
+    assert point[0] > 40.6
+    check_out = check_out_date or check_in + timedelta(days=1)
+    nights = (check_out - check_in).days
+    assert 1 <= nights <= 3
+    receipt = {
+        "provider_id": f"synthetic-hotel:{point[0]:.6f}:{point[1]:.6f}",
+        "name": f"Synthetic dated hotel {point[0]:.6f}",
+        "coordinates": list(point),
+        "check_in_date": check_in.isoformat(),
+        "check_out_date": check_out.isoformat(),
+        "room": room.model_dump(),
+        "price": 125.0 * nights,
+        "price_scope": (
+            "one_room_stay_including_taxes_fees"
+            if nights > 1
+            else "one_room_one_night_including_taxes_fees"
+        ),
+    }
+    counts["hotel_quotes"].append(deepcopy(receipt))
+    return [
+        {
+            **receipt,
+            "url": "https://hotels.invalid/synthetic-offer",
+            "categories": ["hotel"],
+            "source": "synthetic-hotel-provider",
+        }
+    ]
 
 
 original_select = cp_sat.select_attractions
@@ -255,6 +318,10 @@ location_api.get_location = location
 routing_api.get_location = location
 routing_api._call_route = roads
 routing_api.hotel_candidates = hotels
+# A non-secret fixture key satisfies configuration only; no remote geocoder is
+# callable because hotel_records replaces the external provider-record leaf.
+persona_candidates.config.OPENCAGE_KEY = "synthetic-fixture-not-a-real-key"
+GoogleHotelProvider.hotels_near = hotel_records
 repository.nearby_page = catalog_page
 repository.nearby = nearby
 alternatives.catalog_nearby = nearby
@@ -300,6 +367,18 @@ async def record_requests(request, call_next):
                                 "code": event.get("code"),
                             }
                         )
+                        if event.get("stage") == "route.preview":
+                            counts["preview_events"].append(
+                                {
+                                    key: event.get(key)
+                                    for key in (
+                                        "phase",
+                                        "preview_only",
+                                        "geometry",
+                                        "stops",
+                                    )
+                                }
+                            )
                 yield chunk
 
         response.body_iterator = observe_stream()
@@ -322,6 +401,11 @@ def report():
             )
             participant_owned = cursor.fetchone()[0]
             cursor.execute(
+                "SELECT chat_data FROM chats WHERE user_id=%s ORDER BY chat_id",
+                ("guided-overnight",),
+            )
+            overnight_trips = [row[0] for row in cursor.fetchall()]
+            cursor.execute(
                 "SELECT chat_data, chat_log FROM chats WHERE user_id = %s ORDER BY chat_id",
                 ("guided-traveler",),
             )
@@ -340,6 +424,7 @@ def report():
     return counts | {
         "stored_trips": stored,
         "participant_owned_trips": participant_owned,
+        "overnight_trips": overnight_trips,
         "trips": trips,
         "profiles": profiles,
         "blocked_network": blocked_network,
@@ -366,6 +451,7 @@ async def authenticate(request: Request):
     accounts = {
         "traveler@example.test": "guided-traveler",
         "participant@example.test": "guided-participant",
+        "overnight@example.test": "guided-overnight",
     }
     parameters = body.get("AuthParameters") or {}
     email = parameters.get("USERNAME")

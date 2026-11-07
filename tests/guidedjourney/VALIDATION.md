@@ -266,3 +266,18 @@ The mandatory final exact-commit Local containers and PostgreSQL CI executions
 remain required. These local results do not establish live Cognito, Mentro,
 Mapbox, geolocation, true overnight-hotel browser acceptance or production schema
 state.
+
+
+## Unrestricted rhythm/true overnight extension — runtime pending
+
+A separate test branch based on `4074181` prepares the sequential actual
+browser/API/solver/timing/CRUD overnight extension described in README. It has
+not yet run against the upcoming unrestricted-rhythm/progressive-preparation
+application changes. Earlier passing checkpoints do not prove this new scope.
+The hotel fixture supplies only remote provider records and exact requested
+room/date quotes; actual candidate matching, model-response parsing, room
+intersection, scheduling and durable storage are retained. Source assertions
+now include the owners' two-night lodging/full-price metadata and actual
+preparation/planner preview contracts. They still await a final combined
+application checkpoint and actual native execution.
+No hosted database, live provider/account or device location was used.

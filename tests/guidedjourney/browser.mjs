@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { chromium } from "playwright-core";
+import { runOvernightJourney } from "./overnight.mjs";
 
 const frontend = "http://127.0.0.1:8082";
 const backend = "http://127.0.0.1:8002";
@@ -135,6 +136,9 @@ async function enterTrip(page, date, { expectFailure = false } = {}) {
         );
       }),
   ]);
+  await page
+    .getByRole("img", { name: "Trip option route geometry", exact: true })
+    .waitFor();
   const assessed = await fixtureReport();
   assert.equal(
     assessed.stored_trips,
@@ -993,6 +997,16 @@ try {
   );
   assert.deepEqual(blocked, []);
   assert.deepEqual(errors, []);
+  for (const phase of ["considering", "selected", "checking"])
+    assert.ok(
+      report.preview_events.some(
+        (event) =>
+          event.phase === phase &&
+          event.preview_only === true &&
+          event.geometry.coordinates.length >= 2,
+      ),
+      `The primary actual planner stream must emit its ${phase} map preview`,
+    );
   assert.equal(
     departureError,
     "Choose a departure date and time in the future.",
@@ -1017,6 +1031,16 @@ try {
   console.log(
     "PASS: signed offline guided trip created, persisted, reloaded and visited; expired trip rejected without saving.",
   );
+  await runOvernightJourney({
+    session,
+    api,
+    fixtureReport,
+    assertWidths,
+    frontend,
+    output,
+  });
+  assert.deepEqual(blocked, []);
+  assert.deepEqual(errors, []);
 } catch (error) {
   if (activePage && !activePage.isClosed()) {
     await activePage

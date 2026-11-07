@@ -24,8 +24,9 @@ A separate bounded actual HTTP candidate case rejects flexible/overnight
 confirmation without occupancy, then accepts valid occupancy/budget while still
 finishing the short route with zero hotels. Confirmation reuses the checked
 attraction pool without repeating AI, and actual itinerary generation preserves
-meal time. It does not save a second trip. The hotel provider seam still raises
-on any unexpected hotel lookup; this is not a synthetic multi-day hotel stay.
+meal time. It does not save a second trip. This original short-corridor case still
+raises on any unexpected hotel lookup; the separate long-corridor extension
+below is responsible for exercising an actual scheduled stay.
 
 The saved `/trip` workspace must reload. Sequential visit/undo writes must refresh
 modern revisions without reload, and a stale revision must return 409 without
@@ -118,3 +119,34 @@ under `.artifacts/`; installed test dependencies are ignored under `node_modules
 These fixtures are mounted only into the test image by this runner. They are not
 part of the production image or app configuration. Do not point the fixture
 browser at production or disable authentication/network protections to pass.
+
+
+## Overnight extension under development
+
+The mandatory browser entry also invokes `overnight.mjs` sequentially after all
+prior strict cases. This separate fourth synthetic account drives a longer
+synthetic corridor through actual candidate assessment, explicit stay choice,
+room occupancy, actual hotel candidate validation/rating/intersection, CP-SAT,
+clock, itinerary and disposable PostgreSQL. Only the remote hotel-record leaf
+is synthetic; it returns the exact requested dates/room with a clearly synthetic
+full-stay price. The original short corridor still rejects every hotel lookup.
+No real hotel availability or check-in guarantee is established. This lane does
+not exercise Google HTML/date-control parsing; the backend provider tests cover
+that distinct seam.
+
+The pending case uses driving 20:00–06:00 and sleep 08:00–16:00, requires actual
+lodging and date rollover, checks the prior-date → following-date two-night booking range, full-stay total
+and room occupancy, wake-relative meal windows/full durations with no sleep/visit overlap, then saves/reloads and previews/saves/reloads an edit
+without losing the rhythm. A separate short awake cycle must fail the actual
+itinerary clock without changing storage. Source preparation is not evidence
+that this extension passed; it awaits the corresponding application branches
+and a fresh combined native run. Existing prior assertions remain required.
+
+The extension also observes the actual read-only preparation HTTP stream for its
+final rhythm: tentative areas must declare that quotes and availability were
+not checked, followed by six bounded catalog-section events and a real result.
+The map must render tentative markers, and the primary completed assessment
+must render its candidate geometry. Actual planner preview events must identify
+considering, selected and checking phases as preview-only. Browser enforcement
+of stale/out-of-order cancellation remains the focused preparation/UI tests;
+this release journey does not inject fake late events to claim that coverage.
