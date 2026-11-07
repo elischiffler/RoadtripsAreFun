@@ -17,6 +17,7 @@ legacy pages. Change a token once to update every adopting component.
 | `--rt-space-*`                                                      | A 4px-based rem spacing scale: 4, 8, 12, 16, 20, 24, 32, 40, 48 at the default root size |
 | `--rt-radius-*`                                                     | Small details, controls, sheets and pills                                                |
 | `--rt-target-min`, `--rt-control-height`                            | At least 44px hit targets, comfortable 52px inputs                                       |
+| `--rt-slider-thumb-size`, `--rt-opacity-disabled`                   | Slider thumb appearance and shared disabled opacity                                     |
 | `--rt-content-width`, `--rt-page-padding`                           | Centered 30rem column with fluid outer gutters                                           |
 | `--rt-text-*`, `--rt-weight-*`, `--rt-leading-*`, `--rt-tracking-*` | System type hierarchy; tighter titles and comfortable body copy                          |
 | `--rt-color-*`                                                      | Semantic page/surface/text/selection/error/focus and route colors                        |
@@ -43,6 +44,7 @@ font, radius or color values in adopting pages; extend the master file deliberat
 | `Sheet`          | `children`, optional `floating`, `className`, section props. Nonmodal document-flow surface; name it with `aria-label` or `aria-labelledby`.                                                                          |
 | `QuestionGroup`  | Required `legend`, optional `description`, `children`, native fieldset props. Groups related questions; preserves external `aria-describedby`.                                                                        |
 | `Field`          | Required `label`; optional `id`, `hint`, `error`, `className`; native input props. Automatically associates labels, hints and errors. Value/validation remain with the caller.                                        |
+| `AmountControl`  | Required `label`, finite non-negative `value`, `onChange(number)`; optional `id`, `initialMax`, `disabled`, `describedBy`. Native continuous range and explicit − / + tap actions; preserves raw caller values. |
 | `ActionButton`   | `variant` (`primary` or `secondary`), `type` (defaults to `button`), native button props and children. Set `type="submit"` explicitly inside forms.                                                                   |
 | `ChoiceGroup`    | Required `legend`, `options`, `onChange(value)`; optional `value`, `description`, `name`, `disabled`. Options have `value`, `label`, optional `description` and `disabled`. Native radio behavior, one selection.     |
 | `StageProgress`  | Required `stages: [{id,label}]`; optional `currentId`, `completedIds`. Reports actual completed stage count; deduplicates and ignores unknown IDs. Caller owns validation/completion.                                 |
@@ -50,10 +52,27 @@ font, radius or color values in adopting pages; extend the master file deliberat
 | `TripTimeline`   | Required `label` and `items`. Items have `id`, `title`, `time`, optional `dateTime`, `description`, `status` (`upcoming`, `current`, `complete`). Current step and status text convey state without relying on color. |
 
 [`DesignSystemExample.jsx`](../frontend/src/design/DesignSystemExample.jsx) is a
-standalone local composition using every public primitive. Mount its default export
+standalone local composition using representative public primitives. Mount its default export
 in a temporary Vite entry for visual review or import it into a development harness.
 It has no route, account, map provider, backend, storage or network dependencies.
 Its save action changes local preview state only and its itinerary is sample data.
+
+`AmountControl` removes the need to type an interest amount. Drag the native slider,
+use its arrow/Home/End keys, or tap the labeled − / + actions. All three controls
+have at least 44px hit targets and visible focus. Tap actions announce the updated
+amount through a polite status; slider feedback uses native assistive-technology
+behavior without repeated live announcements during dragging.
+
+Amounts are relative weights, not percentages. `initialMax` is a soft display
+range, not a stored-value cap: larger restored or explicitly increased values
+expand it, and the range stays stable during a drag. The tap increment scales with
+the range magnitude. Rendering does not round, normalize or write caller state;
+the compact visual label is rounded for readability while the slider's accessible
+value retains the exact amount. In the trip setup flow, the first manual action
+seeds untouched amounts at full precision from the stated profile; subsequent
+actions change only the chosen interest. Existing normalization and the internal
+50/50 comparison blend stay in the setup model. All-zero profiles still fail its
+existing validation.
 
 ## Integration contract
 

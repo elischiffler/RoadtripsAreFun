@@ -84,7 +84,8 @@ export default function TripSetupPage() {
   };
 
   const save = async (current, session, controller) => {
-    if (!isActive(controller, session)) return false;
+    if (!isActive(controller, session) || !current.itinerary || !current.snapshot.isComplete)
+      return false;
     const logs = loaded.UserData.chatlogs;
     const records = [
       ...loaded.chats.filter((item) => item.id !== current.snapshot.chatId),
@@ -133,6 +134,7 @@ export default function TripSetupPage() {
         destination,
         controller.signal,
         {
+          reserveMealSlots: true,
           onProgress: (event) => {
             if (isActive(controller, session)) report(event);
           },
@@ -157,6 +159,7 @@ export default function TripSetupPage() {
         isComplete: false,
         tripProfile: {
           ...structuredTripInputs(proposal.draft),
+          reserve_meal_slots: true,
           preference_profiles: preferenceProfiles(proposal.draft),
           start_address: origin.address,
           destination_address: destination.address,
@@ -199,6 +202,10 @@ export default function TripSetupPage() {
         current.itineraryError = plannerError(failure);
         report({ type: 'failed' });
       }
+      if (!current.itinerary) {
+        setResult(current);
+        return;
+      }
       setSaving(true);
       current.saved = await save(current, session, controller);
       if (!isActive(controller, session)) return;
@@ -228,7 +235,7 @@ export default function TripSetupPage() {
   };
 
   const retry = async (itineraryOnly) => {
-    if (busy || !result) return;
+    if (busy || !result || (!itineraryOnly && !result.itinerary)) return;
     const session = getSession(),
       controller = new AbortController();
     request.current = controller;
@@ -359,6 +366,11 @@ export default function TripSetupPage() {
                 location. The planning service checks the final schedule. Route planning uses AI
                 place ratings and live road and hotel providers.
               </p>
+              <p className="rt-caption">
+                Meal breaks are included when your trip spans breakfast, lunch or dinner: 30, 45 and
+                60 minutes. No dining places are selected or booked. If the breaks cannot fit your
+                driving and visit schedule, planning will explain the conflict.
+              </p>
               <ActionButton
                 variant="secondary"
                 disabled={busy}
@@ -419,8 +431,8 @@ export default function TripSetupPage() {
                 </dd>
               </dl>
               <p className="rt-caption">
-                Driving excludes visits and overnight stays. Hotel quotes exclude fuel, food and
-                tickets and do not guarantee booking availability.
+                Driving excludes visits, meal breaks and overnight stays. Hotel quotes exclude fuel,
+                food and tickets and do not guarantee booking availability.
               </p>
               {(result.route.warnings ?? []).map((warning, index) => (
                 <p role="note" key={index} className="rt-caption">
@@ -450,7 +462,7 @@ export default function TripSetupPage() {
                   </ActionButton>
                 </div>
               )}
-              {!result.saved && (
+              {!result.saved && result.itinerary && (
                 <ActionButton disabled={busy} onClick={() => retry(false)}>
                   Retry saving trip
                 </ActionButton>

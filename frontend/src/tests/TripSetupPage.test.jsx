@@ -95,6 +95,7 @@ it('plans only after explicit provider-address confirmation and creates a new sa
   await confirm();
   expect(await screen.findByText('Trip saved.')).toBeInTheDocument();
   expect(planStructuredRoute.mock.calls[0].slice(0, 3)).toEqual([draft, origin, destination]);
+  expect(planStructuredRoute.mock.calls[0][4].reserveMealSlots).toBe(true);
   expect(ensureChatCreated).toHaveBeenCalledTimes(1);
   const snapshot = ensureChatCreated.mock.calls[0][1];
   expect(snapshot.chatId).toBe(8);
@@ -113,27 +114,31 @@ it('plans only after explicit provider-address confirmation and creates a new sa
   expect(screen.getByRole('heading', { name: 'Review', exact: true })).toBeInTheDocument();
   expect(existing.route).toEqual({ name: 'Original saved route' });
 });
-it('retains a partial route and retries only itinerary, updating an existing saved row', async () => {
+it('keeps a failed itinerary local and retries without saving a partial trip', async () => {
   planStructuredItinerary.mockRejectedValueOnce(new Error('temporary'));
   await confirm();
-  await screen.findByText('Trip saved.');
+  await screen.findByText('Trip is not saved yet.');
+  expect(ensureChatCreated).not.toHaveBeenCalled();
+  expect(updateUserData).not.toHaveBeenCalled();
+  expect(screen.queryByRole('button', { name: 'Retry saving trip' })).not.toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'View itinerary' })).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Retry itinerary' }));
   await screen.findByRole('link', { name: 'View itinerary' });
   expect(planStructuredRoute).toHaveBeenCalledTimes(1);
-  expect(updateUserData).toHaveBeenCalledTimes(1);
+  expect(ensureChatCreated).toHaveBeenCalledTimes(1);
+  expect(updateUserData).not.toHaveBeenCalled();
 });
-it('does not claim a failed update was saved when retrying persistence', async () => {
+it('does not claim a failed creation was saved when retrying persistence', async () => {
   planStructuredItinerary.mockRejectedValueOnce(new Error('temporary'));
   await confirm();
-  await screen.findByText('Trip saved.');
-  updateUserData.mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+  await screen.findByText('Trip is not saved yet.');
+  ensureChatCreated.mockResolvedValueOnce(false).mockResolvedValueOnce(true);
   await userEvent.click(screen.getByRole('button', { name: 'Retry itinerary' }));
   await screen.findByText('Trip is not saved yet.');
   await userEvent.click(screen.getByRole('button', { name: 'Retry saving trip' }));
   await screen.findByText('Trip saved.');
-  expect(updateUserData).toHaveBeenCalledTimes(2);
-  expect(ensureChatCreated).toHaveBeenCalledTimes(1);
+  expect(updateUserData).not.toHaveBeenCalled();
+  expect(ensureChatCreated).toHaveBeenCalledTimes(2);
 });
 it('preserves results when creating a row fails and retries saving without another provider run', async () => {
   ensureChatCreated.mockResolvedValueOnce(false).mockResolvedValueOnce(true);
@@ -159,6 +164,43 @@ it('blocks planning when saved IDs could not be loaded and surfaces route valida
   );
   expect(await screen.findByRole('alert')).toHaveTextContent('Departure must be in the future');
   expect(ensureChatCreated).not.toHaveBeenCalled();
+});
+it('explains meal infeasibility without requesting an itinerary, saving, or completing progress', async () => {
+  planStructuredRoute.mockRejectedValueOnce({
+    response: {
+      status: 422,
+      data: {
+        detail: 'Lunch cannot fit between the visit and your driving cutoff. Edit your schedule.',
+      },
+    },
+  });
+  await confirm();
+  expect(await screen.findByRole('alert')).toHaveTextContent('Lunch cannot fit');
+  expect(planStructuredItinerary).not.toHaveBeenCalled();
+  expect(ensureChatCreated).not.toHaveBeenCalled();
+  expect(updateUserData).not.toHaveBeenCalled();
+  expect(screen.queryByText('Trip saved.')).not.toBeInTheDocument();
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).not.toHaveAttribute(
+    'value',
+    '100'
+  );
+  expect(existing.route).toEqual({ name: 'Original saved route' });
+});
+
+it('keeps a meal reservation validation failure local until a complete itinerary is available', async () => {
+  planStructuredItinerary.mockRejectedValueOnce({
+    response: { status: 422, data: { detail: 'Dinner overlaps a visit; revise your schedule.' } },
+  });
+  await confirm();
+  await screen.findByText('Trip is not saved yet.');
+  expect(screen.getByRole('alert')).toHaveTextContent('Dinner overlaps a visit');
+  expect(ensureChatCreated).not.toHaveBeenCalled();
+  expect(updateUserData).not.toHaveBeenCalled();
+  expect(screen.queryByRole('button', { name: 'Retry saving trip' })).not.toBeInTheDocument();
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '92'
+  );
 });
 it('discards a late planning result after account sign-out', async () => {
   let finish;
@@ -233,7 +275,7 @@ it('waits for explicit selection when a location has several provider matches', 
   expect(screen.queryByText('Interests sent to the planner')).not.toBeInTheDocument();
 });
 
-it('reaches70 with an actual base route, waits for itinerary and saving, and opts into open meal slots', async () => {
+it('reaches70 with a base route and requests reserved meal time before saving a completed itinerary', async () => {
   let finishRoute, finishItinerary, finishSave;
   planStructuredRoute.mockImplementationOnce(
     (_draft, _origin, _destination, _signal, { onProgress }) => {
@@ -291,7 +333,7 @@ it('discards a stopped itinerary retry before it can publish progress or save', 
       })
   );
   await confirm();
-  await screen.findByText('Trip saved.');
+  await screen.findByText('Trip is not saved yet.');
   await userEvent.click(screen.getByRole('button', { name: 'Retry itinerary' }));
   await waitFor(() => expect(planStructuredItinerary).toHaveBeenCalledTimes(2));
   const retrySignal = planStructuredItinerary.mock.calls[1][1];
@@ -324,7 +366,7 @@ it('keeps a newer retry active when a cancelled retry resolves out of order', as
         })
     );
   await confirm();
-  await screen.findByText('Trip saved.');
+  await screen.findByText('Trip is not saved yet.');
   await userEvent.click(screen.getByRole('button', { name: 'Retry itinerary' }));
   await userEvent.click(screen.getByRole('button', { name: 'Stop waiting' }));
   await userEvent.click(screen.getByRole('button', { name: 'Retry itinerary' }));
@@ -340,8 +382,8 @@ it('keeps a newer retry active when a cancelled retry resolves out of order', as
   const latest = [{ date: 'New retry', stops: route.stops }];
   await act(async () => finishNew(latest));
   await screen.findByRole('link', { name: 'View itinerary' });
-  expect(updateUserData).toHaveBeenCalledTimes(1);
-  expect(updateUserData.mock.calls[0][1].itinerary).toEqual(latest);
+  expect(ensureChatCreated).toHaveBeenCalledTimes(1);
+  expect(ensureChatCreated.mock.calls[0][1].itinerary).toEqual(latest);
   expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
     'value',
     '100'

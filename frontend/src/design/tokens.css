@@ -23,7 +23,9 @@
   --rt-content-width: 30rem;
   --rt-page-padding: clamp(1rem, 4vw, 2rem);
   --rt-marker-size: 0.75rem;
+  --rt-slider-thumb-size: 1.5rem;
   --rt-press-scale: 0.98;
+  --rt-opacity-disabled: 0.5;
 
   --rt-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --rt-text-caption: 0.8125rem;

@@ -76,11 +76,16 @@ export async function streamTripRoute(payload, signal, onProgress) {
       const event = JSON.parse(line);
       if (!event || typeof event !== 'object') throw new Error('Invalid trip progress event.');
       if (event.type === 'error') {
-        // Public guidance comes from an exact application-owned contract, never
-        // provider details carried by an arbitrary streamed error.
+        // Public guidance is limited to exact application-owned error contracts.
+        // Provider details and errors with other statuses remain redacted.
         const detail =
           event.status === 422 && event.code === 'departure_not_upcoming'
             ? DEPARTURE_NOT_UPCOMING
+            : event.status === 422 &&
+                event.code === 'meal_schedule_conflict' &&
+                typeof event.detail === 'string' &&
+                event.detail.length <= 1000
+              ? event.detail
             : undefined;
         throw streamError(event.status ?? 503, detail);
       }

@@ -20,6 +20,7 @@ class Itinerary_Day(BaseModel):
         meal_type: Literal["breakfast", "lunch", "dinner"] | None = None
         window_start: str | None = None
         window_end: str | None = None
+        duration_seconds: int | None = None
         provider_id: str | None = None
         source: str | None = None
         source_release: str | None = None
