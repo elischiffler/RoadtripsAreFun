@@ -12,7 +12,7 @@ import {
   setupErrors,
 } from './setupModel';
 import './TripSetup.css';
-import DailyRhythm from './DailyRhythm';
+import DailyRhythm from './DailyRhythm.jsx';
 import PreferenceProfilePicker from '../../components/PreferenceProfilePicker';
 
 export default function TripSetup({ onSubmit, busy = false, renderEstimate, prepareRoute }) {

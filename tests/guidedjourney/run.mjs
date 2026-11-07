@@ -128,7 +128,7 @@ invoke(
     "-s",
     "/journey",
     "-p",
-    "test_preparation_observer.py",
+    "test_*.py",
     "-q",
   ],
   { stdio: "inherit", timeout: 30000 },

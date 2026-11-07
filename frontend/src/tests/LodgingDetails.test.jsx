@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import { expect, it } from 'vitest';
-import PlaceTiming from '../components/PlaceTiming';
+import PlaceTiming from '../components/PlaceTiming.jsx';
 const lodging = {
   check_in_date: '2027-06-01',
   check_out_date: '2027-06-03',

@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ActionButton, DesignFrame, Field, Sheet } from '../../design';
 import { getSession, isCurrentSession } from '../../services/session';
 import { useSessionStatus } from '../../services/useSessionStatus';
-import PlaceTiming from '../../components/PlaceTiming';
+import PlaceTiming from '../../components/PlaceTiming.jsx';
 import {
   captureShareToken,
   clearShareToken,

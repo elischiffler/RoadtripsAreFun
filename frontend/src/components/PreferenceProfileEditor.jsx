@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { ActionButton, AmountControl, ChoiceGroup, Field } from '../design';
 import { INTERESTS, newSetupDraft, setupErrors } from '../pages/TripSetup/setupModel';
 import { applyPreferenceChoices, choicesFromDraft } from '../services/preferenceProfiles';
-import DailyRhythm from '../pages/TripSetup/DailyRhythm';
+import DailyRhythm from '../pages/TripSetup/DailyRhythm.jsx';
 
 const TIMES = {
   morning_restart: 'Start driving each morning',
