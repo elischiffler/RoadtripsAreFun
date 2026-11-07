@@ -2,7 +2,14 @@ import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { chromium } from "../guidedjourney/node_modules/playwright-core/index.mjs";
-const origin = "http://127.0.0.1:5199";
+const fixturePort = process.env.ARRIVAL_TEST_PORT || "5199";
+assert.ok(
+  /^\d{4,5}$/.test(fixturePort) &&
+    Number(fixturePort) >= 1024 &&
+    Number(fixturePort) <= 65535,
+  "Arrival harness port must be a bounded local test port",
+);
+const origin = "http://127.0.0.1:" + fixturePort;
 const output = join(import.meta.dirname, ".artifacts");
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({
@@ -16,7 +23,7 @@ const browser = await chromium.launch({
 });
 const errors = [],
   blocked = [];
-async function fixture({ conflict = false } = {}) {
+async function fixture({ conflict = false, colocated = false } = {}) {
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
     reducedMotion: "reduce",
@@ -35,10 +42,28 @@ async function fixture({ conflict = false } = {}) {
       const body = route.request().postDataJSON();
       assert.equal(body.ExpectedRevision, revision);
       assert.equal(body.UpdateScope, "presentation");
-      assert.deepEqual(Object.keys(body.ChatData.presentation).sort(), [
+      const allowed = new Set([
         "futureField",
         "visitedStopIds",
+        "arrivals",
+        "automaticArrivalExcludedStopIds",
       ]);
+      assert.ok(
+        Object.keys(body.ChatData.presentation).every((key) =>
+          allowed.has(key),
+        ),
+      );
+      assert.ok(
+        !/"(latitude|longitude|coordinates|speed|timestamp)":/.test(
+          JSON.stringify(body.ChatData.presentation),
+        ),
+      );
+      for (const event of Object.values(
+        body.ChatData.presentation.arrivals || {},
+      )) {
+        assert.ok(["web-foreground", "manual"].includes(event.source));
+        assert.equal(event.type, "trip.stop.arrived");
+      }
       writes.push({
         expectedRevision: body.ExpectedRevision,
         presentation: body.ChatData.presentation,
@@ -101,9 +126,9 @@ async function fixture({ conflict = false } = {}) {
   const page = await context.newPage();
   page.on("pageerror", (error) => errors.push(error.message));
   await page.clock.setFixedTime(new Date("2030-05-04T12:00:00Z"));
-  await page.goto(origin);
+  await page.goto(origin + (colocated ? "/?colocated=1" : "/"));
   await page
-    .getByRole("region", { name: "Arrival assist", exact: true })
+    .getByRole("region", { name: "Automatic arrivals", exact: true })
     .waitFor();
   assert.equal(await page.evaluate(() => window.arrivalFixture.watches), 0);
   return { context, page, writes };
@@ -119,12 +144,13 @@ async function advance(page, milliseconds) {
   const now = await page.evaluate(() => Date.now());
   await page.clock.setFixedTime(new Date(now + milliseconds));
 }
-async function dwell(page) {
-  for (let index = 0; index < 4; index++) {
+async function dwell(page, changes = {}) {
+  for (let index = 0; index < 5; index++) {
     if (index) await advance(page, 15000);
-    await page.evaluate(() => window.arrivalFixture.send());
+    await page.evaluate((value) => window.arrivalFixture.send(value), changes);
   }
 }
+
 try {
   const good = await fixture();
   await enable(good.page);
@@ -165,7 +191,15 @@ try {
     window.arrivalFixture.send({ latitude: 40.003 }),
   );
   await advance(good.page, 15000);
-  await dwell(good.page);
+  await good.page.evaluate(() =>
+    window.arrivalFixture.send({ latitude: 40.003 }),
+  );
+  await advance(good.page, 15000);
+  await good.page.evaluate(() =>
+    window.arrivalFixture.send({ latitude: 40.00054 }),
+  );
+  await advance(good.page, 15000);
+  await dwell(good.page, { latitude: 40.00054 });
   await good.page.getByText("2 of 2 stops visited", { exact: true }).waitFor();
   await good.page.getByText("Visit updates saved.", { exact: true }).waitFor();
   assert.equal(good.writes.length, 2);
@@ -211,6 +245,9 @@ try {
     false,
   );
   await denied.page
+    .getByRole("button", { name: "Correct an arrival", exact: true })
+    .click();
+  await denied.page
     .getByRole("button", {
       name: "Mark visited: Synthetic arrival garden",
       exact: true,
@@ -221,6 +258,18 @@ try {
     .waitFor();
   assert.equal(denied.writes.length, 1);
   await denied.context.close();
+  const colocated = await fixture({ colocated: true });
+  await enable(colocated.page);
+  await dwell(colocated.page);
+  await colocated.page
+    .getByText(/Nearby stops are too close to distinguish/)
+    .waitFor();
+  assert.equal(
+    colocated.writes.length,
+    0,
+    "Co-located identities must remain ambiguous",
+  );
+  await colocated.context.close();
   const stale = await fixture({ conflict: true });
   await enable(stale.page);
   await dwell(stale.page);
@@ -254,7 +303,7 @@ try {
     ) + "\n",
   );
   console.log(
-    "PASS: opt-in automatic arrival, guarded dwell, co-located departure/re-entry across actual client revision updates, undo, denied-location manual fallback, stale-save stop, 390/1440 layout. Browser positions and persistence are mocked.",
+    "PASS: opt-in automatic arrival, guarded dwell, adjacent-stop departure/re-entry across actual client revision updates, co-located ambiguity, undo, denied-location manual fallback, stale-save stop, 390/1440 layout. Browser positions and persistence are mocked.",
   );
 } finally {
   await browser.close();

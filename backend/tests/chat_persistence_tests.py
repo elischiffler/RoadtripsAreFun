@@ -313,7 +313,14 @@ def test_atomic_route_save_rejects_concurrent_car_change_after_preflight(client,
 
 
 def test_route_save_is_scoped_and_stale_visit_cannot_restore_old_route_or_car(client, storage):
-    body = _body(presentation={"future": "keep", "visitedStopIds": ["old"]})
+    body = _body(
+        presentation={
+            "future": "keep",
+            "visitedStopIds": ["old"],
+            "arrivals": {"old": {"source": "web-foreground"}},
+            "automaticArrivalExcludedStopIds": ["other-old-stop"],
+        }
+    )
     created = client.post("/chats/create/1", json=body)
     revision = created.headers["X-Trip-Revision"]
     assert revision == chat_crud.chat_data_revision(

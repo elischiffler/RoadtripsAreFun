@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import ArrivalAssist from '../components/ArrivalAssist';
+import TripArrivalTracking from '../components/TripArrivalTracking';
 import TripVisitProgress from '../components/TripVisitProgress';
 import { ChatData, ChatLogs, Data, UserDataContext } from '../states/UserDataContext';
 import { fixtureSession } from './sessionFixtures';
@@ -31,6 +31,7 @@ const makeTrip = (twoStops = false) => {
           ...stop,
           provider_id: 'place:second',
           name: 'Second garden',
+          coordinates: [40.00054, -105],
           arrival_time: '2030-05-04T12:45:00Z',
           departure_time: '2030-05-04T13:30:00Z',
         },
@@ -87,7 +88,7 @@ const send = async (offset, changes = {}) => {
   });
 };
 const dwell = async () => {
-  for (const offset of [0, 15000, 30000, 45000]) await send(offset);
+  for (const offset of [0, 15000, 30000, 45000, 60000]) await send(offset);
 };
 function Fixture(options = {}) {
   const twoStops = options.twoStops === true;
@@ -109,19 +110,21 @@ it('opts in explicitly, automatically saves one detected visit and supports imme
   });
   await send(0, { accuracy: 1000 });
   expect(updateUserData).not.toHaveBeenCalled();
-  for (const offset of [1000, 16000, 31000, 46000]) await send(offset);
+  for (const offset of [1000, 16000, 31000, 46000, 61000]) await send(offset);
   expect(await screen.findByText('Visit updates saved.')).toBeInTheDocument();
   expect(screen.getByText('1 of 1 stops visited')).toBeInTheDocument();
   expect(screen.getByText('Detected arrival: Arrival garden')).toBeInTheDocument();
   expect(updateUserData).toHaveBeenCalledTimes(1);
   const saved = updateUserData.mock.calls[0][1];
-  expect(saved.presentation).toEqual({
+  expect(saved.presentation).toMatchObject({
     futureField: 'preserve',
     visitedStopIds: [expect.any(String)],
+    arrivals: expect.any(Object),
   });
+  expect(JSON.stringify(saved.presentation)).not.toMatch(/latitude|longitude/);
   expect(saved.savedRevision).toBe('a'.repeat(64));
   expect(updateUserData.mock.calls[0][4]).toEqual({ presentationOnly: true });
-  await send(61000);
+  await send(76000);
   expect(updateUserData).toHaveBeenCalledTimes(1);
   await userEvent.click(
     screen.getByRole('button', { name: 'Undo detected visit: Arrival garden' })
@@ -143,11 +146,14 @@ it('preserves the departure latch and watch through actual auto-save/next-target
   expect(screen.getByText('Next attraction: Second garden')).toBeInTheDocument();
   expect(watchPosition).toHaveBeenCalledTimes(1);
   expect(clearWatch).not.toHaveBeenCalled();
-  for (const offset of [60000, 75000, 90000, 105000]) await send(offset);
+  for (const offset of [75000, 90000, 105000, 120000]) await send(offset);
   expect(updateUserData).toHaveBeenCalledTimes(1);
   expect(screen.getByText(/Leave this arrival area/)).toBeInTheDocument();
-  await send(120000, { latitude: 40.003 });
-  for (const offset of [135000, 150000, 165000, 180000]) await send(offset);
+  await send(135000, { latitude: 40.003 });
+  await send(150000, { latitude: 40.003 });
+  await send(165000, { latitude: 40.00054 });
+  for (const offset of [180000, 195000, 210000, 225000, 240000])
+    await send(offset, { latitude: 40.00054 });
   expect(await screen.findByText('2 of 2 stops visited')).toBeInTheDocument();
   expect(updateUserData).toHaveBeenCalledTimes(2);
   expect(watchPosition).toHaveBeenCalledTimes(1);
@@ -167,7 +173,7 @@ it('does not claim a failed detected visit was saved and never replays a stale c
   expect(
     screen.getByRole('button', { name: 'Enable location and mark nearby stops visited' })
   ).toBeDisabled();
-  await send(60000);
+  await send(75000);
   expect(updateUserData).toHaveBeenCalledTimes(1);
 });
 it('keeps failed automatic writes local and uses the existing explicit retry', async () => {
@@ -190,6 +196,7 @@ it('stops on denial, supports manual fallback and ignores late callbacks', async
   expect(clearWatch).toHaveBeenCalledWith(17);
   await dwell();
   expect(updateUserData).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: 'Correct an arrival' }));
   await userEvent.click(screen.getByRole('button', { name: 'Mark visited: Arrival garden' }));
   expect(await screen.findByText('Visit updates saved.')).toBeInTheDocument();
 });
@@ -206,32 +213,60 @@ it('clears location on hide and requires explicit restart when visible again', a
   expect(watchPosition).toHaveBeenCalledTimes(1);
 });
 it('stops on route changes, account changes and unmount', async () => {
-  const callbacks = { onArrived: vi.fn(), onUndo: vi.fn() };
+  const callbacks = { onArrival: vi.fn(), onUndo: vi.fn(), canRecord: () => true, blocked: false };
   const first = makeTrip();
-  const view = render(<ArrivalAssist trip={first} {...callbacks} />);
+  const view = render(<TripArrivalTracking trip={first} {...callbacks} />);
   await enable();
-  view.rerender(<ArrivalAssist trip={{ ...first, route: { ...first.route } }} {...callbacks} />);
+  view.rerender(
+    <TripArrivalTracking trip={{ ...first, route: { ...first.route } }} {...callbacks} />
+  );
   expect(clearWatch).toHaveBeenCalledWith(17);
   await dwell();
-  expect(callbacks.onArrived).not.toHaveBeenCalled();
+  expect(callbacks.onArrival).not.toHaveBeenCalled();
   await enable();
   act(() => signOut());
   await dwell();
-  expect(callbacks.onArrived).not.toHaveBeenCalled();
+  expect(callbacks.onArrival).not.toHaveBeenCalled();
   fixtureSession();
   await enable();
   view.unmount();
-  expect(clearWatch).toHaveBeenCalledTimes(3);
+  expect(clearWatch).toHaveBeenCalledWith(17);
 });
 it('handles insecure connections and unavailable fixes', async () => {
-  render(<ArrivalAssist trip={makeTrip()} onArrived={vi.fn()} onUndo={vi.fn()} />);
+  const view = render(
+    <TripArrivalTracking
+      trip={makeTrip()}
+      onArrival={vi.fn()}
+      onUndo={vi.fn()}
+      canRecord={() => true}
+      blocked={false}
+    />
+  );
   Object.defineProperty(window, 'isSecureContext', { configurable: true, value: false });
   await enable();
   expect(watchPosition).not.toHaveBeenCalled();
   expect(screen.getByText(/secure connection/)).toBeInTheDocument();
   Object.defineProperty(window, 'isSecureContext', { configurable: true, value: true });
+  view.rerender(
+    <TripArrivalTracking
+      trip={makeTrip()}
+      onArrival={vi.fn()}
+      onUndo={vi.fn()}
+      canRecord={() => true}
+      blocked={false}
+    />
+  );
   await enable();
   act(() => failure({ code: 2 }));
   expect(screen.getByText(/Location is unavailable/)).toBeInTheDocument();
   expect(clearWatch).toHaveBeenCalledWith(17);
+});
+
+it('stops when the account token expires before a fix can be recorded', async () => {
+  render(<Fixture />);
+  await enable();
+  await send(3601000);
+  expect(clearWatch).toHaveBeenCalledWith(17);
+  expect(screen.getByText(/sign-in changed/)).toBeInTheDocument();
+  expect(updateUserData).not.toHaveBeenCalled();
 });
