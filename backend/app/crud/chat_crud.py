@@ -31,6 +31,14 @@ class ChatSnapshotConflict(ValueError):
     """The saved trip changed after the editor loaded its snapshot."""
 
 
+class ChatGeometryUnavailable(ValueError):
+    """An owner-scoped stored coordinate reference has no backing data."""
+
+
+class ChatGeometryInvalid(ValueError):
+    """A saved geometry cannot be interpreted as inline data or a reference."""
+
+
 def chat_data_revision(data: dict[str, Any]) -> str:
     """Opaque revision of exact durable JSON, before geometry hydration."""
     payload = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
@@ -187,6 +195,24 @@ def get_segments(user_id: str, chat_id: str, route_id: str):
         return segs
     finally:
         _put_conn(conn)
+
+
+def restore_geometry(user_id: str, chat_id: str, geometry, *, allow_absent=False):
+    """Hydrate historical references while preserving inline geometry metadata."""
+    if geometry is None and allow_absent:
+        return None
+    if isinstance(geometry, dict):
+        coordinates = geometry.get("coordinates")
+    else:
+        coordinates = geometry
+    if isinstance(coordinates, list):
+        return geometry if isinstance(geometry, dict) else {"coordinates": coordinates}
+    if not isinstance(coordinates, str) or not coordinates.strip():
+        raise ChatGeometryInvalid()
+    restored = get_segments(user_id=user_id, chat_id=chat_id, route_id=coordinates)
+    if not restored:
+        raise ChatGeometryUnavailable()
+    return {**(geometry if isinstance(geometry, dict) else {}), "coordinates": restored}
 
 
 def update_chat_component(
@@ -350,33 +376,54 @@ def delete_chat(auth_token: str, chat_id: str):
 
 def restore_legs(user_id: str, chat_id: str, legs: list[Any]):
     """Restore step coordinates only from the verified user's chat."""
+    if not isinstance(legs, list):
+        raise ChatGeometryInvalid()
+    references = []
+    for leg in legs:
+        if not isinstance(leg, dict):
+            raise ChatGeometryInvalid()
+        steps = leg.get("steps")
+        # Some historical legs have no maneuver details. Preserve absence and
+        # empty arrays exactly, without treating them as stored references.
+        if steps is None:
+            continue
+        if not isinstance(steps, list):
+            raise ChatGeometryInvalid()
+        by_reference = {}
+        for index, step in enumerate(steps):
+            if not isinstance(step, dict) or not isinstance(step.get("geometry"), dict):
+                raise ChatGeometryInvalid()
+            coordinates = step["geometry"].get("coordinates")
+            if isinstance(coordinates, list):
+                continue
+            if not isinstance(coordinates, str) or not coordinates.strip():
+                raise ChatGeometryInvalid()
+            by_reference.setdefault(coordinates, []).append(index)
+        references.extend((steps, ref, indices) for ref, indices in by_reference.items())
+    if not references:
+        return legs
     conn = _get_conn()
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            rest_legs = []
-            for leg in legs:
-                leg_id = leg["steps"][0]["geometry"]["coordinates"]
+            updates = []
+            for steps, leg_id, indices in references:
                 cur.execute(
                     """SELECT * FROM steps
                        WHERE user_id = %s AND chat_id = %s AND leg_id = %s
                        ORDER BY step_id""",
                     (user_id, chat_id, leg_id),
                 )
-                steps_coords = cur.fetchall()
-                num_steps = len(leg["steps"])
-                for step_row in steps_coords:
-                    idx = step_row["step_id"]
-                    # Guard: only restore if the step index still exists in the leg
-                    if idx < num_steps:
-                        leg["steps"][idx]["geometry"]["coordinates"] = step_row["coordinates"]
-                    else:
-                        logger.warning(
-                            "restore_legs: DB has step_id=%s for leg_id=%s but leg only has %d steps — skipping",
-                            idx,
-                            leg_id,
-                            num_steps,
-                        )
-                rest_legs.append(leg)
-        return rest_legs
+                stored = {row["step_id"]: row["coordinates"] for row in cur.fetchall()}
+                for index in indices:
+                    if index not in stored:
+                        raise ChatGeometryUnavailable()
+                    if not isinstance(stored[index], list):
+                        raise ChatGeometryInvalid()
+                    updates.append((steps[index]["geometry"], stored[index]))
+            # Apply only after all references resolve, preserving inline steps
+            # even when old backing rows still contain their former indices.
+            for geometry, coordinates in updates:
+                geometry["coordinates"] = coordinates
+        return legs
     finally:
         _put_conn(conn)

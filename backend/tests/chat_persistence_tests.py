@@ -289,7 +289,7 @@ def test_get_revision_hashes_raw_snapshot_before_geometry_hydration(client, stor
     raw = storage.rows["verified-alice", "1"]["chat_data"]
     raw["route"] = {"geometry": {"coordinates": "owner-route-reference"}}
     revision = chat_crud.chat_data_revision(raw)
-    monkeypatch.setattr(chat_api, "get_segments", lambda **kwargs: [[1, 2], [3, 4]])
+    monkeypatch.setattr(chat_crud, "get_segments", lambda **kwargs: [[1, 2], [3, 4]])
     loaded = client.get("/chats", headers={"Authorization": "Bearer fixture"}).json()[0][0]
     assert loaded["savedRevision"] == revision
     assert loaded["route"]["geometry"]["coordinates"] == [[1, 2], [3, 4]]

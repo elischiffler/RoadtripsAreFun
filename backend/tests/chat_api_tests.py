@@ -242,7 +242,7 @@ def test_get_agent_route_without_legacy_initial_restores_geometry():
     with (
         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
         patch("app.routers.chat_api.get_all_chats", return_value=[item]),
-        patch("app.routers.chat_api.get_segments", return_value=coordinates) as segments,
+        patch("app.crud.chat_crud.get_segments", return_value=coordinates) as segments,
     ):
         response = client.get("/chats", headers={"Authorization": "Bearer fixture-token"})
 

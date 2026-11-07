@@ -6,13 +6,15 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from app.crud.chat_crud import (
+    ChatGeometryInvalid,
+    ChatGeometryUnavailable,
     ChatIdentityConflict,
     ChatSnapshotConflict,
     chat_data_revision,
     create_chat,
     delete_chat,
     get_all_chats,
-    get_segments,
+    restore_geometry,
     restore_legs,
     update_chat_component,
 )
@@ -43,34 +45,40 @@ async def initialize_chats(authorization: str | None = Header(default=None)):
             for item in items:
                 # Hash raw persisted JSON; coordinate hydration changes its shape.
                 item["ChatData"]["savedRevision"] = chat_data_revision(item["ChatData"])
-                sorted_segments = None
-                if item["ChatData"]["initial"]:
-                    sorted_segments = get_segments(
-                        user_id=user_id,
-                        chat_id=item["ChatId"],
-                        route_id=item["ChatData"]["initial"]["geometry"],
-                    )
-                    item["ChatData"]["initial"]["geometry"] = {}
-                    item["ChatData"]["initial"]["geometry"]["coordinates"] = sorted_segments
-                    item["ChatData"]["initial"]["legs"] = restore_legs(
-                        user_id=user_id,
-                        chat_id=item["ChatId"],
-                        legs=item["ChatData"]["initial"]["legs"],
-                    )
-                route = item["ChatData"]["route"]
-                if route:
-                    stored_coordinates = route["geometry"]["coordinates"]
-                    if isinstance(stored_coordinates, str):
-                        route["geometry"]["coordinates"] = get_segments(
+                initial = item["ChatData"].get("initial")
+                if initial is not None and not isinstance(initial, dict):
+                    raise ChatGeometryInvalid()
+                if initial:
+                    if "geometry" in initial:
+                        initial["geometry"] = restore_geometry(
+                            user_id, item["ChatId"], initial["geometry"], allow_absent=True
+                        )
+                    if "legs" in initial:
+                        initial["legs"] = restore_legs(
                             user_id=user_id,
                             chat_id=item["ChatId"],
-                            route_id=stored_coordinates,
+                            legs=initial["legs"],
                         )
+                route = item["ChatData"].get("route")
+                if route is not None and not isinstance(route, dict):
+                    raise ChatGeometryInvalid()
+                if route:
+                    route["geometry"] = restore_geometry(
+                        user_id=user_id,
+                        chat_id=item["ChatId"],
+                        geometry=route.get("geometry"),
+                    )
                 # Add a complete chat entry tuple with a chat log and chat data to chats
                 chats.append((item["ChatData"], item["ChatLog"]))
         # Return a response indicating a successful query and a list of found chats
         return chats
 
+    except ChatGeometryUnavailable:
+        raise HTTPException(
+            status_code=503, detail="Saved trip geometry is temporarily unavailable"
+        ) from None
+    except ChatGeometryInvalid:
+        raise HTTPException(status_code=500, detail="Saved trip geometry is invalid") from None
     except psycopg2.Error as exception:
         logger.warning("Chat read unavailable: %s", type(exception).__name__)
         raise HTTPException(

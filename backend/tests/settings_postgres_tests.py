@@ -249,3 +249,77 @@ def test_long_route_shortening_keeps_exact_geometry_initial_and_scoped_rollback(
         with conn.cursor() as cur:
             cur.execute("DELETE FROM route_segments WHERE user_id IN (%s,%s)", (owner, other))
         conn.commit()
+
+
+@pytest.mark.parametrize("representation", ["inline", "segmented", "unavailable", "absent"])
+def test_legacy_initial_empty_steps_real_save_reload_preserves_json_revision_and_owner(
+    database, monkeypatch, representation
+):
+    """Read hydration uses only actual owner-scoped segments, never rewrites JSON."""
+    from copy import deepcopy
+
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from app.routers import chat_api
+    from tests.legacy_route_hydration_tests import legacy_body
+
+    conn, prefix = database
+    owner, other = prefix + "-legacy", prefix + "-other"
+    app = FastAPI()
+    app.include_router(chat_api.router)
+    monkeypatch.setattr(chat_api, "get_user_id_from_token", lambda _: owner)
+    client = TestClient(app, raise_server_exceptions=False)
+    body = legacy_body()
+    coordinates = deepcopy(body["ChatData"]["initial"]["geometry"]["coordinates"])
+    assert client.post("/chats/create/1", json=body).status_code == 200
+    if representation == "segmented":
+        # The actual legacy update path stores route references, even when a
+        # valid Mapbox leg contains no maneuver steps.
+        assert client.put("/chats/update/1", json=body).status_code == 200
+    if representation in {"unavailable", "absent"}:
+        geometry = "missing-" + owner if representation == "unavailable" else None
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE chats SET chat_data=jsonb_set(chat_data,'{initial,geometry}',%s::jsonb) WHERE user_id=%s AND chat_id='1'",
+                (Json(geometry), owner),
+            )
+        conn.commit()
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT chat_data,chat_log FROM chats WHERE user_id=%s AND chat_id='1'", (owner,)
+        )
+        raw, log = cur.fetchone()
+        reference = "missing-" + owner if representation == "unavailable" else owner + "-1"
+        cur.execute(
+            "INSERT INTO route_segments(user_id,chat_id,route_id,segment_id,coords) VALUES(%s,'1',%s,'999',%s)",
+            (other, reference, Json([[1, 2], [3, 4]])),
+        )
+    conn.commit()
+    revision = chat_crud.chat_data_revision(raw)
+    response = client.get("/chats", headers={"Authorization": "Bearer synthetic-local-token"})
+    if representation == "unavailable":
+        assert response.status_code == 503, response.text
+        assert response.json() == {"detail": "Saved trip geometry is temporarily unavailable"}
+    else:
+        assert response.status_code == 200, response.text
+        hydrated, returned_log = response.json()[0]
+        assert hydrated["savedRevision"] == revision
+        assert hydrated["initial"]["legs"] == raw["initial"]["legs"]
+        if representation == "absent":
+            assert hydrated["initial"]["geometry"] is None
+        else:
+            assert hydrated["initial"]["geometry"]["coordinates"] == coordinates
+        assert hydrated["tripProfile"] == raw["tripProfile"]
+        assert hydrated["presentation"] == raw["presentation"]
+        assert returned_log == log
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT chat_data,chat_log FROM chats WHERE user_id=%s AND chat_id='1'", (owner,)
+        )
+        assert cur.fetchone() == (raw, log)
+        cur.execute(
+            "SELECT coords FROM route_segments WHERE user_id=%s AND route_id=%s", (other, reference)
+        )
+        assert cur.fetchone()[0] == [[1, 2], [3, 4]]
+    conn.rollback()
