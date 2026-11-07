@@ -6,6 +6,7 @@ second phase also checks that no module-level cache or pool hides lost data.
 
 import os
 import sys
+from copy import deepcopy
 from uuid import uuid4
 
 import psycopg2
@@ -247,7 +248,14 @@ def seed():
     restored = chat_crud.restore_legs(OWNER_A, CHAT_ID, legs)
     assert [step["geometry"]["coordinates"] for step in restored[0]["steps"]] == GOOD_STEPS
     other_legs = [{"steps": [{"geometry": {"coordinates": leg_ref}}]}]
-    assert chat_crud.restore_legs(OWNER_B, CHAT_ID, other_legs) == other_legs
+    original_other_legs = deepcopy(other_legs)
+    try:
+        chat_crud.restore_legs(OWNER_B, CHAT_ID, other_legs)
+    except chat_crud.ChatGeometryUnavailable:
+        pass
+    else:
+        raise AssertionError("Foreign-owner step coordinates must remain unavailable")
+    assert other_legs == original_other_legs
 
     memory_crud.upsert_facts(OWNER_A, [MemoryFact(key="home_city", value="San Luis Obispo")])
     memory_crud.upsert_facts(OWNER_B, [MemoryFact(key="home_city", value="Boston")])
