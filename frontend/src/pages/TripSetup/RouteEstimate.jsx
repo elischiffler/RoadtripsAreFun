@@ -1,38 +1,50 @@
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ActionButton, ChoiceGroup, QuestionGroup } from '../../design';
+import { ActionButton, ChoiceGroup } from '../../design';
 import {
   estimateStructuredRoute,
   plannerError,
   resolveTripLocation,
 } from '../../services/tripPlanner';
 import { getSession, isCurrentSession } from '../../services/session';
-import Map from '../../components/Map';
+import OnboardingMap from './OnboardingMap';
+import useCatalogPreparation from './useCatalogPreparation';
+import { approximateRestRegions } from './tripPreparation';
 import './ConnectedPlanning.css';
 
-/** Read-only driving estimate; ambiguity is resolved explicitly before routing. */
-export default function RouteEstimate({ start, destination }) {
+/** User-triggered road preparation, then admitted database ideas. No AI runs here. */
+const RouteEstimate = forwardRef(function RouteEstimate(
+  { start, destination, draft, stage = 0, onPrepared },
+  ref
+) {
   const [candidates, setCandidates] = useState(null);
   const [selected, setSelected] = useState({ origin: '', destination: '' });
-  const [estimate, setEstimate] = useState(null);
+  const [prepared, setPrepared] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const request = useRef(null);
+  const notify = useRef(onPrepared);
+  notify.current = onPrepared;
+  const queryKey = JSON.stringify([start.trim(), destination.trim()]);
+
   useEffect(() => {
     request.current?.abort();
     request.current = null;
     setCandidates(null);
-    setEstimate(null);
+    setPrepared(null);
     setBusy(false);
     setError('');
-    const mountedSession = getSession();
+    notify.current?.(null);
+    const session = getSession();
     const changed = () => {
-      if (isCurrentSession(mountedSession)) return;
+      if (isCurrentSession(session)) return;
       request.current?.abort();
       request.current = null;
       setCandidates(null);
-      setEstimate(null);
+      setPrepared(null);
       setBusy(false);
+      setError('');
+      notify.current?.(null);
     };
     window.addEventListener('auth-changed', changed);
     return () => {
@@ -40,45 +52,60 @@ export default function RouteEstimate({ start, destination }) {
       request.current = null;
       window.removeEventListener('auth-changed', changed);
     };
-  }, [start, destination]);
+  }, [queryKey]);
 
-  const run = async (confirmed) => {
+  const currentData =
+    prepared?.queryKey === queryKey && isCurrentSession(prepared.session) ? prepared : null;
+  const catalog = useCatalogPreparation(currentData?.initialRoute, currentData?.cacheKey);
+  const areas = currentData && draft ? approximateRestRegions(currentData.initialRoute, draft) : [];
+
+  const run = async (confirmed = false) => {
+    if (!confirmed && currentData) return { ok: true, ...currentData };
     request.current?.abort();
-    const controller = new AbortController();
-    const session = getSession();
+    const controller = new AbortController(),
+      session = getSession();
     request.current = controller;
     const current = () =>
       request.current === controller && !controller.signal.aborted && isCurrentSession(session);
     setBusy(true);
     setError('');
-    setEstimate(null);
     try {
-      let places = candidates;
+      let places = candidates?.queryKey === queryKey ? candidates : null;
       let choices = selected;
-      if (!confirmed) {
+      if (!places) {
         const [origin, target] = await Promise.all([
           resolveTripLocation(start.trim(), controller.signal),
           resolveTripLocation(destination.trim(), controller.signal),
         ]);
-        if (!current()) return;
-        places = { origin, destination: target };
+        if (!current()) return { ok: false };
+        places = { origin, destination: target, queryKey };
         choices = {
           origin: origin.length === 1 ? '0' : '',
           destination: target.length === 1 ? '0' : '',
         };
         setCandidates(places);
         setSelected(choices);
-        if (!choices.origin || !choices.destination) return;
       }
-      if (!places || choices.origin === '' || choices.destination === '') return;
-      const result = await estimateStructuredRoute(
-        places.origin[Number(choices.origin)],
-        places.destination[Number(choices.destination)],
-        controller.signal
-      );
-      if (current()) setEstimate(result);
+      if (choices.origin === '' || choices.destination === '')
+        return { ok: false, needsLocations: true };
+      const origin = places.origin[Number(choices.origin)],
+        target = places.destination[Number(choices.destination)];
+      const initialRoute = await estimateStructuredRoute(origin, target, controller.signal);
+      if (!current()) return { ok: false };
+      const data = {
+        queryKey,
+        cacheKey: JSON.stringify([queryKey, initialRoute.geometry]),
+        origin: { ...origin, confirmed },
+        destination: { ...target, confirmed },
+        initialRoute,
+        session: { owner: session.owner, generation: session.generation },
+      };
+      setPrepared(data);
+      notify.current?.(data);
+      return { ok: true, ...data };
     } catch (failure) {
       if (current()) setError(plannerError(failure));
+      return { ok: false };
     } finally {
       if (request.current === controller) {
         request.current = null;
@@ -86,16 +113,42 @@ export default function RouteEstimate({ start, destination }) {
       }
     }
   };
+  useImperativeHandle(ref, () => ({
+    prepare: async () => {
+      const value = await run(false);
+      if (!value?.ok || !isCurrentSession(value.session)) return value;
+      const confirmed = {
+        ...value,
+        origin: { ...value.origin, confirmed: true },
+        destination: { ...value.destination, confirmed: true },
+      };
+      setPrepared(confirmed);
+      notify.current?.(confirmed);
+      return confirmed;
+    },
+  }));
+
   return (
-    <QuestionGroup legend="Preview route">
-      <ActionButton
-        variant="secondary"
-        disabled={busy || !start.trim() || !destination.trim()}
-        onClick={() => run(false)}
-      >
-        {busy ? 'Checking the drive…' : 'Estimate driving time'}
-      </ActionButton>
-      {candidates && !estimate && (
+    <div className="setup-route-preparation">
+      <OnboardingMap
+        origin={currentData?.origin ?? { address: start }}
+        destination={currentData?.destination ?? { address: destination }}
+        route={currentData?.initialRoute}
+        ideas={catalog.places}
+        stayAreas={areas}
+        stage={stage}
+        phase={busy ? 'checking' : 'draft'}
+      />
+      {stage === 0 && (
+        <ActionButton
+          variant="secondary"
+          disabled={busy || !start.trim() || !destination.trim()}
+          onClick={() => run(false)}
+        >
+          {busy ? 'Checking places…' : 'Estimate driving time'}
+        </ActionButton>
+      )}
+      {stage === 0 && candidates?.queryKey === queryKey && !currentData && (
         <div className="rt-stack">
           {['origin', 'destination'].map((field) => (
             <ChoiceGroup
@@ -119,43 +172,35 @@ export default function RouteEstimate({ start, destination }) {
           </ActionButton>
         </div>
       )}
-      {estimate && (
-        <div className="connected-estimate" role="status">
-          <p className="rt-copy">
-            {candidates.origin[Number(selected.origin)].address} →{' '}
-            {candidates.destination[Number(selected.destination)].address}
-          </p>
-          <p className="rt-caption">Edit Start or Destination above to change this route.</p>
-          {estimate.geometry?.coordinates?.length > 1 && (
-            <div className="setup-estimate-map" aria-label="Estimated route map">
-              <Map
-                UserChatData={{
-                  route: estimate,
-                  startConfirmed: candidates.origin[Number(selected.origin)],
-                  endConfirmed: candidates.destination[Number(selected.destination)],
-                }}
-              />
-            </div>
-          )}
-          <p className="rt-title">About {(estimate.duration / 3600).toFixed(1)} hours driving</p>
-          <p className="rt-copy">
-            {(estimate.distance / 1609.344).toFixed(1)} miles before adding stops
-          </p>
-          <p className="rt-caption">
-            Driving only. Visits, meals and overnight stays add time. You’ll confirm your trip
-            locations again before planning.
-          </p>
-        </div>
+      {currentData && (
+        <p className="rt-caption">
+          About {(currentData.initialRoute.duration / 3600).toFixed(1)} hours driving · driving
+          only, before stops and meals.
+        </p>
+      )}
+      {catalog.status === 'loading' && (
+        <p className="rt-caption" role="status">
+          Checking the local catalog…
+        </p>
+      )}
+      {busy && (
+        <p role="status" className="rt-caption">
+          Preparing the road preview.
+        </p>
       )}
       {error && (
         <p role="alert" className="connected-error">
           {error}
         </p>
       )}
-    </QuestionGroup>
+    </div>
   );
-}
+});
 RouteEstimate.propTypes = {
   start: PropTypes.string.isRequired,
   destination: PropTypes.string.isRequired,
+  draft: PropTypes.object,
+  stage: PropTypes.number,
+  onPrepared: PropTypes.func,
 };
+export default RouteEstimate;

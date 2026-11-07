@@ -661,3 +661,41 @@
 .setup-design--large-text input[type='time'] {
   padding-inline: var(--rt-space-1);
 }
+
+.setup-route-preparation {
+  flex-shrink: 0;
+  display: grid;
+  gap: var(--rt-space-2);
+  margin-block-end: var(--rt-space-3);
+}
+.setup-card:has(.setup-map) .setup-progress {
+  margin-block-end: var(--rt-space-2);
+}
+.setup-card:has(.setup-map) .setup-map-canvas {
+  block-size: var(--rt-onboarding-map-height);
+}
+@media (min-width: 24rem) and (min-height: 44rem) {
+  .setup-route-preparation {
+    max-block-size: 45%;
+    overflow-y: auto;
+    min-block-size: 0;
+  }
+}
+.setup-design--large-text .setup-route-preparation {
+  max-block-size: none;
+  overflow: visible;
+}
+
+.setup-map[data-phase='draft']:not([data-stage='0']) .setup-map-canvas {
+  block-size: var(--rt-onboarding-map-compact-height);
+}
+.setup-map[data-phase='draft']:not([data-stage='0']) .setup-map-endpoints {
+  flex-wrap: nowrap;
+}
+.setup-map[data-phase='draft']:not([data-stage='0']) .setup-map-endpoints > span {
+  min-inline-size: 0;
+  max-inline-size: 48%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

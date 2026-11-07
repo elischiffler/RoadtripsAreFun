@@ -32,9 +32,10 @@ function replayable(url, method) {
   const path = url.slice(base.length).split('?')[0];
   return {
     get: /^(preference-profiles|chats|routing-settings|get-initial-route|get-car-details|get-gas-price|get-location|algorithm-lab\/presets)$/,
-    post: /^(chats\/create\/[^/]+|generate-final-route|generate-itinerary|route-alternatives|route-edit|algorithm-lab\/run)$/,
+    post: /^(chats\/create\/[^/]+|generate-final-route|generate-itinerary|planning-candidates\/requests|planning-candidates\/[^/]+\/confirm|route-alternatives|route-edit|algorithm-lab\/run)$/,
     put: /^(chats\/update\/[^/]+|chats\/\d+\/car|preference-profiles\/[^/]+)$/,
-    delete: /^(chats\/delete\/[^/]+|preference-profiles\/[^/]+)$/,
+    delete:
+      /^(planning-candidates\/requests\/[^/]+|planning-candidates\/[^/]+|chats\/delete\/[^/]+|preference-profiles\/[^/]+)$/,
   }[method]?.test(path);
 }
 

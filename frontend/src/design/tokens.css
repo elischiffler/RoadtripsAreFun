@@ -26,6 +26,11 @@
   --rt-map-preview-height: 12rem;
   --rt-map-min-height: 24rem;
   --rt-map-header-clearance: 12rem;
+  --rt-place-image-max-height: 20rem;
+  --rt-onboarding-map-compact-height: 5rem;
+  --rt-onboarding-map-height: clamp(7rem, 18dvh, 11rem);
+  --rt-route-draft-dash: 0.5rem 0.4rem;
+  --rt-map-grid-opacity: 0.35;
   --rt-checkbox-size: 1.25rem;
   --rt-page-padding: clamp(1rem, 4vw, 2rem);
   --rt-marker-size: 0.75rem;

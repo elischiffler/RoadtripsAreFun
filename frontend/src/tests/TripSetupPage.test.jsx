@@ -1,3 +1,4 @@
+import { loadRouteAlternatives } from '../services/routeAlternatives';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { useContext } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
@@ -8,11 +9,11 @@ import { getSession, signOut } from '../services/session';
 import { Data, ChatData, ChatLogs, UserDataContext } from '../states/UserDataContext';
 import { newSetupDraft, preferenceWeights } from '../pages/TripSetup/setupModel';
 import TripSetupPage from '../pages/TripSetup/TripSetupPage';
-import { saveNewTripPreferences } from '../services/preferenceProfiles';
+import { loadPreferenceProfiles, saveNewTripPreferences } from '../services/preferenceProfiles';
 import { initializeUserData, ensureChatCreated, updateUserData } from '../services/savedTrips';
 import {
   resolveTripLocation,
-  planStructuredRoute,
+  estimateStructuredRoute,
   planStructuredItinerary,
 } from '../services/tripPlanner';
 
@@ -24,13 +25,30 @@ vi.mock('../services/savedTrips', () => ({
 vi.mock('../services/tripPlanner', async (original) => ({
   ...(await original()),
   resolveTripLocation: vi.fn(),
-  planStructuredRoute: vi.fn(),
+  estimateStructuredRoute: vi.fn(),
   planStructuredItinerary: vi.fn(),
 }));
 vi.mock('../services/preferenceProfiles', async (original) => ({
   ...(await original()),
   loadPreferenceProfiles: vi.fn(async () => []),
   saveNewTripPreferences: vi.fn(async () => undefined),
+}));
+import {
+  assessPlanningCandidate,
+  buildCandidatePayload,
+  cancelCandidateRequest,
+  confirmPlanningCandidate,
+  registerCandidateRequest,
+} from '../services/planningCandidates';
+vi.mock('../services/planningCandidates', () => ({
+  assessPlanningCandidate: vi.fn(),
+  buildCandidatePayload: vi.fn(),
+  cancelCandidateRequest: vi.fn(async () => {}),
+  confirmPlanningCandidate: vi.fn(),
+  registerCandidateRequest: vi.fn(),
+}));
+vi.mock('../services/routeAlternatives', () => ({
+  loadRouteAlternatives: vi.fn(async () => ({ places: [] })),
 }));
 const origin = { address: 'Boulder, Colorado', latitude: 40, longitude: -105 };
 const destination = { address: 'Denver, Colorado', latitude: 39.7, longitude: -104.9 };
@@ -70,6 +88,8 @@ const draft = {
 let existing;
 beforeEach(() => {
   vi.resetAllMocks();
+  loadPreferenceProfiles.mockResolvedValue([]);
+  loadRouteAlternatives.mockResolvedValue({ places: [] });
   sessionStorage.clear();
   fixtureSession();
   sessionStorage.setItem(
@@ -85,23 +105,34 @@ beforeEach(() => {
   resolveTripLocation.mockImplementation(async (query) => [
     query === 'Boulder' ? origin : destination,
   ]);
-  planStructuredRoute.mockResolvedValue(route);
+  estimateStructuredRoute.mockResolvedValue(route);
+  cancelCandidateRequest.mockResolvedValue(undefined);
+  registerCandidateRequest.mockResolvedValue({});
+  buildCandidatePayload.mockResolvedValue({ immutable: true });
+  assessPlanningCandidate.mockResolvedValue({
+    candidate_id: 'fixture-candidate',
+    input_key: 'f'.repeat(64),
+    expires_at: '2099-01-01T00:00:00Z',
+    one_day: { eligible: true, elapsed_seconds: 7200, threshold_seconds: 43200 },
+    candidate_route: route,
+  });
+  confirmPlanningCandidate.mockResolvedValue(route);
   planStructuredItinerary.mockResolvedValue([{ date: 'Tuesday', stops: route.stops }]);
   ensureChatCreated.mockResolvedValue(true);
   updateUserData.mockResolvedValue(true);
 });
-async function confirm() {
+async function confirm(finish = true) {
   renderWithProviders(<TripSetupPage />);
-  await userEvent.click(await screen.findByRole('button', { name: 'Check locations' }));
-  await screen.findByRole('heading', { name: 'Confirm your locations' });
-  expect(planStructuredRoute).not.toHaveBeenCalled();
-  await userEvent.click(screen.getByRole('button', { name: 'Confirm locations and plan route' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Check trip options' }));
+  expect(confirmPlanningCandidate).not.toHaveBeenCalled();
+  if (finish)
+    await userEvent.click(await screen.findByRole('button', { name: 'Finish in one day' }));
 }
 it('plans only after explicit provider-address confirmation and creates a new saved trip', async () => {
   await confirm();
   expect(await screen.findByText('Trip saved.')).toBeInTheDocument();
-  expect(planStructuredRoute.mock.calls[0].slice(0, 3)).toEqual([draft, origin, destination]);
-  expect(planStructuredRoute.mock.calls[0][4].reserveMealSlots).toBe(true);
+  expect(confirmPlanningCandidate.mock.calls[0][1]).toBe('one_day');
+  expect(confirmPlanningCandidate.mock.calls[0][2]).toEqual(draft);
   expect(ensureChatCreated).toHaveBeenCalledTimes(1);
   const snapshot = ensureChatCreated.mock.calls[0][1];
   expect(snapshot.chatId).toBe(8);
@@ -130,7 +161,7 @@ it('keeps a failed itinerary local and retries without saving a partial trip', a
   expect(screen.queryByRole('link', { name: 'View itinerary' })).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Retry itinerary' }));
   await screen.findByRole('link', { name: 'View itinerary' });
-  expect(planStructuredRoute).toHaveBeenCalledTimes(1);
+  expect(confirmPlanningCandidate).toHaveBeenCalledTimes(1);
   expect(ensureChatCreated).toHaveBeenCalledTimes(1);
   expect(updateUserData).not.toHaveBeenCalled();
 });
@@ -153,26 +184,24 @@ it('preserves results when creating a row fails and retries saving without anoth
   expect(screen.queryByRole('link', { name: 'Open trip' })).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Retry saving trip' }));
   await screen.findByText('Trip saved.');
-  expect(planStructuredRoute).toHaveBeenCalledTimes(1);
+  expect(confirmPlanningCandidate).toHaveBeenCalledTimes(1);
 });
 it('blocks planning when saved IDs could not be loaded and surfaces route validation failures', async () => {
   initializeUserData.mockResolvedValueOnce(null);
   renderWithProviders(<TripSetupPage />);
   await screen.findByRole('button', { name: 'Retry loading trips' });
-  expect(screen.queryByRole('button', { name: 'Check locations' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Check trip options' })).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Retry loading trips' }));
-  await userEvent.click(await screen.findByRole('button', { name: 'Check locations' }));
-  planStructuredRoute.mockRejectedValueOnce({
+  await userEvent.click(await screen.findByRole('button', { name: 'Check trip options' }));
+  confirmPlanningCandidate.mockRejectedValueOnce({
     response: { data: { detail: 'Departure must be in the future' } },
   });
-  await userEvent.click(
-    await screen.findByRole('button', { name: 'Confirm locations and plan route' })
-  );
+  await userEvent.click(await screen.findByRole('button', { name: 'Finish in one day' }));
   expect(await screen.findByRole('alert')).toHaveTextContent('Departure must be in the future');
   expect(ensureChatCreated).not.toHaveBeenCalled();
 });
 it('explains meal infeasibility without requesting an itinerary, saving, or completing progress', async () => {
-  planStructuredRoute.mockRejectedValueOnce({
+  confirmPlanningCandidate.mockRejectedValueOnce({
     response: {
       status: 422,
       data: {
@@ -210,7 +239,7 @@ it('keeps a meal reservation validation failure local until a complete itinerary
 });
 it('discards a late planning result after account sign-out', async () => {
   let finish;
-  planStructuredRoute.mockImplementationOnce(
+  confirmPlanningCandidate.mockImplementationOnce(
     () =>
       new Promise((resolve) => {
         finish = resolve;
@@ -219,13 +248,13 @@ it('discards a late planning result after account sign-out', async () => {
   await confirm();
   signOut();
   finish(route);
-  await waitFor(() => expect(planStructuredRoute).toHaveBeenCalledTimes(1));
+  await waitFor(() => expect(confirmPlanningCandidate).toHaveBeenCalledTimes(1));
   expect(ensureChatCreated).not.toHaveBeenCalled();
 });
 
 it('shows departure guidance without saving a trip or falsely completing planning', async () => {
-  planStructuredRoute.mockImplementationOnce(
-    (_draft, _origin, _destination, _signal, { onProgress }) => {
+  assessPlanningCandidate.mockImplementationOnce(
+    (_draft, _route, _requestId, _signal, onProgress) => {
       onProgress({ type: 'progress', stage: 'route.initial', state: 'completed' });
       return Promise.reject({
         response: {
@@ -235,7 +264,7 @@ it('shows departure guidance without saving a trip or falsely completing plannin
       });
     }
   );
-  await confirm();
+  await confirm(false);
   expect(await screen.findByRole('alert')).toHaveTextContent(
     'Choose a departure date and time in the future.'
   );
@@ -260,31 +289,32 @@ it('saves a fractional nightly target without rounding into the legacy integer s
   await screen.findByText('Trip saved.');
   const snapshot = ensureChatCreated.mock.calls[0][1];
   expect(snapshot.hotelBudget).toBeNull();
-  expect(snapshot.tripProfile.budget).toBe(150.25);
+  expect(snapshot.tripProfile.budget).toBeNull(); // one-day carries no lodging target
 });
 
-it('waits for explicit selection when a location has several provider matches', async () => {
+it('requires explicit ambiguous endpoint selection before leaving the route step', async () => {
   resolveTripLocation.mockImplementation(async (query) =>
     query === 'Boulder' ? [origin, { ...origin, address: 'Boulder, Wyoming' }] : [destination]
   );
   renderWithProviders(<TripSetupPage />);
-  await userEvent.click(await screen.findByRole('button', { name: 'Check locations' }));
-  const confirmButton = await screen.findByRole('button', {
-    name: 'Confirm locations and plan route',
+  await userEvent.click(await screen.findByRole('button', { name: 'Check trip options' }));
+  const useLocations = await screen.findByRole('button', {
+    name: 'Use these locations for estimate',
   });
-  expect(confirmButton).toBeDisabled();
-  expect(planStructuredRoute).not.toHaveBeenCalled();
+  expect(useLocations).toBeDisabled();
+  expect(assessPlanningCandidate).not.toHaveBeenCalled();
   await userEvent.click(screen.getByRole('radio', { name: 'Boulder, Colorado' }));
-  await userEvent.click(confirmButton);
-  await screen.findByText('Trip saved.');
-  expect(planStructuredRoute.mock.calls[0][1]).toEqual(origin);
-  expect(screen.queryByText('Interests sent to the planner')).not.toBeInTheDocument();
+  await userEvent.click(useLocations);
+  await screen.findByText(/About 1.0 hours driving/);
+  await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+  expect(await screen.findByRole('heading', { name: 'People' })).toBeInTheDocument();
+  expect(assessPlanningCandidate).not.toHaveBeenCalled();
 });
 
 it('reaches70 with a base route and requests reserved meal time before saving a completed itinerary', async () => {
   let finishRoute, finishItinerary, finishSave;
-  planStructuredRoute.mockImplementationOnce(
-    (_draft, _origin, _destination, _signal, { onProgress }) => {
+  assessPlanningCandidate.mockImplementationOnce(
+    (_draft, _route, _requestId, _signal, onProgress) => {
       onProgress({ type: 'progress', stage: 'route.initial', state: 'completed' });
       return new Promise((resolve) => {
         finishRoute = resolve;
@@ -303,12 +333,19 @@ it('reaches70 with a base route and requests reserved meal time before saving a 
         finishSave = resolve;
       })
   );
-  await confirm();
+  await confirm(false);
   expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
     'value',
     '70'
   );
-  finishRoute(route);
+  finishRoute({
+    candidate_id: 'fixture-candidate',
+    input_key: 'f'.repeat(64),
+    expires_at: '2099-01-01',
+    one_day: { eligible: true, elapsed_seconds: 7200, threshold_seconds: 43200 },
+    candidate_route: route,
+  });
+  await userEvent.click(await screen.findByRole('button', { name: 'Finish in one day' }));
   await waitFor(() => expect(planStructuredItinerary).toHaveBeenCalled());
   expect(planStructuredItinerary.mock.calls[0][2]).toEqual({ includeMealSlots: true });
   expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
@@ -412,12 +449,10 @@ it('does not publish saving completion or select a trip after the account signs 
   );
   act(() => signOut());
   await act(async () => finishSave(true));
-  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
-    'value',
-    '96'
-  );
+  expect(
+    screen.queryByRole('progressbar', { name: 'Trip planning milestones' })
+  ).not.toBeInTheDocument();
   expect(screen.queryByText('Trip saved.')).not.toBeInTheDocument();
-  expect(screen.queryByRole('link', { name: 'View itinerary' })).not.toBeInTheDocument();
   expect(sessionStorage.getItem('selectedChatId')).toBeNull();
 });
 
@@ -452,10 +487,8 @@ it('does not overwrite another trip selection when an unmounted save finishes', 
       <NavigationProbe key="navigation" />
     </>
   );
-  await userEvent.click(await screen.findByRole('button', { name: 'Check locations' }));
-  await userEvent.click(
-    await screen.findByRole('button', { name: 'Confirm locations and plan route' })
-  );
+  await userEvent.click(await screen.findByRole('button', { name: 'Check trip options' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Finish in one day' }));
   await waitFor(() => expect(ensureChatCreated).toHaveBeenCalled());
   view.rerender(<NavigationProbe key="navigation" />);
   await userEvent.click(screen.getByRole('button', { name: 'Open another saved trip' }));
@@ -480,7 +513,7 @@ it('keeps the trip saved when profile saving fails and retries only the profile 
   expect(saveNewTripPreferences.mock.calls[0]).toEqual(saveNewTripPreferences.mock.calls[1]);
   expect(ensureChatCreated).toHaveBeenCalledTimes(1);
   expect(updateUserData).not.toHaveBeenCalled();
-  expect(planStructuredRoute).toHaveBeenCalledTimes(1);
+  expect(confirmPlanningCandidate).toHaveBeenCalledTimes(1);
   expect(planStructuredItinerary).toHaveBeenCalledTimes(1);
 });
 
@@ -494,4 +527,130 @@ it('requires reloading a newer saved trip after a late create retry conflict wit
   expect(screen.getByRole('alert')).toHaveTextContent('Open Saved trips to reload');
   expect(screen.queryByRole('button', { name: 'Retry saving trip' })).not.toBeInTheDocument();
   expect(screen.queryByText('Trip saved.')).not.toBeInTheDocument();
+});
+
+it('waits for explicit assessment and presents no hotel questions or completion from a preview', async () => {
+  let finish;
+  assessPlanningCandidate.mockImplementationOnce((_draft, _route, _id, _signal, progress) => {
+    progress({
+      type: 'progress',
+      stage: 'route.preview',
+      state: 'completed',
+      phase: 'checking',
+      preview_only: true,
+      geometry: route.geometry,
+      stops: [],
+    });
+    return new Promise((resolve) => {
+      finish = resolve;
+    });
+  });
+  await confirm(false);
+  expect(registerCandidateRequest).toHaveBeenCalledTimes(1);
+  expect(screen.queryByRole('button', { name: 'Finish in one day' })).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Hotel target per room / night')).not.toBeInTheDocument();
+  expect(ensureChatCreated).not.toHaveBeenCalled();
+  expect(screen.getByRole('progressbar', { name: 'Trip planning milestones' })).toHaveAttribute(
+    'value',
+    '70'
+  );
+  await act(async () =>
+    finish({ one_day: { eligible: false, elapsed_seconds: 50000 }, candidate_route: route })
+  );
+  expect(screen.queryByRole('button', { name: 'Finish in one day' })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Allow overnight stays' })).toBeEnabled();
+});
+it('retains the exact registered request and immutable input body on an explicit uncertain retry', async () => {
+  assessPlanningCandidate.mockRejectedValueOnce(new Error('connection lost'));
+  await confirm(false);
+  await screen.findByRole('alert');
+  expect(assessPlanningCandidate).toHaveBeenCalledTimes(1);
+  await userEvent.click(screen.getByRole('button', { name: 'Retry trip option check' }));
+  await screen.findByRole('button', { name: 'Finish in one day' });
+  expect(registerCandidateRequest).toHaveBeenCalledTimes(1);
+  expect(buildCandidatePayload).toHaveBeenCalledTimes(1);
+  expect(assessPlanningCandidate.mock.calls[1][2]).toBe(assessPlanningCandidate.mock.calls[0][2]);
+  expect(assessPlanningCandidate.mock.calls[1][5]).toBe(assessPlanningCandidate.mock.calls[0][5]);
+  expect(ensureChatCreated).not.toHaveBeenCalled();
+});
+it('requires a fresh explicit check after410 without automatic re-registration or AI replay', async () => {
+  assessPlanningCandidate.mockRejectedValueOnce({
+    response: {
+      status: 410,
+      data: {
+        code: 'candidate_expired',
+        detail: 'These trip options expired. Check again explicitly.',
+      },
+    },
+  });
+  await confirm(false);
+  await screen.findByRole('alert');
+  expect(registerCandidateRequest).toHaveBeenCalledTimes(1);
+  expect(assessPlanningCandidate).toHaveBeenCalledTimes(1);
+  await userEvent.click(screen.getByRole('button', { name: 'Check trip options' }));
+  await screen.findByRole('button', { name: 'Finish in one day' });
+  expect(registerCandidateRequest).toHaveBeenCalledTimes(2);
+  expect(assessPlanningCandidate.mock.calls[1][2]).not.toBe(
+    assessPlanningCandidate.mock.calls[0][2]
+  );
+});
+it('collects hotel occupancy only for stays allowed and accepts a flexible route with no hotel', async () => {
+  assessPlanningCandidate.mockResolvedValueOnce({
+    candidate_id: 'fixture-candidate',
+    input_key: 'f'.repeat(64),
+    expires_at: '2099-01-01',
+    one_day: { eligible: false, elapsed_seconds: null },
+    candidate_route: null,
+  });
+  await confirm(false);
+  await userEvent.click(await screen.findByRole('button', { name: 'Allow overnight stays' }));
+  expect(screen.getByLabelText('Hotel target per room / night')).toHaveValue(150);
+  await userEvent.click(screen.getByRole('button', { name: 'Add a room' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Plan with stays allowed' }));
+  expect(screen.getByText('Room occupants must add up to the total people.')).toBeInTheDocument();
+  expect(confirmPlanningCandidate).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: 'Remove room 2' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Plan with stays allowed' }));
+  await screen.findByText('Trip saved.');
+  expect(confirmPlanningCandidate.mock.calls[0][1]).toBe('overnight');
+  expect(ensureChatCreated.mock.calls[0][1].tripProfile.hotel_rooms).toEqual([
+    { adults: 1, child_ages: [] },
+  ]);
+  expect(screen.queryByText(/hotel is guaranteed/i)).not.toBeInTheDocument();
+});
+
+it('keeps hotel typing focus while editing deferred stay answers', async () => {
+  await confirm(false);
+  await userEvent.click(await screen.findByRole('button', { name: 'Allow overnight stays' }));
+  const budget = screen.getByLabelText('Hotel target per room / night');
+  await userEvent.clear(budget);
+  await userEvent.type(budget, '125.50');
+  expect(budget).toHaveFocus();
+  expect(budget).toHaveValue(125.5);
+  expect(assessPlanningCandidate).toHaveBeenCalledTimes(1);
+  expect(confirmPlanningCandidate).not.toHaveBeenCalled();
+});
+
+it('starts a new explicit generation after a definitive typed terminal503 while never auto-replaying', async () => {
+  assessPlanningCandidate.mockRejectedValueOnce({
+    code: 'candidate_unavailable',
+    response: {
+      status: 503,
+      data: {
+        code: 'candidate_unavailable',
+        detail:
+          'Trip options could not be verified. Your draft is kept. Check again explicitly when ready.',
+      },
+    },
+  });
+  await confirm(false);
+  await screen.findByRole('alert');
+  expect(registerCandidateRequest).toHaveBeenCalledTimes(1);
+  expect(assessPlanningCandidate).toHaveBeenCalledTimes(1);
+  const failedId = assessPlanningCandidate.mock.calls[0][2];
+  await userEvent.click(screen.getByRole('button', { name: 'Check trip options' }));
+  await screen.findByRole('button', { name: 'Finish in one day' });
+  expect(registerCandidateRequest).toHaveBeenCalledTimes(2);
+  expect(assessPlanningCandidate.mock.calls[1][2]).not.toBe(failedId);
+  expect(ensureChatCreated).not.toHaveBeenCalled();
 });

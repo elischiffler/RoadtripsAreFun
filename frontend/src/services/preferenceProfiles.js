@@ -7,6 +7,7 @@ import {
   normalizeWeights,
   preferenceProfiles,
 } from '../pages/TripSetup/setupModel';
+import { rhythmFromDailySchedule, schedulingPolicyFromDraft } from '../pages/TripSetup/dailyRhythm';
 
 const endpoint = () => import.meta.env.VITE_BACKEND_SERVER + 'preference-profiles';
 export async function loadPreferenceProfiles() {
@@ -42,7 +43,7 @@ export function choicesFromDraft(draft) {
       draft.carStatus === 'provided'
         ? { year: Number(draft.year), make: draft.make.trim(), model: draft.model.trim() }
         : null,
-    scheduling_policy: { ...draft.schedule },
+    scheduling_policy: schedulingPolicyFromDraft(draft),
     persona_weights: preferenceProfiles(draft).stated,
   };
 }
@@ -60,6 +61,7 @@ export function applyPreferenceChoices(draft, choices) {
     make: choices.car?.make ?? '',
     model: choices.car?.model ?? '',
     schedule: { ...initial.schedule, ...choices.scheduling_policy },
+    dailyRhythm: rhythmFromDailySchedule(choices.scheduling_policy.daily_schedule),
     interests: [],
     ratings: {},
     comparisonAnswers: {},

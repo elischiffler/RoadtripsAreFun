@@ -56,7 +56,7 @@ describe('accessible trip setup', () => {
     fill('Destination', 'Denver');
     fill('Departure date', '2027-06-01');
     await user.click(screen.getByRole('button', { name: 'Next' }));
-    expect(screen.getByRole('heading', { name: 'People and rooms' })).toHaveFocus();
+    expect(screen.getByRole('heading', { name: 'People' })).toHaveFocus();
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('heading', { name: 'What you enjoy' })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Back' }));
@@ -86,8 +86,7 @@ describe('accessible trip setup', () => {
     expect(screen.getByRole('heading', { name: pair.left.name })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: pair.right.name })).toBeInTheDocument();
     const leftPlace = screen.getByRole('heading', { name: pair.left.name }).closest('article');
-    await user.click(within(leftPlace).getByText('Place source'));
-    expect(within(leftPlace).getByRole('link')).toHaveAttribute('href', pair.left.url);
+    expect(within(leftPlace).queryByText('Place source')).not.toBeInTheDocument();
     for (const [choice, label] of [
       ['left', pair.left.name],
       ['right', pair.right.name],
@@ -127,7 +126,7 @@ describe('accessible trip setup', () => {
     const estimate = vi.fn((draft) => <p>Estimate for {draft.start || 'your route'}</p>);
     renderWithProviders(<TripSetup onSubmit={submit} renderEstimate={estimate} />);
     fill('Starting city or address', 'Boulder');
-    expect(estimate).toHaveBeenLastCalledWith(expect.objectContaining({ start: 'Boulder' }));
+    expect(estimate).toHaveBeenLastCalledWith(expect.objectContaining({ start: 'Boulder' }), 0);
     expect(screen.getByText('Estimate for Boulder')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /Studio/i })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Saved trips' })).toHaveAttribute('href', '/trips');
@@ -157,19 +156,15 @@ describe('accessible trip setup', () => {
     const user = userEvent.setup(),
       submit = vi.fn();
     renderWithProviders(<TripSetup onSubmit={submit} />);
-    await user.click(screen.getByRole('button', { name: 'Add a room' }));
-    await user.click(screen.getByRole('button', { name: 'Next' }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Room occupants must add up');
-    await user.click(screen.getByRole('button', { name: 'Remove room 2' }));
+    expect(screen.queryByRole('button', { name: 'Add a room' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Next' }));
     await user.click(screen.getByRole('button', { name: 'Skip interests and use a balanced mix' }));
     expect(screen.queryByLabelText('Would you like to add your car?')).not.toBeInTheDocument();
-    await user.click(screen.getByLabelText('Allow driving later into the evening'));
-    expect(screen.getByLabelText(/Stop late driving by/)).toHaveValue('24:00');
+    expect(screen.getByRole('slider', { name: 'Start driving' })).toHaveValue('9');
     await user.click(screen.getByRole('button', { name: 'Next' }));
     expect(screen.getByRole('heading', { name: 'Review', exact: true })).toHaveFocus();
     expect(submit).not.toHaveBeenCalled();
-    expect(screen.getByRole('button', { name: 'Edit People and rooms' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Edit People' })).toBeEnabled();
     await user.click(screen.getByRole('button', { name: 'Reset draft', exact: true }));
     await user.click(screen.getByRole('button', { name: 'Keep answers' }));
     expect(screen.getByRole('heading', { name: 'Review', exact: true })).toBeInTheDocument();
@@ -179,7 +174,7 @@ describe('accessible trip setup', () => {
     seed(draft, 4);
     const submit = vi.fn().mockResolvedValue({ ok: true });
     renderWithProviders(<TripSetup onSubmit={submit} />);
-    await userEvent.click(screen.getByRole('button', { name: 'Check locations' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Check trip options' }));
     expect(submit).toHaveBeenCalledWith({ draft });
     expect(submit.mock.calls[0][0]).not.toHaveProperty('message');
     expect(screen.queryByText(/Continue in chat/)).not.toBeInTheDocument();
@@ -189,14 +184,14 @@ describe('accessible trip setup', () => {
     renderWithProviders(
       <TripSetup onSubmit={vi.fn().mockResolvedValue({ error: 'Location not found' })} />
     );
-    await userEvent.click(screen.getByRole('button', { name: 'Check locations' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Check trip options' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Location not found');
     expect(sessionStorage.getItem(key())).not.toBeNull();
   });
   it('keeps the draft on a network failure, resets explicitly and removes account data on sign out', async () => {
     seed(validDraft(), 4);
     renderWithProviders(<TripSetup onSubmit={vi.fn().mockRejectedValue(new Error('offline'))} />);
-    await userEvent.click(screen.getByRole('button', { name: 'Check locations' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Check trip options' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Your draft is kept');
     await userEvent.click(screen.getByRole('button', { name: 'Reset draft', exact: true }));
     await userEvent.click(screen.getByRole('button', { name: 'Clear draft answers' }));
@@ -283,4 +278,16 @@ describe('accessible trip setup', () => {
     expect(submit).not.toHaveBeenCalled();
     expect(screen.getByRole('heading', { name: 'What you enjoy' })).toBeInTheDocument();
   });
+});
+
+it('requires valid road preparation before the first Next and retains the actionable route question on failure', async () => {
+  seed(validDraft(), 0);
+  const prepare = vi.fn().mockResolvedValueOnce({ ok: false }).mockResolvedValueOnce({ ok: true });
+  renderWithProviders(<TripSetup onSubmit={vi.fn()} prepareRoute={prepare} />);
+  await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+  expect(screen.getByRole('alert')).toHaveTextContent('usable road route');
+  expect(screen.getByLabelText('Starting city or address')).toHaveValue('Boulder');
+  await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+  expect(await screen.findByRole('heading', { name: 'People' })).toBeInTheDocument();
+  expect(prepare).toHaveBeenCalledTimes(2);
 });

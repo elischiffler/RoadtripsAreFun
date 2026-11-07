@@ -12,19 +12,19 @@ day-by-day timeline. These are design directions, not copied assets.
 values. Variables live on `.rt-design`, so importing the library does not change
 legacy pages. Change a token once to update every adopting component.
 
-| Token family                                                        | Purpose                                                                                  |
-| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `--rt-space-*`                                                      | A 4px-based rem spacing scale: 4, 8, 12, 16, 20, 24, 32, 40, 48 at the default root size |
-| `--rt-radius-*`                                                     | Small details, controls, sheets and pills                                                |
-| `--rt-target-min`, `--rt-control-height`                            | At least 44px hit targets, comfortable 52px inputs                                       |
-| `--rt-slider-thumb-size`, `--rt-opacity-disabled`                   | Slider thumb appearance and shared disabled opacity                                     |
-| `--rt-content-width`, `--rt-page-padding`                           | Centered 30rem column with fluid outer gutters                                           |
-| `--rt-trip-content-width`, `--rt-map-content-width`, `--rt-map-*-height`, `--rt-map-header-clearance` | Workspace widths, shared map previews and full-map sizing |
-| `--rt-checkbox-size`                                               | Checkbox visuals; labels retain 44px minimum hit targets                                  |
-| `--rt-text-*`, `--rt-weight-*`, `--rt-leading-*`, `--rt-tracking-*` | System type hierarchy; tighter titles and comfortable body copy                          |
-| `--rt-color-*`                                                      | Semantic page/surface/text/selection/error/focus and route colors                        |
-| `--rt-shadow-*`, `--rt-material-*`                                  | Quiet surface depth and optional floating material                                       |
-| `--rt-duration-*`, `--rt-ease`, `--rt-press-scale`                  | Immediate, restrained control feedback                                                   |
+| Token family                                                                                          | Purpose                                                                                  |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `--rt-space-*`                                                                                        | A 4px-based rem spacing scale: 4, 8, 12, 16, 20, 24, 32, 40, 48 at the default root size |
+| `--rt-radius-*`                                                                                       | Small details, controls, sheets and pills                                                |
+| `--rt-target-min`, `--rt-control-height`                                                              | At least 44px hit targets, comfortable 52px inputs                                       |
+| `--rt-slider-thumb-size`, `--rt-opacity-disabled`                                                     | Slider thumb appearance and shared disabled opacity                                      |
+| `--rt-content-width`, `--rt-page-padding`                                                             | Centered 30rem column with fluid outer gutters                                           |
+| `--rt-trip-content-width`, `--rt-map-content-width`, `--rt-map-*-height`, `--rt-map-header-clearance` | Workspace widths, shared map previews and full-map sizing                                |
+| `--rt-checkbox-size`                                                                                  | Checkbox visuals; labels retain 44px minimum hit targets                                 |
+| `--rt-text-*`, `--rt-weight-*`, `--rt-leading-*`, `--rt-tracking-*`                                   | System type hierarchy; tighter titles and comfortable body copy                          |
+| `--rt-color-*`                                                                                        | Semantic page/surface/text/selection/error/focus and route colors                        |
+| `--rt-shadow-*`, `--rt-material-*`                                                                    | Quiet surface depth and optional floating material                                       |
+| `--rt-duration-*`, `--rt-ease`, `--rt-press-scale`                                                    | Immediate, restrained control feedback                                                   |
 
 [`layout.css`](../frontend/src/design/layout.css) owns frame, sheet, grouped questions
 and type classes. [`controls.css`](../frontend/src/design/controls.css) owns inputs,
@@ -53,7 +53,7 @@ font, radius or color values in adopting pages; extend the master file deliberat
 | `Sheet`          | `children`, optional `floating`, `className`, section props. Nonmodal document-flow surface; name it with `aria-label` or `aria-labelledby`.                                                                          |
 | `QuestionGroup`  | Required `legend`, optional `description`, `children`, native fieldset props. Groups related questions; preserves external `aria-describedby`.                                                                        |
 | `Field`          | Required `label`; optional `id`, `hint`, `error`, `className`; native input props. Automatically associates labels, hints and errors. Value/validation remain with the caller.                                        |
-| `AmountControl`  | Required `label`, finite non-negative `value`, `onChange(number)`; optional `id`, `initialMax`, `disabled`, `describedBy`. Native continuous range and explicit − / + tap actions; preserves raw caller values. |
+| `AmountControl`  | Required `label`, finite non-negative `value`, `onChange(number)`; optional `id`, `initialMax`, `disabled`, `describedBy`. Native continuous range and explicit − / + tap actions; preserves raw caller values.       |
 | `ActionButton`   | `variant` (`primary` or `secondary`), `type` (defaults to `button`), native button props and children. Set `type="submit"` explicitly inside forms.                                                                   |
 | `ChoiceGroup`    | Required `legend`, `options`, `onChange(value)`; optional `value`, `description`, `name`, `disabled`. Options have `value`, `label`, optional `description` and `disabled`. Native radio behavior, one selection.     |
 | `StageProgress`  | Required `stages: [{id,label}]`; optional `currentId`, `completedIds`. Reports actual completed stage count; deduplicates and ignores unknown IDs. Caller owns validation/completion.                                 |
@@ -177,3 +177,11 @@ No backend tests, live provider/Mentro calls, database operations, Neon recovery
 retries, migrations or deployment were performed. Real iPhone/Safari and screen
 reader acceptance, live map styling and adoption into the separate guided-flow
 prototype remain integration work.
+
+### Progressive planning and daily rhythm
+
+`OnboardingMap` is a source-coordinate route sketch: draft endpoints remain marked unconfirmed until accepted, catalog ideas are unscheduled, and estimated rest regions are explicitly not hotel inventory. Unverified progress geometry stays in the checking phase; only the server's complete candidate proof offers a trip under12hours. `PlaceContext` displays admitted reviewed context and retains mandatory image credit/license links.
+
+`DailyRhythm` uses native continuously tracked hour sliders and the shared44px range target/focus treatment. Its24slots distinguish driving/exploring, rest and sleep. New opt-in requests send only `daily_schedule`; legacy profiles/drafts retain original timing until an explicit adjustment. The sleep interval is a planning constraint, without a health claim. The server remains authoritative for local clock ambiguity and supported lodging rhythms.
+
+Catalog preparation is an admitted read-only lookup, cached only in memory for60seconds/four owner-and-route keys. Planning and AI begin only after **Check trip options**. Registration is lightweight; an interrupted assessment retries the same registered request and immutable payload only on a user action. Expired/cancelled options require a new explicit check. Hotel occupancy/budget are deferred until **Allow overnight stays**; this option allows hotels when needed and does not force a stay. No partial itinerary is saved or shown as100% complete.
