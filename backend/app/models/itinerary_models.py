@@ -3,6 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from app.models.place_context import PlaceContext
 from app.models.routing_models.routing_models import Route
 
 
@@ -21,6 +22,7 @@ class Itinerary_Day(BaseModel):
         window_start: str | None = None
         window_end: str | None = None
         duration_seconds: int | None = None
+        place_context: PlaceContext | None = None
         provider_id: str | None = None
         source: str | None = None
         source_release: str | None = None

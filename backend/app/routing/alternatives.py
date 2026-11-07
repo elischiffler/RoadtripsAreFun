@@ -5,6 +5,7 @@ from urllib.parse import urlsplit
 
 from pydantic import ValidationError
 
+from app.catalog.place_context import context_for_admitted_place
 from app.catalog.repository import nearby as catalog_nearby
 from app.models.guided_planning import (
     AlternativePlace,
@@ -42,6 +43,7 @@ def _public_place(record):
     return AlternativePlace(
         id=provider_id,
         provider_id=provider_id,
+        place_context=context_for_admitted_place(record),
         categories=record.get("categories") or [],
         source_provenance=(record.get("source_provenance") or [])[:8],
         **fields,

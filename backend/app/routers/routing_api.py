@@ -37,6 +37,7 @@ from app.agent.progress import stage
 from app.agent.progress_stream import stream_turn
 from app.agent.provider_diagnostics import retry_async
 from app.agent.trip_dates import timezone_from_location
+from app.catalog.place_context import route_place_context
 from app.core.departure_errors import DepartureNotUpcomingHTTPError
 from app.crud.memory_crud import load_account_persona
 from app.models.guided_planning import RouteAlternativesRequest, RouteAlternativesResponse
@@ -472,6 +473,7 @@ async def plan_final_route(
                 duration=duration,
                 steps=steps,
                 stops=stopping_points,
+                place_context=route_place_context(stopping_points),
                 geometry=geometry,
                 cost=total_cost,
                 scheduling_policy=payload.scheduling_policy,

@@ -4,6 +4,7 @@ from typing import Any
 from pydantic import BaseModel, Field, StrictBool, field_validator
 
 from app.agent.persona import validate_weight_update
+from app.models.place_context import PlaceContext
 from app.models.scheduling_policy import EveningInterest, SchedulingPolicy
 from app.models.trip_limits import MAX_STOPS, MIN_STOPS
 from app.routing.occupancy import HotelRooms, TravelerCount
@@ -37,6 +38,7 @@ class Route(BaseModel):
     reserve_meal_slots: StrictBool = False
     traveler_count: TravelerCount | None = None
     hotel_rooms: HotelRooms | None = None
+    place_context: dict[str, PlaceContext] = Field(default_factory=dict, max_length=100)
 
     class Stop(BaseModel):
         name: str

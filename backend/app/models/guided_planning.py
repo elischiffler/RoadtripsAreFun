@@ -4,6 +4,8 @@ from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.models.place_context import PlaceContext
+
 Latitude = Annotated[float, Field(strict=True, allow_inf_nan=False, ge=-90, le=90)]
 Longitude = Annotated[float, Field(strict=True, allow_inf_nan=False, ge=-180, le=180)]
 PlaceId = Annotated[str, Field(strict=True, min_length=1, max_length=512)]
@@ -32,6 +34,7 @@ class RouteAlternativesRequest(BaseModel):
 class AlternativePlace(BaseModel):
     id: PlaceId
     provider_id: PlaceId
+    place_context: PlaceContext | None = None
     offset_miles: float | None = None
     route_fraction: float | None = None
     detour_minutes: float | None = None
