@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { signUp, confirmSignUp } from '../../services/authService';
-import { Box, TextField, Button, Typography } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { TextField, Button, Typography } from '@mui/material';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthLayout from './AuthLayout';
 import PasswordRequirement from './PasswordRequirement';
 import './AuthPage.css';
 import PasswordField from './PasswordField';
+import { safeReturnPath } from '../../services/session';
 
 const SignUpPage = () => {
   //initialize all useState to default values for the different sign up components
@@ -18,6 +19,8 @@ const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
+  const submitting = useRef(false);
 
   // used an array to package all of the password requirements for ease of mapping
   const passwordValidation = [
@@ -37,125 +40,136 @@ const SignUpPage = () => {
 
   // navigation helper function
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = location.state?.returnTo ? safeReturnPath(location.state.returnTo) : null;
 
-  // handles the AWS interfacing and sign up navigation
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (submitting.current) return;
+    if (!isConfirmed && password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    submitting.current = true;
     setIsSubmitting(true);
-    // Determine whether the password has an outstanding confirmation request
-    if (!isConfirmed) {
-      // ensure password and confirmation password match then send information to AWS
-      if (password !== confirmPassword) {
-        alert('Passwords do not match!');
-        setIsSubmitting(false);
-        return;
-      }
-      try {
+    setError('');
+    try {
+      if (!isConfirmed) {
         const response = await signUp(email, password);
-        alert('Please check your email for the confirmation code.');
         setUsername(response.Username);
         setIsConfirmed(true);
-      } catch (error) {
-        alert('Error signing up. Please try again.');
-      }
-    } else {
-      // If user is partially signed up send the users confirmation code to finalize account creation and navigate to login
-      try {
+        setPassword('');
+        setConfirmPassword('');
+      } else {
         await confirmSignUp(username, confirmationCode);
-        alert('Account confirmed successfully!');
-        navigate('/login');
-      } catch (error) {
-        alert('Error confirming sign up. Please try again.');
+        navigate('/login', { state: { accountCreated: true, ...(returnTo ? { returnTo } : {}) } });
       }
+    } catch {
+      setError(
+        isConfirmed
+          ? 'Code could not be confirmed. Try again.'
+          : 'Account could not be created. Try again.'
+      );
+    } finally {
+      submitting.current = false;
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   };
 
   return (
     <AuthLayout title={isConfirmed ? 'Confirm Your Account' : 'Create Your Account'}>
-      {/* Form to handle the sign ups with state dependent fields */}
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Email"
-          type="email"
-          autoComplete="email"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <PasswordField
-          label="Password"
-          autoComplete="new-password"
-          password={password}
-          onChange={(e) => setPassword(e.target.value)}
-          showPassword={showPassword}
-          onTogglePasswordVisibility={handleTogglePasswordVisibility}
-        />
-        <PasswordField
-          label="Confirm Password"
-          autoComplete="new-password"
-          password={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          showPassword={showConfirmPassword}
-          onTogglePasswordVisibility={handleToggleConfirmPasswordVisibility}
-        />
+      <form onSubmit={handleSubmit} aria-busy={isSubmitting}>
         {isConfirmed ? (
           <>
+            <Typography role="status" className="auth-copy">
+              Code sent to {email}.
+            </Typography>
             <TextField
               label="Confirmation Code"
               autoComplete="one-time-code"
+              autoFocus
               variant="outlined"
               fullWidth
               margin="normal"
               required
+              disabled={isSubmitting}
               value={confirmationCode}
               onChange={(e) => setConfirmationCode(e.target.value)}
             />
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              className="submit-button"
-              disabled={isSubmitting}
-            >
-              Confirm Account
-            </Button>
           </>
         ) : (
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            sx={{ mt: 2 }}
-            disabled={isSubmitting}
-            className="submit-button"
-          >
-            Sign Up
-          </Button>
+          <>
+            <TextField
+              label="Email"
+              type="email"
+              autoComplete="email"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              required
+              disabled={isSubmitting}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <PasswordField
+              label="Password"
+              autoComplete="new-password"
+              password={password}
+              onChange={(e) => setPassword(e.target.value)}
+              showPassword={showPassword}
+              onTogglePasswordVisibility={handleTogglePasswordVisibility}
+              disabled={isSubmitting}
+              inputProps={{ 'aria-describedby': 'password-guidance' }}
+            />
+            <Typography id="password-guidance" className="auth-copy" variant="body2">
+              8+ characters with uppercase, lowercase, a number and a symbol.
+            </Typography>
+            <PasswordField
+              label="Confirm Password"
+              autoComplete="new-password"
+              password={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              showPassword={showConfirmPassword}
+              onTogglePasswordVisibility={handleToggleConfirmPasswordVisibility}
+              disabled={isSubmitting}
+            />
+            <details className="auth-password-details">
+              <summary>Password requirements</summary>
+              <div className="password-requirements">
+                {passwordValidation.map(({ fulfilled, text }) => (
+                  <PasswordRequirement key={text} fulfilled={fulfilled} text={text} />
+                ))}
+              </div>
+            </details>
+          </>
         )}
+        {error && (
+          <Typography role="alert" className="error-message">
+            {error}
+          </Typography>
+        )}
+        <Button
+          type="submit"
+          variant="contained"
+          fullWidth
+          className="submit-button"
+          disabled={isSubmitting}
+        >
+          {isSubmitting
+            ? isConfirmed
+              ? 'Confirming…'
+              : 'Creating account…'
+            : isConfirmed
+              ? 'Confirm Account'
+              : 'Sign Up'}
+        </Button>
       </form>
-
-      {/* The login redirection link */}
       <Typography variant="body2" align="center" className="link-text">
         Already have an account?{' '}
-        <Link to="/login" style={{ textDecoration: 'underline' }}>
+        <Link to="/login" state={returnTo ? { returnTo } : undefined}>
           Sign in
         </Link>
       </Typography>
-
-      {/* Mapping all the password requirements with toggleable icons */}
-      <Box sx={{ mt: 5 }}>
-        <Typography variant="body1">Password Requirements:</Typography>
-        <Box className="password-requirements">
-          {passwordValidation.map(({ fulfilled, text }, index) => (
-            <PasswordRequirement key={index} fulfilled={fulfilled} text={text} />
-          ))}
-        </Box>
-      </Box>
     </AuthLayout>
   );
 };

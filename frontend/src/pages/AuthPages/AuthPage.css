@@ -74,6 +74,30 @@
 .auth-container.rt-design .submit-button.MuiButton-root:hover {
   background: var(--rt-color-accent-hover);
 }
+.auth-container.rt-design .submit-button.MuiButton-root:active {
+  transform: scale(var(--rt-press-scale));
+}
+.auth-container.rt-design .auth-copy {
+  margin-block: var(--rt-space-2);
+  color: var(--rt-color-secondary);
+  overflow-wrap: anywhere;
+}
+.auth-password-details {
+  margin-block-start: var(--rt-space-2);
+  color: var(--rt-color-secondary);
+  font: var(--rt-weight-regular) var(--rt-text-small) / var(--rt-leading-body) var(--rt-font);
+}
+.auth-password-details summary {
+  display: list-item;
+  align-content: center;
+  min-block-size: var(--rt-target-min);
+  cursor: pointer;
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-container.rt-design .submit-button.MuiButton-root:active {
+    transform: none;
+  }
+}
 .auth-container.rt-design .submit-button.Mui-disabled {
   opacity: var(--rt-opacity-disabled);
 }
