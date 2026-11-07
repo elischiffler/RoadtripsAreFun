@@ -5,11 +5,147 @@ This document tracks the local integration after reviewed PR67 head
 original feature heads are recorded in `stage2-integrated-handoff.md`; that report
 is a historical checkpoint, not evidence for the newer combined head.
 
-Production remains held while final combined journey and hosted CI checks finish,
-and until the migration and release acceptance boundaries below are resolved. No GitHub main merge, hosted database mutation, live provider/Mentro
-trip or production deployment was performed by the integration work below.
+Current follow-up source freeze: `8715eee7dbc4259f4a77ba514e51747cd0dccb66`
+(November 7, 2026). This documentation update changes no application or tests.
+Current combined backend/frontend gates and the complete native overnight journey
+passed as recorded below. All four fresh hosted workflows remain **PENDING**
+before push. Older green checks are historical evidence; they do not establish
+acceptance for this freeze.
 
-## Reviewed histories retained
+Production remains held. No sharing migration, production deployment or live
+provider/Mentro trip was performed by this follow-up. Read-only migration
+preflight found the target compatible with the proposed additive migration;
+this does not mean the migration is applied or sharing tables are ready. The
+effective EC2 application role and a fresh recovery rehearsal remain unverified.
+These are release requirements, not consequences of passing local or hosted test
+fixtures.
+
+## Current follow-up scope
+
+The current backend supports practical multi-day trips with wrapped driving and
+daytime sleep. The shape remains exactly one cyclic driving block and one cyclic
+sleep block in 24 hourly slots, with rest elsewhere. Structurally valid rhythms
+are not rejected merely for time of day; actual roads, visit calendars, full
+meal intervals, hotel quote coverage and bounded trip length can still make a
+particular trip infeasible. The strict one-day rule remains complete aware UTC
+elapsed time below 12 hours, with no silent hotel insertion or proof from a
+road-only estimate.
+
+Driving cycles/deadlines are recomputed in the verified next known stop's IANA
+zone. This is a next-known-stop planning clock, not a timezone survey of every
+road point. Positive driving cannot acquire another day from a timezone change
+or continue through rest/sleep. UTC elapsed arithmetic preserves DST duration;
+relevant ambiguous or nonexistent local boundaries return fixed typed conflicts
+rather than silently choosing an offset. These checks apply to estimated
+scheduling as well as actual final-road timing, rebuild and edit preview.
+
+For explicit rhythms, meal windows shift by local sleep-end hour minus 07:00;
+full 30/45/60-minute breaks must fit awake intervals and never overlap sleep.
+For sleep 08–16, breakfast is 16–18, lunch 21–23 and dinner 03–05 on the following
+calendar date, belonging to the preceding awake cycle. Meals reserve time only:
+no dining venue or safe roadside stopping place is verified. Legacy no-rhythm
+windows and policy serialization remain unchanged.
+
+Overnight planning obtains actual full dated quotes through the existing hotel
+provider contract, with exact per-room occupancy and complete check-in/check-out
+coverage. Daytime/after-midnight rest can require prior or additional quoted
+nights. The cost sums verified whole-stay quotes once; it does not multiply a
+one-night rate into an invented multi-night price. The budget remains advisory
+per room/night. Quoted dates and planned physical arrival/departure are displayed
+separately; check-in, checkout and continuous room access require confirmation.
+They are hotel options, not bookings or guaranteed daytime access. Separate
+room inventory and current live provider markup remain unverified by fixtures.
+The 18:00/09:00 booking coverage envelope is an application planning convention,
+not published hotel hours. See [the complete rhythm/quote contract](unrestricted-daily-rhythm.md).
+
+Early preparation uses known road geometry, departure-wall-clock estimates and
+the shared meal policy to produce at most three **tentative stay search areas**.
+It makes at most six bounded admitted-catalog reads and publishes unscheduled
+ideas progressively. There are no early AI or hotel quote requests. Sparse
+catalog samples can omit places; travel-date opening hours, arrival-local clocks,
+availability and trip eligibility are not established by preparation. Actual
+candidate progress distinguishes discovered ideas, solver-selected proposals and
+rerouted checking scenes; every scene is provisional. Geometry projection
+supports both native models and legacy attribute/mapping containers without
+serializing private fields or altering actual planning inputs. Session/input
+keys, a 400 ms debounce, cancellation and stale-response guards protect the UI;
+already-running synchronous catalog work can finish after abort. Confirmation,
+cache/retry ownership and no-save-before-explicit-confirmation remain intact.
+See [progressive preparation](progressive-route-preparation.md).
+
+### Sharing policy resolved
+
+The user's **"Anyone can view"** decision resolves the sharing policy: anyone
+holding the opaque revocable link can view the minimal trip projection without
+an account. Connecting an authenticated account is optional and grants read-only
+access to that same shared trip. This does not grant editing, live GPS, private
+arrival/visit history, inferred preferences or chat access. No invitation or
+message is sent. Stopping a link preserves already connected accounts; stopping
+all sharing revokes both. Removing a connected account also stops link access,
+with stale membership changes rejected. Owner authorization, revocation,
+delete/recreate identity and geometry isolation remain server-enforced. The
+privacy allowlist shares actual rest/sleep rows and literal trip mode while
+omitting raw recurring policy, cached proof and private lodging metadata. See
+[sharing semantics](trip-sharing.md).
+
+### Research reconciliation remains blocked
+
+The separate **24-record research artifact is absent: 0/24 records reconciled**.
+The existing bundled display registry has seven exact identity bindings and one
+credited local photo. Its overlap with those 24 records is **unknown**; seven
+existing bindings must not be reported as seven reconciled research records.
+No new source facts, calendar/admission approvals, arrival coordinates, imagery
+rights or live active-catalog coverage were inferred to fill the gap. Optional
+context appears only after its exact admitted/refreshed identity binding matches;
+missing context has no AI/network fallback. See the [seven-binding registry review](data/place-context-20261107/README.md).
+
+## Current verification status — source freeze `8715eee`
+
+| Required evidence | Current status |
+| --- | --- |
+| Combined offline backend coverage and full lint/format checks | **PASS**: 2,995 passed, 180 skipped, 81.89% coverage; Ruff lint and all 335 format checks passed |
+| Combined frontend coverage, format, lint and build | **PASS**: 617 tests / 78 files, 92.79% lines, 88.11% branches, 89.90% functions; format, lint and build passed |
+| Actual native overnight/wrapped-drive/daytime-sleep browser → API → CP/timing → disposable PostgreSQL journey | **PASS**, exit 0 on `6de80a4cba2e1e1a37b1ed718f294525bbc1365a`, with the same application trees |
+| Observer integrity checks and forbidden-network detection in the mandatory journey | **PASS**: seven observer tests; browser errors, blocked origins and Python blocked attempts all empty |
+| All four fresh hosted workflows on the eventual final candidate | **PENDING**; old `4074181` CI is not acceptance |
+| Effective EC2 application-role sharing privileges | **UNVERIFIED** |
+| Fresh isolated recovery rehearsal for the migration target | **UNVERIFIED** |
+| 24-record research reconciliation | **BLOCKED: artifact absent, 0/24** |
+| Hosted sharing migration and deployment | **NOT PERFORMED** |
+
+These results are tied to backend tree
+`0dbe7243a7da44e8b4ddd0130793ef2c7efc1c5b` and frontend tree
+`1b9bbf656c03c5ea8f697f4de1fddd0e733c5e6c`, both present in `8715eee`.
+Backend coverage took 105.54 seconds and exceeded its 63% gate. The frontend tree
+was unchanged through this source freeze. Backend evidence:
+`/tmp/stage2-corrected-backend-coverage.log` in the implementation workspace.
+
+The complete native gate passed on `6de80a4cba2e1e1a37b1ed718f294525bbc1365a`,
+using the same backend/frontend application trees above. It exercised the full
+strict primary journey and actual overnight candidate/confirmation, scheduling,
+quote coverage, itinerary, save and reload through the browser, API and disposable
+PostgreSQL. Two hotel stays each retained a full two-night USD 250 quote (USD 500
+total), full 08:00–16:00 sleep intervals and wake-relative full meal breaks. The
+final edited trip ran from November 15 at 20:00 to November 18 at 01:18. These
+are actual computed fixture outcomes, not synthetic eligibility/proof metadata.
+
+Six real bounded preparation sections and the ready UI were observed; provisional
+planner progress was observed at its actual execution seams. Short-awake meal
+infeasibility and an edit exceeding driving availability returned 422 and left
+stored state unchanged. A distinct feasible late alternative, with an actual
+source calendar and 120-minute visit, passed UI preview, explicit save and reload
+without extra AI or hotel searches. All seven observer tests passed; browser
+errors, forbidden-origin observations and Python blocked-network attempts were
+empty. Temporary services and dependency links were cleaned up. External road,
+hotel, model and authentication responses remained explicit local fixtures.
+
+The native owner maintains [the detailed journey validation record](../tests/guidedjourney/VALIDATION.md);
+its actual local provider seams, assertions and cleanup results determine the
+scope of that acceptance. No fixture result attests live hotel inventory,
+live third-party map rendering, physical-device GPS, real Cognito service
+behavior or production recovery.
+
+## Historical reviewed histories retained
 
 | Lane                                                       | Exact reviewed head                        | Local integration                |
 | ---------------------------------------------------------- | ------------------------------------------ | -------------------------------- |
@@ -21,7 +157,7 @@ trip or production deployment was performed by the integration work below.
 | Onboarding, candidate map and daily rhythm controls        | `1c6b51749ff5abfd8a1f7d13eef66b6b879f5966` | No-fast-forward merge `d07f6f7`  |
 
 The initially verified combined application checkpoint is
-`d07f6f75fc3b099e73ad120ffbafdc57df5ba2b2`. The final native journey checkpoint is
+`d07f6f75fc3b099e73ad120ffbafdc57df5ba2b2`. The earlier native journey checkpoint is
 `48204ece680feb2a10aff6f4692976717cf5a754`, adding the independently reviewed
 sharing readiness prerequisite and shared-only Home entry. The latter preserves
 owned-route priority, checks connected trips only after a verified empty owned
@@ -31,7 +167,7 @@ conflicts; 15 owner and 10 independent focused tests passed.
 The reconciled arrival merge retains both original implementation parents rather
 than dropping either history. Original feature branches remain untouched.
 
-## Implementation boundaries
+## Retained implementation boundaries (with current follow-up above authoritative)
 
 The one-day backend verifies actual final roads, visits, published opening waits,
 reserved meal breaks and local driving availability before offering eligibility.
@@ -42,14 +178,11 @@ or cache miss from silently repeating model work. One-day requires no hotel
 provider or room occupancy; allowing overnights retains the existing room/provider
 contract and does not force a hotel where none is needed.
 
-Daily rhythm supports one cyclic driving block, one cyclic sleep block and rest
-gaps. Night driving can cross midnight for a fully validated one-day candidate.
-Unsupported hotel arrival/daytime sleep arrangements fail explicitly instead of
-fabricating accommodation availability. Actual hotel idle time accounts for the
-supported rest/sleep intervals. Full hotel meal breaks must fit awake intervals
-and their meal windows; breakfast can move to an awake interval or defer to the
-next drive without moving sleep or restart. Impossible combinations return a
-meal-scheduling conflict. The legacy no-rhythm hotel clock remains unchanged.
+Daily rhythm now supports the wrapped/multi-day/daytime-sleep behavior described
+above. The earlier restriction to conventional overnight hotel clocks is
+superseded. Hotel rows retain actual rest/sleep intervals, wake-relative meals,
+full dated quote prices and explicit access-confirmation wording. The legacy
+no-rhythm hotel clock remains unchanged.
 A saved one-day route is revalidated on itinerary
 rebuild and edit preview; copied proof metadata is never authority. See
 `one-day-candidates-and-daily-rhythm.md` for exact endpoint, policy and limitation
@@ -83,73 +216,47 @@ Compared with PR67 head `3a5494d`, the exact blobs for `catalog/hold_resolution.
 no path under `backend/data` changed. The only additional catalog paths are the
 reviewed optional place-context module and its display registry.
 
-## Verification scope
+## Historical verification — November 7 preceding checkpoints
 
-- Backend one-day lane: 2,848 full tests passed, 151 skipped, 81.83% coverage.
-  After one small independently reviewed shared-clock guard, 109 focused tests
-  passed. Absent-rhythm serialization preserves the exact old policy fingerprint
-  and frozen evaluation fixtures; only the new absent field is omitted.
-- Sharing lane: 2,817 backend and 492 frontend tests passed, with focused tests on
-  the final mode-label change and actual signed local PostgreSQL acceptance.
-- Arrival lane: 523 frontend tests, final 69 focused frontend cases, 27 backend
-  cases, formatting, lint, build and mocked browser acceptance passed.
-- Onboarding lane: 495 full frontend tests passed before bounded final visual and
-  recovery changes; 97 final focused tests, formatting, lint, build and two mocked
-  browser journeys passed on the final reviewed head.
-- Combined native browser/API/disposable-PostgreSQL journey passed on `d07f6f7`,
-  including actual request registration, streamed complete candidate assessment,
-  explicit one-day confirmation, save/edit/reload, visit CAS, profile/car settings,
-  authentication recovery, responsive widths and expired-departure rejection.
-  The real computed candidate elapsed time was 18,000 seconds including meals;
-  assessment left SQL trip count zero and progress below completion. Cached
-  assessment/confirmation and cancellation prevented model replay. Flexible-mode
-  missing occupancy returned 422; valid zero-hotel confirmation reused the pool.
-  Final fixture counters: solver 3, ratings 4, durations 2, gateway 6, hotels 0,
-  stored trips 1; no prohibited network calls or unexpected errors.
-- Frozen combined `d07f6f7` backend offline coverage: **2,891 passed, 163 skipped,
-  81.62% coverage**, 109 seconds.
-- Combined frontend: **591 tests passed across 75 files**, 92.65% lines, 87.68%
-  branches and 89.47% functions; formatting, lint and production build passed.
-  No frontend source changed during this run. Exact-head hosted CI remains
-  pending.
-- The subsequent bounded release-readiness delta passed 47 focused offline tests
-  plus changed-file Ruff formatting/lint. It makes readiness depend on sharing
-  prerequisites without changing liveness, authentication, migrations or data.
-  Independent source review and **17 actual disposable PostgreSQL tests passed**:
-  read-only endpoint connections, effective-role privileges, missing/malformed
-  schema, closed connections and owned CRUD independence. Each of the eight
-  privileges was revoked separately; a SELECT-only effective role was rejected
-  despite privileged session_user. Temporary roles/schema changes were restored
-  and all fixture resources removed. The PostgreSQL CI runner explicitly collects
-  these cases after the existing active-catalog fixture.
-- Final frozen `48204ece` complete native journey **passed**, including a second
-  synthetic participant using the real Cognito SDK against local JWKS/token
-  fixtures, actual sharing link/connect endpoints and PostgreSQL, shared-only
-  Home entry and read-only rendering. Empty-account and saved-owner Home paths
-  also passed. The participant acquired no owned trip, sharing left the owner
-  trip unchanged and the entry checks added no model work. All primary candidate,
-  cache, flexible-mode, CAS/edit, settings and expired-date assertions remained
-  strict and passed. Temporary services and dependency link were removed.
-- A final offline integration probe found breakfast scheduled during explicit
-  hotel sleep. The bounded new-rhythm-only correction passed **116 focused tests**,
-  including 42 frozen evaluation cases, actual hotel clocks, rebuild/edit previews,
-  estimated hotel scheduling, feasible awake breakfast, post-restart deferral,
-  impossible-window conflict and unchanged legacy timing. This application delta
-  follows the successful `48204ece` native journey and needs final exact-head CI;
-  the native zero-hotel fixture is not evidence for real hotel/provider behavior.
-- Readiness app delta is committed as `3b313fc505b6a4eda15de5fb0753349031158a54`;
-  the complete candidate journey gate is committed as `577a614`. The broad test results
-  above predate the bounded readiness and shared-only Home follow-ups; the final
-  native journey includes both. Final exact-head CI must cover the final tree.
+These checks apply only to the named earlier trees/lanes. They are retained as
+regression history; none replaces the current verification table.
 
-The mandatory journey uses the actual registration → complete assessment →
-explicit mode confirmation pipeline, with synthetic external provider leaves and
-real local signed API, scheduling and PostgreSQL persistence. Eligibility comes
-from the actual endpoints; no fixture proof is synthesized. Its temporary
-services and dependency link were removed after the run. Multi-account
-sharing/security remains covered by the actual disposable PostgreSQL lane.
+| Earlier checkpoint | Recorded acceptance |
+| --- | --- |
+| Original one-day backend lane `befbefc` | 2,848 passed, 151 skipped, 81.83%; later 109 focused tests after a bounded guard |
+| Original sharing lane through `fa8c76e` | 2,817 backend and 492 frontend tests; signed disposable-PostgreSQL authorization/revocation cases |
+| Reconciled arrival lane `cd41ae4` | 523 frontend, final 69 focused frontend and 27 backend cases; mocked browser acceptance |
+| Original onboarding lane `1c6b517` | 495 full frontend before final deltas; 97 final focused tests and two mocked browser journeys |
+| Combined `d07f6f7` | 2,891 backend passed, 163 skipped, 81.62%; 591 frontend / 75 files, 92.65% lines; format/lint/build passed |
+| Combined primary native journey `d07f6f7` | Actual complete candidate pipeline, save/edit/reload, visit CAS, settings, expired-date rejection; synthetic provider leaves and actual signed local API/CP/timing/PostgreSQL |
+| Readiness prerequisite `3b313fc` | 47 focused tests and 17 actual disposable PostgreSQL privilege/schema/isolation cases; each privilege revoked individually and a SELECT-only effective role rejected |
+| Earlier native journey `48204ece` | Primary flow plus second synthetic participant using the real Cognito SDK with local token/JWKS fixtures; shared-only Home/read-only access without extra owned rows or model work |
+| Earlier explicit hotel-meal correction | 116 focused tests, including 42 frozen evaluation cases; this preceded the newer unrestricted-rhythm policy |
+| Earlier `4074181` hosted checks | Four green workflows on that older candidate; not current-source acceptance |
+| Isolated preparation lane `846837f` | 603 frontend / 76 files, 92.66% lines; format/lint/build; subsequent geometry compatibility correction passed 96 focused backend tests |
 
-## Release and preview boundary
+An intermediate follow-up backend run failed (2,949 passed, 9 failed, 180 skipped,
+81.87%) because preview serialization assumed a Pydantic geometry. The reviewed
+correction preserved frozen fixtures; 96 focused tests and the current full
+2,995-test backend pass supersede that failed run. Known-stop cycle and typed
+DST-conflict corrections are included in the current freeze.
+
+Native acceptance also found an integer-second versus ISO timestamp precision
+assertion (50,400 versus 50,400.001 seconds). A peer-reviewed test-only tolerance
+below one second corrected that representation boundary; application clocks and
+hard scheduling checks were unchanged. The subsequent complete native pass above
+includes both the infeasible-edit rejection and a genuinely feasible successful
+edit, rather than loosening the planner to force acceptance.
+
+The earlier primary native fixture had no hotels, so it did not establish
+full-date hotel quote behavior. Its real computed candidate elapsed time was
+18,000 seconds, assessment left SQL trip count zero and progress below completion,
+and final fixture counters were solver 3, ratings 4, durations 2, gateway 6,
+hotels 0, stored trips 1. Temporary services/dependency links were removed.
+Historical hosted/local green results cannot be relabeled as current overnight
+or live-provider evidence.
+
+## Current migration, release and preview boundary
 
 The additive sharing migration is checked in with rollback and validation notes.
 It has **not** been applied to production. The normal disposable schema includes
@@ -160,13 +267,22 @@ actual application role. It uses only read-only checks and fixed 503 responses;
 it does not attest foreign keys, indexes, backup/recovery or account acceptance.
 Keep the parent-coordinated backend/migration-before-frontend order.
 
-A Vercel frontend preview can still point at production backend revision
-`42d5068bb4c8804a8024df0e4463fb05e0a7e275`, which does not have the new candidate
-or sharing APIs. Such a preview is not evidence of a working end-to-end release.
-The actual combined local static/browser/API/PostgreSQL journey and four hosted
-workflows on the final combined head remain required. No preview environment or
-protection change, extra public service, direct main push or approval bypass is
-part of this integration.
+Read-only preflight found the target compatible with the proposed migration,
+not proof of applied sharing schema or of each privilege through the effective
+EC2 application role. The effective-role check and a fresh isolated backup/restore
+rehearsal remain unverified. No hosted
+migration, role grant, schema mutation or deployment is authorized by this
+handoff itself or performed here. Keep production held until the concrete target,
+recovery evidence, final checks and coordinated release authorization are settled.
+
+Historical frontend previews pointed at production backend revision
+`42d5068bb4c8804a8024df0e4463fb05e0a7e275`, which lacked the candidate/sharing APIs.
+That observation is not a fresh deployment inspection. Verify actual frontend
+and backend targets during release; a standalone frontend preview cannot prove
+a working combined release. The current local browser/API/PostgreSQL journey has
+passed; all four fresh hosted workflows remain required for the current candidate. No
+preview protection change, extra public service, direct main push or approval
+bypass is part of this documentation update.
 
 Real Cognito, physical-device arrival behavior and the separately approved single
 post-deployment live Mentro/provider check remain distinct acceptance boundaries.
