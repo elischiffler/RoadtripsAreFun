@@ -66,9 +66,11 @@ OWNER_A = f"dbtest-{RUN_ID}-a"
 OWNER_B = f"dbtest-{RUN_ID}-b"
 CHAT_ID = f"dbtest-{RUN_ID}-chat"
 SEGMENT_CHAT = f"dbtest-{RUN_ID}-segment-conflict"
+INITIAL_SEGMENT_CHAT = f"dbtest-{RUN_ID}-initial-segment-conflict"
 STEP_CHAT = f"dbtest-{RUN_ID}-step-conflict"
 DELETE_CHAT = f"dbtest-{RUN_ID}-delete"
 ROUTE_A = f"{OWNER_A}-{CHAT_ID}"
+FINAL_ROUTE_A = f"{ROUTE_A}-final"
 GOOD_COORDS = [[-122.4, 37.7], [-121.9, 37.3]]
 GOOD_STEPS = [[-122.4, 37.7], [-122.2, 37.5]]
 
@@ -236,7 +238,9 @@ def seed():
         "ChatLog",
     )
     assert chat_crud.get_segments(OWNER_A, CHAT_ID, ROUTE_A) == GOOD_COORDS
+    assert chat_crud.get_segments(OWNER_A, CHAT_ID, FINAL_ROUTE_A) == GOOD_COORDS
     assert chat_crud.get_segments(OWNER_B, CHAT_ID, ROUTE_A) == []
+    assert chat_crud.get_segments(OWNER_B, CHAT_ID, FINAL_ROUTE_A) == []
     leg_ref = f"{ROUTE_A}-leg-0"
     legs = [{"steps": [{"geometry": {"coordinates": leg_ref}} for _ in GOOD_STEPS]}]
     restored = chat_crud.restore_legs(OWNER_A, CHAT_ID, legs)
@@ -285,13 +289,18 @@ def seed():
     assert chat_crud.get_chat(OWNER_A, DELETE_CHAT) is None
     assert chat_crud.get_chat(OWNER_B, DELETE_CHAT)["chat_data"] == {"keeper": True}
 
-    for conflict_chat in (SEGMENT_CHAT, STEP_CHAT):
+    for conflict_chat in (SEGMENT_CHAT, INITIAL_SEGMENT_CHAT, STEP_CHAT):
         chat_crud.create_chat(OWNER_A, conflict_chat, {}, {})
     with _raw_connection() as conn, conn.cursor() as cur:
         cur.execute(
             "INSERT INTO route_segments (user_id,chat_id,route_id,segment_id,coords) "
             "VALUES (%s,%s,%s,'0',%s)",
-            (OWNER_B, CHAT_ID, f"{OWNER_A}-{SEGMENT_CHAT}", "[[9,9]]"),
+            (OWNER_B, CHAT_ID, f"{OWNER_A}-{SEGMENT_CHAT}-final", "[[9,9]]"),
+        )
+        cur.execute(
+            "INSERT INTO route_segments (user_id,chat_id,route_id,segment_id,coords) "
+            "VALUES (%s,%s,%s,'0',%s)",
+            (OWNER_B, CHAT_ID, f"{OWNER_A}-{INITIAL_SEGMENT_CHAT}", "[[8,8]]"),
         )
         cur.execute(
             "INSERT INTO steps (user_id,chat_id,leg_id,step_id,coordinates) VALUES (%s,%s,%s,0,%s)",
@@ -305,6 +314,16 @@ def seed():
             "ChatData",
         )
         raise AssertionError("foreign segment key was overwritten")
+    except PermissionError:
+        pass
+    try:
+        chat_crud.update_chat_component(
+            OWNER_A,
+            INITIAL_SEGMENT_CHAT,
+            InitialComponent(initial={"geometry": {"coordinates": GOOD_COORDS}, "legs": []}),
+            "ChatData",
+        )
+        raise AssertionError("foreign initial segment key was overwritten")
     except PermissionError:
         pass
     try:
@@ -363,7 +382,9 @@ def verify():
         "Which evening interests would you like suggestions for (optional)?"
     ]
     assert chat_crud.get_segments(OWNER_A, CHAT_ID, ROUTE_A) == GOOD_COORDS
+    assert chat_crud.get_segments(OWNER_A, CHAT_ID, FINAL_ROUTE_A) == GOOD_COORDS
     assert chat_crud.get_segments(OWNER_B, CHAT_ID, ROUTE_A) == []
+    assert chat_crud.get_segments(OWNER_B, CHAT_ID, FINAL_ROUTE_A) == []
     assert memory_crud.load_facts(OWNER_A)[0].value == "San Luis Obispo"
     assert memory_crud.load_facts(OWNER_B)[0].value == "Boston"
     assert memory_crud.load_conversation(OWNER_A, CHAT_ID).summary == "Pacific coast"
@@ -381,10 +402,21 @@ def verify():
     with _raw_connection() as conn, conn.cursor() as cur:
         cur.execute(
             "SELECT user_id,coords FROM route_segments WHERE route_id=%s AND segment_id='0'",
-            (f"{OWNER_A}-{SEGMENT_CHAT}",),
+            (f"{OWNER_A}-{SEGMENT_CHAT}-final",),
         )
         owner, coords = cur.fetchone()
         assert owner == OWNER_B and coords == [[9, 9]]
+        cur.execute(
+            "SELECT user_id,coords FROM route_segments WHERE route_id=%s AND segment_id='0'",
+            (f"{OWNER_A}-{INITIAL_SEGMENT_CHAT}",),
+        )
+        owner, coords = cur.fetchone()
+        assert owner == OWNER_B and coords == [[8, 8]]
+        cur.execute(
+            "SELECT chat_data FROM chats WHERE user_id=%s AND chat_id=%s",
+            (OWNER_A, INITIAL_SEGMENT_CHAT),
+        )
+        assert cur.fetchone()[0] == {}
         cur.execute(
             "SELECT user_id,coordinates FROM steps WHERE leg_id=%s AND step_id=0",
             (f"{OWNER_A}-{STEP_CHAT}-leg-0",),
