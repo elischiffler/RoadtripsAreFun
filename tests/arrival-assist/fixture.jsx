@@ -31,6 +31,9 @@ function makeTrip() {
         ...stop,
         provider_id: "fixture:second",
         name: "Synthetic second garden",
+        coordinates: new URLSearchParams(location.search).has("colocated")
+          ? [40, -105]
+          : [40.00054, -105],
         arrival_time: new Date(now + 45 * 60000).toISOString(),
         departure_time: new Date(now + 90 * 60000).toISOString(),
       },

@@ -250,6 +250,9 @@ def update_chat_component(
                         **(current_val.get("presentation") or {}),
                         "visitedStopIds": [],
                     }
+                    # Arrival events/undo overrides refer to the old itinerary IDs.
+                    comp_dict["presentation"].pop("arrivals", None)
+                    comp_dict["presentation"].pop("automaticArrivalExcludedStopIds", None)
             empty_vals = [[], {}, None, False, ""]
             route_id = f"{auth_token}-{chat_id}"
 
