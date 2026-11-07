@@ -1,0 +1,933 @@
+{
+  "schema": "roadtrips-semantic-context-reconciliation/1",
+  "base_commit": "c6f8955a382a7b71bd6f59112e23f45e7d668acd",
+  "batch_archive_sha256": "7188e78636224ea8fa786c222936a0f9e551af466a6ff782547640da7ff7ae88",
+  "research_json_sha256": "65d9d8943b21e832eab4c53701862633fa58044e903e1d9fc46c0b47c998033d",
+  "independent_source_review_sha256": "0c2d5551cba590877b459b547ba46690673f2caba4d465d962784331b46cfe87",
+  "current_catalog_reconciliation_sha256": "56ffdec58f4294b5e00b82b5167508950709cd8f231bae0d41520fd0c03cd957",
+  "baseline_entries_sha256": "4292a2c1d6927071927aa422bdee0872d0d28354cc72d06a04dacf4d0d7d33b8",
+  "observation": {
+    "at": "2026-11-07T03:41:23.291Z",
+    "target": {
+      "project_id": "misty-mouse-24917066",
+      "branch_id": "br-noisy-forest-aqidrq92",
+      "database_name": "neondb"
+    },
+    "inspected_role": "neondb_owner",
+    "read_only": true,
+    "active_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660",
+    "release": "04-overture-a75-2026-11-04",
+    "declared_active_row_count": 1142,
+    "is_ec2_runtime_role_proof": false
+  },
+  "summary": {
+    "incoming_records": 24,
+    "identity_matched": 24,
+    "unmatched": 0,
+    "baseline_overlap": 0,
+    "new_display_bindings": 24,
+    "total_display_bindings": 31,
+    "currently_servable_incoming_at_inspection": 11,
+    "suppressed_T2_at_inspection": 10,
+    "suppressed_missing_calendar_at_inspection": 3,
+    "source_clear": 21,
+    "source_trimmed": 3,
+    "new_images_imported": 0,
+    "baseline_images_preserved": 1,
+    "routing_eligibility_changes": 0
+  },
+  "reference_archive": {
+    "archive_name": "RoadtripsAreFun-verified-catalog-2026-11-04.zip",
+    "archive_sha256": "dbd4889eb04a899bb25cee946ff55bd2bcc26baf2c749451a4951c6f80e09893",
+    "snapshot_date_utc": "2026-11-04",
+    "row_count": 1067,
+    "live_catalog_checked": false,
+    "parent_member": "releases/03-new-places/parent-rows.json",
+    "parent_member_sha256": "52e60f6838722e8eddc2ef08b1a648556d65ac3cb507dbcc7c277f03fe8b4a3e",
+    "added_member": "releases/03-new-places/prepared-additions.json",
+    "added_member_sha256": "89d9f31fb93c2d7af458a6fc49e8c88c5d0161bf338a22717c571e0458e7bc03",
+    "bytes_retrieved_for_this_reconciliation": false,
+    "required_for_identity_reconciliation": false,
+    "reason": "All 24 complete current canonical source-row fingerprints independently match the supplied research fingerprints."
+  },
+  "scope": "Dated identity and source/rights reconciliation; registry entries are display-only. Runtime uses current authoritative admission and calendar gates, never these frozen eligibility labels. No source facts, calendars, admissions, weights, ratings, generation pointers or customer records changed.",
+  "records": [
+    {
+      "source_id": "03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+      "provider_id": "overture:03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+      "native_identity": {
+        "provider_id": "overture:03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+        "source": "overture",
+        "name": "Wing Luke Museum",
+        "coordinates": [
+          47.59825849,
+          -122.32289613
+        ]
+      },
+      "region": "WA",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "6b30361d9c75f4484fcb9a5c1162991d7a1d16fc4c84129029c6799fe0130b33",
+      "current_source_row_sha256": "6b30361d9c75f4484fcb9a5c1162991d7a1d16fc4c84129029c6799fe0130b33",
+      "source_rights_decision": "clear",
+      "review_note": "Museum galleries and preserved Freeman Hotel spaces match the Seattle component; neighborhood food/walking tours stay separate.",
+      "summary": "A museum in Seattle’s Chinatown-International District focused on Asian American, Native Hawaiian and Pacific Islander life. Galleries connect art and community stories with regional history, while guided visits into preserved hotel rooms show how early Chinese, Japanese and Filipino immigrants lived. It offers gallery browsing and a close-up encounter with the neighborhood’s past.",
+      "primary_source_urls": [
+        "https://www.wingluke.org/explore"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "currently_policy_eligible",
+      "currently_servable_at_inspection": true,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "omitted_pending_visual_component_and_asset_review",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:wikidata:Q8031716",
+      "provider_id": "catalog-pilot:wikidata:Q8031716",
+      "native_identity": {
+        "provider_id": "catalog-pilot:wikidata:Q8031716",
+        "source": "catalog-pilot",
+        "name": "WonderLab",
+        "coordinates": [
+          39.1658,
+          -86.5364
+        ]
+      },
+      "region": "IN",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "85fd13209a363197ba21bacaac30142b5af8e4f8d6bab41264198f5a495fb598",
+      "current_source_row_sha256": "85fd13209a363197ba21bacaac30142b5af8e4f8d6bab41264198f5a495fb598",
+      "source_rights_decision": "clear",
+      "review_note": "Interactive science, water/bubbles, wind-tunnel construction and sound exhibits are directly supported; no old mask or operating policies imported.",
+      "summary": "An indoor, hands-on science stop in Bloomington spread across two floors. Visitors can experiment with bubbles and water, build creations to test in a wind tunnel, and make sounds with interactive exhibits. The emphasis is on touching, trying and seeing what happens, with exhibit noises and activity forming part of the experience.",
+      "primary_source_urls": [
+        "https://wonderlab.org/featured-exhibits/",
+        "https://wonderlab.org/my-visit-to-wonderlab/"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "currently_policy_eligible",
+      "currently_servable_at_inspection": true,
+      "admission_tier_at_inspection": "T3",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "wikidata-park:Q5160318",
+      "provider_id": "wikidata-park:Q5160318",
+      "native_identity": {
+        "provider_id": "wikidata-park:Q5160318",
+        "source": "kaggle-rideinpark",
+        "name": "Confusion Hill",
+        "coordinates": [
+          39.91892,
+          -123.76494
+        ]
+      },
+      "region": "CA",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "bec257e102b7e36b950a101cfcd13401a6f7fbacab03d4b8fef67770c8e7462f",
+      "current_source_row_sha256": "bec257e102b7e36b950a101cfcd13401a6f7fbacab03d4b8fef67770c8e7462f",
+      "source_rights_decision": "clear",
+      "review_note": "Gravity House and train remain distinct; the train activity must retain its when-operating condition. Seasonal closure stays dated research metadata.",
+      "summary": "A roadside attraction among Northern California’s redwoods, centered on a self-guided Gravity House filled with optical oddities and disorienting physical sensations. A separate miniature railway climbs a wooded hillside on switchbacks, passing historic logging equipment. The house and train offer distinct experiences, and the train has seasonal availability.",
+      "primary_source_urls": [
+        "https://www.confusionhill.com/attractions"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "currently_policy_eligible",
+      "currently_servable_at_inspection": true,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "omitted_pending_visual_component_and_asset_review",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "nps-heritage:crmo",
+      "provider_id": "nps-heritage:crmo",
+      "native_identity": {
+        "provider_id": "nps-heritage:crmo",
+        "source": "nps-heritage",
+        "name": "Craters Of The Moon National Monument & Preserve — Robert Limbert Visitor Center",
+        "coordinates": [
+          43.4620552216,
+          -113.561750105
+        ]
+      },
+      "region": "ID",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "f086c5f796f90c70ae55d31cc05cc2ddfeb3b962110f6d1801add4083f2ab5f3",
+      "current_source_row_sha256": "f086c5f796f90c70ae55d31cc05cc2ddfeb3b962110f6d1801add4083f2ab5f3",
+      "source_rights_decision": "clear",
+      "review_note": "Robert Limbert Visitor Center only. Park lava landscape supplies context, not included hikes or cave access.",
+      "summary": "An indoor introduction to Idaho’s landscape of lava fields, cinder cones and sagebrush. The Robert Limbert Visitor Center combines museum exhibits with maps and information that help visitors understand the area and plan their next stop. Exploring the park’s outdoor trails or lava tubes is a separate part of a visit.",
+      "primary_source_urls": [
+        "https://www.nps.gov/crmo/planyourvisit/visitor-center.htm",
+        "https://www.nps.gov/crmo/index.htm"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "currently_policy_eligible",
+      "currently_servable_at_inspection": true,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "nps:cave",
+      "provider_id": "nps:cave",
+      "native_identity": {
+        "provider_id": "nps:cave",
+        "source": "nps",
+        "name": "Carlsbad Caverns National Park — Visitor Center",
+        "coordinates": [
+          32.1754814177,
+          -104.444223173
+        ]
+      },
+      "region": "NM",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "f979a132a3d50159fb45bb3461e233d0f8eed79810c3fb3b607e62007c688a58",
+      "current_source_row_sha256": "f979a132a3d50159fb45bb3461e233d0f8eed79810c3fb3b607e62007c688a58",
+      "source_rights_decision": "clear",
+      "review_note": "Visitor-center exhibits and introductory film only. No cavern admission, tour slot or visit duration is established.",
+      "summary": "The visitor center introduces Carlsbad Caverns through hands-on displays about cave formation, desert plants and animals, and the park’s history. A short film adds another view of the underground landscape. It is an indoor interpretive stop where visitors can explore cave science and the surrounding desert ecosystem before a separately planned cavern visit.",
+      "primary_source_urls": [
+        "https://www.nps.gov/cave/planyourvisit/visitor-center.htm"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "currently_policy_eligible",
+      "currently_servable_at_inspection": true,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "nps:pefo",
+      "provider_id": "nps:pefo",
+      "native_identity": {
+        "provider_id": "nps:pefo",
+        "source": "nps",
+        "name": "Petrified Forest National Park — Rainbow Forest Museum",
+        "coordinates": [
+          34.8151527674,
+          -109.865823355
+        ]
+      },
+      "region": "AZ",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "a3d79b19a3e60299d17fd11ae76eabba6a90c96541a640a62508057c846a18aa",
+      "current_source_row_sha256": "a3d79b19a3e60299d17fd11ae76eabba6a90c96541a640a62508057c846a18aa",
+      "source_rights_decision": "clear",
+      "review_note": "Rainbow Forest Museum near south entrance; access to named trails is optional and separate. Do not import the other visitor center construction closure.",
+      "summary": "A museum near Petrified Forest’s south entrance, set in a historic building and focused on the area’s prehistoric life. Skeleton displays introduce animals of the distant past. It is also a starting point for the Giant Logs, Long Logs and Agate House trails, combining an indoor interpretive stop with options for separate outdoor exploration.",
+      "primary_source_urls": [
+        "https://www.nps.gov/pefo/planyourvisit/visitorcenters.htm"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "currently_policy_eligible",
+      "currently_servable_at_inspection": true,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "e4919ff5-f961-431a-9f46-0ecdd6b20a5d",
+      "provider_id": "overture:e4919ff5-f961-431a-9f46-0ecdd6b20a5d",
+      "native_identity": {
+        "provider_id": "overture:e4919ff5-f961-431a-9f46-0ecdd6b20a5d",
+        "source": "overture",
+        "name": "Japanese Friendship Garden",
+        "coordinates": [
+          33.460958311576,
+          -112.07668033297
+        ]
+      },
+      "region": "AZ",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "fb46a14635bff443f9be614d39d4e94cf8ecec97a9db37a2fa2801e1e0ee726c",
+      "current_source_row_sha256": "fb46a14635bff443f9be614d39d4e94cf8ecec97a9db37a2fa2801e1e0ee726c",
+      "source_rights_decision": "clear",
+      "review_note": "Phoenix Rohoen stroll-garden identity, curved paths, water, stone features and garden design are supported. No scheduled tea experience is included.",
+      "summary": "A Japanese stroll garden in central Phoenix, where curved paths gradually reveal streams, a koi pond, a waterfall and carefully arranged stone bridges and lanterns. Its layout encourages visitors to notice changing views as they walk, with a tea garden and dry garden adding different expressions of Japanese landscape design.",
+      "primary_source_urls": [
+        "https://www.japanesefriendshipgarden.org/about"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "currently_policy_eligible",
+      "currently_servable_at_inspection": true,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:wikidata:Q1099139",
+      "provider_id": "catalog-pilot:wikidata:Q1099139",
+      "native_identity": {
+        "provider_id": "catalog-pilot:wikidata:Q1099139",
+        "source": "catalog-pilot",
+        "name": "North Carolina Botanical Garden",
+        "coordinates": [
+          35.8994,
+          -79.0339
+        ]
+      },
+      "region": "NC",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "96f09bb786b1991d1be1e4d6eb297b8e6d649e1c1d28692b59f6f868d0fa0e03",
+      "current_source_row_sha256": "96f09bb786b1991d1be1e4d6eb297b8e6d649e1c1d28692b59f6f868d0fa0e03",
+      "source_rights_decision": "trim",
+      "review_note": "Use the independently readable homepage only; blocked visit-page gallery/trail/rear-entry claims are withheld from runtime.",
+      "summary": "A conservation garden in Chapel Hill with plant displays and a focus on connections between plants, people and place.",
+      "primary_source_urls": [
+        "https://ncbg.unc.edu/"
+      ],
+      "withheld_claims": [
+        "exhibit hall and art gallery",
+        "Piedmont Nature Trails, wooded creeks and hills",
+        "rear-entrance vehicle restriction"
+      ],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "T2_browse_only",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "T2",
+      "historical_hold_resolution_count": 1,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:wikidata:Q48803945",
+      "provider_id": "catalog-pilot:wikidata:Q48803945",
+      "native_identity": {
+        "provider_id": "catalog-pilot:wikidata:Q48803945",
+        "source": "catalog-pilot",
+        "name": "Prehistoric Gardens",
+        "coordinates": [
+          42.6123672,
+          -124.3926855
+        ]
+      },
+      "region": "OR",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "926c003d260485162ed19552a347a47cf939ffd222ce283891d785ae77cf6288",
+      "current_source_row_sha256": "926c003d260485162ed19552a347a47cf939ffd222ce283891d785ae77cf6288",
+      "source_rights_decision": "clear",
+      "review_note": "Outdoor self-guided model-dinosaur trail and temperate rainforest are supported; no live animals, fossil excavation or exact dinosaur count inferred.",
+      "summary": "A self-guided outdoor dinosaur walk on the southern Oregon coast, with life-size prehistoric animal models tucked among ferns, moss and old-growth trees. Interpretive plaques accompany the figures, while the temperate rainforest is part of the attraction itself. The visit combines a woodland stroll with a playful, model-based introduction to prehistoric creatures.",
+      "primary_source_urls": [
+        "https://www.prehistoricgardens.com/the-dinosaurs",
+        "https://www.prehistoricgardens.com/the-rainforest-1"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "T2_browse_only",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "T2",
+      "historical_hold_resolution_count": 1,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:wikidata:Q1050851",
+      "provider_id": "catalog-pilot:wikidata:Q1050851",
+      "native_identity": {
+        "provider_id": "catalog-pilot:wikidata:Q1050851",
+        "source": "catalog-pilot",
+        "name": "Cathedral Caverns State Park",
+        "coordinates": [
+          34.573333333,
+          -86.222222222
+        ]
+      },
+      "region": "AL",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "09d1756c9780ec0034355c283df6cf40c32da779fec2fe9ef0a3d6f8ae2b565c",
+      "current_source_row_sha256": "09d1756c9780ec0034355c283df6cf40c32da779fec2fe9ef0a3d6f8ae2b565c",
+      "source_rights_decision": "clear",
+      "review_note": "Cavern formations, separate tours, park trails and seeded gem-sifting are supported. No reservation, time slot or accessibility guarantee.",
+      "summary": "A cavern-focused Alabama state park with a broad rock entrance and underground formations including the massive Goliath stalagmite, flowstone and a dense grouping of stalagmites. Cave tours are the central experience. Above ground, visitors can choose marked walking trails or a separate gem-sifting activity using prepared mining material.",
+      "primary_source_urls": [
+        "https://www.alapark.com/parks/cathedral-caverns-state-park"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "T2_browse_only",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "T2",
+      "historical_hold_resolution_count": 1,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:wikidata:Q10856113",
+      "provider_id": "catalog-pilot:wikidata:Q10856113",
+      "native_identity": {
+        "provider_id": "catalog-pilot:wikidata:Q10856113",
+        "source": "catalog-pilot",
+        "name": "Natural Bridge Caverns",
+        "coordinates": [
+          29.691988888,
+          -98.34285
+        ]
+      },
+      "region": "TX",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "6c82508dd9488ac5d138b012e88f648a37ace350672d17601d30b696aa05b2f2",
+      "current_source_row_sha256": "6c82508dd9488ac5d138b012e88f648a37ace350672d17601d30b696aa05b2f2",
+      "source_rights_decision": "clear",
+      "review_note": "Discovery and Hidden Wonders are distinct guided products. Belt-assisted exit is not wheelchair/accessibility evidence.",
+      "summary": "A guided underground attraction near San Antonio with two distinct cavern experiences. The Discovery Tour emphasizes large chambers and formations such as stalactites and flowstone. Hidden Wonders explores a separate cavern with delicate formations, a sound-and-light presentation and a belt-assisted ride toward the surface. These are separate tour choices rather than one continuous visit.",
+      "primary_source_urls": [
+        "https://naturalbridgecaverns.com/tour/discovery-tour/",
+        "https://naturalbridgecaverns.com/tour/hidden-wonders/"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "T2_browse_only",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "T2",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:wikidata:Q5200329",
+      "provider_id": "catalog-pilot:wikidata:Q5200329",
+      "native_identity": {
+        "provider_id": "catalog-pilot:wikidata:Q5200329",
+        "source": "catalog-pilot",
+        "name": "Cypress Gardens",
+        "coordinates": [
+          33.047777777,
+          -79.948888888
+        ]
+      },
+      "region": "SC",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "6b5013b862cd2c36a4cd42aeee8f7ae0c4a098957c9a24125069c31550da11ee",
+      "current_source_row_sha256": "6b5013b862cd2c36a4cd42aeee8f7ae0c4a098957c9a24125069c31550da11ee",
+      "source_rights_decision": "clear",
+      "review_note": "Moncks Corner South Carolina county attraction, not Florida. Boat options remain conditional; no guaranteed wildlife or tour inclusion.",
+      "summary": "A South Carolina garden built around a swamp landscape, with boat routes beneath bald cypress and tupelo trees. Visitors can look for wildlife from the water, then explore a butterfly greenhouse and the Swamparium’s fish, amphibian and reptile displays. The mix of outdoor water-level exploration and indoor exhibits gives the visit several distinct parts.",
+      "primary_source_urls": [
+        "https://cypressgardens.berkeleycountysc.gov/attractions-activities/"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "T2_browse_only",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "T2",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:wikidata:Q14708625",
+      "provider_id": "catalog-pilot:wikidata:Q14708625",
+      "native_identity": {
+        "provider_id": "catalog-pilot:wikidata:Q14708625",
+        "source": "catalog-pilot",
+        "name": "Myriad Botanical Gardens",
+        "coordinates": [
+          35.465027,
+          -97.517932
+        ]
+      },
+      "region": "OK",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "352c5543666a98d53b2821ecc0668aa2ce8b91c96552618d246ac115caacc337",
+      "current_source_row_sha256": "352c5543666a98d53b2821ecc0668aa2ce8b91c96552618d246ac115caacc337",
+      "source_rights_decision": "clear",
+      "review_note": "Outdoor grounds and separately ticketed Crystal Bridge are distinguished. Seasonal exterior water closure does not close the conservatory waterfall.",
+      "summary": "An urban garden in Oklahoma City combining outdoor grounds and a children’s garden with the separately ticketed Crystal Bridge Conservatory. Inside the conservatory, tropical plant collections surround a reflecting pool and waterfall, with terraces offering views across the interior. Visitors can choose an outdoor garden break or add the enclosed plant-focused experience.",
+      "primary_source_urls": [
+        "https://myriadgardens.org/visit-us/",
+        "https://myriadgardens.org/crystalbridge/"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "T2_browse_only",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "T2",
+      "historical_hold_resolution_count": 1,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:wikidata:Q5302612",
+      "provider_id": "catalog-pilot:wikidata:Q5302612",
+      "native_identity": {
+        "provider_id": "catalog-pilot:wikidata:Q5302612",
+        "source": "catalog-pilot",
+        "name": "Dow Gardens",
+        "coordinates": [
+          43.6234,
+          -84.2496
+        ]
+      },
+      "region": "MI",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "6eadd41ef8792d8b77d4ba7d227754e38b7666d634e936c64492db80f36bca2d",
+      "current_source_row_sha256": "6eadd41ef8792d8b77d4ba7d227754e38b7666d634e936c64492db80f36bca2d",
+      "source_rights_decision": "trim",
+      "review_note": "Prefer includes Whiting Forest to an adjoining separate forest; the source explicitly identifies it as part of Dow Gardens.",
+      "summary": "A garden destination in Midland that includes Whiting Forest and an elevated canopy walk above the ground. The forest adds woodland, ponds, an orchard and meadow to the visit, with pedestrian bridges connecting areas. The combination offers changing perspectives on planted landscapes and forest habitat, including views from among the trees.",
+      "primary_source_urls": [
+        "https://dowgardens.org/forest/"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "T2_browse_only",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "T2",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "57193dd5-6aa9-4857-98bc-60e2097c3af0",
+      "provider_id": "overture:57193dd5-6aa9-4857-98bc-60e2097c3af0",
+      "native_identity": {
+        "provider_id": "overture:57193dd5-6aa9-4857-98bc-60e2097c3af0",
+        "source": "overture",
+        "name": "Waikiki Aquarium",
+        "coordinates": [
+          21.26582513,
+          -157.82149954
+        ]
+      },
+      "region": "HI",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "d43a1a41b64caf8d8905fa8b725350037f8fd5d16559f4c10a6621fc40c7e10d",
+      "current_source_row_sha256": "d43a1a41b64caf8d8905fa8b725350037f8fd5d16559f4c10a6621fc40c7e10d",
+      "source_rights_decision": "clear",
+      "review_note": "Hawaiian habitat gallery and Living Reef coral displays match the Honolulu aquarium. No touch/encounter or specific animal guarantee.",
+      "summary": "An aquarium in Honolulu that gives close-up views of Hawaiian and Pacific marine habitats. Displays move from wave-washed shores to sheltered bays and deeper reefs, pairing fish with the corals and other life around them. The Living Reef gallery adds soft and stony corals, making reef ecology a central part of the experience.",
+      "primary_source_urls": [
+        "https://www.waikikiaquarium.org/experience/exhibits/hawaiian-marine-communities/",
+        "https://www.waikikiaquarium.org/experience/exhibits/the-living-reef/"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "currently_policy_eligible",
+      "currently_servable_at_inspection": true,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:wikidata:Q1155919",
+      "provider_id": "catalog-pilot:wikidata:Q1155919",
+      "native_identity": {
+        "provider_id": "catalog-pilot:wikidata:Q1155919",
+        "source": "catalog-pilot",
+        "name": "Georgia Aquarium",
+        "coordinates": [
+          33.76343,
+          -84.395075
+        ]
+      },
+      "region": "GA",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "41e42d250b46d6a33deca0251e18da055459695f82e77469e4eb5ea21372462d",
+      "current_source_row_sha256": "41e42d250b46d6a33deca0251e18da055459695f82e77469e4eb5ea21372462d",
+      "source_rights_decision": "trim",
+      "review_note": "Avoid an implied current count of whale sharks; use singular/species-neutral wording. Tunnel/window core and manta-ray context are supported.",
+      "summary": "An aquarium in Atlanta with an Ocean Voyager gallery that surrounds visitors with marine life through an underwater viewing tunnel and a broad window into the habitat. Sharks, rays and other fish are prominent features, with several viewing angles for watching animals move through the large ocean exhibit.",
+      "primary_source_urls": [
+        "https://www.georgiaaquarium.org/gallery/ocean-voyager/"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "T2_browse_only",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "T2",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "05672cd0-77c3-41db-97c1-929f3c0ebe9d",
+      "provider_id": "overture:05672cd0-77c3-41db-97c1-929f3c0ebe9d",
+      "native_identity": {
+        "provider_id": "overture:05672cd0-77c3-41db-97c1-929f3c0ebe9d",
+        "source": "overture",
+        "name": "Armenian Museum of America",
+        "coordinates": [
+          42.36641168,
+          -71.18568955
+        ]
+      },
+      "region": "MA",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "75fbabd464539cf5039b93142748eafe44ffaed324097cc648d9dbe1fd609695",
+      "current_source_row_sha256": "75fbabd464539cf5039b93142748eafe44ffaed324097cc648d9dbe1fd609695",
+      "source_rights_decision": "clear",
+      "review_note": "Watertown cultural overview, genocide exhibition and ongoing Karsh portraits are supported. Renovation/holiday observations remain dated metadata.",
+      "summary": "Explore Armenian history and art in Watertown through objects linking ancient culture with Armenian life in the United States. The galleries pair an introduction to that long cultural story with an exhibition about the Armenian Genocide and portraits by photographer Yousuf Karsh, offering both historical interpretation and close looking at visual art.",
+      "primary_source_urls": [
+        "https://www.armenianmuseum.org/"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "currently_policy_eligible",
+      "currently_servable_at_inspection": true,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "2abb1511-8b94-4503-8c49-46c17ddae309",
+      "provider_id": "overture:2abb1511-8b94-4503-8c49-46c17ddae309",
+      "native_identity": {
+        "provider_id": "overture:2abb1511-8b94-4503-8c49-46c17ddae309",
+        "source": "overture",
+        "name": "Connections Museum",
+        "coordinates": [
+          47.540846055746044,
+          -122.32320968704548
+        ]
+      },
+      "region": "WA",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "350d3f02114b3bd741896a11b91e8eff841375227a9eed70994d40fdd283d001",
+      "current_source_row_sha256": "350d3f02114b3bd741896a11b91e8eff841375227a9eed70994d40fdd283d001",
+      "source_rights_decision": "clear",
+      "review_note": "Seattle Georgetown component, working switches and volunteer interpretation are supported. Do not import site hours, age guidance or visit duration as new route rules.",
+      "summary": "See how telephone networks worked before digital communications took over at this Seattle museum. Working electromechanical switching systems sit alongside antique telephones, switchboards, telegraphs and equipment used on telephone lines. Volunteers offer guided explanations of the collection, making the visit an encounter with actual communications machinery rather than only photographs of obsolete technology.",
+      "primary_source_urls": [
+        "https://www.telcomhistory.org/ConnectionsSeattle.html"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "required_calendar_missing",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "69bc4e96-e908-43cc-af03-8aa4c9d5880f",
+      "provider_id": "overture:69bc4e96-e908-43cc-af03-8aa4c9d5880f",
+      "native_identity": {
+        "provider_id": "overture:69bc4e96-e908-43cc-af03-8aa4c9d5880f",
+        "source": "overture",
+        "name": "Seattle Pinball Museum",
+        "coordinates": [
+          47.59806249,
+          -122.3248855
+        ]
+      },
+      "region": "WA",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "98818402a37226322c61e0603d1f0ae2c2900ff2598b21c34e7d290d7c8ed16f",
+      "current_source_row_sha256": "98818402a37226322c61e0603d1f0ae2c2900ff2598b21c34e7d290d7c8ed16f",
+      "source_rights_decision": "clear",
+      "review_note": "Maynard Avenue Seattle playable pinball museum matches. Admission/under-seven constraint is dated research, not a new family-fit rating or availability promise.",
+      "summary": "Play your way through pinball history at this interactive museum in Seattle’s Chinatown-International District. Machines range from vintage games to modern designs. Visitors move between playable machines and experience their different themes and game designs firsthand, making hands-on play the central activity of the visit.",
+      "primary_source_urls": [
+        "https://seattlepinballmuseum.com/home"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "required_calendar_missing",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "c630ba4d-42aa-40af-87d7-57e2256b5f1b",
+      "provider_id": "overture:c630ba4d-42aa-40af-87d7-57e2256b5f1b",
+      "native_identity": {
+        "provider_id": "overture:c630ba4d-42aa-40af-87d7-57e2256b5f1b",
+        "source": "overture",
+        "name": "Martin Auto Museum",
+        "coordinates": [
+          33.6120255,
+          -112.15253723
+        ]
+      },
+      "region": "AZ",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "8d9a8fbe92d592fd7b9d88cbcfe77e957a8821aa2d1e2d96ae987528ff037264",
+      "current_source_row_sha256": "8d9a8fbe92d592fd7b9d88cbcfe77e957a8821aa2d1e2d96ae987528ff037264",
+      "source_rights_decision": "clear",
+      "review_note": "Same Thunderbird Road street address; preserve the existing catalog city/address and record the Glendale/Phoenix discrepancy internally. Replica terminology is correct.",
+      "summary": "Walk among collector vehicles spanning early motoring, prewar luxury, postwar styling, muscle cars and modern customs. This Thunderbird Road museum offers a self-guided look at changing automobile design, with examples ranging from a Benz Motorwagen replica to later performance cars. A game room and carousel add activities beyond browsing the vehicle collection.",
+      "primary_source_urls": [
+        "https://www.martinautomuseum.org/collection",
+        "https://www.martinautomuseum.org/tickets",
+        "https://www.martinautomuseum.org/visit"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "required_calendar_missing",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:wikidata:Q1184855",
+      "provider_id": "catalog-pilot:wikidata:Q1184855",
+      "native_identity": {
+        "provider_id": "catalog-pilot:wikidata:Q1184855",
+        "source": "catalog-pilot",
+        "name": "Delta Blues Museum",
+        "coordinates": [
+          34.200108,
+          -90.573581
+        ]
+      },
+      "region": "MS",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "bc3e48ac54f0daf24485974dd0f3379799dcc9934031aa2c4ef87a78fcacd436",
+      "current_source_row_sha256": "bc3e48ac54f0daf24485974dd0f3379799dcc9934031aa2c4ef87a78fcacd436",
+      "source_rights_decision": "clear",
+      "review_note": "Clarksdale collection and the saved core of Muddy Waters former home match. No live performance or whole restored-home claim; closures/photo rules stay dated metadata.",
+      "summary": "Explore the musicians and material history of Delta blues in Clarksdale through guitars, photographs, costumes and other memorabilia. A central exhibit preserves part of Muddy Waters’ former home, with interpretation of his life and music. Displays also feature instruments associated with John Lee Hooker, B.B. King and other performers, connecting familiar names with tangible objects.",
+      "primary_source_urls": [
+        "https://www.deltabluesmuseum.org/collection.aspx",
+        "https://www.deltabluesmuseum.org/"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "T2_browse_only",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "T2",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:wikidata:Q122945",
+      "provider_id": "catalog-pilot:wikidata:Q122945",
+      "native_identity": {
+        "provider_id": "catalog-pilot:wikidata:Q122945",
+        "source": "catalog-pilot",
+        "name": "Yale Peabody Museum",
+        "coordinates": [
+          41.315752777,
+          -72.921175
+        ]
+      },
+      "region": "CT",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "a1f0b4dc8a297546fd28381a59efa1b1f0afe32088577418364838bef2f46904",
+      "current_source_row_sha256": "a1f0b4dc8a297546fd28381a59efa1b1f0afe32088577418364838bef2f46904",
+      "source_rights_decision": "clear",
+      "review_note": "Public New Haven galleries, fossils, minerals, dioramas, culture/science and Living Lab match; no research-collection access or touch guarantee.",
+      "summary": "Walk among dinosaur fossils, including Brontosaurus, then explore ancient marine life, minerals and habitat dioramas at Yale’s New Haven museum. Other galleries examine human cultures and the history of science. The Living Lab adds hands-on exploration with living organisms and collection objects, giving the visit a mix of large specimens, detailed displays and interactive discovery.",
+      "primary_source_urls": [
+        "https://peabody.yale.edu/explore/exhibitions"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "T2_browse_only",
+      "currently_servable_at_inspection": false,
+      "admission_tier_at_inspection": "T2",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "catalog-pilot:entertainment-reno",
+      "provider_id": "catalog-pilot:entertainment-reno",
+      "native_identity": {
+        "provider_id": "catalog-pilot:entertainment-reno",
+        "source": "catalog-pilot",
+        "name": "National Automobile Museum",
+        "coordinates": [
+          39.525861,
+          -119.8087918
+        ]
+      },
+      "region": "NV",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": false,
+      "research_row_sha256": "bad642fb0e71f146c323ccd19b9bbfe946baa59ee609319eb78db84406bf2582",
+      "current_source_row_sha256": "bad642fb0e71f146c323ccd19b9bbfe946baa59ee609319eb78db84406bf2582",
+      "source_rights_decision": "clear",
+      "review_note": "Reno historic streetscapes, sounds, artifacts, theatre, horn and photo car are explicitly supported. Guided tours remain volunteer-dependent.",
+      "summary": "Stroll through recreated historic streets lined with automobiles at this Reno museum. Period storefronts, artifacts and sounds place the cars in their eras, while galleries and theatre presentations add their stories. Visitors can also try an antique horn or pose in the photo car with period clothing, combining automotive history with a few hands-on moments.",
+      "primary_source_urls": [
+        "https://automuseum.org/visit/",
+        "https://automuseum.org/"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "currently_policy_eligible",
+      "currently_servable_at_inspection": true,
+      "admission_tier_at_inspection": "T3",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    },
+    {
+      "source_id": "a83224d1-0e20-459e-94bf-7163444a2821",
+      "provider_id": "overture:a83224d1-0e20-459e-94bf-7163444a2821",
+      "native_identity": {
+        "provider_id": "overture:a83224d1-0e20-459e-94bf-7163444a2821",
+        "source": "overture",
+        "name": "Alaska Aviation Museum",
+        "coordinates": [
+          61.17939588,
+          -149.97191488
+        ]
+      },
+      "region": "AK",
+      "identity_decision": "exact_current_source_id_name_coordinates_and_full_row_hash_match",
+      "checked_in_native_identity_match": true,
+      "research_row_sha256": "9d8e13c0994ac939853fe91e4cec926298b512ef9500e000afb5b48eae41abf3",
+      "current_source_row_sha256": "9d8e13c0994ac939853fe91e4cec926298b512ef9500e000afb5b48eae41abf3",
+      "source_rights_decision": "clear",
+      "review_note": "Lake Hood hangars, restoration viewing and Seybert Tower match. Retain when-volunteers-are-working wording; no daily P-40 demonstration, flight or airport access promised.",
+      "summary": "Explore Alaska’s aviation history through vintage aircraft and exhibits spread across four hangars beside Lake Hood. The restoration hangar offers a chance to observe volunteers working on a World War II Curtiss P-40. At Seybert Tower, visitors can watch seaplanes from the flight deck and listen to the live aviation radio feed.",
+      "primary_source_urls": [
+        "https://alaskaairmuseum.org/"
+      ],
+      "withheld_claims": [],
+      "registry_decision": "added_non_authoritative_display_binding",
+      "policy_result_at_inspection": "currently_policy_eligible",
+      "currently_servable_at_inspection": true,
+      "admission_tier_at_inspection": "legacy",
+      "historical_hold_resolution_count": 0,
+      "blocked_by_current_hold": false,
+      "new_image_decision": "none_proposed",
+      "temporary_conditions_promoted": false,
+      "editorial_fit_or_numeric_ratings_promoted": false,
+      "eligibility_changed": false
+    }
+  ],
+  "excluded_research": [
+    {
+      "source_id": "catalog-pilot:fdep-beach:FL297",
+      "decision": "withhold",
+      "reason": "Henderson Beach had snippet-only/403 evidence in intake and is excluded; no independent retry or workaround attempted. Not part of the 24."
+    }
+  ],
+  "new_images": [
+    {
+      "source_id": "03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+      "decision": "omit_new_runtime_image",
+      "license_metadata": "Commons records CC0-1.0, Seattle City Council, 2010-04-23, 800x600; Flickr license review dated 2017-05-18. Original Flickr license not independently reopened.",
+      "revision_url": "https://commons.wikimedia.org/w/index.php?title=File:Wing_Luke_Museum_(13928326428).jpg&oldid=1185029680",
+      "reason": "Metadata declaration checked; actual bytes, checksum, composition, current component identity and crop suitability not reviewed. No asset downloaded or selected."
+    },
+    {
+      "source_id": "wikidata-park:Q5160318",
+      "decision": "omit_new_runtime_image",
+      "license_metadata": "Commons own-work declaration by Ijon, CC-BY-SA-4.0, 2016-02-03, 3264x2448; attribution/source/license/change notice and applicable adaptation ShareAlike terms apply if later used.",
+      "revision_url": "https://commons.wikimedia.org/w/index.php?title=File:Confusion_Hill_signage.jpg&oldid=1131882251",
+      "reason": "Metadata declaration checked; signage is not a current Gravity House/train availability photo. Actual bytes/checksum/visual fit were not reviewed; no asset downloaded or selected."
+    }
+  ]
+}

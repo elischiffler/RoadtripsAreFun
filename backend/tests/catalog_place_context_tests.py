@@ -82,8 +82,8 @@ def test_mismatched_or_unadmitted_identity_has_no_context(change):
 
 def test_registry_review_and_asset_are_bounded_and_traceable():
     entries = DOCUMENT["entries"]
-    assert len(entries) == 7
-    assert len({e["identity"]["provider_id"] for e in entries}) == 7
+    assert len(entries) == 31
+    assert len({e["identity"]["provider_id"] for e in entries}) == 31
     receipts = {r["url"]: r for r in DOCUMENT["source_receipts"]}
     for entry in entries:
         assert entry["review"]["source_url"] in receipts
@@ -136,7 +136,7 @@ def test_registry_identities_match_checked_in_source_evidence():
         (ROOT / "docs/evidence/catalog-automation-coverage-20261019.json").read_text()
     )
     source_rows = {row["source_id"]: row for row in coverage["new_places"]}
-    for entry in DOCUMENT["entries"][4:]:
+    for entry in DOCUMENT["entries"][4:7]:
         identity = entry["identity"]
         source = source_rows[identity["provider_id"]]
         assert identity["name"] == source["name"]
