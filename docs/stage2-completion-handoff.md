@@ -13,6 +13,11 @@ yet run when this local report was recorded; verify the final exact head's check
 on [PR67](https://github.com/elischiffler/RoadtripsAreFun/pull/67) for current CI
 authority. Older green checks do not establish acceptance for a newer head.
 
+The later 24-record semantic-context reconciliation is recorded separately below.
+Its focused checks do not relabel this earlier full-suite/native snapshot or any
+older hosted CI as acceptance for the new registry/head. Fresh combined checks
+must be associated with the final exact PR67 head after integration.
+
 Production was held at this pre-push snapshot. No sharing migration, production
 deployment or live provider/Mentro trip was performed by this follow-up. Read-only migration
 preflight found the target compatible with the proposed additive migration;
@@ -22,6 +27,9 @@ was unavailable to preflight. Release needs current recovery evidence, including
 a sufficiently recent verified backup/restore receipt or validated PITR point;
 preflight did not establish that a new restore exercise is mandatory for every
 additive migration. Local or hosted test fixtures do not supply this evidence.
+The [read-only operator handoff](sharing-readonly-operator-handoff.md) supplies
+the actual app-connection/schema/privilege queries and existing recovery-receipt
+fields needed to resolve these access gaps without exposing credentials.
 
 ## Current follow-up scope
 
@@ -91,16 +99,44 @@ privacy allowlist shares actual rest/sleep rows and literal trip mode while
 omitting raw recurring policy, cached proof and private lodging metadata. See
 [sharing semantics](trip-sharing.md).
 
-### Research reconciliation remains blocked
+### Research reconciliation resolved
 
-The separate **24-record research artifact is absent: 0/24 records reconciled**.
-The existing bundled display registry has seven exact identity bindings and one
-credited local photo. Its overlap with those 24 records is **unknown**; seven
-existing bindings must not be reported as seven reconciled research records.
-No new source facts, calendar/admission approvals, arrival coordinates, imagery
-rights or live active-catalog coverage were inferred to fill the gap. Optional
-context appears only after its exact admitted/refreshed identity binding matches;
-missing context has no AI/network fallback. See the [seven-binding registry review](data/place-context-20261107/README.md).
+The supplied 24-record artifact has now been reconciled in semantic-context
+commit `2971b00`, integrated as `3e6e3e5`: **all 24 incoming native identities and full source-row
+fingerprints match the read-only current catalog inspection**. The static display
+registry contains **31 bindings**: the original seven and their credited local
+photo are preserved unchanged, plus 24 new text-only bindings with no overlap.
+No new photo was added. The [24-record reconciliation report](data/semantic-context-24-20261107/README.md)
+is authoritative for the per-record source/rights decisions and current-catalog
+receipts; the [initial seven-binding review](data/place-context-20261107/README.md)
+is the historical baseline, not the current registry total.
+
+At the report's **November 7, 2026, 03:41:23.291 UTC** inspection, **11 incoming
+records** passed existing admission/calendar policy. The other **10 T2 browse-only
+records and 3 without required calendars remain suppressed**. These are dated
+results for the incoming batch, not a claim that all 31 bindings currently serve
+or that any place is selected, open for a trip date or newly admitted. Production
+retains current identity refresh, the real clock, admission/holds and calendars;
+optional context has no AI/network fallback. No source facts, admission contracts,
+calendar approvals, arrival coordinates, ratings, active generation or schema
+were changed by this display-only reconciliation.
+
+The current read-only catalog receipt identifies active generation
+`5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660`,
+release `04-overture-a75-2026-11-04`, with **1,142 declared rows** in Neon project
+`misty-mouse-24917066`, branch `br-noisy-forest-aqidrq92`, database `neondb`.
+That is distinct from the older 1,067-row reference archive. The MCP owner-session
+observation is current-catalog evidence, not proof of the effective EC2 app role,
+sharing migration or recoverability.
+
+The lane reports **167 focused/adjacent tests passed**, including **42 frozen
+evaluation cases**, plus Ruff/format checks. Independent source/rights and
+catalog-equality reviews approved `2971b00`. Fresh combined exact-head CI remains
+pending and is separate from those focused results and the earlier full/native
+snapshot below. The optional original November 4 reference archive is not needed because
+all 24 full-row fingerprints match the current canonical rows. **No research
+user action is needed**. Effective EC2-role/current recovery evidence remains a
+separate unresolved release boundary.
 
 ## Local verification snapshot — November 7, 2026, source freeze `8715eee`
 
@@ -113,7 +149,7 @@ missing context has no AI/network fallback. See the [seven-binding registry revi
 | All four hosted workflows on the final candidate | Not yet run at this November 7 pre-push snapshot; verify the final exact PR67 head. Old `4074181` CI is not acceptance |
 | Effective EC2 application-role sharing privileges | **UNVERIFIED** |
 | Current recovery evidence for the migration target | Unavailable to preflight: obtain a sufficiently recent verified backup/restore receipt or validated PITR point |
-| 24-record research reconciliation | **BLOCKED: artifact absent, 0/24** |
+| Later 24-record research reconciliation | Resolved by the separate `2971b00` follow-up above; its focused evidence is not part of this earlier full-suite snapshot |
 | Hosted sharing migration and deployment | **NOT PERFORMED** |
 
 These results are tied to backend tree
@@ -276,6 +312,11 @@ EC2 application role. That role remained unverified and recovery evidence was
 unavailable to preflight. Obtain current recovery evidence, including a
 sufficiently recent verified backup/restore receipt or validated PITR point;
 a new restore exercise for each additive migration is not an established gate.
+Use the [read-only operator handoff](sharing-readonly-operator-handoff.md): an
+authorized operator can provide sanitized results through the running app's
+connection factory plus existing current recovery receipts, or a legitimate
+read-only host/ops identity can be configured in environment settings. No
+credentials in chat and no fresh restore are required by that handoff.
 No hosted migration, role grant, schema mutation or deployment is authorized by
 this handoff itself or performed here. Keep production held until the concrete target,
 recovery evidence, final checks and coordinated release authorization are settled.

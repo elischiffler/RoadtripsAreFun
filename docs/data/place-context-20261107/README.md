@@ -1,5 +1,11 @@
 # Reviewed place context — 7 November 2026
 
+This report records the **initial seven-binding review**, not the current registry
+total. The later [24-record reconciliation](../semantic-context-24-20261107/README.md)
+adds 24 exact display bindings, bringing the static registry to 31 while preserving
+these seven entries and their credited photo unchanged. That report owns the
+incoming batch's dated current-catalog identity and eligibility evidence.
+
 This is a display enrichment review, not a catalog import or a claim of complete
 place coverage. It adds **seven exact identity bindings and one optional photo**.
 No hosted catalog was queried or changed. Current active/admitted coverage is
