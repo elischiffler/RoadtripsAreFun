@@ -18,6 +18,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import urlparse
 
+from preparation_observer import PreparationObserver
+
 target = urlparse(os.environ.get("DATABASE_URL", ""))
 if (
     target.hostname not in {"postgres", "127.0.0.1", "localhost"}
@@ -148,6 +150,7 @@ counts = {
     "requests": [],
     "stream_events": [],
     "preview_events": [],
+    "preparation_records": [],
 }
 
 
@@ -383,6 +386,9 @@ async def record_requests(request, call_next):
 
         response.body_iterator = observe_stream()
     return response
+
+
+app.add_middleware(PreparationObserver, records=counts["preparation_records"])
 
 
 @app.get("/fixture/report")

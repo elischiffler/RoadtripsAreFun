@@ -183,30 +183,6 @@ export async function runOvernightJourney({
   const baseline = await fixtureReport();
   const { context, page } = await session({ email: "overnight@example.test" });
   try {
-    let preparedResponse;
-    const preparation = new Promise((resolve) => {
-      preparedResponse = resolve;
-    });
-    page.on("response", (response) => {
-      if (new URL(response.url()).pathname !== "/route-preparation/stream")
-        return;
-      const payload = response.request().postDataJSON();
-      if (
-        JSON.stringify(payload?.scheduling_policy?.daily_schedule) !==
-        JSON.stringify(schedule)
-      )
-        return;
-      void response
-        .text()
-        .then((text) => {
-          const events = text
-            .trim()
-            .split("\n")
-            .map((line) => JSON.parse(line));
-          preparedResponse(events);
-        })
-        .catch(() => {}); // Aborted obsolete reads are not accepted as evidence.
-    });
     const date = new Date(Date.now() + 8 * 86400000).toISOString().slice(0, 10);
     await page
       .getByLabel("Starting city or address", { exact: true })
@@ -239,19 +215,44 @@ export async function runOvernightJourney({
       .getByRole("button", { name: /^Tentative stay search area:/ })
       .first()
       .waitFor();
-    let deadline;
-    const preparationEvents = await Promise.race([
-      preparation,
-      new Promise((_, reject) => {
-        deadline = setTimeout(
-          () =>
-            reject(
-              Error("No complete preparation response for the final rhythm"),
-            ),
-          30000,
-        );
-      }),
-    ]).finally(() => clearTimeout(deadline));
+    const lastSequence = baseline.preparation_records.at(-1)?.sequence || 0;
+    const deadline = Date.now() + 30000;
+    let receipt;
+    while (Date.now() < deadline) {
+      receipt = (await fixtureReport()).preparation_records.find(
+        (record) =>
+          record.sequence > lastSequence &&
+          record.request.departure_clock === "20:00" &&
+          record.request.daily_schedule?.timezone === schedule.timezone &&
+          JSON.stringify(record.request.daily_schedule?.slots) ===
+            JSON.stringify(schedule.slots) &&
+          record.events.at(-1)?.type === "result",
+      );
+      if (receipt) break;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    assert.ok(receipt, "No complete preparation receipt for the final rhythm");
+    assert.equal(receipt.status, 200);
+    assert.equal(receipt.truncated, false);
+    assert.equal(receipt.invalid_event, undefined);
+    const preparationEvents = receipt.events;
+    // Server receipt is not browser proof. Areas must render, loading must end,
+    // and the actual map must switch to its ready geometry without fallback.
+    await page
+      .getByRole("img", { name: "Draft route geometry", exact: true })
+      .waitFor();
+    await page
+      .getByText(/^Preparing catalog ideas ·/)
+      .waitFor({ state: "detached" });
+    assert.equal(
+      await page
+        .getByText(
+          "Some catalog ideas could not be checked. You can continue planning.",
+          { exact: true },
+        )
+        .count(),
+      0,
+    );
     const earlyAreas = preparationEvents.find(
       (event) => event.stage === "preparation.areas",
     );
