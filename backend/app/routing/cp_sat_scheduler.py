@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from datetime import UTC
+from datetime import UTC, datetime
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -14,6 +14,7 @@ from app.agent.progress import emit
 from app.models.routing_models.routing_models import MapBox
 from app.models.scheduling_policy import advance, local_time, seconds_until
 from app.routing.base import MAX_TRIP_OVERNIGHTS, PlanningError, PlanOptions
+from app.routing.daily_rhythm import rest_blocks
 from app.routing.discovery import SelectedAttraction
 from app.routing.geometry import RouteMeasure
 from app.routing.meal_reservations import MealClock, MealScheduleConflict
@@ -417,7 +418,19 @@ async def schedule_cp_sat_route(
                 meal_clock.nominal_end = advance(
                     meal_clock.nominal_end, max(0, seconds_until(arrival, now))
                 )
-                meal_clock.rest(arrival, now, zone)
+                awake_intervals = (
+                    [
+                        (
+                            datetime.fromisoformat(b["arrival_time"]),
+                            datetime.fromisoformat(b["departure_time"]),
+                        )
+                        for b in rest_blocks(arrival, now, policy.daily_schedule)
+                        if b["kind"] == "rest"
+                    ]
+                    if policy.daily_schedule
+                    else None
+                )
+                meal_clock.rest(arrival, now, zone, awake_intervals=awake_intervals)
             if seconds_until(arrival, now) <= 0:
                 raise PlanningError(
                     "Hotel arrival leaves no time before the chosen morning restart", 422

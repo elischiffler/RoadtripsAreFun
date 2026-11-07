@@ -166,14 +166,27 @@ class MealClock:
                 return finish
             cursor = finish
 
-    def rest(self, arrival, departure, zone):
-        """Use hotel idle time without moving the selected morning restart."""
+    def rest(self, arrival, departure, zone, *, awake_intervals=None):
+        """Use hotel awake time without moving sleep or the selected restart."""
         cursor = arrival
         while True:
             candidate = self._next(cursor, departure, zone)
             if candidate is None:
                 return
             beginning = _later(cursor, candidate[0])
+            if awake_intervals is not None:
+                for awake_start, awake_end in awake_intervals:
+                    trial = _later(beginning, awake_start)
+                    limit = _earlier(_earlier(awake_end, departure), candidate[3])
+                    if seconds_until(advance(trial, candidate[4]), limit) >= -1e-6:
+                        beginning = trial
+                        break
+                else:
+                    # A meal still fitting after restart belongs to the next
+                    # drive; an already closed window cannot be eaten in sleep.
+                    if seconds_until(advance(departure, candidate[4]), candidate[3]) >= -1e-6:
+                        return
+                    raise self.conflict(candidate[1][1])
             if seconds_until(advance(beginning, candidate[4]), departure) < -1e-6:
                 # E.g. an early restart: breakfast is handled by the next drive.
                 return

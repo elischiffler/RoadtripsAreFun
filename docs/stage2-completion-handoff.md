@@ -21,7 +21,7 @@ trip or production deployment was performed by the integration work below.
 | Onboarding, candidate map and daily rhythm controls        | `1c6b51749ff5abfd8a1f7d13eef66b6b879f5966` | No-fast-forward merge `d07f6f7`  |
 
 The initially verified combined application checkpoint is
-`d07f6f75fc3b099e73ad120ffbafdc57df5ba2b2`. The final frozen application is
+`d07f6f75fc3b099e73ad120ffbafdc57df5ba2b2`. The final native journey checkpoint is
 `48204ece680feb2a10aff6f4692976717cf5a754`, adding the independently reviewed
 sharing readiness prerequisite and shared-only Home entry. The latter preserves
 owned-route priority, checks connected trips only after a verified empty owned
@@ -46,7 +46,11 @@ Daily rhythm supports one cyclic driving block, one cyclic sleep block and rest
 gaps. Night driving can cross midnight for a fully validated one-day candidate.
 Unsupported hotel arrival/daytime sleep arrangements fail explicitly instead of
 fabricating accommodation availability. Actual hotel idle time accounts for the
-supported rest/sleep intervals. A saved one-day route is revalidated on itinerary
+supported rest/sleep intervals. Full hotel meal breaks must fit awake intervals
+and their meal windows; breakfast can move to an awake interval or defer to the
+next drive without moving sleep or restart. Impossible combinations return a
+meal-scheduling conflict. The legacy no-rhythm hotel clock remains unchanged.
+A saved one-day route is revalidated on itinerary
 rebuild and edit preview; copied proof metadata is never authority. See
 `one-day-candidates-and-daily-rhythm.md` for exact endpoint, policy and limitation
 contracts.
@@ -126,6 +130,13 @@ reviewed optional place-context module and its display registry.
   trip unchanged and the entry checks added no model work. All primary candidate,
   cache, flexible-mode, CAS/edit, settings and expired-date assertions remained
   strict and passed. Temporary services and dependency link were removed.
+- A final offline integration probe found breakfast scheduled during explicit
+  hotel sleep. The bounded new-rhythm-only correction passed **116 focused tests**,
+  including 42 frozen evaluation cases, actual hotel clocks, rebuild/edit previews,
+  estimated hotel scheduling, feasible awake breakfast, post-restart deferral,
+  impossible-window conflict and unchanged legacy timing. This application delta
+  follows the successful `48204ece` native journey and needs final exact-head CI;
+  the native zero-hotel fixture is not evidence for real hotel/provider behavior.
 - Readiness app delta is committed as `3b313fc505b6a4eda15de5fb0753349031158a54`;
   the complete candidate journey gate is committed as `577a614`. The broad test results
   above predate the bounded readiness and shared-only Home follow-ups; the final

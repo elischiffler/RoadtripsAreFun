@@ -147,10 +147,27 @@ def _apply_timing(stops, start, policy, start_timezone, clock):
                 or arrival.date() > travel_day
             ):
                 stop["late_check_in_notice"] = "Confirm late check-in with the hotel"
+            blocks = (
+                rest_blocks(arrival, departure, policy.daily_schedule)
+                if policy.daily_schedule
+                else None
+            )
             if clock:
-                clock.rest(arrival, departure, zone)
-            if policy.daily_schedule:
-                stop["daily_rhythm_blocks"] = rest_blocks(arrival, departure, policy.daily_schedule)
+                awake_intervals = (
+                    [
+                        (
+                            datetime.fromisoformat(b["arrival_time"]),
+                            datetime.fromisoformat(b["departure_time"]),
+                        )
+                        for b in blocks
+                        if b["kind"] == "rest"
+                    ]
+                    if blocks is not None
+                    else None
+                )
+                clock.rest(arrival, departure, zone, awake_intervals=awake_intervals)
+            if blocks is not None:
+                stop["daily_rhythm_blocks"] = blocks
                 stop["check_in_timing_notice"] = (
                     "Planned rest; confirm hotel check-in and checkout times."
                 )
