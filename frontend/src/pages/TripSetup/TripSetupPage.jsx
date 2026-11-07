@@ -591,8 +591,8 @@ export default function TripSetupPage() {
                     </p>
                   ) : (
                     <p className="rt-copy">
-                      A complete trip under 12 hours could not be verified. Allow overnight stays,
-                      or edit your answers.
+                      A complete trip under 12 hours could not be verified. Allow hotel stays, or
+                      edit your answers.
                     </p>
                   )}
                   {candidate.one_day.eligible && (
@@ -605,7 +605,7 @@ export default function TripSetupPage() {
                     disabled={busy}
                     onClick={() => setOvernight(true)}
                   >
-                    Allow overnight stays
+                    Allow hotel stays
                   </ActionButton>
                   {overnight && (
                     <>
@@ -619,8 +619,8 @@ export default function TripSetupPage() {
                         }}
                       />
                       <p className="rt-caption">
-                        Stays are added only when needed. Quotes do not book a room. Night-driving
-                        rhythms may require a one-day trip.
+                        Stays are added only when needed. Quotes do not book a room or confirm
+                        arrival times.
                       </p>
                       <ActionButton disabled={busy} onClick={() => plan('overnight')}>
                         Plan with stays allowed
@@ -700,8 +700,8 @@ export default function TripSetupPage() {
                 </dd>
               </dl>
               <p className="rt-caption">
-                Driving excludes visits, meal breaks and overnight stays. Hotel quotes exclude fuel,
-                food and tickets and do not guarantee booking availability.
+                Driving time excludes stops and rest. Hotel quotes exclude fuel, food and tickets
+                and do not guarantee booking availability.
               </p>
               {(result.route.warnings ?? []).map((warning, index) => (
                 <p role="note" key={index} className="rt-caption">

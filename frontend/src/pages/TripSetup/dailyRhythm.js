@@ -67,14 +67,3 @@ export function schedulingPolicyFromDraft(draft) {
   const rhythm = draft.dailyRhythm ?? rhythmFromDailySchedule(draft.schedule?.daily_schedule);
   return rhythm ? { daily_schedule: dailyScheduleFromRhythm(rhythm) } : { ...draft.schedule };
 }
-
-export function supportsOvernightRhythm(rhythm) {
-  if (!rhythm) return true;
-  try {
-    const { slots } = dailyScheduleFromRhythm(rhythm);
-    const end = rhythm.driveEnd === 0 ? 24 : rhythm.driveEnd;
-    return end >= 18 && end > rhythm.driveStart && slots[0] === 'sleep';
-  } catch {
-    return false;
-  }
-}

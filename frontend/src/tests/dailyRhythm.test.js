@@ -4,7 +4,6 @@ import {
   dailyScheduleFromRhythm,
   rhythmFromDailySchedule,
   schedulingPolicyFromDraft,
-  supportsOvernightRhythm,
 } from '../pages/TripSetup/dailyRhythm';
 import {
   hotelSetupErrors,
@@ -30,14 +29,11 @@ it('keeps all24 meaningful slots and omits conflicting legacy clocks on opt-in',
     /driving hour/
   );
 });
-it('supports midnight-wrapping one-day availability while declaring unsupported hotel rhythms', () => {
+it('accepts midnight-wrapping and daytime-sleep policies for multiday planning', () => {
   const night = { driveStart: 20, driveEnd: 6, sleepStart: 8, sleepEnd: 16 };
   expect(rhythmFromDailySchedule(dailyScheduleFromRhythm(night))).toEqual(night);
-  expect(supportsOvernightRhythm(night)).toBe(false);
-  expect(supportsOvernightRhythm({ driveStart: 9, driveEnd: 0, sleepStart: 0, sleepEnd: 7 })).toBe(
-    true
-  );
-  expect(supportsOvernightRhythm(DEFAULT_DAILY_RHYTHM)).toBe(true);
+  const early = { driveStart: 0, driveEnd: 8, sleepStart: 10, sleepEnd: 18 };
+  expect(rhythmFromDailySchedule(dailyScheduleFromRhythm(early))).toEqual(early);
   const split = dailyScheduleFromRhythm(DEFAULT_DAILY_RHYTHM);
   split.slots[12] = 'rest';
   expect(() => rhythmFromDailySchedule(split)).toThrow(/one driving/);

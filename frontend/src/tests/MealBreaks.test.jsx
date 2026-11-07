@@ -78,3 +78,61 @@ it('does not claim malformed saved reservation intervals are scheduled', () => {
   expect(screen.getAllByText(/no usable scheduled interval/)).toHaveLength(2);
   expect(screen.queryByText(/minutes set aside/)).not.toBeInTheDocument();
 });
+
+it('shows the actual next-day date for a sleep-shifted dinner instead of inferring it from the travel-day heading', () => {
+  render(
+    <ItineraryDays
+      itinerary={[
+        {
+          date: 'Thursday, November 07 2030',
+          stops: [
+            {
+              ...lunch,
+              id: 'shifted-dinner',
+              name: 'Dinner',
+              meal_type: 'dinner',
+              arrival_time: '2030-11-08T03:00:00-07:00',
+              departure_time: '2030-11-08T04:00:00-07:00',
+              window_start: '2030-11-08T03:00:00-07:00',
+              window_end: '2030-11-08T05:00:00-07:00',
+              timezone: 'America/Denver',
+            },
+          ],
+        },
+      ]}
+    />
+  );
+  const region = screen.getByRole('region', { name: 'Meal breaks' });
+  expect(region).toHaveTextContent('Dinner');
+  expect(region).toHaveTextContent('Nov 8 · MST');
+  expect(
+    within(region).getByLabelText('Nov 8, 2030, 3:00 AM GMT-7 (America/Denver)')
+  ).toHaveAttribute('datetime', '2030-11-08T03:00:00-07:00');
+  expect(region).toHaveTextContent('60 minutes set aside');
+});
+it('keeps both local dates visible and accessible when a meal crosses midnight', () => {
+  render(
+    <ItineraryDays
+      itinerary={[
+        {
+          date: 'November 07 2030',
+          stops: [
+            {
+              ...lunch,
+              name: 'Dinner',
+              arrival_time: '2030-11-07T23:45:00-07:00',
+              departure_time: '2030-11-08T00:45:00-07:00',
+              timezone: 'America/Denver',
+            },
+          ],
+        },
+      ]}
+    />
+  );
+  const region = screen.getByRole('region', { name: 'Meal breaks' });
+  expect(region).toHaveTextContent('Nov 7 · MST');
+  expect(region).toHaveTextContent('Nov 8 · MST');
+  expect(
+    within(region).getByLabelText('Nov 8, 2030, 12:45 AM GMT-7 (America/Denver)')
+  ).toHaveAttribute('datetime', '2030-11-08T00:45:00-07:00');
+});

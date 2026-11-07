@@ -558,7 +558,7 @@ it('waits for explicit assessment and presents no hotel questions or completion 
     finish({ one_day: { eligible: false, elapsed_seconds: 50000 }, candidate_route: route })
   );
   expect(screen.queryByRole('button', { name: 'Finish in one day' })).not.toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Allow overnight stays' })).toBeEnabled();
+  expect(screen.getByRole('button', { name: 'Allow hotel stays' })).toBeEnabled();
 });
 it('retains the exact registered request and immutable input body on an explicit uncertain retry', async () => {
   assessPlanningCandidate.mockRejectedValueOnce(new Error('connection lost'));
@@ -603,7 +603,7 @@ it('collects hotel occupancy only for stays allowed and accepts a flexible route
     candidate_route: null,
   });
   await confirm(false);
-  await userEvent.click(await screen.findByRole('button', { name: 'Allow overnight stays' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Allow hotel stays' }));
   expect(screen.getByLabelText('Hotel target per room / night')).toHaveValue(150);
   await userEvent.click(screen.getByRole('button', { name: 'Add a room' }));
   await userEvent.click(screen.getByRole('button', { name: 'Plan with stays allowed' }));
@@ -621,7 +621,7 @@ it('collects hotel occupancy only for stays allowed and accepts a flexible route
 
 it('keeps hotel typing focus while editing deferred stay answers', async () => {
   await confirm(false);
-  await userEvent.click(await screen.findByRole('button', { name: 'Allow overnight stays' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Allow hotel stays' }));
   const budget = screen.getByLabelText('Hotel target per room / night');
   await userEvent.clear(budget);
   await userEvent.type(budget, '125.50');

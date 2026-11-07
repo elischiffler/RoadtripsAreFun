@@ -246,9 +246,7 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate, prep
                       step: 1,
                       inputMode: 'numeric',
                     })}
-                    <p className="setup-hint">
-                      Stay choices appear only if you allow an overnight trip.
-                    </p>
+                    <p className="setup-hint">Stay choices appear only if you allow hotel stays.</p>
                   </>
                 )}
                 {step === 2 && (

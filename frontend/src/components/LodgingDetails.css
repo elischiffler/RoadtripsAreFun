@@ -1,0 +1,10 @@
+.lodging-details {
+  display: grid;
+  gap: var(--rt-space-2, 0);
+  margin-block-start: var(--rt-space-3, 0);
+  font-size: var(--rt-text-small, inherit);
+  line-height: var(--rt-leading-body, normal);
+}
+.lodging-details p {
+  margin: 0;
+}

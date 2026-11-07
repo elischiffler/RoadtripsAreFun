@@ -13,7 +13,7 @@ import {
   registerCandidateRequest,
   validateCandidate,
 } from '../services/planningCandidates';
-import { candidateErrorMessage } from '../services/planningCandidateErrors';
+import { candidateErrorMessage, safeCandidateError } from '../services/planningCandidateErrors';
 import { streamPlanningCandidate } from '../services/tripRouteStream';
 import { getFreshRoutingAlgorithm } from '../services/routingSettings';
 vi.mock('../services/protectedRequest', () => ({ default: { post: vi.fn(), delete: vi.fn() } }));
@@ -150,4 +150,33 @@ it('does not dispatch cancellation as a different account or accept late assessm
   signOut();
   finish(candidate);
   await expect(pending).rejects.toMatchObject({ code: 'session-changed' });
+});
+
+it('keeps actual timing conflicts actionable while retiring the old clock-band restriction', () => {
+  expect(candidateErrorMessage(422, 'rhythm_availability_conflict')).toMatch(
+    /road leg falls outside driving availability/
+  );
+  expect(candidateErrorMessage(422, 'unsupported_overnight_rhythm')).toBeUndefined();
+  const error = safeCandidateError({
+    response: {
+      status: 422,
+      data: { code: 'unsupported_overnight_rhythm', detail: 'Night driving must be one day only' },
+    },
+  });
+  expect(error.message).not.toMatch(/one day only/);
+});
+
+it('only exposes fixed actionable lodging guidance for the exact422 contract', () => {
+  const message =
+    'The dated hotel quote does not cover the planned rest interval. Choose a later departure or adjust the daily rhythm and check options again. Confirm hotel check-in and checkout times before booking.';
+  expect(candidateErrorMessage(422, 'lodging_stay_conflict')).toBe(message);
+  expect(candidateErrorMessage(500, 'lodging_stay_conflict')).toBeUndefined();
+  const error = safeCandidateError({
+    response: {
+      status: 422,
+      data: { code: 'lodging_stay_conflict', detail: 'Private hotel provider diagnostics' },
+    },
+  });
+  expect(error.message).toBe(message);
+  expect(error.message).not.toMatch(/Private hotel/);
 });

@@ -1,4 +1,4 @@
-import { dailyScheduleFromRhythm, supportsOvernightRhythm } from './dailyRhythm';
+import { dailyScheduleFromRhythm } from './dailyRhythm';
 import { validStopCoordinates } from '../../services/tripPresentation';
 
 const line = (route) =>
@@ -12,13 +12,7 @@ const line = (route) =>
 
 /** Road-only rest regions are a draft map hint, never hotel inventory or a quote. */
 export function approximateRestRegions(route, draft) {
-  if (
-    !line(route) ||
-    !Number.isFinite(route.duration) ||
-    route.duration <= 0 ||
-    !draft.dailyRhythm ||
-    !supportsOvernightRhythm(draft.dailyRhythm)
-  )
+  if (!line(route) || !Number.isFinite(route.duration) || route.duration <= 0 || !draft.dailyRhythm)
     return [];
   let slots;
   try {

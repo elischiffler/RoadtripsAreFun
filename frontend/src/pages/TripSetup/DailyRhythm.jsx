@@ -14,6 +14,10 @@ const HANDLES = [
 export default function DailyRhythm({ value, onChange, disabled = false, error }) {
   const id = useId();
   const rhythm = value ?? DEFAULT_DAILY_RHYTHM;
+  const wraps = (key) =>
+    (key === 'driveEnd' && rhythm.driveEnd < rhythm.driveStart) ||
+    (key === 'sleepEnd' && rhythm.sleepEnd < rhythm.sleepStart);
+  const timeLabel = (key) => `${hourLabel(rhythm[key])}${wraps(key) ? ', next day' : ''}`;
   let slots;
   let issue = error;
   try {
@@ -27,12 +31,13 @@ export default function DailyRhythm({ value, onChange, disabled = false, error }
         <h3 id={`${id}-heading`} className="rt-title">
           Your 24 hours
         </h3>
-        <p className="rt-caption">Driving time can also include stops and meals.</p>
+        <p className="rt-caption">These windows repeat daily, in each stop’s local time.</p>
+        {value && <p className="rt-caption">Meal breaks follow your sleep schedule.</p>}
       </header>
       <div
         className="setup-rhythm-bar"
         role="img"
-        aria-label={`Drive ${hourLabel(rhythm.driveStart)} to ${hourLabel(rhythm.driveEnd)}; sleep ${hourLabel(rhythm.sleepStart)} to ${hourLabel(rhythm.sleepEnd)}. Other hours are rest.`}
+        aria-label={`Drive ${hourLabel(rhythm.driveStart)} to ${timeLabel('driveEnd')}; sleep ${hourLabel(rhythm.sleepStart)} to ${timeLabel('sleepEnd')}. Other hours are rest.`}
       >
         {(slots ?? Array(24).fill('rest')).map((slot, hour) => (
           <span key={hour} data-period={slot} title={`${hourLabel(hour)} · ${slot}`} />
@@ -57,7 +62,11 @@ export default function DailyRhythm({ value, onChange, disabled = false, error }
         {HANDLES.map(([key, label]) => (
           <label key={key} className="setup-rhythm-handle">
             <span className="rt-field__label">
-              {label} <strong>{hourLabel(rhythm[key])}</strong>
+              {label}{' '}
+              <strong>
+                {hourLabel(rhythm[key])}
+                {wraps(key) && <span className="rt-caption"> +1 day</span>}
+              </strong>
             </span>
             <input
               aria-label={label}
@@ -68,7 +77,7 @@ export default function DailyRhythm({ value, onChange, disabled = false, error }
               step="1"
               value={rhythm[key]}
               disabled={disabled}
-              aria-valuetext={hourLabel(rhythm[key])}
+              aria-valuetext={timeLabel(key)}
               aria-describedby={issue ? `${id}-error` : undefined}
               aria-invalid={issue ? true : undefined}
               onChange={(event) => onChange({ ...rhythm, [key]: Number(event.target.value) })}

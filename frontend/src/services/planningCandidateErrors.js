@@ -1,4 +1,8 @@
 const ERRORS = {
+  lodging_stay_conflict: [
+    422,
+    'The dated hotel quote does not cover the planned rest interval. Choose a later departure or adjust the daily rhythm and check options again. Confirm hotel check-in and checkout times before booking.',
+  ],
   rhythm_clock_conflict: [
     422,
     'A driving or sleep boundary falls in an ambiguous or missing local hour. Choose a different hour for this date.',
@@ -36,10 +40,6 @@ const ERRORS = {
   candidate_cannot_fit: [
     422,
     'The candidate cannot fit the validated visit, meal and driving constraints. Revise the trip options.',
-  ],
-  unsupported_overnight_rhythm: [
-    422,
-    'This rhythm needs hotel arrival or sleep timing the nightly hotel source cannot validate. Choose evening arrival with overnight sleep, or an eligible one-day trip.',
   ],
   departure_outside_rhythm: [
     422,
