@@ -5,7 +5,7 @@ from datetime import UTC, datetime, timedelta
 from app.agent.trip_dates import _localize
 from app.models.scheduling_policy import advance, seconds_until
 from app.routing.base import PlanningError
-from app.routing.trip_modes import RhythmClockConflict
+from app.routing.trip_modes import RhythmAvailabilityConflict, RhythmClockConflict
 
 
 def rest_blocks(arrival, departure, rhythm):
@@ -55,3 +55,22 @@ def clear_rhythm_metadata(stop):
     """A legacy policy cannot reuse copied derived rhythm display state."""
     for key in ("lodging", "daily_rhythm_blocks", "check_in_timing_notice"):
         stop.pop(key, None)
+
+
+def drive_cycle(policy, instant, zone, *, allow_completed_boundary=False):
+    """Resolve the known next stop's local cycle, not the origin's calendar date.
+
+    A zero-road tail can complete exactly at a cutoff; it cannot begin fresh
+    driving in rest/sleep or reinterpret the cutoff as tomorrow's window.
+    """
+    local = instant.astimezone(zone) if zone is not None else instant
+    try:
+        return policy.travel_day_for(local)
+    except ValueError:
+        if allow_completed_boundary:
+            previous = advance(local, -0.000001)
+            if policy.daily_schedule.available(previous):
+                day = policy.travel_day_for(previous)
+                if abs(seconds_until(local, policy.deadline(day, zone))) <= 0.000001:
+                    return day
+        raise RhythmAvailabilityConflict() from None

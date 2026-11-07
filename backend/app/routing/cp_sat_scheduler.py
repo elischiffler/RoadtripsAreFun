@@ -14,7 +14,7 @@ from app.agent.progress import emit
 from app.models.routing_models.routing_models import MapBox
 from app.models.scheduling_policy import advance, local_time, seconds_until
 from app.routing.base import MAX_TRIP_OVERNIGHTS, PlanningError, PlanOptions
-from app.routing.daily_rhythm import rest_blocks
+from app.routing.daily_rhythm import drive_cycle, rest_blocks
 from app.routing.discovery import SelectedAttraction
 from app.routing.geometry import RouteMeasure
 from app.routing.lodging import (
@@ -27,6 +27,7 @@ from app.routing.meal_reservations import MealClock, MealScheduleConflict
 from app.routing.occupancy import require_occupancy
 from app.routing.runtime import threaded
 from app.routing.services import RoutingServices
+from app.routing.trip_modes import RhythmAvailabilityConflict
 from app.routing.visit_calendar import VisitCalendarConflict, requires_calendar, solve_visit
 from app.routing.visit_duration import visit_seconds
 
@@ -181,6 +182,11 @@ async def schedule_cp_sat_route(
                 high = middle
         return low
 
+    def local_cycle(zone, *, moving=True):
+        if not policy.daily_schedule:
+            return travel_day
+        return drive_cycle(policy, now, zone, allow_completed_boundary=not moving)
+
     elapsed, total_cost, overnights = 0.0, 0.0, 0
     stops = []
     end_zone = await zone_at([coordinates[-1][1], coordinates[-1][0]])
@@ -204,13 +210,25 @@ async def schedule_cp_sat_route(
                 if meal_clock
                 else advance(now, finish_seconds)
             )
-            can_finish = (
-                seconds_until(finish, policy.deadline(travel_day, end_zone, final=True)) >= -1e-6
+            try:
+                end_day = local_cycle(end_zone, moving=finish_seconds > 1e-6)
+            except RhythmAvailabilityConflict:
+                end_day = None
+            can_finish = end_day is not None and (
+                seconds_until(finish, policy.deadline(end_day, end_zone, final=True)) >= -1e-6
             )
+            try:
+                event_day = local_cycle(event_zone, moving=drive_left > 1e-6)
+            except RhythmAvailabilityConflict:
+                event_day = None
             event_limit = (
-                policy.deadline(travel_day, event_zone, final=attraction is None)
-                if can_finish
-                else policy.at(travel_day, policy.preferred_arrival_clock, event_zone)
+                (
+                    policy.deadline(event_day, event_zone, final=attraction is None)
+                    if can_finish
+                    else policy.at(event_day, policy.preferred_arrival_clock, event_zone)
+                )
+                if event_day is not None
+                else now
             )
             candidate_clock = meal_clock.copy() if meal_clock else None
             arrival = (
@@ -220,7 +238,7 @@ async def schedule_cp_sat_route(
             )
             if candidate_clock and attraction is None:
                 arrival = candidate_clock.finish(arrival, event_zone)
-            if (
+            if event_day is not None and (
                 visit + max(0, seconds_until(now, arrival))
                 <= seconds_until(now, event_limit) + 1e-6
             ):
@@ -247,6 +265,7 @@ async def schedule_cp_sat_route(
                         else:
                             raise MealScheduleConflict()
                 if seconds_until(advance(arrival, visit), event_limit) >= -1e-6:
+                    travel_day = event_day
                     now = advance(arrival, visit)
                     meal_clock = candidate_clock
                     elapsed = target
@@ -278,16 +297,27 @@ async def schedule_cp_sat_route(
             preferred_drive = max(
                 0.0,
                 seconds_until(
-                    now, policy.at(travel_day, policy.preferred_arrival_clock, now.tzinfo)
+                    now,
+                    policy.at(
+                        local_cycle(now.tzinfo, moving=False),
+                        policy.preferred_arrival_clock,
+                        now.tzinfo,
+                    ),
                 ),
             )
             for _ in range(3):
                 trial = min(drive_left, preferred_drive)
                 position = estimated_position(elapsed + trial)
                 zone = await zone_at(position)
-                preferred_drive = drive_capacity(
-                    policy.at(travel_day, policy.preferred_arrival_clock, zone), zone, drive_left
-                )
+                try:
+                    position_day = local_cycle(zone, moving=trial > 1e-6)
+                    preferred_drive = drive_capacity(
+                        policy.at(position_day, policy.preferred_arrival_clock, zone),
+                        zone,
+                        drive_left,
+                    )
+                except RhythmAvailabilityConflict:
+                    preferred_drive = 0.0
             base_drive = min(drive_left, preferred_drive)
             # The target is per room per night, not a balance for the whole trip.
             # Providers retain actual quotes above this advisory band as well.
@@ -296,9 +326,13 @@ async def schedule_cp_sat_route(
             tried = set()
             # Include the hard cutoff as an availability fallback, while keeping
             # six searches and the original 2.5h earlier fallback.
-            cutoff_offset = (
-                drive_capacity(policy.deadline(travel_day, zone), zone, drive_left) - base_drive
-            )
+            try:
+                cutoff_day = local_cycle(zone, moving=False)
+                cutoff_offset = (
+                    drive_capacity(policy.deadline(cutoff_day, zone), zone, drive_left) - base_drive
+                )
+            except RhythmAvailabilityConflict:
+                cutoff_offset = -base_drive
             for offset in (0, -1800, 1800, -3600, cutoff_offset, -9000):
                 trial_drive = min(drive_left, max(0.0, base_drive + offset))
                 trial_elapsed = segment_start + trial_drive
@@ -309,6 +343,10 @@ async def schedule_cp_sat_route(
                 zone = await zone_at(position)
                 hotel_clock = meal_clock.copy() if meal_clock else None
                 try:
+                    trial_day = local_cycle(zone, moving=trial_drive > 1e-6)
+                except RhythmAvailabilityConflict:
+                    continue
+                try:
                     arrival = (
                         hotel_clock.drive(now, trial_drive, zone)
                         if hotel_clock
@@ -316,15 +354,15 @@ async def schedule_cp_sat_route(
                     )
                 except MealScheduleConflict:
                     continue
-                if seconds_until(arrival, policy.deadline(travel_day, zone)) < -1e-6:
+                if seconds_until(arrival, policy.deadline(trial_day, zone)) < -1e-6:
                     continue
                 attempt = len(tried)
                 emit("route.overnight", "started", day=overnights + 1, attempt=attempt)
-                booking_date = travel_day
+                booking_date = trial_day
                 checkout_date = None
                 if policy.daily_schedule:
                     booking_date, checkout_date = required_stay(
-                        arrival, policy.restart(travel_day, zone)
+                        arrival, policy.restart(trial_day, zone)
                     )
                     require_future_quote(booking_date, zone)
                 try:
@@ -366,6 +404,10 @@ async def schedule_cp_sat_route(
                     ):
                         continue
                     hotel_zone = await zone_at(item["coordinates"])
+                    try:
+                        hotel_day = local_cycle(hotel_zone, moving=trial_drive > 1e-6)
+                    except RhythmAvailabilityConflict:
+                        continue
                     verification_clock = meal_clock.copy() if meal_clock else None
                     try:
                         hotel_arrival = (
@@ -378,17 +420,17 @@ async def schedule_cp_sat_route(
                     if policy.daily_schedule:
                         try:
                             validate_stored_stay(
-                                item, hotel_arrival, policy.restart(travel_day, hotel_zone)
+                                item, hotel_arrival, policy.restart(hotel_day, hotel_zone)
                             )
                         except LodgingCoverageConflict:
                             continue
                     if (
-                        seconds_until(hotel_arrival, policy.deadline(travel_day, hotel_zone))
+                        seconds_until(hotel_arrival, policy.deadline(hotel_day, hotel_zone))
                         >= -1e-6
                     ):
-                        usable.append((item, hotel_zone))
+                        usable.append((item, hotel_zone, hotel_day))
                 if usable:
-                    hotel, zone = min(
+                    hotel, zone, travel_day = min(
                         usable,
                         key=lambda pair: (
                             _over_budget(pair[0], options.budget, len(hotel_rooms)),

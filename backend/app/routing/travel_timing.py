@@ -8,11 +8,10 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from app.models.daily_schedule import DailyRhythmClockError
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time, seconds_until
 from app.routing.base import PlanningError
-from app.routing.daily_rhythm import clear_rhythm_metadata, rest_blocks
+from app.routing.daily_rhythm import clear_rhythm_metadata, drive_cycle, rest_blocks
 from app.routing.lodging import validate_stored_stay
 from app.routing.meal_reservations import MealClock, MealScheduleConflict
 from app.routing.trip_modes import (
-    RhythmAvailabilityConflict,
     RhythmClockConflict,
     require_overnight_rhythm,
 )
@@ -79,12 +78,8 @@ def _apply_timing(stops, start, policy, start_timezone, clock, *, validate_quote
                 stop.get("provider_id", "unknown"), "arrival IANA timezone is unknown"
             )
         zone = ZoneInfo(stop["timezone"]) if stop.get("timezone") else now.tzinfo
-        if policy.daily_schedule and duration > 1e-6:
-            local_departure = now.astimezone(zone) if zone else now
-            if not policy.daily_schedule.available(local_departure):
-                # A timezone change can move the next leg's local clock back into
-                # rest/sleep. Do not fabricate a safe roadside wait location.
-                raise RhythmAvailabilityConflict()
+        if policy.daily_schedule:
+            travel_day = drive_cycle(policy, now, zone, allow_completed_boundary=duration <= 1e-6)
         arrival = clock.drive(now, duration, zone) if clock else advance(now, duration)
         if zone is not None:
             arrival = arrival.astimezone(zone)

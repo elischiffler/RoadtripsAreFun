@@ -10,7 +10,11 @@ Availability is not a guarantee that every possible combination is feasible.
 
 ## Travel cycles and local clocks
 
-A cycle is anchored to the local date on which its driving block begins. Early
+A cycle is anchored to the local date on which its driving block begins,
+recomputed in each known next stop’s zone from that leg’s departure instant. The
+origin’s date cannot supply an extra driving day after a timezone change. A
+zero-road tail may finish exactly at its completed cutoff; positive driving
+cannot begin there during rest or sleep. Early
 hours in a wrapped 20–06 block belong to the preceding cycle date. The next
 restart is the next block's start, not an assumed morning. Hotel arrival and
 booking dates are derived separately in the hotel's verified IANA zone. Final
