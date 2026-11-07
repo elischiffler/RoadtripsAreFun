@@ -17,6 +17,7 @@ import { advancePlanningProgress, newPlanningProgress } from '../../services/tri
 import RouteEstimate from './RouteEstimate';
 import PlanningProgress from './PlanningProgress';
 import './ConnectedPlanning.css';
+import { saveNewTripPreferences } from '../../services/preferenceProfiles';
 
 export default function TripSetupPage() {
   const { setUserData, setChats } = useContext(UserDataContext);
@@ -28,6 +29,7 @@ export default function TripSetupPage() {
   const [busy, setBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [preferenceNotice, setPreferenceNotice] = useState('');
   const [result, setResult] = useState(null);
   const [progress, setProgress] = useState(newPlanningProgress);
   const report = (event) => setProgress((old) => advancePlanningProgress(old, event));
@@ -96,6 +98,18 @@ export default function TripSetupPage() {
       : await ensureChatCreated(session.accessToken, current.snapshot, records, logs);
     if (!isActive(controller, session)) return false;
     if (!saved) return false;
+    if (!current.preferencesSaved) {
+      try {
+        await saveNewTripPreferences(current.draft, current.preferenceId);
+        current.preferencesSaved = true;
+        if (isActive(controller, session))
+          setPreferenceNotice('Preferences saved for future trips.');
+      } catch {
+        if (isActive(controller, session))
+          setPreferenceNotice('Trip saved. Preferences could not be saved; retry below.');
+      }
+    }
+    if (!isActive(controller, session)) return false;
     const index = logs.chatdata.findIndex((item) => item.chatId === current.snapshot.chatId);
     if (index < 0) logs.addChatData(current.snapshot);
     else logs.chatdata[index] = current.snapshot;
@@ -118,6 +132,7 @@ export default function TripSetupPage() {
     request.current = controller;
     setBusy(true);
     setError('');
+    setPreferenceNotice('');
     setProgress(
       advancePlanningProgress(newPlanningProgress(), {
         type: 'progress',
@@ -181,6 +196,8 @@ export default function TripSetupPage() {
         },
       });
       const current = {
+        draft: proposal.draft,
+        preferenceId: crypto.randomUUID(),
         route,
         snapshot,
         record: { id, title: origin.address + ' → ' + destination.address, messages: [] },
@@ -279,6 +296,28 @@ export default function TripSetupPage() {
         request.current = null;
         setBusy(false);
         setSaving(false);
+      }
+    }
+  };
+
+  const retryPreferences = async () => {
+    if (busy || !result) return;
+    const session = getSession();
+    const controller = new AbortController();
+    request.current = controller;
+    setBusy(true);
+    try {
+      await saveNewTripPreferences(result.draft, result.preferenceId);
+      if (!isActive(controller, session)) return;
+      setResult((old) => ({ ...old, preferencesSaved: true }));
+      setPreferenceNotice('Preferences saved for future trips.');
+    } catch {
+      if (isActive(controller, session))
+        setPreferenceNotice('Preferences could not be saved. Please retry.');
+    } finally {
+      if (request.current === controller) {
+        request.current = null;
+        setBusy(false);
       }
     }
   };
@@ -451,6 +490,16 @@ export default function TripSetupPage() {
               >
                 Edit draft for another trip
               </ActionButton>
+              {preferenceNotice && (
+                <p role="status" className="rt-caption">
+                  {preferenceNotice}
+                </p>
+              )}
+              {result.saved && !result.preferencesSaved && (
+                <ActionButton variant="secondary" disabled={busy} onClick={retryPreferences}>
+                  Retry saving preferences
+                </ActionButton>
+              )}
               {result.itineraryError && (
                 <div role="alert" className="rt-stack">
                   <p className="rt-copy">

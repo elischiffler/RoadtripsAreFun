@@ -8,6 +8,7 @@ import { getSession, signOut } from '../services/session';
 import { Data, ChatData, ChatLogs, UserDataContext } from '../states/UserDataContext';
 import { newSetupDraft, preferenceWeights } from '../pages/TripSetup/setupModel';
 import TripSetupPage from '../pages/TripSetup/TripSetupPage';
+import { saveNewTripPreferences } from '../services/preferenceProfiles';
 import { initializeUserData, ensureChatCreated, updateUserData } from '../services/savedTrips';
 import {
   resolveTripLocation,
@@ -25,6 +26,11 @@ vi.mock('../services/tripPlanner', async (original) => ({
   resolveTripLocation: vi.fn(),
   planStructuredRoute: vi.fn(),
   planStructuredItinerary: vi.fn(),
+}));
+vi.mock('../services/preferenceProfiles', async (original) => ({
+  ...(await original()),
+  loadPreferenceProfiles: vi.fn(async () => []),
+  saveNewTripPreferences: vi.fn(async () => undefined),
 }));
 const origin = { address: 'Boulder, Colorado', latitude: 40, longitude: -105 };
 const destination = { address: 'Denver, Colorado', latitude: 39.7, longitude: -104.9 };
@@ -457,4 +463,23 @@ it('does not overwrite another trip selection when an unmounted save finishes', 
   await act(async () => finishSave(true));
   expect(sessionStorage.getItem('selectedChatId')).toBe('99');
   expect(screen.getByText('Selected trip context: 99')).toBeInTheDocument();
+});
+
+it('keeps the trip saved when profile saving fails and retries only the profile with the same id', async () => {
+  saveNewTripPreferences
+    .mockRejectedValueOnce(new Error('offline'))
+    .mockResolvedValueOnce(undefined);
+  await confirm();
+  await screen.findByText('Trip saved.');
+  expect(
+    screen.getByText('Trip saved. Preferences could not be saved; retry below.')
+  ).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Retry saving preferences' }));
+  await screen.findByText('Preferences saved for future trips.');
+  expect(saveNewTripPreferences).toHaveBeenCalledTimes(2);
+  expect(saveNewTripPreferences.mock.calls[0]).toEqual(saveNewTripPreferences.mock.calls[1]);
+  expect(ensureChatCreated).toHaveBeenCalledTimes(1);
+  expect(updateUserData).not.toHaveBeenCalled();
+  expect(planStructuredRoute).toHaveBeenCalledTimes(1);
+  expect(planStructuredItinerary).toHaveBeenCalledTimes(1);
 });
