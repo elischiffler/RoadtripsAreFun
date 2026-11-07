@@ -28,7 +28,7 @@ to an installed copy of the committed `tests/guidedjourney` package.
 No browser authentication state or bearer token is exported.
 
 The layout check covers all five grouped stages after an actual route estimate
-is rendered. Ordinary 390×844 and 1440×900 viewports must fit without document or
+is rendered. Ordinary 375×812, 390×844 and 1440×900 viewports must fit without document or
 nested vertical scrolling, keep the primary actions visible, preserve keyboard
 focus and honor reduced motion. Short 320×568 and 200% text cases retain readable
 questions and reachable actions without horizontal clipping; vertical scrolling

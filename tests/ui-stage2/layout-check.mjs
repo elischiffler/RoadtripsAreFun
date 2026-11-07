@@ -116,6 +116,7 @@ async function inspectPanel(page, name, done, ordinary) {
 try {
   for (const [width, height, scale] of [
     [390, 844, 1],
+    [375, 812, 1],
     [1440, 900, 1],
     [320, 568, 1],
     [390, 844, 2],
@@ -297,7 +298,7 @@ try {
         true,
         name + " keyboard focus",
       );
-      if (scale === 1 && width >= 390 && !baseline) {
+      if (scale === 1 && width >= 375 && !baseline) {
         assert.ok(
           metrics.scrollHeight <= height + 2,
           name + " document scrolling",
@@ -322,7 +323,7 @@ try {
           page,
           name + "-route",
           done,
-          scale === 1 && width >= 390,
+          scale === 1 && width >= 375,
         );
         await done.click();
         assert.equal(
@@ -344,8 +345,35 @@ try {
             page,
             name + "-" + label.replaceAll(" ", "-").toLowerCase(),
             done,
-            scale === 1 && width >= 390,
+            scale === 1 && width >= 375,
           );
+          if (label === "Compare places") {
+            assert.equal(
+              await page
+                .locator('.setup-comparisons input[type="radio"]')
+                .count(),
+              5,
+              "exactly five comparison answers, without duplicate place radios",
+            );
+            const firstPlace = page
+              .locator('.setup-comparison-places input[type="radio"]')
+              .first();
+            await firstPlace.focus();
+            await page.keyboard.press("Space");
+            assert.equal(
+              await firstPlace.isChecked(),
+              true,
+              "place card selects by keyboard",
+            );
+            await page
+              .getByRole("radio", { name: "Either place", exact: true })
+              .check();
+            assert.equal(
+              await firstPlace.isChecked(),
+              false,
+              "either choice clears place-card selection",
+            );
+          }
           await done.click();
           assert.equal(
             await page
@@ -357,7 +385,7 @@ try {
         }
       }
     }
-    if (scale === 1 && width >= 390) {
+    if (scale === 1 && width >= 375) {
       preferenceRows = await page.evaluate(async () => {
         const key = "roadtrips.setup.v1.fixture%3Aui-layout";
         const state = JSON.parse(sessionStorage.getItem(key));
