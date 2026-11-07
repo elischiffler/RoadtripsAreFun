@@ -23,7 +23,10 @@ const errors = [],
   http = [];
 let activePage;
 
-async function session() {
+async function session({
+  email = "traveler@example.test",
+  homePath = "/plan",
+} = {}) {
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
     reducedMotion: "reduce",
@@ -65,12 +68,11 @@ async function session() {
     http.push({ path: url.pathname, status: response.status() });
   });
   await page.goto(frontend + "/login");
-  await page
-    .getByRole("textbox", { name: /^Email/ })
-    .fill("traveler@example.test");
+  await page.getByRole("textbox", { name: /^Email/ }).fill(email);
   await page.getByLabel(/^Password/).fill("fixture-only");
   await page.getByRole("button", { name: "Log In", exact: true }).click();
-  await page.waitForURL(frontend + "/");
+  // Await the real Home decision rather than its transient '/' redirect.
+  await page.waitForURL(frontend + homePath);
   return { context, page };
 }
 
@@ -231,6 +233,85 @@ async function assertWidths(page) {
       `The current page must fit the ${width}px viewport`,
     );
   }
+}
+
+async function sharedOnlyHomeChecks(ownerPage) {
+  const before = await fixtureReport();
+  await ownerPage.goto(frontend + "/");
+  await ownerPage.waitForURL(frontend + "/trips");
+  await ownerPage
+    .getByRole("heading", { name: "Saved trips", exact: true })
+    .waitFor();
+  const owned = await api(ownerPage, "/chats");
+  assert.equal(owned.status, 200);
+  const saved = owned.data[0][0];
+  const link = await api(ownerPage, `/chats/${saved.chatId}/sharing/link`, {
+    method: "POST",
+    body: { expected_revision: saved.savedRevision },
+  });
+  assert.equal(link.status, 200);
+  assert.equal(typeof link.data.token, "string");
+  // Keep the capability only in memory, never in a URL, log or artifact.
+  const participant = await session({ email: "participant@example.test" });
+  const empty = await api(participant.page, "/chats");
+  assert.equal(empty.status, 200);
+  assert.deepEqual(empty.data, []);
+  const connected = await api(participant.page, "/trip-sharing/connect", {
+    method: "POST",
+    body: { token: link.data.token, display_name: "Synthetic participant" },
+  });
+  assert.equal(connected.status, 200);
+  await participant.page.goto(frontend + "/");
+  await participant.page.waitForURL(frontend + "/shared-trips");
+  await participant.page
+    .getByRole("heading", { name: "Shared with me", exact: true })
+    .waitFor();
+  await participant.page
+    .getByRole("link", { name: "View shared trip", exact: true })
+    .click();
+  const projection = await api(
+    participant.page,
+    `/shared-trips/${connected.data.share_id}`,
+  );
+  assert.equal(projection.status, 200);
+  await participant.page
+    .getByRole("heading", { name: projection.data.title, exact: true })
+    .waitFor();
+  await participant.page
+    .getByRole("img", { name: "Shared route outline", exact: true })
+    .waitFor();
+  for (const field of ["presentation", "tripProfile", "ChatLog", "carDetails"])
+    assert.equal(Object.hasOwn(projection.data, field), false);
+  assert.equal(
+    await participant.page
+      .getByRole("button", {
+        name: /^(Start arrival|Correct an arrival|Mark visited)/,
+      })
+      .count(),
+    0,
+  );
+  await assertWidths(participant.page);
+  const after = await fixtureReport();
+  assert.equal(after.participant_owned_trips, 0);
+  assert.deepEqual(after.trips, before.trips);
+  assert.deepEqual(workCounters(after), workCounters(before));
+  await writeFile(
+    join(output, "home-entry-result.json"),
+    JSON.stringify(
+      {
+        passed: true,
+        emptyOwnerHome: "/plan",
+        savedOwnerHome: "/trips",
+        sharedOnlyHome: "/shared-trips",
+        participantOwnedTrips: after.participant_owned_trips,
+        modelWorkUnchanged: true,
+      },
+      null,
+      2,
+    ) + "\n",
+  );
+  await participant.context.close();
+  activePage = ownerPage;
 }
 
 function assertOneDay(route) {
@@ -827,9 +908,10 @@ try {
   console.log(
     "PASS: actual trip creation, reserved meals, sequential visit revisions, stale rejection, edit preview/save/reload and Settings profile/car persistence in disposable PostgreSQL.",
   );
+  await sharedOnlyHomeChecks(page);
   await context.close();
 
-  const failed = await session();
+  const failed = await session({ homePath: "/trips" });
   await enterTrip(failed.page, "2000-01-01", { expectFailure: true });
   const alert = failed.page.getByRole("alert");
   await alert.waitFor();
@@ -856,7 +938,7 @@ try {
   );
   await failed.context.close();
   const report = await (await fetch(backend + "/fixture/report")).json();
-  assert.equal(report.login, 2);
+  assert.equal(report.login, 3);
   assert.ok(
     report.catalog > 0 &&
       report.ratings > 0 &&

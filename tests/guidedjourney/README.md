@@ -38,6 +38,14 @@ cannot see research tools or access their API. Phone/desktop widths must fit.
 An expired departure must expose its real typed error, start no more AI/solver
 work, save no extra trip and never falsely complete.
 
+Home entry is checked through actual authenticated API reads: an empty account
+opens `/plan`, an owner with a saved route opens `/trips`, and a second fixed
+synthetic account connected through the real sharing API opens `/shared-trips`.
+That participant renders the read-only shared route with no owner visit controls,
+creates no owned trip and starts no model work. The capability stays only in
+memory, never in a URL or exported artifact. Both identities use local synthetic
+SDK login/JWK delivery; no real Cognito account is involved.
+
 Only external boundaries are synthetic: Cognito login/JWK delivery, catalog rows,
 geocoding, road responses and a local Supabase/Mentro HTTP/SSE service. The real
 gateway adapter, source parser, solver, timing, verifier and CRUD stay active.

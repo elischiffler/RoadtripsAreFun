@@ -5,8 +5,8 @@ production deployment. The latest complete native run passes the positive and
 negative cases below. The corrected original container wrapper subsequently passed on final main
 `42d5068bb4c8804a8024df0e4463fb05e0a7e275` in Local containers run
 [42315083289](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/42315083289).
-The combined Stage2 candidate flow also passed a fresh native execution at
-`d07f6f75fc3b099e73ad120ffbafdc57df5ba2b2`, recorded below; its final container
+The final combined Stage2 flow passed a fresh native execution at
+`48204ece680feb2a10aff6f4692976717cf5a754`, recorded below; its final container
 execution remains required. No hosted database or live Mentro request was made.
 
 ## Reproduced save failure
@@ -218,3 +218,51 @@ fresh random PostgreSQL project and temporary dependency symlink; fixture ports
 were confirmed closed afterward. The exact final integrated commit must still
 pass the mandatory Local containers CI gate before release. This native result
 does not establish live Cognito/provider/device acceptance or replace that gate.
+
+
+## Final readiness and shared-only Home follow-up — passed
+
+The complete native browser/API/disposable-PostgreSQL journey was rebuilt and
+rerun successfully against final frozen application checkpoint
+`48204ece680feb2a10aff6f4692976717cf5a754`. All preceding candidate, proof,
+cache/cancel, conditional occupancy, timing/meal, save/reload, revision conflict,
+edit/reset, profile/car, research denial, viewport and expired-date assertions
+passed unchanged. Actual `/ready` accepted the normal complete seeded schema.
+
+The new Home checks awaited the final routing decision: an authenticated empty
+owner reached `/plan`, and the same owner after saving reached `/trips`. The
+owner created a capability using the actual revision-checked sharing API. A
+second fixed synthetic account used real local SDK login and signed verification,
+connected through the actual sharing API, then visited `/` and reached
+`/shared-trips`. Its shared list and read-only trip/route outline rendered; owner
+visit controls and private projection fields were absent. It had zero owned
+trip rows; sharing left the owner's durable trip and model counters unchanged.
+The capability remained only in memory, never in a URL or evidence artifact.
+
+The final report contains three synthetic logins, three real solves, four rating
+and two duration adapter calls, six local gateway requests, zero hotel requests,
+one owned trip and zero participant-owned trips. Browser errors, prohibited
+origins/device geolocation and prohibited Python network attempts were empty.
+`.artifacts/home-entry-result.json` records the routing outcomes without
+credentials or capability tokens. The fresh `.artifacts/result.json` and other
+passing artifacts now represent this final run. Its command exited zero; own
+API/static processes, random PostgreSQL project and temporary dependency link
+were removed, with all fixture ports confirmed closed.
+
+Separately, `tests/readiness_postgres_tests.py` passed all 17 actual-PostgreSQL
+cases in a fresh standard guarded local database with the normal schema and
+existing synthetic catalog seed. Real HTTP `/ready` connections were read-only.
+A non-superuser effective app role with required grants returned 200; SELECT-only
+sharing grants and each of eight individually missing privileges returned the
+fixed 503. The session user remained privileged, proving checks use the effective
+role. Each sharing table's absent name, missing column and wrong column type
+returned fixed schema 503, and restored schema returned 200. Actual owner CRUD
+still worked with both sharing table names unavailable. Test fixture changes
+were restored and its separate disposable database/roles/project removed.
+The normal PostgreSQL CI runner includes these tests after its existing catalog
+seed; no readiness query, schema check or fixture target guard was bypassed.
+
+The mandatory final exact-commit Local containers and PostgreSQL CI executions
+remain required. These local results do not establish live Cognito, Mentro,
+Mapbox, geolocation, true overnight-hotel browser acceptance or production schema
+state.

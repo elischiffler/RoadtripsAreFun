@@ -318,6 +318,10 @@ def report():
             )
             stored = cursor.fetchone()[0]
             cursor.execute(
+                "SELECT count(*) FROM chats WHERE user_id = %s", ("guided-participant",)
+            )
+            participant_owned = cursor.fetchone()[0]
+            cursor.execute(
                 "SELECT chat_data, chat_log FROM chats WHERE user_id = %s ORDER BY chat_id",
                 ("guided-traveler",),
             )
@@ -331,10 +335,11 @@ def report():
             profiles = [{"id": row[0], **row[1]} for row in cursor.fetchall()]
     finally:
         _put_conn(connection)
-    # Only this disposable synthetic account exists here. Never expose a real
+    # Both identities are fixed disposable synthetic accounts. Never expose an
     # auth token; snapshots let browser assertions verify actual durable state.
     return counts | {
         "stored_trips": stored,
+        "participant_owned_trips": participant_owned,
         "trips": trips,
         "profiles": profiles,
         "blocked_network": blocked_network,
@@ -358,8 +363,14 @@ async def authenticate(request: Request):
         or body.get("ClientId") != "localfixture"
     ):
         return JSONResponse({"__type": "NotAuthorizedException"}, status_code=400)
-    if body.get("AuthParameters") != {
-        "USERNAME": "traveler@example.test",
+    accounts = {
+        "traveler@example.test": "guided-traveler",
+        "participant@example.test": "guided-participant",
+    }
+    parameters = body.get("AuthParameters") or {}
+    email = parameters.get("USERNAME")
+    if email not in accounts or parameters != {
+        "USERNAME": email,
         "PASSWORD": "fixture-only",
     }:
         return JSONResponse({"__type": "NotAuthorizedException"}, status_code=400)
@@ -367,7 +378,7 @@ async def authenticate(request: Request):
     now = datetime.now(UTC)
     claims = {
         "iss": "https://cognito-idp.us-west-1.amazonaws.com/us-west-1_fixture",
-        "sub": "guided-traveler",
+        "sub": accounts[email],
         "iat": now,
         "exp": now + timedelta(hours=1),
     }
@@ -381,7 +392,7 @@ async def authenticate(request: Request):
                 {
                     "token_use": "id",
                     "aud": "localfixture",
-                    "email": "traveler@example.test",
+                    "email": email,
                     "email_verified": True,
                 }
             ),
