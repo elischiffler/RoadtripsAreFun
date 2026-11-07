@@ -313,3 +313,31 @@ it('updates both the document theme and browser preference through settings', as
   await userEvent.click(screen.getByRole('radio', { name: 'Light' }));
   expect(document.documentElement.dataset.theme).toBe('light');
 });
+
+it('summarizes saved overnight driving and daytime sleep from the actual daily rhythm', async () => {
+  const night = {
+    ...draft(),
+    dailyRhythm: { driveStart: 20, driveEnd: 6, sleepStart: 8, sleepEnd: 16 },
+  };
+  axios.get.mockResolvedValue({ data: [{ ...profile(), choices: choicesFromDraft(night) }] });
+  renderWithProviders(<SettingsPage />);
+  await screen.findByRole('heading', { name: 'Weekend car' });
+  expect(screen.getByText(/Drive 20:00–06:00 \(\+1 day\) · Sleep 08:00–16:00/)).toBeInTheDocument();
+  expect(screen.queryByText(/Start .*Hotel/)).not.toBeInTheDocument();
+  expect(axios.put).not.toHaveBeenCalled();
+});
+
+it('keeps legacy timing summaries and marks midnight-crossing sleep for modern preferences', async () => {
+  const legacy = { ...draft(), dailyRhythm: null };
+  axios.get.mockResolvedValue({
+    data: [
+      { ...profile(), id: 'legacy', name: 'Legacy timing', choices: choicesFromDraft(legacy) },
+      { ...profile(), id: 'modern', name: 'Modern timing' },
+    ],
+  });
+  renderWithProviders(<SettingsPage />);
+  await screen.findByRole('heading', { name: 'Legacy timing' });
+  expect(screen.getByText(/Start 09:00 · Hotel 18:00/)).toBeInTheDocument();
+  expect(screen.getByText(/Drive 09:00–20:00 · Sleep 22:00–07:00 \(\+1 day\)/)).toBeInTheDocument();
+  expect(screen.queryByText(/undefined/)).not.toBeInTheDocument();
+});

@@ -9,7 +9,22 @@ import usePreferenceProfiles from '../services/usePreferenceProfiles';
 import { savePreferenceProfile, deletePreferenceProfile } from '../services/preferenceProfiles';
 import PreferenceProfileEditor from '../components/PreferenceProfileEditor';
 import TripCarSettings from '../components/TripCarSettings';
+import { hourLabel, rhythmFromDailySchedule } from './TripSetup/dailyRhythm';
 import './SettingsPage.css';
+
+function timingSummary(policy) {
+  if (policy.daily_schedule) {
+    try {
+      const rhythm = rhythmFromDailySchedule(policy.daily_schedule);
+      const range = (start, end) =>
+        `${hourLabel(start)}–${hourLabel(end)}${end < start ? ' (+1 day)' : ''}`;
+      return `Drive ${range(rhythm.driveStart, rhythm.driveEnd)} · Sleep ${range(rhythm.sleepStart, rhythm.sleepEnd)}`;
+    } catch {
+      return 'Daily timing unavailable';
+    }
+  }
+  return `Start ${policy.morning_restart} · Hotel ${policy.preferred_hotel_arrival}`;
+}
 
 export default function SettingsPage() {
   const { canSelect } = useRoutingSettings();
@@ -100,8 +115,7 @@ export default function SettingsPage() {
                     {profile.choices.car
                       ? `${profile.choices.car.year} ${profile.choices.car.make} ${profile.choices.car.model}`
                       : 'No car details'}{' '}
-                    · Start {profile.choices.scheduling_policy.morning_restart} · Hotel{' '}
-                    {profile.choices.scheduling_policy.preferred_hotel_arrival}
+                    · {timingSummary(profile.choices.scheduling_policy)}
                   </p>
                   {deleting?.owner === owner && deleting.id === profile.id ? (
                     <div className="rt-stack">
