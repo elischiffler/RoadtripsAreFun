@@ -132,12 +132,15 @@ function assertOvernight(data, quotes) {
       hotel.daily_rhythm_blocks.map((block) => block.kind),
       ["rest", "sleep", "rest"],
     );
-    assert.equal(
-      hotel.daily_rhythm_blocks.reduce(
-        (sum, block) => sum + block.duration_seconds,
-        0,
-      ),
-      (time(hotel.departure_time) - time(hotel.arrival_time)) / 1000,
+    assert.ok(
+      Math.abs(
+        hotel.daily_rhythm_blocks.reduce(
+          (sum, block) => sum + block.duration_seconds,
+          0,
+        ) -
+          (time(hotel.departure_time) - time(hotel.arrival_time)) / 1000,
+      ) < 1,
+      "Rounded block seconds must account for the full physical stay to within one second",
     );
     const matching = quotes.filter(
       (quote) =>
