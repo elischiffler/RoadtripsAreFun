@@ -137,7 +137,9 @@ counts = {
     "ratings": 0,
     "durations": 0,
     "gateway_auth": 0,
+    "gateway_requests": 0,
     "solver": 0,
+    "hotel_requests": 0,
     "browse": 0,
     "current_facts": 0,
     "requests": [],
@@ -234,6 +236,7 @@ def current_records(source_ids, *args, **kwargs):
 
 
 async def hotels(*args, **kwargs):
+    counts["hotel_requests"] += 1
     raise AssertionError(
         "Short guided fixture unexpectedly requested an overnight hotel"
     )
@@ -276,7 +279,8 @@ async def record_requests(request, call_next):
             }
         )
     if (
-        request.url.path == "/generate-final-route/stream"
+        request.url.path
+        in {"/generate-final-route/stream", "/planning-candidates/stream"}
         and response.status_code == 200
     ):
         original = response.body_iterator
@@ -404,6 +408,7 @@ async def service_auth(request: Request):
 
 @providers.post("/api/chat/stream-full")
 async def gateway(request: Request):
+    counts["gateway_requests"] += 1
     assert request.headers.get("authorization") == "Bearer fixture-gateway-token"
     raw = await request.body()
     assert len(raw) <= 256 * 1024

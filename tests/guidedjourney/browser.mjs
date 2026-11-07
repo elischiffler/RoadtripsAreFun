@@ -28,6 +28,26 @@ async function session() {
     viewport: { width: 390, height: 844 },
     reducedMotion: "reduce",
   });
+  await context.exposeBinding("rejectRealLocation", () =>
+    blocked.push("device-geolocation"),
+  );
+  await context.addInitScript(() => {
+    // The main release journey uses explicit manual corrections. Real device
+    // acquisition is forbidden here; automatic arrivals have a separate mocked
+    // position harness. A caught unexpected call still fails the release gate.
+    const denyLocation = () => {
+      void window.rejectRealLocation();
+      throw new Error("Offline release journey prohibits device geolocation");
+    };
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        getCurrentPosition: denyLocation,
+        watchPosition: denyLocation,
+        clearWatch: () => {},
+      },
+    });
+  });
   await context.route("**/*", async (route) => {
     const url = new URL(route.request().url());
     if (![frontend, backend, "http://127.0.0.1:8999"].includes(url.origin)) {
@@ -54,7 +74,20 @@ async function session() {
   return { context, page };
 }
 
-async function enterTrip(page, date) {
+let expectedSolverCalls = 1;
+let expectedWorkCounters;
+const counterKeys = [
+  "ratings",
+  "durations",
+  "gateway_requests",
+  "catalog",
+  "solver",
+  "hotel_requests",
+];
+const workCounters = (report) =>
+  Object.fromEntries(counterKeys.map((key) => [key, report[key]]));
+async function enterTrip(page, date, { expectFailure = false } = {}) {
+  const before = await fixtureReport();
   await page.goto(frontend + "/plan");
   await page
     .getByLabel("Starting city or address", { exact: true })
@@ -62,22 +95,92 @@ async function enterTrip(page, date) {
   await page.getByLabel("Destination", { exact: true }).fill("Fort Morgan");
   await page.getByLabel("Departure date", { exact: true }).fill(date);
   await page.getByLabel("Departure time", { exact: true }).fill("09:00");
-  await page.getByRole("button", { name: "Next", exact: true }).click();
-  await page.getByRole("button", { name: "Next", exact: true }).click();
-  await page.getByRole("button", { name: "Next", exact: true }).click();
-  await page.getByRole("button", { name: "Next", exact: true }).click();
+  for (let step = 0; step < 4; step++)
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+  const prepared = await fixtureReport();
+  assert.deepEqual(
+    workCounters(prepared),
+    workCounters(before),
+    "Preparing locations, roads and grouped answers must not start AI or scheduling",
+  );
+  assert.equal(prepared.stored_trips, before.stored_trips);
+  const actualRequest = page.waitForRequest(
+    (request) =>
+      request.method() === "POST" &&
+      new URL(request.url()).pathname === "/planning-candidates/stream",
+  );
   await page
-    .getByRole("button", { name: "Check locations", exact: true })
+    .getByRole("button", { name: "Check trip options", exact: true })
     .click();
+  const payload = (await actualRequest).postDataJSON();
+  assert.match(payload.request_id, /^[0-9a-f-]{36}$/i);
+  assert.equal(Object.hasOwn(payload, "budget"), false);
+  assert.equal(Object.hasOwn(payload, "hotel_rooms"), false);
+  assert.equal(payload.reserve_meal_slots, true);
+  assert.equal(payload.scheduling_policy.daily_schedule.slots.length, 24);
+  if (expectFailure) return { payload };
+  await Promise.race([
+    page
+      .getByRole("button", { name: "Finish in one day", exact: true })
+      .waitFor({ timeout: 60000 }),
+    page
+      .getByRole("alert")
+      .waitFor({ timeout: 60000 })
+      .then(async () => {
+        throw Error(
+          "Candidate assessment failed: " +
+            (await page.getByRole("alert").innerText()),
+        );
+      }),
+  ]);
+  const assessed = await fixtureReport();
+  assert.equal(
+    assessed.stored_trips,
+    0,
+    "Successful assessment must remain unsaved before explicit mode confirmation",
+  );
+  assert.equal(await page.getByText("Trip saved.", { exact: true }).count(), 0);
+  const progress = page.getByRole("progressbar", {
+    name: "Trip planning milestones",
+    exact: true,
+  });
+  assert.equal(await progress.count(), 1);
+  assert.ok(
+    await progress.evaluate(
+      (element) => element.max === 100 && element.value < 100,
+    ),
+    "A checked but unconfirmed candidate must not signal completion",
+  );
+  assert.equal(
+    assessed.hotel_requests,
+    0,
+    "One-day assessment must never query hotels",
+  );
+  assert.equal(
+    assessed.solver,
+    1,
+    "The primary complete candidate must run the real solver",
+  );
+  // Actual duplicate HTTP assessment reuses the registered server-owned result.
+  // No response/proof is constructed in this fixture or browser.
+  const cached = await api(page, "/planning-candidates", {
+    method: "POST",
+    body: payload,
+  });
+  assert.equal(cached.status, 200);
+  assert.equal(cached.data.one_day.eligible, true);
+  assert.equal(cached.data.one_day.threshold_seconds, 43200);
+  assert.ok(cached.data.one_day.elapsed_seconds < 43200);
+  assertOneDay(cached.data.candidate_route);
+  assert.deepEqual(
+    workCounters(await fixtureReport()),
+    workCounters(assessed),
+    "A same-UUID cached assessment must not replay discovery/models/solver",
+  );
   await page
-    .getByRole("heading", { name: "Confirm your locations", exact: true })
-    .waitFor();
-  await page
-    .getByRole("button", {
-      name: "Confirm locations and plan route",
-      exact: true,
-    })
+    .getByRole("button", { name: "Finish in one day", exact: true })
     .click();
+  return { payload, candidate: cached.data };
 }
 
 async function fixtureReport() {
@@ -102,7 +205,13 @@ async function api(page, path, options = {}) {
           ...(options.body ? { "Content-Type": "application/json" } : {}),
         },
         ...(options.body
-          ? { body: JSON.stringify({ ...options.body, PartitionKey: token }) }
+          ? {
+              body: JSON.stringify(
+                path.startsWith("/chats/update/")
+                  ? { ...options.body, PartitionKey: token }
+                  : options.body,
+              ),
+            }
           : {}),
       });
       return { status: response.status, data: await response.json() };
@@ -122,6 +231,153 @@ async function assertWidths(page) {
       `The current page must fit the ${width}px viewport`,
     );
   }
+}
+
+function assertOneDay(route) {
+  assert.equal(route.trip_mode, "one_day");
+  assert.equal(route.reserve_meal_slots, true);
+  assert.equal(
+    route.stops.some((stop) => stop.type === "hotel"),
+    false,
+  );
+  const elapsed =
+    (Date.parse(route.stops.at(-1).departure_time) -
+      Date.parse(route.departure_time)) /
+    1000;
+  assert.ok(Number.isFinite(elapsed) && elapsed >= 0 && elapsed < 43200);
+  assert.equal(route.one_day_proof.status, "validated");
+  assert.equal(route.one_day_proof.threshold_seconds, 43200);
+  assert.ok(Math.abs(route.one_day_proof.elapsed_seconds - elapsed) < 1);
+  assert.ok(Number.isFinite(Date.parse(route.one_day_proof.validated_at)));
+}
+async function candidateCacheAndFlexibleChecks(page, assessment) {
+  const before = await fixtureReport();
+  assert.equal(before.stored_trips, 1);
+  const confirmBody = {
+    input_key: assessment.candidate.input_key,
+    trip_mode: "one_day",
+    traveler_count: assessment.payload.traveler_count,
+  };
+  const duplicate = await api(
+    page,
+    `/planning-candidates/${assessment.candidate.candidate_id}/confirm`,
+    { method: "POST", body: confirmBody },
+  );
+  assert.equal(duplicate.status, 200);
+  assertOneDay(duplicate.data);
+  assert.deepEqual(
+    workCounters(await fixtureReport()),
+    workCounters(before),
+    "Identical confirmation must return its cached route without model replay",
+  );
+  const cancelled = await api(
+    page,
+    `/planning-candidates/requests/${assessment.payload.request_id}`,
+    { method: "DELETE" },
+  );
+  assert.equal(cancelled.status, 200);
+  const cancelledConfirm = await api(
+    page,
+    `/planning-candidates/${assessment.candidate.candidate_id}/confirm`,
+    { method: "POST", body: confirmBody },
+  );
+  assert.equal(cancelledConfirm.status, 410);
+  assert.deepEqual(
+    workCounters(await fixtureReport()),
+    workCounters(before),
+    "A cancelled candidate must fail without repeating AI or solver work",
+  );
+
+  // Separate actual HTTP acceptance: flexible stays require occupancy, yet may
+  // finish with no hotel. This does not claim a real multi-day/hotel journey.
+  const requestId = await page.evaluate(() => crypto.randomUUID());
+  const registered = await api(page, "/planning-candidates/requests", {
+    method: "POST",
+    body: { request_id: requestId },
+  });
+  assert.equal(registered.status, 200);
+  const checked = await api(page, "/planning-candidates", {
+    method: "POST",
+    body: { ...assessment.payload, request_id: requestId },
+  });
+  assert.equal(checked.status, 200);
+  const afterAssessment = await fixtureReport();
+  assert.equal(
+    afterAssessment.stored_trips,
+    1,
+    "A second HTTP assessment must not save another trip",
+  );
+  const flexible = {
+    input_key: checked.data.input_key,
+    trip_mode: "overnight",
+  };
+  const missingOccupancy = await api(
+    page,
+    `/planning-candidates/${checked.data.candidate_id}/confirm`,
+    { method: "POST", body: flexible },
+  );
+  assert.equal(missingOccupancy.status, 422);
+  assert.deepEqual(
+    workCounters(await fixtureReport()),
+    workCounters(afterAssessment),
+  );
+  const confirmed = await api(
+    page,
+    `/planning-candidates/${checked.data.candidate_id}/confirm`,
+    {
+      method: "POST",
+      body: {
+        ...flexible,
+        traveler_count: 1,
+        hotel_rooms: [{ adults: 1, child_ages: [] }],
+        budget: 150,
+      },
+    },
+  );
+  assert.equal(confirmed.status, 200);
+  assert.equal(confirmed.data.trip_mode, "overnight");
+  assert.equal(
+    confirmed.data.stops.some((stop) => stop.type === "hotel"),
+    false,
+  );
+  const itinerary = await api(page, "/generate-itinerary", {
+    method: "POST",
+    body: { route: confirmed.data, include_meal_slots: true },
+  });
+  assert.equal(itinerary.status, 200);
+  assertReservedMeals({ route: confirmed.data, itinerary: itinerary.data });
+  const after = await fixtureReport();
+  for (const key of ["ratings", "durations", "catalog", "gateway_requests"])
+    assert.equal(
+      after[key],
+      afterAssessment[key],
+      "Flexible confirmation reuses the checked attraction pool without new AI",
+    );
+  assert.equal(after.hotel_requests, 0);
+  assert.equal(after.stored_trips, 1);
+  expectedSolverCalls = after.solver;
+  expectedWorkCounters = workCounters(after);
+  await writeFile(
+    join(output, "candidate-cache-result.json"),
+    JSON.stringify(
+      {
+        passed: true,
+        primaryAssessmentUnsaved: true,
+        primaryOneDayElapsed: assessment.candidate.one_day.elapsed_seconds,
+        cachedConfirmationStatus: duplicate.status,
+        cancelledConfirmationStatus: cancelledConfirm.status,
+        flexibleMissingOccupancyStatus: missingOccupancy.status,
+        flexibleMode: confirmed.data.trip_mode,
+        flexibleHotelStops: confirmed.data.stops.filter(
+          (stop) => stop.type === "hotel",
+        ).length,
+        modelCountersBeforeFlexibleConfirm: workCounters(afterAssessment),
+        modelCountersAfter: workCounters(after),
+      },
+      null,
+      2,
+    ) + "\n",
+  );
 }
 
 function assertReservedMeals(trip) {
@@ -181,7 +437,7 @@ function assertReservedMeals(trip) {
 try {
   const { context, page } = await session();
   const future = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
-  await enterTrip(page, future);
+  const assessment = await enterTrip(page, future);
   await Promise.race([
     page.getByText("Trip saved.", { exact: true }).waitFor({ timeout: 60000 }),
     page
@@ -210,6 +466,7 @@ try {
     path: join(output, "saved-trip.png"),
     fullPage: true,
   });
+  await candidateCacheAndFlexibleChecks(page, assessment);
   await page.getByRole("link", { name: "Open trip", exact: true }).click();
   await page
     .getByRole("heading", { name: "Trip details", exact: true })
@@ -219,6 +476,7 @@ try {
     .waitFor();
   const created = await fixtureReport();
   assertReservedMeals(created.trips[0].data);
+  assertOneDay(created.trips[0].data.route);
   assert.equal(
     created.profiles.length,
     1,
@@ -359,6 +617,7 @@ try {
     "overture:guided-edit",
   );
   assertReservedMeals(edited.trips[0].data);
+  assertOneDay(edited.trips[0].data.route);
   assert.equal(
     Object.hasOwn(edited.trips[0].data.presentation, "arrivals"),
     false,
@@ -412,8 +671,8 @@ try {
     .getByLabel("Profile name", { exact: true })
     .fill("Synthetic weekend");
   await page
-    .getByLabel("Start driving each morning", { exact: true })
-    .fill("08:30");
+    .getByRole("slider", { name: "Start driving", exact: true })
+    .press("ArrowLeft");
   await page
     .getByRole("button", { name: "Save preferences", exact: true })
     .click();
@@ -424,9 +683,9 @@ try {
     .click();
   assert.equal(
     await page
-      .getByLabel("Start driving each morning", { exact: true })
+      .getByRole("slider", { name: "Start driving", exact: true })
       .inputValue(),
-    "08:30",
+    "8",
   );
   await page
     .getByLabel("Profile name", { exact: true })
@@ -474,7 +733,18 @@ try {
   const profile = afterCar.profiles.find(
     (item) => item.name === "Synthetic weekend updated",
   );
-  assert.equal(profile.choices.scheduling_policy.morning_restart, "08:30");
+  assert.equal(
+    profile.choices.scheduling_policy.daily_schedule.slots.length,
+    24,
+  );
+  assert.equal(
+    profile.choices.scheduling_policy.daily_schedule.slots[8],
+    "drive",
+  );
+  assert.equal(
+    profile.choices.scheduling_policy.daily_schedule.slots[7],
+    "rest",
+  );
   assert.deepEqual(Object.keys(profile.choices).sort(), [
     "car",
     "car_status",
@@ -524,9 +794,9 @@ try {
     await page.getByRole("button", { name: "Next", exact: true }).click();
   assert.equal(
     await page
-      .getByLabel("Start driving next morning", { exact: true })
+      .getByRole("slider", { name: "Start driving", exact: true })
       .inputValue(),
-    "08:30",
+    "8",
   );
   await page.goto(frontend + "/trip");
   await page.reload();
@@ -541,7 +811,13 @@ try {
     .waitFor();
   const happyReport = await (await fetch(backend + "/fixture/report")).json();
   assert.equal(happyReport.stored_trips, 1);
-  assert.equal(happyReport.solver, 1);
+  assert.equal(happyReport.solver, expectedSolverCalls);
+  assert.deepEqual(
+    workCounters(happyReport),
+    expectedWorkCounters,
+    "Edits, Settings and preference reuse must not start another model-backed assessment",
+  );
+  assert.equal(happyReport.hotel_requests, 0);
   assert.ok(happyReport.browse > 0 && happyReport.current_facts > 0);
   assertReservedMeals(happyReport.trips[0].data);
   await writeFile(
@@ -554,7 +830,7 @@ try {
   await context.close();
 
   const failed = await session();
-  await enterTrip(failed.page, "2000-01-01");
+  await enterTrip(failed.page, "2000-01-01", { expectFailure: true });
   const alert = failed.page.getByRole("alert");
   await alert.waitFor();
   const departureError = await alert.innerText();
@@ -589,8 +865,8 @@ try {
   );
   assert.equal(
     report.solver,
-    1,
-    "Only the valid trip may execute the actual CP-SAT selection",
+    expectedSolverCalls,
+    "The rejected expired trip must not execute another solve",
   );
   assert.equal(
     report.stored_trips,
@@ -603,8 +879,9 @@ try {
     "An unexpected provider connection must fail the gate",
   );
   assert.equal(
-    report.requests.filter((r) => r.path === "/generate-final-route/stream")
-      .length,
+    report.requests.filter(
+      (r) => r.method === "POST" && r.path === "/planning-candidates/stream",
+    ).length,
     2,
   );
   assert.equal(
@@ -618,6 +895,19 @@ try {
   assert.deepEqual(
     report.stream_events.filter((event) => event.type === "error"),
     [{ type: "error", status: 422, code: "departure_not_upcoming" }],
+  );
+  assert.equal(report.hotel_requests, 0);
+  assert.deepEqual(
+    workCounters(report),
+    expectedWorkCounters,
+    "The expired attempt must fail before AI work or another solve",
+  );
+  assert.equal(
+    report.requests.filter(
+      (request) => request.path === "/generate-final-route/stream",
+    ).length,
+    0,
+    "Current UI must use the actual registered candidate flow",
   );
   assert.deepEqual(blocked, []);
   assert.deepEqual(errors, []);

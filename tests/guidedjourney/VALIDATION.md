@@ -5,8 +5,9 @@ production deployment. The latest complete native run passes the positive and
 negative cases below. The corrected original container wrapper subsequently passed on final main
 `42d5068bb4c8804a8024df0e4463fb05e0a7e275` in Local containers run
 [42315083289](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/42315083289).
-Stage2 coverage below requires its own fresh candidate execution. No hosted
-database or live Mentro request was made.
+The combined Stage2 candidate flow also passed a fresh native execution at
+`d07f6f75fc3b099e73ad120ffbafdc57df5ba2b2`, recorded below; its final container
+execution remains required. No hosted database or live Mentro request was made.
 
 ## Reproduced save failure
 
@@ -160,3 +161,60 @@ the browser gate above covers the actual signed verifier. The instance used the
 standard fixture's own required local credentials, fresh-schema guard and offline
 runner with loopback only, and was removed afterward. Neither database target
 guard was weakened to share credentials between the two fixtures.
+
+
+## Registered candidates and daily rhythm — native execution passed
+
+The gate is adapted to the combined registration → real candidate NDJSON stream
+→ explicit one-day confirmation flow. It requires no AI before the explicit
+check, no durable trip and no 100% progress after successful assessment, actual
+server-derived under-12-hour proof including meals, no hotel calls, and no model
+replay on duplicate assessment/confirmation or after cancellation. A second
+actual HTTP candidate checks required overnight occupancy and an allowed short
+flexible route with zero hotels, without another saved trip or new attraction AI.
+Settings coverage now uses the actual 24-hour rhythm sliders/profile contract.
+Existing save/reload, arrival correction/undo/CAS, route edit and metadata reset,
+meals, car, non-owner auth, expired-date and viewport/network assertions remain.
+Real device geolocation is blocked; automatic arrival positions are separately
+mocked in their own harness.
+
+Only lower external provider/repository seams are synthetic. No candidate
+registration, assessment, proof, confirmation, scheduler, timing, auth or durable
+storage behavior is stubbed. The hotel seam still rejects every call, so an
+actual overnight hotel/sleep/rest/browser path is not claimed; those dated hotel,
+rest/sleep, DST and infeasibility paths remain backend clock/API/integration
+coverage. Source checks (syntax, Prettier, Ruff and whitespace) pass, and an
+independent read-only review found no source blocker.
+
+A fresh complete native run **passed** against frozen application checkpoint
+`d07f6f75fc3b099e73ad120ffbafdc57df5ba2b2`. A new production-mode Vite bundle
+used only fixture endpoints; the actual signed browser/API/CP-SAT/timing/CRUD
+journey ran against a fresh empty marked PostgreSQL instance. The primary
+candidate's actual elapsed time was 18,000 seconds, including its reserved meal.
+Successful assessment had zero saved rows and progress below completion; only
+explicit one-day confirmation caused the durable save. Repeated assessment and
+confirmation reused work. Cancellation returned actual 410 without model or
+solver replay. A second assessment rejected missing overnight occupancy with
+actual 422, then accepted flexible mode with zero hotels and no additional
+attraction AI. Actual itinerary construction validated that route's reserved
+meal as well.
+
+Save/reload, manual arrival correction/undo with sequential revisions, stale 409
+with unchanged storage, route preview/save/reload and arrival-metadata reset,
+24-hour profile create/edit/reload/reuse, separate car persistence, non-owner
+Settings/research restrictions and 390px/1440px assertions all passed. The second
+login's expired departure produced the actual typed 422 event and exact safe
+future-date message without another save, solver call or false completion.
+Final counts were two logins, three real solves, four rating adapter calls, two
+duration adapter calls, six local gateway requests, zero hotel requests, one
+saved trip and two profiles. Browser errors, prohibited browser origins/device
+geolocation and prohibited Python network attempts were empty.
+
+Fresh ignored evidence is `.artifacts/result.json`, `.artifacts/happy-result.json`,
+`.artifacts/candidate-cache-result.json`, `.artifacts/saved-trip.png`,
+`.artifacts/trip-workspace.png` and `.artifacts/reloaded-edited-trip.png`.
+The native driver exited zero and removed only its own API/static process groups,
+fresh random PostgreSQL project and temporary dependency symlink; fixture ports
+were confirmed closed afterward. The exact final integrated commit must still
+pass the mandatory Local containers CI gate before release. This native result
+does not establish live Cognito/provider/device acceptance or replace that gate.
