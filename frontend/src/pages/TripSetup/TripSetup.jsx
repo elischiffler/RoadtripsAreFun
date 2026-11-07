@@ -261,7 +261,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate, prep
                 {step === 2 && (
                   <>
                     <div className="setup-interest-choices" hidden={interestView !== 'choices'}>
-                      <p className="setup-hint">Pick a few, or keep a balanced mix.</p>
                       <div className="setup-interest-grid" id="setup-interests">
                         {Object.entries(INTERESTS).map(([key, label]) => (
                           <label
