@@ -5,6 +5,7 @@ import { getSession, isCurrentSession } from '../services/session';
 import { updateUserData } from '../services/savedTrips';
 import { itineraryEntries, toggleVisited, visitedStopIds } from '../services/tripPresentation';
 import ItineraryDays from './ItineraryDays';
+import ArrivalAssist from './ArrivalAssist';
 import { ActionButton } from '../design';
 
 // Account-owned context instance, so unsaved feedback survives switching trip views.
@@ -84,6 +85,17 @@ export default function TripVisitProgress({ trip }) {
           </ActionButton>
         )}
       </section>
+      <ArrivalAssist
+        trip={trip}
+        busy={status === 'saving'}
+        blocked={status === 'error' || status === 'conflict'}
+        onArrived={(id) => {
+          if (ids.includes(id) && !visited.has(id)) toggle(id);
+        }}
+        onUndo={(id) => {
+          if (ids.includes(id) && visited.has(id)) toggle(id);
+        }}
+      />
       <ItineraryDays
         itinerary={trip.itinerary}
         presentation={trip.presentation}
