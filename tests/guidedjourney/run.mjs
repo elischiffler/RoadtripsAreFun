@@ -22,6 +22,18 @@ if (revision !== actualRevision || dirty)
   throw Error(
     "The release gate requires a clean checkout of its exact revision",
   );
+// Exercise launcher ownership/race/path checks with isolated fake process
+// helpers only. No application, SQL, database or hosted environment is loaded.
+execFileSync(
+  process.execPath,
+  ["--test", "tests/guidedjourney/local_runner.test.mjs"],
+  {
+    cwd: root,
+    env: { PATH: process.env.PATH },
+    stdio: "inherit",
+    timeout: 30000,
+  },
+);
 const dockerEnv = { ...process.env };
 for (const selector of [
   "DOCKER_HOST",
@@ -128,7 +140,7 @@ invoke(
     "-s",
     "/journey",
     "-p",
-    "test_preparation_observer.py",
+    "test_*.py",
     "-q",
   ],
   { stdio: "inherit", timeout: 30000 },

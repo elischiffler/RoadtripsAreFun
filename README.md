@@ -265,3 +265,9 @@ licensed US catalog on Neon. Apply its schema and activate validated coverage
 before deploying: [rollout and rollback](docs/neon-places-catalog.md),
 [source review including Kaggle](docs/catalog-source-review.md), and
 [validation evidence and outstanding gates](docs/catalog-validation.md).
+
+## Native offline Stage 2 preview
+
+Use the [native offline preview](docs/native-offline-preview.md) for a restartable
+local frontend/API/PostgreSQL setup with synthetic login and providers, without
+hosted credentials or live AI requests.

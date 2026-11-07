@@ -18,19 +18,17 @@ from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import urlparse
 
+from local_config import FixtureConfig
 from preparation_observer import PreparationObserver
+
+fixture_config = FixtureConfig(
+    os.environ.get("GUIDED_JOURNEY_NATIVE_PREVIEW") == "true"
+)
 
 target = urlparse(os.environ.get("DATABASE_URL", ""))
 if (
-    target.hostname not in {"postgres", "127.0.0.1", "localhost"}
-    or target.path != "/roadtrips"
-    or target.username != "postgres"
-    or target.password != "disposable-guided-only"
+    not fixture_config.allows_database(target)
     or os.environ.get("GUIDED_JOURNEY_FIXTURE") != "disposable-local-only"
-    or target.scheme != "postgresql"
-    or target.query
-    or target.fragment
-    or target.port not in ({None, 5432} if target.hostname == "postgres" else {6543})
 ):
     raise RuntimeError(
         "Guided fixture requires its disposable local roadtrips database"
@@ -39,10 +37,11 @@ os.environ["PYTHON_DOTENV_DISABLED"] = "1"
 os.environ["COGNITO_USER_POOL_ID"] = "us-west-1_fixture"
 os.environ["COGNITO_APP_CLIENT_ID"] = "localfixture"
 os.environ["STUDIO_RESEARCH_DATABASE"] = "false"
+fixture_config.apply_origins()
 os.environ["PLACE_TRAITS_CACHE_ENABLED"] = "false"
-os.environ["SUPABASE_URL"] = "http://127.0.0.1:9009"
+os.environ["SUPABASE_URL"] = f"http://127.0.0.1:{fixture_config.provider_port}"
 os.environ["SUPABASE_ANON_KEY"] = "synthetic-anon-key"
-os.environ["MENTRO_GATEWAY_URL"] = "http://127.0.0.1:9009"
+os.environ["MENTRO_GATEWAY_URL"] = f"http://127.0.0.1:{fixture_config.provider_port}"
 os.environ["MENTRO_SERVICE_EMAIL"] = "fixture@example.test"
 os.environ["MENTRO_SERVICE_PASSWORD"] = "fixture-only"
 os.environ.pop("LOCAL_PREVIEW", None)
@@ -102,7 +101,6 @@ dotenv.load_dotenv = lambda *args, **kwargs: False
 import jwt
 import psycopg2
 import uvicorn
-from cryptography.hazmat.primitives.asymmetric import rsa
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
@@ -117,7 +115,7 @@ with (
     if marker_cursor.fetchall() != [("disposable-local-only",)]:
         raise RuntimeError("Refusing a database without the isolated journey marker")
 
-key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+key = fixture_config.signing_key()
 jwk = jwt.algorithms.RSAAlgorithm.to_jwk(key.public_key(), as_dict=True)
 jwk.update(kid="guided-fixture", use="sig", alg="RS256")
 jwt.PyJWKClient.fetch_data = lambda self: {"keys": [jwk]}
@@ -475,7 +473,7 @@ def report():
 identity = FastAPI()
 identity.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:8082"],
+    allow_origins=fixture_config.origins,
     allow_methods=["POST"],
     allow_headers=["*"],
 )
@@ -603,13 +601,28 @@ async def gateway(request: Request):
 async def main():
     await asyncio.gather(
         uvicorn.Server(
-            uvicorn.Config(app, host="0.0.0.0", port=8002, log_level="warning")
+            uvicorn.Config(
+                app,
+                host=fixture_config.bind_host,
+                port=fixture_config.api_port,
+                log_level="warning",
+            )
         ).serve(),
         uvicorn.Server(
-            uvicorn.Config(identity, host="0.0.0.0", port=8999, log_level="warning")
+            uvicorn.Config(
+                identity,
+                host=fixture_config.bind_host,
+                port=fixture_config.identity_port,
+                log_level="warning",
+            )
         ).serve(),
         uvicorn.Server(
-            uvicorn.Config(providers, host="127.0.0.1", port=9009, log_level="warning")
+            uvicorn.Config(
+                providers,
+                host="127.0.0.1",
+                port=fixture_config.provider_port,
+                log_level="warning",
+            )
         ).serve(),
     )
 
