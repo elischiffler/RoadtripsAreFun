@@ -241,6 +241,7 @@ try {
   assert.equal(original.status, 200);
   const [oldData, oldLog] = original.data[0];
   assert.match(oldData.savedRevision, /^[0-9a-f]{64}$/);
+  await page.getByRole("button", { name: "Correct an arrival", exact: true }).click();
   const mark = page
     .getByRole("button", { name: /^Mark visited: Synthetic overlook / })
     .first();
@@ -295,6 +296,7 @@ try {
     .first()
     .click();
   await page.reload();
+  await page.getByRole("button", { name: "Correct an arrival", exact: true }).click();
   await page
     .getByRole("button", { name: "Mark visited: " + visitedName, exact: true })
     .waitFor();
@@ -356,6 +358,7 @@ try {
   assert.deepEqual(edited.trips[0].data.presentation.visitedStopIds, []);
   await page.getByRole("link", { name: "Back to trip", exact: true }).click();
   await page.reload();
+  await page.getByRole("button", { name: "Correct an arrival", exact: true }).click();
   const editedMark = page.getByRole("button", {
     name: "Mark visited: Synthetic edit stop",
     exact: true,
@@ -371,6 +374,7 @@ try {
     .click();
   await page.getByText("Visit updates saved.", { exact: true }).waitFor();
   await page.reload();
+  await page.getByRole("button", { name: "Correct an arrival", exact: true }).click();
   await editedMark.waitFor();
   await page.screenshot({
     path: join(output, "reloaded-edited-trip.png"),
@@ -505,6 +509,7 @@ try {
   );
   await page.goto(frontend + "/trip");
   await page.reload();
+  await page.getByRole("button", { name: "Correct an arrival", exact: true }).click();
   await page
     .getByRole("button", {
       name: "Mark visited: Synthetic edit stop",

@@ -57,6 +57,7 @@ it('restores selected trip and historical chat together, then persists mark and 
   });
   axios.put.mockResolvedValue({ status: 200, data: { savedRevision: 'a'.repeat(64) } });
   render(<ReloadFixture />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Correct an arrival' }));
   await userEvent.click(
     await screen.findByRole('button', { name: 'Mark visited: Saved forest walk' })
   );

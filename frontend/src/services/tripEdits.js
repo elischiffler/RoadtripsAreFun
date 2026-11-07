@@ -57,11 +57,14 @@ export async function previewTripEdit(trip, place, action, stopIndex, signal) {
 export function editedTripSnapshot(original, preview) {
   const oldCount = (original.route?.stops || []).filter((stop) => stop.type === 'stop').length;
   const count = (preview.route.stops || []).filter((stop) => stop.type === 'stop').length;
+  const presentation = { ...original.presentation, visitedStopIds: [] };
+  delete presentation.arrivals;
+  delete presentation.automaticArrivalExcludedStopIds;
   return {
     ...original,
     route: preview.route,
     itinerary: preview.itinerary,
-    presentation: { ...original.presentation, visitedStopIds: [] },
+    presentation,
     ...(oldCount === count
       ? {}
       : { stops: count, tripProfile: { ...original.tripProfile, num_stops: count } }),

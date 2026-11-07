@@ -147,3 +147,14 @@
   font-weight: var(--rt-weight-medium);
   line-height: var(--rt-leading-body);
 }
+
+.rt-design .trip-arrival-tracking {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-4);
+  border: var(--rt-border-width) solid var(--rt-color-border);
+  border-radius: var(--rt-radius-control);
+}
+.rt-design .trip-arrival-tracking .rt-button {
+  justify-self: start;
+}

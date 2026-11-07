@@ -69,7 +69,10 @@ it('previews authenticated edits with meal slots and no saved write', async () =
 });
 it('preserves metadata, clears obsolete visits, and updates counts only after additions', () => {
   const trip = original();
+  trip.presentation.arrivals = { old: { source: 'web-foreground' } };
+  trip.presentation.automaticArrivalExcludedStopIds = ['old'];
   const next = editedTripSnapshot(trip, preview);
+  expect(next.presentation).toEqual({ visitedStopIds: [], custom: 'kept' });
   expect(next).toMatchObject({
     stops: 2,
     tripProfile: { num_stops: 2, traveler_count: 2 },
