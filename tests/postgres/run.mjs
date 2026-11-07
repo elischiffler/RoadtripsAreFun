@@ -84,11 +84,11 @@ function probeResearchDatabase() {
 }
 
 function probeSettingsDatabase() {
-  console.log("Real preference profile isolation and targeted trip-car updates");
+  console.log("Real preference profile isolation, targeted trip-car updates and sharing readiness");
   docker([
     "run", "--rm", "--no-deps", "-e",
     "SETTINGS_TEST_DATABASE_URL=postgresql://postgres:disposable-local-only@postgres/roadtrips",
-    "test", "python", "-m", "pytest", "tests/settings_postgres_tests.py", "tests/trip_sharing_postgres_tests.py", "-q",
+    "test", "python", "-m", "pytest", "tests/settings_postgres_tests.py", "tests/trip_sharing_postgres_tests.py", "tests/readiness_postgres_tests.py", "-q",
   ], { stdio: "inherit", timeout: 120_000 });
 }
 
@@ -202,11 +202,11 @@ try {
   });
   probe("seed");
   probeResearchDatabase();
-  probeSettingsDatabase();
   docker(["exec", "-T", "postgres", "psql", "-U", "postgres", "-d", "roadtrips", "-v", "ON_ERROR_STOP=1"], {
     input: readFileSync(join(directory, "catalog-fixture.sql"), "utf8"),
   });
   assertCatalogFixture("postgres");
+  probeSettingsDatabase();
 
   docker(["--profile", "api", "up", "-d", "--wait", "--wait-timeout", "60", "api"]);
   apiStarted = true;
