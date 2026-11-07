@@ -23,6 +23,7 @@ const RouteEstimate = forwardRef(function RouteEstimate(
   const [error, setError] = useState('');
   const request = useRef(null);
   const preview = useRef(null);
+  const locationHeading = useRef(null);
   const previewTrigger = useRef(null);
   const notify = useRef(onPrepared);
   notify.current = onPrepared;
@@ -58,6 +59,14 @@ const RouteEstimate = forwardRef(function RouteEstimate(
   const currentData =
     prepared?.queryKey === queryKey && isCurrentSession(prepared.session) ? prepared : null;
   const catalog = useCatalogPreparation(currentData?.initialRoute, currentData?.cacheKey, draft);
+  const needsLocations =
+    stage === 0 &&
+    candidates?.queryKey === queryKey &&
+    !currentData &&
+    (candidates.origin.length > 1 || candidates.destination.length > 1);
+  useEffect(() => {
+    if (needsLocations) locationHeading.current?.focus({ preventScroll: true });
+  }, [needsLocations]);
 
   const run = async (confirmed = false) => {
     if (!confirmed && currentData) return { ok: true, ...currentData };
@@ -177,7 +186,7 @@ const RouteEstimate = forwardRef(function RouteEstimate(
           </ActionButton>
         </details>
       )}
-      {stage === 0 && !currentData && (
+      {stage === 0 && !currentData && !needsLocations && (
         <ActionButton
           variant="secondary"
           disabled={busy || !start.trim() || !destination.trim()}
@@ -186,8 +195,11 @@ const RouteEstimate = forwardRef(function RouteEstimate(
           {busy ? 'Checking places…' : 'Estimate driving time'}
         </ActionButton>
       )}
-      {stage === 0 && candidates?.queryKey === queryKey && !currentData && (
-        <div className="rt-stack">
+      {needsLocations && (
+        <div className="rt-stack setup-location-confirmation">
+          <h2 className="rt-title" ref={locationHeading} tabIndex={-1}>
+            Choose locations
+          </h2>
           {['origin', 'destination'].map((field) => (
             <ChoiceGroup
               key={field}
@@ -207,6 +219,21 @@ const RouteEstimate = forwardRef(function RouteEstimate(
             onClick={() => run(true)}
           >
             Use these locations for estimate
+          </ActionButton>
+          <ActionButton
+            variant="secondary"
+            onClick={() => {
+              request.current?.abort();
+              request.current = null;
+              setCandidates(null);
+              setBusy(false);
+              setError('');
+              requestAnimationFrame(() =>
+                document.getElementById('setup-start')?.focus({ preventScroll: true })
+              );
+            }}
+          >
+            Edit addresses
           </ActionButton>
         </div>
       )}

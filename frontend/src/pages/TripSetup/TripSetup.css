@@ -876,3 +876,11 @@
 .setup-interest-tools details:not([open]) > :not(summary) {
   display: none;
 }
+
+.setup-card:has(.setup-location-confirmation) > form,
+.setup-card:has(.setup-location-confirmation) > .setup-bottom-actions {
+  display: none;
+}
+.setup-location-confirmation {
+  gap: var(--rt-space-3);
+}

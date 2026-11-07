@@ -103,3 +103,18 @@ it('aborts a stale estimate when its endpoints change and reports recoverable lo
   expect(await screen.findByRole('alert')).toHaveTextContent('Could not check this drive.');
   expect(screen.getByRole('button', { name: 'Estimate driving time' })).toBeEnabled();
 });
+
+it('returns from ambiguous locations to unchanged answers and supports another explicit estimate', async () => {
+  resolveTripLocation
+    .mockResolvedValueOnce([start, { ...start, address: 'Denver, Iowa' }])
+    .mockResolvedValueOnce([end]);
+  render(<RouteEstimate start="Denver" destination="Boulder" />);
+  await userEvent.click(screen.getByRole('button', { name: 'Estimate driving time' }));
+  expect(await screen.findByRole('heading', { name: 'Choose locations' })).toHaveFocus();
+  expect(screen.queryByRole('button', { name: 'Estimate driving time' })).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Edit addresses' }));
+  expect(screen.queryByRole('heading', { name: 'Choose locations' })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Estimate driving time' })).toBeEnabled();
+  expect(resolveTripLocation).toHaveBeenCalledTimes(2);
+  expect(estimateStructuredRoute).not.toHaveBeenCalled();
+});
