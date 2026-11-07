@@ -11,6 +11,7 @@ from fastapi import HTTPException
 from geopy.distance import geodesic
 
 from app.agent.progress import emit
+from app.models.daily_schedule import DailyRhythmClockError
 from app.models.routing_models.routing_models import MapBox
 from app.models.scheduling_policy import advance, local_time, seconds_until
 from app.routing.base import MAX_TRIP_OVERNIGHTS, PlanningError, PlanOptions
@@ -27,7 +28,7 @@ from app.routing.meal_reservations import MealClock, MealScheduleConflict
 from app.routing.occupancy import require_occupancy
 from app.routing.runtime import threaded
 from app.routing.services import RoutingServices
-from app.routing.trip_modes import RhythmAvailabilityConflict
+from app.routing.trip_modes import RhythmAvailabilityConflict, RhythmClockConflict
 from app.routing.visit_calendar import VisitCalendarConflict, requires_calendar, solve_visit
 from app.routing.visit_duration import visit_seconds
 
@@ -79,6 +80,19 @@ def _over_budget(hotel: dict, budget: float, room_count: int) -> bool:
 
 
 async def schedule_cp_sat_route(
+    route: MapBox_route,
+    selected: list[SelectedAttraction],
+    options: PlanOptions,
+    services: RoutingServices,
+) -> tuple[list[dict[str, Any]], float]:
+    """Translate only relevant recurring-clock localization failures into a safe conflict."""
+    try:
+        return await _schedule_cp_sat_route(route, selected, options, services)
+    except DailyRhythmClockError:
+        raise RhythmClockConflict() from None
+
+
+async def _schedule_cp_sat_route(
     route: MapBox_route,
     selected: list[SelectedAttraction],
     options: PlanOptions,

@@ -13,11 +13,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
 from app.core.candidate_errors import ERRORS, CandidateHTTPError
-from app.models.planning_candidates import CandidateRequest
+from app.models.planning_candidates import CandidateRequest, OneDayAssessment
 from app.models.routing_models.routing_models import MapBox
 from app.routers import planning_candidates as api
 from app.routers import routing_api
 from app.routing.base import PlanningError, PlanOptions, PlanResult
+from app.routing.cp_sat_scheduler import schedule_cp_sat_route
 from app.routing.planners.cp_sat import CPSatPlanner
 from app.routing.planning_candidates import CandidateStore
 from app.utils.auth import require_authenticated_user
@@ -409,6 +410,67 @@ def test_ambiguous_or_missing_relevant_cutoff_rejects_with_fixed422_before_plann
         "detail": ERRORS["rhythm_clock_conflict"][1],
     }
     assert state.calls == state.discovery == 0
+
+
+@pytest.mark.parametrize("day,cutoff", [("2030-03-09", 2), ("2030-11-02", 1)])
+def test_overnight_confirmation_translates_actual_estimated_cross_zone_dst_conflict(
+    runtime, monkeypatch, day, cutoff
+):
+    client, cache, state, _ = runtime
+    request = CandidateRequest.model_validate(
+        payload(
+            start=day + "T21:00:00-07:00",
+            scheduling_policy={
+                "daily_schedule": policy((20, cutoff), (cutoff, 10)).daily_schedule.model_dump()
+            },
+        )
+    )
+    # Seed only the trusted server-held discovery boundary. Confirmation still
+    # runs the actual routing API and estimated scheduler with its local clocks.
+    candidate = cache.add(
+        "fixture-account",
+        request,
+        {"verified_candidates": []},
+        OneDayAssessment(eligible=False),
+        None,
+    )
+    origin = list(reversed(request.initial_route.geometry.coordinates[0]))
+
+    async def zones(point):
+        return "America/Phoenix" if list(point) == origin else "America/Los_Angeles"
+
+    hotels = AsyncMock(side_effect=AssertionError("unexpected hotel lookup"))
+    monkeypatch.setattr(
+        routing_api,
+        "_build_services",
+        lambda: SimpleNamespace(timezone_at=zones, cp_sat_hotels=hotels),
+    )
+
+    async def plan(initial, options, services):
+        state.calls += 1
+        stops, total = await schedule_cp_sat_route(initial, [], options, services)
+        return PlanResult(stopping_points=stops, total_cost=total)
+
+    monkeypatch.setattr(routing_api, "get_planner", lambda _: SimpleNamespace(plan=plan))
+    response = client.post(
+        "/planning-candidates/" + candidate.candidate_id + "/confirm",
+        json={
+            "input_key": candidate.input_key,
+            "trip_mode": "overnight",
+            "budget": 150,
+            "traveler_count": 1,
+            "hotel_rooms": [{"adults": 1, "child_ages": []}],
+        },
+    )
+    assert response.status_code == 422, response.text
+    assert response.json() == {
+        "code": "rhythm_clock_conflict",
+        "detail": ERRORS["rhythm_clock_conflict"][1],
+    }
+    assert state.calls == 1 and state.discovery == 0
+    assert cache.entries[candidate.candidate_id].confirmed_route is None
+    assert cache.entries[candidate.candidate_id].busy is False
+    hotels.assert_not_awaited()
 
 
 def test_westbound_unavailable_leg_has_actionable_fixed422_and_no_candidate_claim(
