@@ -84,8 +84,12 @@ CI. No migration/production enablement is claimed.
 
 Production remains held for an explicitly approved database target/schema/backup
 and application of the prepared migration. The release owner coordinates this
-as a separate concrete approval. Existing `/ready` does not prove sharing schema
-readiness; sharing endpoints return a fixed 503 if it is absent.
+as a separate concrete approval. At this standalone lane checkpoint, `/ready`
+did not check sharing prerequisites and sharing endpoints returned fixed 503 if
+they were absent. The later complete Stage2 integration adds a bounded read-only
+readiness check for both tables, 11 required column names/types and each individual
+CRUD privilege of the application role. This release gate does not replace the
+explicit constraint/index, recovery or live-account migration verification.
 
 A separate bounded integration delta follows this fully reviewed checkpoint after
 reading one-day schema `b945c827`. It allowlists only saved `trip_mode` literals as

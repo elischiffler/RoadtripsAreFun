@@ -41,7 +41,13 @@ def test_ready_uses_pooler_compatible_statement_timeout(monkeypatch):
             executed.append(statement)
 
         def fetchone(self):
-            return ("chats", "route_segments", "steps", "chat_memory")
+            return (True,) * 8
+
+        def fetchall(self):
+            return [
+                (table, column, kind)
+                for (table, column), kind in main._SHARING_COLUMN_TYPES.items()
+            ]
 
     class Connection:
         def cursor(self):

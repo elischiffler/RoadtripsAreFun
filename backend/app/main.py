@@ -157,6 +157,63 @@ async def health():
     return {"status": "ok"}
 
 
+_SHARING_COLUMN_TYPES = {
+    ("trip_shares", "id"): "uuid",
+    ("trip_shares", "owner_id"): "text",
+    ("trip_shares", "chat_id"): "text",
+    ("trip_shares", "token_digest"): "text",
+    ("trip_shares", "link_expires_at"): "timestamp with time zone",
+    ("trip_shares", "created_at"): "timestamp with time zone",
+    ("trip_share_members", "id"): "uuid",
+    ("trip_share_members", "share_id"): "uuid",
+    ("trip_share_members", "account_id"): "text",
+    ("trip_share_members", "display_name"): "text",
+    ("trip_share_members", "connected_at"): "timestamp with time zone",
+}
+
+
+def _sharing_readiness(cur):
+    """Read-only release prerequisite, not a migration/constraint/recovery audit."""
+    try:
+        cur.execute(
+            "SELECT to_regclass('public.trip_shares'), to_regclass('public.trip_share_members')"
+        )
+        if not all(cur.fetchone()):
+            return "sharing_schema"
+        cur.execute(
+            "SELECT c.relname, a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod) "
+            "FROM pg_catalog.pg_attribute a JOIN pg_catalog.pg_class c ON c.oid=a.attrelid "
+            "WHERE c.relnamespace='public'::regnamespace AND c.relkind IN ('r','p') "
+            "AND c.relname IN ('trip_shares','trip_share_members') "
+            "AND a.attnum>0 AND NOT a.attisdropped"
+        )
+        actual = {(table, column): kind for table, column, kind in cur.fetchall()}
+        if any(actual.get(key) != kind for key, kind in _SHARING_COLUMN_TYPES.items()):
+            return "sharing_schema"
+        # A comma-separated privilege argument tests ANY privilege, not ALL.
+        cur.execute(
+            "SELECT "
+            + ", ".join(
+                f"has_table_privilege(current_user, 'public.{table}', '{privilege}')"
+                for table in ("trip_shares", "trip_share_members")
+                for privilege in ("SELECT", "INSERT", "UPDATE", "DELETE")
+            )
+        )
+        if not all(cur.fetchone()):
+            return "sharing_permissions"
+        cur.execute(
+            "SELECT id, owner_id, chat_id, token_digest, link_expires_at, created_at "
+            "FROM public.trip_shares LIMIT 0"
+        )
+        cur.execute(
+            "SELECT id, share_id, account_id, display_name, connected_at "
+            "FROM public.trip_share_members LIMIT 0"
+        )
+    except Exception:
+        return "sharing_schema"
+    return None
+
+
 @app.get("/ready")
 def ready():
     """Database readiness is separate from process liveness at /health."""
@@ -190,6 +247,10 @@ def ready():
                 return JSONResponse(
                     status_code=503,
                     content={"status": "not_ready", "dependency": "places_catalog"},
+                )
+            if dependency := _sharing_readiness(cur):
+                return JSONResponse(
+                    status_code=503, content={"status": "not_ready", "dependency": dependency}
                 )
         return {"status": "ready"}
     except Exception:

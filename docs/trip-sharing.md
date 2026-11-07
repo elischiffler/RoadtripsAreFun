@@ -100,8 +100,16 @@ database.** The authoritative forward file is
 
 There is no startup DDL, migration auto-apply or modification to account
 permissions, existing owner data, catalogs or source/calendar safeguards. Existing
-`/ready` remains unchanged. Missing/incompatible sharing tables fail sharing
-endpoints with fixed 503 responses; existing saved-trip reads/writes continue.
+For the complete Stage2 release, `/ready` also requires both sharing tables, the
+11 required column names and PostgreSQL types, and each individual
+SELECT/INSERT/UPDATE/DELETE privilege for the current application database role.
+It performs only catalog/privilege queries and empty column reads, using the
+existing bounded connection. Missing or incompatible sharing prerequisites return
+a fixed non-sensitive 503 so a deployment cannot report ready with this feature
+unavailable. This does not verify foreign keys, indexes, recovery or live account
+behavior. `/health` remains process liveness. Sharing endpoints independently fail
+with fixed 503 responses when their schema is unavailable; owned saved-trip
+reads/writes do not depend on those tables and continue.
 `IF NOT EXISTS` makes repeated application idempotent on the expected schema, not
 a repair of incompatible tables with the same names.
 
