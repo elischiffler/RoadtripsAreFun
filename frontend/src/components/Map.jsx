@@ -1,3 +1,4 @@
+import PlaceContext from './PlaceContext';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import PropTypes from 'prop-types';
@@ -49,6 +50,7 @@ const Map = ({
         return [
           {
             ...stop,
+            place_context: UserChatData.route.place_context?.[stop.provider_id] ?? null,
             number: index + 1,
             name: stop.name || `Stop ${index + 1}`,
             longitude: coordinates[1],
@@ -56,7 +58,7 @@ const Map = ({
           },
         ];
       }),
-    [UserChatData.route.stops]
+    [UserChatData.route.stops, UserChatData.route.place_context]
   );
   const localJourney = import.meta.env.VITE_LOCAL_JOURNEY === 'true';
 
@@ -187,7 +189,7 @@ const Map = ({
         const heading = document.createElement('strong');
         heading.textContent = stop.name;
         content.append(heading);
-        for (const text of [stop.address]) {
+        for (const text of [stop.place_context?.summary, stop.address]) {
           if (!text) continue;
           const line = document.createElement('p');
           line.textContent = text;
@@ -296,10 +298,7 @@ const Map = ({
       </button>
       <strong>{selectedSuggestion.name}</strong>
       <p>Unscheduled idea · opening hours, availability and detour timing need checking.</p>
-      <p>
-        Source:{' '}
-        {selectedSuggestion.source_attribution || selectedSuggestion.source || 'Place catalog'}
-      </p>
+      <PlaceContext context={selectedSuggestion.place_context} />
     </div>
   );
 
@@ -477,6 +476,7 @@ const Map = ({
               ×
             </button>
             <strong>{selectedStop.name}</strong>
+            <PlaceContext context={selectedStop.place_context} />
             {selectedStop.address && <p>{selectedStop.address}</p>}
           </div>
         )}

@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import ValidationError
 
 from app.agent.progress import stage
+from app.catalog.place_context import route_place_context
 from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time
 from app.routing.base import PlanningError
@@ -89,6 +90,8 @@ async def _build_itinerary(
             422,
         )
     await refresh_for_timing(data.route.stops or [], catalog_lookup=catalog_lookup)
+    # Recompute from freshly admitted facts; ignore serialized/client display claims.
+    data.route.place_context = route_place_context(data.route.stops)
     if data.route.scheduling_policy is None and any(
         requires_calendar(stop) for stop in data.route.stops or []
     ):
@@ -158,6 +161,7 @@ async def _build_itinerary(
             "departure_time": stop.get("departure_time"),
             "visit_duration": stop.get("visit_duration"),
             "provider_id": stop.get("provider_id"),
+            "place_context": data.route.place_context.get(stop.get("provider_id")),
             "source": stop.get("source"),
             "source_release": stop.get("source_release"),
             "source_attribution": stop.get("source_attribution"),
@@ -326,6 +330,7 @@ async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]
                 "paired_departure": stop.get("paired_departure", False),
                 "source": stop.get("source"),
                 "provider_id": stop.get("provider_id"),
+                "place_context": stop.get("place_context"),
                 "source_release": stop.get("source_release"),
                 "source_attribution": stop.get("source_attribution"),
                 "source_updated_at": stop.get("source_updated_at"),

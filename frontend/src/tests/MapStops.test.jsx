@@ -188,6 +188,7 @@ it('adds distinct nearby pins and centers a selected actual idea without changin
     name: 'Gallery',
     coordinates: [37.5, -122.2],
     source_attribution: 'Fixture catalog',
+    place_context: { summary: 'Small galleries with local history exhibits.' },
   };
   const select = vi.fn();
   const data = trip();
@@ -216,8 +217,9 @@ it('adds distinct nearby pins and centers a selected actual idea without changin
     'Unscheduled idea'
   );
   expect(screen.getByRole('region', { name: 'Selected nearby idea' })).toHaveTextContent(
-    'Fixture catalog'
+    'Small galleries with local history exhibits.'
   );
+  expect(screen.queryByText(/Source: Fixture catalog/)).not.toBeInTheDocument();
   expect(screen.getAllByRole('button', { name: /^Stop / })).toHaveLength(3);
   expect(data.route.stops).toEqual(stops);
 });
@@ -230,4 +232,16 @@ it('renders local fixture nearby pins with keyboard selection', async () => {
   await userEvent.keyboard('{Enter}');
   expect(select).toHaveBeenCalledWith(idea);
   expect(mapboxgl.Map).not.toHaveBeenCalled();
+});
+
+it('joins reviewed context from the route map without annotating source stop dictionaries', async () => {
+  const data = trip();
+  data.route.stops = structuredClone(data.route.stops);
+  data.route.stops[0].provider_id = 'boulder:250';
+  data.route.place_context = { 'boulder:250': { summary: 'A trailhead with picnic facilities.' } };
+  const original = structuredClone(data.route);
+  render(<Map UserChatData={data} />);
+  await userEvent.click(screen.getByRole('button', { name: 'Stop 1: Forest walk' }));
+  expect(screen.getByRole('dialog')).toHaveTextContent('A trailhead with picnic facilities.');
+  expect(data.route).toEqual(original);
 });

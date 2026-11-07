@@ -1,0 +1,246 @@
+{
+  "schema": "roadtrips-reviewed-place-context/1",
+  "reviewed_on": "2026-11-07",
+  "entries": [
+    {
+      "identity": {
+        "provider_id": "boulder:284",
+        "source": "boulder-osmp",
+        "name": "Halfway House",
+        "coordinates": [
+          40.006528644887,
+          -105.2946087495
+        ]
+      },
+      "context": {
+        "summary": "A stone shelter beside a small Flagstaff Mountain trailhead. A short path joins Flagstaff Trail, and outdoor picnic tables sit by the building. Indoor group use requires a reservation."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://bouldercolorado.gov/trailhead/halfway-house",
+        "claims": "A stone shelter beside a small Flagstaff Mountain trailhead. A short path joins Flagstaff Trail, and outdoor picnic tables sit by the building. Indoor group use requires a reservation.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "boulder:272",
+        "source": "boulder-osmp",
+        "name": "Realization Point",
+        "coordinates": [
+          39.997223311727,
+          -105.30900101863
+        ]
+      },
+      "context": {
+        "summary": "A trail junction on Flagstaff Road linking routes including Tenderfoot, Range View and Ranger. There are picnic tables, but no restroom at the trailhead."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://bouldercolorado.gov/trailhead/realization-point",
+        "claims": "A trail junction on Flagstaff Road linking routes including Tenderfoot, Range View and Ranger. There are picnic tables, but no restroom at the trailhead.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "boulder:250",
+        "source": "boulder-osmp",
+        "name": "Chautauqua",
+        "coordinates": [
+          39.998910206824,
+          -105.28252474797
+        ]
+      },
+      "context": {
+        "summary": "A busy starting point for hikes on Boulder’s mountain trails. The Ranger Cottage offers maps and visitor information, and the Bluebell Shelter area has picnic facilities.",
+        "image": {
+          "src": "/place-images/chautauqua-trail-2026.jpg",
+          "alt": "Chautauqua Trail at the 6th Street connector, photographed in October 2026",
+          "credit": "Dough4872",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+          "source_url": "https://commons.wikimedia.org/w/index.php?oldid=1295058964&title=File:Chautauqua_Trail_in_Boulder_Mountain_Park_looking_west_at_6th_Street_Connector.jpeg",
+          "caption": "Chautauqua Trail, October 2026. Source-provided resized preview; no other edits.",
+          "width": 960,
+          "height": 720
+        }
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://bouldercolorado.gov/trailhead/chautauqua",
+        "claims": "A busy starting point for hikes on Boulder’s mountain trails. The Ranger Cottage offers maps and visitor information, and the Bluebell Shelter area has picnic facilities.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification",
+        "image": {
+          "sha256": "05a71cb5806f8093576aa729d22bd135fda3959ef6763e41ace5f83c22103a3a",
+          "bytes": 239256,
+          "mime": "image/jpeg",
+          "rights_basis": "Author’s own-work declaration and explicit CC BY-SA 4.0 grant at pinned Commons revision. Not a blanket Commons or NPS license assumption.",
+          "identity_basis": "Photo coordinates 39.998314,-105.284181 and filename identify trail near Chautauqua; does not depict or verify parking/arrival point.",
+          "rights_review_on": "2026-11-07",
+          "source_preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/Chautauqua_Trail_in_Boulder_Mountain_Park_looking_west_at_6th_Street_Connector.jpeg/960px-Chautauqua_Trail_in_Boulder_Mountain_Park_looking_west_at_6th_Street_Connector.jpeg"
+        }
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "nps-public:bica:visitor-center",
+        "source": "nps-public",
+        "name": "Bighorn Canyon National Recreation Area — Cal S. Taggart Bighorn Canyon Visitor Center (Lovell, WY)",
+        "coordinates": [
+          44.837479952208064,
+          -108.37667249937681
+        ]
+      },
+      "context": {
+        "summary": "An indoor introduction to the canyon’s landscape and history, with a large relief map, geology and history exhibits, and films on request. Interpretive signs surround the ponds outside."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.nps.gov/bica/planyourvisit/bighorn-canyon-visitor-center.htm",
+        "claims": "An indoor introduction to the canyon’s landscape and history, with a large relief map, geology and history exhibits, and films on request. Interpretive signs surround the ponds outside.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "usfs:facility:5770.004481",
+        "source": "usfs",
+        "name": "Boca Historic Townsite Interpretive Trai",
+        "coordinates": [
+          39.386615,
+          -120.093321
+        ]
+      },
+      "context": {
+        "summary": "A paved half-mile loop through the former town of Boca. Signs explain its railroad, ice and brewing history as the trail climbs toward a small cemetery. Some sections exceed a five-percent slope."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.fs.usda.gov/r05/tahoe/recreation/trails/boca-historic-townsite-interpretive-trail",
+        "claims": "A paved half-mile loop through the former town of Boca. Signs explain its railroad, ice and brewing history as the trail climbs toward a small cemetery. Some sections exceed a five-percent slope.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "usfs:facility:5340.004481",
+        "source": "usfs",
+        "name": "Donner Summit  Trailhead",
+        "coordinates": [
+          39.33988,
+          -120.343936
+        ]
+      },
+      "context": {
+        "summary": "A short connector from this trailhead reaches the Pacific Crest Trail. From the junction, hikers can head north under Interstate 80 or south toward Lake Tahoe. Winter Sno-Park use requires payment."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://explore.pcta.org/trailheads/donner-summit-pct-trailhead",
+        "claims": "A short connector from this trailhead reaches the Pacific Crest Trail. From the junction, hikers can head north under Interstate 80 or south toward Lake Tahoe. Winter Sno-Park use requires payment.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "nps-public:facility:lecl:1242",
+        "source": "nps-public",
+        "name": "Lewis & Clark National Historic Trail — Lewis and Clark National Historic Trail Visitor Center",
+        "coordinates": [
+          41.264808,
+          -95.92437699999999
+        ]
+      },
+      "context": {
+        "summary": "A visitor center beside Omaha’s Missouri River waterfront and the Bob Kerrey Pedestrian Bridge. Rangers provide trail information; inside are a Lewis and Clark film and a period-clothing display."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.nps.gov/lecl/planyourvisit/lecl_headquarters.htm",
+        "claims": "A visitor center beside Omaha’s Missouri River waterfront and the Bob Kerrey Pedestrian Bridge. Rangers provide trail information; inside are a Lewis and Clark film and a period-clothing display.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    }
+  ],
+  "source_receipts": [
+    {
+      "url": "https://bouldercolorado.gov/trailhead/halfway-house",
+      "final_url": "https://bouldercolorado.gov/trailhead/halfway-house",
+      "http_status": 200,
+      "sha256": "0c115a23fd66be548337846626153589933dec5fc372e608774fe3e7862143e2",
+      "bytes": 61429,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://bouldercolorado.gov/trailhead/realization-point",
+      "final_url": "https://bouldercolorado.gov/trailhead/realization-point",
+      "http_status": 200,
+      "sha256": "b539d5547a936c59c7ba60a4e69c7e55d5121a5bdd5bb68c7ee36fc159c5c9b2",
+      "bytes": 61351,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://bouldercolorado.gov/trailhead/chautauqua",
+      "final_url": "https://bouldercolorado.gov/trailhead/chautauqua",
+      "http_status": 200,
+      "sha256": "1b40dae740474a209751bec5310420a3406f0346e74a771588615d6608d7c2a3",
+      "bytes": 65116,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.nps.gov/bica/planyourvisit/bighorn-canyon-visitor-center.htm",
+      "final_url": "https://www.nps.gov/bica/planyourvisit/bighorn-canyon-visitor-center.htm",
+      "http_status": 200,
+      "sha256": "9091b7ddcb8263dfede095d6e5c1b3f58b52e1588d91671b7ec5419def6b2d72",
+      "bytes": 36758,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.fs.usda.gov/r05/tahoe/recreation/trails/boca-historic-townsite-interpretive-trail",
+      "capture_error": "HTTPError",
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed via web browser; raw HTTP capture unavailable"
+    },
+    {
+      "url": "https://explore.pcta.org/trailheads/donner-summit-pct-trailhead",
+      "final_url": "https://explore.pcta.org/trailheads/donner-summit-pct-trailhead",
+      "http_status": 200,
+      "sha256": "b6965454ccfd61fa13087e39ae36839bbdfeb2fc2a10352e2b76b23f51b8573b",
+      "bytes": 833986,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.nps.gov/lecl/planyourvisit/lecl_headquarters.htm",
+      "final_url": "https://www.nps.gov/lecl/planyourvisit/lecl_headquarters.htm",
+      "http_status": 200,
+      "sha256": "a4c76bc5ab3f7a01f17b2d374c5d19aea911894ef33157889c2c881b529f772a",
+      "bytes": 59489,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/index.php?oldid=1295058964&title=File:Chautauqua_Trail_in_Boulder_Mountain_Park_looking_west_at_6th_Street_Connector.jpeg",
+      "final_url": "https://commons.wikimedia.org/w/index.php?oldid=1295058964&title=File:Chautauqua_Trail_in_Boulder_Mountain_Park_looking_west_at_6th_Street_Connector.jpeg",
+      "http_status": 200,
+      "sha256": "4264a7b0799fca2c591701b34c4b9d905362413aefe8afc79bd8c287514c9e88",
+      "bytes": 117544,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "final_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "http_status": 200,
+      "sha256": "b462fb0a649a8ec875bba7590abad7dc1e72c0456ddec070cf3a28183689dceb",
+      "bytes": 35530,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    }
+  ]
+}

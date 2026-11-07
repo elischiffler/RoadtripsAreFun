@@ -1,3 +1,4 @@
+import PlaceContext from './PlaceContext';
 import PlaceTiming from './PlaceTiming.jsx';
 import MealBreaks from './MealBreaks';
 import './TripExperience.css';
@@ -43,6 +44,7 @@ export default function ItineraryDays({
                     activity.name
                   )}
                 </h3>
+                <PlaceContext context={activity.place_context} />
                 <PlaceTiming place={activity} />
                 {!activity.arrival_time &&
                   !activity.departure_time &&

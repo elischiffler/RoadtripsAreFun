@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { DesignFrame, Sheet, ActionButton } from '../../design';
 import Map from '../../components/Map';
+import PlaceContext from '../../components/PlaceContext';
 import ItineraryDays from '../../components/ItineraryDays';
 import { UserDataContext, Data } from '../../states/UserDataContext';
 import {
@@ -211,6 +212,7 @@ const EditItineraryPage = () => {
           {selectedIdea && !preview && (
             <Sheet>
               <h2 className="rt-title">{selectedIdea.name}</h2>
+              <PlaceContext context={selectedIdea.place_context} />
               <fieldset disabled={locked} className="rt-stack">
                 <legend>Change itinerary</legend>
                 <label>
@@ -336,6 +338,7 @@ const EditItineraryPage = () => {
                   {ideas.places.map((place) => (
                     <li key={place.id}>
                       <h3 className="rt-title">{place.name}</h3>
+                      <PlaceContext context={place.place_context} />
                       <ActionButton
                         variant="secondary"
                         aria-label={`View on map: ${place.name}`}
@@ -367,10 +370,6 @@ const EditItineraryPage = () => {
                           Place information: {place.name}
                         </a>
                       )}
-                      <p className="rt-caption">
-                        Source: {place.source_attribution || place.source || 'Place catalog'}
-                        {place.source_release ? ` · ${place.source_release}` : ''}
-                      </p>
                     </li>
                   ))}
                 </ul>

@@ -10,6 +10,8 @@ LABEL org.opencontainers.image.revision=$VCS_REF
 COPY backend/ ./
 COPY scripts/ /scripts/
 COPY frontend/public/licenses/ /frontend/public/licenses/
+COPY frontend/public/place-images/ /frontend/public/place-images/
+COPY docs/evidence/catalog-automation-coverage-20261019.json /docs/evidence/catalog-automation-coverage-20261019.json
 COPY docs/data/catalog-expansion-20261015/ /docs/data/catalog-expansion-20261015/
 COPY docs/data/catalog-expansion-kaggle-20261015/ /docs/data/catalog-expansion-kaggle-20261015/
 COPY docs/data/catalog-expansion-500-20261015/reviewed-500.preview.jsonl /docs/data/catalog-expansion-500-20261015/reviewed-500.preview.jsonl

@@ -75,7 +75,7 @@ function buildUserDataWithRoute(route = null) {
 
 beforeEach(() => vi.clearAllMocks());
 
-it('loads source-labelled nearby ideas from this route without changing the route', async () => {
+it('loads nearby ideas with semantic context from this route without changing the route', async () => {
   const route = {
     stops: [],
     geometry: {
@@ -92,6 +92,7 @@ it('loads source-labelled nearby ideas from this route without changing the rout
         name: 'Forest',
         coordinates: [37, -120],
         source_attribution: 'Fixture catalog',
+        place_context: { summary: 'A trail through woodland with interpretive signs.' },
         offset_miles: 2.34,
         detour_minutes: null,
         url: 'https://example.test/forest',
@@ -104,7 +105,8 @@ it('loads source-labelled nearby ideas from this route without changing the rout
   await userEvent.click(screen.getByRole('button', { name: 'Find places' }));
   expect(await screen.findByText('Forest')).toBeInTheDocument();
   expect(loadRouteAlternatives).toHaveBeenCalledWith(route, expect.any(AbortSignal));
-  expect(screen.getByText('Source: Fixture catalog')).toBeInTheDocument();
+  expect(screen.queryByText('Source: Fixture catalog')).not.toBeInTheDocument();
+  expect(screen.getByText('A trail through woodland with interpretive signs.')).toBeInTheDocument();
   expect(screen.getByText(/Choose a place, recalculate/)).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'View on map: Forest' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Place information: Forest' })).toHaveAttribute(

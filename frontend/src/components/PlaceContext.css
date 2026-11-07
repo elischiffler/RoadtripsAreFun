@@ -1,0 +1,35 @@
+.rt-design .place-context {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin-block: var(--rt-space-3);
+  color: var(--rt-color-text);
+}
+
+.rt-design .place-context-summary {
+  margin: 0;
+  font-family: var(--rt-font);
+  font-size: var(--rt-text-body);
+  font-weight: var(--rt-weight-regular);
+  line-height: var(--rt-leading-body);
+}
+
+.rt-design .place-context-photo {
+  margin: 0;
+}
+
+.rt-design .place-context-photo img {
+  display: block;
+  width: 100%;
+  max-height: var(--rt-place-image-max-height);
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--rt-radius-sm);
+}
+
+.rt-design .place-context-photo figcaption {
+  margin-top: var(--rt-space-2);
+  font-family: var(--rt-font);
+  font-size: var(--rt-text-caption);
+  line-height: var(--rt-leading-body);
+  color: var(--rt-color-secondary);
+}
