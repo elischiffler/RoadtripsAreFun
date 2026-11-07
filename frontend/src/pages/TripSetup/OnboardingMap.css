@@ -1,0 +1,91 @@
+.setup-map {
+  display: grid;
+  gap: var(--rt-space-2);
+  min-inline-size: 0;
+  margin-block-end: var(--rt-space-3);
+  padding: var(--rt-space-3);
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-color-muted);
+}
+.setup-map-heading,
+.setup-map-endpoints {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+}
+.setup-map-heading > span {
+  color: var(--rt-color-accent);
+}
+.setup-map-canvas {
+  position: relative;
+  block-size: var(--rt-onboarding-map-height);
+  overflow: hidden;
+  border-radius: var(--rt-radius-sm);
+  background: var(--rt-color-surface);
+}
+.setup-map-canvas svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+.setup-map-grid {
+  fill: none;
+  stroke: var(--rt-color-border);
+  stroke-width: var(--rt-border-width);
+  opacity: var(--rt-map-grid-opacity);
+}
+.setup-map-route {
+  fill: none;
+  stroke: var(--rt-color-route);
+  stroke-width: var(--rt-focus-width);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.setup-map[data-phase='draft'] .setup-map-route,
+.setup-map[data-phase='checking'] .setup-map-route {
+  stroke-dasharray: var(--rt-route-draft-dash);
+}
+.setup-map-pin {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  inline-size: var(--rt-target-min);
+  block-size: var(--rt-target-min);
+  transform: translate(-50%, -50%);
+  border: 0;
+  border-radius: var(--rt-radius-pill);
+  background: var(--rt-color-material);
+  color: var(--rt-color-accent);
+  box-shadow: var(--rt-shadow-floating);
+  cursor: pointer;
+}
+.setup-map-pin:active {
+  background: var(--rt-color-selected);
+}
+.setup-map-pin[data-kind='idea'] {
+  color: var(--rt-color-route);
+}
+.setup-map-pin[data-kind='area'] {
+  box-shadow: none;
+  background: var(--rt-color-selected);
+}
+.setup-map-pin[data-confirmed='true'],
+.setup-map-pin[data-kind='stop'] {
+  background: var(--rt-color-accent);
+  color: var(--rt-color-on-accent);
+}
+.setup-map-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--rt-space-4);
+  text-align: center;
+}
+.setup-map {
+  grid-template-columns: minmax(0, 1fr);
+}
+.setup-map-endpoints {
+  min-inline-size: 0;
+}

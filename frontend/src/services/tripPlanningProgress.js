@@ -8,6 +8,7 @@ const MILESTONES = {
   'route.schedule': [86, 'A daily schedule has been checked'],
   'route.final_reroute': [88, 'Driving between the stops has been checked'],
   'route.validation': [90, 'Final route timing has been checked'],
+  'candidate.checked': [91, 'Your trip options are checked'],
   'route.ready': [92, 'Your route is ready'],
   'itinerary.ready': [96, 'Your day-by-day itinerary is ready'],
 };

@@ -44,3 +44,30 @@
   align-items: center;
   min-block-size: var(--rt-target-min);
 }
+
+.connected-card {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+@media (max-height: 43.99rem), (max-width: 23.99rem) {
+  .connected-card {
+    overflow: visible;
+  }
+}
+
+.setup-design--large-text .connected-card {
+  overflow: visible;
+}
+.trip-setup > .connected-progress {
+  flex-shrink: 0;
+  gap: var(--rt-space-2);
+  padding: var(--rt-space-3);
+  margin-block-end: var(--rt-space-3);
+}
+.trip-setup > .connected-progress > h2,
+.trip-setup > .connected-progress > p:last-child {
+  display: none;
+}
+.trip-setup > .connected-progress > p {
+  font-size: var(--rt-text-small);
+}

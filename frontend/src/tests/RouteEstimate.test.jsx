@@ -1,3 +1,4 @@
+import { loadRouteAlternatives } from '../services/routeAlternatives';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, it, vi } from 'vitest';
@@ -10,11 +11,14 @@ vi.mock('../services/tripPlanner', () => ({
   resolveTripLocation: vi.fn(),
   plannerError: () => 'Could not check this drive.',
 }));
-vi.mock('../components/Map', () => ({ default: () => <div>Route geometry</div> }));
+vi.mock('../services/routeAlternatives', () => ({
+  loadRouteAlternatives: vi.fn(async () => ({ places: [] })),
+}));
 const start = { address: 'Denver, Colorado', latitude: 39.7, longitude: -105 };
 const end = { address: 'Boulder, Colorado', latitude: 40, longitude: -105.2 };
 beforeEach(() => {
   vi.resetAllMocks();
+  loadRouteAlternatives.mockResolvedValue({ places: [] });
   sessionStorage.clear();
   fixtureSession();
   estimateStructuredRoute.mockResolvedValue({
@@ -39,19 +43,18 @@ it('does not guess ambiguous provider locations and estimates only confirmed cho
   expect(estimateStructuredRoute).not.toHaveBeenCalled();
   await userEvent.click(screen.getByRole('radio', { name: 'Denver, Colorado' }));
   await userEvent.click(confirm);
-  expect(await screen.findByText('About 1.0 hours driving')).toBeInTheDocument();
+  expect(await screen.findByText(/About 1.0 hours driving/)).toBeInTheDocument();
   expect(estimateStructuredRoute.mock.calls[0].slice(0, 2)).toEqual([start, end]);
-  expect(screen.getByLabelText('Estimated route map')).toBeInTheDocument();
-  expect(screen.getByText('Denver, Colorado → Boulder, Colorado')).toBeInTheDocument();
-  expect(screen.getByText(/Visits, meals and overnight stays add time/)).toBeInTheDocument();
+  expect(screen.getByLabelText('Trip preview')).toBeInTheDocument();
+  expect(screen.getByText(/driving only, before stops and meals/)).toBeInTheDocument();
 });
 it('clears estimates on changed text and discards late results after sign out', async () => {
   resolveTripLocation.mockResolvedValueOnce([start]).mockResolvedValueOnce([end]);
   const view = render(<RouteEstimate start="Denver" destination="Boulder" />);
   await userEvent.click(screen.getByRole('button', { name: 'Estimate driving time' }));
-  await screen.findByText('About 1.0 hours driving');
+  await screen.findByText(/About 1.0 hours driving/);
   view.rerender(<RouteEstimate start="Colorado Springs" destination="Boulder" />);
-  expect(screen.queryByText('About 1.0 hours driving')).not.toBeInTheDocument();
+  expect(screen.queryByText(/About 1.0 hours driving/)).not.toBeInTheDocument();
   let finish;
   resolveTripLocation.mockResolvedValueOnce([start]).mockResolvedValueOnce([end]);
   estimateStructuredRoute.mockImplementationOnce(

@@ -4,16 +4,24 @@ import { ChatData, Data, UserDataContext } from '../../states/UserDataContext';
 import { initializeUserData, ensureChatCreated, updateUserData } from '../../services/savedTrips';
 import { getSession, isCurrentSession } from '../../services/session';
 import {
-  resolveTripLocation,
-  planStructuredRoute,
   planStructuredItinerary,
   plannerError,
   structuredTripInputs,
 } from '../../services/tripPlanner';
 import TripSetup from './TripSetup';
-import { ActionButton, ChoiceGroup, DesignFrame, Sheet, StageProgress } from '../../design';
-import { preferenceProfiles, STEPS } from './setupModel';
+import { ActionButton, DesignFrame, Sheet } from '../../design';
+import { hotelSetupErrors, preferenceProfiles } from './setupModel';
 import { advancePlanningProgress, newPlanningProgress } from '../../services/tripPlanningProgress';
+import {
+  assessPlanningCandidate,
+  buildCandidatePayload,
+  cancelCandidateRequest,
+  confirmPlanningCandidate,
+  registerCandidateRequest,
+} from '../../services/planningCandidates';
+import { candidateErrorMessage } from '../../services/planningCandidateErrors';
+import HotelQuestions from './HotelQuestions';
+import OnboardingMap from './OnboardingMap';
 import RouteEstimate from './RouteEstimate';
 import PlanningProgress from './PlanningProgress';
 import './ConnectedPlanning.css';
@@ -34,7 +42,33 @@ export default function TripSetupPage() {
   const [progress, setProgress] = useState(newPlanningProgress);
   const report = (event) => setProgress((old) => advancePlanningProgress(old, event));
   const request = useRef(null);
+  const preparation = useRef(null);
+  const estimate = useRef(null);
+  const attempt = useRef(null);
+  const [candidate, setCandidate] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [overnight, setOvernight] = useState(false);
+  const [hotelErrors, setHotelErrors] = useState({});
+  const clearCandidate = () => {
+    const old = attempt.current;
+    attempt.current = null;
+    if (old) cancelCandidateRequest(old.requestId, old.session).catch(() => {});
+    setCandidate(null);
+    setPreview(null);
+    setOvernight(false);
+    setHotelErrors({});
+  };
   const heading = useRef(null);
+  const textProbe = useRef(null);
+  const [largeText, setLargeText] = useState(false);
+  useEffect(() => {
+    if (!textProbe.current || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() =>
+      setLargeText(textProbe.current?.getBoundingClientRect().width > 24)
+    );
+    observer.observe(textProbe.current);
+    return () => observer.disconnect();
+  }, [proposal, loaded]);
   const isActive = (controller, session) =>
     request.current === controller && !controller.signal.aborted && isCurrentSession(session);
 
@@ -42,39 +76,72 @@ export default function TripSetupPage() {
     let cancelled = false;
     const session = getSession();
     setLoadError(false);
-    initializeUserData(session.accessToken).then((data) => {
-      if (cancelled || !isCurrentSession(session)) return;
-      if (!data) setLoadError(true);
-      else setLoaded(data);
-    });
-    return () => {
-      cancelled = true;
+    const changed = () => {
+      if (isCurrentSession(session)) return;
       request.current?.abort();
       request.current = null;
+      attempt.current = null;
+      setLoaded(null);
+      setProposal(null);
+      setCandidate(null);
+      setResult(null);
+      setBusy(false);
+      setSaving(false);
+      setError('');
+      setPreferenceNotice('');
+      setProgress(newPlanningProgress());
+      setLoadAttempt((old) => old + 1);
+    };
+    window.addEventListener('auth-changed', changed);
+    if (session.owner)
+      initializeUserData(session.accessToken).then((data) => {
+        if (cancelled || !isCurrentSession(session)) return;
+        if (!data) setLoadError(true);
+        else setLoaded(data);
+      });
+    return () => {
+      cancelled = true;
+      window.removeEventListener('auth-changed', changed);
+      request.current?.abort();
+      request.current = null;
+      const old = attempt.current;
+      if (old) cancelCandidateRequest(old.requestId, old.session).catch(() => {});
+      attempt.current = null;
     };
   }, [loadAttempt]);
 
+  const proposalReady = Boolean(proposal);
+  const resultId = result?.snapshot.chatId;
+  const candidateId = candidate?.candidate_id;
   useEffect(() => {
     heading.current?.focus();
-  }, [proposal, result, error]);
+  }, [proposalReady, resultId, candidateId, error]);
 
   const locate = async ({ draft }) => {
     const session = getSession();
     const controller = new AbortController();
     request.current = controller;
     try {
-      const [origin, destination] = await Promise.all([
-        resolveTripLocation(draft.start.trim(), controller.signal),
-        resolveTripLocation(draft.destination.trim(), controller.signal),
-      ]);
+      const ready = preparation.current;
+      if (
+        !ready ||
+        !isCurrentSession(ready.session) ||
+        ready.queryKey !== JSON.stringify([draft.start.trim(), draft.destination.trim()])
+      )
+        return { error: 'Check your road route before continuing.' };
       if (!isActive(controller, session))
         return { error: 'Session changed. Please sign in again.' };
-      setSelections({
-        origin: origin.length === 1 ? 0 : -1,
-        destination: destination.length === 1 ? 0 : -1,
-      });
-      setProposal({ draft, origin, destination });
+      clearCandidate();
+      setSelections({ origin: 0, destination: 0 });
+      const nextProposal = {
+        draft,
+        origin: [ready.origin],
+        destination: [ready.destination],
+        initialRoute: ready.initialRoute,
+      };
+      setProposal(nextProposal);
       setError('');
+      await checkOptions(nextProposal);
       return { ok: true };
     } catch (failure) {
       return {
@@ -124,8 +191,94 @@ export default function TripSetupPage() {
     return true;
   };
 
-  const plan = async () => {
-    if (busy || !proposal) return;
+  const checkOptions = async (currentProposal = proposal) => {
+    if (busy || !currentProposal) return;
+    const session = getSession(),
+      controller = new AbortController();
+    request.current = controller;
+    setBusy(true);
+    setError('');
+    setProgress(
+      advancePlanningProgress(newPlanningProgress(), {
+        type: 'progress',
+        stage: 'route.initial',
+        state: 'completed',
+      })
+    );
+    try {
+      if (!attempt.current)
+        attempt.current = {
+          requestId: crypto.randomUUID(),
+          session,
+          registered: false,
+          payload: null,
+        };
+      const current = attempt.current;
+      if (!isCurrentSession(current.session)) return;
+      if (!current.registered) {
+        await registerCandidateRequest(current.requestId, controller.signal);
+        if (!isActive(controller, session)) return;
+        current.registered = true;
+      }
+      if (!current.payload)
+        current.payload = await buildCandidatePayload(
+          currentProposal.draft,
+          currentProposal.initialRoute,
+          current.requestId
+        );
+      if (!isActive(controller, session)) return;
+      const checked = await assessPlanningCandidate(
+        currentProposal.draft,
+        currentProposal.initialRoute,
+        current.requestId,
+        controller.signal,
+        (event) => {
+          if (!isActive(controller, session)) return;
+          if (
+            event.stage === 'route.preview' &&
+            event.preview_only === true &&
+            event.phase === 'checking' &&
+            event.geometry?.type === 'LineString'
+          )
+            setPreview({ geometry: event.geometry, stops: event.stops ?? [] });
+          report(event);
+        },
+        current.payload
+      );
+      if (!isActive(controller, session)) return;
+      setCandidate(checked);
+      setPreview(null);
+      report({ type: 'progress', stage: 'candidate.checked', state: 'completed' });
+    } catch (failure) {
+      if (!isActive(controller, session)) return;
+      setError(plannerError(failure));
+      report({ type: 'failed' });
+      if (
+        candidateErrorMessage(failure.response?.status, failure.response?.data?.code) &&
+        [
+          'candidate_expired',
+          'candidate_cancelled',
+          'candidate_inputs_changed',
+          'candidate_already_confirmed',
+          'candidate_unavailable',
+        ].includes(failure.response.data.code)
+      )
+        clearCandidate();
+    } finally {
+      if (request.current === controller) {
+        request.current = null;
+        setBusy(false);
+      }
+    }
+  };
+
+  const plan = async (mode) => {
+    if (busy || !proposal || !candidate) return;
+    if (mode === 'overnight') {
+      const issues = hotelSetupErrors(proposal.draft);
+      setHotelErrors(issues);
+      if (Object.keys(issues).length) return;
+    }
     if (selections.origin < 0 || selections.destination < 0) {
       setError('Choose both confirmed locations before planning.');
       return;
@@ -136,27 +289,15 @@ export default function TripSetupPage() {
     setBusy(true);
     setError('');
     setPreferenceNotice('');
-    setProgress(
-      advancePlanningProgress(newPlanningProgress(), {
-        type: 'progress',
-        stage: 'details.confirmed',
-        state: 'completed',
-      })
-    );
+    report({ type: 'resume' });
     try {
       const origin = proposal.origin[selections.origin],
         destination = proposal.destination[selections.destination];
-      const route = await planStructuredRoute(
+      const route = await confirmPlanningCandidate(
+        candidate,
+        mode,
         proposal.draft,
-        origin,
-        destination,
-        controller.signal,
-        {
-          reserveMealSlots: true,
-          onProgress: (event) => {
-            if (isActive(controller, session)) report(event);
-          },
-        }
+        controller.signal
       );
       if (!isActive(controller, session)) return;
       report({ type: 'progress', stage: 'route.ready', state: 'completed' });
@@ -178,6 +319,8 @@ export default function TripSetupPage() {
         tripProfile: {
           ...structuredTripInputs(proposal.draft),
           reserve_meal_slots: true,
+          trip_mode: mode,
+          ...(mode === 'one_day' ? { hotel_rooms: [], budget: null } : {}),
           preference_profiles: preferenceProfiles(proposal.draft),
           start_address: origin.address,
           destination_address: destination.address,
@@ -247,6 +390,17 @@ export default function TripSetupPage() {
     } catch (failure) {
       if (isActive(controller, session)) {
         setError(plannerError(failure));
+        if (
+          candidateErrorMessage(failure.response?.status, failure.response?.data?.code) &&
+          [
+            'candidate_expired',
+            'candidate_cancelled',
+            'candidate_inputs_changed',
+            'candidate_already_confirmed',
+            'candidate_unavailable',
+          ].includes(failure.response.data.code)
+        )
+          clearCandidate();
         report({ type: 'failed' });
       }
     } finally {
@@ -336,8 +490,8 @@ export default function TripSetupPage() {
 
   if (loadError)
     return (
-      <main className="trip-setup">
-        <DesignFrame className="setup-design">
+      <DesignFrame className="setup-design">
+        <main className="trip-setup">
           <Sheet aria-label="Saved trips unavailable">
             <div role="alert">
               <h1 className="rt-display">Saved trips could not be loaded.</h1>
@@ -347,47 +501,55 @@ export default function TripSetupPage() {
               Retry loading trips
             </ActionButton>
           </Sheet>
-        </DesignFrame>
-      </main>
+        </main>
+      </DesignFrame>
     );
   if (!loaded)
     return (
-      <main className="trip-setup">
-        <DesignFrame className="setup-design">
+      <DesignFrame className="setup-design">
+        <main className="trip-setup">
           <p role="status" className="rt-copy">
             Loading your saved trips…
           </p>
-        </DesignFrame>
-      </main>
+        </main>
+      </DesignFrame>
     );
   if (!proposal)
     return (
       <TripSetup
         onSubmit={locate}
-        renderEstimate={(draft) => (
-          <RouteEstimate start={draft.start} destination={draft.destination} />
+        prepareRoute={() => estimate.current?.prepare()}
+        renderEstimate={(draft, stage) => (
+          <RouteEstimate
+            ref={estimate}
+            start={draft.start}
+            destination={draft.destination}
+            draft={draft}
+            stage={stage}
+            onPrepared={(value) => {
+              preparation.current = value;
+            }}
+          />
         )}
       />
     );
 
   return (
-    <main className="trip-setup">
-      <DesignFrame className="setup-design">
+    <DesignFrame className={'setup-design' + (largeText ? ' setup-design--large-text' : '')}>
+      <span ref={textProbe} className="setup-text-probe" aria-hidden="true" />
+      <main className="trip-setup">
         <nav className="connected-links" aria-label="Trip navigation">
           <Link to="/">Home</Link>
           <Link to="/trips">Saved trips</Link>
         </nav>
-        {!result && (
-          <StageProgress
-            stages={STEPS.map((label, index) => ({ id: String(index), label }))}
-            currentId="4"
-            completedIds={['0', '1', '2', '3']}
-          />
-        )}
-        <Sheet aria-label={result ? 'Your trip' : 'Review and confirm'}>
+        {progress.percent > 0 && <PlanningProgress progress={progress} />}
+        <Sheet
+          className="setup-card connected-card"
+          aria-label={result ? 'Your trip' : 'Review and confirm'}
+        >
           {!result && <p className="rt-caption">Review · Step 5 of 5</p>}
           <h1 ref={heading} tabIndex={-1} className="rt-display">
-            {result ? 'Your trip' : 'Confirm your locations'}
+            {result ? 'Your trip' : candidate ? 'Choose your trip' : 'Check trip options'}
           </h1>
           {error && (
             <p role="alert" className="connected-error">
@@ -396,36 +558,82 @@ export default function TripSetupPage() {
           )}
           {!result && (
             <>
-              <p className="rt-copy">
-                Choose the addresses you mean. Planning starts only when you confirm them below.
-              </p>
-              {['origin', 'destination'].map((field) => (
-                <ChoiceGroup
-                  key={field}
-                  legend={field === 'origin' ? 'Starting location' : 'Destination'}
-                  disabled={busy}
-                  value={selections[field] < 0 ? '' : String(selections[field])}
-                  onChange={(value) => setSelections((old) => ({ ...old, [field]: Number(value) }))}
-                  options={proposal[field].map((candidate, index) => ({
-                    value: String(index),
-                    label: candidate.address,
-                  }))}
-                />
-              ))}
+              <OnboardingMap
+                origin={proposal.origin[0]}
+                destination={proposal.destination[0]}
+                route={candidate?.candidate_route ?? preview ?? proposal.initialRoute}
+                phase={candidate?.candidate_route ? 'candidate' : preview ? 'checking' : 'draft'}
+                stage={4}
+              />
               <p className="rt-caption">
-                Departure is {proposal.draft.date} at {proposal.draft.time}, local to your starting
-                location. The planning service checks the final schedule. Route planning uses AI
-                place ratings and live road and hotel providers.
+                {proposal.origin[0].address} → {proposal.destination[0].address} ·{' '}
+                {proposal.draft.date}, {proposal.draft.time} local to your start.
               </p>
-              <p className="rt-caption">
-                Meal breaks are included when your trip spans breakfast, lunch or dinner: 30, 45 and
-                60 minutes. No dining places are selected or booked. If the breaks cannot fit your
-                driving and visit schedule, planning will explain the conflict.
-              </p>
+              {!candidate && (
+                <p className="rt-copy">
+                  Check the complete route, visits and meal breaks before choosing one day or
+                  allowing stays.
+                </p>
+              )}
+              {!candidate && (
+                <p className="rt-caption">
+                  This action uses AI place ratings and live road providers. No hotels are checked
+                  yet.
+                </p>
+              )}
+              {candidate && (
+                <>
+                  {candidate.one_day.eligible ? (
+                    <p className="rt-copy">
+                      This checked candidate fits in{' '}
+                      {(candidate.one_day.elapsed_seconds / 3600).toFixed(1)} hours, including
+                      visits and meal breaks.
+                    </p>
+                  ) : (
+                    <p className="rt-copy">
+                      A complete trip under 12 hours could not be verified. Allow overnight stays,
+                      or edit your answers.
+                    </p>
+                  )}
+                  {candidate.one_day.eligible && (
+                    <ActionButton disabled={busy} onClick={() => plan('one_day')}>
+                      Finish in one day
+                    </ActionButton>
+                  )}
+                  <ActionButton
+                    variant="secondary"
+                    disabled={busy}
+                    onClick={() => setOvernight(true)}
+                  >
+                    Allow overnight stays
+                  </ActionButton>
+                  {overnight && (
+                    <>
+                      <HotelQuestions
+                        draft={proposal.draft}
+                        disabled={busy}
+                        errors={hotelErrors}
+                        onChange={(draft) => {
+                          setProposal((old) => ({ ...old, draft }));
+                          setHotelErrors({});
+                        }}
+                      />
+                      <p className="rt-caption">
+                        Stays are added only when needed. Quotes do not book a room. Night-driving
+                        rhythms may require a one-day trip.
+                      </p>
+                      <ActionButton disabled={busy} onClick={() => plan('overnight')}>
+                        Plan with stays allowed
+                      </ActionButton>
+                    </>
+                  )}
+                </>
+              )}
               <ActionButton
                 variant="secondary"
                 disabled={busy}
                 onClick={() => {
+                  clearCandidate();
                   setProposal(null);
                   setError('');
                   setProgress(newPlanningProgress());
@@ -433,15 +641,13 @@ export default function TripSetupPage() {
               >
                 Edit answers
               </ActionButton>
-              <ActionButton
-                disabled={busy || selections.origin < 0 || selections.destination < 0}
-                onClick={plan}
-              >
-                Confirm locations and plan route
-              </ActionButton>
+              {!candidate && (
+                <ActionButton disabled={busy} onClick={() => checkOptions()}>
+                  {attempt.current ? 'Retry trip option check' : 'Check trip options'}
+                </ActionButton>
+              )}
             </>
           )}
-          {progress.percent > 0 && <PlanningProgress progress={progress} />}
           {busy && (
             <div className="rt-stack">
               <p className="rt-caption">
@@ -453,6 +659,7 @@ export default function TripSetupPage() {
                 onClick={() => {
                   request.current?.abort();
                   request.current = null;
+                  clearCandidate();
                   setBusy(false);
                   report({ type: 'failed' });
                   setError(
@@ -466,6 +673,13 @@ export default function TripSetupPage() {
           )}
           {result && (
             <>
+              <OnboardingMap
+                origin={{ ...result.snapshot.startConfirmed, confirmed: true }}
+                destination={{ ...result.snapshot.endConfirmed, confirmed: true }}
+                route={result.route}
+                phase="confirmed"
+                stage={4}
+              />
               <p role="status" className="rt-copy">
                 {result.saved
                   ? 'Trip saved.'
@@ -498,6 +712,7 @@ export default function TripSetupPage() {
                 variant="secondary"
                 disabled={busy}
                 onClick={() => {
+                  clearCandidate();
                   setResult(null);
                   setProposal(null);
                   setError('');
@@ -548,7 +763,7 @@ export default function TripSetupPage() {
             </>
           )}
         </Sheet>
-      </DesignFrame>
-    </main>
+      </main>
+    </DesignFrame>
   );
 }

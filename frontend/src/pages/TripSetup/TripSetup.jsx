@@ -6,16 +6,16 @@ import { ActionButton, AmountControl, ChoiceGroup, DesignFrame, Field, Sheet } f
 import {
   INTERESTS,
   COMPARISONS,
-  MAX_SETUP_ROOMS,
   STEPS,
   newSetupDraft,
   preferenceProfiles,
   setupErrors,
 } from './setupModel';
 import './TripSetup.css';
+import DailyRhythm from './DailyRhythm';
 import PreferenceProfilePicker from '../../components/PreferenceProfilePicker';
 
-export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
+export default function TripSetup({ onSubmit, busy = false, renderEstimate, prepareRoute }) {
   const { draft, setDraft, step, setStep, stored, reset } = useSetupDraft();
   const [errors, setErrors] = useState({});
   const [receipt, setReceipt] = useState(null);
@@ -77,10 +77,27 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
     setErrors({});
     setStep(next);
   };
-  const next = () => {
+  const next = async () => {
     const issues = setupErrors(draft, step);
     if (Object.keys(issues).length) setErrors(issues);
-    else go(step + 1);
+    else {
+      if (step === 0 && prepareRoute) {
+        setSending(true);
+        try {
+          const prepared = await prepareRoute();
+          if (!alive.current) return;
+          if (!prepared?.ok) {
+            setErrors({
+              start: 'Confirm the locations and a usable road route before continuing.',
+            });
+            return;
+          }
+        } finally {
+          if (alive.current) setSending(false);
+        }
+      }
+      go(step + 1);
+    }
   };
   const send = async (event) => {
     event.preventDefault();
@@ -100,6 +117,15 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
     setSending(true);
     setReceipt(null);
     try {
+      if (prepareRoute) {
+        const prepared = await prepareRoute();
+        if (!alive.current) return;
+        if (!prepared?.ok) {
+          setStep(0);
+          setErrors({ start: 'Confirm the locations and a usable road route before continuing.' });
+          return;
+        }
+      }
       const result = await onSubmit({ draft });
       if (!alive.current) return;
       setReceipt(result?.error ? result : null);
@@ -123,11 +149,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
       {...extra}
     />
   );
-  const updateRoom = (index, key, value) =>
-    set(
-      'rooms',
-      draft.rooms.map((room, i) => (i === index ? { ...room, [key]: value } : room))
-    );
   const toggleInterest = (key) => {
     setAmountReset((previous) => previous + 1);
     setDraft((old) => ({
@@ -155,10 +176,11 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
         <Sheet className="setup-card" aria-label="Plan your trip">
           <nav aria-label="Trip setup progress" className="setup-progress">
             <p>
-              <span>{Math.round((step / (STEPS.length - 1)) * 100)}%</span>
+              <span>{step * 15}%</span>
             </p>
-            <progress aria-label="Trip setup completion" value={step} max={STEPS.length - 1} />
+            <progress aria-label="Trip setup completion" value={step * 15} max={100} />
           </nav>
+          {renderEstimate?.(draft, step)}
           <form onSubmit={send} noValidate aria-busy={locked}>
             <div className="setup-section" key={step}>
               <h2 ref={heading} tabIndex={-1}>
@@ -202,7 +224,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                       autoComplete: 'off',
                       maxLength: 256,
                     })}
-                    {renderEstimate?.(draft)}
                     <div className="setup-grid">
                       {field('date', 'Departure date', 'date')}
                       {field('time', 'Departure time', 'time')}
@@ -225,74 +246,8 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                       step: 1,
                       inputMode: 'numeric',
                     })}
-                    <div
-                      id="setup-rooms"
-                      tabIndex={-1}
-                      aria-describedby={errors.rooms ? 'setup-rooms-error' : undefined}
-                    >
-                      {draft.rooms.map((room, index) => (
-                        <fieldset className="setup-room" key={index}>
-                          <legend>Room {index + 1}</legend>
-                          <div className="setup-grid">
-                            <label className="setup-field">
-                              Adults
-                              <input
-                                type="number"
-                                min="1"
-                                step="1"
-                                value={room.adults}
-                                onChange={(e) => updateRoom(index, 'adults', e.target.value)}
-                              />
-                            </label>
-                            <label className="setup-field">
-                              Child ages, if any
-                              <input
-                                placeholder="For example, 5, 8"
-                                value={room.children}
-                                onChange={(e) => updateRoom(index, 'children', e.target.value)}
-                              />
-                            </label>
-                          </div>
-                          {draft.rooms.length > 1 && (
-                            <button
-                              type="button"
-                              className="setup-text-button"
-                              onClick={() =>
-                                set(
-                                  'rooms',
-                                  draft.rooms.filter((_, i) => i !== index)
-                                )
-                              }
-                            >
-                              Remove room {index + 1}
-                            </button>
-                          )}
-                        </fieldset>
-                      ))}
-                      {errors.rooms && (
-                        <p id="setup-rooms-error" className="setup-error">
-                          {errors.rooms}
-                        </p>
-                      )}
-                      <button
-                        type="button"
-                        className="setup-secondary"
-                        disabled={draft.rooms.length >= MAX_SETUP_ROOMS}
-                        onClick={() =>
-                          set('rooms', [...draft.rooms, { adults: '1', children: '' }])
-                        }
-                      >
-                        Add a room
-                      </button>
-                    </div>
-                    {field('budget', 'Hotel target per room, per night (USD)', 'number', {
-                      min: 0,
-                      step: 'any',
-                      inputMode: 'decimal',
-                    })}
                     <p className="setup-hint">
-                      A nightly target, not a total-trip budget. Food, fuel and tickets aren’t
-                      included. Current hotel quotes appear after planning.
+                      Stay choices appear only if you allow an overnight trip.
                     </p>
                   </>
                 )}
@@ -340,17 +295,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                               </span>
                               <h4>{place.name}</h4>
                               <p>{place.character ?? place.description}</p>
-                              <details className="setup-source">
-                                <summary>Place source</summary>
-                                <p>{place.source_attribution}</p>
-                                <a href={place.url} target="_blank" rel="noreferrer">
-                                  Visitor information
-                                  <span className="setup-visually-hidden">
-                                    {' '}
-                                    for {place.name} (new tab)
-                                  </span>
-                                </a>
-                              </details>
                             </article>
                           ))}
                         </div>
@@ -474,61 +418,14 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                 )}
                 {step === 3 && (
                   <>
-                    <p>Set a comfortable rhythm for your days.</p>
-                    <p className="setup-hint">Car details can be added later.</p>
-                    <div
-                      className="setup-grid"
-                      id="setup-schedule"
-                      tabIndex={-1}
-                      aria-describedby={errors.schedule ? 'setup-schedule-error' : undefined}
-                    >
-                      {[
-                        ['preferred_hotel_arrival', 'Preferred hotel arrival'],
-                        ['latest_hotel_arrival', 'Latest hotel arrival'],
-                        ['latest_destination_arrival', 'Latest destination arrival'],
-                        ['morning_restart', 'Start driving next morning'],
-                      ].map(([key, label]) => (
-                        <label className="setup-field" key={key}>
-                          {label}
-                          <input
-                            type="time"
-                            value={draft.schedule[key]}
-                            onChange={(e) =>
-                              set('schedule', { ...draft.schedule, [key]: e.target.value })
-                            }
-                          />
-                        </label>
-                      ))}
-                    </div>
-                    <label className="setup-choice">
-                      <input
-                        type="checkbox"
-                        checked={draft.schedule.late_driving}
-                        onChange={(e) =>
-                          set('schedule', { ...draft.schedule, late_driving: e.target.checked })
-                        }
-                      />
-                      Allow driving later into the evening
-                    </label>
-                    {draft.schedule.late_driving && (
-                      <label className="setup-field">
-                        Stop late driving by (24:00 means midnight)
-                        <input
-                          value={draft.schedule.late_cutoff}
-                          onChange={(e) =>
-                            set('schedule', { ...draft.schedule, late_cutoff: e.target.value })
-                          }
-                        />
-                      </label>
-                    )}
-                    {errors.schedule && (
-                      <p id="setup-schedule-error" className="setup-error">
-                        {errors.schedule}
-                      </p>
-                    )}
+                    <DailyRhythm
+                      value={draft.dailyRhythm}
+                      onChange={(value) => set('dailyRhythm', value)}
+                      disabled={locked}
+                      error={errors.schedule}
+                    />
                     <p className="setup-hint">
-                      Daily times are local to each stop. The planning service checks the final
-                      schedule.
+                      Drive time also allows visits and meals. Car details come later.
                     </p>
                   </>
                 )}
@@ -542,27 +439,9 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                           draft.date + ' at ' + draft.time + ' · ' + draft.stops + ' attractions',
                         ],
                         [
-                          'People and rooms',
-                          draft.travelers +
-                            (Number(draft.travelers) === 1 ? ' person · ' : ' people · ') +
-                            draft.rooms.length +
-                            (draft.rooms.length === 1 ? ' room' : ' rooms'),
-                          '$' +
-                            draft.budget +
-                            ' hotel target / room / night\n' +
-                            draft.rooms
-                              .map(
-                                (room, index) =>
-                                  'Room ' +
-                                  (index + 1) +
-                                  ': ' +
-                                  room.adults +
-                                  (Number(room.adults) === 1 ? ' adult' : ' adults') +
-                                  (room.children.trim()
-                                    ? '; child ages ' + room.children
-                                    : '; no children')
-                              )
-                              .join('\n'),
+                          'People',
+                          draft.travelers + (Number(draft.travelers) === 1 ? ' person' : ' people'),
+                          'Stay choices after the trip check',
                         ],
                         [
                           'What you enjoy',
@@ -575,19 +454,10 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                         ],
                         [
                           'Daily timing',
-                          draft.schedule.late_driving ? 'Later evenings' : 'Standard evenings',
-                          'Hotel: prefer ' +
-                            draft.schedule.preferred_hotel_arrival +
-                            ', latest ' +
-                            draft.schedule.latest_hotel_arrival +
-                            '\nDestination by ' +
-                            draft.schedule.latest_destination_arrival +
-                            ' · next morning ' +
-                            draft.schedule.morning_restart +
-                            '\n' +
-                            (draft.schedule.late_driving
-                              ? 'Late driving allowed until ' + draft.schedule.late_cutoff
-                              : 'Late driving not requested'),
+                          draft.dailyRhythm
+                            ? 'Your driving, rest and sleep rhythm'
+                            : 'Your existing daily timing',
+                          'Local to each stop · checked with the complete route',
                         ],
                       ].map(([title, primary, secondary], index) => (
                         <section key={title}>
@@ -607,8 +477,8 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                       ))}
                     </div>
                     <p className="setup-hint">
-                      Next, confirm the suggested addresses. Your choices help tailor the stops for
-                      this trip. Prices and travel-time estimates arrive with the route.
+                      Next, check the complete trip before choosing one day or allowing overnight
+                      stays.
                     </p>
                   </>
                 )}
@@ -631,7 +501,7 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
               </ActionButton>
               <span>{stored ? 'Draft saved' : 'Draft kept'}</span>
               <ActionButton type="submit" disabled={locked}>
-                {locked ? 'Checking locations…' : step === 4 ? 'Check locations' : 'Next'}
+                {locked ? 'Checking locations…' : step === 4 ? 'Check trip options' : 'Next'}
               </ActionButton>
             </footer>
           </form>
@@ -674,4 +544,5 @@ TripSetup.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   busy: PropTypes.bool,
   renderEstimate: PropTypes.func,
+  prepareRoute: PropTypes.func,
 };

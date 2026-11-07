@@ -32,10 +32,10 @@ function replayable(url, method) {
   const path = url.slice(base.length).split('?')[0];
   return {
     get: /^(preference-profiles|chats|chats\/\d+\/sharing|shared-trips(?:\/[0-9a-f-]{36})?|routing-settings|get-initial-route|get-car-details|get-gas-price|get-location|algorithm-lab\/presets)$/,
-    post: /^(chats\/create\/[^/]+|chats\/\d+\/sharing\/link|trip-sharing\/connect|generate-final-route|generate-itinerary|route-alternatives|route-edit|algorithm-lab\/run)$/,
+    post: /^(chats\/create\/[^/]+|chats\/\d+\/sharing\/link|trip-sharing\/connect|generate-final-route|generate-itinerary|planning-candidates\/requests|planning-candidates\/[^/]+\/confirm|route-alternatives|route-edit|algorithm-lab\/run)$/,
     put: /^(chats\/update\/[^/]+|chats\/\d+\/car|preference-profiles\/[^/]+)$/,
     delete:
-      /^(chats\/delete\/[^/]+|chats\/\d+\/sharing(?:\/link|\/members\/[0-9a-f-]{36})?|shared-trips\/[0-9a-f-]{36}\/membership|preference-profiles\/[^/]+)$/,
+      /^(planning-candidates\/requests\/[^/]+|planning-candidates\/[^/]+|chats\/delete\/[^/]+|chats\/\d+\/sharing(?:\/link|\/members\/[0-9a-f-]{36})?|shared-trips\/[0-9a-f-]{36}\/membership|preference-profiles\/[^/]+)$/,
   }[method]?.test(path);
 }
 

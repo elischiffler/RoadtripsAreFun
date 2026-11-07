@@ -210,3 +210,43 @@ it('does not dispatch an already aborted request or let a presentation exception
     })
   ).resolves.toEqual(route);
 });
+
+it('consumes candidate preview as unverified progress and redacts arbitrary typed failure details without replay', async () => {
+  const { streamPlanningCandidate } = await import('../services/tripRouteStream');
+  const progress = vi.fn();
+  fetch.mockResolvedValue(
+    streamed([
+      {
+        type: 'progress',
+        stage: 'route.preview',
+        state: 'completed',
+        phase: 'checking',
+        preview_only: true,
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [-105, 40],
+            [-104, 41],
+          ],
+        },
+      },
+      { type: 'error', status: 410, code: 'candidate_expired', detail: 'provider secret' },
+    ])
+  );
+  await expect(
+    streamPlanningCandidate({ request_id: 'same-id' }, undefined, progress)
+  ).rejects.toMatchObject({
+    response: {
+      status: 410,
+      data: {
+        code: 'candidate_expired',
+        detail:
+          'These trip options expired or are unavailable. Check trip options again explicitly.',
+      },
+    },
+  });
+  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(fetch.mock.calls[0][0]).toBe('https://api.example.test/planning-candidates/stream');
+  expect(progress.mock.calls[0][0].preview_only).toBe(true);
+  expect(cognitoClient.send).not.toHaveBeenCalled();
+});

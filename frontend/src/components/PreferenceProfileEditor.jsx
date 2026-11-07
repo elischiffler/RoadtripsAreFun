@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { ActionButton, AmountControl, ChoiceGroup, Field } from '../design';
 import { INTERESTS, newSetupDraft, setupErrors } from '../pages/TripSetup/setupModel';
 import { applyPreferenceChoices, choicesFromDraft } from '../services/preferenceProfiles';
+import DailyRhythm from '../pages/TripSetup/DailyRhythm';
 
 const TIMES = {
   morning_restart: 'Start driving each morning',
@@ -36,6 +37,7 @@ export default function PreferenceProfileEditor({ profile, onSave, onCancel, bus
         event.preventDefault();
         const errors = { ...setupErrors(draft, 2), ...setupErrors(draft, 3) };
         if (
+          !draft.dailyRhythm &&
           !(
             draft.schedule.morning_restart < draft.schedule.preferred_hotel_arrival &&
             draft.schedule.preferred_hotel_arrival <= draft.schedule.latest_hotel_arrival &&
@@ -113,27 +115,38 @@ export default function PreferenceProfileEditor({ profile, onSave, onCancel, bus
             />
           </div>
         )}
-        <h4 className="rt-title">Daily timing</h4>
-        {Object.entries(TIMES).map(([key, label]) => (
-          <Field
-            key={key}
-            label={label}
-            type={key === 'late_cutoff' ? 'text' : 'time'}
-            hint={key === 'late_cutoff' ? 'HH:MM; use 24:00 for midnight.' : undefined}
-            value={draft.schedule[key]}
-            onChange={(event) => set('schedule', { ...draft.schedule, [key]: event.target.value })}
-          />
-        ))}
-        <label className="settings-check">
-          <input
-            type="checkbox"
-            checked={draft.schedule.late_driving}
-            onChange={(event) =>
-              set('schedule', { ...draft.schedule, late_driving: event.target.checked })
-            }
-          />
-          Allow late driving
-        </label>
+        <DailyRhythm
+          value={draft.dailyRhythm}
+          onChange={(value) => set('dailyRhythm', value)}
+          disabled={busy}
+        />
+        {!draft.dailyRhythm && (
+          <details>
+            <summary>Existing timing</summary>
+            {Object.entries(TIMES).map(([key, label]) => (
+              <Field
+                key={key}
+                label={label}
+                type={key === 'late_cutoff' ? 'text' : 'time'}
+                hint={key === 'late_cutoff' ? 'HH:MM; use 24:00 for midnight.' : undefined}
+                value={draft.schedule[key]}
+                onChange={(event) =>
+                  set('schedule', { ...draft.schedule, [key]: event.target.value })
+                }
+              />
+            ))}
+            <label className="settings-check">
+              <input
+                type="checkbox"
+                checked={draft.schedule.late_driving}
+                onChange={(event) =>
+                  set('schedule', { ...draft.schedule, late_driving: event.target.checked })
+                }
+              />
+              Allow late driving
+            </label>
+          </details>
+        )}
         <details>
           <summary>Interests</summary>
           <p className="rt-caption">

@@ -1,3 +1,4 @@
+import { loadRouteAlternatives } from '../services/routeAlternatives';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -9,7 +10,7 @@ import TripSetupPage from '../pages/TripSetup/TripSetupPage';
 import client from 'axios';
 import {
   resolveTripLocation,
-  planStructuredRoute,
+  estimateStructuredRoute,
   planStructuredItinerary,
 } from '../services/tripPlanner';
 
@@ -17,10 +18,27 @@ vi.mock('axios');
 vi.mock('../services/tripPlanner', async (original) => ({
   ...(await original()),
   resolveTripLocation: vi.fn(),
-  planStructuredRoute: vi.fn(),
+  estimateStructuredRoute: vi.fn(),
   planStructuredItinerary: vi.fn(),
 }));
 
+import {
+  assessPlanningCandidate,
+  buildCandidatePayload,
+  cancelCandidateRequest,
+  confirmPlanningCandidate,
+  registerCandidateRequest,
+} from '../services/planningCandidates';
+vi.mock('../services/planningCandidates', () => ({
+  assessPlanningCandidate: vi.fn(),
+  buildCandidatePayload: vi.fn(),
+  cancelCandidateRequest: vi.fn(async () => {}),
+  confirmPlanningCandidate: vi.fn(),
+  registerCandidateRequest: vi.fn(),
+}));
+vi.mock('../services/routeAlternatives', () => ({
+  loadRouteAlternatives: vi.fn(async () => ({ places: [] })),
+}));
 const origin = { address: 'Boulder, Colorado', latitude: 40, longitude: -105 };
 const destination = { address: 'Fort Morgan, Colorado', latitude: 40.2, longitude: -103.8 };
 const route = {
@@ -45,6 +63,7 @@ const route = {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  loadRouteAlternatives.mockResolvedValue({ places: [] });
   sessionStorage.clear();
   fixtureSession();
   import.meta.env.VITE_BACKEND_SERVER = 'http://fixture/';
@@ -67,7 +86,18 @@ beforeEach(() => {
   resolveTripLocation.mockImplementation(async (query) => [
     query === 'Boulder' ? origin : destination,
   ]);
-  planStructuredRoute.mockResolvedValue(route);
+  estimateStructuredRoute.mockResolvedValue(route);
+  cancelCandidateRequest.mockResolvedValue(undefined);
+  registerCandidateRequest.mockResolvedValue({});
+  buildCandidatePayload.mockResolvedValue({ immutable: true });
+  assessPlanningCandidate.mockResolvedValue({
+    candidate_id: 'fixture-candidate',
+    input_key: 'f'.repeat(64),
+    expires_at: '2099-01-01T00:00:00Z',
+    one_day: { eligible: true, elapsed_seconds: 7200, threshold_seconds: 43200 },
+    candidate_route: route,
+  });
+  confirmPlanningCandidate.mockResolvedValue(route);
   planStructuredItinerary.mockResolvedValue([
     { date: 'Tuesday, June 01 2027', stops: route.stops },
   ]);
@@ -75,10 +105,8 @@ beforeEach(() => {
 
 it('persists a completed first trip through the actual saved-trip lifecycle before claiming success', async () => {
   renderWithProviders(<TripSetupPage />);
-  await userEvent.click(await screen.findByRole('button', { name: 'Check locations' }));
-  await userEvent.click(
-    await screen.findByRole('button', { name: 'Confirm locations and plan route' })
-  );
+  await userEvent.click(await screen.findByRole('button', { name: 'Check trip options' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Finish in one day' }));
   await screen.findByText('Trip saved.');
   expect(client.post).toHaveBeenCalledTimes(1);
   expect(client.post.mock.calls[0][0]).toBe('http://fixture/chats/create/1');

@@ -44,7 +44,7 @@ describe('trip setup contract', () => {
     );
   });
   it('validates inputs, room allocations and daily times before sending', () => {
-    const draft = newSetupDraft();
+    const draft = { ...newSetupDraft(), tripMode: 'overnight', dailyRhythm: null };
     expect(Object.keys(setupErrors(draft, 0))).toEqual(['start', 'destination', 'date']);
     Object.assign(draft, {
       start: 'Boulder',
@@ -63,7 +63,7 @@ describe('trip setup contract', () => {
     draft.travelers = '3';
     expect(setupErrors(draft, 1).rooms).toMatch(/add up/);
     draft.rooms[0].children = '5,';
-    expect(setupErrors(draft, 1).rooms).toMatch(/separated/);
+    expect(setupErrors(draft, 1).rooms).toMatch(/child ages/);
     draft.rooms[0].children = '18';
     draft.budget = '-1';
     draft.travelers = '0';

@@ -231,13 +231,7 @@ describe('version 1 setup draft migration', () => {
     const restored = restoreDraft(JSON.stringify({ version: 1, draft, step: 2 }));
     expect(restored).toEqual({ draft: { ...draft, comparisonAnswers: {} }, step: 2 });
     expect(preferenceWeights(restored.draft)).toEqual(normalizeWeights(draft.customWeights));
-    expect(STEPS).toEqual([
-      'Where and when',
-      'People and rooms',
-      'What you enjoy',
-      'Daily timing',
-      'Review',
-    ]);
+    expect(STEPS).toEqual(['Where and when', 'People', 'What you enjoy', 'Daily timing', 'Review']);
   });
 
   it('retains unanswered or valid comparison answers across draft restoration', () => {
