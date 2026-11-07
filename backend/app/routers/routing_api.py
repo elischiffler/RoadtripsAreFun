@@ -38,6 +38,7 @@ from app.agent.progress_stream import stream_turn
 from app.agent.provider_diagnostics import retry_async
 from app.agent.trip_dates import timezone_from_location
 from app.catalog.place_context import route_place_context
+from app.core.candidate_errors import CandidateHTTPError
 from app.core.departure_errors import DepartureNotUpcomingHTTPError
 from app.crud.memory_crud import load_account_persona
 from app.models.daily_schedule import DailyRhythmClockError
@@ -53,6 +54,7 @@ from app.routing.catalog_calendars import refresh_for_timing
 from app.routing.config import geolocator  # shared reverse-geocoder
 from app.routing.explanation import record_stage
 from app.routing.geometry import find_position as _find_position  # noqa: F401
+from app.routing.lodging import LodgingCoverageConflict
 from app.routing.meal_reservations import MealScheduleConflict, MealScheduleHTTPError
 from app.routing.occupancy import require_occupancy
 from app.routing.pricing import get_price_range as _get_price_range  # noqa: F401
@@ -215,6 +217,8 @@ async def get_final_route(
 
     except CandidateRatingError as exception:
         raise HTTPException(status_code=502, detail=exception.public_message) from None
+    except LodgingCoverageConflict:
+        raise CandidateHTTPError("lodging_stay_conflict") from None
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail)
     except HTTPException as exception:
@@ -239,6 +243,8 @@ async def _plan_for_http(payload, *, user_id, can_select_algorithm):
         raise DepartureNotUpcomingHTTPError() from None
     except MealScheduleConflict:
         raise MealScheduleHTTPError() from None
+    except LodgingCoverageConflict:
+        raise CandidateHTTPError("lodging_stay_conflict") from None
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail) from None
     except RequestException as exception:
@@ -593,5 +599,7 @@ async def benchmark(algorithms: str = None):
     algo_list = [a.strip() for a in algorithms.split(",")] if algorithms else None
     try:
         return await run_benchmark(algorithms=algo_list)
+    except LodgingCoverageConflict:
+        raise CandidateHTTPError("lodging_stay_conflict") from None
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail)

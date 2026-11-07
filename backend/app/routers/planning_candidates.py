@@ -23,6 +23,7 @@ from app.models.routing_models.routing_models import Route
 from app.routers import routing_api
 from app.routing.base import DepartureNotUpcoming, PlanningError
 from app.routing.catalog_calendars import refresh_for_timing
+from app.routing.lodging import LodgingCoverageConflict
 from app.routing.planning_candidates import store
 from app.routing.route_preparation import candidate_stay_areas, preview_details
 from app.routing.travel_timing import apply_timing
@@ -65,6 +66,8 @@ def public_failure(error):
         raise error
     if isinstance(error, DepartureNotUpcoming):
         raise DepartureNotUpcomingHTTPError() from None
+    if isinstance(error, LodgingCoverageConflict):
+        raise CandidateHTTPError("lodging_stay_conflict") from None
     if isinstance(error, UnsupportedOvernightRhythm):
         raise CandidateHTTPError("unsupported_overnight_rhythm") from None
     if isinstance(error, RhythmAvailabilityConflict):

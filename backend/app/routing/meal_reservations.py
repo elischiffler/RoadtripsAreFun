@@ -9,6 +9,7 @@ from datetime import UTC, datetime, timedelta
 
 from fastapi import HTTPException
 
+from app.agent.trip_dates import _localize
 from app.models.scheduling_policy import advance, seconds_until
 from app.routing.base import PlanningError
 
@@ -62,7 +63,8 @@ class MealScheduleHTTPError(HTTPException):
 class MealClock:
     """One request-local clock; speculative scheduling uses independent copies."""
 
-    def __init__(self, departure: datetime, nominal_end: datetime):
+    def __init__(self, departure: datetime, nominal_end: datetime, daily_schedule=None):
+        self.daily_schedule = daily_schedule
         self.departure = departure
         self.nominal_end = nominal_end
         self.done = set()
@@ -78,16 +80,32 @@ class MealClock:
         if days > 62:
             raise PlanningError("Meal scheduling exceeds the trip-day limit", 422)
         choices = []
-        for offset in range(max(0, days) + 1):
+        for offset in range(-1 if self.daily_schedule else 0, max(0, days) + 1):
             date = local_start.date() + timedelta(days=offset)
-            for meal, opening, closing, duration in MEALS:
+            for meal, opening, closing, duration in meal_windows(self.daily_schedule):
                 key = (date.isoformat(), meal)
                 if key in self.done:
                     continue
-                window_start = datetime.combine(date, datetime.min.time(), tzinfo=zone).replace(
-                    hour=opening
-                )
-                window_end = window_start.replace(hour=closing)
+                wall_start = datetime.combine(date, datetime.min.time()) + timedelta(hours=opening)
+                wall_end = datetime.combine(date, datetime.min.time()) + timedelta(hours=closing)
+                window_start = wall_start.replace(tzinfo=zone)
+                window_end = wall_end.replace(tzinfo=zone)
+                if self.daily_schedule and zone:
+                    # Ignore unrelated neighboring cycles before strict DST localization.
+                    endings = [wall_end.replace(tzinfo=zone, fold=f) for f in (0, 1)]
+                    openings = [wall_start.replace(tzinfo=zone, fold=f) for f in (0, 1)]
+                    if all(_absolute(t) <= _absolute(self.departure) for t in endings) or all(
+                        _absolute(t) >= _absolute(self.nominal_end)
+                        or _absolute(t) >= _absolute(end)
+                        for t in openings
+                    ):
+                        continue
+                    if hasattr(zone, "key"):
+                        try:
+                            window_start = _localize(wall_start, zone)
+                            window_end = _localize(wall_end, zone)
+                        except ValueError:
+                            raise self.conflict(meal) from None
                 earliest = _later(window_start, self.departure)
                 # Fixed meal-free bounds prevent delays from pulling in more meals.
                 last = _earlier(window_end, self.nominal_end)
@@ -135,7 +153,8 @@ class MealClock:
                 "window_end": window_end.isoformat(),
                 "duration_seconds": duration,
                 "timezone": getattr(zone, "key", None),
-                "notice": _NOTICE,
+                "notice": _NOTICE
+                + (" Meal breaks follow your sleep schedule." if self.daily_schedule else ""),
             }
         )
         return finish

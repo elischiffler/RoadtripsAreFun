@@ -9,6 +9,7 @@ from app.models.daily_schedule import DailyRhythmClockError
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time, seconds_until
 from app.routing.base import PlanningError
 from app.routing.daily_rhythm import rest_blocks
+from app.routing.lodging import validate_stored_stay
 from app.routing.meal_reservations import MealClock, MealScheduleConflict
 from app.routing.trip_modes import (
     RhythmAvailabilityConflict,
@@ -26,6 +27,7 @@ def apply_timing(
     start_timezone: str | None = None,
     *,
     reserve_meal_slots: bool = False,
+    _nominal: bool = False,
 ):
     """Recompute all timing, including place-free breaks; ignore supplied break metadata."""
     if policy.daily_schedule and any(stop.get("type") == "hotel" for stop in stops):
@@ -47,16 +49,18 @@ def apply_timing(
                 "Meal reservations require a complete route with a final destination", 422
             )
         nominal = deepcopy(stops)
-        apply_timing(nominal, start, policy, start_timezone)
+        apply_timing(nominal, start, policy, start_timezone, _nominal=True)
         departure = local_time(start, ZoneInfo(start_timezone)) if start_timezone else start
-        clock = MealClock(departure, datetime.fromisoformat(nominal[-1]["arrival_time"]))
+        clock = MealClock(
+            departure, datetime.fromisoformat(nominal[-1]["arrival_time"]), policy.daily_schedule
+        )
     try:
-        _apply_timing(stops, start, policy, start_timezone, clock)
+        _apply_timing(stops, start, policy, start_timezone, clock, validate_quotes=not _nominal)
     except DailyRhythmClockError:
         raise RhythmClockConflict() from None
 
 
-def _apply_timing(stops, start, policy, start_timezone, clock):
+def _apply_timing(stops, start, policy, start_timezone, clock, *, validate_quotes=True):
     now = start
     if start_timezone:
         zone = ZoneInfo(start_timezone)
@@ -131,13 +135,18 @@ def _apply_timing(stops, start, policy, start_timezone, clock):
             deadline=deadline.isoformat(),
         )
         if stop["type"] == "hotel":
-            booked = stop.get("check_in_date")
-            if booked and booked != travel_day.isoformat():
-                raise PlanningError(
-                    "Final detour changed the dated hotel stay; replan the overnight", 422
-                )
-            stop["check_in_date"] = travel_day.isoformat()
             departure = policy.restart(travel_day, zone)
+            if policy.daily_schedule:
+                if validate_quotes:
+                    validate_stored_stay(stop, arrival, departure)
+            else:
+                stop.pop("lodging", None)
+                booked = stop.get("check_in_date")
+                if booked and booked != travel_day.isoformat():
+                    raise PlanningError(
+                        "Final detour changed the dated hotel stay; replan the overnight", 422
+                    )
+                stop["check_in_date"] = travel_day.isoformat()
             if seconds_until(arrival, departure) <= 0:
                 raise PlanningError(
                     "Hotel arrival leaves no time before the chosen morning restart", 422
@@ -168,9 +177,10 @@ def _apply_timing(stops, start, policy, start_timezone, clock):
                 clock.rest(arrival, departure, zone, awake_intervals=awake_intervals)
             if blocks is not None:
                 stop["daily_rhythm_blocks"] = blocks
-                stop["check_in_timing_notice"] = (
-                    "Planned rest; confirm hotel check-in and checkout times."
-                )
+                if "lodging" not in stop:
+                    stop["check_in_timing_notice"] = (
+                        "Planned rest; confirm hotel check-in and checkout times."
+                    )
             travel_day = policy.travel_day_for(departure)
         if clock:
             stop["meal_breaks"] = deepcopy(clock.breaks[meal_index:])

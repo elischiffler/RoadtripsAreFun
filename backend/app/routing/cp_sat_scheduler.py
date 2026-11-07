@@ -17,6 +17,12 @@ from app.routing.base import MAX_TRIP_OVERNIGHTS, PlanningError, PlanOptions
 from app.routing.daily_rhythm import rest_blocks
 from app.routing.discovery import SelectedAttraction
 from app.routing.geometry import RouteMeasure
+from app.routing.lodging import (
+    LodgingCoverageConflict,
+    require_future_quote,
+    required_stay,
+    validate_stored_stay,
+)
 from app.routing.meal_reservations import MealClock, MealScheduleConflict
 from app.routing.occupancy import require_occupancy
 from app.routing.runtime import threaded
@@ -63,10 +69,11 @@ def _over_budget(hotel: dict, budget: float, room_count: int) -> bool:
     Without individual offers, compare the hotel total against budget times room count.
     """
     offers = hotel.get("room_offers") or []
+    nights = hotel.get("lodging", {}).get("nights", 1)
     return (
-        any(offer["price"] > budget for offer in offers)
+        any(offer["price"] > budget * nights for offer in offers)
         if offers
-        else hotel["price"] > budget * room_count
+        else hotel["price"] > budget * room_count * nights
     )
 
 
@@ -149,7 +156,9 @@ async def schedule_cp_sat_route(
 
     meal_clock = (
         MealClock(
-            now, advance(now, total_drive + sum(visit_seconds(item) for _, item in events if item))
+            now,
+            advance(now, total_drive + sum(visit_seconds(item) for _, item in events if item)),
+            policy.daily_schedule,
         )
         if options.reserve_meal_slots
         else None
@@ -311,9 +320,25 @@ async def schedule_cp_sat_route(
                     continue
                 attempt = len(tried)
                 emit("route.overnight", "started", day=overnights + 1, attempt=attempt)
+                booking_date = travel_day
+                checkout_date = None
+                if policy.daily_schedule:
+                    booking_date, checkout_date = required_stay(
+                        arrival, policy.restart(travel_day, zone)
+                    )
+                    require_future_quote(booking_date, zone)
                 try:
+                    lookup_range = price_range
+                    if checkout_date is not None:
+                        total_target = options.budget * (checkout_date - booking_date).days
+                        lookup_range = ((0.0, total_target), f"0-{total_target:.2f}")
                     candidates = await services.cp_sat_hotels(
-                        position, travel_day, price_range, options.weights or {}, hotel_rooms
+                        position,
+                        booking_date,
+                        lookup_range,
+                        options.weights or {},
+                        hotel_rooms,
+                        **({"check_out_date": checkout_date} if checkout_date is not None else {}),
                     )
                 except HTTPException as exc:
                     if exc.status_code != 404:
@@ -337,7 +362,7 @@ async def schedule_cp_sat_route(
                     # adapters that supply a different explicit booking date.
                     if (
                         item.get("check_in_date")
-                        and str(item["check_in_date"]) != travel_day.isoformat()
+                        and str(item["check_in_date"]) != booking_date.isoformat()
                     ):
                         continue
                     hotel_zone = await zone_at(item["coordinates"])
@@ -350,6 +375,13 @@ async def schedule_cp_sat_route(
                         )
                     except MealScheduleConflict:
                         continue
+                    if policy.daily_schedule:
+                        try:
+                            validate_stored_stay(
+                                item, hotel_arrival, policy.restart(travel_day, hotel_zone)
+                            )
+                        except LodgingCoverageConflict:
+                            continue
                     if (
                         seconds_until(hotel_arrival, policy.deadline(travel_day, hotel_zone))
                         >= -1e-6
@@ -389,7 +421,12 @@ async def schedule_cp_sat_route(
                     "url": hotel.get("url"),
                     "price": hotel["price"],
                     "timezone": getattr(zone, "key", None),
-                    "check_in_date": travel_day.isoformat(),
+                    "check_in_date": hotel.get("check_in_date") or travel_day.isoformat(),
+                    **(
+                        {"check_out_date": hotel["check_out_date"], "lodging": hotel["lodging"]}
+                        if policy.daily_schedule
+                        else {}
+                    ),
                     "traveler_count": options.traveler_count,
                     "hotel_rooms": hotel["hotel_rooms"],
                     "room_offers": hotel["room_offers"],
@@ -435,5 +472,5 @@ async def schedule_cp_sat_route(
                 raise PlanningError(
                     "Hotel arrival leaves no time before the chosen morning restart", 422
                 )
-            travel_day = now.date()
+            travel_day = policy.travel_day_for(now)
     return stops, total_cost

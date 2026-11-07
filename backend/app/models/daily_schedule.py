@@ -56,7 +56,6 @@ class DailySchedule(BaseModel):
 
     @property
     def supports_overnight_quotes(self) -> bool:
-        start, end = self.bounds("drive")
-        # Keep the current evening-arrival/booking-night contract. A nightly
-        # quote does not verify daytime or after-midnight check-in availability.
-        return start < end <= 24 and end >= 18 and self.slots[0] == "sleep"
+        # Shape validation is independent of hotel time-of-day. Exact dated
+        # room coverage and unconfirmed access hours are checked downstream.
+        return True

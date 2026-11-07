@@ -3,6 +3,10 @@
 from fastapi import HTTPException
 
 ERRORS = {
+    "lodging_stay_conflict": (
+        422,
+        "The dated hotel quote does not cover the planned rest interval. Choose a later departure or adjust the daily rhythm and check options again. Confirm hotel check-in and checkout times before booking.",
+    ),
     "rhythm_availability_conflict": (
         422,
         "A road leg falls outside driving availability in its next stop's local time. Choose a later departure or edit the daily rhythm.",

@@ -187,6 +187,7 @@ async def _build_itinerary(
             "hotel_rooms": stop.get("hotel_rooms"),
             "room_offers": stop.get("room_offers"),
             "price_scope": stop.get("price_scope"),
+            "lodging": stop.get("lodging"),
             "address": stop.get("address"),
             "kind": "arrival",
             "timezone": stop.get("timezone"),
@@ -195,7 +196,7 @@ async def _build_itinerary(
                 for value in (
                     stop.get("late_check_in_notice"),
                     stop.get("warning"),
-                    stop.get("check_in_timing_notice"),
+                    stop.get("check_in_timing_notice") if not stop.get("lodging") else None,
                     (
                         f"Wait {stop['wait_seconds'] / 60:g} minutes for published opening."
                         if stop.get("wait_seconds", 0) > 0
@@ -375,6 +376,7 @@ async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]
                 "hotel_rooms": stop.get("hotel_rooms"),
                 "room_offers": stop.get("room_offers"),
                 "price_scope": stop.get("price_scope"),
+                "lodging": stop.get("lodging"),
             }
             # Check if the date matches and if so add stop to the same day
             if stop["date"] == curr_day["date"]:

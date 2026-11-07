@@ -19,7 +19,6 @@ from app.routing.daily_rhythm import rest_blocks
 from app.routing.travel_timing import apply_timing
 from app.routing.trip_modes import (
     OneDayIneligible,
-    UnsupportedOvernightRhythm,
     require_one_day,
     require_overnight_rhythm,
 )
@@ -101,9 +100,9 @@ def test_night_driving_anchors_early_hours_to_previous_travel_day():
     stops = [endpoint(8 * 3600)]
     start = moment("20:00", "2027-06-01")
     apply_timing(stops, start, night, ZONE, reserve_meal_slots=True)
-    assert stops[-1]["arrival_time"] == "2027-06-02T04:00:00-07:00"
+    assert stops[-1]["arrival_time"] == "2027-06-02T04:45:00-07:00"
     assert stops[-1]["deadline"] == "2027-06-02T08:00:00-07:00"
-    assert require_one_day(route(stops, start, night)) == 8 * 3600
+    assert require_one_day(route(stops, start, night)) == 8.75 * 3600
     assert night.travel_day_for(moment("02:00", "2027-06-02")).isoformat() == "2027-06-01"
     with pytest.raises(ValueError, match="outside"):
         night.travel_day_for(moment("12:00", "2027-06-02"))
@@ -120,7 +119,7 @@ def test_night_clock_dst_is_elapsed_utc_not_wall_clock(date, seconds, arrival):
     night = policy((20, 8), (9, 17))
     stops = [endpoint(seconds)]
     start = moment("20:00", date)
-    apply_timing(stops, start, night, ZONE, reserve_meal_slots=True)
+    apply_timing(stops, start, night, ZONE, reserve_meal_slots=False)
     assert stops[-1]["arrival_time"] == arrival
     assert require_one_day(route(stops, start, night)) == seconds
 
@@ -146,12 +145,15 @@ def test_overlapping_or_multiple_blocks_and_conflicting_legacy_overrides_reject(
     assert SchedulingPolicy(late_driving=True).arrival_cutoff(final=True) == "24:00"
 
 
-def test_overnight_rhythm_requires_representable_evening_arrival_and_nightly_sleep():
-    require_overnight_rhythm(policy())
-    require_overnight_rhythm(policy((9, 0), (0, 7)))
-    for custom in [policy((20, 8), (9, 17)), policy((9, 14), (22, 7))]:
-        with pytest.raises(UnsupportedOvernightRhythm):
-            require_overnight_rhythm(custom)
+def test_valid_overnight_rhythms_include_wrapped_driving_and_daytime_sleep():
+    for custom in [
+        policy(),
+        policy((9, 0), (0, 7)),
+        policy((20, 8), (9, 17)),
+        policy((9, 14), (22, 7)),
+    ]:
+        require_overnight_rhythm(custom)
+        assert custom.daily_schedule.supports_overnight_quotes
 
 
 def test_hotel_idle_accounts_rest_sleep_and_dst_booking_dates():
@@ -166,6 +168,9 @@ def test_hotel_idle_accounts_rest_sleep_and_dst_booking_dates():
         },
         endpoint(3600),
     ]
+    from tests.routing.unrestricted_rhythm_tests import quoted
+
+    stops[0] = {**quoted(datetime(2027, 3, 13).date(), datetime(2027, 3, 14).date()), **stops[0]}
     apply_timing(stops, moment("18:00", "2027-03-13"), selected, ZONE, reserve_meal_slots=True)
     hotel = stops[0]
     assert hotel["check_in_date"] == "2027-03-13"
@@ -173,7 +178,7 @@ def test_hotel_idle_accounts_rest_sleep_and_dst_booking_dates():
     blocks = hotel["daily_rhythm_blocks"]
     assert [b["kind"] for b in blocks] == ["rest", "sleep", "rest"]
     assert sum(b["duration_seconds"] for b in blocks) == 13 * 3600
-    assert "confirm hotel" in hotel["check_in_timing_notice"]
+    assert "Confirm check-in" in hotel["check_in_timing_notice"]
 
 
 @pytest.mark.asyncio
@@ -294,13 +299,13 @@ def test_westbound_zone_change_cannot_drive_during_next_stops_rest_window():
     assert legacy[-1]["arrival_time"] == "2027-06-01T08:10:00-07:00"
 
 
-def test_spring_forward_night_proof_can_fit_12_wall_hours_but11_actual_hours_with_breakfast():
+def test_spring_forward_night_proof_fits_12_wall_hours_but11_actual_with_shifted_meals():
     selected = policy((20, 8), (9, 17))
     start = moment("20:00", "2027-03-13")
-    stops = [endpoint(int(10.5 * 3600))]
+    stops = [endpoint(int(9.25 * 3600))]
     apply_timing(stops, start, selected, ZONE, reserve_meal_slots=True)
     assert stops[-1]["arrival_time"] == "2027-03-14T08:00:00-07:00"
-    assert stops[-1]["meal_breaks"][0]["meal_type"] == "breakfast"
+    assert {m["meal_type"] for m in stops[-1]["meal_breaks"]} == {"lunch", "dinner"}
     assert require_one_day(route(stops, start, selected)) == 11 * 3600
 
 
@@ -329,7 +334,9 @@ def test_absent_rhythm_preserves_legacy_policy_wire_shape_in_nested_models():
 
 
 @pytest.mark.asyncio
-async def test_direct_saved_overnight_rebuild_cannot_bypass_unsupported_daytime_stay(monkeypatch):
+async def test_direct_saved_daytime_rebuild_cannot_bypass_required_dated_quote_coverage(
+    monkeypatch,
+):
     from app.routers import itinerary_api
 
     monkeypatch.setattr(itinerary_api, "refresh_for_timing", AsyncMock())
@@ -344,11 +351,13 @@ async def test_direct_saved_overnight_rebuild_cannot_bypass_unsupported_daytime_
         endpoint(3600),
     ]
     selected = policy((20, 8), (9, 17))
-    with pytest.raises(UnsupportedOvernightRhythm):
+    from app.routing.lodging import LodgingCoverageConflict
+
+    with pytest.raises(LodgingCoverageConflict):
         apply_timing(
             deepcopy(stops), moment("20:00", "2035-06-01"), selected, ZONE, reserve_meal_slots=True
         )
     planned = route(stops, moment("20:00", "2035-06-01"), selected)
     planned.trip_mode = "overnight"
-    with pytest.raises(UnsupportedOvernightRhythm):
+    with pytest.raises(LodgingCoverageConflict):
         await build_itinerary(Itinerary_Payload(route=planned))

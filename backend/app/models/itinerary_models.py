@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_serializer
 
 from app.models.place_context import PlaceContext
 from app.models.routing_models.routing_models import Route
@@ -51,5 +51,13 @@ class Itinerary_Day(BaseModel):
         hotel_rooms: list[dict] | None = None
         room_offers: list[dict] | None = None
         price_scope: str | None = None
+        lodging: dict | None = None
+
+        @model_serializer(mode="wrap")
+        def _optional_lodging(self, handler):
+            data = handler(self)
+            if self.lodging is None:
+                data.pop("lodging", None)
+            return data
 
     stops: list[Itinerary_Stop]

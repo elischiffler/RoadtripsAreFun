@@ -16,11 +16,16 @@ from tests.reserved_meal_tests import ZONE, endpoint, moment
 from tests.routing_api.route_edit_tests import request, road, run, with_hotel
 
 
-def hotel_stops():
-    return [
-        {"name": "Nightly quote", "type": "hotel", "duration": 3600, "timezone": ZONE},
-        endpoint(3600),
-    ]
+def hotel_stops(selected=None):
+    stop = {"name": "Nightly quote", "type": "hotel", "duration": 3600, "timezone": ZONE}
+    if selected:
+        from app.routing.lodging import required_stay
+        from tests.routing.unrestricted_rhythm_tests import quoted
+
+        arrival = moment("18:00")
+        departure = selected.restart(arrival.date(), arrival.tzinfo)
+        stop = {**quoted(*required_stay(arrival, departure)), **stop}
+    return [stop, endpoint(3600)]
 
 
 def assert_awake_breakfast(hotel):
@@ -43,7 +48,7 @@ def assert_awake_breakfast(hotel):
 
 
 def test_hotel_shifts_full_breakfast_into_awake_rest_without_changing_restart():
-    stops = hotel_stops()
+    stops = hotel_stops(policy((9, 20), (22, 8)))
     apply_timing(stops, moment("17:00"), policy((9, 20), (22, 8)), ZONE, reserve_meal_slots=True)
     assert_awake_breakfast(stops[0])
     assert stops[-1]["arrival_time"] == "2027-06-02T10:00:00-07:00"
@@ -52,7 +57,7 @@ def test_hotel_shifts_full_breakfast_into_awake_rest_without_changing_restart():
 def test_hotel_rejects_breakfast_window_entirely_inside_sleep():
     with pytest.raises(MealScheduleConflict) as error:
         apply_timing(
-            hotel_stops(),
+            hotel_stops(policy((10, 18), (20, 10))),
             moment("17:00"),
             policy((10, 18), (20, 10)),
             ZONE,
@@ -62,7 +67,7 @@ def test_hotel_rejects_breakfast_window_entirely_inside_sleep():
 
 
 def test_breakfast_defers_to_next_drive_when_sleep_ends_at_restart():
-    stops = hotel_stops()
+    stops = hotel_stops(policy((8, 20), (22, 8)))
     apply_timing(stops, moment("17:00"), policy((8, 20), (22, 8)), ZONE, reserve_meal_slots=True)
     assert not any(m["meal_type"] == "breakfast" for m in stops[0]["meal_breaks"])
     assert stops[0]["departure_time"] == "2027-06-02T08:00:00-07:00"
@@ -87,7 +92,7 @@ async def test_saved_itinerary_rebuild_rechecks_sleep_instead_of_trusting_breaks
 ):
     monkeypatch.setattr(itinerary_api, "refresh_for_timing", AsyncMock())
     selected = policy((9, 20), (22, 8)) if possible else policy((10, 18), (20, 10))
-    planned = route(hotel_stops(), moment("17:00"), selected).model_copy(
+    planned = route(hotel_stops(selected), moment("17:00"), selected).model_copy(
         update={"trip_mode": "overnight"}
     )
     planned.stops[0]["meal_breaks"] = [{"meal_type": "breakfast", "arrival_time": "FORGED"}]
@@ -109,6 +114,17 @@ async def test_edited_route_rebuild_preserves_sleep_or_rejects_preview(possible)
     saved["departure_time"] = "2030-06-01T15:00:00+00:00"
     selected = policy((9, 20), (22, 8)) if possible else policy((10, 18), (20, 10))
     saved["scheduling_policy"] = selected.model_dump()
+    from app.routing.lodging import required_stay
+    from tests.routing.unrestricted_rhythm_tests import quoted
+
+    arrival = datetime.fromisoformat("2030-06-01T18:00:00+00:00")
+    saved["stops"][1] = {
+        **quoted(
+            *required_stay(arrival, selected.restart(arrival.date(), arrival.tzinfo)),
+            price=saved["stops"][1]["price"],
+        ),
+        **saved["stops"][1],
+    }
     payload = request(route=saved, action="replace", stop_index=0, include_meal_slots=False)
     original = deepcopy(payload.model_dump())
     response = road(3, 0)

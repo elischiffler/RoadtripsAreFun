@@ -162,7 +162,7 @@ def test_overnight_requires_occupancy_then_reuses_only_verified_pool(runtime):
     assert state.mode_calls[-1].hotel_rooms[0].adults == 1
 
 
-def test_unsupported_overnight_rhythm_and_unavailable_departure_are_fixed_errors_before_ai(runtime):
+def test_valid_wrapped_overnight_rhythm_is_allowed_but_unavailable_departure_still_rejects(runtime):
     client, _, state, _ = runtime
     body = payload(
         start="2035-06-01T20:00:00-07:00",
@@ -180,16 +180,13 @@ def test_unsupported_overnight_rhythm_and_unavailable_departure_are_fixed_errors
     rejected = client.post(
         "/planning-candidates/" + result["candidate_id"] + "/confirm", json=confirm
     )
-    assert rejected.status_code == 422
-    assert rejected.json() == {
-        "code": "unsupported_overnight_rhythm",
-        "detail": ERRORS["unsupported_overnight_rhythm"][1],
-    }
-    assert state.calls == 1
+    assert rejected.status_code == 200, rejected.text
+    assert rejected.json()["trip_mode"] == "overnight"
+    assert state.calls == 2
     body = payload(start="2035-06-01T12:00:00-07:00", scheduling_policy=body["scheduling_policy"])
     invalid = check(client, body)
     assert invalid.status_code == 422 and invalid.json()["code"] == "departure_outside_rhythm"
-    assert state.calls == 1
+    assert state.calls == 2
 
 
 def test_same_request_id_deduplicates_and_changed_inputs_cancel_expiry_and_restart_never_replan(

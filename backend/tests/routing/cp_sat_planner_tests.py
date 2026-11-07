@@ -416,15 +416,20 @@ async def test_meal_aware_hotel_search_leaves_time_for_breaks(route, start_date,
 @pytest.mark.asyncio
 @pytest.mark.parametrize("possible", [True, False])
 async def test_estimated_hotel_meals_obey_opted_in_sleep(
-    route, start_date, fake_services, possible
+    route, start_date, fake_services, possible, monkeypatch
 ):
+    from app.routing import lodging
     from app.routing.meal_reservations import MealScheduleConflict
     from tests.one_day_rhythm_tests import policy
+    from tests.routing.unrestricted_rhythm_tests import quoted
 
+    monkeypatch.setattr(lodging, "current_local_date", lambda zone: date(2020, 1, 1))
     services, _ = configure(fake_services)
 
-    async def near_hotel(position, check_in, price_range, weights, hotel_rooms):
-        return [hotel("sleep-aware-hotel", position, 100, 0.8)]
+    async def near_hotel(
+        position, check_in, price_range, weights, hotel_rooms, *, check_out_date=None
+    ):
+        return [{**quoted(check_in, check_out_date, price=100), "coordinates": position}]
 
     services.cp_sat_hotels = near_hotel
     selected_policy = policy((9, 20), (22, 8)) if possible else policy((10, 18), (20, 10))

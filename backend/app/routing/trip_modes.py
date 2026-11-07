@@ -1,4 +1,4 @@
-"""Complete-candidate eligibility and explicit unsupported accommodation rhythms."""
+"""Complete-candidate eligibility and explicit recurring clock conflicts."""
 
 import math
 from datetime import UTC, datetime
@@ -46,9 +46,8 @@ class DepartureOutsideRhythm(PlanningError):
 
 
 def require_overnight_rhythm(policy):
-    rhythm = policy.daily_schedule
-    if rhythm and not rhythm.supports_overnight_quotes:
-        raise UnsupportedOvernightRhythm()
+    """All validated recurring shapes can be modeled; dated quotes remain mandatory."""
+    return None
 
 
 def one_day_elapsed(route) -> float:

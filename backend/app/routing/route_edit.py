@@ -146,7 +146,13 @@ async def preview_route_edit(
         if not math.isfinite(leg.distance) or leg.distance < 0:
             raise PlanningError("Mapbox returned an invalid edited route leg", 502)
         stop.update(duration=leg.duration, distance=leg.distance)
-    apply_timing(stops, start, route.scheduling_policy, start_timezone)
+    apply_timing(
+        stops,
+        start,
+        route.scheduling_policy,
+        start_timezone,
+        reserve_meal_slots=route.reserve_meal_slots,
+    )
     result = Route(
         **{
             **route.model_dump(),
