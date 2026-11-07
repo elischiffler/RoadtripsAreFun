@@ -11,10 +11,17 @@ and subject verification. It then executes actual HTTP planning, adaptive source
 processing, AI-rating/visit-duration prompt construction and parsing, CP-SAT,
 estimated scheduling, actual-leg timing validation, itinerary construction and
 saved-trip CRUD. Storage is a new synthetic PostgreSQL instance in an internal
-Docker network. Browser reload, visit/undo persistence, and opening the saved
-itinerary must work. Settings navigation must hide research tools for the
-verified non-owner, and the actual research API must return 403. The itinerary
-must still reload after Settings; phone/desktop widths must not overflow.
+Docker network. Browser reload and the saved `/trip` workspace must work. Sequential visit/undo
+writes must refresh modern snapshot revisions without a reload, and an actual
+stale-revision write must return 409 without changing stored state. A route
+alternative must be browsed, recalculated, previewed without persistence, then
+saved and reloaded. The dated short trip reserves a real 45-minute lunch, with
+no attraction overlap and elapsed arrival time including that reservation.
+Settings must persist and reload reusable profiles and a separate trip car;
+loading a profile must populate the guided draft. Settings must hide research
+tools for the verified non-owner, and the actual research API must return 403.
+The edited trip must still reload after Settings; phone/desktop widths must not
+overflow.
 An expired departure must expose an actionable error and
 must not save another trip or falsely complete planning.
 
@@ -26,17 +33,19 @@ ratings and durations. It is not the actual Mentro server or model, and does not
 prove live provider behavior, current Cognito accounts, production data/schema,
 or network availability.
 
-Location text search/confirmation and the initial driving estimate execute
-through actual HTTP APIs in this gate. Mapbox map rendering and nearby-idea UI
-are covered separately by the existing component/service/API suites; this gate
-does not call a live map provider or enable a different map build mode. Visit
-and undo test saved presentation edits, not an unsupported route-editing feature.
+Location text search/confirmation, the initial driving estimate, along-route
+alternative search, route-edit preview and saved-route update execute through
+actual HTTP APIs. Frozen synthetic source facts are supplied at the repository
+read boundary for browse/current-place refresh; source validation, rerouting,
+meal timing and itinerary logic remain active. Mapbox rendering is not verified:
+the normal token-absent preview/list works without enabling a different map
+build mode. No actual catalog SQL parity or live source freshness is claimed.
 
 | Area | Evidence | Boundary |
 | --- | --- | --- |
-| Create, save and visit edits | This signed browser/API/CP-SAT/timing/CRUD/PostgreSQL gate; serialization and persistence regressions | Catalog and remote provider responses are synthetic |
-| Errors, auth and Settings | Strict expired-date and non-owner API/Settings checks; existing session, stream, access and race suites | Most outage/account-switch tests use fixtures; no real Cognito acceptance |
-| Search and maps | Browser location confirmation/driving estimate; existing location, map and nearby component/API suites | No live Mapbox rendering, geocoding or roads; arbitrary saved-route replanning is not exercised |
+| Create, meals and saved edits | This signed browser/API/CP-SAT/timing/CRUD/PostgreSQL gate; actual route preview/save/reload; sequential visit revisions and stale 409 | Catalog and remote provider responses are synthetic; the short fixture exercises lunch, not every multi-day meal/window conflict |
+| Errors, auth and Settings | Strict expired-date and non-owner checks; real profile create/edit/reload/reuse and trip car persistence | Most outage/account-switch tests use fixtures; no real Cognito acceptance; additional CAS races remain API/unit regressions |
+| Search and maps | Browser location confirmation/driving estimate, along-route alternatives and an explicit attraction replacement; existing map/API suites | No live Mapbox rendering, geocoding or roads; not every edit/overnight/infeasibility path is exercised |
 | Responsive layout | Browser 390px and 1440px overflow checks | Not physical-device or manual screen-reader acceptance |
 | Recovery and ownership | Separate Disposable PostgreSQL CRUD workflow | Real CRUD/recovery there complements this browser lane |
 | Catalog safeguards | Full offline admission/hold/tamper/refresh suites; unchanged 133 holds, 170 exact versions and seven parking decisions | Optional catalog PostgreSQL SQL-parity tests need their dedicated disposable database; readiness is not that test |

@@ -38,13 +38,20 @@ scope and remaining acceptance boundaries.
 - Derived meal reservations are validated when admitting runtime catalog rows;
   original source facts, hashes, hold markers and pinned registries are unchanged.
   Itinerary rebuild recomputes reservations instead of trusting saved intervals.
+- Repeated modern CREATE requests for the same planning UUID retain the existing
+  durable trip and log. An exact retry succeeds; a changed saved version returns
+  a distinct conflict, keeps the ID and asks the traveler to reload instead of
+  blindly retrying or allocating a duplicate trip. Legacy null-ID creation retains
+  its compatibility behavior.
 - Route edits use a server-issued opaque revision of exact stored trip JSON,
   checked after an owner-scoped `SELECT ... FOR UPDATE` before segment writes.
   Route-only saves preserve car, unrelated trip fields and logs. Modern visit/undo
   writes use the same guard with presentation-only updates; a stale car/route
   snapshot returns 409 without overwrite. Successful saves refresh the revision.
   Each ChatData update rotates server metadata so coordinate-only segment writes
-  also invalidate prior snapshots. This is application concurrency control, not
+  also invalidate prior snapshots. Replacing a long route prunes only obsolete
+  segments for that verified owner/chat/route; new final-route storage identities
+  preserve legacy initial geometry. This is application concurrency control, not
   independent integrity verification of all segment tables.
 
 `GET /chats` hashes stored JSON before hydrating coordinate references and returns
@@ -57,9 +64,47 @@ required. Route edits retain explicit save/discard and uncertain-write readback.
 
 ## Combined verification
 
-Pending final combined checks; results will be recorded before this candidate is
-handed back for draft-PR review. Full backend, frontend and browser/API gates run
-sequentially to avoid resource-contention timeouts; thresholds are unchanged.
+Checks run sequentially to avoid resource-contention timeouts; thresholds are
+unchanged. No live service or hosted database was used.
+
+- Combined backend suite: 2,799 passed, 150 skipped, 81.32% coverage (63% required).
+  Final bounded CAS/create/car/geometry changes then passed 55 focused API/schema/
+  storage tests; final full Ruff formatting and lint pass (307 files). The full
+  coverage run predates those last bounded fixes; exact-head CI remains required.
+- Combined frontend suite: 469 tests / 61 files passed, 92.49% lines/statements,
+  87.43% branches, 88.16% functions. Post-freeze persistence/page/profile checks:
+  86 tests / 9 files passed. Final format, ESLint and production build pass.
+- The 10,001-point to two-point route regression passes through the real schema,
+  API and CRUD with a transactional cursor double, checking exact reloaded final
+  geometry, preserved initial geometry, independent foreign rows and revision
+  refresh. The separate actual disposable PostgreSQL regression also passed
+  (one test, 0.23 seconds) on a fresh local standard-credential fixture. It verifies
+  real stored/hydrated geometry, initial preservation, owner-scoped pruning and
+  rollback after a partial segment insert encounters a foreign identity. Evidence:
+  `/tmp/roadtrips-stage2-geometry-native.log`.
+- Expanded offline signed browser/API/disposable-PostgreSQL journey passed against
+  the combined application. The gate follows the actual compact setup to `/trip`,
+  real reserved lunch accounting, no-reload visit/undo revision refresh, stale
+  HTTP 409 with unchanged durable state, browse/edit preview/no-write/save/reload,
+  profiles and separate car persistence. It retains expired-departure and
+  non-owner research rejection, external-network refusal and 390px/1440px checks.
+  Runtime used frozen application checkpoint `0e2d0f3` and exited zero; one trip
+  and two profiles were created only in the disposable fixture, with no blocked
+  external requests or browser errors. Evidence is in
+  `tests/guidedjourney/.artifacts/result.json`, `happy-result.json` and adjacent
+  screenshots; `/tmp/roadtrips-stage2-guided-native.log` records the native run.
+  Both disposable projects and all fixture services were stopped afterward.
+  See `tests/guidedjourney/VALIDATION.md` for the exact execution boundary.
+
+Independent reviewers approved the shared control/profile privacy fix, the
+catalog meal compatibility boundary, and the scoped save/create/geometry fixes.
+Only `backend/app/catalog/hold_resolution.py` changes under catalog code/data;
+all catalog pin and data files remain unchanged. All four original feature heads
+and the fresh hotfix develop base are verified ancestors of the application
+checkpoint `0e2d0f345597311f66eaa8058b2316966227536c`.
+
+The normal four hosted workflows must pass on the final combined draft-PR head.
+Native success does not replace the mandatory Local containers wrapper gate.
 
 ## Remaining product and acceptance boundaries
 

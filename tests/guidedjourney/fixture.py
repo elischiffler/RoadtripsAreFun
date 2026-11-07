@@ -12,6 +12,7 @@ import math
 import os
 import socket
 import sys
+from copy import deepcopy
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from types import SimpleNamespace
@@ -126,6 +127,7 @@ from app.agent.persona import ATTRIBUTE_KEYS
 from app.catalog import repository
 from app.models.routing_models.routing_models import MapBox
 from app.routers import location_api, routing_api
+from app.routing import alternatives
 from app.routing.planners import cp_sat
 
 counts = {
@@ -136,6 +138,8 @@ counts = {
     "durations": 0,
     "gateway_auth": 0,
     "solver": 0,
+    "browse": 0,
+    "current_facts": 0,
     "requests": [],
     "stream_events": [],
 }
@@ -204,6 +208,31 @@ def catalog_page(point, *args, **kwargs):
     )
 
 
+# Frozen source facts are a repository/provider seam, not a planner or route-edit
+# stub. Real browse admission, current-fact refresh, geometry, timing and CRUD run.
+EDIT_PLACE = {
+    "provider_id": "overture:guided-edit",
+    "name": "Synthetic edit stop",
+    "coordinates": [40.168, -104.58],
+    "address": "Synthetic edit address",
+    "categories": ["daytime"],
+    "source": "overture",
+    "source_release": "synthetic-test-fixture",
+    "source_attribution": "Synthetic catalog fixture",
+    "source_provenance": [],
+}
+
+
+def nearby(*args, **kwargs):
+    counts["browse"] += 1
+    return [deepcopy(EDIT_PLACE)]
+
+
+def current_records(source_ids, *args, **kwargs):
+    counts["current_facts"] += 1
+    return {sid: deepcopy(EDIT_PLACE) for sid in source_ids if sid == "guided-edit"}
+
+
 async def hotels(*args, **kwargs):
     raise AssertionError(
         "Short guided fixture unexpectedly requested an overnight hotel"
@@ -224,6 +253,9 @@ routing_api.get_location = location
 routing_api._call_route = roads
 routing_api.hotel_candidates = hotels
 repository.nearby_page = catalog_page
+repository.nearby = nearby
+alternatives.catalog_nearby = nearby
+repository.current_records = current_records
 
 
 @app.middleware("http")
@@ -281,9 +313,28 @@ def report():
                 "SELECT count(*) FROM chats WHERE user_id = %s", ("guided-traveler",)
             )
             stored = cursor.fetchone()[0]
+            cursor.execute(
+                "SELECT chat_data, chat_log FROM chats WHERE user_id = %s ORDER BY chat_id",
+                ("guided-traveler",),
+            )
+            trips = [{"data": row[0], "log": row[1]} for row in cursor.fetchall()]
+            cursor.execute(
+                """SELECT mem_key, mem_value FROM chat_memory
+                   WHERE user_id = %s AND chat_id = '' AND mem_type = %s
+                   ORDER BY mem_key""",
+                ("guided-traveler", "preference_profile"),
+            )
+            profiles = [{"id": row[0], **row[1]} for row in cursor.fetchall()]
     finally:
         _put_conn(connection)
-    return counts | {"stored_trips": stored, "blocked_network": blocked_network}
+    # Only this disposable synthetic account exists here. Never expose a real
+    # auth token; snapshots let browser assertions verify actual durable state.
+    return counts | {
+        "stored_trips": stored,
+        "trips": trips,
+        "profiles": profiles,
+        "blocked_network": blocked_network,
+    }
 
 
 identity = FastAPI()

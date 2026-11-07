@@ -2,9 +2,11 @@
 
 This records local synthetic verification, not a live provider/account test or a
 production deployment. The latest complete native run passes the positive and
-negative cases below. The corrected container wrapper still needs its next
-GitHub CI execution after integration. No hosted database or live Mentro request
-was made.
+negative cases below. The corrected original container wrapper subsequently passed on final main
+`42d5068bb4c8804a8024df0e4463fb05e0a7e275` in Local containers run
+[42315083289](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/42315083289).
+Stage2 coverage below requires its own fresh candidate execution. No hosted
+database or live Mentro request was made.
 
 ## Reproduced save failure
 
@@ -100,3 +102,61 @@ pass. Independent review checked the fixture isolation, real execution seams,
 native progress assertions, persisted visit/undo assertions, database target
 guards and image revision checks. Those checks and the full native pass do not
 replace the outstanding corrected container-wrapper run.
+
+
+## Stage2 combined journey — November 7, 2026
+
+The mandatory browser gate now follows the combined five-stage setup and `/trip`
+workspace. Its assertions cover a real reserved lunch (duration/window, no visit
+overlap and arrival elapsed-time accounting), sequential modern visit revisions
+without reload, actual stale-revision HTTP 409 with unchanged PostgreSQL state,
+along-route browse and explicit replacement preview/save/reload, reusable
+preference profile create/edit/reload/reuse, and separate trip-car persistence.
+The preview is checked against durable state before saving. Existing expired-date
+safe-error, no false completion/extra trip, actual non-owner research denial,
+external-network refusal and 390px/1440px checks remain required.
+
+Synthetic edit-place facts are supplied only at repository nearby/current-record
+read seams, alongside the existing local source/geocoding/road/HTTP gateway
+fixtures. Actual browse filters, current-fact validation, route-edit timing,
+itinerary and scoped CAS CRUD remain active. The gate does not establish live
+Cognito/Mentro/Mapbox acceptance, catalog SQL parity, every multi-day meal conflict,
+or all possible saved-trip edit/race combinations.
+
+Status: **fresh complete native journey passed** against the frozen application
+checkpoint `0e2d0f345597311f66eaa8058b2316966227536c`, with a new Vite production
+build served from a separate static output directory and a fresh empty marked
+PostgreSQL instance. The command exited zero; its `finally` cleanup stopped only
+its own API/static server and removed its own random PostgreSQL project.
+
+The passing report contains two synthetic logins, one real CP-SAT solve, 13 road
+adapter calls, nine candidate page reads, 13 browse reads, three current-fact
+refreshes, two actual rating and two actual duration adapter calls. One saved
+trip and two reusable profiles remain in the report. The explicit old revision
+returned actual HTTP 409; route preview returned 200 and the subsequent save and
+reload passed. Browser page errors, blocked external origins and prohibited
+Python network attempts are all empty. The expired attempt returned the actual
+422 `departure_not_upcoming` event without another save/solve or false completion.
+
+Ignored local evidence: `.artifacts/result.json`, `.artifacts/happy-result.json`,
+`.artifacts/saved-trip.png`, `.artifacts/trip-workspace.png` and
+`.artifacts/reloaded-edited-trip.png`. The first attempt stopped at an overly
+strict test locator for an implicitly labelled select; its retained
+`initial-selector-failure` artifacts show that creation, meal timing, revision
+writes and browse had already passed. Matching the actual combobox accessible
+name fixed the locator; no application behavior or strict assertion was changed.
+
+Source syntax, Ruff and whitespace checks pass. Independent read-only review
+found no safety or coverage blocker. The exact integrated commit still requires
+the normal Local containers CI gate; this native result does not replace it.
+
+A separate fresh standard disposable PostgreSQL instance also passed
+`tests/settings_postgres_tests.py::test_long_route_shortening_keeps_exact_geometry_initial_and_scoped_rollback`
+(one test, 0.23s). This uses the real API/CRUD and segment-table transaction to
+shorten 10,001 coordinates to two, retain the independent initial geometry,
+preserve a foreign owner's rows and roll back a partial insert on an ownership
+conflict. It supplies a synthetic endpoint identity rather than JWT verification;
+the browser gate above covers the actual signed verifier. The instance used the
+standard fixture's own required local credentials, fresh-schema guard and offline
+runner with loopback only, and was removed afterward. Neither database target
+guard was weakened to share credentials between the two fixtures.
