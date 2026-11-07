@@ -45,7 +45,7 @@ export const STEPS = [
   'Where and when',
   'People and rooms',
   'What you enjoy',
-  'Car and timing',
+  'Daily timing',
   'Review',
 ];
 
@@ -63,7 +63,7 @@ export function newSetupDraft() {
     ratings: {},
     customWeights: null,
     comparisonAnswers: {},
-    carStatus: 'unanswered',
+    carStatus: 'skipped',
     year: '',
     make: '',
     model: '',
@@ -342,7 +342,11 @@ export function restoreDraft(value) {
       // Keep the older, valid trip answers available for correction and review.
     }
     return {
-      draft: { ...draft, comparisonAnswers },
+      draft: {
+        ...draft,
+        carStatus: draft.carStatus === 'unanswered' ? 'skipped' : draft.carStatus,
+        comparisonAnswers,
+      },
       step: Number.isInteger(step) && step >= 0 && step < STEPS.length ? step : 0,
     };
   } catch {

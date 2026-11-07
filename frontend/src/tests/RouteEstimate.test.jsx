@@ -10,13 +10,23 @@ vi.mock('../services/tripPlanner', () => ({
   resolveTripLocation: vi.fn(),
   plannerError: () => 'Could not check this drive.',
 }));
+vi.mock('../components/Map', () => ({ default: () => <div>Route geometry</div> }));
 const start = { address: 'Denver, Colorado', latitude: 39.7, longitude: -105 };
 const end = { address: 'Boulder, Colorado', latitude: 40, longitude: -105.2 };
 beforeEach(() => {
   vi.resetAllMocks();
   sessionStorage.clear();
   fixtureSession();
-  estimateStructuredRoute.mockResolvedValue({ duration: 3600, distance: 16093.44 });
+  estimateStructuredRoute.mockResolvedValue({
+    duration: 3600,
+    distance: 16093.44,
+    geometry: {
+      coordinates: [
+        [-105, 39.7],
+        [-105.2, 40],
+      ],
+    },
+  });
 });
 it('does not guess ambiguous provider locations and estimates only confirmed choices', async () => {
   resolveTripLocation
@@ -31,6 +41,8 @@ it('does not guess ambiguous provider locations and estimates only confirmed cho
   await userEvent.click(confirm);
   expect(await screen.findByText('About 1.0 hours driving')).toBeInTheDocument();
   expect(estimateStructuredRoute.mock.calls[0].slice(0, 2)).toEqual([start, end]);
+  expect(screen.getByLabelText('Estimated route map')).toBeInTheDocument();
+  expect(screen.getByText('Denver, Colorado → Boulder, Colorado')).toBeInTheDocument();
   expect(screen.getByText(/Visits, meals and overnight stays add time/)).toBeInTheDocument();
 });
 it('clears estimates on changed text and discards late results after sign out', async () => {
