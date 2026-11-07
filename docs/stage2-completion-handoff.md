@@ -5,20 +5,23 @@ This document tracks the local integration after reviewed PR67 head
 original feature heads are recorded in `stage2-integrated-handoff.md`; that report
 is a historical checkpoint, not evidence for the newer combined head.
 
-Current follow-up source freeze: `8715eee7dbc4259f4a77ba514e51747cd0dccb66`
-(November 7, 2026). This documentation update changes no application or tests.
-Current combined backend/frontend gates and the complete native overnight journey
-passed as recorded below. All four fresh hosted workflows remain **PENDING**
-before push. Older green checks are historical evidence; they do not establish
-acceptance for this freeze.
+Local pre-push report recorded **November 7, 2026**, for application source freeze
+`8715eee7dbc4259f4a77ba514e51747cd0dccb66`. This documentation update changes no
+application or tests. Combined backend/frontend gates and the complete native
+overnight journey passed as recorded below. The four hosted workflows had not
+yet run when this local report was recorded; verify the final exact head's checks
+on [PR67](https://github.com/elischiffler/RoadtripsAreFun/pull/67) for current CI
+authority. Older green checks do not establish acceptance for a newer head.
 
-Production remains held. No sharing migration, production deployment or live
-provider/Mentro trip was performed by this follow-up. Read-only migration
+Production was held at this pre-push snapshot. No sharing migration, production
+deployment or live provider/Mentro trip was performed by this follow-up. Read-only migration
 preflight found the target compatible with the proposed additive migration;
 this does not mean the migration is applied or sharing tables are ready. The
-effective EC2 application role and a fresh recovery rehearsal remain unverified.
-These are release requirements, not consequences of passing local or hosted test
-fixtures.
+effective EC2 application role remained unverified, and current recovery evidence
+was unavailable to preflight. Release needs current recovery evidence, including
+a sufficiently recent verified backup/restore receipt or validated PITR point;
+preflight did not establish that a new restore exercise is mandatory for every
+additive migration. Local or hosted test fixtures do not supply this evidence.
 
 ## Current follow-up scope
 
@@ -99,17 +102,17 @@ rights or live active-catalog coverage were inferred to fill the gap. Optional
 context appears only after its exact admitted/refreshed identity binding matches;
 missing context has no AI/network fallback. See the [seven-binding registry review](data/place-context-20261107/README.md).
 
-## Current verification status — source freeze `8715eee`
+## Local verification snapshot — November 7, 2026, source freeze `8715eee`
 
-| Required evidence | Current status |
+| Required evidence | Status when this local report was recorded |
 | --- | --- |
 | Combined offline backend coverage and full lint/format checks | **PASS**: 2,995 passed, 180 skipped, 81.89% coverage; Ruff lint and all 335 format checks passed |
 | Combined frontend coverage, format, lint and build | **PASS**: 617 tests / 78 files, 92.79% lines, 88.11% branches, 89.90% functions; format, lint and build passed |
 | Actual native overnight/wrapped-drive/daytime-sleep browser → API → CP/timing → disposable PostgreSQL journey | **PASS**, exit 0 on `6de80a4cba2e1e1a37b1ed718f294525bbc1365a`, with the same application trees |
 | Observer integrity checks and forbidden-network detection in the mandatory journey | **PASS**: seven observer tests; browser errors, blocked origins and Python blocked attempts all empty |
-| All four fresh hosted workflows on the eventual final candidate | **PENDING**; old `4074181` CI is not acceptance |
+| All four hosted workflows on the final candidate | Not yet run at this November 7 pre-push snapshot; verify the final exact PR67 head. Old `4074181` CI is not acceptance |
 | Effective EC2 application-role sharing privileges | **UNVERIFIED** |
-| Fresh isolated recovery rehearsal for the migration target | **UNVERIFIED** |
+| Current recovery evidence for the migration target | Unavailable to preflight: obtain a sufficiently recent verified backup/restore receipt or validated PITR point |
 | 24-record research reconciliation | **BLOCKED: artifact absent, 0/24** |
 | Hosted sharing migration and deployment | **NOT PERFORMED** |
 
@@ -269,20 +272,24 @@ Keep the parent-coordinated backend/migration-before-frontend order.
 
 Read-only preflight found the target compatible with the proposed migration,
 not proof of applied sharing schema or of each privilege through the effective
-EC2 application role. The effective-role check and a fresh isolated backup/restore
-rehearsal remain unverified. No hosted
-migration, role grant, schema mutation or deployment is authorized by this
-handoff itself or performed here. Keep production held until the concrete target,
+EC2 application role. That role remained unverified and recovery evidence was
+unavailable to preflight. Obtain current recovery evidence, including a
+sufficiently recent verified backup/restore receipt or validated PITR point;
+a new restore exercise for each additive migration is not an established gate.
+No hosted migration, role grant, schema mutation or deployment is authorized by
+this handoff itself or performed here. Keep production held until the concrete target,
 recovery evidence, final checks and coordinated release authorization are settled.
 
 Historical frontend previews pointed at production backend revision
 `42d5068bb4c8804a8024df0e4463fb05e0a7e275`, which lacked the candidate/sharing APIs.
 That observation is not a fresh deployment inspection. Verify actual frontend
 and backend targets during release; a standalone frontend preview cannot prove
-a working combined release. The current local browser/API/PostgreSQL journey has
-passed; all four fresh hosted workflows remain required for the current candidate. No
-preview protection change, extra public service, direct main push or approval
-bypass is part of this documentation update.
+a working combined release. The local browser/API/PostgreSQL journey passed on
+the recorded source trees. Hosted workflows had not yet run at this November 7
+pre-push snapshot; the final exact [PR67 head's checks](https://github.com/elischiffler/RoadtripsAreFun/pull/67)
+are the authority for current CI status. No preview protection change, extra
+public service, direct main push or approval bypass is part of this documentation
+update.
 
 Real Cognito, physical-device arrival behavior and the separately approved single
 post-deployment live Mentro/provider check remain distinct acceptance boundaries.
