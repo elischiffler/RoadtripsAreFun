@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import DailyRhythm from '../pages/TripSetup/DailyRhythm';
+import DailyRhythm from '../pages/TripSetup/DailyRhythm.jsx';
 import { dailyScheduleFromRhythm, schedulingPolicyFromDraft } from '../pages/TripSetup/dailyRhythm';
 import { newSetupDraft, setupErrors } from '../pages/TripSetup/setupModel';
 import { applyPreferenceChoices, choicesFromDraft } from '../services/preferenceProfiles';
