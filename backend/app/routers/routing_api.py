@@ -33,13 +33,14 @@ from starlette.concurrency import run_in_threadpool
 
 from app.agent.departure import is_upcoming_departure
 from app.agent.persona import effective_weights
-from app.agent.progress import stage
+from app.agent.progress import emit, stage
 from app.agent.progress_stream import stream_turn
 from app.agent.provider_diagnostics import retry_async
 from app.agent.trip_dates import timezone_from_location
 from app.catalog.place_context import route_place_context
 from app.core.departure_errors import DepartureNotUpcomingHTTPError
 from app.crud.memory_crud import load_account_persona
+from app.models.daily_schedule import DailyRhythmClockError
 from app.models.guided_planning import RouteAlternativesRequest, RouteAlternativesResponse
 from app.models.route_edit import RouteEditRequest, RouteEditResponse
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
@@ -71,6 +72,12 @@ from app.routing.sources.persona_candidates import (
     hotel_candidates,
 )
 from app.routing.travel_timing import apply_timing
+from app.routing.trip_modes import (
+    DepartureOutsideRhythm,
+    RhythmClockConflict,
+    require_one_day,
+    require_overnight_rhythm,
+)
 from app.routing.visit_calendar import VisitCalendarConflict
 from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location  # noqa: F401  (patched in tests)
@@ -319,7 +326,12 @@ router.include_router(guided_router)
 
 @in_run
 async def plan_final_route(
-    payload: Route_Payload, user_id: str | None = None, *, can_select_algorithm: bool = False
+    payload: Route_Payload,
+    user_id: str | None = None,
+    *,
+    can_select_algorithm: bool = False,
+    candidate_context: dict | None = None,
+    assess_only: bool = False,
 ) -> Route:
     """Build and validate the complete road trip for both HTTP and chat callers.
 
@@ -329,10 +341,14 @@ async def plan_final_route(
     Returns a Route with stops, geometry, distance, duration, and hotel quote total.
     Invalid trip inputs and required provider failures propagate to the caller.
     """
-    try:
-        require_occupancy(payload.traveler_count, payload.hotel_rooms)
-    except ValueError as exc:
-        raise PlanningError(str(exc), 422) from exc
+    if payload.trip_mode == "one_day":
+        payload = payload.model_copy(update={"reserve_meal_slots": True})
+    if payload.trip_mode != "one_day":
+        require_overnight_rhythm(payload.scheduling_policy)
+        try:
+            require_occupancy(payload.traveler_count, payload.hotel_rooms)
+        except ValueError as exc:
+            raise PlanningError(str(exc), 422) from exc
     initial_route = payload.initial_route
     start_lon, start_lat = initial_route.geometry.coordinates[0]
     end_lon, end_lat = initial_route.geometry.coordinates[-1]
@@ -369,8 +385,20 @@ async def plan_final_route(
                 raise PlanningError(str(exc), 422) from exc
         if not is_upcoming_departure(start):
             raise DepartureNotUpcoming()
+        if payload.scheduling_policy.daily_schedule:
+            try:
+                zone = ZoneInfo(await services.timezone_at([start_lat, start_lon]))
+                local_start = local_time(start, zone)
+                travel_day = payload.scheduling_policy.travel_day_for(local_start)
+                payload.scheduling_policy.deadline(travel_day, zone, final=True)
+            except DailyRhythmClockError:
+                raise RhythmClockConflict() from None
+            except (ValueError, TypeError):
+                raise DepartureOutsideRhythm() from None
         account = load_account_persona(user_id)
         weights = effective_weights(account.weights, payload.persona_weights)
+    if candidate_context is not None:
+        candidate_context["resolved_start"] = start
     options = PlanOptions(
         num_stops=num_stops,
         budget=budget,
@@ -378,16 +406,23 @@ async def plan_final_route(
         weights=weights,
         scheduling_policy=payload.scheduling_policy,
         reserve_meal_slots=payload.reserve_meal_slots,
+        trip_mode=payload.trip_mode,
         traveler_count=payload.traveler_count,
         hotel_rooms=payload.hotel_rooms,
     )
 
+    if candidate_context is not None and candidate_context.get("verified_candidates") is not None:
+        options._verified_cp_sat_candidates = candidate_context["verified_candidates"]
     # At most one exclusion per bounded candidate. Discovery/solo road checks
     # are cached on these request-local options, including final-leg retries.
     for _ in range(61):
         try:
             # Run the planner to find stopping points.
-            result = await planner.plan(initial_route, options, services)
+            try:
+                result = await planner.plan(initial_route, options, services)
+            finally:
+                if candidate_context is not None:
+                    candidate_context["verified_candidates"] = options._verified_cp_sat_candidates
             stopping_points, total_cost = result.stopping_points, result.total_cost
 
             coordinates = [stop["coordinates"] for stop in stopping_points]
@@ -443,6 +478,17 @@ async def plan_final_route(
                         }
                     )
                 idx += 1
+            if candidate_context is not None:
+                emit(
+                    "route.preview",
+                    phase="checking",
+                    preview_only=True,
+                    geometry=geometry.model_dump() if geometry else None,
+                    stops=[
+                        {key: stop[key] for key in ("name", "coordinates", "type") if key in stop}
+                        for stop in stopping_points
+                    ],
+                )
             start_timezone = payload.start_timezone
             # Final timing validation
             if algorithm.startswith("cp_sat"):
@@ -467,7 +513,7 @@ async def plan_final_route(
                 )
             # Clients consume stops and geometry; turn-by-turn steps remain empty.
             coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
-            return Route(
+            complete = Route(
                 coordinates=coordinates,
                 distance=distance,
                 duration=duration,
@@ -480,11 +526,15 @@ async def plan_final_route(
                 start_timezone=start_timezone,
                 departure_time=start,
                 reserve_meal_slots=payload.reserve_meal_slots,
+                trip_mode=payload.trip_mode,
                 traveler_count=payload.traveler_count,
                 hotel_rooms=payload.hotel_rooms,
                 warnings=[stop["warning"] for stop in stopping_points if stop.get("warning")]
                 or None,
             )
+            if payload.trip_mode == "one_day" and not assess_only:
+                require_one_day(complete)
+            return complete
         except VisitCalendarConflict as exc:
             if exc.provider_id in options.excluded_provider_ids:
                 raise

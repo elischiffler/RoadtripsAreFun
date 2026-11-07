@@ -14,6 +14,7 @@ from app.routing.catalog_calendars import CatalogLookup, refresh_for_timing
 from app.routing.meal_slots import add_meal_windows
 from app.routing.sources.evenings import current_suggestions
 from app.routing.travel_timing import apply_timing
+from app.routing.trip_modes import OneDayIneligible, require_one_day
 from app.routing.visit_calendar import requires_calendar
 from app.routing.visit_duration import visit_seconds
 from app.utils.auth import require_authenticated_user
@@ -79,6 +80,14 @@ async def _build_itinerary(
     Raises:
         HTTPException: if the route is incomplete or the data can't be processed.
     """
+    if data.route.trip_mode == "one_day":
+        # Persisted/caller proof is display metadata, never authority. Rebuilds
+        # recompute the full meal-aware clock and enforce the mode again.
+        data.route.reserve_meal_slots = True
+        if any(stop.get("type") == "hotel" for stop in data.route.stops or []):
+            raise OneDayIneligible("A one-day route cannot contain an overnight hotel stay")
+        if data.route.scheduling_policy is None:
+            raise PlanningError("One-day routes require a validated daily policy and timing", 422)
     if data.route.reserve_meal_slots and (
         data.route.scheduling_policy is None
         or not data.route.stops
@@ -112,6 +121,8 @@ async def _build_itinerary(
     known_departure = current_time is not None
     current_time = current_time or datetime(2024, 9, 21, 9)
     if data.route.scheduling_policy is not None:
+        if data.route.trip_mode == "one_day":
+            data.route.departure_time = current_time
         if data.route.start_timezone:
             current_time = local_time(current_time, ZoneInfo(data.route.start_timezone))
         apply_timing(
@@ -121,6 +132,8 @@ async def _build_itinerary(
             data.route.start_timezone,
             reserve_meal_slots=data.route.reserve_meal_slots,
         )
+    if data.route.trip_mode == "one_day":
+        require_one_day(data.route)
     departure = current_time if known_departure else None
     trip_end = None
 
@@ -182,6 +195,7 @@ async def _build_itinerary(
                 for value in (
                     stop.get("late_check_in_notice"),
                     stop.get("warning"),
+                    stop.get("check_in_timing_notice"),
                     (
                         f"Wait {stop['wait_seconds'] / 60:g} minutes for published opening."
                         if stop.get("wait_seconds", 0) > 0
@@ -203,6 +217,16 @@ async def _build_itinerary(
         # Add the stop to stop_list
         stop_list.append(destination)
         if stop["type"] == "hotel":  # If the stop is a hotel
+            for block in stop.get("daily_rhythm_blocks", []):
+                beginning = datetime.fromisoformat(block["arrival_time"])
+                stop_list.append(
+                    {
+                        **block,
+                        "date": beginning.strftime("%A, %B %d %Y"),
+                        "time": beginning.strftime("%I:%M %p"),
+                        "_sort_time": beginning.isoformat(),
+                    }
+                )
             for suggestion in current_suggestions(stop) if data.route.scheduling_policy else []:
                 visit = (
                     datetime.fromisoformat(suggestion["visit_time"])
