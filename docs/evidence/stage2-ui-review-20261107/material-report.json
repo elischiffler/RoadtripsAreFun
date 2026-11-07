@@ -1,0 +1,87 @@
+{
+  "scope": "Actual MUI/saved-trip presentation with synthetic GET responses; no data writes or providers",
+  "audits": [
+    {
+      "name": "material-390-light-delete-dialog",
+      "primary": {
+        "background": "rgb(22, 91, 80)",
+        "height": 48
+      },
+      "width": 390,
+      "scrollWidth": 390,
+      "dialog": {
+        "left": 32,
+        "right": 358,
+        "top": 329.59375,
+        "bottom": 514.390625
+      },
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(23, 43, 37)",
+      "accent": "rgb(22, 91, 80)",
+      "surface": "rgb(255, 255, 255)",
+      "text": "rgb(23, 43, 37)"
+    },
+    {
+      "name": "material-390-dark-delete-dialog",
+      "primary": {
+        "background": "rgb(155, 220, 199)",
+        "height": 48
+      },
+      "width": 390,
+      "scrollWidth": 390,
+      "dialog": {
+        "left": 32,
+        "right": 358,
+        "top": 329.59375,
+        "bottom": 514.390625
+      },
+      "background": "rgb(28, 44, 37)",
+      "color": "rgb(241, 246, 242)",
+      "accent": "rgb(155, 220, 199)",
+      "surface": "rgb(28, 44, 37)",
+      "text": "rgb(241, 246, 242)"
+    },
+    {
+      "name": "material-1440-light-delete-dialog",
+      "primary": {
+        "background": "rgb(22, 91, 80)",
+        "height": 48
+      },
+      "width": 1440,
+      "scrollWidth": 1440,
+      "dialog": {
+        "left": 484.90625,
+        "right": 955.09375,
+        "top": 369.59375,
+        "bottom": 530.390625
+      },
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(23, 43, 37)",
+      "accent": "rgb(22, 91, 80)",
+      "surface": "rgb(255, 255, 255)",
+      "text": "rgb(23, 43, 37)"
+    },
+    {
+      "name": "material-1440-dark-delete-dialog",
+      "primary": {
+        "background": "rgb(155, 220, 199)",
+        "height": 48
+      },
+      "width": 1440,
+      "scrollWidth": 1440,
+      "dialog": {
+        "left": 484.90625,
+        "right": 955.09375,
+        "top": 369.59375,
+        "bottom": 530.390625
+      },
+      "background": "rgb(28, 44, 37)",
+      "color": "rgb(241, 246, 242)",
+      "accent": "rgb(155, 220, 199)",
+      "surface": "rgb(28, 44, 37)",
+      "text": "rgb(241, 246, 242)"
+    }
+  ],
+  "errors": [],
+  "blocked": []
+}

@@ -1,0 +1,137 @@
+{
+  "scope": "Actual auth presentation and SDK with synthetic intercepted responses; no real account created",
+  "audits": [
+    {
+      "name": "auth-390-light-login",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "theme": "light",
+      "color": "rgb(23, 43, 37)",
+      "background": "rgb(244, 246, 243)"
+    },
+    {
+      "name": "auth-390-light-signup-error",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "theme": "light",
+      "color": "rgb(23, 43, 37)",
+      "background": "rgb(244, 246, 243)"
+    },
+    {
+      "name": "auth-390-light-confirmation-error",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "theme": "light",
+      "color": "rgb(23, 43, 37)",
+      "background": "rgb(244, 246, 243)"
+    },
+    {
+      "name": "auth-390-dark-login",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "theme": "dark",
+      "color": "rgb(241, 246, 242)",
+      "background": "rgb(17, 28, 24)"
+    },
+    {
+      "name": "auth-390-dark-signup-error",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "theme": "dark",
+      "color": "rgb(241, 246, 242)",
+      "background": "rgb(17, 28, 24)"
+    },
+    {
+      "name": "auth-390-dark-confirmation-error",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "theme": "dark",
+      "color": "rgb(241, 246, 242)",
+      "background": "rgb(17, 28, 24)"
+    },
+    {
+      "name": "auth-1440-light-login",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "theme": "light",
+      "color": "rgb(23, 43, 37)",
+      "background": "rgb(244, 246, 243)"
+    },
+    {
+      "name": "auth-1440-light-signup-error",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "theme": "light",
+      "color": "rgb(23, 43, 37)",
+      "background": "rgb(244, 246, 243)"
+    },
+    {
+      "name": "auth-1440-light-confirmation-error",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "theme": "light",
+      "color": "rgb(23, 43, 37)",
+      "background": "rgb(244, 246, 243)"
+    },
+    {
+      "name": "auth-1440-dark-login",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "theme": "dark",
+      "color": "rgb(241, 246, 242)",
+      "background": "rgb(17, 28, 24)"
+    },
+    {
+      "name": "auth-1440-dark-signup-error",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "theme": "dark",
+      "color": "rgb(241, 246, 242)",
+      "background": "rgb(17, 28, 24)"
+    },
+    {
+      "name": "auth-1440-dark-confirmation-error",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "theme": "dark",
+      "color": "rgb(241, 246, 242)",
+      "background": "rgb(17, 28, 24)"
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "operations": [
+    "SignUp",
+    "ConfirmSignUp",
+    "SignUp",
+    "ConfirmSignUp",
+    "SignUp",
+    "ConfirmSignUp",
+    "SignUp",
+    "ConfirmSignUp"
+  ]
+}
