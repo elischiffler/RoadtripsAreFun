@@ -29,7 +29,7 @@ const INTEREST_LABELS = {
   relaxation: 'Relaxation',
   unique_local_experiences: 'Local places',
   family_friendliness: 'Family',
-  crowd_avoidance: 'Quiet places',
+  crowd_avoidance: 'Quiet',
 };
 
 export default function TripSetup({ onSubmit, busy = false, renderEstimate, prepareRoute }) {

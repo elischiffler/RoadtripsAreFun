@@ -333,7 +333,7 @@ it('keeps compact visible interest names in their accessible names and preserves
     ['Scenery', 'Scenic views', 'scenery'],
     ['Arts', 'Art and culture', 'culture_arts'],
     ['Local places', 'Local discoveries', 'unique_local_experiences'],
-    ['Quiet places', 'Quieter places', 'crowd_avoidance'],
+    ['Quiet', 'Quieter places', 'crowd_avoidance'],
   ]) {
     const control = screen.getByRole('checkbox', { name: `${visible} · ${canonical}` });
     expect(control.closest('label')).toHaveTextContent(visible);

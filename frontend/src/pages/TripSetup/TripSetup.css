@@ -870,3 +870,9 @@
     outline: var(--rt-focus-width) solid Highlight;
   }
 }
+
+/* Closed optional tools must contribute only their summary, including when
+   surrounding component styles override the browser's details-content layout. */
+.setup-interest-tools details:not([open]) > :not(summary) {
+  display: none;
+}
