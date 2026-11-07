@@ -13,6 +13,16 @@ from app.models.scheduling_policy import advance, seconds_until
 from app.routing.base import PlanningError
 
 MEALS = (("breakfast", 7, 9, 30 * 60), ("lunch", 12, 14, 45 * 60), ("dinner", 18, 20, 60 * 60))
+
+
+def meal_windows(schedule=None):
+    """Default meal windows on an unwrapped local wake-cycle clock."""
+    shift = 0 if schedule is None else schedule.bounds("sleep")[1] % 24 - 7
+    return tuple(
+        (kind, start + shift, end + shift, duration) for kind, start, end, duration in MEALS
+    )
+
+
 _NOTICE = (
     "Time reserved for a meal break. No venue or safe stopping location is verified; "
     "choose a safe place. Extra driving or parking time is not included. "
