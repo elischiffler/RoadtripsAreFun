@@ -1,3 +1,4 @@
+import PlaceContext from './PlaceContext';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import PropTypes from 'prop-types';
@@ -8,6 +9,7 @@ import './Map.css';
 
 const NO_SUGGESTIONS = [];
 const Map = ({
+  preview = false,
   UserChatData,
   suggestions = NO_SUGGESTIONS,
   selectedSuggestion = null,
@@ -48,6 +50,7 @@ const Map = ({
         return [
           {
             ...stop,
+            place_context: UserChatData.route.place_context?.[stop.provider_id] ?? null,
             number: index + 1,
             name: stop.name || `Stop ${index + 1}`,
             longitude: coordinates[1],
@@ -55,7 +58,7 @@ const Map = ({
           },
         ];
       }),
-    [UserChatData.route.stops]
+    [UserChatData.route.stops, UserChatData.route.place_context]
   );
   const localJourney = import.meta.env.VITE_LOCAL_JOURNEY === 'true';
 
@@ -78,6 +81,7 @@ const Map = ({
         center,
         zoom: 7,
         attributionControl: false,
+        interactive: !preview,
       });
     } catch {
       setMapError(true);
@@ -141,6 +145,7 @@ const Map = ({
     };
   }, [
     geometry,
+    preview,
     localJourney,
     mapToken,
     stops,
@@ -149,7 +154,7 @@ const Map = ({
   ]);
 
   useEffect(() => {
-    if (localJourney || !mapRef.current || !stops.length) return;
+    if (preview || localJourney || !mapRef.current || !stops.length) return;
     const map = mapRef.current;
     const popup = new mapboxgl.Popup({
       offset: 18,
@@ -184,7 +189,7 @@ const Map = ({
         const heading = document.createElement('strong');
         heading.textContent = stop.name;
         content.append(heading);
-        for (const text of [stop.address]) {
+        for (const text of [stop.place_context?.summary, stop.address]) {
           if (!text) continue;
           const line = document.createElement('p');
           line.textContent = text;
@@ -219,7 +224,7 @@ const Map = ({
       stopPopup.current = null;
       markers.forEach((marker) => marker.remove());
     };
-  }, [stops, localJourney, geometry, mapToken]);
+  }, [stops, localJourney, geometry, mapToken, preview]);
 
   useEffect(() => {
     if (localJourney || !mapRef.current) return;
@@ -293,10 +298,7 @@ const Map = ({
       </button>
       <strong>{selectedSuggestion.name}</strong>
       <p>Unscheduled idea · opening hours, availability and detour timing need checking.</p>
-      <p>
-        Source:{' '}
-        {selectedSuggestion.source_attribution || selectedSuggestion.source || 'Place catalog'}
-      </p>
+      <PlaceContext context={selectedSuggestion.place_context} />
     </div>
   );
 
@@ -474,6 +476,7 @@ const Map = ({
               ×
             </button>
             <strong>{selectedStop.name}</strong>
+            <PlaceContext context={selectedStop.place_context} />
             {selectedStop.address && <p>{selectedStop.address}</p>}
           </div>
         )}
@@ -499,6 +502,7 @@ const Map = ({
 };
 
 Map.propTypes = {
+  preview: PropTypes.bool,
   UserChatData: PropTypes.object.isRequired,
   suggestions: PropTypes.arrayOf(PropTypes.object),
   selectedSuggestion: PropTypes.object,

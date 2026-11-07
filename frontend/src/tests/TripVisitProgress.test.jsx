@@ -66,6 +66,7 @@ it('marks only explicit visits, preserves unknown data, saves and supports undo'
   expect(screen.getByText('0 of 1 stops visited')).toBeInTheDocument();
   expect(screen.getByRole('region', { name: 'Open meal windows' })).toHaveTextContent('12:00 PM');
   expect(screen.queryByRole('button', { name: /visited: Lunch/ })).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Correct an arrival' }));
   await userEvent.click(screen.getByRole('button', { name: 'Mark visited: Past visit' }));
   expect(await screen.findByText('Visit updates saved.')).toBeInTheDocument();
   expect(screen.getByText('1 of 1 stops visited')).toBeInTheDocument();
@@ -77,6 +78,7 @@ it('marks only explicit visits, preserves unknown data, saves and supports undo'
 it('keeps failed updates local with retry and does not claim they were saved', async () => {
   updateUserData.mockResolvedValueOnce(false).mockResolvedValueOnce(true);
   render(<Fixture />);
+  await userEvent.click(screen.getByRole('button', { name: 'Correct an arrival' }));
   await userEvent.click(screen.getByRole('button', { name: 'Mark visited: Past visit' }));
   expect(await screen.findByText(/could not be saved/)).toBeInTheDocument();
   expect(screen.getByText('1 of 1 stops visited')).toBeInTheDocument();
@@ -96,6 +98,7 @@ it('ignores a completion after the account session changes', async () => {
       })
   );
   render(<Fixture />);
+  await userEvent.click(screen.getByRole('button', { name: 'Correct an arrival' }));
   await userEvent.click(screen.getByRole('button', { name: 'Mark visited: Past visit' }));
   expect(screen.getByRole('button', { name: 'Undo visited: Past visit' })).toBeDisabled();
   act(() => signOut());
@@ -104,6 +107,6 @@ it('ignores a completion after the account session changes', async () => {
 });
 it('switches saved trip views without losing the selected trip identity', async () => {
   render(<Fixture />);
-  await userEvent.click(screen.getByRole('link', { name: 'Map' }));
+  await userEvent.click(screen.getByRole('link', { name: 'View map' }));
   expect(sessionStorage.getItem('selectedChatId')).toBe('42');
 });

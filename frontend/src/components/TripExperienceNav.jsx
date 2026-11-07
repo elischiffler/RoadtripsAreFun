@@ -6,6 +6,9 @@ export default function TripExperienceNav({ trip, view }) {
   const select = () => sessionStorage.setItem('selectedChatId', String(trip.chatId));
   return (
     <nav className="trip-view-nav" aria-label="Trip views">
+      <Link to="/trip" onClick={select} aria-current={view === 'trip' ? 'page' : undefined}>
+        Trip
+      </Link>
       <Link
         to="/itinerary"
         onClick={select}
@@ -14,13 +17,19 @@ export default function TripExperienceNav({ trip, view }) {
         Itinerary
       </Link>
       <Link to="/map" onClick={select} aria-current={view === 'map' ? 'page' : undefined}>
-        Map
+        View map
       </Link>
-      <Link to="/trips">Saved trips</Link>
+      <Link
+        to="/itinerary/edit"
+        onClick={select}
+        aria-current={view === 'edit' ? 'page' : undefined}
+      >
+        Edit itinerary
+      </Link>
     </nav>
   );
 }
 TripExperienceNav.propTypes = {
   trip: PropTypes.object.isRequired,
-  view: PropTypes.oneOf(['itinerary', 'map']).isRequired,
+  view: PropTypes.oneOf(['trip', 'itinerary', 'map', 'edit']).isRequired,
 };

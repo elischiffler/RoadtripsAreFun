@@ -1,0 +1,85 @@
+.rt-design .trip-facts {
+  display: grid;
+  gap: var(--rt-space-4);
+  margin: 0;
+}
+.rt-design .trip-facts div {
+  display: grid;
+  gap: var(--rt-space-1);
+}
+.rt-design .trip-facts dt {
+  color: var(--rt-color-secondary);
+  font-size: var(--rt-text-small);
+}
+.rt-design .trip-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.rt-design .trip-map-preview {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: var(--rt-map-preview-height);
+  overflow: hidden;
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-color-route-surface);
+  color: var(--rt-color-route);
+}
+.rt-design .trip-map-preview svg {
+  width: 100%;
+  height: 100%;
+}
+.rt-design .trip-map-preview-label {
+  position: absolute;
+  right: var(--rt-space-3);
+  bottom: var(--rt-space-3);
+  padding: var(--rt-space-3);
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-color-surface);
+  color: var(--rt-color-accent);
+}
+.rt-design .trip-itinerary-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+}
+.rt-design .trip-itinerary-heading a {
+  display: flex;
+  align-items: center;
+  min-height: var(--rt-target-min);
+  color: var(--rt-color-accent);
+}
+.rt-design .trip-itinerary-scroll {
+  max-height: 65dvh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  border: var(--rt-border-width) solid var(--rt-color-border);
+  border-radius: var(--rt-radius-sheet);
+}
+.rt-design .trip-itinerary-scroll:focus-visible,
+.rt-design .trip-map-preview:focus-visible {
+  outline: var(--rt-focus-width) solid var(--rt-color-focus);
+  outline-offset: var(--rt-focus-offset);
+}
+@media (min-width: 48rem) {
+  .rt-design.trip-page .rt-design__content {
+    max-inline-size: var(--rt-trip-content-width);
+  }
+  .rt-design .trip-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.rt-design .trip-map-preview-link {
+  z-index: 2;
+  position: absolute;
+  inset: 0 0 var(--rt-space-8);
+  display: grid;
+  place-items: center;
+  color: inherit;
+}
+.rt-design .trip-map-preview-link:focus-visible {
+  outline: var(--rt-focus-width) solid var(--rt-color-focus);
+  outline-offset: calc(-1 * var(--rt-focus-width));
+}

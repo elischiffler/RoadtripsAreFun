@@ -23,7 +23,12 @@ const PasswordField = ({
     InputProps={{
       endAdornment: (
         <InputAdornment position="end">
-          <IconButton onClick={onTogglePasswordVisibility}>
+          <IconButton
+            type="button"
+            aria-label={`${showPassword ? 'Hide' : 'Show'} ${label.toLowerCase()}`}
+            aria-pressed={showPassword}
+            onClick={onTogglePasswordVisibility}
+          >
             {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
           </IconButton>
         </InputAdornment>

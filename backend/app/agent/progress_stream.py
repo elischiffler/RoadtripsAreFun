@@ -11,11 +11,13 @@ import threading
 from fastapi import HTTPException
 
 from app.agent.progress import reporting, stage
+from app.core.candidate_errors import CandidateHTTPError, public_candidate_error
 from app.core.departure_errors import (
     DEPARTURE_NOT_UPCOMING_CODE,
     DEPARTURE_NOT_UPCOMING_MESSAGE,
     DepartureNotUpcomingHTTPError,
 )
+from app.routing.meal_reservations import MealScheduleHTTPError
 
 HEARTBEAT_SECONDS = 10
 
@@ -54,6 +56,11 @@ async def stream_turn(run, *, stage_name="planner.run"):
                     "detail": DEPARTURE_NOT_UPCOMING_MESSAGE,
                 }
             )
+        except MealScheduleHTTPError as exc:
+            publish({"type": "error", "status": 422, "code": exc.code, "detail": exc.detail})
+        except CandidateHTTPError as exc:
+            status, code, message = public_candidate_error(exc)
+            publish({"type": "error", "status": status, "code": code, "detail": message})
         except HTTPException as exc:
             publish({"type": "error", "status": exc.status_code})
         except Exception:

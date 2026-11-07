@@ -6,16 +6,17 @@ import {
   SessionError,
 } from './session';
 import { isAuthRejection, sessionRequest } from './protectedRequest';
+import { candidateErrorMessage } from './planningCandidateErrors';
 
 const abortError = () => new DOMException('Trip planning was stopped.', 'AbortError');
-const DEPARTURE_NOT_UPCOMING = 'Choose a departure date and time in the future.';
-const streamError = (status, detail) =>
+const streamError = (status, detail, code) =>
   Object.assign(new Error('The planning service could not finish.'), {
-    response: { status, data: detail ? { detail } : undefined },
+    ...(code ? { code } : {}),
+    response: { status, data: detail ? { detail, ...(code ? { code } : {}) } : undefined },
   });
 
 /** Authenticated account planning. Never replay a request after streaming begins. */
-export async function streamTripRoute(payload, signal, onProgress) {
+async function streamPlanningRequest(endpoint, payload, signal, onProgress) {
   const started = getSession();
   const controller = new AbortController();
   const cancel = () => controller.abort();
@@ -45,7 +46,7 @@ export async function streamTripRoute(payload, signal, onProgress) {
       const { config } = sessionRequest(session, null, {
         headers: { 'Content-Type': 'application/json', Accept: 'application/x-ndjson' },
       });
-      response = await fetch(`${import.meta.env.VITE_BACKEND_SERVER}generate-final-route/stream`, {
+      response = await fetch(`${import.meta.env.VITE_BACKEND_SERVER}${endpoint}`, {
         method: 'POST',
         headers: config.headers,
         body: JSON.stringify(payload),
@@ -76,13 +77,18 @@ export async function streamTripRoute(payload, signal, onProgress) {
       const event = JSON.parse(line);
       if (!event || typeof event !== 'object') throw new Error('Invalid trip progress event.');
       if (event.type === 'error') {
-        // Public guidance comes from an exact application-owned contract, never
-        // provider details carried by an arbitrary streamed error.
+        // Public guidance is limited to exact application-owned error contracts.
+        // Provider details and errors with other statuses remain redacted.
+        const candidateDetail = candidateErrorMessage(event.status, event.code);
         const detail =
-          event.status === 422 && event.code === 'departure_not_upcoming'
-            ? DEPARTURE_NOT_UPCOMING
-            : undefined;
-        throw streamError(event.status ?? 503, detail);
+          candidateDetail ||
+          (event.status === 422 &&
+          event.code === 'meal_schedule_conflict' &&
+          typeof event.detail === 'string' &&
+          event.detail.length <= 1000
+            ? event.detail
+            : undefined);
+        throw streamError(event.status ?? 503, detail, candidateDetail ? event.code : undefined);
       }
       if (!['progress', 'heartbeat', 'result'].includes(event.type))
         throw new Error('Unexpected trip progress event.');
@@ -134,3 +140,12 @@ export async function streamTripRoute(payload, signal, onProgress) {
     await reader?.cancel().catch(() => {});
   }
 }
+
+export const streamTripRoute = (payload, signal, onProgress) =>
+  streamPlanningRequest('generate-final-route/stream', payload, signal, onProgress);
+
+export const streamPlanningCandidate = (payload, signal, onProgress) =>
+  streamPlanningRequest('planning-candidates/stream', payload, signal, onProgress);
+
+export const streamRoutePreparation = (payload, signal, onProgress) =>
+  streamPlanningRequest('route-preparation/stream', payload, signal, onProgress);

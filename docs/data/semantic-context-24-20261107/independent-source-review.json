@@ -1,0 +1,730 @@
+{
+  "schema_version": "roadtrips-independent-semantic-source-review/1",
+  "review_date_utc": "2026-11-07",
+  "reviewer": "release_review",
+  "archive_sha256": "7188e78636224ea8fa786c222936a0f9e551af466a6ff782547640da7ff7ae88",
+  "research_json_sha256": "65d9d8943b21e832eab4c53701862633fa58044e903e1d9fc46c0b47c998033d",
+  "scope": "Independent primary-source factual/component/rights metadata review. No worker files, source facts, scores, calendars, coordinates, admissions or live databases changed.",
+  "summary": {
+    "records": 24,
+    "clear": 21,
+    "trim": 3,
+    "withhold_whole_record": 0,
+    "cited_primary_urls_opened": 35,
+    "readable_cited_primary_urls": 34,
+    "blocked_cited_primary_urls": 1,
+    "new_images_omitted": 2
+  },
+  "source_access": [
+    {
+      "id": "wing-explore",
+      "url": "https://www.wingluke.org/explore",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "wonder-exhibits",
+      "url": "https://wonderlab.org/featured-exhibits/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "wonder-visit",
+      "url": "https://wonderlab.org/my-visit-to-wonderlab/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "confusion-attractions",
+      "url": "https://www.confusionhill.com/attractions",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "crmo-center",
+      "url": "https://www.nps.gov/crmo/planyourvisit/visitor-center.htm",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "crmo-park",
+      "url": "https://www.nps.gov/crmo/index.htm",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "cave-center",
+      "url": "https://www.nps.gov/cave/planyourvisit/visitor-center.htm",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "pefo-centers",
+      "url": "https://www.nps.gov/pefo/planyourvisit/visitorcenters.htm",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "phoenix-garden-about",
+      "url": "https://www.japanesefriendshipgarden.org/about",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "ncbg-home",
+      "url": "https://ncbg.unc.edu/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "ncbg-visit",
+      "url": "https://ncbg.unc.edu/visit/",
+      "independent_review_status": "http_403_stop_no_retry",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "prehistoric-dinosaurs",
+      "url": "https://www.prehistoricgardens.com/the-dinosaurs",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "prehistoric-rainforest",
+      "url": "https://www.prehistoricgardens.com/the-rainforest-1",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "cathedral-park",
+      "url": "https://www.alapark.com/parks/cathedral-caverns-state-park",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "naturalbridge-discovery",
+      "url": "https://naturalbridgecaverns.com/tour/discovery-tour/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "naturalbridge-hidden",
+      "url": "https://naturalbridgecaverns.com/tour/hidden-wonders/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "cypress-attractions",
+      "url": "https://cypressgardens.berkeleycountysc.gov/attractions-activities/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "myriad-visit",
+      "url": "https://myriadgardens.org/visit-us/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "myriad-crystal",
+      "url": "https://myriadgardens.org/crystalbridge/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "dow-forest",
+      "url": "https://dowgardens.org/forest/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "waikiki-habitats",
+      "url": "https://www.waikikiaquarium.org/experience/exhibits/hawaiian-marine-communities/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "waikiki-living-reef",
+      "url": "https://www.waikikiaquarium.org/experience/exhibits/the-living-reef/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "georgia-ocean-voyager",
+      "url": "https://www.georgiaaquarium.org/gallery/ocean-voyager/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "armenian-home",
+      "url": "https://www.armenianmuseum.org/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "connections-seattle",
+      "url": "https://www.telcomhistory.org/ConnectionsSeattle.html",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "pinball-home",
+      "url": "https://seattlepinballmuseum.com/home",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "martin-collection",
+      "url": "https://www.martinautomuseum.org/collection",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "martin-tickets",
+      "url": "https://www.martinautomuseum.org/tickets",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "martin-visit",
+      "url": "https://www.martinautomuseum.org/visit",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "delta-collection",
+      "url": "https://www.deltabluesmuseum.org/collection.aspx",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "delta-home",
+      "url": "https://www.deltabluesmuseum.org/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "peabody-exhibitions",
+      "url": "https://peabody.yale.edu/explore/exhibitions",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "reno-visit",
+      "url": "https://automuseum.org/visit/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "reno-home",
+      "url": "https://automuseum.org/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    },
+    {
+      "id": "alaska-home",
+      "url": "https://alaskaairmuseum.org/",
+      "independent_review_status": "primary_page_readable",
+      "observed_date_utc": "2026-11-07"
+    }
+  ],
+  "records": [
+    {
+      "index": 1,
+      "source_id": "03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+      "catalog_name": "Wing Luke Museum",
+      "region": "WA",
+      "decision": "clear",
+      "source_review_note": "Museum galleries and preserved Freeman Hotel spaces match the Seattle component; neighborhood food/walking tours stay separate.",
+      "source_urls": [
+        "https://www.wingluke.org/explore"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": true,
+      "inspected_provider_id": "overture:03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+      "inspected_source_row_sha256": "6b30361d9c75f4484fcb9a5c1162991d7a1d16fc4c84129029c6799fe0130b33"
+    },
+    {
+      "index": 2,
+      "source_id": "catalog-pilot:wikidata:Q8031716",
+      "catalog_name": "WonderLab",
+      "region": "IN",
+      "decision": "clear",
+      "source_review_note": "Interactive science, water/bubbles, wind-tunnel construction and sound exhibits are directly supported; no old mask or operating policies imported.",
+      "source_urls": [
+        "https://wonderlab.org/featured-exhibits/",
+        "https://wonderlab.org/my-visit-to-wonderlab/"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": true,
+      "inspected_provider_id": "catalog-pilot:wikidata:Q8031716",
+      "inspected_source_row_sha256": "85fd13209a363197ba21bacaac30142b5af8e4f8d6bab41264198f5a495fb598"
+    },
+    {
+      "index": 3,
+      "source_id": "wikidata-park:Q5160318",
+      "catalog_name": "Confusion Hill",
+      "region": "CA",
+      "decision": "clear",
+      "source_review_note": "Gravity House and train remain distinct; the train activity must retain its when-operating condition. Seasonal closure stays dated research metadata.",
+      "source_urls": [
+        "https://www.confusionhill.com/attractions"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": true,
+      "inspected_provider_id": "wikidata-park:Q5160318",
+      "inspected_source_row_sha256": "bec257e102b7e36b950a101cfcd13401a6f7fbacab03d4b8fef67770c8e7462f"
+    },
+    {
+      "index": 4,
+      "source_id": "nps-heritage:crmo",
+      "catalog_name": "Craters Of The Moon National Monument & Preserve — Robert Limbert Visitor Center",
+      "region": "ID",
+      "decision": "clear",
+      "source_review_note": "Robert Limbert Visitor Center only. Park lava landscape supplies context, not included hikes or cave access.",
+      "source_urls": [
+        "https://www.nps.gov/crmo/planyourvisit/visitor-center.htm",
+        "https://www.nps.gov/crmo/index.htm"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": true,
+      "inspected_provider_id": "nps-heritage:crmo",
+      "inspected_source_row_sha256": "f086c5f796f90c70ae55d31cc05cc2ddfeb3b962110f6d1801add4083f2ab5f3"
+    },
+    {
+      "index": 5,
+      "source_id": "nps:cave",
+      "catalog_name": "Carlsbad Caverns National Park — Visitor Center",
+      "region": "NM",
+      "decision": "clear",
+      "source_review_note": "Visitor-center exhibits and introductory film only. No cavern admission, tour slot or visit duration is established.",
+      "source_urls": [
+        "https://www.nps.gov/cave/planyourvisit/visitor-center.htm"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": true,
+      "inspected_provider_id": "nps:cave",
+      "inspected_source_row_sha256": "f979a132a3d50159fb45bb3461e233d0f8eed79810c3fb3b607e62007c688a58"
+    },
+    {
+      "index": 6,
+      "source_id": "nps:pefo",
+      "catalog_name": "Petrified Forest National Park — Rainbow Forest Museum",
+      "region": "AZ",
+      "decision": "clear",
+      "source_review_note": "Rainbow Forest Museum near south entrance; access to named trails is optional and separate. Do not import the other visitor center construction closure.",
+      "source_urls": [
+        "https://www.nps.gov/pefo/planyourvisit/visitorcenters.htm"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": true,
+      "inspected_provider_id": "nps:pefo",
+      "inspected_source_row_sha256": "a3d79b19a3e60299d17fd11ae76eabba6a90c96541a640a62508057c846a18aa"
+    },
+    {
+      "index": 7,
+      "source_id": "e4919ff5-f961-431a-9f46-0ecdd6b20a5d",
+      "catalog_name": "Japanese Friendship Garden",
+      "region": "AZ",
+      "decision": "clear",
+      "source_review_note": "Phoenix Rohoen stroll-garden identity, curved paths, water, stone features and garden design are supported. No scheduled tea experience is included.",
+      "source_urls": [
+        "https://www.japanesefriendshipgarden.org/about"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": true,
+      "inspected_provider_id": "overture:e4919ff5-f961-431a-9f46-0ecdd6b20a5d",
+      "inspected_source_row_sha256": "fb46a14635bff443f9be614d39d4e94cf8ecec97a9db37a2fa2801e1e0ee726c"
+    },
+    {
+      "index": 8,
+      "source_id": "catalog-pilot:wikidata:Q1099139",
+      "catalog_name": "North Carolina Botanical Garden",
+      "region": "NC",
+      "decision": "trim",
+      "source_review_note": "Use the independently readable homepage only; blocked visit-page gallery/trail/rear-entry claims are withheld from runtime.",
+      "source_urls": [
+        "https://ncbg.unc.edu/",
+        "https://ncbg.unc.edu/visit/"
+      ],
+      "proposed_trim": {
+        "summary": "A conservation garden in Chapel Hill with plant displays and a focus on connections between plants, people and place.",
+        "activities": [
+          "Explore the display gardens"
+        ],
+        "source_urls": [
+          "https://ncbg.unc.edu/"
+        ],
+        "withheld_claims": [
+          "exhibit hall and art gallery",
+          "Piedmont Nature Trails, wooded creeks and hills",
+          "rear-entrance vehicle restriction"
+        ]
+      },
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "catalog-pilot:wikidata:Q1099139",
+      "inspected_source_row_sha256": "96f09bb786b1991d1be1e4d6eb297b8e6d649e1c1d28692b59f6f868d0fa0e03"
+    },
+    {
+      "index": 9,
+      "source_id": "catalog-pilot:wikidata:Q48803945",
+      "catalog_name": "Prehistoric Gardens",
+      "region": "OR",
+      "decision": "clear",
+      "source_review_note": "Outdoor self-guided model-dinosaur trail and temperate rainforest are supported; no live animals, fossil excavation or exact dinosaur count inferred.",
+      "source_urls": [
+        "https://www.prehistoricgardens.com/the-dinosaurs",
+        "https://www.prehistoricgardens.com/the-rainforest-1"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "catalog-pilot:wikidata:Q48803945",
+      "inspected_source_row_sha256": "926c003d260485162ed19552a347a47cf939ffd222ce283891d785ae77cf6288"
+    },
+    {
+      "index": 10,
+      "source_id": "catalog-pilot:wikidata:Q1050851",
+      "catalog_name": "Cathedral Caverns State Park",
+      "region": "AL",
+      "decision": "clear",
+      "source_review_note": "Cavern formations, separate tours, park trails and seeded gem-sifting are supported. No reservation, time slot or accessibility guarantee.",
+      "source_urls": [
+        "https://www.alapark.com/parks/cathedral-caverns-state-park"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "catalog-pilot:wikidata:Q1050851",
+      "inspected_source_row_sha256": "09d1756c9780ec0034355c283df6cf40c32da779fec2fe9ef0a3d6f8ae2b565c"
+    },
+    {
+      "index": 11,
+      "source_id": "catalog-pilot:wikidata:Q10856113",
+      "catalog_name": "Natural Bridge Caverns",
+      "region": "TX",
+      "decision": "clear",
+      "source_review_note": "Discovery and Hidden Wonders are distinct guided products. Belt-assisted exit is not wheelchair/accessibility evidence.",
+      "source_urls": [
+        "https://naturalbridgecaverns.com/tour/discovery-tour/",
+        "https://naturalbridgecaverns.com/tour/hidden-wonders/"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "catalog-pilot:wikidata:Q10856113",
+      "inspected_source_row_sha256": "6c82508dd9488ac5d138b012e88f648a37ace350672d17601d30b696aa05b2f2"
+    },
+    {
+      "index": 12,
+      "source_id": "catalog-pilot:wikidata:Q5200329",
+      "catalog_name": "Cypress Gardens",
+      "region": "SC",
+      "decision": "clear",
+      "source_review_note": "Moncks Corner South Carolina county attraction, not Florida. Boat options remain conditional; no guaranteed wildlife or tour inclusion.",
+      "source_urls": [
+        "https://cypressgardens.berkeleycountysc.gov/attractions-activities/"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "catalog-pilot:wikidata:Q5200329",
+      "inspected_source_row_sha256": "6b5013b862cd2c36a4cd42aeee8f7ae0c4a098957c9a24125069c31550da11ee"
+    },
+    {
+      "index": 13,
+      "source_id": "catalog-pilot:wikidata:Q14708625",
+      "catalog_name": "Myriad Botanical Gardens",
+      "region": "OK",
+      "decision": "clear",
+      "source_review_note": "Outdoor grounds and separately ticketed Crystal Bridge are distinguished. Seasonal exterior water closure does not close the conservatory waterfall.",
+      "source_urls": [
+        "https://myriadgardens.org/visit-us/",
+        "https://myriadgardens.org/crystalbridge/"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "catalog-pilot:wikidata:Q14708625",
+      "inspected_source_row_sha256": "352c5543666a98d53b2821ecc0668aa2ce8b91c96552618d246ac115caacc337"
+    },
+    {
+      "index": 14,
+      "source_id": "catalog-pilot:wikidata:Q5302612",
+      "catalog_name": "Dow Gardens",
+      "region": "MI",
+      "decision": "trim",
+      "source_review_note": "Prefer includes Whiting Forest to an adjoining separate forest; the source explicitly identifies it as part of Dow Gardens.",
+      "source_urls": [
+        "https://dowgardens.org/forest/"
+      ],
+      "proposed_trim": {
+        "instruction": "Replace an adjoining forest experience with includes Whiting Forest, retaining the supported canopy/woodland/pond/orchard/meadow facts."
+      },
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "catalog-pilot:wikidata:Q5302612",
+      "inspected_source_row_sha256": "6eadd41ef8792d8b77d4ba7d227754e38b7666d634e936c64492db80f36bca2d"
+    },
+    {
+      "index": 15,
+      "source_id": "57193dd5-6aa9-4857-98bc-60e2097c3af0",
+      "catalog_name": "Waikiki Aquarium",
+      "region": "HI",
+      "decision": "clear",
+      "source_review_note": "Hawaiian habitat gallery and Living Reef coral displays match the Honolulu aquarium. No touch/encounter or specific animal guarantee.",
+      "source_urls": [
+        "https://www.waikikiaquarium.org/experience/exhibits/hawaiian-marine-communities/",
+        "https://www.waikikiaquarium.org/experience/exhibits/the-living-reef/"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": true,
+      "inspected_provider_id": "overture:57193dd5-6aa9-4857-98bc-60e2097c3af0",
+      "inspected_source_row_sha256": "d43a1a41b64caf8d8905fa8b725350037f8fd5d16559f4c10a6621fc40c7e10d"
+    },
+    {
+      "index": 16,
+      "source_id": "catalog-pilot:wikidata:Q1155919",
+      "catalog_name": "Georgia Aquarium",
+      "region": "GA",
+      "decision": "trim",
+      "source_review_note": "Avoid an implied current count of whale sharks; use singular/species-neutral wording. Tunnel/window core and manta-ray context are supported.",
+      "source_urls": [
+        "https://www.georgiaaquarium.org/gallery/ocean-voyager/"
+      ],
+      "proposed_trim": {
+        "instruction": "Replace Whale sharks, manta rays and other fish with A whale shark, manta rays and other fish or species-neutral sharks, rays and other fish; do not introduce a numeric animal census."
+      },
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "catalog-pilot:wikidata:Q1155919",
+      "inspected_source_row_sha256": "41e42d250b46d6a33deca0251e18da055459695f82e77469e4eb5ea21372462d"
+    },
+    {
+      "index": 17,
+      "source_id": "05672cd0-77c3-41db-97c1-929f3c0ebe9d",
+      "catalog_name": "Armenian Museum of America",
+      "region": "MA",
+      "decision": "clear",
+      "source_review_note": "Watertown cultural overview, genocide exhibition and ongoing Karsh portraits are supported. Renovation/holiday observations remain dated metadata.",
+      "source_urls": [
+        "https://www.armenianmuseum.org/"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": true,
+      "inspected_provider_id": "overture:05672cd0-77c3-41db-97c1-929f3c0ebe9d",
+      "inspected_source_row_sha256": "75fbabd464539cf5039b93142748eafe44ffaed324097cc648d9dbe1fd609695"
+    },
+    {
+      "index": 18,
+      "source_id": "2abb1511-8b94-4503-8c49-46c17ddae309",
+      "catalog_name": "Connections Museum",
+      "region": "WA",
+      "decision": "clear",
+      "source_review_note": "Seattle Georgetown component, working switches and volunteer interpretation are supported. Do not import site hours, age guidance or visit duration as new route rules.",
+      "source_urls": [
+        "https://www.telcomhistory.org/ConnectionsSeattle.html"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "overture:2abb1511-8b94-4503-8c49-46c17ddae309",
+      "inspected_source_row_sha256": "350d3f02114b3bd741896a11b91e8eff841375227a9eed70994d40fdd283d001"
+    },
+    {
+      "index": 19,
+      "source_id": "69bc4e96-e908-43cc-af03-8aa4c9d5880f",
+      "catalog_name": "Seattle Pinball Museum",
+      "region": "WA",
+      "decision": "clear",
+      "source_review_note": "Maynard Avenue Seattle playable pinball museum matches. Admission/under-seven constraint is dated research, not a new family-fit rating or availability promise.",
+      "source_urls": [
+        "https://seattlepinballmuseum.com/home"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "overture:69bc4e96-e908-43cc-af03-8aa4c9d5880f",
+      "inspected_source_row_sha256": "98818402a37226322c61e0603d1f0ae2c2900ff2598b21c34e7d290d7c8ed16f"
+    },
+    {
+      "index": 20,
+      "source_id": "c630ba4d-42aa-40af-87d7-57e2256b5f1b",
+      "catalog_name": "Martin Auto Museum",
+      "region": "AZ",
+      "decision": "clear",
+      "source_review_note": "Same Thunderbird Road street address; preserve the existing catalog city/address and record the Glendale/Phoenix discrepancy internally. Replica terminology is correct.",
+      "source_urls": [
+        "https://www.martinautomuseum.org/collection",
+        "https://www.martinautomuseum.org/tickets",
+        "https://www.martinautomuseum.org/visit"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "overture:c630ba4d-42aa-40af-87d7-57e2256b5f1b",
+      "inspected_source_row_sha256": "8d9a8fbe92d592fd7b9d88cbcfe77e957a8821aa2d1e2d96ae987528ff037264"
+    },
+    {
+      "index": 21,
+      "source_id": "catalog-pilot:wikidata:Q1184855",
+      "catalog_name": "Delta Blues Museum",
+      "region": "MS",
+      "decision": "clear",
+      "source_review_note": "Clarksdale collection and the saved core of Muddy Waters former home match. No live performance or whole restored-home claim; closures/photo rules stay dated metadata.",
+      "source_urls": [
+        "https://www.deltabluesmuseum.org/collection.aspx",
+        "https://www.deltabluesmuseum.org/"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "catalog-pilot:wikidata:Q1184855",
+      "inspected_source_row_sha256": "bc3e48ac54f0daf24485974dd0f3379799dcc9934031aa2c4ef87a78fcacd436"
+    },
+    {
+      "index": 22,
+      "source_id": "catalog-pilot:wikidata:Q122945",
+      "catalog_name": "Yale Peabody Museum",
+      "region": "CT",
+      "decision": "clear",
+      "source_review_note": "Public New Haven galleries, fossils, minerals, dioramas, culture/science and Living Lab match; no research-collection access or touch guarantee.",
+      "source_urls": [
+        "https://peabody.yale.edu/explore/exhibitions"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": false,
+      "inspected_provider_id": "catalog-pilot:wikidata:Q122945",
+      "inspected_source_row_sha256": "a1f0b4dc8a297546fd28381a59efa1b1f0afe32088577418364838bef2f46904"
+    },
+    {
+      "index": 23,
+      "source_id": "catalog-pilot:entertainment-reno",
+      "catalog_name": "National Automobile Museum",
+      "region": "NV",
+      "decision": "clear",
+      "source_review_note": "Reno historic streetscapes, sounds, artifacts, theatre, horn and photo car are explicitly supported. Guided tours remain volunteer-dependent.",
+      "source_urls": [
+        "https://automuseum.org/visit/",
+        "https://automuseum.org/"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": true,
+      "inspected_provider_id": "catalog-pilot:entertainment-reno",
+      "inspected_source_row_sha256": "bad642fb0e71f146c323ccd19b9bbfe946baa59ee609319eb78db84406bf2582"
+    },
+    {
+      "index": 24,
+      "source_id": "a83224d1-0e20-459e-94bf-7163444a2821",
+      "catalog_name": "Alaska Aviation Museum",
+      "region": "AK",
+      "decision": "clear",
+      "source_review_note": "Lake Hood hangars, restoration viewing and Seybert Tower match. Retain when-volunteers-are-working wording; no daily P-40 demonstration, flight or airport access promised.",
+      "source_urls": [
+        "https://alaskaairmuseum.org/"
+      ],
+      "proposed_trim": null,
+      "eligibility_change": false,
+      "current_catalog_binding": "Identity/source-row hash matched independently to current read-only reconciliation artifact; runtime admission/calendar checks remain authoritative.",
+      "current_policy_eligible_at_inspected_clock": true,
+      "inspected_provider_id": "overture:a83224d1-0e20-459e-94bf-7163444a2821",
+      "inspected_source_row_sha256": "9d8e13c0994ac939853fe91e4cec926298b512ef9500e000afb5b48eae41abf3"
+    }
+  ],
+  "held_outside_24": [
+    {
+      "source_id": "catalog-pilot:fdep-beach:FL297",
+      "decision": "withhold",
+      "reason": "Henderson Beach had snippet-only/403 evidence in intake and is excluded; no independent retry or workaround attempted. Not part of the 24."
+    }
+  ],
+  "images": [
+    {
+      "source_id": "03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+      "decision": "omit_new_runtime_image",
+      "license_metadata": "Commons records CC0-1.0, Seattle City Council, 2010-04-23, 800x600; Flickr license review dated 2017-05-18. Original Flickr license not independently reopened.",
+      "revision_url": "https://commons.wikimedia.org/w/index.php?title=File:Wing_Luke_Museum_(13928326428).jpg&oldid=1185029680",
+      "reason": "Metadata declaration checked; actual bytes, checksum, composition, current component identity and crop suitability not reviewed. No asset downloaded or selected."
+    },
+    {
+      "source_id": "wikidata-park:Q5160318",
+      "decision": "omit_new_runtime_image",
+      "license_metadata": "Commons own-work declaration by Ijon, CC-BY-SA-4.0, 2016-02-03, 3264x2448; attribution/source/license/change notice and applicable adaptation ShareAlike terms apply if later used.",
+      "revision_url": "https://commons.wikimedia.org/w/index.php?title=File:Confusion_Hill_signage.jpg&oldid=1131882251",
+      "reason": "Metadata declaration checked; signage is not a current Gravity House/train availability photo. Actual bytes/checksum/visual fit were not reviewed; no asset downloaded or selected."
+    }
+  ],
+  "license_sources": [
+    "https://creativecommons.org/publicdomain/zero/1.0/",
+    "https://creativecommons.org/licenses/by-sa/4.0/"
+  ],
+  "integration_requirements": [
+    "Bind only exact inspected current native identity/source/arrival coordinates; preserve canonical facts and pins. All24 intake source-row hashes matched the current inspection encoding, but none is the active generation hash. Existing runtime admission/calendar gates remain authoritative.",
+    "Preserve existing seven context bindings and one image; do not count them as overlap without exact evidence.",
+    "Never derive or overwrite weights, attribute ratings, preferences, source categories, route eligibility, visit duration, hours, parking or accessibility from inferred_traveler_fit or these descriptions.",
+    "Temporary conditions and visitor constraints remain dated research metadata; no calendar/admission mutation or false current availability claim.",
+    "NCBG /visit/ 403 is an evidence-access boundary, not evidence of venue closure or routing ineligibility. Only independent homepage-supported narrow text is cleared.",
+    "Original fact-based descriptions/activities do not convey a blanket license to publisher prose or images. Preserve per-source rights/provenance and do not copy page bodies into runtime."
+  ],
+  "final_implementation_pin": null,
+  "current_record_reconciliation": {
+    "evidence_path": "/tmp/catalog24-current-reconciliation-20261107.json",
+    "sha256": "56ffdec58f4294b5e00b82b5167508950709cd8f231bae0d41520fd0c03cd957",
+    "independent_cross_check": "All24 source IDs/native names and intake research_row_sha256 matched inspected current_source_row_compact_utf8_sha256; no query performed by this reviewer.",
+    "summary": {
+      "records": 24,
+      "all_current_id_matches": true,
+      "proposal_native_name_matches": 24,
+      "checked_in_name_coordinate_matches": 23,
+      "research_hash_equals_current_source_row": 24,
+      "routing_and_calendar_policy_eligible": 11,
+      "browse_only_T2": 10,
+      "T3": 2,
+      "legacy_required_calendar_missing": 3,
+      "blocked_by_current_release_hold": 0
+    },
+    "limits": [
+      "MCP inspected neondb_owner; this does not prove the EC2 application role or deployed runtime configuration.",
+      "The active import row_count is import metadata, not a newly scanned count of every catalog row. Only these 24 current source IDs were queried.",
+      "Eligibility is replayed offline using the pinned validator commit and inspected database time; no hosted app request, road check, current live operator check or trip-specific availability evaluation occurred.",
+      "This is identity/admission reconciliation, not approval of new research descriptions, inferred traits or photo licensing.",
+      "The Nov 4 1067-row archive remains a separate historical reference; its archive hash and research row hashes are not the active production generation hash.",
+      "Legacy calendar-optional eligibility preserves existing policy and does not establish opening hours.",
+      "All source facts, ratings, admission clocks, holds and calendar rows remain unchanged."
+    ]
+  }
+}

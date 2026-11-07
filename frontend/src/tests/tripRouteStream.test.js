@@ -157,6 +157,27 @@ it.each([
     expect(cognitoClient.send).not.toHaveBeenCalled();
   }
 );
+it('preserves a dedicated meal conflict explanation without exposing arbitrary provider details or replaying', async () => {
+  const detail = 'Lunch cannot fit before your driving cutoff. Edit your schedule.';
+  fetch.mockResolvedValueOnce(
+    streamed([{ type: 'error', status: 422, code: 'meal_schedule_conflict', detail }])
+  );
+  await expect(streamTripRoute({}, new AbortController().signal)).rejects.toMatchObject({
+    response: { status: 422, data: { detail } },
+  });
+  expect(fetch).toHaveBeenCalledOnce();
+  expect(cognitoClient.send).not.toHaveBeenCalled();
+
+  fetch
+    .mockReset()
+    .mockResolvedValueOnce(
+      streamed([{ type: 'error', status: 503, detail: 'Private provider diagnostics' }])
+    );
+  await expect(streamTripRoute({}, new AbortController().signal)).rejects.toMatchObject({
+    response: { status: 503, data: undefined },
+  });
+  expect(fetch).toHaveBeenCalledOnce();
+});
 it.each([
   [() => streamed([{ type: 'heartbeat' }]), /without a result/],
   [
@@ -188,4 +209,62 @@ it('does not dispatch an already aborted request or let a presentation exception
       throw new Error('UI failed');
     })
   ).resolves.toEqual(route);
+});
+
+it('consumes candidate preview as unverified progress and redacts arbitrary typed failure details without replay', async () => {
+  const { streamPlanningCandidate } = await import('../services/tripRouteStream');
+  const progress = vi.fn();
+  fetch.mockResolvedValue(
+    streamed([
+      {
+        type: 'progress',
+        stage: 'route.preview',
+        state: 'completed',
+        phase: 'checking',
+        preview_only: true,
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [-105, 40],
+            [-104, 41],
+          ],
+        },
+      },
+      { type: 'error', status: 410, code: 'candidate_expired', detail: 'provider secret' },
+    ])
+  );
+  await expect(
+    streamPlanningCandidate({ request_id: 'same-id' }, undefined, progress)
+  ).rejects.toMatchObject({
+    response: {
+      status: 410,
+      data: {
+        code: 'candidate_expired',
+        detail:
+          'These trip options expired or are unavailable. Check trip options again explicitly.',
+      },
+    },
+  });
+  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(fetch.mock.calls[0][0]).toBe('https://api.example.test/planning-candidates/stream');
+  expect(progress.mock.calls[0][0].preview_only).toBe(true);
+  expect(cognitoClient.send).not.toHaveBeenCalled();
+});
+
+it('streams bounded preparation through account auth without changing planner retry rules', async () => {
+  const { streamRoutePreparation } = await import('../services/tripRouteStream');
+  const progress = vi.fn();
+  fetch.mockResolvedValue(
+    streamed([
+      { type: 'progress', stage: 'preparation.catalog', sections_checked: 1, places: [] },
+      { type: 'result', response: { catalog_status: 'ready', places: [] } },
+    ])
+  );
+  await expect(
+    streamRoutePreparation({ departure_clock: '09:00' }, new AbortController().signal, progress)
+  ).resolves.toEqual({ catalog_status: 'ready', places: [] });
+  expect(fetch.mock.calls[0][0]).toBe('https://api.example.test/route-preparation/stream');
+  expect(fetch.mock.calls[0][1].headers.Authorization).toBe('Bearer ' + getSession().accessToken);
+  expect(progress).toHaveBeenCalledTimes(1);
+  expect(fetch).toHaveBeenCalledTimes(1);
 });

@@ -65,7 +65,7 @@ describe('createChat', () => {
 describe('deleteChat', () => {
   it('calls DELETE chats/delete/:chatId', async () => {
     axios.delete.mockResolvedValueOnce({ status: 204 });
-    await deleteChat(AUTH_TOKEN, 1);
+    expect(await deleteChat(AUTH_TOKEN, 1)).toBe(true);
     expect(axios.delete).toHaveBeenCalledTimes(1);
     expect(axios.delete.mock.calls[0][0]).toMatch(/chats\/delete\/1/);
     expect(axios.delete.mock.calls[0][1]).toEqual({
@@ -76,13 +76,13 @@ describe('deleteChat', () => {
     });
   });
 
-  it('returns null and does not throw on error', async () => {
+  it('returns false and does not throw on error', async () => {
     axios.delete.mockRejectedValueOnce({
       response: { status: 403 },
       config: { headers: { Authorization: `Bearer ${AUTH_TOKEN}` } },
     });
     const result = await deleteChat(AUTH_TOKEN, 1);
-    expect(result).toBeNull();
+    expect(result).toBe(false);
     expect(JSON.stringify(console.error.mock.calls)).not.toContain(AUTH_TOKEN);
   });
 });

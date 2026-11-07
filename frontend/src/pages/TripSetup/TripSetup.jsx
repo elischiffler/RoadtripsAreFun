@@ -2,26 +2,29 @@ import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import useSetupDraft from './useSetupDraft';
-import { ActionButton, ChoiceGroup, DesignFrame, Field, Sheet } from '../../design';
+import { ActionButton, AmountControl, ChoiceGroup, DesignFrame, Field, Sheet } from '../../design';
 import {
   INTERESTS,
   COMPARISONS,
-  MAX_SETUP_ROOMS,
   STEPS,
   newSetupDraft,
   preferenceProfiles,
   setupErrors,
 } from './setupModel';
 import './TripSetup.css';
+import DailyRhythm from './DailyRhythm.jsx';
+import PreferenceProfilePicker from '../../components/PreferenceProfilePicker';
 
-export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
+export default function TripSetup({ onSubmit, busy = false, renderEstimate, prepareRoute }) {
   const { draft, setDraft, step, setStep, stored, reset } = useSetupDraft();
   const [errors, setErrors] = useState({});
   const [receipt, setReceipt] = useState(null);
   const [sending, setSending] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
-  const [visited, setVisited] = useState(step);
+  const [largeText, setLargeText] = useState(false);
+  const textProbe = useRef(null);
   const [comparisonIndex, setComparisonIndex] = useState(0);
+  const [amountReset, setAmountReset] = useState(0);
   const heading = useRef(null);
   const errorSummary = useRef(null);
   const alive = useRef(true);
@@ -33,9 +36,23 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
   } catch {
     profiles = preferenceProfiles(newSetupDraft());
   }
+  const interestAmounts =
+    draft.customWeights ??
+    Object.fromEntries(Object.entries(profiles.stated).map(([key, value]) => [key, value * 100]));
+  const largestAmount = Math.max(...Object.values(interestAmounts));
+  const initialAmountMax =
+    largestAmount > Number.MAX_VALUE / 2 ? Number.MAX_VALUE : largestAmount * 2 || 1;
 
   const comparison = COMPARISONS[comparisonIndex];
 
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() =>
+      setLargeText(textProbe.current.getBoundingClientRect().width > 24)
+    );
+    observer.observe(textProbe.current);
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     heading.current?.focus({ preventScroll: true });
     if (previousStep.current !== step)
@@ -58,13 +75,29 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
   };
   const go = (next) => {
     setErrors({});
-    setVisited((previous) => Math.max(previous, next));
     setStep(next);
   };
-  const next = () => {
+  const next = async () => {
     const issues = setupErrors(draft, step);
     if (Object.keys(issues).length) setErrors(issues);
-    else go(step + 1);
+    else {
+      if (step === 0 && prepareRoute) {
+        setSending(true);
+        try {
+          const prepared = await prepareRoute();
+          if (!alive.current) return;
+          if (!prepared?.ok) {
+            setErrors({
+              start: 'Confirm the locations and a usable road route before continuing.',
+            });
+            return;
+          }
+        } finally {
+          if (alive.current) setSending(false);
+        }
+      }
+      go(step + 1);
+    }
   };
   const send = async (event) => {
     event.preventDefault();
@@ -84,6 +117,15 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
     setSending(true);
     setReceipt(null);
     try {
+      if (prepareRoute) {
+        const prepared = await prepareRoute();
+        if (!alive.current) return;
+        if (!prepared?.ok) {
+          setStep(0);
+          setErrors({ start: 'Confirm the locations and a usable road route before continuing.' });
+          return;
+        }
+      }
       const result = await onSubmit({ draft });
       if (!alive.current) return;
       setReceipt(result?.error ? result : null);
@@ -107,12 +149,8 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
       {...extra}
     />
   );
-  const updateRoom = (index, key, value) =>
-    set(
-      'rooms',
-      draft.rooms.map((room, i) => (i === index ? { ...room, [key]: value } : room))
-    );
   const toggleInterest = (key) => {
+    setAmountReset((previous) => previous + 1);
     setDraft((old) => ({
       ...old,
       customWeights: null,
@@ -128,40 +166,21 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
   };
 
   return (
-    <DesignFrame className="setup-design">
+    <DesignFrame className={'setup-design' + (largeText ? ' setup-design--large-text' : '')}>
+      <span ref={textProbe} className="setup-text-probe" aria-hidden="true" />
       <main className="trip-setup">
         <div className="setup-wayfinding">
           <Link to="/">Home</Link>
-          <span>Plan a trip</span>
           <Link to="/trips">Saved trips</Link>
         </div>
-        <header className="setup-intro">
-          <p className="setup-eyebrow">A road trip, your way</p>
-          <h1>Make room for the good stops.</h1>
-          <p>A few details, a little inspiration. We’ll help you shape the trip.</p>
-        </header>
         <Sheet className="setup-card" aria-label="Plan your trip">
           <nav aria-label="Trip setup progress" className="setup-progress">
             <p>
-              Step {step + 1} of {STEPS.length} <span>{STEPS[step]}</span>
+              <span>{step * 15}%</span>
             </p>
-            <ol>
-              {STEPS.map((name, index) => (
-                <li key={name}>
-                  <button
-                    type="button"
-                    aria-current={index === step ? 'step' : undefined}
-                    disabled={locked || index > visited}
-                    onClick={() => go(index)}
-                    aria-label={'Step ' + (index + 1) + ': ' + name}
-                  >
-                    <span aria-hidden="true">{index < step ? '✓' : index + 1}</span>
-                    <span className="setup-step-name">{name}</span>
-                  </button>
-                </li>
-              ))}
-            </ol>
+            <progress aria-label="Trip setup completion" value={step * 15} max={100} />
           </nav>
+          {renderEstimate?.(draft, step)}
           <form onSubmit={send} noValidate aria-busy={locked}>
             <div className="setup-section" key={step}>
               <h2 ref={heading} tabIndex={-1}>
@@ -181,9 +200,22 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
               )}
               <fieldset disabled={locked} className="setup-fields">
                 <legend className="setup-visually-hidden">{STEPS[step]} details</legend>
+                {step === 4 && (
+                  <p className="rt-caption">
+                    Your car, timing and chosen interests will be saved as reusable preferences when
+                    this trip is saved.
+                  </p>
+                )}
                 {step === 0 && (
                   <>
-                    <p>Where are you heading?</p>
+                    <PreferenceProfilePicker
+                      setDraft={(updater) => {
+                        setDraft(updater);
+                        setErrors({});
+                        setReceipt(null);
+                      }}
+                      disabled={locked}
+                    />
                     {field('start', 'Starting city or address', 'text', {
                       autoComplete: 'off',
                       maxLength: 256,
@@ -192,7 +224,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                       autoComplete: 'off',
                       maxLength: 256,
                     })}
-                    {renderEstimate?.(draft)}
                     <div className="setup-grid">
                       {field('date', 'Departure date', 'date')}
                       {field('time', 'Departure time', 'time')}
@@ -210,86 +241,17 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                 )}
                 {step === 1 && (
                   <>
-                    <p>Who’s coming along?</p>
                     {field('travelers', 'Total people, including you', 'number', {
                       min: 1,
                       step: 1,
                       inputMode: 'numeric',
                     })}
-                    <div
-                      id="setup-rooms"
-                      tabIndex={-1}
-                      aria-describedby={errors.rooms ? 'setup-rooms-error' : undefined}
-                    >
-                      {draft.rooms.map((room, index) => (
-                        <fieldset className="setup-room" key={index}>
-                          <legend>Room {index + 1}</legend>
-                          <div className="setup-grid">
-                            <label className="setup-field">
-                              Adults
-                              <input
-                                type="number"
-                                min="1"
-                                step="1"
-                                value={room.adults}
-                                onChange={(e) => updateRoom(index, 'adults', e.target.value)}
-                              />
-                            </label>
-                            <label className="setup-field">
-                              Child ages, if any
-                              <input
-                                placeholder="For example, 5, 8"
-                                value={room.children}
-                                onChange={(e) => updateRoom(index, 'children', e.target.value)}
-                              />
-                            </label>
-                          </div>
-                          {draft.rooms.length > 1 && (
-                            <button
-                              type="button"
-                              className="setup-text-button"
-                              onClick={() =>
-                                set(
-                                  'rooms',
-                                  draft.rooms.filter((_, i) => i !== index)
-                                )
-                              }
-                            >
-                              Remove room {index + 1}
-                            </button>
-                          )}
-                        </fieldset>
-                      ))}
-                      {errors.rooms && (
-                        <p id="setup-rooms-error" className="setup-error">
-                          {errors.rooms}
-                        </p>
-                      )}
-                      <button
-                        type="button"
-                        className="setup-secondary"
-                        disabled={draft.rooms.length >= MAX_SETUP_ROOMS}
-                        onClick={() =>
-                          set('rooms', [...draft.rooms, { adults: '1', children: '' }])
-                        }
-                      >
-                        Add a room
-                      </button>
-                    </div>
-                    {field('budget', 'Hotel target per room, per night (USD)', 'number', {
-                      min: 0,
-                      step: 'any',
-                      inputMode: 'decimal',
-                    })}
-                    <p className="setup-hint">
-                      A nightly target, not a total-trip budget. Food, fuel and tickets aren’t
-                      included. Current hotel quotes appear after planning.
-                    </p>
+                    <p className="setup-hint">Stay choices appear only if you allow hotel stays.</p>
                   </>
                 )}
                 {step === 2 && (
                   <>
-                    <p>What would make this trip enjoyable? Choose any, or keep a balanced mix.</p>
+                    <p>Choose your interests, or keep a balanced mix.</p>
                     <div className="setup-interest-grid" id="setup-interests">
                       {Object.entries(INTERESTS).map(([key, label]) => (
                         <label
@@ -307,132 +269,112 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                         </label>
                       ))}
                     </div>
-                    <section className="setup-comparisons" aria-labelledby="comparison-heading">
-                      <div className="setup-group-heading">
-                        <p className="setup-eyebrow">
-                          Optional · {COMPARISONS.length} quick comparisons
+                    <details className="setup-explanation">
+                      <summary>Refine with place comparisons</summary>
+                      <section className="setup-comparisons" aria-labelledby="comparison-heading">
+                        <div className="setup-group-heading">
+                          <p className="setup-eyebrow">
+                            Optional · {COMPARISONS.length} quick comparisons
+                          </p>
+                          <h3 id="comparison-heading">Which stop feels more like you?</h3>
+                          <p className="setup-hint">
+                            Compare real places to add a second perspective. These examples aren’t
+                            route recommendations.
+                          </p>
+                        </div>
+                        <p className="setup-hint" aria-live="polite">
+                          Comparison {comparisonIndex + 1} of {COMPARISONS.length}
                         </p>
-                        <h3 id="comparison-heading">Which stop feels more like you?</h3>
-                        <p className="setup-hint">
-                          Compare real places to add a second perspective. These examples aren’t
-                          route recommendations.
-                        </p>
-                      </div>
-                      <p className="setup-hint" aria-live="polite">
-                        Comparison {comparisonIndex + 1} of {COMPARISONS.length}
-                      </p>
-                      <div className="setup-comparison-places">
-                        {[comparison.left, comparison.right].map((place, index) => (
-                          <article className="setup-place" key={place.id}>
-                            <span className="setup-place-marker" aria-hidden="true">
-                              {index === 0 ? 'A' : 'B'}
-                            </span>
-                            <h4>{place.name}</h4>
-                            <p>{place.character ?? place.description}</p>
-                            <details className="setup-source">
-                              <summary>Place source</summary>
-                              <p>{place.source_attribution}</p>
-                              <a href={place.url} target="_blank" rel="noreferrer">
-                                Visitor information
-                                <span className="setup-visually-hidden">
-                                  {' '}
-                                  for {place.name} (new tab)
-                                </span>
-                              </a>
-                            </details>
-                          </article>
-                        ))}
-                      </div>
-                      <ChoiceGroup
-                        legend="Which would you choose?"
-                        name={comparison.id}
-                        value={draft.comparisonAnswers?.[comparison.id]}
-                        onChange={answerComparison}
-                        options={[
-                          { value: 'left', label: comparison.left.name },
-                          { value: 'right', label: comparison.right.name },
-                          { value: 'either', label: 'Either place' },
-                          { value: 'neither', label: 'Neither place' },
-                          { value: 'unsure', label: 'Not sure' },
-                        ]}
-                      />
-                      <div className="setup-inline-actions">
-                        <ActionButton
-                          variant="secondary"
-                          disabled={comparisonIndex === 0}
-                          onClick={() => setComparisonIndex((index) => index - 1)}
-                        >
-                          Previous comparison
-                        </ActionButton>
-                        <ActionButton
-                          variant="secondary"
-                          disabled={comparisonIndex === COMPARISONS.length - 1}
-                          onClick={() => setComparisonIndex((index) => index + 1)}
-                        >
-                          Next comparison
-                        </ActionButton>
-                      </div>
-                      <div className="setup-inline-actions">
-                        <button
-                          type="button"
-                          className="setup-text-button"
-                          onClick={() => {
-                            answerComparison('unsure');
-                            setComparisonIndex((index) =>
-                              Math.min(index + 1, COMPARISONS.length - 1)
-                            );
-                          }}
-                        >
-                          Skip this comparison
-                        </button>
-                        <button
-                          type="button"
-                          className="setup-text-button"
-                          onClick={() => {
-                            set('comparisonAnswers', {});
-                            setComparisonIndex(0);
-                          }}
-                        >
-                          Reset comparisons
-                        </button>
-                      </div>
-                    </section>
-                    <p className="setup-hint">
-                      Your choices help tailor the stops. Skip any comparison you’re unsure about.
-                    </p>
+                        <div className="setup-comparison-places">
+                          {[comparison.left, comparison.right].map((place, index) => (
+                            <article className="setup-place" key={place.id}>
+                              <span className="setup-place-marker" aria-hidden="true">
+                                {index === 0 ? 'A' : 'B'}
+                              </span>
+                              <h4>{place.name}</h4>
+                              <p>{place.character ?? place.description}</p>
+                            </article>
+                          ))}
+                        </div>
+                        <ChoiceGroup
+                          legend="Which would you choose?"
+                          name={comparison.id}
+                          value={draft.comparisonAnswers?.[comparison.id]}
+                          onChange={answerComparison}
+                          options={[
+                            { value: 'left', label: comparison.left.name },
+                            { value: 'right', label: comparison.right.name },
+                            { value: 'either', label: 'Either place' },
+                            { value: 'neither', label: 'Neither place' },
+                            { value: 'unsure', label: 'Not sure' },
+                          ]}
+                        />
+                        <div className="setup-inline-actions">
+                          <ActionButton
+                            variant="secondary"
+                            disabled={comparisonIndex === 0}
+                            onClick={() => setComparisonIndex((index) => index - 1)}
+                          >
+                            Previous comparison
+                          </ActionButton>
+                          <ActionButton
+                            variant="secondary"
+                            disabled={comparisonIndex === COMPARISONS.length - 1}
+                            onClick={() => setComparisonIndex((index) => index + 1)}
+                          >
+                            Next comparison
+                          </ActionButton>
+                        </div>
+                        <div className="setup-inline-actions">
+                          <button
+                            type="button"
+                            className="setup-text-button"
+                            onClick={() => {
+                              answerComparison('unsure');
+                              setComparisonIndex((index) =>
+                                Math.min(index + 1, COMPARISONS.length - 1)
+                              );
+                            }}
+                          >
+                            Skip this comparison
+                          </button>
+                          <button
+                            type="button"
+                            className="setup-text-button"
+                            onClick={() => {
+                              set('comparisonAnswers', {});
+                              setComparisonIndex(0);
+                            }}
+                          >
+                            Reset comparisons
+                          </button>
+                        </div>
+                      </section>
+                    </details>
                     <details className="setup-explanation">
                       <summary>Edit interest amounts</summary>
-                      <p>
-                        Edit your chosen interests with non-negative amounts. At least one must be
-                        above zero. Changing an interest checkbox replaces manual amounts;
-                        comparison choices keep them.
+                      <p id="setup-interest-amount-hint">
+                        Drag or tap − / +. Higher amounts give an interest more influence. At least
+                        one must stay above zero.
                       </p>
-                      <div className="setup-grid">
+                      <p className="setup-hint">
+                        Selecting interests above resets these amounts; comparison choices keep
+                        them.
+                      </p>
+                      <div className="rt-amount-grid">
                         {Object.entries(INTERESTS).map(([key, label]) => (
-                          <label className="setup-field" key={key}>
-                            {label}
-                            <input
-                              type="number"
-                              min="0"
-                              step="any"
-                              value={
-                                draft.customWeights?.[key] ??
-                                Number((profiles.stated[key] * 100).toFixed(3))
-                              }
-                              onChange={(e) =>
-                                set('customWeights', {
-                                  ...(draft.customWeights ??
-                                    Object.fromEntries(
-                                      Object.entries(profiles.stated).map(([k, v]) => [
-                                        k,
-                                        Number((v * 100).toFixed(3)),
-                                      ])
-                                    )),
-                                  [key]: e.target.value === '' ? 0 : Number(e.target.value),
-                                })
-                              }
-                            />
-                          </label>
+                          <AmountControl
+                            key={`${key}:${amountReset}`}
+                            id={`setup-interest-${key}`}
+                            label={label}
+                            value={interestAmounts[key]}
+                            initialMax={initialAmountMax}
+                            disabled={locked}
+                            describedBy="setup-interest-amount-hint"
+                            onChange={(value) =>
+                              set('customWeights', { ...interestAmounts, [key]: value })
+                            }
+                          />
                         ))}
                       </div>
                     </details>
@@ -441,6 +383,7 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                       type="button"
                       className="setup-text-button"
                       onClick={() => {
+                        setAmountReset((previous) => previous + 1);
                         setDraft((old) => ({
                           ...old,
                           interests: [],
@@ -473,92 +416,19 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                 )}
                 {step === 3 && (
                   <>
-                    <p>Set a comfortable rhythm for your days.</p>
-                    <div className="setup-field">
-                      <label htmlFor="setup-carStatus">Would you like to add your car?</label>
-                      <select
-                        id="setup-carStatus"
-                        value={draft.carStatus}
-                        onChange={(e) => set('carStatus', e.target.value)}
-                        aria-invalid={!!errors.carStatus}
-                        aria-describedby={errors.carStatus ? 'setup-carStatus-error' : undefined}
-                      >
-                        <option value="unanswered">Choose an option</option>
-                        <option value="skipped">Skip car details</option>
-                        <option value="provided">Add my car</option>
-                      </select>
-                      {errors.carStatus && (
-                        <small id="setup-carStatus-error" className="setup-error">
-                          {errors.carStatus}
-                        </small>
-                      )}
-                    </div>
-                    {draft.carStatus === 'provided' && (
-                      <div className="setup-grid">
-                        {field('year', 'Car year', 'number')}
-                        {field('make', 'Car make')}
-                        {field('model', 'Car model')}
-                      </div>
-                    )}
-                    <div
-                      className="setup-grid"
-                      id="setup-schedule"
-                      tabIndex={-1}
-                      aria-describedby={errors.schedule ? 'setup-schedule-error' : undefined}
-                    >
-                      {[
-                        ['preferred_hotel_arrival', 'Preferred hotel arrival'],
-                        ['latest_hotel_arrival', 'Latest hotel arrival'],
-                        ['latest_destination_arrival', 'Latest destination arrival'],
-                        ['morning_restart', 'Start driving next morning'],
-                      ].map(([key, label]) => (
-                        <label className="setup-field" key={key}>
-                          {label}
-                          <input
-                            type="time"
-                            value={draft.schedule[key]}
-                            onChange={(e) =>
-                              set('schedule', { ...draft.schedule, [key]: e.target.value })
-                            }
-                          />
-                        </label>
-                      ))}
-                    </div>
-                    <label className="setup-choice">
-                      <input
-                        type="checkbox"
-                        checked={draft.schedule.late_driving}
-                        onChange={(e) =>
-                          set('schedule', { ...draft.schedule, late_driving: e.target.checked })
-                        }
-                      />
-                      Allow driving later into the evening
-                    </label>
-                    {draft.schedule.late_driving && (
-                      <label className="setup-field">
-                        Stop late driving by (24:00 means midnight)
-                        <input
-                          value={draft.schedule.late_cutoff}
-                          onChange={(e) =>
-                            set('schedule', { ...draft.schedule, late_cutoff: e.target.value })
-                          }
-                        />
-                      </label>
-                    )}
-                    {errors.schedule && (
-                      <p id="setup-schedule-error" className="setup-error">
-                        {errors.schedule}
-                      </p>
-                    )}
+                    <DailyRhythm
+                      value={draft.dailyRhythm}
+                      onChange={(value) => set('dailyRhythm', value)}
+                      disabled={locked}
+                      error={errors.schedule}
+                    />
                     <p className="setup-hint">
-                      Daily times are local to each stop. The planning service checks the final
-                      schedule.
+                      Drive time also allows visits and meals. Car details come later.
                     </p>
                   </>
                 )}
                 {step === 4 && (
                   <>
-                    <p>Take a moment to check your answers. Nothing is sent until you continue.</p>
                     <div className="setup-review">
                       {[
                         [
@@ -567,27 +437,9 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                           draft.date + ' at ' + draft.time + ' · ' + draft.stops + ' attractions',
                         ],
                         [
-                          'People and rooms',
-                          draft.travelers +
-                            (Number(draft.travelers) === 1 ? ' person · ' : ' people · ') +
-                            draft.rooms.length +
-                            (draft.rooms.length === 1 ? ' room' : ' rooms'),
-                          '$' +
-                            draft.budget +
-                            ' hotel target / room / night\n' +
-                            draft.rooms
-                              .map(
-                                (room, index) =>
-                                  'Room ' +
-                                  (index + 1) +
-                                  ': ' +
-                                  room.adults +
-                                  (Number(room.adults) === 1 ? ' adult' : ' adults') +
-                                  (room.children.trim()
-                                    ? '; child ages ' + room.children
-                                    : '; no children')
-                              )
-                              .join('\n'),
+                          'People',
+                          draft.travelers + (Number(draft.travelers) === 1 ? ' person' : ' people'),
+                          'Stay choices after the trip check',
                         ],
                         [
                           'What you enjoy',
@@ -596,25 +448,14 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                             : draft.interests.length
                               ? draft.interests.map((key) => INTERESTS[key]).join(', ')
                               : 'A balanced mix across all interests',
-                          'Trip-only interests; account preferences stay separate',
+                          '',
                         ],
                         [
-                          'Car and timing',
-                          draft.carStatus === 'provided'
-                            ? [draft.year, draft.make, draft.model].join(' ')
-                            : 'Car details skipped',
-                          'Hotel: prefer ' +
-                            draft.schedule.preferred_hotel_arrival +
-                            ', latest ' +
-                            draft.schedule.latest_hotel_arrival +
-                            '\nDestination by ' +
-                            draft.schedule.latest_destination_arrival +
-                            ' · next morning ' +
-                            draft.schedule.morning_restart +
-                            '\n' +
-                            (draft.schedule.late_driving
-                              ? 'Late driving allowed until ' + draft.schedule.late_cutoff
-                              : 'Late driving not requested'),
+                          'Daily timing',
+                          draft.dailyRhythm
+                            ? 'Your driving, rest and sleep rhythm'
+                            : 'Your existing daily timing',
+                          'Local to each stop · checked with the complete route',
                         ],
                       ].map(([title, primary, secondary], index) => (
                         <section key={title}>
@@ -634,8 +475,8 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                       ))}
                     </div>
                     <p className="setup-hint">
-                      Next, confirm the suggested addresses. Your choices help tailor the stops for
-                      this trip. Prices and travel-time estimates arrive with the route.
+                      Next, check the complete trip before choosing one day or allowing overnight
+                      stays.
                     </p>
                   </>
                 )}
@@ -656,11 +497,9 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
               >
                 Back
               </ActionButton>
-              <span>
-                {stored ? 'Draft saved in this browser tab' : 'Draft kept on this screen'}
-              </span>
+              <span>{stored ? 'Draft saved' : 'Draft kept'}</span>
               <ActionButton type="submit" disabled={locked}>
-                {locked ? 'Checking locations…' : step === 4 ? 'Check locations' : 'Next'}
+                {locked ? 'Checking locations…' : step === 4 ? 'Check trip options' : 'Next'}
               </ActionButton>
             </footer>
           </form>
@@ -685,7 +524,6 @@ export default function TripSetup({ onSubmit, busy = false, renderEstimate }) {
                 className="setup-secondary"
                 onClick={() => {
                   reset();
-                  setVisited(0);
                   setErrors({});
                   setReceipt(null);
                   setResetOpen(false);
@@ -704,4 +542,5 @@ TripSetup.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   busy: PropTypes.bool,
   renderEstimate: PropTypes.func,
+  prepareRoute: PropTypes.func,
 };

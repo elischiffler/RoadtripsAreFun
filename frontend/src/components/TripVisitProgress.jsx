@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import { UserDataContext, Data } from '../states/UserDataContext';
 import { getSession, isCurrentSession } from '../services/session';
 import { updateUserData } from '../services/savedTrips';
-import { itineraryEntries, toggleVisited, visitedStopIds } from '../services/tripPresentation';
+import { itineraryEntries, visitedStopIds } from '../services/tripPresentation';
 import ItineraryDays from './ItineraryDays';
+import TripArrivalTracking from './TripArrivalTracking';
+import { correctArrival, recordArrival } from '../services/tripArrivals';
 import { ActionButton } from '../design';
 
 // Account-owned context instance, so unsaved feedback survives switching trip views.
@@ -14,6 +16,7 @@ export default function TripVisitProgress({ trip }) {
   const logs = UserData.chatlogs;
   if (!saveStates.has(logs)) saveStates.set(logs, new Map());
   const states = saveStates.get(logs);
+  const [correcting, setCorrecting] = useState(false);
   const [status, setStatus] = useState(states.get(trip.chatId) || 'idle');
   const mounted = useRef(true);
   useEffect(() => {
@@ -32,33 +35,52 @@ export default function TripVisitProgress({ trip }) {
   const ids = itineraryEntries(trip.itinerary).flatMap((day) => day.stops.map((item) => item.id));
   const count = ids.filter((id) => visited.has(id)).length;
   const save = async (snapshot) => {
-    if (states.get(trip.chatId) === 'saving') return;
+    if (['saving', 'conflict'].includes(states.get(trip.chatId))) return;
     const session = getSession();
     states.set(trip.chatId, 'saving');
     setStatus('saving');
     let saved = false;
     try {
       saved = Boolean(
-        session.accessToken && (await updateUserData(session.accessToken, snapshot, chats, logs))
+        session.accessToken &&
+          (await updateUserData(session.accessToken, snapshot, chats, logs, {
+            presentationOnly: true,
+          }))
       );
     } catch {
       /* Keep the local presentation and offer retry. */
     }
     if (!isCurrentSession(session)) return;
-    const nextStatus = saved ? 'saved' : 'error';
+    const nextStatus = saved ? 'saved' : snapshot.saveConflict ? 'conflict' : 'error';
     states.set(trip.chatId, nextStatus);
     window.dispatchEvent(new Event('trip-visits-changed'));
     if (mounted.current) setStatus(nextStatus);
   };
-  const toggle = (id) => {
-    if (states.get(trip.chatId) === 'saving') return;
-    const snapshot = { ...trip, presentation: toggleVisited(trip.presentation, id) };
+  const canRecord = () => !['saving', 'conflict', 'error'].includes(states.get(trip.chatId));
+  const update = (presentation) => {
+    if (!canRecord()) return false;
+    const snapshot = { ...trip, presentation };
     logs.chatdata = logs.chatdata.map((item) => (item.chatId === trip.chatId ? snapshot : item));
     setUserData((current) => (current.chatlogs === logs ? new Data(logs) : current));
     void save(snapshot);
+    return true;
+  };
+  const toggle = (id) =>
+    ids.includes(id) && update(correctArrival(trip.presentation, trip.chatId, id));
+  const arrive = (event) => {
+    if (ids.includes(event.stopId) && !visited.has(event.stopId))
+      return update(recordArrival(trip.presentation, event));
+    return false;
   };
   return (
     <>
+      <TripArrivalTracking
+        trip={trip}
+        onArrival={arrive}
+        onUndo={toggle}
+        canRecord={canRecord}
+        blocked={status === 'error' || status === 'conflict'}
+      />
       <section className="trip-visit-summary" aria-label="Trip visit progress">
         <p className="rt-title">
           {count} of {ids.length} stops visited
@@ -69,21 +91,36 @@ export default function TripVisitProgress({ trip }) {
             ? 'Saving visit updates…'
             : status === 'saved'
               ? 'Visit updates saved.'
-              : status === 'error'
-                ? 'Visit updates are kept here, but could not be saved. Retry before leaving or refreshing.'
-                : 'Mark each stop when you visit. Your schedule does not mark it for you.'}
+              : status === 'conflict'
+                ? 'This saved trip changed. Open Saved trips and reload it before marking more visits.'
+                : status === 'error'
+                  ? 'Visit updates are kept here, but could not be saved. Retry before leaving or refreshing.'
+                  : 'Arrivals are detected only when enabled. Your schedule does not mark stops for you.'}
         </p>
         {status === 'error' && (
           <ActionButton variant="secondary" onClick={() => void save(trip)}>
             Retry saving visits
           </ActionButton>
         )}
+        <ActionButton
+          variant="secondary"
+          onClick={() => setCorrecting((value) => !value)}
+          aria-expanded={correcting}
+        >
+          {correcting ? 'Done correcting arrivals' : 'Correct an arrival'}
+        </ActionButton>
+        {correcting && (
+          <p className="rt-caption">
+            Mark a missed arrival or undo one below. Undo turns off automatic detection for that
+            stop until you mark it again.
+          </p>
+        )}
       </section>
       <ItineraryDays
         itinerary={trip.itinerary}
         presentation={trip.presentation}
-        onToggleVisited={toggle}
-        saving={status === 'saving'}
+        onToggleVisited={correcting ? toggle : undefined}
+        saving={!canRecord()}
       />
     </>
   );

@@ -7,16 +7,45 @@ separate explicit approval; this test never makes one.
 
 The browser signs in through the real current login form and Cognito SDK using
 a local protocol fixture. The API uses its actual RS256 signature/issuer/client
-and subject verification. It then executes actual HTTP planning, adaptive source
-processing, AI-rating/visit-duration prompt construction and parsing, CP-SAT,
-estimated scheduling, actual-leg timing validation, itinerary construction and
-saved-trip CRUD. Storage is a new synthetic PostgreSQL instance in an internal
-Docker network. Browser reload, visit/undo persistence, and opening the saved
-itinerary must work. Settings navigation must hide research tools for the
-verified non-owner, and the actual research API must return 403. The itinerary
-must still reload after Settings; phone/desktop widths must not overflow.
-An expired departure must expose an actionable error and
-must not save another trip or falsely complete planning.
+and subject verification. The five grouped stages prepare locations and roads
+without AI. **Check trip options** explicitly registers a request UUID and runs
+the real candidate NDJSON assessment, adaptive source processing, rating/duration
+prompt construction/parsing, CP-SAT, actual-leg timing and reserved meals.
+
+A successful assessment must leave **zero saved trips** and progress below 100.
+The same registered assessment is fetched again through the real API without
+replaying model or solver work. **Finish in one day** explicitly confirms the
+server-owned candidate before itinerary construction and real PostgreSQL saving.
+Its mode/proof must match actual full elapsed timing under 12 hours, with no
+hotel queries. Identical confirmation is cached; cancellation then returns 410
+without repeating AI or writing a trip.
+
+A separate bounded actual HTTP candidate case rejects flexible/overnight
+confirmation without occupancy, then accepts valid occupancy/budget while still
+finishing the short route with zero hotels. Confirmation reuses the checked
+attraction pool without repeating AI, and actual itinerary generation preserves
+meal time. It does not save a second trip. This original short-corridor case still
+raises on any unexpected hotel lookup; the separate long-corridor extension
+below is responsible for exercising an actual scheduled stay.
+
+The saved `/trip` workspace must reload. Sequential visit/undo writes must refresh
+modern revisions without reload, and a stale revision must return 409 without
+changing PostgreSQL state. Route alternatives and a replacement are previewed
+without persistence, then saved/reloaded with obsolete arrival events and undo
+exclusions cleared. Meals must occupy actual elapsed time without visit overlap.
+Settings must persist/reload reusable 24-hour rhythm profiles and a separate trip
+car, and loading a profile must populate the guided draft. The verified non-owner
+cannot see research tools or access their API. Phone/desktop widths must fit.
+An expired departure must expose its real typed error, start no more AI/solver
+work, save no extra trip and never falsely complete.
+
+Home entry is checked through actual authenticated API reads: an empty account
+opens `/plan`, an owner with a saved route opens `/trips`, and a second fixed
+synthetic account connected through the real sharing API opens `/shared-trips`.
+That participant renders the read-only shared route with no owner visit controls,
+creates no owned trip and starts no model work. The capability stays only in
+memory, never in a URL or exported artifact. Both identities use local synthetic
+SDK login/JWK delivery; no real Cognito account is involved.
 
 Only external boundaries are synthetic: Cognito login/JWK delivery, catalog rows,
 geocoding, road responses and a local Supabase/Mentro HTTP/SSE service. The real
@@ -26,17 +55,19 @@ ratings and durations. It is not the actual Mentro server or model, and does not
 prove live provider behavior, current Cognito accounts, production data/schema,
 or network availability.
 
-Location text search/confirmation and the initial driving estimate execute
-through actual HTTP APIs in this gate. Mapbox map rendering and nearby-idea UI
-are covered separately by the existing component/service/API suites; this gate
-does not call a live map provider or enable a different map build mode. Visit
-and undo test saved presentation edits, not an unsupported route-editing feature.
+Location text search/confirmation, the initial driving estimate, along-route
+alternative search, route-edit preview and saved-route update execute through
+actual HTTP APIs. Frozen synthetic source facts are supplied at the repository
+read boundary for browse/current-place refresh; source validation, rerouting,
+meal timing and itinerary logic remain active. Mapbox rendering is not verified:
+the normal token-absent preview/list works without enabling a different map
+build mode. No actual catalog SQL parity or live source freshness is claimed.
 
 | Area | Evidence | Boundary |
 | --- | --- | --- |
-| Create, save and visit edits | This signed browser/API/CP-SAT/timing/CRUD/PostgreSQL gate; serialization and persistence regressions | Catalog and remote provider responses are synthetic |
-| Errors, auth and Settings | Strict expired-date and non-owner API/Settings checks; existing session, stream, access and race suites | Most outage/account-switch tests use fixtures; no real Cognito acceptance |
-| Search and maps | Browser location confirmation/driving estimate; existing location, map and nearby component/API suites | No live Mapbox rendering, geocoding or roads; arbitrary saved-route replanning is not exercised |
+| Candidate choice, meals and saved edits | This signed browser/API/CP-SAT/timing/CRUD/PostgreSQL gate; actual registered candidate assessment/confirmation/cache/cancel; route preview/save/reload; visit revisions and stale 409 | Catalog/provider responses are synthetic; the separate long case schedules actual multi-day hotel rests, but proves no live availability or every meal/window conflict |
+| Errors, auth and Settings | Strict expired-date and non-owner checks; real profile create/edit/reload/reuse and trip car persistence | Most outage/account-switch tests use fixtures; no real Cognito acceptance; additional CAS races remain API/unit regressions |
+| Search and maps | Browser location confirmation/driving estimate, along-route alternatives and an explicit attraction replacement; existing map/API suites | No live Mapbox rendering, geocoding or roads; not every edit/overnight/infeasibility path is exercised |
 | Responsive layout | Browser 390px and 1440px overflow checks | Not physical-device or manual screen-reader acceptance |
 | Recovery and ownership | Separate Disposable PostgreSQL CRUD workflow | Real CRUD/recovery there complements this browser lane |
 | Catalog safeguards | Full offline admission/hold/tamper/refresh suites; unchanged 133 holds, 170 exact versions and seven parking decisions | Optional catalog PostgreSQL SQL-parity tests need their dedicated disposable database; readiness is not that test |
@@ -71,7 +102,10 @@ one place and its active pointer. This lets the actual `/ready` dependency check
 pass without overriding readiness or using a production catalog. The synthetic
 generation's declared row count and actual place count are both one.
 
-The browser permits only the three loopback app/API/identity origins. PostgreSQL
+The browser permits only the three loopback app/API/identity origins. Device
+geolocation calls are rejected and recorded as a failure even if the app catches
+the rejection. The separate arrival harness supplies mocked positions; this gate
+uses the real manual correction/save path. PostgreSQL
 uses only an internal network. The API additionally uses a local access bridge
 with IP masquerading disabled for its loopback-published HTTP ports; its Python
 DNS/connect/connect_ex guards reject external destinations, and any attempted
@@ -85,3 +119,50 @@ under `.artifacts/`; installed test dependencies are ignored under `node_modules
 These fixtures are mounted only into the test image by this runner. They are not
 part of the production image or app configuration. Do not point the fixture
 browser at production or disable authentication/network protections to pass.
+
+
+## True overnight and daytime-sleep journey
+
+The mandatory browser entry also invokes `overnight.mjs` sequentially after all
+prior strict cases. A separate fixed synthetic account drives a longer
+synthetic corridor through actual candidate assessment, explicit stay choice,
+room occupancy, actual hotel candidate validation/rating/intersection, CP-SAT,
+clock, itinerary and disposable PostgreSQL. Only the remote hotel-record leaf
+is synthetic; it returns the exact requested dates/room with a clearly synthetic
+full-stay price. The original short corridor still rejects every hotel lookup.
+No real hotel availability or check-in guarantee is established. This lane does
+not exercise Google HTML/date-control parsing; the backend provider tests cover
+that distinct seam.
+
+The long case uses driving 20:00–06:00 and sleep 08:00–16:00. It requires
+actual lodging and date rollover, full two-night booking ranges/totals and exact
+room occupancy. Wake-relative full meals must remain outside sleep and visits.
+The trip saves/reloads before an infeasible awake cycle returns 422 without a
+storage change. A replacement that cannot fit its conservative two-hour visit
+must also return 422 and leave storage unchanged. A separate admitted synthetic
+night-calendar place is then added near the final segment, after the last hotel,
+through actual preview/save/reload. No fallback duration, cutoff, quote or meal
+policy is shortened to make an edit fit. Generation and the original short
+corridor's source facts remain unchanged.
+
+The complete native journey passed at `6de80a4cba2e1e1a37b1ed718f294525bbc1365a`;
+see `VALIDATION.md` for exact application trees, artifacts and limitations. This
+local result does not replace mandatory CI on the final integrated commit.
+
+The extension also observes the actual read-only preparation HTTP stream for its
+final rhythm: tentative areas must declare that quotes and availability were
+not checked, followed by six bounded catalog-section events and a real result.
+The map must render tentative markers, and the primary completed assessment
+must render its candidate geometry. The primary planner stream must identify considering, selected and checking
+phases as preview-only. The overnight case slices its own run's receipts and
+requires considering/selected; its recorded successful run also emitted checking. Browser enforcement
+of stale/out-of-order cancellation remains the focused preparation/UI tests;
+this release journey does not inject fake late events to claim that coverage.
+
+A bounded passive ASGI tee records the actual preparation request policy and
+NDJSON after successful sends, without altering bytes, timing or cancellation.
+It is server receipt evidence, paired with independent browser marker/ready-map
+and no-fallback assertions. It does not pretend Chromium retained a cancelled
+fetch body. Seven standalone transparency/cancellation/bounds tests run as a
+required preflight in the already revision-checked Python image with no network
+or app startup before the journey fixture starts.

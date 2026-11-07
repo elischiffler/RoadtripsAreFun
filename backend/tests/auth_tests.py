@@ -252,7 +252,7 @@ def test_two_signed_users_reach_only_their_scoped_chat_segments(signed_token):
             "app.routers.chat_api.get_all_chats", side_effect=lambda user: [deepcopy(row)]
         ) as chats,
         patch(
-            "app.routers.chat_api.get_segments",
+            "app.crud.chat_crud.get_segments",
             side_effect=lambda user_id, chat_id, route_id: (
                 [[1, 2]] if user_id == "alice" else [[9, 9]]
             ),

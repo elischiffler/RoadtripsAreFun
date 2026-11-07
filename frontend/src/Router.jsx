@@ -2,6 +2,10 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import AuthWrapper from './components/AuthWrapper';
 import RootLayout from './components/RootLayout';
 import HomePage from './pages/HomePage/HomePage';
+import TripPage from './pages/TripPage/TripPage';
+import SharedTripPage from './pages/SharedTripPage/SharedTripPage';
+import SharedTripsPage from './pages/SharedTripPage/SharedTripsPage';
+import EditItineraryPage from './pages/EditItineraryPage/EditItineraryPage';
 import ItineraryPage from './pages/ItineraryPage/ItineraryPage';
 import LoginPage from './pages/AuthPages/LoginPage';
 import SavedTripsPage from './pages/SavedTripsPage';
@@ -29,6 +33,39 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <HomePage />,
+      },
+      { path: 'share', element: <SharedTripPage /> },
+      {
+        path: 'shared-trips',
+        element: (
+          <AuthWrapper>
+            <SharedTripsPage />
+          </AuthWrapper>
+        ),
+      },
+      {
+        path: 'shared-trips/:shareId',
+        element: (
+          <AuthWrapper>
+            <SharedTripPage />
+          </AuthWrapper>
+        ),
+      },
+      {
+        path: 'trip',
+        element: (
+          <AuthWrapper>
+            <TripPage />
+          </AuthWrapper>
+        ),
+      },
+      {
+        path: 'itinerary/edit',
+        element: (
+          <AuthWrapper>
+            <EditItineraryPage />
+          </AuthWrapper>
+        ),
       },
       {
         path: 'itinerary',

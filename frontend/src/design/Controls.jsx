@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useEffect, useId, useState } from 'react';
 import PropTypes from 'prop-types';
 import { QuestionGroup } from './Layout';
 
@@ -64,6 +64,101 @@ Field.propTypes = {
   className: PropTypes.string,
   'aria-describedby': PropTypes.string,
   'aria-invalid': PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+};
+
+const expandedAmountLimit = (value) =>
+  value > Number.MAX_VALUE / 2 ? Number.MAX_VALUE : value * 2;
+
+/** Continuous native slider with explicit tap actions; stored amounts are never quantized. */
+export function AmountControl({
+  id,
+  label,
+  value,
+  onChange,
+  initialMax = 100,
+  disabled = false,
+  describedBy,
+}) {
+  const generatedId = useId();
+  const inputId = id || generatedId;
+  const [upperBound, setUpperBound] = useState(() =>
+    Math.max(initialMax, expandedAmountLimit(value), Number.MIN_VALUE)
+  );
+  const [announcement, setAnnouncement] = useState('');
+  // Expand for externally restored amounts too, without ever writing to the caller.
+  // Bounds do not shrink during a drag, so the thumb follows the pointer directly.
+  useEffect(() => {
+    setUpperBound((previous) => (value > previous ? expandedAmountLimit(value) : previous));
+  }, [value]);
+  const maximum = Math.max(upperBound, value);
+  const increment = Math.max(Number.MIN_VALUE, 10 ** (Math.floor(Math.log10(maximum)) - 2));
+  const change = (next, announce = false) => {
+    if (!disabled && Number.isFinite(next) && next >= 0) {
+      onChange(next);
+      setAnnouncement(announce ? `${label}: ${next} relative amount` : '');
+    }
+  };
+  const increase = () =>
+    change(value > Number.MAX_VALUE - increment ? Number.MAX_VALUE : value + increment, true);
+  return (
+    <div className="rt-amount">
+      <div className="rt-amount__heading">
+        <label className="rt-field__label" htmlFor={inputId}>
+          {label}
+        </label>
+        <output htmlFor={inputId} className="rt-caption" title={String(value)} aria-hidden="true">
+          {Number(value.toPrecision(4)).toString()}
+        </output>
+      </div>
+      <div className="rt-amount__controls">
+        <ActionButton
+          variant="secondary"
+          className="rt-amount__step"
+          aria-label={`Less ${label}`}
+          aria-controls={inputId}
+          disabled={disabled || value === 0}
+          onClick={() => change(Math.max(0, value - increment), true)}
+        >
+          <span aria-hidden="true">−</span>
+        </ActionButton>
+        <input
+          id={inputId}
+          className="rt-amount__range"
+          type="range"
+          min="0"
+          max={maximum}
+          step="any"
+          value={value}
+          onChange={(event) => change(Number(event.target.value))}
+          disabled={disabled}
+          aria-valuetext={`${value} relative amount`}
+          aria-describedby={describedBy}
+        />
+        <ActionButton
+          variant="secondary"
+          className="rt-amount__step"
+          aria-label={`More ${label}`}
+          aria-controls={inputId}
+          disabled={disabled || value === Number.MAX_VALUE}
+          onClick={increase}
+        >
+          <span aria-hidden="true">+</span>
+        </ActionButton>
+      </div>
+      <span className="rt-visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+        {announcement}
+      </span>
+    </div>
+  );
+}
+AmountControl.propTypes = {
+  id: PropTypes.string,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
+  onChange: PropTypes.func.isRequired,
+  initialMax: PropTypes.number,
+  disabled: PropTypes.bool,
+  describedBy: PropTypes.string,
 };
 
 export function ChoiceGroup({

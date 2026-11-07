@@ -1,4 +1,9 @@
 import comparisonPlaces from './comparisonPlaces.json';
+import {
+  dailyScheduleFromRhythm,
+  DEFAULT_DAILY_RHYTHM,
+  rhythmFromDailySchedule,
+} from './dailyRhythm';
 
 // Pinned examples retain the reviewed source vectors and their evidence. They
 // express taste only: source holds and trip feasibility remain server-owned.
@@ -41,13 +46,7 @@ export const PLACES = [
 // Mirrors backend/app/routing/occupancy.py; server validation remains authoritative.
 export const MAX_SETUP_ROOMS = 4;
 export const PLACE_REASONS = ['nature', 'hiking_outdoors', 'scenery'];
-export const STEPS = [
-  'Where and when',
-  'People and rooms',
-  'What you enjoy',
-  'Car and timing',
-  'Review',
-];
+export const STEPS = ['Where and when', 'People', 'What you enjoy', 'Daily timing', 'Review'];
 
 export function newSetupDraft() {
   return {
@@ -63,7 +62,9 @@ export function newSetupDraft() {
     ratings: {},
     customWeights: null,
     comparisonAnswers: {},
-    carStatus: 'unanswered',
+    tripMode: 'auto',
+    dailyRhythm: { ...DEFAULT_DAILY_RHYTHM },
+    carStatus: 'skipped',
     year: '',
     make: '',
     model: '',
@@ -203,6 +204,32 @@ export function roomInputs(draft) {
   }));
 }
 
+export function hotelSetupErrors(draft) {
+  const errors = {};
+  const rooms = roomInputs(draft);
+  if (!draft.budget || !Number.isFinite(Number(draft.budget)) || Number(draft.budget) < 0)
+    errors.budget = 'Enter a hotel target of zero or more.';
+  if (
+    rooms.some(
+      (r, i) =>
+        !draft.rooms[i].adults ||
+        !Number.isInteger(r.adults) ||
+        r.adults < 1 ||
+        r.adults + r.child_ages.length > 6 ||
+        (draft.rooms[i].children.trim() &&
+          !/^\s*\d{1,2}\s*(,\s*\d{1,2}\s*)*$/.test(draft.rooms[i].children)) ||
+        r.child_ages.some((age) => !Number.isInteger(age) || age < 0 || age > 17)
+    )
+  )
+    errors.rooms = 'Each room needs an adult and at most 6 people. Use child ages from 0 to 17.';
+  else if (
+    rooms.reduce((sum, room) => sum + room.adults + room.child_ages.length, 0) !==
+    Number(draft.travelers)
+  )
+    errors.rooms = 'Room occupants must add up to the total people.';
+  return errors;
+}
+
 export function setupErrors(draft, step) {
   const errors = {};
   const needed = (key, label) => {
@@ -222,7 +249,6 @@ export function setupErrors(draft, step) {
       errors.stops = 'Choose at least one attraction.';
   }
   if (step === 1) {
-    const rooms = roomInputs(draft);
     if (
       !draft.travelers ||
       !Number.isInteger(Number(draft.travelers)) ||
@@ -230,26 +256,8 @@ export function setupErrors(draft, step) {
       Number(draft.travelers) > 24
     )
       errors.travelers = 'Enter 1 to 24 people, including you.';
-    if (!draft.budget || !Number.isFinite(Number(draft.budget)) || Number(draft.budget) < 0)
-      errors.budget = 'Enter a hotel target of zero or more.';
-    if (
-      rooms.some(
-        (r, i) =>
-          !draft.rooms[i].adults ||
-          !Number.isInteger(r.adults) ||
-          r.adults < 1 ||
-          r.adults + r.child_ages.length > 6 ||
-          (draft.rooms[i].children.trim() &&
-            !/^\s*\d{1,2}\s*(,\s*\d{1,2}\s*)*$/.test(draft.rooms[i].children)) ||
-          r.child_ages.some((age) => !Number.isInteger(age) || age < 0 || age > 17)
-      )
-    )
-      errors.rooms =
-        'Each room needs an adult and at most 6 people. Use child ages from 0 to 17, separated by commas.';
-    else if (
-      rooms.reduce((sum, r) => sum + r.adults + r.child_ages.length, 0) !== Number(draft.travelers)
-    )
-      errors.rooms = 'Room occupants must add up to the total people.';
+    if (draft.tripMode === 'overnight' || draft.tripMode === undefined)
+      Object.assign(errors, hotelSetupErrors(draft));
   }
   if (step === 2) {
     try {
@@ -265,6 +273,21 @@ export function setupErrors(draft, step) {
       needed('make', 'Enter the car make.');
       needed('model', 'Enter the car model.');
       if (!/^\d{4}$/.test(draft.year)) errors.year = 'Enter the four-digit car year.';
+    }
+    if (draft.dailyRhythm) {
+      try {
+        const { slots } = dailyScheduleFromRhythm(draft.dailyRhythm);
+        if (
+          draft.date &&
+          /^\d{2}:\d{2}$/.test(draft.time) &&
+          slots[Number(draft.time.slice(0, 2))] !== 'drive'
+        )
+          errors.schedule =
+            'Departure is outside driving hours. Change the departure or this rhythm.';
+      } catch (error) {
+        errors.schedule = error.message;
+      }
+      return errors;
     }
     if (draft.schedule.preferred_hotel_arrival > draft.schedule.latest_hotel_arrival)
       errors.schedule = 'Your preferred hotel arrival must be before the latest hotel arrival.';
@@ -287,16 +310,33 @@ export function restoreDraft(value) {
     if (
       version !== 1 ||
       !isObject(draft) ||
-      Object.keys(initial).some((key) => key !== 'comparisonAnswers' && !(key in draft))
+      Object.keys(initial).some(
+        (key) => !['comparisonAnswers', 'tripMode', 'dailyRhythm'].includes(key) && !(key in draft)
+      )
     )
       return null;
     for (const [key, baseline] of Object.entries(initial)) {
+      if (['tripMode', 'dailyRhythm'].includes(key) && !(key in draft)) continue;
       if (
         typeof baseline === 'string' &&
         (typeof draft[key] !== 'string' || draft[key].length > 500)
       )
         return null;
     }
+    if ('tripMode' in draft && !['auto', 'one_day', 'overnight'].includes(draft.tripMode))
+      return null;
+    if (
+      'dailyRhythm' in draft &&
+      draft.dailyRhythm !== null &&
+      (!isObject(draft.dailyRhythm) ||
+        Object.keys(DEFAULT_DAILY_RHYTHM).some(
+          (key) =>
+            !Number.isInteger(draft.dailyRhythm[key]) ||
+            draft.dailyRhythm[key] < 0 ||
+            draft.dailyRhythm[key] > 23
+        ))
+    )
+      return null;
     if (
       !Array.isArray(draft.rooms) ||
       !draft.rooms.length ||
@@ -342,7 +382,15 @@ export function restoreDraft(value) {
       // Keep the older, valid trip answers available for correction and review.
     }
     return {
-      draft: { ...draft, comparisonAnswers },
+      draft: {
+        ...draft,
+        carStatus: draft.carStatus === 'unanswered' ? 'skipped' : draft.carStatus,
+        comparisonAnswers,
+        tripMode: draft.tripMode ?? 'auto',
+        dailyRhythm: Object.hasOwn(draft, 'dailyRhythm')
+          ? draft.dailyRhythm
+          : rhythmFromDailySchedule(draft.schedule.daily_schedule),
+      },
       step: Number.isInteger(step) && step >= 0 && step < STEPS.length ? step : 0,
     };
   } catch {

@@ -140,6 +140,7 @@ export const createChat = async (auth_token, UserChatData, ChatLog, options = {}
         data
       );
       if (!isCurrentSession(session)) return false;
+      UserChatData.savedRevision = response.headers?.['x-trip-revision'] ?? null;
       console.debug(
         '[DB] createChat success chatId=%s status=%s',
         UserChatData.chatId,
@@ -152,6 +153,14 @@ export const createChat = async (auth_token, UserChatData, ChatLog, options = {}
         UserChatData.chatId,
         error.response?.status ?? 'network'
       );
+      if (
+        isCurrentSession(session) &&
+        error.response?.status === 409 &&
+        error.response?.data?.detail === 'Trip already saved; reload before continuing'
+      ) {
+        UserChatData.saveConflict = true;
+        return false;
+      }
       if (
         !isCurrentSession(session) ||
         attempt + 1 >= maxAttempts ||
@@ -170,15 +179,17 @@ export const createChat = async (auth_token, UserChatData, ChatLog, options = {}
 };
 
 export const deleteChat = async (auth_token, chatId, owner) => {
-  if (owner) lifecycleFor(owner, auth_token).ready.delete(chatId);
+  const session = getSession();
   try {
     await axios.delete(`${import.meta.env.VITE_BACKEND_SERVER}chats/delete/${chatId}`, {
       headers: { Authorization: `Bearer ${auth_token}` },
     });
-    return null;
+    if (!isCurrentSession(session)) return false;
+    if (owner) lifecycleFor(owner, auth_token).ready.delete(chatId);
+    return true;
   } catch (error) {
     console.error('Failed to delete chat; status=%s', error.response?.status ?? 'network');
-    return null;
+    return false;
   }
 };
 
@@ -220,6 +231,7 @@ export const initializeUserData = async (auth_token) => {
         chat_d['isComplete'] || false,
         chat_d['agentChatId'] || null
       );
+      restored.savedRevision = chat_d.savedRevision ?? null;
       restored.tripProfile = chat_d.tripProfile ?? {};
       restored.presentation =
         chat_d.presentation &&
@@ -240,8 +252,14 @@ export const initializeUserData = async (auth_token) => {
   }
 };
 
-export const updateUserData = async (access_token, UserChatData, chats, owner) => {
-  if (owner && !(await ensureChatCreated(access_token, UserChatData, chats, owner))) return false;
+export const updateUserData = async (access_token, UserChatData, chats, owner, options = {}) => {
+  const session = getSession();
+  if (
+    !options.presentationOnly &&
+    owner &&
+    !(await ensureChatCreated(access_token, UserChatData, chats, owner))
+  )
+    return false;
   const newChat = chats.find(
     (
       Chat // Find the currently selected chat in chats
@@ -268,16 +286,39 @@ export const updateUserData = async (access_token, UserChatData, chats, owner) =
     UserChatData.chatId,
     sanitizedChat.messages.length
   );
+  let revision = UserChatData.savedRevision;
+  if (options.presentationOnly && !revision) {
+    const loaded = await initializeUserData(access_token);
+    if (!isCurrentSession(session)) return false;
+    const latest = loaded?.UserData.chatlogs.getChatDataById(UserChatData.chatId);
+    if (
+      !latest ||
+      latest.agentChatId !== UserChatData.agentChatId ||
+      JSON.stringify(latest.route) !== JSON.stringify(UserChatData.route) ||
+      JSON.stringify(latest.itinerary) !== JSON.stringify(UserChatData.itinerary)
+    )
+      return false;
+    revision = latest.savedRevision;
+  }
+  if (options.presentationOnly && !/^[0-9a-f]{64}$/.test(revision ?? '')) return false;
   const data = {
     PartitionKey: access_token,
     ChatData: UserChatData,
     ChatLog: sanitizedChat,
+    ...(revision
+      ? {
+          ExpectedRevision: revision,
+          UpdateScope: options.presentationOnly ? 'presentation' : 'full',
+        }
+      : {}),
   };
   try {
     const response = await axios.put(
       `${import.meta.env.VITE_BACKEND_SERVER}chats/update/${UserChatData.chatId}`,
       data
     );
+    if (!isCurrentSession(session)) return false;
+    if (revision) UserChatData.savedRevision = response.data?.savedRevision ?? null;
     console.debug(
       '[DB] updateUserData success chatId=%s status=%s',
       UserChatData.chatId,
@@ -285,7 +326,9 @@ export const updateUserData = async (access_token, UserChatData, chats, owner) =
     );
     return true;
   } catch (error) {
-    if (error.response?.status === 404) {
+    if (isCurrentSession(session) && revision && [404, 409].includes(error.response?.status))
+      UserChatData.saveConflict = true;
+    if (error.response?.status === 404 && !options.presentationOnly && !revision) {
       // Recover a genuinely stale/deleted row; ordinary new trips create before PUT.
       return createChat(access_token, UserChatData, sanitizedChat);
     }

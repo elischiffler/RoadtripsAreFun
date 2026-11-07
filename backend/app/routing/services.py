@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import datetime
 from typing import Any
 
 from app.models.routing_models.routing_models import MapBox
@@ -53,9 +53,8 @@ GatherCandidates = Callable[..., Awaitable[list[dict[str, Any]]]]
 FindCPSatCandidates = Callable[
     [MapBox_route, DiscoveryPlan, dict[str, float]], Awaitable[DiscoveryResult]
 ]
-FindCPSatHotels = Callable[
-    [list[float], date, PriceRange, dict[str, float], list], Awaitable[list[dict[str, Any]]]
-]
+# Explicit rhythms also pass keyword check_out_date for a full dated stay.
+FindCPSatHotels = Callable[..., Awaitable[list[dict[str, Any]]]]
 
 
 @dataclass

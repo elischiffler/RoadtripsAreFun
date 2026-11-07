@@ -22,6 +22,18 @@ if (revision !== actualRevision || dirty)
   throw Error(
     "The release gate requires a clean checkout of its exact revision",
   );
+// Exercise launcher ownership/race/path checks with isolated fake process
+// helpers only. No application, SQL, database or hosted environment is loaded.
+execFileSync(
+  process.execPath,
+  ["--test", "tests/guidedjourney/local_runner.test.mjs"],
+  {
+    cwd: root,
+    env: { PATH: process.env.PATH },
+    stdio: "inherit",
+    timeout: 30000,
+  },
+);
 const dockerEnv = { ...process.env };
 for (const selector of [
   "DOCKER_HOST",
@@ -99,6 +111,40 @@ const chromium =
   ["/usr/bin/google-chrome", "/usr/bin/chromium"].find(existsSync);
 if (!chromium)
   throw Error("Chromium is required for the trip-creation release gate");
+// Cheap observer integrity preflight, before starting any journey fixture.
+// Use the already revision-verified Python image with no network or app startup.
+invoke(
+  [
+    "run",
+    "--rm",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges:true",
+    "--memory",
+    "256m",
+    "--pids-limit",
+    "64",
+    "--tmpfs",
+    "/tmp:size=8m",
+    "--mount",
+    `type=bind,src=${join(root, "tests/guidedjourney")},dst=/journey,readonly`,
+    testImage.Id,
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/journey",
+    "-p",
+    "test_*.py",
+    "-q",
+  ],
+  { stdio: "inherit", timeout: 30000 },
+);
 try {
   // The diagnostic API intentionally blocks business routes. Replace only that
   // local preview process; leave the already-built real frontend running.

@@ -1,0 +1,80 @@
+{
+  "fixtureOnly": true,
+  "audits": [
+    {
+      "width": 390,
+      "height": 844,
+      "textScale": 1,
+      "theme": "Light",
+      "horizontalOverflow": false,
+      "violations": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "textScale": 1,
+      "theme": "Dark",
+      "horizontalOverflow": false,
+      "violations": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "textScale": 1,
+      "theme": "Light",
+      "horizontalOverflow": false,
+      "violations": []
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "textScale": 1,
+      "theme": "Dark",
+      "horizontalOverflow": false,
+      "violations": []
+    },
+    {
+      "width": 1365,
+      "height": 900,
+      "textScale": 1,
+      "theme": "Light",
+      "horizontalOverflow": false,
+      "violations": []
+    },
+    {
+      "width": 1365,
+      "height": 900,
+      "textScale": 1,
+      "theme": "Dark",
+      "horizontalOverflow": false,
+      "violations": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "textScale": 2,
+      "theme": "Light",
+      "horizontalOverflow": false,
+      "violations": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "textScale": 2,
+      "theme": "Dark",
+      "horizontalOverflow": false,
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "blockedExternalOrigins": [],
+  "writes": [
+    "trip-car-save",
+    "profile-save",
+    "profile-delete"
+  ],
+  "legacyCarLoaded": true,
+  "carPersistedAcrossReload": true,
+  "themePersistedAcrossReload": true,
+  "profileCreatedAndDeleted": true
+}

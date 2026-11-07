@@ -1,10 +1,12 @@
 """CP-SAT selection and scheduling with provider-verified fake records."""
 
 from datetime import date
+from types import SimpleNamespace
 
 import pytest
 from ortools.sat.python import cp_model
 
+from app.agent.progress import reporting
 from app.routing.base import PlanningError, PlanOptions
 from app.routing.cp_sat_scheduler import schedule_cp_sat_route
 from app.routing.discovery import DiscoveryResult
@@ -345,3 +347,142 @@ async def test_missing_hotel_fails_after_bounded_retries(route, start_date, fake
             services,
         )
     assert 1 <= len(calls["hotels"]) <= 6
+
+
+@pytest.mark.asyncio
+async def test_reserved_meal_can_use_opening_wait_before_unsplit_visit(
+    route, start_date, fake_services
+):
+    from app.routing.visit_duration import VisitDuration
+
+    services, _ = configure(fake_services)
+    candidate = attraction("meal-opening-wait", [0, 0], 0.9)
+    candidate["visit_duration"] = VisitDuration(
+        seconds=3600, source="ai_estimate", reason="estimated"
+    ).model_dump()
+    candidate["source_provenance"] = [
+        {
+            "dataset": "Synthetic hours",
+            "source_visit_calendar": {
+                "schema_version": "roadtrips-source-visit-calendar/1",
+                "weekly_windows": [
+                    {"weekdays": list(range(7)), "opens": "13:00", "closes": "14:00"}
+                ],
+                "source_receipts": [{"source_url": "https://operator.example/meal-opening-wait"}],
+            },
+        }
+    ]
+    stops, _ = await schedule_cp_sat_route(
+        short_route(route, 6 * 3600),
+        [(2 * 3600, candidate)],
+        PlanOptions(
+            1,
+            100,
+            start_date,
+            traveler_count=2,
+            hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+            reserve_meal_slots=True,
+        ),
+        services,
+    )
+    assert [stop["provider_id"] for stop in stops] == ["meal-opening-wait"]
+
+
+@pytest.mark.asyncio
+async def test_meal_aware_hotel_search_leaves_time_for_breaks(route, start_date, fake_services):
+    services, calls = configure(fake_services)
+
+    async def near_hotel(position, check_in, price_range, weights, hotel_rooms):
+        calls["hotels"].append((position, check_in, price_range, weights))
+        return [hotel("meal-hotel", position, 100, 0.8)]
+
+    services.cp_sat_hotels = near_hotel
+    stops, _ = await schedule_cp_sat_route(
+        short_route(route, 11 * 3600),
+        [],
+        PlanOptions(
+            0,
+            100,
+            start_date,
+            traveler_count=2,
+            hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+            reserve_meal_slots=True,
+        ),
+        services,
+    )
+    assert len(stops) == 1 and stops[0]["type"] == "hotel"
+    assert len(calls["hotels"]) <= 6
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("possible", [True, False])
+async def test_estimated_hotel_meals_obey_opted_in_sleep(
+    route, start_date, fake_services, possible, monkeypatch
+):
+    from app.routing import lodging
+    from app.routing.meal_reservations import MealScheduleConflict
+    from tests.one_day_rhythm_tests import policy
+    from tests.routing.unrestricted_rhythm_tests import quoted
+
+    monkeypatch.setattr(lodging, "current_local_date", lambda zone: date(2020, 1, 1))
+    services, _ = configure(fake_services)
+
+    async def near_hotel(
+        position, check_in, price_range, weights, hotel_rooms, *, check_out_date=None
+    ):
+        return [{**quoted(check_in, check_out_date, price=100), "coordinates": position}]
+
+    services.cp_sat_hotels = near_hotel
+    selected_policy = policy((9, 20), (22, 8)) if possible else policy((10, 18), (20, 10))
+    args = (
+        short_route(route, 13 * 3600),
+        [],
+        PlanOptions(
+            0,
+            100,
+            start_date.replace(hour=17),
+            traveler_count=2,
+            hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+            reserve_meal_slots=True,
+            scheduling_policy=selected_policy,
+        ),
+        services,
+    )
+    if not possible:
+        with pytest.raises(MealScheduleConflict):
+            await schedule_cp_sat_route(*args)
+    else:
+        stops, _ = await schedule_cp_sat_route(*args)
+        assert stops and all(s["type"] == "hotel" for s in stops)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("legacy_geometry", [False, True])
+async def test_provisional_map_scenes_follow_real_discovery_and_solver_selection(
+    route, start_date, fake_services, legacy_geometry
+):
+    short_route(route, 3600)
+    if legacy_geometry:
+        route.geometry = SimpleNamespace(coordinates=route.geometry.coordinates)
+    services, _ = configure(fake_services, [attraction("verified", [0, 0], 0.9)])
+    events = []
+    with reporting(events.append):
+        result = await CPSatPlanner().plan(
+            route,
+            PlanOptions(
+                1,
+                100,
+                start_date,
+                traveler_count=2,
+                hotel_rooms=[HotelRoom(adults=2, child_ages=[])],
+            ),
+            services,
+        )
+    scenes = [e for e in events if e.get("stage") == "route.preview"]
+    assert [e["phase"] for e in scenes] == ["considering", "selected"]
+    assert all(e["preview_only"] is True for e in scenes)
+    assert scenes[0]["stops"][0]["provider_id"] == "verified"
+    assert [s["name"] for s in scenes[1]["stops"]] == [
+        s["name"] for s in result.stopping_points if s["type"] == "stop"
+    ]
+    assert "attribute_ratings" not in str(scenes) and "source_provenance" not in str(scenes)

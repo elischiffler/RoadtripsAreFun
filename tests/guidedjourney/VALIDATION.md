@@ -2,9 +2,12 @@
 
 This records local synthetic verification, not a live provider/account test or a
 production deployment. The latest complete native run passes the positive and
-negative cases below. The corrected container wrapper still needs its next
-GitHub CI execution after integration. No hosted database or live Mentro request
-was made.
+negative cases below. The corrected original container wrapper subsequently passed on final main
+`42d5068bb4c8804a8024df0e4463fb05e0a7e275` in Local containers run
+[42315083289](https://github.com/elischiffler/RoadtripsAreFun/actions/runs/42315083289).
+The latest combined practical overnight/daytime-sleep flow passed a fresh native
+execution at `6de80a4cba2e1e1a37b1ed718f294525bbc1365a`, recorded below; its
+final exact-commit container execution remains required. No hosted database or live Mentro request was made.
 
 ## Reproduced save failure
 
@@ -100,3 +103,267 @@ pass. Independent review checked the fixture isolation, real execution seams,
 native progress assertions, persisted visit/undo assertions, database target
 guards and image revision checks. Those checks and the full native pass do not
 replace the outstanding corrected container-wrapper run.
+
+
+## Stage2 combined journey — November 7, 2026
+
+The mandatory browser gate now follows the combined five-stage setup and `/trip`
+workspace. Its assertions cover a real reserved lunch (duration/window, no visit
+overlap and arrival elapsed-time accounting), sequential modern visit revisions
+without reload, actual stale-revision HTTP 409 with unchanged PostgreSQL state,
+along-route browse and explicit replacement preview/save/reload, reusable
+preference profile create/edit/reload/reuse, and separate trip-car persistence.
+The preview is checked against durable state before saving. Existing expired-date
+safe-error, no false completion/extra trip, actual non-owner research denial,
+external-network refusal and 390px/1440px checks remain required.
+
+Synthetic edit-place facts are supplied only at repository nearby/current-record
+read seams, alongside the existing local source/geocoding/road/HTTP gateway
+fixtures. Actual browse filters, current-fact validation, route-edit timing,
+itinerary and scoped CAS CRUD remain active. The gate does not establish live
+Cognito/Mentro/Mapbox acceptance, catalog SQL parity, every multi-day meal conflict,
+or all possible saved-trip edit/race combinations.
+
+Status: **fresh complete native journey passed** against the frozen application
+checkpoint `0e2d0f345597311f66eaa8058b2316966227536c`, with a new Vite production
+build served from a separate static output directory and a fresh empty marked
+PostgreSQL instance. The command exited zero; its `finally` cleanup stopped only
+its own API/static server and removed its own random PostgreSQL project.
+
+The passing report contains two synthetic logins, one real CP-SAT solve, 13 road
+adapter calls, nine candidate page reads, 13 browse reads, three current-fact
+refreshes, two actual rating and two actual duration adapter calls. One saved
+trip and two reusable profiles remain in the report. The explicit old revision
+returned actual HTTP 409; route preview returned 200 and the subsequent save and
+reload passed. Browser page errors, blocked external origins and prohibited
+Python network attempts are all empty. The expired attempt returned the actual
+422 `departure_not_upcoming` event without another save/solve or false completion.
+
+Ignored local evidence: `.artifacts/result.json`, `.artifacts/happy-result.json`,
+`.artifacts/saved-trip.png`, `.artifacts/trip-workspace.png` and
+`.artifacts/reloaded-edited-trip.png`. The first attempt stopped at an overly
+strict test locator for an implicitly labelled select; its retained
+`initial-selector-failure` artifacts show that creation, meal timing, revision
+writes and browse had already passed. Matching the actual combobox accessible
+name fixed the locator; no application behavior or strict assertion was changed.
+
+Source syntax, Ruff and whitespace checks pass. Independent read-only review
+found no safety or coverage blocker. The exact integrated commit still requires
+the normal Local containers CI gate; this native result does not replace it.
+
+A separate fresh standard disposable PostgreSQL instance also passed
+`tests/settings_postgres_tests.py::test_long_route_shortening_keeps_exact_geometry_initial_and_scoped_rollback`
+(one test, 0.23s). This uses the real API/CRUD and segment-table transaction to
+shorten 10,001 coordinates to two, retain the independent initial geometry,
+preserve a foreign owner's rows and roll back a partial insert on an ownership
+conflict. It supplies a synthetic endpoint identity rather than JWT verification;
+the browser gate above covers the actual signed verifier. The instance used the
+standard fixture's own required local credentials, fresh-schema guard and offline
+runner with loopback only, and was removed afterward. Neither database target
+guard was weakened to share credentials between the two fixtures.
+
+
+## Registered candidates and daily rhythm — native execution passed
+
+The gate is adapted to the combined registration → real candidate NDJSON stream
+→ explicit one-day confirmation flow. It requires no AI before the explicit
+check, no durable trip and no 100% progress after successful assessment, actual
+server-derived under-12-hour proof including meals, no hotel calls, and no model
+replay on duplicate assessment/confirmation or after cancellation. A second
+actual HTTP candidate checks required overnight occupancy and an allowed short
+flexible route with zero hotels, without another saved trip or new attraction AI.
+Settings coverage now uses the actual 24-hour rhythm sliders/profile contract.
+Existing save/reload, arrival correction/undo/CAS, route edit and metadata reset,
+meals, car, non-owner auth, expired-date and viewport/network assertions remain.
+Real device geolocation is blocked; automatic arrival positions are separately
+mocked in their own harness.
+
+Only lower external provider/repository seams are synthetic. No candidate
+registration, assessment, proof, confirmation, scheduler, timing, auth or durable
+storage behavior is stubbed. The hotel seam still rejects every call, so an
+actual overnight hotel/sleep/rest/browser path is not claimed; those dated hotel,
+rest/sleep, DST and infeasibility paths remain backend clock/API/integration
+coverage. Source checks (syntax, Prettier, Ruff and whitespace) pass, and an
+independent read-only review found no source blocker.
+
+A fresh complete native run **passed** against frozen application checkpoint
+`d07f6f75fc3b099e73ad120ffbafdc57df5ba2b2`. A new production-mode Vite bundle
+used only fixture endpoints; the actual signed browser/API/CP-SAT/timing/CRUD
+journey ran against a fresh empty marked PostgreSQL instance. The primary
+candidate's actual elapsed time was 18,000 seconds, including its reserved meal.
+Successful assessment had zero saved rows and progress below completion; only
+explicit one-day confirmation caused the durable save. Repeated assessment and
+confirmation reused work. Cancellation returned actual 410 without model or
+solver replay. A second assessment rejected missing overnight occupancy with
+actual 422, then accepted flexible mode with zero hotels and no additional
+attraction AI. Actual itinerary construction validated that route's reserved
+meal as well.
+
+Save/reload, manual arrival correction/undo with sequential revisions, stale 409
+with unchanged storage, route preview/save/reload and arrival-metadata reset,
+24-hour profile create/edit/reload/reuse, separate car persistence, non-owner
+Settings/research restrictions and 390px/1440px assertions all passed. The second
+login's expired departure produced the actual typed 422 event and exact safe
+future-date message without another save, solver call or false completion.
+Final counts were two logins, three real solves, four rating adapter calls, two
+duration adapter calls, six local gateway requests, zero hotel requests, one
+saved trip and two profiles. Browser errors, prohibited browser origins/device
+geolocation and prohibited Python network attempts were empty.
+
+Fresh ignored evidence is `.artifacts/result.json`, `.artifacts/happy-result.json`,
+`.artifacts/candidate-cache-result.json`, `.artifacts/saved-trip.png`,
+`.artifacts/trip-workspace.png` and `.artifacts/reloaded-edited-trip.png`.
+The native driver exited zero and removed only its own API/static process groups,
+fresh random PostgreSQL project and temporary dependency symlink; fixture ports
+were confirmed closed afterward. The exact final integrated commit must still
+pass the mandatory Local containers CI gate before release. This native result
+does not establish live Cognito/provider/device acceptance or replace that gate.
+
+
+## Final readiness and shared-only Home follow-up — passed
+
+The complete native browser/API/disposable-PostgreSQL journey was rebuilt and
+rerun successfully against final frozen application checkpoint
+`48204ece680feb2a10aff6f4692976717cf5a754`. All preceding candidate, proof,
+cache/cancel, conditional occupancy, timing/meal, save/reload, revision conflict,
+edit/reset, profile/car, research denial, viewport and expired-date assertions
+passed unchanged. Actual `/ready` accepted the normal complete seeded schema.
+
+The new Home checks awaited the final routing decision: an authenticated empty
+owner reached `/plan`, and the same owner after saving reached `/trips`. The
+owner created a capability using the actual revision-checked sharing API. A
+second fixed synthetic account used real local SDK login and signed verification,
+connected through the actual sharing API, then visited `/` and reached
+`/shared-trips`. Its shared list and read-only trip/route outline rendered; owner
+visit controls and private projection fields were absent. It had zero owned
+trip rows; sharing left the owner's durable trip and model counters unchanged.
+The capability remained only in memory, never in a URL or evidence artifact.
+
+The final report contains three synthetic logins, three real solves, four rating
+and two duration adapter calls, six local gateway requests, zero hotel requests,
+one owned trip and zero participant-owned trips. Browser errors, prohibited
+origins/device geolocation and prohibited Python network attempts were empty.
+`.artifacts/home-entry-result.json` records the routing outcomes without
+credentials or capability tokens. The fresh `.artifacts/result.json` and other
+passing artifacts now represent this final run. Its command exited zero; own
+API/static processes, random PostgreSQL project and temporary dependency link
+were removed, with all fixture ports confirmed closed.
+
+Separately, `tests/readiness_postgres_tests.py` passed all 17 actual-PostgreSQL
+cases in a fresh standard guarded local database with the normal schema and
+existing synthetic catalog seed. Real HTTP `/ready` connections were read-only.
+A non-superuser effective app role with required grants returned 200; SELECT-only
+sharing grants and each of eight individually missing privileges returned the
+fixed 503. The session user remained privileged, proving checks use the effective
+role. Each sharing table's absent name, missing column and wrong column type
+returned fixed schema 503, and restored schema returned 200. Actual owner CRUD
+still worked with both sharing table names unavailable. Test fixture changes
+were restored and its separate disposable database/roles/project removed.
+The normal PostgreSQL CI runner includes these tests after its existing catalog
+seed; no readiness query, schema check or fixture target guard was bypassed.
+
+The mandatory final exact-commit Local containers and PostgreSQL CI executions
+remain required. These local results do not establish live Cognito, Mentro,
+Mapbox, geolocation, true overnight-hotel browser acceptance or production schema
+state.
+
+
+## Practical daytime sleep and full hotel stays — native passed
+
+The complete native command exited zero on frozen integrated revision
+`6de80a4cba2e1e1a37b1ed718f294525bbc1365a`:
+
+- Backend tree: `0dbe7243a7da44e8b4ddd0130793ef2c7efc1c5b`.
+- Frontend tree: `1b9bbf656c03c5ea8f697f4de1fddd0e733c5e6c`.
+- Seven standalone observer preflight tests passed before fixture startup.
+- All prior strict primary, candidate/cache/cancel, flexible zero-hotel,
+  save/reload, revision, Settings, shared-only Home, viewport and expired-date
+  assertions passed again. The primary report records three logins, three actual
+  selection solves, four rating and two duration adapter calls, six local gateway
+  requests, zero hotel calls, one owner trip and zero participant-owned trips.
+
+A separate fixed synthetic identity then used the actual guided UI for a longer
+corridor, driving 20:00–06:00 and sleeping 08:00–16:00. Its stated room was two
+adults and a seven-year-old child. The actual candidate assessment, explicit stay
+confirmation, CP-SAT selection, hotel validation/rating/room intersection, final
+road-leg timing, itinerary and PostgreSQL save/reload completed. There were two
+hotel requests and two actual scheduled hotel rests, each with a two-night
+quote of $250; the route counted the full $500 total once. The quote ranges were
+November 15–17 and November 16–18, 2026. Each physical rest contained eight
+hours of daytime sleep and separate awake rest; its planned rest times remained
+distinct from the covering quote dates, with `access_status: confirmation_required`. These are synthetic dated offers,
+not real inventory or confirmed hotel access.
+
+Full wake-relative windows were breakfast 16:00–18:00, lunch 21:00–23:00 and
+dinner 03:00–05:00 the following calendar day. Dinner IDs retained the previous
+wake-cycle date. Meal durations, windows and disjointness from sleep/visits
+passed, as did actual road-leg and cross-midnight timing checks.
+
+Both failure invariants were exercised through real HTTP: a short awake cycle
+returned a meal-related 422, and replacing an estimated 45-minute visit with the
+existing conservative two-hour fallback returned 422 with a visible explanation.
+Both left the durable trip unchanged. The separate feasible edit added a clearly
+synthetic place near the last segment, after the final hotel, through actual
+source refresh, night-calendar admission/CP checks, road/timing, preview and
+save/reload. Its full 7,200-second fallback and `within_published_window` status
+were retained. That calendar status describes only the explicit test fixture,
+not real published venue hours. The rejected replacement was absent; no extra
+model or hotel lookups occurred during either edit. The final edited interval
+was November 15 at 20:00 through November 18 at 01:18:55, about 53 hours.
+
+Progress verification used the actual final-rhythm preparation request and six
+catalog-section events/result, with tentative areas explicitly marked as not
+having checked quotes or availability. A bounded passive ASGI tee forwarded
+original request/response messages unchanged and recorded only actual successful
+sends. Independent browser assertions required the tentative pin, ready map,
+ended loading and no unavailable fallback; a server-emitted result alone was
+insufficient. The primary artifact observed and required `considering`,
+`selected`, `checking`. The overnight artifact sliced its own receipts, required
+`considering`/`selected`, and actually observed all three phases including
+`checking`. All were preview-only. No fake progress or late-response injection
+was used; focused UI tests retain stale/out-of-order coverage.
+
+### Scope and cleanup
+
+The actual static production-mode Vite bundle, browser, HTTP FastAPI, signed
+synthetic JWT verifier, CP-SAT, actual-leg timing, itinerary and CRUD used a fresh
+empty marked disposable PostgreSQL database. Remote catalog/geocoding/road facts,
+Mentro model replies and Google hotel records were synthetic leaves. The local
+Supabase/Mentro HTTP/SSE adapters and parsers stayed active; actual
+`hotel_candidates`, `LivePlaceProvider`/dated hotel validation and room matching
+stayed active. This browser lane does **not** exercise Google HTTP/HTML/date-control
+parsing; separate backend provider tests cover that synthetic-HTML seam. It also
+does not establish live Cognito/Mentro/Mapbox, real hotel/venue availability,
+physical geolocation or production schema state.
+
+Browser errors and prohibited external/device requests were empty. Python's
+prohibited-network list was empty. The native driver stopped only its own
+API/static process groups, removed its own random PostgreSQL project and removed
+its temporary frontend dependency symlink. Ports 8002, 8082, 8999, 9009 and 6543
+were confirmed closed afterward. No live/hosted request or production write was
+made. Required final exact-commit CI remains outstanding; native success is not
+container/deployment acceptance.
+
+### Evidence
+
+All files below are local ignored synthetic evidence under
+`/workspace/roadtrips-stage2-integration/tests/guidedjourney/.artifacts/`:
+
+- `result.json` SHA256 `9cfa53a00a5dcd29a9bcb5e4878f1c1781a6579541c64bfeb606a460a6ddf8bb`.
+- `overnight-result.json` SHA256 `b173b7dd683cce6cec64de85f70bb8f70314753805f0f2e2b143ed11da710fdf`.
+- `final-native-manifest.json` SHA256 `f8e1782478312d971ab4c5ad656d9f00ebce36199b0013b7dd2c3cf655f26e8a`
+  lists absolute paths and hashes for all current result/screenshot files and the
+  native log. No credentials, capability tokens or browser auth-state exports are
+  included.
+
+The native log is `/tmp/roadtrips-stage2-guided-native.log`, SHA256
+`cce58a51b7b0c610ceba54468caaa4ed6c39b0bdfbd8b9c1077328d857c888ab`.
+Earlier failures remain preserved with revision prefixes `e4f6468-first`,
+`8715eee-first` and `6023324-first`. They respectively show a cancelled-fetch CDP
+observer defect, integer/millisecond metadata precision mismatch, and the correct
+rejection of an edit that did not fit its longer conservative visit. The final
+case keeps the last rejection as an explicit regression and separately proves
+successful feasible editing. No application policy changed. Only the rounded
+block-duration metadata comparison permits a difference strictly below one
+second; exact eight-hour sleep, meal overlap, quote, price, source and storage
+guards remain required.
