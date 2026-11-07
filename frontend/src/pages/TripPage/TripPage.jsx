@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { DesignFrame, Sheet } from '../../design';
 import Map from '../../components/Map';
+import ShareTripPanel from '../../components/ShareTripPanel';
 import TripExperienceNav from '../../components/TripExperienceNav';
 import TripVisitProgress from '../../components/TripVisitProgress';
 import { useStoredTrip } from '../useStoredTrip';
@@ -112,6 +113,7 @@ export default function TripPage() {
               <p className="rt-copy">No route available.</p>
             )}
           </Sheet>
+          <ShareTripPanel key={`${trip.chatId}:${trip.agentChatId}`} trip={trip} />
           <section className="rt-stack" aria-labelledby="trip-itinerary-title">
             <div className="trip-itinerary-heading">
               <h2 id="trip-itinerary-title" className="rt-title">
