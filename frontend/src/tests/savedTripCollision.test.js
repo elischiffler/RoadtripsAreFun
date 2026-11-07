@@ -217,3 +217,16 @@ it('does not create duplicate local record IDs while aligning an already complet
   expect(otherRecord.id).toBe(data.chatId);
   expect(client.post).toHaveBeenCalledTimes(2);
 });
+
+it('does not allocate another ID or overwrite a newer saved version on a late same-planning create retry', async () => {
+  const data = planned();
+  const random = randomIds([1, 99]);
+  client.post.mockRejectedValue({
+    response: { status: 409, data: { detail: 'Trip already saved; reload before continuing' } },
+  });
+  expect(await ensureChatCreated(token, data, [log()], { chatdata: [] })).toBe(false);
+  expect(data.saveConflict).toBe(true);
+  expect(data.chatId).toBe(8);
+  expect(client.post).toHaveBeenCalledTimes(1);
+  expect(random).not.toHaveBeenCalled();
+});

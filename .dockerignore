@@ -18,6 +18,8 @@
 !scripts/run_offline_tests.py
 !scripts/catalog_*.py
 !docs/
+!docs/evidence/
+!docs/evidence/catalog-automation-coverage-20261019.json
 !docs/data/
 !docs/data/catalog-expansion-20261015/
 !docs/data/catalog-expansion-20261015/*.json

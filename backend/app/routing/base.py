@@ -92,6 +92,8 @@ class PlanOptions:
     preferences: dict[str, Any] | None = None
     weights: dict[str, float] | None = None
     scheduling_policy: SchedulingPolicy = field(default_factory=SchedulingPolicy)
+    reserve_meal_slots: bool = False
+    trip_mode: str = "overnight"
     # Request-local only: actual-leg calendar conflicts trigger reselection from
     # the same bounded, road-checked discovery pool without more sourcing calls.
     excluded_provider_ids: frozenset[str] = field(default_factory=frozenset)

@@ -1,0 +1,1402 @@
+{
+  "scope": "Intercepted browser presentation; no actual backend/auth/providers/database",
+  "passed": true,
+  "baseline": false,
+  "ordinary_no_scroll_assertions_enforced": true,
+  "audits": [
+    {
+      "name": "setup-390x844-100pct-stage0",
+      "heading": "Where and when",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "section": {
+        "top": 232,
+        "bottom": 563,
+        "height": 331
+      },
+      "footer": {
+        "top": 579,
+        "bottom": 638.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-100pct-stage0-route",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-100pct-stage1",
+      "heading": "People",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "section": {
+        "top": 203,
+        "bottom": 413,
+        "height": 210
+      },
+      "footer": {
+        "top": 429,
+        "bottom": 488.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-100pct-stage2",
+      "heading": "What you enjoy",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "section": {
+        "top": 203,
+        "bottom": 609,
+        "height": 406
+      },
+      "footer": {
+        "top": 625,
+        "bottom": 684.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-100pct-stage2-compare-places",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-100pct-stage2-adjust-amounts",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-100pct-stage3",
+      "heading": "Daily timing",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "section": {
+        "top": 203,
+        "bottom": 616,
+        "height": 413
+      },
+      "footer": {
+        "top": 632,
+        "bottom": 691.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-100pct-stage4",
+      "heading": "Review",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "section": {
+        "top": 203,
+        "bottom": 640.1875,
+        "height": 437.1875
+      },
+      "footer": {
+        "top": 656.1875,
+        "bottom": 715.984375,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-saved-preferences",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-loaded-preferences",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-375x812-100pct-stage0",
+      "heading": "Where and when",
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "section": {
+        "top": 232,
+        "bottom": 563,
+        "height": 331
+      },
+      "footer": {
+        "top": 579,
+        "bottom": 638.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-375x812-100pct-stage0-route",
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-375x812-100pct-stage1",
+      "heading": "People",
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "section": {
+        "top": 232,
+        "bottom": 442,
+        "height": 210
+      },
+      "footer": {
+        "top": 458,
+        "bottom": 517.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-375x812-100pct-stage2",
+      "heading": "What you enjoy",
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "section": {
+        "top": 232,
+        "bottom": 638,
+        "height": 406
+      },
+      "footer": {
+        "top": 654,
+        "bottom": 713.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-375x812-100pct-stage2-compare-places",
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-375x812-100pct-stage2-adjust-amounts",
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-375x812-100pct-stage3",
+      "heading": "Daily timing",
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "section": {
+        "top": 203,
+        "bottom": 616,
+        "height": 413
+      },
+      "footer": {
+        "top": 632,
+        "bottom": 691.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-375x812-100pct-stage4",
+      "heading": "Review",
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "section": {
+        "top": 203,
+        "bottom": 640.1875,
+        "height": 437.1875
+      },
+      "footer": {
+        "top": 656.1875,
+        "bottom": 715.984375,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-375x812-saved-preferences",
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-375x812-loaded-preferences",
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-1440x900-100pct-stage0",
+      "heading": "Where and when",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "section": {
+        "top": 236,
+        "bottom": 567,
+        "height": 331
+      },
+      "footer": {
+        "top": 583,
+        "bottom": 642.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-1440x900-100pct-stage0-route",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-1440x900-100pct-stage1",
+      "heading": "People",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "section": {
+        "top": 236,
+        "bottom": 446,
+        "height": 210
+      },
+      "footer": {
+        "top": 462,
+        "bottom": 521.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-1440x900-100pct-stage2",
+      "heading": "What you enjoy",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "section": {
+        "top": 236,
+        "bottom": 642,
+        "height": 406
+      },
+      "footer": {
+        "top": 658,
+        "bottom": 717.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-1440x900-100pct-stage2-compare-places",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-1440x900-100pct-stage2-adjust-amounts",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-1440x900-100pct-stage3",
+      "heading": "Daily timing",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "section": {
+        "top": 207,
+        "bottom": 564,
+        "height": 357
+      },
+      "footer": {
+        "top": 580,
+        "bottom": 639.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-1440x900-100pct-stage4",
+      "heading": "Review",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "section": {
+        "top": 207,
+        "bottom": 599.1875,
+        "height": 392.1875
+      },
+      "footer": {
+        "top": 615.1875,
+        "bottom": 674.984375,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-1440x900-saved-preferences",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-1440x900-loaded-preferences",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "scrollY": 0,
+      "outliers": [],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-320x568-100pct-stage0",
+      "heading": "Where and when",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "scrollHeight": 871,
+      "section": {
+        "top": 232,
+        "bottom": 680,
+        "height": 448
+      },
+      "footer": {
+        "top": 696,
+        "bottom": 755.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-320x568-100pct-stage0-route",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "scrollHeight": 606,
+      "scrollY": 0,
+      "outliers": [
+        {
+          "tag": "DIV",
+          "cls": "rt-design setup-design",
+          "id": "",
+          "right": 320,
+          "bottom": 606
+        },
+        {
+          "tag": "DIV",
+          "cls": "rt-design__content rt-stack",
+          "id": "",
+          "right": 304,
+          "bottom": 590
+        },
+        {
+          "tag": "MAIN",
+          "cls": "trip-setup",
+          "id": "",
+          "right": 304,
+          "bottom": 590
+        },
+        {
+          "tag": "SECTION",
+          "cls": "rt-sheet rt-stack  setup-card setup-card--choices",
+          "id": "",
+          "right": 304,
+          "bottom": 590
+        }
+      ],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-320x568-100pct-stage1",
+      "heading": "People",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "scrollHeight": 657,
+      "section": {
+        "top": 143,
+        "bottom": 377,
+        "height": 234
+      },
+      "footer": {
+        "top": 393,
+        "bottom": 452.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-320x568-100pct-stage2",
+      "heading": "What you enjoy",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "scrollHeight": 1313,
+      "section": {
+        "top": 80,
+        "bottom": 970,
+        "height": 890
+      },
+      "footer": {
+        "top": 986,
+        "bottom": 1045.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-320x568-100pct-stage2-compare-places",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "scrollHeight": 832,
+      "scrollY": 264,
+      "outliers": [
+        {
+          "tag": "DIV",
+          "cls": "rt-design setup-design",
+          "id": "",
+          "right": 320,
+          "bottom": 831.546875
+        },
+        {
+          "tag": "DIV",
+          "cls": "rt-design__content rt-stack",
+          "id": "",
+          "right": 304,
+          "bottom": 815.546875
+        },
+        {
+          "tag": "MAIN",
+          "cls": "trip-setup",
+          "id": "",
+          "right": 304,
+          "bottom": 815.546875
+        },
+        {
+          "tag": "SECTION",
+          "cls": "rt-sheet rt-stack  setup-card setup-card--comparisons",
+          "id": "",
+          "right": 304,
+          "bottom": 815.546875
+        },
+        {
+          "tag": "FORM",
+          "cls": "",
+          "id": "",
+          "right": 287,
+          "bottom": 798.546875
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-section",
+          "id": "",
+          "right": 287,
+          "bottom": 798.546875
+        },
+        {
+          "tag": "FIELDSET",
+          "cls": "setup-fields",
+          "id": "",
+          "right": 287,
+          "bottom": 798.546875
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "rt-button rt-button--secondary ",
+          "id": "",
+          "right": 287,
+          "bottom": 798.546875
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-interest-tools",
+          "id": "",
+          "right": 287,
+          "bottom": 743.75
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "setup-explanation setup-comparison-panel",
+          "id": "",
+          "right": 287,
+          "bottom": 743.75
+        },
+        {
+          "tag": "SECTION",
+          "cls": "setup-comparisons",
+          "id": "",
+          "right": 287,
+          "bottom": 743.75
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-inline-actions",
+          "id": "",
+          "right": 287,
+          "bottom": 743.75
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "setup-text-button",
+          "id": "",
+          "right": 98.296875,
+          "bottom": 743.75
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "setup-text-button",
+          "id": "",
+          "right": 185.75,
+          "bottom": 743.75
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-inline-actions",
+          "id": "",
+          "right": 287,
+          "bottom": 665.75
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "rt-button rt-button--secondary ",
+          "id": "",
+          "right": 154,
+          "bottom": 665.75
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "rt-button rt-button--secondary ",
+          "id": "",
+          "right": 287,
+          "bottom": 665.75
+        },
+        {
+          "tag": "FIELDSET",
+          "cls": "rt-question-group",
+          "id": "",
+          "right": 287,
+          "bottom": 587.75
+        },
+        {
+          "tag": "DIV",
+          "cls": "rt-choices",
+          "id": "",
+          "right": 287,
+          "bottom": 587.75
+        },
+        {
+          "tag": "LABEL",
+          "cls": "rt-choice",
+          "id": "",
+          "right": 156,
+          "bottom": 587.75
+        }
+      ],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-320x568-100pct-stage2-adjust-amounts",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "scrollHeight": 602,
+      "scrollY": 34,
+      "outliers": [
+        {
+          "tag": "DIV",
+          "cls": "rt-design setup-design",
+          "id": "",
+          "right": 320,
+          "bottom": 601.796875
+        },
+        {
+          "tag": "DIV",
+          "cls": "rt-design__content rt-stack",
+          "id": "",
+          "right": 304,
+          "bottom": 585.796875
+        },
+        {
+          "tag": "MAIN",
+          "cls": "trip-setup",
+          "id": "",
+          "right": 304,
+          "bottom": 585.796875
+        },
+        {
+          "tag": "SECTION",
+          "cls": "rt-sheet rt-stack  setup-card setup-card--amounts",
+          "id": "",
+          "right": 304,
+          "bottom": 585.796875
+        }
+      ],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-320x568-100pct-stage3",
+      "heading": "Daily timing",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "scrollHeight": 828,
+      "section": {
+        "top": 80,
+        "bottom": 514,
+        "height": 434
+      },
+      "footer": {
+        "top": 530,
+        "bottom": 589.796875,
+        "height": 59.796875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-320x568-100pct-stage4",
+      "heading": "Review",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "scrollHeight": 852,
+      "section": {
+        "top": 80,
+        "bottom": 517.1875,
+        "height": 437.1875
+      },
+      "footer": {
+        "top": 533.1875,
+        "bottom": 613.78125,
+        "height": 80.59375
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-200pct-stage0",
+      "heading": "Where and when",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 2073,
+      "section": {
+        "top": 448,
+        "bottom": 1486,
+        "height": 1038
+      },
+      "footer": {
+        "top": 1518,
+        "bottom": 1750.1875,
+        "height": 232.1875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-200pct-stage0-route",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 1498,
+      "scrollY": 0,
+      "outliers": [
+        {
+          "tag": "DIV",
+          "cls": "rt-design setup-design setup-design--large-text",
+          "id": "",
+          "right": 390,
+          "bottom": 1497.78125
+        },
+        {
+          "tag": "DIV",
+          "cls": "rt-design__content rt-stack",
+          "id": "",
+          "right": 358,
+          "bottom": 1465.78125
+        },
+        {
+          "tag": "MAIN",
+          "cls": "trip-setup",
+          "id": "",
+          "right": 358,
+          "bottom": 1465.78125
+        },
+        {
+          "tag": "SECTION",
+          "cls": "rt-sheet rt-stack  setup-card setup-card--choices",
+          "id": "",
+          "right": 358,
+          "bottom": 1465.78125
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-route-preparation",
+          "id": "",
+          "right": 325,
+          "bottom": 1408.78125
+        },
+        {
+          "tag": "P",
+          "cls": "rt-caption",
+          "id": "",
+          "right": 325,
+          "bottom": 1408.78125
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "setup-route-map",
+          "id": "",
+          "right": 325,
+          "bottom": 1308.78125
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "rt-button rt-button--secondary ",
+          "id": "",
+          "right": 325,
+          "bottom": 1308.78125
+        },
+        {
+          "tag": "P",
+          "cls": "rt-caption",
+          "id": "",
+          "right": 325,
+          "bottom": 1134
+        },
+        {
+          "tag": "SECTION",
+          "cls": "setup-map",
+          "id": "",
+          "right": 325,
+          "bottom": 984
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-map-endpoints rt-caption",
+          "id": "",
+          "right": 301,
+          "bottom": 960
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "id": "",
+          "right": 301,
+          "bottom": 960
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "id": "",
+          "right": 301,
+          "bottom": 860
+        },
+        {
+          "tag": "A",
+          "cls": "MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary header-nav-link css-18n709e-MuiButtonBase-root-MuiButton-root",
+          "id": "",
+          "right": 448.53125,
+          "bottom": 71.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root",
+          "id": "",
+          "right": 448.53125,
+          "bottom": 71.5
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "avatar-placeholder MuiBox-root css-0",
+          "id": "",
+          "right": 544.53125,
+          "bottom": 71.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "header-label-compact",
+          "id": "",
+          "right": 436.328125,
+          "bottom": 48.5
+        },
+        {
+          "tag": "P",
+          "cls": "MuiTypography-root MuiTypography-body1 avatar-initials css-fsl2dh-MuiTypography-root",
+          "id": "",
+          "right": 520.53125,
+          "bottom": 48.5
+        }
+      ],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-200pct-stage1",
+      "heading": "People",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 1599,
+      "section": {
+        "top": 104,
+        "bottom": 668,
+        "height": 564
+      },
+      "footer": {
+        "top": 700,
+        "bottom": 932.1875,
+        "height": 232.1875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-200pct-stage2",
+      "heading": "What you enjoy",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 3005,
+      "section": {
+        "top": 104,
+        "bottom": 2174,
+        "height": 2070
+      },
+      "footer": {
+        "top": 2206,
+        "bottom": 2438.1875,
+        "height": 232.1875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-200pct-stage2-compare-places",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 2311,
+      "scrollY": 1450,
+      "outliers": [
+        {
+          "tag": "DIV",
+          "cls": "rt-design setup-design setup-design--large-text",
+          "id": "",
+          "right": 390,
+          "bottom": 2311.296875
+        },
+        {
+          "tag": "DIV",
+          "cls": "rt-design__content rt-stack",
+          "id": "",
+          "right": 358,
+          "bottom": 2279.296875
+        },
+        {
+          "tag": "MAIN",
+          "cls": "trip-setup",
+          "id": "",
+          "right": 358,
+          "bottom": 2279.296875
+        },
+        {
+          "tag": "SECTION",
+          "cls": "rt-sheet rt-stack  setup-card setup-card--comparisons",
+          "id": "",
+          "right": 358,
+          "bottom": 2279.296875
+        },
+        {
+          "tag": "FORM",
+          "cls": "",
+          "id": "",
+          "right": 325,
+          "bottom": 2246.296875
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-section",
+          "id": "",
+          "right": 325,
+          "bottom": 2246.296875
+        },
+        {
+          "tag": "FIELDSET",
+          "cls": "setup-fields",
+          "id": "",
+          "right": 325,
+          "bottom": 2246.296875
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "rt-button rt-button--secondary ",
+          "id": "",
+          "right": 325,
+          "bottom": 2246.296875
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-interest-tools",
+          "id": "",
+          "right": 325,
+          "bottom": 2055.515625
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "setup-explanation setup-comparison-panel",
+          "id": "",
+          "right": 325,
+          "bottom": 2055.515625
+        },
+        {
+          "tag": "SECTION",
+          "cls": "setup-comparisons",
+          "id": "",
+          "right": 325,
+          "bottom": 2055.515625
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-inline-actions",
+          "id": "",
+          "right": 325,
+          "bottom": 2055.515625
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "setup-text-button",
+          "id": "",
+          "right": 213.890625,
+          "bottom": 2055.515625
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "setup-text-button",
+          "id": "",
+          "right": 193.59375,
+          "bottom": 1893.515625
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-inline-actions",
+          "id": "",
+          "right": 325,
+          "bottom": 1739.515625
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "rt-button rt-button--secondary ",
+          "id": "",
+          "right": 183,
+          "bottom": 1739.515625
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "rt-button rt-button--secondary ",
+          "id": "",
+          "right": 325,
+          "bottom": 1721.3125
+        },
+        {
+          "tag": "FIELDSET",
+          "cls": "rt-question-group",
+          "id": "",
+          "right": 325,
+          "bottom": 1527.953125
+        },
+        {
+          "tag": "DIV",
+          "cls": "rt-choices",
+          "id": "",
+          "right": 325,
+          "bottom": 1527.953125
+        },
+        {
+          "tag": "LABEL",
+          "cls": "rt-choice",
+          "id": "",
+          "right": 325,
+          "bottom": 1527.953125
+        }
+      ],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-200pct-stage2-adjust-amounts",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 1492,
+      "scrollY": 648,
+      "outliers": [
+        {
+          "tag": "DIV",
+          "cls": "rt-design setup-design setup-design--large-text",
+          "id": "",
+          "right": 390,
+          "bottom": 1491.78125
+        },
+        {
+          "tag": "DIV",
+          "cls": "rt-design__content rt-stack",
+          "id": "",
+          "right": 358,
+          "bottom": 1459.78125
+        },
+        {
+          "tag": "MAIN",
+          "cls": "trip-setup",
+          "id": "",
+          "right": 358,
+          "bottom": 1459.78125
+        },
+        {
+          "tag": "SECTION",
+          "cls": "rt-sheet rt-stack  setup-card setup-card--amounts",
+          "id": "",
+          "right": 358,
+          "bottom": 1459.78125
+        },
+        {
+          "tag": "FORM",
+          "cls": "",
+          "id": "",
+          "right": 325,
+          "bottom": 1426.78125
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-section",
+          "id": "",
+          "right": 325,
+          "bottom": 1426.78125
+        },
+        {
+          "tag": "FIELDSET",
+          "cls": "setup-fields",
+          "id": "",
+          "right": 325,
+          "bottom": 1426.78125
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "rt-button rt-button--secondary ",
+          "id": "",
+          "right": 325,
+          "bottom": 1426.78125
+        },
+        {
+          "tag": "DIV",
+          "cls": "setup-interest-tools",
+          "id": "",
+          "right": 325,
+          "bottom": 1236
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "setup-explanation setup-amount-panel",
+          "id": "",
+          "right": 325,
+          "bottom": 1236
+        },
+        {
+          "tag": "DIV",
+          "cls": "rt-amount",
+          "id": "",
+          "right": 325,
+          "bottom": 1236
+        },
+        {
+          "tag": "DIV",
+          "cls": "rt-amount__controls",
+          "id": "",
+          "right": 361,
+          "bottom": 1236
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "rt-button rt-button--secondary rt-amount__step",
+          "id": "",
+          "right": 155,
+          "bottom": 1236
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "rt-button rt-button--secondary rt-amount__step",
+          "id": "",
+          "right": 363,
+          "bottom": 1236
+        },
+        {
+          "tag": "INPUT",
+          "cls": "rt-amount__range",
+          "id": "setup-interest-food",
+          "right": 257,
+          "bottom": 1235
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "id": "",
+          "right": 121.671875,
+          "bottom": 1217
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "id": "",
+          "right": 329.4375,
+          "bottom": 1217
+        },
+        {
+          "tag": "DIV",
+          "cls": "rt-amount__heading",
+          "id": "",
+          "right": 361,
+          "bottom": 1130
+        },
+        {
+          "tag": "LABEL",
+          "cls": "rt-field__label",
+          "id": "",
+          "right": 142.453125,
+          "bottom": 1130
+        },
+        {
+          "tag": "OUTPUT",
+          "cls": "rt-caption",
+          "id": "",
+          "right": 361,
+          "bottom": 1128
+        }
+      ],
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-200pct-stage3",
+      "heading": "Daily timing",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 2415,
+      "section": {
+        "top": 104,
+        "bottom": 1584,
+        "height": 1480
+      },
+      "footer": {
+        "top": 1616,
+        "bottom": 1848.1875,
+        "height": 232.1875
+      },
+      "animation": "none",
+      "scrollContainers": []
+    },
+    {
+      "name": "setup-390x844-200pct-stage4",
+      "heading": "Review",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 2739,
+      "section": {
+        "top": 104,
+        "bottom": 1866.34375,
+        "height": 1762.34375
+      },
+      "footer": {
+        "top": 1898.34375,
+        "bottom": 2172.125,
+        "height": 273.78125
+      },
+      "animation": "none",
+      "scrollContainers": []
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "requests": [
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/validate-location",
+    "/validate-location",
+    "/get-initial-route",
+    "/route-preparation/stream",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/validate-location",
+    "/validate-location",
+    "/get-initial-route",
+    "/route-preparation/stream",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/validate-location",
+    "/validate-location",
+    "/get-initial-route",
+    "/route-preparation/stream",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/validate-location",
+    "/validate-location",
+    "/get-initial-route",
+    "/route-preparation/stream",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/chats",
+    "/chats",
+    "/preference-profiles",
+    "/preference-profiles",
+    "/validate-location",
+    "/validate-location",
+    "/get-initial-route",
+    "/route-preparation/stream"
+  ]
+}

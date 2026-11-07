@@ -19,6 +19,7 @@ const history = {
 };
 const trip = {
   chatId: 42,
+  savedRevision: 'a'.repeat(64),
   itinerary: [
     { date: 'Day 1', stops: [{ name: 'Saved forest walk', provider_id: 'park:1', time: '8 AM' }] },
   ],
@@ -54,8 +55,9 @@ it('restores selected trip and historical chat together, then persists mark and 
       [trip, history],
     ],
   });
-  axios.put.mockResolvedValue({ status: 200 });
+  axios.put.mockResolvedValue({ status: 200, data: { savedRevision: 'a'.repeat(64) } });
   render(<ReloadFixture />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Correct an arrival' }));
   await userEvent.click(
     await screen.findByRole('button', { name: 'Mark visited: Saved forest walk' })
   );
@@ -64,6 +66,8 @@ it('restores selected trip and historical chat together, then persists mark and 
   expect(axios.put.mock.calls[0][0]).toMatch(/chats\/update\/42$/);
   const marked = axios.put.mock.calls[0][1];
   expect(marked.ChatLog).toEqual(history);
+  expect(marked.ExpectedRevision).toBe('a'.repeat(64));
+  expect(marked.UpdateScope).toBe('presentation');
   expect(marked.ChatData.presentation.visitedStopIds).toHaveLength(1);
   expect(marked.ChatData.presentation.futureField).toBe('preserve');
   expect(axios.post).not.toHaveBeenCalled();

@@ -3,7 +3,7 @@
  * authService is fully mocked so no real Cognito calls happen.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderPage } from './testUtils';
 import LoginPage from '../pages/AuthPages/LoginPage';
@@ -67,4 +67,27 @@ describe('LoginPage', () => {
       expect(signIn).toHaveBeenCalledWith('user@example.com', 'MyP@ss1');
     });
   });
+});
+
+it('shows immediate pending feedback and prevents duplicate sign-in requests', async () => {
+  let reject;
+  signIn.mockImplementationOnce(
+    () =>
+      new Promise((resolve, fail) => {
+        reject = fail;
+      })
+  );
+  const user = userEvent.setup();
+  renderPage('/login', <LoginPage />);
+  await user.type(screen.getByLabelText(/email/i), 'user@example.com');
+  await user.type(document.querySelector('input[type="password"]'), 'MyP@ss1');
+  await user.click(screen.getByRole('button', { name: 'Log In' }));
+  expect(screen.getByRole('button', { name: 'Logging in…' })).toBeDisabled();
+  expect(screen.getByLabelText(/email/i)).toBeDisabled();
+  fireEvent.submit(document.querySelector('form'));
+  expect(signIn).toHaveBeenCalledTimes(1);
+  await act(async () => reject(new Error('private-provider-detail')));
+  expect(screen.getByRole('alert')).toHaveTextContent('Failed to sign in.');
+  expect(screen.getByRole('button', { name: 'Log In' })).toBeEnabled();
+  expect(screen.queryByText('private-provider-detail')).not.toBeInTheDocument();
 });

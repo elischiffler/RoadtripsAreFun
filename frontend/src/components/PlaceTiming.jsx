@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import LodgingDetails from './LodgingDetails';
 import { compactTimestamp } from './placeTiming';
 import './PlaceTiming.css';
 
@@ -6,13 +7,15 @@ export default function PlaceTiming({ place }) {
   const arrival = compactTimestamp(place.arrival_time, place.timezone);
   const leaving =
     place.type === 'end' ? null : compactTimestamp(place.departure_time, place.timezone);
-  if (!arrival && !leaving) return null;
+  if (!arrival && !leaving) return <LodgingDetails lodging={place.lodging} />;
   const shared =
     !arrival || !leaving || (arrival.day === leaving.day && arrival.offset === leaving.offset);
   const context = arrival ?? leaving;
   const clocks = [
-    ['Arrival', arrival, place.arrival_time],
-    ...(place.type === 'end' ? [] : [['Leaving', leaving, place.departure_time]]),
+    [place.lodging ? 'Planned arrival' : 'Arrival', arrival, place.arrival_time],
+    ...(place.type === 'end'
+      ? []
+      : [[place.lodging ? 'Planned departure' : 'Leaving', leaving, place.departure_time]]),
   ];
   return (
     <div className="place-timing" aria-label="Place timing">
@@ -44,6 +47,7 @@ export default function PlaceTiming({ place }) {
           </div>
         ))}
       </dl>
+      <LodgingDetails lodging={place.lodging} />
     </div>
   );
 }

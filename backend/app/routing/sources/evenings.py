@@ -114,6 +114,18 @@ def evening_interests(explicit, weights):
     return sorted(selected, key=lambda interest: -(weights or {})[keys[interest]])
 
 
+def _overlaps_meal(hotel, beginning, finish):
+    for meal in hotel.get("meal_breaks", []):
+        try:
+            start = datetime.fromisoformat(meal["arrival_time"])
+            end = datetime.fromisoformat(meal["departure_time"])
+            if seconds_until(beginning, end) > 0 and seconds_until(start, finish) > 0:
+                return True
+        except (KeyError, ValueError, TypeError):
+            continue
+    return False
+
+
 def current_suggestions(hotel):
     """Do not display stale visits when an itinerary's departure was overridden."""
     arrival = datetime.fromisoformat(hotel["arrival_time"])
@@ -136,6 +148,11 @@ def current_suggestions(hotel):
             elif seconds_until(advance(earliest, VISIT_SECONDS + inward), deadline) < 0:
                 continue
         except (KeyError, ValueError, TypeError):
+            continue
+        # A timed outing includes its road travel, not only the venue visit.
+        if suggestion.get("visit_time") and _overlaps_meal(
+            hotel, advance(visit, -outward), returned
+        ):
             continue
         yield {**suggestion, "return_by": deadline.isoformat()}
 
@@ -234,6 +251,8 @@ async def _hotel_suggestions(hotel, arrival, deadline, interests, provider):
             if not windows:
                 continue
         scheduled = known_hours and place.category is not None
+        if scheduled and _overlaps_meal(hotel, advance(visit_start, -outward), return_time):
+            continue
         hotel["evening_suggestions"].append(
             {
                 **place.model_dump(mode="json", exclude={"opening_intervals", "closed"}),

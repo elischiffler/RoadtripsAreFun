@@ -25,3 +25,40 @@
   outline: var(--rt-focus-width) solid var(--rt-color-focus);
   outline-offset: var(--rt-focus-offset);
 }
+.settings-profiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.settings-profiles > li {
+  padding-block: var(--rt-space-4);
+  border-block-end: var(--rt-border-width) solid var(--rt-color-border);
+}
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+}
+.settings-fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-inline-size: 0;
+}
+.settings-check {
+  display: flex;
+  gap: var(--rt-space-3);
+  align-items: center;
+  min-block-size: var(--rt-target-min);
+  color: var(--rt-color-text);
+}
+.settings-check input {
+  accent-color: var(--rt-color-accent);
+  inline-size: var(--rt-checkbox-size);
+  block-size: var(--rt-checkbox-size);
+}
+.settings-page summary {
+  min-block-size: var(--rt-target-min);
+  cursor: pointer;
+  font-weight: var(--rt-weight-medium);
+}

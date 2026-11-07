@@ -14,7 +14,14 @@ from datetime import date, datetime
 from typing import Any, Literal, Protocol
 
 from geopy.distance import geodesic
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_serializer,
+    model_validator,
+)
 
 from app.agent.persona import ATTRIBUTE_KEYS, normalize_weights
 from app.agent.progress import emit, stage
@@ -32,6 +39,7 @@ from app.routing.discovery import (
 )
 from app.routing.explanation import record_explanation
 from app.routing.geometry import RouteMeasure
+from app.routing.lodging import stay_dates
 from app.routing.occupancy import MAX_ROOMS, HotelRoom
 from app.routing.profiles import AttributeRatings, crossmatch, eligible_utility
 from app.routing.run_metrics import increment, timed
@@ -137,10 +145,32 @@ class VerifiedHotel(VerifiedPlace):
 
     price: float
     check_in_date: date
+    check_out_date: date | None = None
     room: HotelRoom
-    price_scope: Literal["one_room_one_night_including_taxes_fees"]
+    price_scope: Literal[
+        "one_room_one_night_including_taxes_fees", "one_room_stay_including_taxes_fees"
+    ]
     stars: float | None = None
     review_count: int | None = None
+
+    @model_validator(mode="after")
+    def _dated_scope(self):
+        end = stay_dates(self.check_in_date, self.check_out_date)
+        expected = (
+            "one_room_one_night_including_taxes_fees"
+            if (end - self.check_in_date).days == 1
+            else "one_room_stay_including_taxes_fees"
+        )
+        if self.price_scope != expected:
+            raise ValueError("The quote scope must cover the complete requested stay")
+        return self
+
+    @model_serializer(mode="wrap")
+    def _legacy_shape(self, handler):
+        data = handler(self)
+        if self.check_out_date is None:
+            data.pop("check_out_date", None)
+        return data
 
     @field_validator("price")
     @classmethod
@@ -162,6 +192,8 @@ class PlaceProvider(Protocol):
         check_in: date,
         price_range: tuple[tuple[float, float], str],
         room: HotelRoom,
+        *,
+        check_out_date: date | None = None,
     ) -> list[VerifiedHotel]:
         """Return dated hotel offers near a point for the requested room occupants."""
         ...
@@ -349,7 +381,9 @@ def _candidate(
             "verified_at": None,
         },
     )
-    provider_fields = place.model_dump(exclude={"check_in_date", "price", "stars", "review_count"})
+    provider_fields = place.model_dump(
+        exclude={"check_in_date", "check_out_date", "price", "stars", "review_count"}
+    )
     return {**provider_fields, **profile.model_dump(), **match.model_dump()}
 
 
@@ -791,6 +825,7 @@ async def _room_candidates(
     effective_weights: dict[str, float],
     room: HotelRoom,
     *,
+    check_out_date: date | None = None,
     ai: LLMProvider | None = None,
     places: PlaceProvider | None = None,
 ) -> list[dict[str, Any]]:
@@ -800,6 +835,7 @@ async def _room_candidates(
     check_in = check_in_date.date() if isinstance(check_in_date, datetime) else check_in_date
     if not isinstance(check_in, date):
         raise ValueError("check_in_date must be a date")
+    requested_end = stay_dates(check_in, check_out_date)
     low, high = price_range[0]
     if not all(math.isfinite(v) for v in (low, high)) or low < 0 or high < low:
         raise ValueError("invalid hotel price range")
@@ -807,7 +843,13 @@ async def _room_candidates(
     places = places or LivePlaceProvider()
     if isinstance(places, LivePlaceProvider):
         places.require_hotels()
-    records = await places.hotels_near(point, check_in, price_range, room)
+    records = await places.hotels_near(
+        point,
+        check_in,
+        price_range,
+        room,
+        **({"check_out_date": check_out_date} if check_out_date is not None else {}),
+    )
     if not records:
         return []
     names = [
@@ -826,6 +868,8 @@ async def _room_candidates(
                 continue
             if (
                 verified.check_in_date != check_in
+                or stay_dates(verified.check_in_date, verified.check_out_date) != requested_end
+                or (check_out_date is not None and verified.check_out_date is None)
                 or verified.room != room
                 or _name_key(verified.name) != _name_key(proposal.name)
                 or verified.provider_id in seen
@@ -837,6 +881,8 @@ async def _room_candidates(
             candidate.update(
                 type="hotel", price=verified.price, check_in_date=verified.check_in_date.isoformat()
             )
+            if check_out_date is not None:
+                candidate["check_out_date"] = requested_end.isoformat()
             candidate["stars"] = verified.stars
             candidate["review_count"] = verified.review_count
             results.append(candidate)
@@ -960,6 +1006,8 @@ class LivePlaceProvider:
         check_in: date,
         price_range: tuple[tuple[float, float], str],
         room: HotelRoom,
+        *,
+        check_out_date: date | None = None,
     ) -> list[VerifiedHotel]:
         """Fetch and validate Google Hotels offers for a location, date, and room.
 
@@ -971,7 +1019,10 @@ class LivePlaceProvider:
 
         try:
             records = await GoogleHotelProvider(config.geolocator).hotels_near(
-                point, check_in, room
+                point,
+                check_in,
+                room,
+                **({"check_out_date": check_out_date} if check_out_date is not None else {}),
             )
             return [VerifiedHotel.model_validate(record) for record in records]
         except GoogleHotelLookupError as exc:
@@ -986,6 +1037,7 @@ async def hotel_candidates(
     effective_weights: dict[str, float],
     hotel_rooms: list[HotelRoom],
     *,
+    check_out_date: date | None = None,
     ai: LLMProvider | None = None,
     places: PlaceProvider | None = None,
 ) -> list[dict[str, Any]]:
@@ -1005,6 +1057,7 @@ async def hotel_candidates(
             "room",
             tuple(overnight_position),
             str(check_in_date),
+            str(check_out_date),
             room.adults,
             tuple(room.child_ages),
         )
@@ -1016,6 +1069,7 @@ async def hotel_candidates(
                 price_range,
                 effective_weights,
                 room,
+                check_out_date=check_out_date,
                 ai=ai,
                 places=places,
             ),
@@ -1035,6 +1089,11 @@ async def hotel_candidates(
                 "price": lookup[key]["price"],
                 "url": lookup[key]["url"],
                 "check_in_date": lookup[key]["check_in_date"],
+                **(
+                    {"check_out_date": lookup[key]["check_out_date"]}
+                    if check_out_date is not None
+                    else {}
+                ),
                 "price_scope": lookup[key]["price_scope"],
             }
             for room, lookup in zip(rooms, by_room)
@@ -1047,7 +1106,7 @@ async def hotel_candidates(
                 "room_offers": offers,
                 "price": sum(offer["price"] for offer in offers),
                 "url": offers[0]["url"] if len(offers) == 1 else None,
-                "price_scope": "one_room_one_night_including_taxes_fees"
+                "price_scope": first["price_scope"]
                 if len(offers) == 1
                 else "independent_room_quotes_not_combined_inventory",
             }

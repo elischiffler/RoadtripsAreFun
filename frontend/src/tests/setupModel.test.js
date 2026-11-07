@@ -44,7 +44,7 @@ describe('trip setup contract', () => {
     );
   });
   it('validates inputs, room allocations and daily times before sending', () => {
-    const draft = newSetupDraft();
+    const draft = { ...newSetupDraft(), tripMode: 'overnight', dailyRhythm: null };
     expect(Object.keys(setupErrors(draft, 0))).toEqual(['start', 'destination', 'date']);
     Object.assign(draft, {
       start: 'Boulder',
@@ -55,19 +55,23 @@ describe('trip setup contract', () => {
     });
     expect(setupErrors(draft, 0)).toHaveProperty('destination');
     expect(setupErrors(draft, 0)).toHaveProperty('time');
-    expect(setupErrors(draft, 0)).toHaveProperty('stops');
+    expect(setupErrors(draft, 0)).not.toHaveProperty('stops');
+    expect(setupErrors(draft, 1)).toHaveProperty('stops');
     draft.rooms = [{ adults: '2', children: '5, 8' }];
+    draft.stops = '3';
     draft.travelers = '4';
     expect(roomInputs(draft)).toEqual([{ adults: 2, child_ages: [5, 8] }]);
     expect(setupErrors(draft, 1)).toEqual({});
     draft.travelers = '3';
     expect(setupErrors(draft, 1).rooms).toMatch(/add up/);
     draft.rooms[0].children = '5,';
-    expect(setupErrors(draft, 1).rooms).toMatch(/separated/);
+    expect(setupErrors(draft, 1).rooms).toMatch(/child ages/);
     draft.rooms[0].children = '18';
     draft.budget = '-1';
     draft.travelers = '0';
     expect(Object.keys(setupErrors(draft, 1))).toEqual(['travelers', 'budget', 'rooms']);
+    expect(setupErrors(draft, 3).carStatus).toBeUndefined();
+    draft.carStatus = 'invalid';
     expect(setupErrors(draft, 3).carStatus).toBeDefined();
     draft.carStatus = 'provided';
     expect(Object.keys(setupErrors(draft, 3))).toEqual(['make', 'model', 'year']);
@@ -77,6 +81,21 @@ describe('trip setup contract', () => {
     expect(setupErrors(draft, 3).schedule).toMatch(/before/);
     draft.schedule.morning_restart = '';
     expect(setupErrors(draft, 3).schedule).toMatch(/valid/);
+  });
+  it('preserves provided car data when restoring an onboarding draft', () => {
+    const draft = {
+      ...newSetupDraft(),
+      carStatus: 'provided',
+      year: '2020',
+      make: 'Toyota',
+      model: 'Corolla',
+    };
+    expect(restoreDraft(JSON.stringify({ version: 1, draft, step: 3 })).draft).toEqual(draft);
+    expect(
+      restoreDraft(
+        JSON.stringify({ version: 1, draft: { ...draft, carStatus: 'unanswered' }, step: 3 })
+      ).draft
+    ).toEqual({ ...draft, carStatus: 'skipped' });
   });
   it('restores versioned drafts and rejects corrupt storage', () => {
     const draft = newSetupDraft();

@@ -32,9 +32,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Test development launcher
+      - name: Test development launcher and import portability
         working-directory: .
-        run: node --test tests/dev-runner.test.mjs
+        run: node --test tests/dev-runner.test.mjs frontend/node-tests/import-portability.mjs
 
       - name: Check formatting
         if: ${{ !cancelled() }}

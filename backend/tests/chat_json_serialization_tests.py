@@ -26,6 +26,15 @@ class RouteStorage(StorageDouble):
             self.segments[owner, chat, route, segment] = json.loads(coordinates)
             self.cursor.fetchone.return_value = {"user_id": owner}
             return
+        if statement.startswith("DELETE FROM route_segments"):
+            owner, chat, route, retained = params
+            assert "user_id = %s AND chat_id = %s AND route_id = %s" in statement
+            self.segments = {
+                key: value
+                for key, value in self.segments.items()
+                if key[:3] != (owner, chat, route) or key[3] in retained
+            }
+            return
         if statement.startswith("SELECT * FROM route_segments"):
             owner, chat, route = params
             self.cursor.fetchall.return_value = [
@@ -120,3 +129,32 @@ def test_legacy_route_without_departure_stays_compatible(boundary):
     data, _ = loaded(client)
     assert data["route"]["departure_time"] is None
     assert data["agentChatId"] is None
+
+
+def test_long_route_replacement_prunes_only_own_obsolete_segments_and_preserves_initial(boundary):
+    client, storage = boundary
+    body = timed_body()
+    chat_crud.create_chat("verified-alice", "1", body["ChatData"], body["ChatLog"])
+    raw = storage.rows["verified-alice", "1"]["chat_data"]
+    raw["initial"] = {"geometry": "verified-alice-1", "legs": []}
+    initial = [[-110, 40], [-109, 41]]
+    storage.segments["verified-alice", "1", "verified-alice-1", "0"] = initial
+    foreign = ("other-owner", "9", "other-route", "1")
+    storage.segments[foreign] = [[1, 2]]
+    geometry = [[-105 + i / 100000, 40] for i in range(10001)]
+    body["ChatData"]["route"]["geometry"]["coordinates"] = geometry
+    body["ExpectedRevision"] = chat_crud.chat_data_revision(raw)
+    first = client.put("/chats/update/1", json=body)
+    assert first.status_code == 200
+    assert len([k for k in storage.segments if k[2] == "verified-alice-1-final"]) == 2
+    shorter = [[-105, 40], [-104, 40]]
+    body["ChatData"]["route"]["geometry"]["coordinates"] = shorter
+    body["ExpectedRevision"] = first.json()["savedRevision"]
+    second = client.put("/chats/update/1", json=body)
+    assert second.status_code == 200
+    data, _ = loaded(client)
+    assert data["route"]["geometry"]["coordinates"] == shorter
+    assert data["initial"]["geometry"]["coordinates"] == initial
+    assert len([k for k in storage.segments if k[2] == "verified-alice-1-final"]) == 1
+    assert storage.segments[foreign] == [[1, 2]]
+    assert second.json()["savedRevision"] != first.json()["savedRevision"]

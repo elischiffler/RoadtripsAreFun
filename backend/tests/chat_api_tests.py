@@ -84,10 +84,17 @@ def test_create_chat():
 
 def test_create_chat_preserves_agent_conversation_id():
     """The agent key survives storage so a reload can resume its memory."""
-    data = {**CHAT_DATA, "agentChatId": "agent-uuid-123"}
+    from app.schemas.chat_schemas import ChatDataSchema, ChatLogSchema
+
+    data = ChatDataSchema.model_validate({**CHAT_DATA, "agentChatId": "agent-uuid-123"}).model_dump(
+        mode="json"
+    )
+    log = ChatLogSchema.model_validate(CHAT_LOG).model_dump(mode="json")
     with (
         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
-        patch("app.routers.chat_api.create_chat", return_value=("user123", "1")) as create,
+        patch(
+            "app.routers.chat_api.create_chat", return_value=("user123", "1", data, log)
+        ) as create,
     ):
         response = client.post(
             "/chats/create/1",
@@ -235,7 +242,7 @@ def test_get_agent_route_without_legacy_initial_restores_geometry():
     with (
         patch("app.routers.chat_api.get_user_id_from_token", return_value="user123"),
         patch("app.routers.chat_api.get_all_chats", return_value=[item]),
-        patch("app.routers.chat_api.get_segments", return_value=coordinates) as segments,
+        patch("app.crud.chat_crud.get_segments", return_value=coordinates) as segments,
     ):
         response = client.get("/chats", headers={"Authorization": "Bearer fixture-token"})
 

@@ -18,8 +18,7 @@ const ItineraryPage = () => {
       ) : (
         <>
           <header className="rt-stack">
-            <p className="rt-caption">Your road trip</p>
-            <h1 className="rt-display">A day at a time</h1>
+            <h1 className="rt-display">Itinerary</h1>
             <TripExperienceNav trip={trip} view="itinerary" />
           </header>
           <TripVisitProgress key={trip.chatId} trip={trip} />

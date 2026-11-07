@@ -6,6 +6,7 @@ second phase also checks that no module-level cache or pool hides lost data.
 
 import os
 import sys
+from copy import deepcopy
 from uuid import uuid4
 
 import psycopg2
@@ -14,7 +15,7 @@ from pydantic import BaseModel
 from app.agent.memory import ConversationMemory, MemoryFact
 from app.agent.trip_dates import PendingDeparture
 from app.agent.trip_profile import TripProfile
-from app.crud import chat_crud, lab_runs, memory_crud
+from app.crud import chat_crud, lab_runs, memory_crud, trip_sharing
 from app.models.scheduling_policy import SchedulingPolicy
 from app.schemas.chat_schemas import ChatLogSchema
 from app.utils.location_resolution import LocationCandidate, PendingLocation
@@ -66,9 +67,12 @@ OWNER_A = f"dbtest-{RUN_ID}-a"
 OWNER_B = f"dbtest-{RUN_ID}-b"
 CHAT_ID = f"dbtest-{RUN_ID}-chat"
 SEGMENT_CHAT = f"dbtest-{RUN_ID}-segment-conflict"
+INITIAL_SEGMENT_CHAT = f"dbtest-{RUN_ID}-initial-segment-conflict"
 STEP_CHAT = f"dbtest-{RUN_ID}-step-conflict"
 DELETE_CHAT = f"dbtest-{RUN_ID}-delete"
 ROUTE_A = f"{OWNER_A}-{CHAT_ID}"
+FINAL_ROUTE_A = f"{ROUTE_A}-final"
+SHARED_CHAT = f"dbtest-{RUN_ID}-shared"
 GOOD_COORDS = [[-122.4, 37.7], [-121.9, 37.3]]
 GOOD_STEPS = [[-122.4, 37.7], [-122.2, 37.5]]
 
@@ -236,13 +240,22 @@ def seed():
         "ChatLog",
     )
     assert chat_crud.get_segments(OWNER_A, CHAT_ID, ROUTE_A) == GOOD_COORDS
+    assert chat_crud.get_segments(OWNER_A, CHAT_ID, FINAL_ROUTE_A) == GOOD_COORDS
     assert chat_crud.get_segments(OWNER_B, CHAT_ID, ROUTE_A) == []
+    assert chat_crud.get_segments(OWNER_B, CHAT_ID, FINAL_ROUTE_A) == []
     leg_ref = f"{ROUTE_A}-leg-0"
     legs = [{"steps": [{"geometry": {"coordinates": leg_ref}} for _ in GOOD_STEPS]}]
     restored = chat_crud.restore_legs(OWNER_A, CHAT_ID, legs)
     assert [step["geometry"]["coordinates"] for step in restored[0]["steps"]] == GOOD_STEPS
     other_legs = [{"steps": [{"geometry": {"coordinates": leg_ref}}]}]
-    assert chat_crud.restore_legs(OWNER_B, CHAT_ID, other_legs) == other_legs
+    original_other_legs = deepcopy(other_legs)
+    try:
+        chat_crud.restore_legs(OWNER_B, CHAT_ID, other_legs)
+    except chat_crud.ChatGeometryUnavailable:
+        pass
+    else:
+        raise AssertionError("Foreign-owner step coordinates must remain unavailable")
+    assert other_legs == original_other_legs
 
     memory_crud.upsert_facts(OWNER_A, [MemoryFact(key="home_city", value="San Luis Obispo")])
     memory_crud.upsert_facts(OWNER_B, [MemoryFact(key="home_city", value="Boston")])
@@ -285,13 +298,18 @@ def seed():
     assert chat_crud.get_chat(OWNER_A, DELETE_CHAT) is None
     assert chat_crud.get_chat(OWNER_B, DELETE_CHAT)["chat_data"] == {"keeper": True}
 
-    for conflict_chat in (SEGMENT_CHAT, STEP_CHAT):
+    for conflict_chat in (SEGMENT_CHAT, INITIAL_SEGMENT_CHAT, STEP_CHAT):
         chat_crud.create_chat(OWNER_A, conflict_chat, {}, {})
     with _raw_connection() as conn, conn.cursor() as cur:
         cur.execute(
             "INSERT INTO route_segments (user_id,chat_id,route_id,segment_id,coords) "
             "VALUES (%s,%s,%s,'0',%s)",
-            (OWNER_B, CHAT_ID, f"{OWNER_A}-{SEGMENT_CHAT}", "[[9,9]]"),
+            (OWNER_B, CHAT_ID, f"{OWNER_A}-{SEGMENT_CHAT}-final", "[[9,9]]"),
+        )
+        cur.execute(
+            "INSERT INTO route_segments (user_id,chat_id,route_id,segment_id,coords) "
+            "VALUES (%s,%s,%s,'0',%s)",
+            (OWNER_B, CHAT_ID, f"{OWNER_A}-{INITIAL_SEGMENT_CHAT}", "[[8,8]]"),
         )
         cur.execute(
             "INSERT INTO steps (user_id,chat_id,leg_id,step_id,coordinates) VALUES (%s,%s,%s,0,%s)",
@@ -310,6 +328,16 @@ def seed():
     try:
         chat_crud.update_chat_component(
             OWNER_A,
+            INITIAL_SEGMENT_CHAT,
+            InitialComponent(initial={"geometry": {"coordinates": GOOD_COORDS}, "legs": []}),
+            "ChatData",
+        )
+        raise AssertionError("foreign initial segment key was overwritten")
+    except PermissionError:
+        pass
+    try:
+        chat_crud.update_chat_component(
+            OWNER_A,
             STEP_CHAT,
             InitialComponent(
                 initial={
@@ -322,6 +350,15 @@ def seed():
         raise AssertionError("foreign step key was overwritten")
     except PermissionError:
         pass
+    shared_data = {
+        "route": {"geometry": {"coordinates": GOOD_COORDS}},
+        "itinerary": [{"date": "2030-01-01", "stops": [{"name": "Shared visit", "time": "10:00"}]}],
+        "presentation": {"visitedStopIds": ["private"]},
+    }
+    chat_crud.create_chat(OWNER_A, SHARED_CHAT, shared_data, {"private": "not shared"})
+    link = trip_sharing.create_link(OWNER_A, SHARED_CHAT, chat_crud.chat_data_revision(shared_data))
+    trip_sharing.connect(OWNER_B, link["token"], "Synthetic reader")
+    assert trip_sharing.view(token=link["token"])["route"]["coordinates"] == GOOD_COORDS
     verify()
     print("seed: real CRUD, geometry, memory, two-owner isolation and conflicts PASS")
 
@@ -363,7 +400,9 @@ def verify():
         "Which evening interests would you like suggestions for (optional)?"
     ]
     assert chat_crud.get_segments(OWNER_A, CHAT_ID, ROUTE_A) == GOOD_COORDS
+    assert chat_crud.get_segments(OWNER_A, CHAT_ID, FINAL_ROUTE_A) == GOOD_COORDS
     assert chat_crud.get_segments(OWNER_B, CHAT_ID, ROUTE_A) == []
+    assert chat_crud.get_segments(OWNER_B, CHAT_ID, FINAL_ROUTE_A) == []
     assert memory_crud.load_facts(OWNER_A)[0].value == "San Luis Obispo"
     assert memory_crud.load_facts(OWNER_B)[0].value == "Boston"
     assert memory_crud.load_conversation(OWNER_A, CHAT_ID).summary == "Pacific coast"
@@ -381,10 +420,21 @@ def verify():
     with _raw_connection() as conn, conn.cursor() as cur:
         cur.execute(
             "SELECT user_id,coords FROM route_segments WHERE route_id=%s AND segment_id='0'",
-            (f"{OWNER_A}-{SEGMENT_CHAT}",),
+            (f"{OWNER_A}-{SEGMENT_CHAT}-final",),
         )
         owner, coords = cur.fetchone()
         assert owner == OWNER_B and coords == [[9, 9]]
+        cur.execute(
+            "SELECT user_id,coords FROM route_segments WHERE route_id=%s AND segment_id='0'",
+            (f"{OWNER_A}-{INITIAL_SEGMENT_CHAT}",),
+        )
+        owner, coords = cur.fetchone()
+        assert owner == OWNER_B and coords == [[8, 8]]
+        cur.execute(
+            "SELECT chat_data FROM chats WHERE user_id=%s AND chat_id=%s",
+            (OWNER_A, INITIAL_SEGMENT_CHAT),
+        )
+        assert cur.fetchone()[0] == {}
         cur.execute(
             "SELECT user_id,coordinates FROM steps WHERE leg_id=%s AND step_id=0",
             (f"{OWNER_A}-{STEP_CHAT}-leg-0",),
@@ -399,7 +449,14 @@ def verify():
             "SELECT chat_data FROM chats WHERE user_id=%s AND chat_id=%s", (OWNER_A, STEP_CHAT)
         )
         assert cur.fetchone()[0] == {}
-    print("verify: persisted CRUD and ownership state PASS")
+    access = trip_sharing.owner_status(OWNER_A, SHARED_CHAT)
+    assert access["link_enabled"] and len(access["members"]) == 1
+    assert access["members"][0]["display_name"] == "Synthetic reader"
+    connected = trip_sharing.view(user_id=OWNER_B, share_id=access["share_id"])
+    assert connected["route"]["coordinates"] == GOOD_COORDS
+    assert connected["itinerary"][0]["stops"][0]["name"] == "Shared visit"
+    assert "private" not in str(connected)
+    print("verify: persisted CRUD, sharing membership and ownership state PASS")
 
 
 if __name__ == "__main__":

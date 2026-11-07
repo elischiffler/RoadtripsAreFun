@@ -12,10 +12,7 @@ export default function PlanningProgress({ progress }) {
       <p className="rt-copy" role="status">
         {progress.percent}% · {progress.label}
       </p>
-      <p className="rt-caption">
-        This tracks completed planning milestones, not time remaining. Finding places and checking
-        roads can take several minutes.
-      </p>
+      <p className="rt-caption">Completed milestones, not time remaining.</p>
     </section>
   );
 }

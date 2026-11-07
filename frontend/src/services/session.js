@@ -221,7 +221,9 @@ export function watchSession() {
 
 export const safeReturnPath = (path) =>
   typeof path === 'string' &&
-  /^\/(plan|trips|map|itinerary|settings|algorithm)(\?|$)/.test(path) &&
+  (/^\/(plan|trips|map|itinerary|settings|algorithm)(\?|$)/.test(path) ||
+    path === '/share' ||
+    /^\/shared-trips(?:\/[0-9a-f-]{36})?$/.test(path)) &&
   !path.includes('\\')
     ? path
     : '/plan';

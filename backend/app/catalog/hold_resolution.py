@@ -97,6 +97,7 @@ _RUNTIME_KEYS = {
     "departure_time",
     "travel_day",
     "deadline",
+    "meal_breaks",
 }
 
 
@@ -578,9 +579,97 @@ def _rating_annotation(value):
     return stamp.tzinfo is not None and stamp.utcoffset() is not None
 
 
+_MEAL_KEYS = {
+    "id",
+    "kind",
+    "meal_type",
+    "name",
+    "status",
+    "optional",
+    "arrival_time",
+    "departure_time",
+    "window_start",
+    "window_end",
+    "duration_seconds",
+    "timezone",
+    "notice",
+}
+_MEAL_WINDOWS = {"breakfast": (7, 9, 1800), "lunch": (12, 14, 2700), "dinner": (18, 20, 3600)}
+
+
+def _meal_annotation(value):
+    """Accept only bounded derived break metadata; it never supplies source facts.
+
+    Final timing and itinerary rebuilding recompute these intervals. Admission
+    checks only their shape before discarding them from the canonical payload;
+    adding a break cannot resolve an unknown, altered, expired or unreviewed row.
+    This module deliberately does not import the routing clock (an import cycle).
+    """
+    if type(value) is not list or len(value) > 189:
+        return False
+    seen, previous = set(), None
+    for meal in value:
+        if type(meal) is not dict or set(meal) != _MEAL_KEYS:
+            return False
+        kind = meal["meal_type"]
+        if type(kind) is not str or kind not in _MEAL_WINDOWS:
+            return False
+        opening, closing, duration = _MEAL_WINDOWS[kind]
+        if (
+            meal["kind"] != "meal"
+            or meal["status"] != "reserved"
+            or meal["optional"] is not False
+            or meal["name"] != kind.capitalize()
+            or type(meal["duration_seconds"]) is not int
+            or meal["duration_seconds"] != duration
+            or type(meal["timezone"]) is not str
+            or not 1 <= len(meal["timezone"]) <= 128
+            or type(meal["notice"]) is not str
+            or not 1 <= len(meal["notice"]) <= 1000
+            or type(meal["id"]) is not str
+        ):
+            return False
+        try:
+            zone = ZoneInfo(meal["timezone"])
+            stamps = []
+            for key in ("window_start", "window_end", "arrival_time", "departure_time"):
+                text = meal[key]
+                if type(text) is not str or not 1 <= len(text) <= 64:
+                    return False
+                stamp = datetime.fromisoformat(text.replace("Z", "+00:00"))
+                if stamp.tzinfo is None or stamp.utcoffset() is None:
+                    return False
+                local = stamp.astimezone(zone)
+                if (
+                    local.replace(tzinfo=None) != stamp.replace(tzinfo=None)
+                    or local.utcoffset() != stamp.utcoffset()
+                ):
+                    return False
+                stamps.append(stamp)
+            start, end, arrival, departure = stamps
+            if (
+                start.time().isoformat() != f"{opening:02d}:00:00"
+                or end.time().isoformat() != f"{closing:02d}:00:00"
+                or end.date() != start.date()
+                or meal["id"] != f"meal:{start.date().isoformat()}:{kind}"
+                or meal["id"] in seen
+                or not start <= arrival < departure <= end
+                or (departure.astimezone(UTC) - arrival.astimezone(UTC)).total_seconds() != duration
+                or (previous is not None and previous > arrival.astimezone(UTC))
+            ):
+                return False
+        except (ValueError, TypeError, KeyError, OverflowError):
+            return False
+        seen.add(meal["id"])
+        previous = departure.astimezone(UTC)
+    return True
+
+
 def _canonical(record, entry):
     if type(record) is not dict or set(record) - (set(FIELDS) | _RUNTIME_KEYS | {"generation"}):
         raise ValueError("unknown record projection")
+    if "meal_breaks" in record and not _meal_annotation(record["meal_breaks"]):
+        raise ValueError("invalid derived meal annotation")
     sid = entry["source_id"]
     provider = record.get("provider_id")
     expected_provider, expected_source = identity(sid)

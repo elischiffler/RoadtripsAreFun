@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -6,13 +6,16 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import ValidationError
 
 from app.agent.progress import stage
+from app.catalog.place_context import route_place_context
 from app.models.itinerary_models import Itinerary_Day, Itinerary_Payload
 from app.models.scheduling_policy import SchedulingPolicy, advance, local_time
 from app.routing.base import PlanningError
 from app.routing.catalog_calendars import CatalogLookup, refresh_for_timing
+from app.routing.daily_rhythm import clear_rhythm_metadata
 from app.routing.meal_slots import add_meal_windows
 from app.routing.sources.evenings import current_suggestions
 from app.routing.travel_timing import apply_timing
+from app.routing.trip_modes import OneDayIneligible, require_one_day
 from app.routing.visit_calendar import requires_calendar
 from app.routing.visit_duration import visit_seconds
 from app.utils.auth import require_authenticated_user
@@ -78,7 +81,31 @@ async def _build_itinerary(
     Raises:
         HTTPException: if the route is incomplete or the data can't be processed.
     """
+    if data.route.trip_mode == "one_day":
+        # Persisted/caller proof is display metadata, never authority. Rebuilds
+        # recompute the full meal-aware clock and enforce the mode again.
+        data.route.reserve_meal_slots = True
+        if any(stop.get("type") == "hotel" for stop in data.route.stops or []):
+            raise OneDayIneligible("A one-day route cannot contain an overnight hotel stay")
+        if data.route.scheduling_policy is None:
+            raise PlanningError("One-day routes require a validated daily policy and timing", 422)
+    if data.route.reserve_meal_slots and (
+        data.route.scheduling_policy is None
+        or not data.route.stops
+        or data.route.stops[-1].get("type") != "end"
+        or (data.start_time is None and data.route.departure_time is None)
+    ):
+        raise PlanningError(
+            "Meal reservations require a complete dated route with a scheduling policy; replan this trip",
+            422,
+        )
     await refresh_for_timing(data.route.stops or [], catalog_lookup=catalog_lookup)
+    # Recompute from freshly admitted facts; ignore serialized/client display claims.
+    data.route.place_context = route_place_context(data.route.stops)
+    if data.route.scheduling_policy is None or data.route.scheduling_policy.daily_schedule is None:
+        for stop in data.route.stops or []:
+            if stop.get("type") == "hotel":
+                clear_rhythm_metadata(stop)
     if data.route.scheduling_policy is None and any(
         requires_calendar(stop) for stop in data.route.stops or []
     ):
@@ -99,6 +126,8 @@ async def _build_itinerary(
     known_departure = current_time is not None
     current_time = current_time or datetime(2024, 9, 21, 9)
     if data.route.scheduling_policy is not None:
+        if data.route.trip_mode == "one_day":
+            data.route.departure_time = current_time
         if data.route.start_timezone:
             current_time = local_time(current_time, ZoneInfo(data.route.start_timezone))
         apply_timing(
@@ -106,13 +135,17 @@ async def _build_itinerary(
             current_time,
             data.route.scheduling_policy,
             data.route.start_timezone,
+            reserve_meal_slots=data.route.reserve_meal_slots,
         )
+    if data.route.trip_mode == "one_day":
+        require_one_day(data.route)
     departure = current_time if known_departure else None
     trip_end = None
 
     # initialize a list of stops with a generic message and specified start time
     stop_list = [
         {
+            "_sort_time": current_time.isoformat(),
             "date": current_time.strftime("%A, %B %d %Y"),
             "time": current_time.strftime("%I:%M %p"),
             "name": "Depart from your starting location",
@@ -120,6 +153,16 @@ async def _build_itinerary(
     ]
     # loop through the stops and get the time for each
     for stop in data.route.stops:
+        if data.route.reserve_meal_slots:
+            for meal in stop.get("meal_breaks", []):
+                beginning = datetime.fromisoformat(meal["arrival_time"])
+                stop_list.append(
+                    {
+                        **meal,
+                        "date": beginning.strftime("%A, %B %d %Y"),
+                        "time": beginning.strftime("%I:%M %p"),
+                    }
+                )
         # Add the time to get to the stop to the current time
         current_time = (
             datetime.fromisoformat(stop["arrival_time"])
@@ -127,6 +170,7 @@ async def _build_itinerary(
             else advance(current_time, stop["duration"])
         )
         destination = {
+            "_sort_time": current_time.isoformat(),
             "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
             "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
             "name": stop["name"],
@@ -135,6 +179,7 @@ async def _build_itinerary(
             "departure_time": stop.get("departure_time"),
             "visit_duration": stop.get("visit_duration"),
             "provider_id": stop.get("provider_id"),
+            "place_context": data.route.place_context.get(stop.get("provider_id")),
             "source": stop.get("source"),
             "source_release": stop.get("source_release"),
             "source_attribution": stop.get("source_attribution"),
@@ -147,6 +192,7 @@ async def _build_itinerary(
             "hotel_rooms": stop.get("hotel_rooms"),
             "room_offers": stop.get("room_offers"),
             "price_scope": stop.get("price_scope"),
+            "lodging": stop.get("lodging"),
             "address": stop.get("address"),
             "kind": "arrival",
             "timezone": stop.get("timezone"),
@@ -155,6 +201,7 @@ async def _build_itinerary(
                 for value in (
                     stop.get("late_check_in_notice"),
                     stop.get("warning"),
+                    stop.get("check_in_timing_notice") if not stop.get("lodging") else None,
                     (
                         f"Wait {stop['wait_seconds'] / 60:g} minutes for published opening."
                         if stop.get("wait_seconds", 0) > 0
@@ -176,6 +223,16 @@ async def _build_itinerary(
         # Add the stop to stop_list
         stop_list.append(destination)
         if stop["type"] == "hotel":  # If the stop is a hotel
+            for block in stop.get("daily_rhythm_blocks", []):
+                beginning = datetime.fromisoformat(block["arrival_time"])
+                stop_list.append(
+                    {
+                        **block,
+                        "date": beginning.strftime("%A, %B %d %Y"),
+                        "time": beginning.strftime("%I:%M %p"),
+                        "_sort_time": beginning.isoformat(),
+                    }
+                )
             for suggestion in current_suggestions(stop) if data.route.scheduling_policy else []:
                 visit = (
                     datetime.fromisoformat(suggestion["visit_time"])
@@ -184,6 +241,7 @@ async def _build_itinerary(
                 )
                 stop_list.append(
                     {
+                        "_sort_time": visit.isoformat(),
                         "date": visit.strftime("%A, %B %d %Y"),
                         "time": visit.strftime("%I:%M %p")
                         if suggestion.get("visit_time")
@@ -221,6 +279,7 @@ async def _build_itinerary(
                 )
             stop_list.append(
                 {
+                    "_sort_time": current_time.isoformat(),
                     "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
                     "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
                     "name": "Depart from your hotel",
@@ -237,6 +296,7 @@ async def _build_itinerary(
             )
             stop_list.append(
                 {
+                    "_sort_time": current_time.isoformat(),
                     "date": current_time.strftime("%A, %B %d %Y"),  # Weekday, Month Day Year
                     "time": current_time.strftime("%I:%M %p"),  # Hour:Minutes
                     "name": "Depart from the stop",
@@ -247,8 +307,16 @@ async def _build_itinerary(
             )
     if len(stop_list) >= 2:
         # Organize the stops by date
+        if data.route.reserve_meal_slots:
+            # A hotel's breakfast is attached to its prior arrival record. Sort
+            # presentation only; physical route stop order remains untouched.
+            stop_list.sort(
+                key=lambda row: datetime.fromisoformat(
+                    row.get("arrival_time") or row["_sort_time"]
+                ).astimezone(UTC)
+            )
         days = await _day_itinerary(stop_list)
-        if data.include_meal_slots:
+        if data.include_meal_slots and not data.route.reserve_meal_slots:
             return add_meal_windows(
                 days,
                 departure=departure,
@@ -279,6 +347,11 @@ async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]
         # iterate through all stops
         for stop in itinerary:
             point = {
+                "id": stop.get("id"),
+                "meal_type": stop.get("meal_type"),
+                "window_start": stop.get("window_start"),
+                "window_end": stop.get("window_end"),
+                "duration_seconds": stop.get("duration_seconds"),
                 "name": stop["name"],
                 "type": stop.get("type"),
                 "arrival_time": stop.get("arrival_time"),
@@ -287,6 +360,7 @@ async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]
                 "paired_departure": stop.get("paired_departure", False),
                 "source": stop.get("source"),
                 "provider_id": stop.get("provider_id"),
+                "place_context": stop.get("place_context"),
                 "source_release": stop.get("source_release"),
                 "source_attribution": stop.get("source_attribution"),
                 "source_updated_at": stop.get("source_updated_at"),
@@ -307,6 +381,7 @@ async def _day_itinerary(itinerary: list[dict[str, Any]]) -> list[Itinerary_Day]
                 "hotel_rooms": stop.get("hotel_rooms"),
                 "room_offers": stop.get("room_offers"),
                 "price_scope": stop.get("price_scope"),
+                "lodging": stop.get("lodging"),
             }
             # Check if the date matches and if so add stop to the same day
             if stop["date"] == curr_day["date"]:

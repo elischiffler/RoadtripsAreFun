@@ -1,5 +1,6 @@
+import PlaceContext from './PlaceContext';
 import PlaceTiming from './PlaceTiming.jsx';
-import { compactTimestamp } from './placeTiming';
+import MealBreaks from './MealBreaks';
 import './TripExperience.css';
 import { itineraryEntries, visitedStopIds } from '../services/tripPresentation';
 import { ActionButton } from '../design';
@@ -43,6 +44,7 @@ export default function ItineraryDays({
                     activity.name
                   )}
                 </h3>
+                <PlaceContext context={activity.place_context} />
                 <PlaceTiming place={activity} />
                 {!activity.arrival_time &&
                   !activity.departure_time &&
@@ -93,36 +95,7 @@ export default function ItineraryDays({
               </li>
             ))}
           </ol>
-          {meals.length > 0 && (
-            <section className="trip-meal-windows" aria-label="Open meal windows">
-              <h3 className="rt-title">Open meal windows</h3>
-              <ul>
-                {meals.map((meal, mealIndex) => (
-                  <li key={meal.id || mealIndex}>
-                    <h4 className="rt-copy">{meal.name}</h4>
-                    <p className="rt-caption">
-                      <time dateTime={meal.window_start}>
-                        {compactTimestamp(meal.window_start, meal.timezone)?.time ||
-                          meal.window_start?.slice(11, 16) ||
-                          'Time to choose'}
-                      </time>
-                      {' – '}
-                      <time dateTime={meal.window_end}>
-                        {compactTimestamp(meal.window_end, meal.timezone)?.time ||
-                          meal.window_end?.slice(11, 16) ||
-                          'Time to choose'}
-                      </time>
-                      {meal.timezone ? ` (${meal.timezone})` : ''}
-                    </p>
-                    <p className="rt-caption">
-                      {meal.notice ||
-                        'Open planning window; no time or place is reserved. May overlap driving or visits; adjust the time.'}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          <MealBreaks meals={meals} />
         </section>
       ))}
     </div>

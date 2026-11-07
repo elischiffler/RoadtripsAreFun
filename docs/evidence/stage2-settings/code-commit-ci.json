@@ -1,0 +1,82 @@
+{
+  "commit": "03e14c537c1165b5497fd9c3e589704db239f493",
+  "checks": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-06T23:51:19Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/elischiffler/RoadtripsAreFun/actions/runs/42314326968/job/128223146364",
+      "name": "Run pytest",
+      "startedAt": "2026-11-06T23:49:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Backend CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-06T23:50:48Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/elischiffler/RoadtripsAreFun/actions/runs/42314326970/job/128223145340",
+      "name": "Real CRUD, recreate, backup and restore",
+      "startedAt": "2026-11-06T23:49:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Disposable PostgreSQL CRUD"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-06T23:50:19Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/elischiffler/RoadtripsAreFun/actions/runs/42314326973/job/128223144962",
+      "name": "Test",
+      "startedAt": "2026-11-06T23:49:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Frontend CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-06T23:51:41Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/elischiffler/RoadtripsAreFun/actions/runs/42314327017/job/128223145402",
+      "name": "container",
+      "startedAt": "2026-11-06T23:49:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Local containers"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-06T23:49:23Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/elischiffler/RoadtripsAreFun/actions/runs/42314326973/job/128223145315",
+      "name": "Build",
+      "startedAt": "2026-11-06T23:49:00Z",
+      "status": "COMPLETED",
+      "workflowName": "Frontend CI"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-06T23:49:02Z",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://coderabbit.ai?utm_source=cr_app&utm_medium=github",
+      "name": "CodeRabbit",
+      "startedAt": "2026-11-06T23:49:02Z",
+      "status": "COMPLETED",
+      "workflowName": ""
+    },
+    {
+      "__typename": "StatusContext",
+      "context": "Vercel",
+      "startedAt": "2026-11-06T23:49:05Z",
+      "state": "SUCCESS",
+      "targetUrl": "https://vercel.com/eli-schifflers-projects/roadtripsarefun/71p296Pp1LfFeMMgNEXynZMNGNHx"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-06T23:49:06Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://vercel.com/github",
+      "name": "Vercel Preview Comments",
+      "startedAt": "2026-11-06T23:49:06Z",
+      "status": "COMPLETED",
+      "workflowName": ""
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import PlaceTiming from '../components/PlaceTiming';
+import PlaceTiming from '../components/PlaceTiming.jsx';
 import ItineraryDays from '../components/ItineraryDays';
 import RouteOverview from '../pages/AlgorithmLab/RouteOverview';
 import { compactTimestamp, localTimestamp } from '../components/placeTiming';

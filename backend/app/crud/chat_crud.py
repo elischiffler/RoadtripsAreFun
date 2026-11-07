@@ -1,7 +1,9 @@
+import hashlib
 import json
 import logging
 from threading import Lock
 from typing import Any
+from uuid import uuid4
 
 import psycopg2
 import psycopg2.extras
@@ -23,6 +25,24 @@ _pool_lock = Lock()
 
 class ChatIdentityConflict(ValueError):
     """A trip number already belongs to another planning operation."""
+
+
+class ChatSnapshotConflict(ValueError):
+    """The saved trip changed after the editor loaded its snapshot."""
+
+
+class ChatGeometryUnavailable(ValueError):
+    """An owner-scoped stored coordinate reference has no backing data."""
+
+
+class ChatGeometryInvalid(ValueError):
+    """A saved geometry cannot be interpreted as inline data or a reference."""
+
+
+def chat_data_revision(data: dict[str, Any]) -> str:
+    """Opaque revision of exact durable JSON, before geometry hydration."""
+    payload = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
@@ -89,7 +109,8 @@ def create_chat(
 
     The conflict predicate is part of the upsert and checked while PostgreSQL
     locks the conflicting row. A separate existence read would race across tabs.
-    Missing/null legacy planning IDs remain compatible with one another.
+    Modern repeated creates return their existing durable snapshot unchanged.
+    Missing/null legacy planning IDs retain their prior upsert behavior.
     """
     conn = _get_conn()
     try:
@@ -99,8 +120,10 @@ def create_chat(
                 INSERT INTO chats (user_id, chat_id, chat_data, chat_log)
                 VALUES (%s, %s, %s, %s)
                 ON CONFLICT (user_id, chat_id) DO UPDATE
-                  SET chat_data = EXCLUDED.chat_data,
-                      chat_log  = EXCLUDED.chat_log
+                  SET chat_data = CASE WHEN chats.chat_data->>'agentChatId' IS NULL
+                        THEN EXCLUDED.chat_data ELSE chats.chat_data END,
+                      chat_log = CASE WHEN chats.chat_data->>'agentChatId' IS NULL
+                        THEN EXCLUDED.chat_log ELSE chats.chat_log END
                   WHERE chats.chat_data->>'agentChatId'
                     IS NOT DISTINCT FROM EXCLUDED.chat_data->>'agentChatId'
                 RETURNING *
@@ -174,7 +197,33 @@ def get_segments(user_id: str, chat_id: str, route_id: str):
         _put_conn(conn)
 
 
-def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel, prefix: str):
+def restore_geometry(user_id: str, chat_id: str, geometry, *, allow_absent=False):
+    """Hydrate historical references while preserving inline geometry metadata."""
+    if geometry is None and allow_absent:
+        return None
+    if isinstance(geometry, dict):
+        coordinates = geometry.get("coordinates")
+    else:
+        coordinates = geometry
+    if isinstance(coordinates, list):
+        return geometry if isinstance(geometry, dict) else {"coordinates": coordinates}
+    if not isinstance(coordinates, str) or not coordinates.strip():
+        raise ChatGeometryInvalid()
+    restored = get_segments(user_id=user_id, chat_id=chat_id, route_id=coordinates)
+    if not restored:
+        raise ChatGeometryUnavailable()
+    return {**(geometry if isinstance(geometry, dict) else {}), "coordinates": restored}
+
+
+def update_chat_component(
+    auth_token: str,
+    chat_id: str,
+    chat_schema: BaseModel,
+    prefix: str,
+    *,
+    expected_revision: str | None = None,
+    update_scope: str = "route",
+):
     """Update a component of a user's chat in the database."""
     # Durable JSON must contain ISO timestamps, not Pydantic datetime objects.
     comp_dict = chat_schema.model_dump(mode="json")
@@ -196,7 +245,7 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute(
-                f"SELECT {col_name} FROM chats WHERE user_id = %s AND chat_id = %s",
+                f"SELECT {col_name} FROM chats WHERE user_id = %s AND chat_id = %s FOR UPDATE",
                 (auth_token, chat_id),
             )
             row = cur.fetchone()
@@ -207,9 +256,29 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                     chat_id,
                     prefix,
                 )
+                conn.rollback()
                 return None
 
             current_val = row[col_name] or {}
+            if expected_revision is not None:
+                if prefix != "ChatData" or chat_data_revision(current_val) != expected_revision:
+                    raise ChatSnapshotConflict("Saved trip changed; reload before editing")
+                if update_scope == "presentation":
+                    comp_dict = {"presentation": comp_dict.get("presentation")}
+                elif update_scope == "route":
+                    # Route edits cannot replace unrelated car, account or log state.
+                    comp_dict = {key: comp_dict[key] for key in ("route", "itinerary", "stops")}
+                    comp_dict["tripProfile"] = {
+                        **(current_val.get("tripProfile") or {}),
+                        "num_stops": comp_dict["stops"],
+                    }
+                    comp_dict["presentation"] = {
+                        **(current_val.get("presentation") or {}),
+                        "visitedStopIds": [],
+                    }
+                    # Arrival events/undo overrides refer to the old itinerary IDs.
+                    comp_dict["presentation"].pop("arrivals", None)
+                    comp_dict["presentation"].pop("automaticArrivalExcludedStopIds", None)
             empty_vals = [[], {}, None, False, ""]
             route_id = f"{auth_token}-{chat_id}"
 
@@ -228,6 +297,9 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                             conn, auth_token, chat_id, route_id, value["legs"]
                         )
                     if key == "route":
+                        # New final routes use their own storage identity, preserving
+                        # legacy initial geometry that may share the old identifier.
+                        route_id = f"{auth_token}-{chat_id}-final"
                         route = value["geometry"]["coordinates"]
                         value["geometry"]["coordinates"] = route_id
                     if route:
@@ -249,8 +321,17 @@ def update_chat_component(auth_token: str, chat_id: str, chat_schema: BaseModel,
                                 raise PermissionError(
                                     "Route segment identifier belongs to a different chat"
                                 )
+                        cur.execute(
+                            """DELETE FROM route_segments
+                               WHERE user_id = %s AND chat_id = %s AND route_id = %s
+                                 AND NOT (segment_id = ANY(%s))""",
+                            (auth_token, chat_id, route_id, [str(i) for i in range(len(segments))]),
+                        )
                     current_val[key] = value
 
+            if prefix == "ChatData":
+                # Invalidate snapshots even when only segmented coordinates changed.
+                current_val["_storageRevision"] = str(uuid4())
             cur.execute(
                 f"UPDATE chats SET {col_name} = %s WHERE user_id = %s AND chat_id = %s RETURNING *",
                 (json.dumps(current_val), auth_token, chat_id),
@@ -295,33 +376,54 @@ def delete_chat(auth_token: str, chat_id: str):
 
 def restore_legs(user_id: str, chat_id: str, legs: list[Any]):
     """Restore step coordinates only from the verified user's chat."""
+    if not isinstance(legs, list):
+        raise ChatGeometryInvalid()
+    references = []
+    for leg in legs:
+        if not isinstance(leg, dict):
+            raise ChatGeometryInvalid()
+        steps = leg.get("steps")
+        # Some historical legs have no maneuver details. Preserve absence and
+        # empty arrays exactly, without treating them as stored references.
+        if steps is None:
+            continue
+        if not isinstance(steps, list):
+            raise ChatGeometryInvalid()
+        by_reference = {}
+        for index, step in enumerate(steps):
+            if not isinstance(step, dict) or not isinstance(step.get("geometry"), dict):
+                raise ChatGeometryInvalid()
+            coordinates = step["geometry"].get("coordinates")
+            if isinstance(coordinates, list):
+                continue
+            if not isinstance(coordinates, str) or not coordinates.strip():
+                raise ChatGeometryInvalid()
+            by_reference.setdefault(coordinates, []).append(index)
+        references.extend((steps, ref, indices) for ref, indices in by_reference.items())
+    if not references:
+        return legs
     conn = _get_conn()
     try:
         with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            rest_legs = []
-            for leg in legs:
-                leg_id = leg["steps"][0]["geometry"]["coordinates"]
+            updates = []
+            for steps, leg_id, indices in references:
                 cur.execute(
                     """SELECT * FROM steps
                        WHERE user_id = %s AND chat_id = %s AND leg_id = %s
                        ORDER BY step_id""",
                     (user_id, chat_id, leg_id),
                 )
-                steps_coords = cur.fetchall()
-                num_steps = len(leg["steps"])
-                for step_row in steps_coords:
-                    idx = step_row["step_id"]
-                    # Guard: only restore if the step index still exists in the leg
-                    if idx < num_steps:
-                        leg["steps"][idx]["geometry"]["coordinates"] = step_row["coordinates"]
-                    else:
-                        logger.warning(
-                            "restore_legs: DB has step_id=%s for leg_id=%s but leg only has %d steps — skipping",
-                            idx,
-                            leg_id,
-                            num_steps,
-                        )
-                rest_legs.append(leg)
-        return rest_legs
+                stored = {row["step_id"]: row["coordinates"] for row in cur.fetchall()}
+                for index in indices:
+                    if index not in stored:
+                        raise ChatGeometryUnavailable()
+                    if not isinstance(stored[index], list):
+                        raise ChatGeometryInvalid()
+                    updates.append((steps[index]["geometry"], stored[index]))
+            # Apply only after all references resolve, preserving inline steps
+            # even when old backing rows still contain their former indices.
+            for geometry, coordinates in updates:
+                geometry["coordinates"] = coordinates
+        return legs
     finally:
         _put_conn(conn)

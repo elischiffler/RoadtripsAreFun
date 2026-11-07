@@ -21,9 +21,23 @@
   --rt-control-height: 3.25rem;
   --rt-choice-min-width: 9rem;
   --rt-content-width: 30rem;
+  --rt-trip-content-width: 56rem;
+  --rt-map-content-width: 72rem;
+  --rt-place-image-max-height: 20rem;
+  --rt-map-preview-height: 12rem;
+  --rt-map-min-height: 24rem;
+  --rt-map-header-clearance: 12rem;
+  --rt-place-image-max-height: 20rem;
+  --rt-onboarding-map-compact-height: 5rem;
+  --rt-onboarding-map-height: clamp(7rem, 18dvh, 11rem);
+  --rt-route-draft-dash: 0.5rem 0.4rem;
+  --rt-map-grid-opacity: 0.35;
+  --rt-checkbox-size: 1.25rem;
   --rt-page-padding: clamp(1rem, 4vw, 2rem);
   --rt-marker-size: 0.75rem;
+  --rt-slider-thumb-size: 1.5rem;
   --rt-press-scale: 0.98;
+  --rt-opacity-disabled: 0.5;
 
   --rt-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --rt-text-caption: 0.8125rem;
@@ -65,4 +79,26 @@
   --rt-duration-feedback: 100ms;
   --rt-duration-color: 160ms;
   --rt-ease: ease-out;
+}
+
+:root[data-theme='dark'] .rt-design {
+  --rt-color-page: #111c18;
+  --rt-color-surface: #1c2c25;
+  --rt-color-muted: #283d32;
+  --rt-color-text: #f1f6f2;
+  --rt-color-secondary: #b9cac0;
+  --rt-color-border: #526b5c;
+  --rt-color-control-border: #8ca797;
+  --rt-color-accent: #9bdcc7;
+  --rt-color-accent-hover: #bae9d9;
+  --rt-color-on-accent: #102b22;
+  --rt-color-selected: #284d3e;
+  --rt-color-error: #ffb5b7;
+  --rt-color-error-surface: #49262b;
+  --rt-color-focus: #a9ceff;
+  --rt-color-route: #a9ceff;
+  --rt-color-route-surface: #233c58;
+  --rt-color-material: rgb(28 44 37 / 94%);
+  --rt-shadow-sheet: 0 0.5rem 2rem rgb(0 0 0 / 20%);
+  --rt-shadow-floating: 0 0.25rem 1rem rgb(0 0 0 / 30%);
 }

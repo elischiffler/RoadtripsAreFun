@@ -33,13 +33,17 @@ from starlette.concurrency import run_in_threadpool
 
 from app.agent.departure import is_upcoming_departure
 from app.agent.persona import effective_weights
-from app.agent.progress import stage
+from app.agent.progress import emit, stage
 from app.agent.progress_stream import stream_turn
 from app.agent.provider_diagnostics import retry_async
 from app.agent.trip_dates import timezone_from_location
+from app.catalog.place_context import route_place_context
+from app.core.candidate_errors import CandidateHTTPError
 from app.core.departure_errors import DepartureNotUpcomingHTTPError
 from app.crud.memory_crud import load_account_persona
+from app.models.daily_schedule import DailyRhythmClockError
 from app.models.guided_planning import RouteAlternativesRequest, RouteAlternativesResponse
+from app.models.route_edit import RouteEditRequest, RouteEditResponse
 from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
 from app.models.scheduling_policy import local_time
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
@@ -50,9 +54,13 @@ from app.routing.catalog_calendars import refresh_for_timing
 from app.routing.config import geolocator  # shared reverse-geocoder
 from app.routing.explanation import record_stage
 from app.routing.geometry import find_position as _find_position  # noqa: F401
+from app.routing.lodging import LodgingCoverageConflict
+from app.routing.meal_reservations import MealScheduleConflict, MealScheduleHTTPError
 from app.routing.occupancy import require_occupancy
 from app.routing.pricing import get_price_range as _get_price_range  # noqa: F401
 from app.routing.registry import DEFAULT_ALGORITHM
+from app.routing.route_edit import preview_route_edit
+from app.routing.route_preparation import preview_details
 from app.routing.runtime import in_run, singleflight, threaded
 from app.routing.selection import owner_routing_claims, select_algorithm
 from app.routing.sources.attractions import find_stop as _find_stop  # noqa: F401
@@ -67,6 +75,12 @@ from app.routing.sources.persona_candidates import (
     hotel_candidates,
 )
 from app.routing.travel_timing import apply_timing
+from app.routing.trip_modes import (
+    DepartureOutsideRhythm,
+    RhythmClockConflict,
+    require_one_day,
+    require_overnight_rhythm,
+)
 from app.routing.visit_calendar import VisitCalendarConflict
 from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location  # noqa: F401  (patched in tests)
@@ -203,6 +217,8 @@ async def get_final_route(
 
     except CandidateRatingError as exception:
         raise HTTPException(status_code=502, detail=exception.public_message) from None
+    except LodgingCoverageConflict:
+        raise CandidateHTTPError("lodging_stay_conflict") from None
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail)
     except HTTPException as exception:
@@ -225,6 +241,10 @@ async def _plan_for_http(payload, *, user_id, can_select_algorithm):
         raise HTTPException(status_code=502, detail=exception.public_message) from None
     except DepartureNotUpcoming:
         raise DepartureNotUpcomingHTTPError() from None
+    except MealScheduleConflict:
+        raise MealScheduleHTTPError() from None
+    except LodgingCoverageConflict:
+        raise CandidateHTTPError("lodging_stay_conflict") from None
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail) from None
     except RequestException as exception:
@@ -287,12 +307,38 @@ async def route_alternatives(payload: RouteAlternativesRequest):
         ) from None
 
 
+@guided_router.post(
+    "/route-edit",
+    response_model=RouteEditResponse,
+    dependencies=[Depends(require_authenticated_user)],
+)
+async def route_edit(payload: RouteEditRequest):
+    """Preview an explicit catalog stop change; saved trips are untouched."""
+    try:
+        return await preview_route_edit(
+            payload, route_call=_call_route, timezone_at=_build_services().timezone_at
+        )
+    except PlanningError as error:
+        raise HTTPException(status_code=error.status_code, detail=error.detail) from None
+    except Exception:
+        logger.warning("Route edit preview is unavailable")
+        raise HTTPException(
+            status_code=503,
+            detail="The edited route could not be verified. Your saved trip is unchanged.",
+        ) from None
+
+
 router.include_router(guided_router)
 
 
 @in_run
 async def plan_final_route(
-    payload: Route_Payload, user_id: str | None = None, *, can_select_algorithm: bool = False
+    payload: Route_Payload,
+    user_id: str | None = None,
+    *,
+    can_select_algorithm: bool = False,
+    candidate_context: dict | None = None,
+    assess_only: bool = False,
 ) -> Route:
     """Build and validate the complete road trip for both HTTP and chat callers.
 
@@ -302,10 +348,14 @@ async def plan_final_route(
     Returns a Route with stops, geometry, distance, duration, and hotel quote total.
     Invalid trip inputs and required provider failures propagate to the caller.
     """
-    try:
-        require_occupancy(payload.traveler_count, payload.hotel_rooms)
-    except ValueError as exc:
-        raise PlanningError(str(exc), 422) from exc
+    if payload.trip_mode == "one_day":
+        payload = payload.model_copy(update={"reserve_meal_slots": True})
+    if payload.trip_mode != "one_day":
+        require_overnight_rhythm(payload.scheduling_policy)
+        try:
+            require_occupancy(payload.traveler_count, payload.hotel_rooms)
+        except ValueError as exc:
+            raise PlanningError(str(exc), 422) from exc
     initial_route = payload.initial_route
     start_lon, start_lat = initial_route.geometry.coordinates[0]
     end_lon, end_lat = initial_route.geometry.coordinates[-1]
@@ -342,24 +392,44 @@ async def plan_final_route(
                 raise PlanningError(str(exc), 422) from exc
         if not is_upcoming_departure(start):
             raise DepartureNotUpcoming()
+        if payload.scheduling_policy.daily_schedule:
+            try:
+                zone = ZoneInfo(await services.timezone_at([start_lat, start_lon]))
+                local_start = local_time(start, zone)
+                travel_day = payload.scheduling_policy.travel_day_for(local_start)
+                payload.scheduling_policy.deadline(travel_day, zone, final=True)
+            except DailyRhythmClockError:
+                raise RhythmClockConflict() from None
+            except (ValueError, TypeError):
+                raise DepartureOutsideRhythm() from None
         account = load_account_persona(user_id)
         weights = effective_weights(account.weights, payload.persona_weights)
+    if candidate_context is not None:
+        candidate_context["resolved_start"] = start
     options = PlanOptions(
         num_stops=num_stops,
         budget=budget,
         start=start,
         weights=weights,
         scheduling_policy=payload.scheduling_policy,
+        reserve_meal_slots=payload.reserve_meal_slots,
+        trip_mode=payload.trip_mode,
         traveler_count=payload.traveler_count,
         hotel_rooms=payload.hotel_rooms,
     )
 
+    if candidate_context is not None and candidate_context.get("verified_candidates") is not None:
+        options._verified_cp_sat_candidates = candidate_context["verified_candidates"]
     # At most one exclusion per bounded candidate. Discovery/solo road checks
     # are cached on these request-local options, including final-leg retries.
     for _ in range(61):
         try:
             # Run the planner to find stopping points.
-            result = await planner.plan(initial_route, options, services)
+            try:
+                result = await planner.plan(initial_route, options, services)
+            finally:
+                if candidate_context is not None:
+                    candidate_context["verified_candidates"] = options._verified_cp_sat_candidates
             stopping_points, total_cost = result.stopping_points, result.total_cost
 
             coordinates = [stop["coordinates"] for stop in stopping_points]
@@ -415,6 +485,11 @@ async def plan_final_route(
                         }
                     )
                 idx += 1
+            if candidate_context is not None:
+                emit(
+                    "route.preview",
+                    **preview_details("checking", geometry, stopping_points),
+                )
             start_timezone = payload.start_timezone
             # Final timing validation
             if algorithm.startswith("cp_sat"):
@@ -424,7 +499,13 @@ async def plan_final_route(
                         start_timezone = await services.timezone_at([start_lat, start_lon])
                         for stop in stopping_points:
                             stop["timezone"] = await services.timezone_at(stop["coordinates"])
-                    apply_timing(stopping_points, start, payload.scheduling_policy, start_timezone)
+                    apply_timing(
+                        stopping_points,
+                        start,
+                        payload.scheduling_policy,
+                        start_timezone,
+                        reserve_meal_slots=payload.reserve_meal_slots,
+                    )
                 record_stage(
                     "reroute", "complete", "Mapbox actual legs passed local timing checks."
                 )
@@ -433,22 +514,28 @@ async def plan_final_route(
                 )
             # Clients consume stops and geometry; turn-by-turn steps remain empty.
             coordinates = [[start_lat, start_lon]] + coordinates + [[end_lat, end_lon]]
-            return Route(
+            complete = Route(
                 coordinates=coordinates,
                 distance=distance,
                 duration=duration,
                 steps=steps,
                 stops=stopping_points,
+                place_context=route_place_context(stopping_points),
                 geometry=geometry,
                 cost=total_cost,
                 scheduling_policy=payload.scheduling_policy,
                 start_timezone=start_timezone,
                 departure_time=start,
+                reserve_meal_slots=payload.reserve_meal_slots,
+                trip_mode=payload.trip_mode,
                 traveler_count=payload.traveler_count,
                 hotel_rooms=payload.hotel_rooms,
                 warnings=[stop["warning"] for stop in stopping_points if stop.get("warning")]
                 or None,
             )
+            if payload.trip_mode == "one_day" and not assess_only:
+                require_one_day(complete)
+            return complete
         except VisitCalendarConflict as exc:
             if exc.provider_id in options.excluded_provider_ids:
                 raise
@@ -510,5 +597,7 @@ async def benchmark(algorithms: str = None):
     algo_list = [a.strip() for a in algorithms.split(",")] if algorithms else None
     try:
         return await run_benchmark(algorithms=algo_list)
+    except LodgingCoverageConflict:
+        raise CandidateHTTPError("lodging_stay_conflict") from None
     except PlanningError as exception:
         raise HTTPException(status_code=exception.status_code, detail=exception.detail)

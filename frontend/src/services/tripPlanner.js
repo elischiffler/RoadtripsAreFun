@@ -4,6 +4,7 @@ import { getFreshRoutingAlgorithm } from './routingSettings';
 import { getSession, isCurrentSession, SessionError } from './session';
 import { preferenceWeights, roomInputs } from '../pages/TripSetup/setupModel';
 import { streamTripRoute } from './tripRouteStream';
+import { schedulingPolicyFromDraft } from '../pages/TripSetup/dailyRhythm';
 
 export function plannerError(error) {
   const detail = error.response?.data?.detail;
@@ -28,7 +29,7 @@ export async function resolveTripLocation(address, signal) {
     const { data } = await axios.post(
       import.meta.env.VITE_BACKEND_SERVER + 'validate-location',
       { is_coordinates: false, location: { address } },
-      { ...backendAuthConfig(), signal }
+      { ...backendAuthConfig(), signal, timeout: 15000 }
     );
     candidates = [data];
   } catch (error) {
@@ -55,7 +56,7 @@ export function structuredTripInputs(draft) {
     traveler_count: Number(draft.travelers),
     hotel_rooms: roomInputs(draft),
     persona_weights: preferenceWeights(draft),
-    scheduling_policy: { ...draft.schedule },
+    scheduling_policy: schedulingPolicyFromDraft(draft),
     // The retained API localizes this wall time using the origin's provider timezone.
     // Never apply the browser's timezone or invent a UTC offset.
     start: draft.date + 'T' + draft.time + ':00',
@@ -78,6 +79,7 @@ export async function estimateStructuredRoute(origin, destination, signal) {
   const { data } = await axios.get(import.meta.env.VITE_BACKEND_SERVER + 'get-initial-route', {
     ...backendAuthConfig(),
     signal,
+    timeout: 15000,
     params: {
       start_lat: origin.latitude,
       start_lon: origin.longitude,
@@ -97,7 +99,13 @@ export async function estimateStructuredRoute(origin, destination, signal) {
   return data;
 }
 
-export async function planStructuredRoute(draft, origin, destination, signal, { onProgress } = {}) {
+export async function planStructuredRoute(
+  draft,
+  origin,
+  destination,
+  signal,
+  { onProgress, reserveMealSlots = false } = {}
+) {
   const started = getSession();
   let initial_route;
   if (onProgress) {
@@ -122,6 +130,7 @@ export async function planStructuredRoute(draft, origin, destination, signal, { 
   const payload = {
     initial_route,
     ...structuredTripInputs(draft),
+    ...(reserveMealSlots ? { reserve_meal_slots: true } : {}),
     ...(algorithm ? { algorithm } : {}),
   };
   let route;
@@ -144,6 +153,8 @@ export async function planStructuredRoute(draft, origin, destination, signal, { 
     route.duration < 0
   )
     throw new Error('The planning service did not return a complete route.');
+  if (reserveMealSlots && route.reserve_meal_slots !== true)
+    throw new Error('The planning service did not confirm meal breaks. Your draft is kept.');
   return route;
 }
 

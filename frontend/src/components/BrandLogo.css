@@ -1,0 +1,28 @@
+.rt-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rt-space-2);
+  flex-shrink: 0;
+}
+.rt-brand__type {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-family: var(--rt-font);
+  text-align: start;
+  white-space: nowrap;
+}
+.rt-brand__name {
+  color: var(--rt-color-text);
+  font-size: var(--rt-text-body);
+  font-weight: var(--rt-weight-strong);
+  line-height: var(--rt-leading-tight);
+  letter-spacing: var(--rt-tracking-title);
+}
+.rt-brand__suffix {
+  color: var(--rt-color-secondary);
+  font-size: var(--rt-text-caption);
+  font-weight: var(--rt-weight-medium);
+  line-height: var(--rt-leading-title);
+  letter-spacing: var(--rt-tracking-caption);
+}

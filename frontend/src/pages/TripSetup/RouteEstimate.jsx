@@ -1,37 +1,52 @@
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ActionButton, ChoiceGroup, QuestionGroup } from '../../design';
+import { ActionButton, ChoiceGroup } from '../../design';
 import {
   estimateStructuredRoute,
   plannerError,
   resolveTripLocation,
 } from '../../services/tripPlanner';
 import { getSession, isCurrentSession } from '../../services/session';
+import OnboardingMap from './OnboardingMap';
+import useCatalogPreparation from './useCatalogPreparation';
 import './ConnectedPlanning.css';
 
-/** Read-only driving estimate; ambiguity is resolved explicitly before routing. */
-export default function RouteEstimate({ start, destination }) {
+/** User-triggered road preparation, then admitted database ideas. No AI runs here. */
+const RouteEstimate = forwardRef(function RouteEstimate(
+  { start, destination, draft, stage = 0, onPrepared },
+  ref
+) {
   const [candidates, setCandidates] = useState(null);
   const [selected, setSelected] = useState({ origin: '', destination: '' });
-  const [estimate, setEstimate] = useState(null);
+  const [prepared, setPrepared] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const request = useRef(null);
+  const preview = useRef(null);
+  const locationHeading = useRef(null);
+  const previewTrigger = useRef(null);
+  const notify = useRef(onPrepared);
+  notify.current = onPrepared;
+  const queryKey = JSON.stringify([start.trim(), destination.trim()]);
+
   useEffect(() => {
     request.current?.abort();
     request.current = null;
     setCandidates(null);
-    setEstimate(null);
+    setPrepared(null);
     setBusy(false);
     setError('');
-    const mountedSession = getSession();
+    notify.current?.(null);
+    const session = getSession();
     const changed = () => {
-      if (isCurrentSession(mountedSession)) return;
+      if (isCurrentSession(session)) return;
       request.current?.abort();
       request.current = null;
       setCandidates(null);
-      setEstimate(null);
+      setPrepared(null);
       setBusy(false);
+      setError('');
+      notify.current?.(null);
     };
     window.addEventListener('auth-changed', changed);
     return () => {
@@ -39,45 +54,67 @@ export default function RouteEstimate({ start, destination }) {
       request.current = null;
       window.removeEventListener('auth-changed', changed);
     };
-  }, [start, destination]);
+  }, [queryKey]);
 
-  const run = async (confirmed) => {
+  const currentData =
+    prepared?.queryKey === queryKey && isCurrentSession(prepared.session) ? prepared : null;
+  const catalog = useCatalogPreparation(currentData?.initialRoute, currentData?.cacheKey, draft);
+  const needsLocations =
+    stage === 0 &&
+    candidates?.queryKey === queryKey &&
+    !currentData &&
+    (candidates.origin.length > 1 || candidates.destination.length > 1);
+  useEffect(() => {
+    if (needsLocations) locationHeading.current?.focus({ preventScroll: true });
+  }, [needsLocations]);
+
+  const run = async (confirmed = false) => {
+    if (!confirmed && currentData) return { ok: true, ...currentData };
     request.current?.abort();
-    const controller = new AbortController();
-    const session = getSession();
+    const controller = new AbortController(),
+      session = getSession();
     request.current = controller;
     const current = () =>
       request.current === controller && !controller.signal.aborted && isCurrentSession(session);
     setBusy(true);
     setError('');
-    setEstimate(null);
     try {
-      let places = candidates;
+      let places = candidates?.queryKey === queryKey ? candidates : null;
       let choices = selected;
-      if (!confirmed) {
+      if (!places) {
         const [origin, target] = await Promise.all([
           resolveTripLocation(start.trim(), controller.signal),
           resolveTripLocation(destination.trim(), controller.signal),
         ]);
-        if (!current()) return;
-        places = { origin, destination: target };
+        if (!current()) return { ok: false };
+        places = { origin, destination: target, queryKey };
         choices = {
           origin: origin.length === 1 ? '0' : '',
           destination: target.length === 1 ? '0' : '',
         };
         setCandidates(places);
         setSelected(choices);
-        if (!choices.origin || !choices.destination) return;
       }
-      if (!places || choices.origin === '' || choices.destination === '') return;
-      const result = await estimateStructuredRoute(
-        places.origin[Number(choices.origin)],
-        places.destination[Number(choices.destination)],
-        controller.signal
-      );
-      if (current()) setEstimate(result);
+      if (choices.origin === '' || choices.destination === '')
+        return { ok: false, needsLocations: true };
+      const origin = places.origin[Number(choices.origin)],
+        target = places.destination[Number(choices.destination)];
+      const initialRoute = await estimateStructuredRoute(origin, target, controller.signal);
+      if (!current()) return { ok: false };
+      const data = {
+        queryKey,
+        cacheKey: JSON.stringify([queryKey, initialRoute.geometry]),
+        origin: { ...origin, confirmed },
+        destination: { ...target, confirmed },
+        initialRoute,
+        session: { owner: session.owner, generation: session.generation },
+      };
+      setPrepared(data);
+      notify.current?.(data);
+      return { ok: true, ...data };
     } catch (failure) {
       if (current()) setError(plannerError(failure));
+      return { ok: false };
     } finally {
       if (request.current === controller) {
         request.current = null;
@@ -85,20 +122,84 @@ export default function RouteEstimate({ start, destination }) {
       }
     }
   };
+  useEffect(() => {
+    if (preview.current) preview.current.open = false;
+  }, [stage]);
+  useImperativeHandle(ref, () => ({
+    prepare: async () => {
+      const value = await run(false);
+      if (!value?.ok || !isCurrentSession(value.session)) return value;
+      const confirmed = {
+        ...value,
+        origin: { ...value.origin, confirmed: true },
+        destination: { ...value.destination, confirmed: true },
+      };
+      setPrepared(confirmed);
+      notify.current?.(confirmed);
+      return confirmed;
+    },
+  }));
+
   return (
-    <QuestionGroup
-      legend="Get a feel for the drive"
-      description="A driving estimate can help you choose how much time to allow."
-    >
-      <ActionButton
-        variant="secondary"
-        disabled={busy || !start.trim() || !destination.trim()}
-        onClick={() => run(false)}
-      >
-        {busy ? 'Checking the drive…' : 'Estimate driving time'}
-      </ActionButton>
-      {candidates && !estimate && (
-        <div className="rt-stack">
+    <div className="setup-route-preparation">
+      {currentData && (
+        <details className="setup-route-map" ref={preview}>
+          <summary ref={previewTrigger}>
+            View route · About {(currentData.initialRoute.duration / 3600).toFixed(1)} hours driving
+          </summary>
+          <OnboardingMap
+            origin={currentData?.origin ?? { address: start }}
+            destination={currentData?.destination ?? { address: destination }}
+            route={currentData?.initialRoute}
+            ideas={catalog.places}
+            stayAreas={catalog.areas}
+            stage={stage}
+            phase={busy ? 'checking' : catalog.status === 'loading' ? 'preparing' : 'draft'}
+          />
+          <p className="rt-caption">Driving only, before stops and meals.</p>
+          {(catalog.places.length > 0 || catalog.areas.length > 0) && (
+            <details className="setup-preview-notes">
+              <summary>About these ideas</summary>
+              {catalog.places.length > 0 && (
+                <p className="rt-caption">
+                  Catalog ideas may be missing. Opening hours for your travel date are checked with
+                  trip options.
+                </p>
+              )}
+              {catalog.areas.length > 0 && (
+                <p className="rt-caption">
+                  Stay areas use approximate departure-clock timing, driving hours and meal
+                  allowances. Visits, detours and local clocks may move them. No hotel availability
+                  checked.
+                </p>
+              )}
+            </details>
+          )}
+          <ActionButton
+            variant="secondary"
+            onClick={() => {
+              preview.current.open = false;
+              previewTrigger.current?.focus({ preventScroll: true });
+            }}
+          >
+            Done viewing route
+          </ActionButton>
+        </details>
+      )}
+      {stage === 0 && !currentData && !needsLocations && (
+        <ActionButton
+          variant="secondary"
+          disabled={busy || !start.trim() || !destination.trim()}
+          onClick={() => run(false)}
+        >
+          {busy ? 'Checking places…' : 'Estimate driving time'}
+        </ActionButton>
+      )}
+      {needsLocations && (
+        <div className="rt-stack setup-location-confirmation">
+          <h2 className="rt-title" ref={locationHeading} tabIndex={-1}>
+            Choose locations
+          </h2>
           {['origin', 'destination'].map((field) => (
             <ChoiceGroup
               key={field}
@@ -119,29 +220,51 @@ export default function RouteEstimate({ start, destination }) {
           >
             Use these locations for estimate
           </ActionButton>
+          <ActionButton
+            variant="secondary"
+            onClick={() => {
+              request.current?.abort();
+              request.current = null;
+              setCandidates(null);
+              setBusy(false);
+              setError('');
+              requestAnimationFrame(() =>
+                document.getElementById('setup-start')?.focus({ preventScroll: true })
+              );
+            }}
+          >
+            Edit addresses
+          </ActionButton>
         </div>
       )}
-      {estimate && (
-        <div className="connected-estimate" role="status">
-          <p className="rt-title">About {(estimate.duration / 3600).toFixed(1)} hours driving</p>
-          <p className="rt-copy">
-            {(estimate.distance / 1609.344).toFixed(1)} miles before adding stops
-          </p>
-          <p className="rt-caption">
-            Driving only. Visits, meals and overnight stays add time. You’ll confirm your trip
-            locations again before planning.
-          </p>
-        </div>
+      {catalog.status === 'loading' && (
+        <p className="rt-caption" role="status">
+          Finding route ideas…
+        </p>
+      )}
+      {['partial', 'unavailable'].includes(catalog.status) && (
+        <p className="rt-caption" role="status">
+          Some catalog ideas could not be checked. You can continue planning.
+        </p>
+      )}
+      {busy && (
+        <p role="status" className="rt-caption">
+          Preparing the road preview.
+        </p>
       )}
       {error && (
         <p role="alert" className="connected-error">
           {error}
         </p>
       )}
-    </QuestionGroup>
+    </div>
   );
-}
+});
 RouteEstimate.propTypes = {
   start: PropTypes.string.isRequired,
   destination: PropTypes.string.isRequired,
+  draft: PropTypes.object,
+  stage: PropTypes.number,
+  onPrepared: PropTypes.func,
 };
+export default RouteEstimate;

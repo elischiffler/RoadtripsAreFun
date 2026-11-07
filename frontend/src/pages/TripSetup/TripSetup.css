@@ -261,10 +261,10 @@
 .setup-choice {
   display: flex;
   align-items: center;
-  gap: var(--rt-space-3);
+  gap: var(--rt-space-2);
   min-inline-size: 0;
   min-block-size: var(--rt-target-min);
-  padding: var(--rt-space-3);
+  padding: var(--rt-space-2);
   margin: 0;
   border: var(--rt-border-width) solid var(--rt-color-border);
   border-radius: var(--rt-radius-control);
@@ -283,8 +283,9 @@
 }
 
 .setup-comparisons {
-  padding-block: var(--rt-space-5);
-  border-block: var(--rt-border-width) solid var(--rt-color-border);
+  padding-block: 0;
+  border: 0;
+  gap: var(--rt-space-2);
 }
 
 .setup-group-heading {
@@ -300,7 +301,7 @@
 }
 
 .setup-place h4 {
-  font-size: var(--rt-text-body);
+  font-size: var(--rt-text-small);
 }
 
 .setup-place-marker {
@@ -496,4 +497,390 @@
   .setup-progress button[aria-current='step'] {
     outline: var(--rt-focus-width) solid Highlight;
   }
+}
+
+/* Keep setup a compact app workspace at every viewport size. */
+.setup-design {
+  padding-block-start: calc(var(--header-height) + var(--rt-space-3));
+  padding-block-end: max(var(--rt-space-4), env(safe-area-inset-bottom));
+}
+.setup-wayfinding {
+  margin-block-end: var(--rt-space-3);
+}
+.setup-progress {
+  margin-block-end: var(--rt-space-4);
+  padding-block-end: var(--rt-space-3);
+}
+.setup-progress progress {
+  display: block;
+  inline-size: 100%;
+  block-size: var(--rt-space-2);
+  accent-color: var(--rt-color-accent);
+}
+.setup-section,
+.setup-fields {
+  gap: var(--rt-space-3);
+}
+.setup-section {
+  animation: setup-enter var(--rt-duration-color) var(--rt-ease);
+}
+.setup-choice,
+.setup-secondary {
+  background: var(--rt-color-surface);
+  box-shadow: var(--rt-shadow-sheet);
+  transition:
+    background-color var(--rt-duration-color) var(--rt-ease),
+    transform var(--rt-duration-feedback) var(--rt-ease);
+}
+.setup-choice:active,
+.setup-secondary:active {
+  transform: scale(var(--rt-press-scale));
+}
+.setup-field input[type='range'] {
+  padding-inline: 0;
+  accent-color: var(--rt-color-accent);
+}
+.setup-footer {
+  margin-block-start: var(--rt-space-4);
+  padding-block-start: var(--rt-space-3);
+}
+.setup-estimate-map {
+  block-size: var(--rt-map-preview-height);
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--rt-radius-control);
+}
+@keyframes setup-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--rt-space-2));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .setup-section {
+    animation: none;
+  }
+  .setup-choice,
+  .setup-secondary,
+  .setup-choice:active,
+  .setup-secondary:active {
+    transition: none;
+    transform: none;
+  }
+}
+@media (max-width: 30rem) {
+  .rt-design .setup-card {
+    padding: var(--rt-space-4);
+  }
+  .setup-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+/* Preserve document scrolling for large text and short screens. */
+@media (max-width: 22rem) {
+  .setup-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Let the document grow for validation, zoom and unusually small viewports.
+   Ordinary screens fit by reducing simultaneous content, never clipping fields. */
+.setup-card form {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 0;
+}
+.setup-section,
+.setup-route-preparation {
+  overflow: visible;
+}
+
+.setup-text-probe {
+  position: absolute;
+  visibility: hidden;
+  inline-size: var(--rt-text-body);
+  block-size: var(--rt-text-body);
+  pointer-events: none;
+}
+.setup-wayfinding {
+  justify-content: space-between;
+}
+.setup-design--large-text {
+  block-size: auto;
+  min-block-size: 100dvh;
+}
+.setup-design--large-text > .rt-design__content,
+.setup-design--large-text .trip-setup {
+  block-size: auto;
+}
+.setup-design--large-text .setup-section {
+  overflow: visible;
+}
+.setup-design--large-text .setup-grid,
+.setup-design--large-text .setup-interest-grid {
+  grid-template-columns: 1fr;
+}
+.setup-design--large-text input[type='date'],
+.setup-design--large-text input[type='time'] {
+  padding-inline: var(--rt-space-1);
+}
+
+.setup-route-preparation {
+  flex-shrink: 0;
+  display: grid;
+  gap: var(--rt-space-2);
+  margin-block-end: var(--rt-space-3);
+}
+.setup-card:has(.setup-map) .setup-progress {
+  margin-block-end: var(--rt-space-2);
+}
+.setup-card:has(.setup-map) .setup-map-canvas {
+  block-size: var(--rt-onboarding-map-height);
+}
+
+/* Optional adjustments replace the main choices rather than stacking below them. */
+.setup-card [hidden] {
+  display: none;
+}
+.setup-card--comparisons .setup-route-preparation,
+.setup-card--amounts .setup-route-preparation,
+.setup-card--comparisons .setup-amount-panel,
+.setup-card--amounts .setup-comparison-panel {
+  display: none;
+}
+.setup-interest-choices {
+  display: grid;
+  gap: var(--rt-space-2);
+}
+.setup-interest-grid {
+  gap: var(--rt-space-2);
+}
+.setup-comparison-places {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.setup-place {
+  padding: var(--rt-space-3);
+  gap: var(--rt-space-2);
+}
+.setup-place-marker {
+  min-block-size: 0;
+  min-inline-size: 0;
+  padding: var(--rt-space-1) var(--rt-space-2);
+}
+.setup-comparisons .rt-choices {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rt-space-2);
+}
+.setup-comparisons .rt-choice:nth-child(n + 3) .rt-choice__body {
+  padding: var(--rt-space-2);
+}
+.setup-comparisons .rt-choice__body .rt-field__label {
+  font-size: var(--rt-text-small);
+}
+.setup-bottom-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+  margin-block-start: var(--rt-space-2);
+}
+.setup-review {
+  gap: var(--rt-space-2);
+}
+.setup-review > section {
+  padding-block-end: var(--rt-space-2);
+}
+.setup-preview-notes > summary {
+  min-block-size: var(--rt-target-min);
+  display: flex;
+  align-items: center;
+  color: var(--rt-color-accent);
+  cursor: pointer;
+  font-size: var(--rt-text-small);
+  text-decoration: underline;
+}
+.setup-preview-notes > p + p {
+  margin-block-start: var(--rt-space-2);
+}
+.setup-design--large-text .setup-comparison-places,
+.setup-design--large-text .setup-comparisons .rt-choices {
+  grid-template-columns: 1fr;
+}
+
+.setup-bottom-actions > a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--rt-target-min);
+  font-size: var(--rt-text-small);
+}
+
+.setup-interest-tools,
+.setup-interest-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rt-space-2);
+}
+.setup-interest-tools:has(details[open]) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.setup-interest-tools .setup-explanation {
+  padding: 0;
+  background: transparent;
+}
+.setup-interest-tools .setup-explanation > summary {
+  padding-block: var(--rt-space-2);
+  font-size: var(--rt-text-small);
+}
+.setup-interest-actions .setup-text-button {
+  padding: var(--rt-space-2);
+  font-size: var(--rt-text-small);
+}
+@media (min-width: 23rem) {
+  .setup-interest-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .setup-interest-grid .setup-choice {
+    position: relative;
+    justify-content: center;
+    text-align: center;
+  }
+  .setup-interest-grid input {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .setup-interest-grid .setup-choice:has(input:focus-visible) {
+    outline: var(--rt-focus-width) solid var(--rt-color-focus);
+    outline-offset: var(--rt-focus-offset);
+  }
+}
+.setup-design--large-text .setup-interest-grid,
+.setup-design--large-text .setup-interest-tools,
+.setup-design--large-text .setup-interest-actions {
+  grid-template-columns: 1fr;
+}
+
+.setup-card .setup-rhythm > header h3 {
+  position: absolute;
+  inline-size: var(--rt-border-width);
+  block-size: var(--rt-border-width);
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.setup-card .setup-rhythm-handle {
+  padding-inline: var(--rt-space-2);
+}
+.setup-card .setup-rhythm-handle strong {
+  white-space: nowrap;
+}
+
+/* A map is a focused inspection of the current group, not another wizard stage. */
+.setup-route-map > summary {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--rt-target-min);
+  color: var(--rt-color-accent);
+  cursor: pointer;
+  font-size: var(--rt-text-small);
+}
+.setup-route-map[open] {
+  display: grid;
+  gap: var(--rt-space-3);
+}
+.setup-card:has(.setup-route-map[open]) > form,
+.setup-card:has(.setup-route-map[open]) > .setup-bottom-actions {
+  display: none;
+}
+.setup-card .setup-fields,
+.setup-card .setup-section {
+  gap: var(--rt-space-2);
+}
+
+.setup-preference-picker > summary {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--rt-target-min);
+  cursor: pointer;
+  color: var(--rt-color-accent);
+  font-size: var(--rt-text-small);
+}
+.setup-preference-picker[open] > .rt-stack {
+  gap: var(--rt-space-3);
+}
+.setup-card:has(.setup-preference-picker[open]) .setup-fields > :not(.setup-preference-picker),
+.setup-card:has(.setup-preference-picker[open]) .setup-footer,
+.setup-card:has(.setup-preference-picker[open]) > .setup-route-preparation,
+.setup-card:has(.setup-preference-picker[open]) > .setup-bottom-actions {
+  display: none;
+}
+
+.setup-amount-panel select,
+.setup-preference-picker select {
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+.setup-card--comparisons .setup-section > h2,
+.setup-card--comparisons .setup-footer,
+.setup-card--amounts .setup-footer,
+.setup-card--comparisons > .setup-bottom-actions,
+.setup-card--amounts > .setup-bottom-actions {
+  display: none;
+}
+.setup-comparisons .rt-question-group > legend {
+  position: absolute;
+  inline-size: var(--rt-border-width);
+  block-size: var(--rt-border-width);
+  overflow: hidden;
+  clip-path: inset(50%);
+  margin: 0;
+}
+.setup-place {
+  position: relative;
+}
+.setup-place input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.setup-place:has(input:checked) {
+  background: var(--rt-color-selected);
+  border-color: var(--rt-color-accent);
+}
+.setup-place:has(input:focus-visible) {
+  outline: var(--rt-focus-width) solid var(--rt-color-focus);
+  outline-offset: var(--rt-focus-offset);
+}
+
+@media (forced-colors: active) {
+  .setup-place:has(input:checked) {
+    outline: var(--rt-focus-width) solid Highlight;
+  }
+}
+
+/* Closed optional tools must contribute only their summary, including when
+   surrounding component styles override the browser's details-content layout. */
+.setup-interest-tools details:not([open]) > :not(summary) {
+  display: none;
+}
+
+.setup-card:has(.setup-location-confirmation) > form,
+.setup-card:has(.setup-location-confirmation) > .setup-bottom-actions {
+  display: none;
+}
+.setup-location-confirmation {
+  gap: var(--rt-space-3);
 }

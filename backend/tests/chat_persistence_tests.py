@@ -57,8 +57,13 @@ class StorageDouble:
             existing = self.rows.get((owner, identifier))
             if existing and existing["chat_data"].get("agentChatId") != data.get("agentChatId"):
                 return  # PostgreSQL returns no row when the conflict WHERE fails.
+            assert "CASE WHEN chats.chat_data->>'agentChatId' IS NULL" in statement
             self.pending = copy.deepcopy(self.rows)
-            row = {"user_id": owner, "chat_id": identifier, "chat_data": data, "chat_log": log}
+            row = (
+                copy.deepcopy(existing)
+                if existing and existing["chat_data"].get("agentChatId") is not None
+                else {"user_id": owner, "chat_id": identifier, "chat_data": data, "chat_log": log}
+            )
             self.pending[owner, identifier] = row
             self.cursor.fetchone.return_value = copy.deepcopy(row)
         elif statement == "SELECT * FROM chats WHERE user_id = %s":
@@ -222,11 +227,16 @@ def test_same_planning_identity_and_legacy_null_creates_remain_idempotent(
 ):
     body = _body(planning_id=planning_id)
     assert client.post("/chats/create/1", json=body).status_code == 200
-    body["ChatLog"]["title"] = "Retried trip"
     assert client.post("/chats/create/1", json=body).status_code == 200
+    body["ChatLog"]["title"] = "Retried trip"
+    assert client.post("/chats/create/1", json=body).status_code == (
+        200 if planning_id is None else 409
+    )
     assert len(storage.rows) == 1
-    assert storage.rows["verified-alice", "1"]["chat_log"]["title"] == "Retried trip"
-    assert storage.connection.commit.call_count == 2
+    assert storage.rows["verified-alice", "1"]["chat_log"]["title"] == (
+        "Retried trip" if planning_id is None else "Saved trip"
+    )
+    assert storage.connection.commit.call_count == 3
     storage.connection.rollback.assert_not_called()
 
 
@@ -271,3 +281,140 @@ def test_mismatched_path_data_or_log_ids_are_rejected_before_storage(
     assert response.json() == {"detail": "Trip IDs must match the request path"}
     storage.cursor.execute.assert_not_called()
     assert storage.rows == {}
+
+
+def test_get_revision_hashes_raw_snapshot_before_geometry_hydration(client, storage, monkeypatch):
+    body = _body()
+    client.post("/chats/create/1", json=body)
+    raw = storage.rows["verified-alice", "1"]["chat_data"]
+    raw["route"] = {"geometry": {"coordinates": "owner-route-reference"}}
+    revision = chat_crud.chat_data_revision(raw)
+    monkeypatch.setattr(chat_crud, "get_segments", lambda **kwargs: [[1, 2], [3, 4]])
+    loaded = client.get("/chats", headers={"Authorization": "Bearer fixture"}).json()[0][0]
+    assert loaded["savedRevision"] == revision
+    assert loaded["route"]["geometry"]["coordinates"] == [[1, 2], [3, 4]]
+    assert "savedRevision" not in raw
+
+
+def test_atomic_route_save_rejects_concurrent_car_change_after_preflight(client, storage):
+    body = _body()
+    client.post("/chats/create/1", json=body)
+    before = storage.rows["verified-alice", "1"]["chat_data"]
+    body["ExpectedRevision"] = chat_crud.chat_data_revision(before)
+    before["carDetails"] = ["2024", "Honda", "Civic"]
+    before["tripProfile"] = {"car_status": "provided", "car": {"year": 2024}}
+    retained = copy.deepcopy(storage.rows)
+    body["ChatData"]["itinerary"] = [{"changed": True}]
+    response = client.put("/chats/update/1", json=body)
+    assert response.status_code == 409
+    assert storage.rows == retained
+    assert "FOR UPDATE" in storage.cursor.execute.call_args.args[0]
+    storage.connection.rollback.assert_called_once()
+
+
+def test_route_save_is_scoped_and_stale_visit_cannot_restore_old_route_or_car(client, storage):
+    body = _body(
+        presentation={
+            "future": "keep",
+            "visitedStopIds": ["old"],
+            "arrivals": {"old": {"source": "web-foreground"}},
+            "automaticArrivalExcludedStopIds": ["other-old-stop"],
+        }
+    )
+    created = client.post("/chats/create/1", json=body)
+    revision = created.headers["X-Trip-Revision"]
+    assert revision == chat_crud.chat_data_revision(
+        storage.rows["verified-alice", "1"]["chat_data"]
+    )
+    stale_visit = copy.deepcopy(body) | {
+        "ExpectedRevision": revision,
+        "UpdateScope": "presentation",
+    }
+    body["ExpectedRevision"] = revision
+    body["ChatData"]["itinerary"] = [{"new": "route itinerary"}]
+    body["ChatData"]["carDetails"] = ["injected", "must", "not replace"]
+    body["ChatLog"]["title"] = "must not replace log"
+    saved = client.put("/chats/update/1", json=body)
+    assert saved.status_code == 200
+    row = storage.rows["verified-alice", "1"]
+    assert row["chat_data"]["itinerary"] == [{"new": "route itinerary"}]
+    assert row["chat_data"]["carDetails"] == []
+    assert row["chat_log"]["title"] == "Saved trip"
+    assert row["chat_data"]["presentation"] == {"future": "keep", "visitedStopIds": []}
+    assert saved.json()["savedRevision"] != revision
+    before = copy.deepcopy(storage.rows)
+    assert client.put("/chats/update/1", json=stale_visit).status_code == 409
+    assert storage.rows == before
+
+
+def test_presentation_save_changes_only_presentation_and_refreshes_revision(client, storage):
+    body = _body(presentation={"future": "keep"})
+    client.post("/chats/create/1", json=body)
+    raw = storage.rows["verified-alice", "1"]["chat_data"]
+    raw["carDetails"] = ["2025", "Toyota", "Corolla"]
+    raw["itinerary"] = [{"unchanged": True}]
+    body["ExpectedRevision"] = chat_crud.chat_data_revision(raw)
+    body["UpdateScope"] = "presentation"
+    body["ChatData"]["presentation"] = {"future": "keep", "visitedStopIds": ["visit"]}
+    assert client.put("/chats/update/1", json=body).status_code == 200
+    saved = storage.rows["verified-alice", "1"]["chat_data"]
+    assert saved["carDetails"] == ["2025", "Toyota", "Corolla"]
+    assert saved["itinerary"] == [{"unchanged": True}]
+    assert saved["presentation"]["visitedStopIds"] == ["visit"]
+    assert "savedRevision" not in saved
+
+
+@pytest.mark.parametrize("scope", ["route", "presentation", "full"])
+def test_explicit_modern_scope_requires_revision_before_storage(client, storage, scope):
+    body = _body() | {"UpdateScope": scope}
+    assert client.put("/chats/update/1", json=body).status_code == 422
+    storage.cursor.execute.assert_not_called()
+
+
+def test_targeted_presentation_requires_explicit_field_without_clearing_existing_state(
+    client, storage
+):
+    body = _body(presentation={"future": "keep"})
+    response = client.post("/chats/create/1", json=body)
+    body["ExpectedRevision"] = response.headers["X-Trip-Revision"]
+    body["UpdateScope"] = "presentation"
+    body["ChatData"].pop("presentation")
+    before = copy.deepcopy(storage.rows)
+    assert client.put("/chats/update/1", json=body).status_code == 422
+    assert storage.rows == before
+
+
+def test_stale_visit_after_car_change_rejects_and_fresh_visit_uses_new_revision(client, storage):
+    body = _body(presentation={"visitedStopIds": []})
+    created = client.post("/chats/create/1", json=body)
+    body["UpdateScope"] = "presentation"
+    body["ExpectedRevision"] = created.headers["X-Trip-Revision"]
+    raw = storage.rows["verified-alice", "1"]["chat_data"]
+    raw["carDetails"] = ["2024", "Honda", "Civic"]
+    body["ChatData"]["presentation"] = {"visitedStopIds": ["visit"]}
+    assert client.put("/chats/update/1", json=body).status_code == 409
+    body["ExpectedRevision"] = chat_crud.chat_data_revision(raw)
+    saved = client.put("/chats/update/1", json=body)
+    assert saved.status_code == 200
+    assert storage.rows["verified-alice", "1"]["chat_data"]["carDetails"] == [
+        "2024",
+        "Honda",
+        "Civic",
+    ]
+    body["ExpectedRevision"] = saved.json()["savedRevision"]
+    body["ChatData"]["presentation"] = {"visitedStopIds": []}
+    assert client.put("/chats/update/1", json=body).status_code == 200
+
+
+def test_late_same_planning_create_cannot_replace_newer_route_car_or_visits(client, storage):
+    body = _body(presentation={"visitedStopIds": []})
+    assert client.post("/chats/create/1", json=body).status_code == 200
+    raw = storage.rows["verified-alice", "1"]["chat_data"]
+    raw["carDetails"] = ["2025", "Honda", "Civic"]
+    raw["itinerary"] = [{"newer": "route"}]
+    raw["presentation"] = {"visitedStopIds": ["newer-visit"]}
+    retained = copy.deepcopy(storage.rows)
+    response = client.post("/chats/create/1", json=body)
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Trip already saved; reload before continuing"
+    assert storage.rows == retained

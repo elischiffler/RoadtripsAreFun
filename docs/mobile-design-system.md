@@ -12,16 +12,19 @@ day-by-day timeline. These are design directions, not copied assets.
 values. Variables live on `.rt-design`, so importing the library does not change
 legacy pages. Change a token once to update every adopting component.
 
-| Token family                                                        | Purpose                                                                                  |
-| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `--rt-space-*`                                                      | A 4px-based rem spacing scale: 4, 8, 12, 16, 20, 24, 32, 40, 48 at the default root size |
-| `--rt-radius-*`                                                     | Small details, controls, sheets and pills                                                |
-| `--rt-target-min`, `--rt-control-height`                            | At least 44px hit targets, comfortable 52px inputs                                       |
-| `--rt-content-width`, `--rt-page-padding`                           | Centered 30rem column with fluid outer gutters                                           |
-| `--rt-text-*`, `--rt-weight-*`, `--rt-leading-*`, `--rt-tracking-*` | System type hierarchy; tighter titles and comfortable body copy                          |
-| `--rt-color-*`                                                      | Semantic page/surface/text/selection/error/focus and route colors                        |
-| `--rt-shadow-*`, `--rt-material-*`                                  | Quiet surface depth and optional floating material                                       |
-| `--rt-duration-*`, `--rt-ease`, `--rt-press-scale`                  | Immediate, restrained control feedback                                                   |
+| Token family                                                                                          | Purpose                                                                                  |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `--rt-space-*`                                                                                        | A 4px-based rem spacing scale: 4, 8, 12, 16, 20, 24, 32, 40, 48 at the default root size |
+| `--rt-radius-*`                                                                                       | Small details, controls, sheets and pills                                                |
+| `--rt-target-min`, `--rt-control-height`                                                              | At least 44px hit targets, comfortable 52px inputs                                       |
+| `--rt-slider-thumb-size`, `--rt-opacity-disabled`                                                     | Slider thumb appearance and shared disabled opacity                                      |
+| `--rt-content-width`, `--rt-page-padding`                                                             | Centered 30rem column with fluid outer gutters                                           |
+| `--rt-trip-content-width`, `--rt-map-content-width`, `--rt-map-*-height`, `--rt-map-header-clearance` | Workspace widths, shared map previews and full-map sizing                                |
+| `--rt-checkbox-size`                                                                                  | Checkbox visuals; labels retain 44px minimum hit targets                                 |
+| `--rt-text-*`, `--rt-weight-*`, `--rt-leading-*`, `--rt-tracking-*`                                   | System type hierarchy; tighter titles and comfortable body copy                          |
+| `--rt-color-*`                                                                                        | Semantic page/surface/text/selection/error/focus and route colors                        |
+| `--rt-shadow-*`, `--rt-material-*`                                                                    | Quiet surface depth and optional floating material                                       |
+| `--rt-duration-*`, `--rt-ease`, `--rt-press-scale`                                                    | Immediate, restrained control feedback                                                   |
 
 [`layout.css`](../frontend/src/design/layout.css) owns frame, sheet, grouped questions
 and type classes. [`controls.css`](../frontend/src/design/controls.css) owns inputs,
@@ -29,6 +32,13 @@ actions and choices. [`patterns.css`](../frontend/src/design/patterns.css) owns 
 progress and timelines. [`index.js`](../frontend/src/design/index.js) imports all
 supporting CSS and exports the public React API. Use that entry point rather than
 importing individual files so styles arrive with components.
+
+[`materialPalette.js`](../frontend/src/design/materialPalette.js) is the focused
+bridge for the legacy Material UI 5 theme. Material's color calculations need
+concrete color values, so the adapter names and reuses its existing dark palette
+instead of passing scoped CSS variables into those calculations. Native controls
+continue to use the CSS master. Keep matching semantic colors aligned when changing
+the palette; do not introduce separate literals in individual Material overrides.
 
 Structural values such as `0`, `100%`, `auto`, grid fractions, local timeline
 stacking, and system colors in forced-color mode are intentionally not visual
@@ -43,6 +53,7 @@ font, radius or color values in adopting pages; extend the master file deliberat
 | `Sheet`          | `children`, optional `floating`, `className`, section props. Nonmodal document-flow surface; name it with `aria-label` or `aria-labelledby`.                                                                          |
 | `QuestionGroup`  | Required `legend`, optional `description`, `children`, native fieldset props. Groups related questions; preserves external `aria-describedby`.                                                                        |
 | `Field`          | Required `label`; optional `id`, `hint`, `error`, `className`; native input props. Automatically associates labels, hints and errors. Value/validation remain with the caller.                                        |
+| `AmountControl`  | Required `label`, finite non-negative `value`, `onChange(number)`; optional `id`, `initialMax`, `disabled`, `describedBy`. Native continuous range and explicit − / + tap actions; preserves raw caller values.       |
 | `ActionButton`   | `variant` (`primary` or `secondary`), `type` (defaults to `button`), native button props and children. Set `type="submit"` explicitly inside forms.                                                                   |
 | `ChoiceGroup`    | Required `legend`, `options`, `onChange(value)`; optional `value`, `description`, `name`, `disabled`. Options have `value`, `label`, optional `description` and `disabled`. Native radio behavior, one selection.     |
 | `StageProgress`  | Required `stages: [{id,label}]`; optional `currentId`, `completedIds`. Reports actual completed stage count; deduplicates and ignores unknown IDs. Caller owns validation/completion.                                 |
@@ -50,10 +61,27 @@ font, radius or color values in adopting pages; extend the master file deliberat
 | `TripTimeline`   | Required `label` and `items`. Items have `id`, `title`, `time`, optional `dateTime`, `description`, `status` (`upcoming`, `current`, `complete`). Current step and status text convey state without relying on color. |
 
 [`DesignSystemExample.jsx`](../frontend/src/design/DesignSystemExample.jsx) is a
-standalone local composition using every public primitive. Mount its default export
+standalone local composition using representative public primitives. Mount its default export
 in a temporary Vite entry for visual review or import it into a development harness.
 It has no route, account, map provider, backend, storage or network dependencies.
 Its save action changes local preview state only and its itinerary is sample data.
+
+`AmountControl` removes the need to type an interest amount. Drag the native slider,
+use its arrow/Home/End keys, or tap the labeled − / + actions. All three controls
+have at least 44px hit targets and visible focus. Tap actions announce the updated
+amount through a polite status; slider feedback uses native assistive-technology
+behavior without repeated live announcements during dragging.
+
+Amounts are relative weights, not percentages. `initialMax` is a soft display
+range, not a stored-value cap: larger restored or explicitly increased values
+expand it, and the range stays stable during a drag. The tap increment scales with
+the range magnitude. Rendering does not round, normalize or write caller state;
+the compact visual label is rounded for readability while the slider's accessible
+value retains the exact amount. In the trip setup flow, the first manual action
+seeds untouched amounts at full precision from the stated profile; subsequent
+actions change only the chosen interest. Existing normalization and the internal
+50/50 comparison blend stay in the setup model. All-zero profiles still fail its
+existing validation.
 
 ## Integration contract
 
@@ -149,3 +177,13 @@ No backend tests, live provider/Mentro calls, database operations, Neon recovery
 retries, migrations or deployment were performed. Real iPhone/Safari and screen
 reader acceptance, live map styling and adoption into the separate guided-flow
 prototype remain integration work.
+
+### Progressive planning and daily rhythm
+
+`OnboardingMap` is a source-coordinate route sketch: draft endpoints remain marked unconfirmed until accepted, catalog ideas are unscheduled, and estimated rest regions are explicitly not hotel inventory. Unverified progress geometry stays in the checking phase; only the server's complete candidate proof offers a trip under12hours. `PlaceContext` displays admitted reviewed context and retains mandatory image credit/license links.
+
+`DailyRhythm` uses native continuously tracked hour sliders and the shared44px range target/focus treatment. Its24slots distinguish driving/exploring, rest and sleep. New opt-in requests send only `daily_schedule`; legacy profiles/drafts retain original timing until an explicit adjustment. The sleep interval is a planning constraint, without a health claim. Valid driving windows may cross midnight, and sleep may occur during the day. The editor labels a wrapped endpoint “+1 day” while preserving all 24 slots and the exact source clocks. Meal breaks follow the explicit sleep schedule; displayed meal dates and times come from the server. Actual local-clock conflicts and infeasible schedules remain server-owned errors.
+
+Catalog preparation is an admitted read-only lookup, cached only in memory for60seconds/four owner-and-route keys. Planning and AI begin only after **Check trip options**. Registration is lightweight; an interrupted assessment retries the same registered request and immutable payload only on a user action. Expired/cancelled options require a new explicit check. Hotel occupancy/budget are deferred until **Allow hotel stays**; this option allows hotels when needed and does not force a stay. No partial itinerary is saved or shown as100% complete.
+
+Reusable `LodgingDetails` inside owner `PlaceTiming` keeps server-returned quote calendar dates separate from planned arrival/leaving clocks. Lodging metadata is not added to the public shared-trip projection; shared views retain their existing planned timing only. A two-night quote may cover a daytime rest period on one calendar day; the UI never derives quote dates or prices from that rest interval. Arrival and departure access require confirmation with the property, and no room is booked. Legacy hotel rows without lodging metadata retain their previous display. Meal clocks include actual date/offset context and full accessible timestamps, including after-midnight and DST intervals.

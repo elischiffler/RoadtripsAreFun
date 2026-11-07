@@ -1,0 +1,52 @@
+{
+  "scope": "Actual location-choice UI with intercepted deterministic geocoding/roads; no provider calls",
+  "passed": true,
+  "audits": [
+    {
+      "name": "locations-390x844",
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "scrollContainers": []
+    },
+    {
+      "name": "locations-375x812",
+      "width": 375,
+      "height": 812,
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "scrollContainers": []
+    },
+    {
+      "name": "locations-1440x900",
+      "width": 1440,
+      "height": 900,
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "scrollContainers": []
+    }
+  ],
+  "errors": [],
+  "blocked": [],
+  "roadRequests": [
+    {
+      "start_lat": "42",
+      "start_lon": "-109",
+      "end_lat": "40",
+      "end_lon": "-76"
+    },
+    {
+      "start_lat": "42",
+      "start_lon": "-109",
+      "end_lat": "40",
+      "end_lon": "-76"
+    },
+    {
+      "start_lat": "42",
+      "start_lon": "-109",
+      "end_lat": "40",
+      "end_lon": "-76"
+    }
+  ]
+}

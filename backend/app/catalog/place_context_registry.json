@@ -1,0 +1,1132 @@
+{
+  "schema": "roadtrips-reviewed-place-context/1",
+  "reviewed_on": "2026-11-07",
+  "entries": [
+    {
+      "identity": {
+        "provider_id": "boulder:284",
+        "source": "boulder-osmp",
+        "name": "Halfway House",
+        "coordinates": [
+          40.006528644887,
+          -105.2946087495
+        ]
+      },
+      "context": {
+        "summary": "A stone shelter beside a small Flagstaff Mountain trailhead. A short path joins Flagstaff Trail, and outdoor picnic tables sit by the building. Indoor group use requires a reservation."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://bouldercolorado.gov/trailhead/halfway-house",
+        "claims": "A stone shelter beside a small Flagstaff Mountain trailhead. A short path joins Flagstaff Trail, and outdoor picnic tables sit by the building. Indoor group use requires a reservation.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "boulder:272",
+        "source": "boulder-osmp",
+        "name": "Realization Point",
+        "coordinates": [
+          39.997223311727,
+          -105.30900101863
+        ]
+      },
+      "context": {
+        "summary": "A trail junction on Flagstaff Road linking routes including Tenderfoot, Range View and Ranger. There are picnic tables, but no restroom at the trailhead."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://bouldercolorado.gov/trailhead/realization-point",
+        "claims": "A trail junction on Flagstaff Road linking routes including Tenderfoot, Range View and Ranger. There are picnic tables, but no restroom at the trailhead.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "boulder:250",
+        "source": "boulder-osmp",
+        "name": "Chautauqua",
+        "coordinates": [
+          39.998910206824,
+          -105.28252474797
+        ]
+      },
+      "context": {
+        "summary": "A busy starting point for hikes on Boulder’s mountain trails. The Ranger Cottage offers maps and visitor information, and the Bluebell Shelter area has picnic facilities.",
+        "image": {
+          "src": "/place-images/chautauqua-trail-2026.jpg",
+          "alt": "Chautauqua Trail at the 6th Street connector, photographed in October 2026",
+          "credit": "Dough4872",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+          "source_url": "https://commons.wikimedia.org/w/index.php?oldid=1295058964&title=File:Chautauqua_Trail_in_Boulder_Mountain_Park_looking_west_at_6th_Street_Connector.jpeg",
+          "caption": "Chautauqua Trail, October 2026. Source-provided resized preview; no other edits.",
+          "width": 960,
+          "height": 720
+        }
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://bouldercolorado.gov/trailhead/chautauqua",
+        "claims": "A busy starting point for hikes on Boulder’s mountain trails. The Ranger Cottage offers maps and visitor information, and the Bluebell Shelter area has picnic facilities.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification",
+        "image": {
+          "sha256": "05a71cb5806f8093576aa729d22bd135fda3959ef6763e41ace5f83c22103a3a",
+          "bytes": 239256,
+          "mime": "image/jpeg",
+          "rights_basis": "Author’s own-work declaration and explicit CC BY-SA 4.0 grant at pinned Commons revision. Not a blanket Commons or NPS license assumption.",
+          "identity_basis": "Photo coordinates 39.998314,-105.284181 and filename identify trail near Chautauqua; does not depict or verify parking/arrival point.",
+          "rights_review_on": "2026-11-07",
+          "source_preview_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/Chautauqua_Trail_in_Boulder_Mountain_Park_looking_west_at_6th_Street_Connector.jpeg/960px-Chautauqua_Trail_in_Boulder_Mountain_Park_looking_west_at_6th_Street_Connector.jpeg"
+        }
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "nps-public:bica:visitor-center",
+        "source": "nps-public",
+        "name": "Bighorn Canyon National Recreation Area — Cal S. Taggart Bighorn Canyon Visitor Center (Lovell, WY)",
+        "coordinates": [
+          44.837479952208064,
+          -108.37667249937681
+        ]
+      },
+      "context": {
+        "summary": "An indoor introduction to the canyon’s landscape and history, with a large relief map, geology and history exhibits, and films on request. Interpretive signs surround the ponds outside."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.nps.gov/bica/planyourvisit/bighorn-canyon-visitor-center.htm",
+        "claims": "An indoor introduction to the canyon’s landscape and history, with a large relief map, geology and history exhibits, and films on request. Interpretive signs surround the ponds outside.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "usfs:facility:5770.004481",
+        "source": "usfs",
+        "name": "Boca Historic Townsite Interpretive Trai",
+        "coordinates": [
+          39.386615,
+          -120.093321
+        ]
+      },
+      "context": {
+        "summary": "A paved half-mile loop through the former town of Boca. Signs explain its railroad, ice and brewing history as the trail climbs toward a small cemetery. Some sections exceed a five-percent slope."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.fs.usda.gov/r05/tahoe/recreation/trails/boca-historic-townsite-interpretive-trail",
+        "claims": "A paved half-mile loop through the former town of Boca. Signs explain its railroad, ice and brewing history as the trail climbs toward a small cemetery. Some sections exceed a five-percent slope.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "usfs:facility:5340.004481",
+        "source": "usfs",
+        "name": "Donner Summit  Trailhead",
+        "coordinates": [
+          39.33988,
+          -120.343936
+        ]
+      },
+      "context": {
+        "summary": "A short connector from this trailhead reaches the Pacific Crest Trail. From the junction, hikers can head north under Interstate 80 or south toward Lake Tahoe. Winter Sno-Park use requires payment."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://explore.pcta.org/trailheads/donner-summit-pct-trailhead",
+        "claims": "A short connector from this trailhead reaches the Pacific Crest Trail. From the junction, hikers can head north under Interstate 80 or south toward Lake Tahoe. Winter Sno-Park use requires payment.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "nps-public:facility:lecl:1242",
+        "source": "nps-public",
+        "name": "Lewis & Clark National Historic Trail — Lewis and Clark National Historic Trail Visitor Center",
+        "coordinates": [
+          41.264808,
+          -95.92437699999999
+        ]
+      },
+      "context": {
+        "summary": "A visitor center beside Omaha’s Missouri River waterfront and the Bob Kerrey Pedestrian Bridge. Rangers provide trail information; inside are a Lewis and Clark film and a period-clothing display."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.nps.gov/lecl/planyourvisit/lecl_headquarters.htm",
+        "claims": "A visitor center beside Omaha’s Missouri River waterfront and the Bob Kerrey Pedestrian Bridge. Rangers provide trail information; inside are a Lewis and Clark film and a period-clothing display.",
+        "scope": "display only; not hours, admission, bookability, visit duration or access verification"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "overture:03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+        "source": "overture",
+        "name": "Wing Luke Museum",
+        "coordinates": [
+          47.59825849,
+          -122.32289613
+        ]
+      },
+      "context": {
+        "summary": "A museum in Seattle’s Chinatown-International District focused on Asian American, Native Hawaiian and Pacific Islander life. Galleries connect art and community stories with regional history, while guided visits into preserved hotel rooms show how early Chinese, Japanese and Filipino immigrants lived. It offers gallery browsing and a close-up encounter with the neighborhood’s past."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.wingluke.org/explore",
+        "source_urls": [
+          "https://www.wingluke.org/explore"
+        ],
+        "claims": "A museum in Seattle’s Chinatown-International District focused on Asian American, Native Hawaiian and Pacific Islander life. Galleries connect art and community stories with regional history, while guided visits into preserved hotel rooms show how early Chinese, Japanese and Filipino immigrants lived. It offers gallery browsing and a close-up encounter with the neighborhood’s past.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "03f811cd-0401-40ad-b75c-1ae7328cf6b7",
+        "current_source_row_sha256": "6b30361d9c75f4484fcb9a5c1162991d7a1d16fc4c84129029c6799fe0130b33",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:wikidata:Q8031716",
+        "source": "catalog-pilot",
+        "name": "WonderLab",
+        "coordinates": [
+          39.1658,
+          -86.5364
+        ]
+      },
+      "context": {
+        "summary": "An indoor, hands-on science stop in Bloomington spread across two floors. Visitors can experiment with bubbles and water, build creations to test in a wind tunnel, and make sounds with interactive exhibits. The emphasis is on touching, trying and seeing what happens, with exhibit noises and activity forming part of the experience."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://wonderlab.org/featured-exhibits/",
+        "source_urls": [
+          "https://wonderlab.org/featured-exhibits/",
+          "https://wonderlab.org/my-visit-to-wonderlab/"
+        ],
+        "claims": "An indoor, hands-on science stop in Bloomington spread across two floors. Visitors can experiment with bubbles and water, build creations to test in a wind tunnel, and make sounds with interactive exhibits. The emphasis is on touching, trying and seeing what happens, with exhibit noises and activity forming part of the experience.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:wikidata:Q8031716",
+        "current_source_row_sha256": "85fd13209a363197ba21bacaac30142b5af8e4f8d6bab41264198f5a495fb598",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "wikidata-park:Q5160318",
+        "source": "kaggle-rideinpark",
+        "name": "Confusion Hill",
+        "coordinates": [
+          39.91892,
+          -123.76494
+        ]
+      },
+      "context": {
+        "summary": "A roadside attraction among Northern California’s redwoods, centered on a self-guided Gravity House filled with optical oddities and disorienting physical sensations. A separate miniature railway climbs a wooded hillside on switchbacks, passing historic logging equipment. The house and train offer distinct experiences, and the train has seasonal availability."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.confusionhill.com/attractions",
+        "source_urls": [
+          "https://www.confusionhill.com/attractions"
+        ],
+        "claims": "A roadside attraction among Northern California’s redwoods, centered on a self-guided Gravity House filled with optical oddities and disorienting physical sensations. A separate miniature railway climbs a wooded hillside on switchbacks, passing historic logging equipment. The house and train offer distinct experiences, and the train has seasonal availability.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "wikidata-park:Q5160318",
+        "current_source_row_sha256": "bec257e102b7e36b950a101cfcd13401a6f7fbacab03d4b8fef67770c8e7462f",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "nps-heritage:crmo",
+        "source": "nps-heritage",
+        "name": "Craters Of The Moon National Monument & Preserve — Robert Limbert Visitor Center",
+        "coordinates": [
+          43.4620552216,
+          -113.561750105
+        ]
+      },
+      "context": {
+        "summary": "An indoor introduction to Idaho’s landscape of lava fields, cinder cones and sagebrush. The Robert Limbert Visitor Center combines museum exhibits with maps and information that help visitors understand the area and plan their next stop. Exploring the park’s outdoor trails or lava tubes is a separate part of a visit."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.nps.gov/crmo/planyourvisit/visitor-center.htm",
+        "source_urls": [
+          "https://www.nps.gov/crmo/planyourvisit/visitor-center.htm",
+          "https://www.nps.gov/crmo/index.htm"
+        ],
+        "claims": "An indoor introduction to Idaho’s landscape of lava fields, cinder cones and sagebrush. The Robert Limbert Visitor Center combines museum exhibits with maps and information that help visitors understand the area and plan their next stop. Exploring the park’s outdoor trails or lava tubes is a separate part of a visit.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "nps-heritage:crmo",
+        "current_source_row_sha256": "f086c5f796f90c70ae55d31cc05cc2ddfeb3b962110f6d1801add4083f2ab5f3",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "nps:cave",
+        "source": "nps",
+        "name": "Carlsbad Caverns National Park — Visitor Center",
+        "coordinates": [
+          32.1754814177,
+          -104.444223173
+        ]
+      },
+      "context": {
+        "summary": "The visitor center introduces Carlsbad Caverns through hands-on displays about cave formation, desert plants and animals, and the park’s history. A short film adds another view of the underground landscape. It is an indoor interpretive stop where visitors can explore cave science and the surrounding desert ecosystem before a separately planned cavern visit."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.nps.gov/cave/planyourvisit/visitor-center.htm",
+        "source_urls": [
+          "https://www.nps.gov/cave/planyourvisit/visitor-center.htm"
+        ],
+        "claims": "The visitor center introduces Carlsbad Caverns through hands-on displays about cave formation, desert plants and animals, and the park’s history. A short film adds another view of the underground landscape. It is an indoor interpretive stop where visitors can explore cave science and the surrounding desert ecosystem before a separately planned cavern visit.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "nps:cave",
+        "current_source_row_sha256": "f979a132a3d50159fb45bb3461e233d0f8eed79810c3fb3b607e62007c688a58",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "nps:pefo",
+        "source": "nps",
+        "name": "Petrified Forest National Park — Rainbow Forest Museum",
+        "coordinates": [
+          34.8151527674,
+          -109.865823355
+        ]
+      },
+      "context": {
+        "summary": "A museum near Petrified Forest’s south entrance, set in a historic building and focused on the area’s prehistoric life. Skeleton displays introduce animals of the distant past. It is also a starting point for the Giant Logs, Long Logs and Agate House trails, combining an indoor interpretive stop with options for separate outdoor exploration."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.nps.gov/pefo/planyourvisit/visitorcenters.htm",
+        "source_urls": [
+          "https://www.nps.gov/pefo/planyourvisit/visitorcenters.htm"
+        ],
+        "claims": "A museum near Petrified Forest’s south entrance, set in a historic building and focused on the area’s prehistoric life. Skeleton displays introduce animals of the distant past. It is also a starting point for the Giant Logs, Long Logs and Agate House trails, combining an indoor interpretive stop with options for separate outdoor exploration.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "nps:pefo",
+        "current_source_row_sha256": "a3d79b19a3e60299d17fd11ae76eabba6a90c96541a640a62508057c846a18aa",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "overture:e4919ff5-f961-431a-9f46-0ecdd6b20a5d",
+        "source": "overture",
+        "name": "Japanese Friendship Garden",
+        "coordinates": [
+          33.460958311576,
+          -112.07668033297
+        ]
+      },
+      "context": {
+        "summary": "A Japanese stroll garden in central Phoenix, where curved paths gradually reveal streams, a koi pond, a waterfall and carefully arranged stone bridges and lanterns. Its layout encourages visitors to notice changing views as they walk, with a tea garden and dry garden adding different expressions of Japanese landscape design."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.japanesefriendshipgarden.org/about",
+        "source_urls": [
+          "https://www.japanesefriendshipgarden.org/about"
+        ],
+        "claims": "A Japanese stroll garden in central Phoenix, where curved paths gradually reveal streams, a koi pond, a waterfall and carefully arranged stone bridges and lanterns. Its layout encourages visitors to notice changing views as they walk, with a tea garden and dry garden adding different expressions of Japanese landscape design.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "e4919ff5-f961-431a-9f46-0ecdd6b20a5d",
+        "current_source_row_sha256": "fb46a14635bff443f9be614d39d4e94cf8ecec97a9db37a2fa2801e1e0ee726c",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:wikidata:Q1099139",
+        "source": "catalog-pilot",
+        "name": "North Carolina Botanical Garden",
+        "coordinates": [
+          35.8994,
+          -79.0339
+        ]
+      },
+      "context": {
+        "summary": "A conservation garden in Chapel Hill with plant displays and a focus on connections between plants, people and place."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://ncbg.unc.edu/",
+        "source_urls": [
+          "https://ncbg.unc.edu/"
+        ],
+        "claims": "A conservation garden in Chapel Hill with plant displays and a focus on connections between plants, people and place.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:wikidata:Q1099139",
+        "current_source_row_sha256": "96f09bb786b1991d1be1e4d6eb297b8e6d649e1c1d28692b59f6f868d0fa0e03",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:wikidata:Q48803945",
+        "source": "catalog-pilot",
+        "name": "Prehistoric Gardens",
+        "coordinates": [
+          42.6123672,
+          -124.3926855
+        ]
+      },
+      "context": {
+        "summary": "A self-guided outdoor dinosaur walk on the southern Oregon coast, with life-size prehistoric animal models tucked among ferns, moss and old-growth trees. Interpretive plaques accompany the figures, while the temperate rainforest is part of the attraction itself. The visit combines a woodland stroll with a playful, model-based introduction to prehistoric creatures."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.prehistoricgardens.com/the-dinosaurs",
+        "source_urls": [
+          "https://www.prehistoricgardens.com/the-dinosaurs",
+          "https://www.prehistoricgardens.com/the-rainforest-1"
+        ],
+        "claims": "A self-guided outdoor dinosaur walk on the southern Oregon coast, with life-size prehistoric animal models tucked among ferns, moss and old-growth trees. Interpretive plaques accompany the figures, while the temperate rainforest is part of the attraction itself. The visit combines a woodland stroll with a playful, model-based introduction to prehistoric creatures.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:wikidata:Q48803945",
+        "current_source_row_sha256": "926c003d260485162ed19552a347a47cf939ffd222ce283891d785ae77cf6288",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:wikidata:Q1050851",
+        "source": "catalog-pilot",
+        "name": "Cathedral Caverns State Park",
+        "coordinates": [
+          34.573333333,
+          -86.222222222
+        ]
+      },
+      "context": {
+        "summary": "A cavern-focused Alabama state park with a broad rock entrance and underground formations including the massive Goliath stalagmite, flowstone and a dense grouping of stalagmites. Cave tours are the central experience. Above ground, visitors can choose marked walking trails or a separate gem-sifting activity using prepared mining material."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.alapark.com/parks/cathedral-caverns-state-park",
+        "source_urls": [
+          "https://www.alapark.com/parks/cathedral-caverns-state-park"
+        ],
+        "claims": "A cavern-focused Alabama state park with a broad rock entrance and underground formations including the massive Goliath stalagmite, flowstone and a dense grouping of stalagmites. Cave tours are the central experience. Above ground, visitors can choose marked walking trails or a separate gem-sifting activity using prepared mining material.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:wikidata:Q1050851",
+        "current_source_row_sha256": "09d1756c9780ec0034355c283df6cf40c32da779fec2fe9ef0a3d6f8ae2b565c",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:wikidata:Q10856113",
+        "source": "catalog-pilot",
+        "name": "Natural Bridge Caverns",
+        "coordinates": [
+          29.691988888,
+          -98.34285
+        ]
+      },
+      "context": {
+        "summary": "A guided underground attraction near San Antonio with two distinct cavern experiences. The Discovery Tour emphasizes large chambers and formations such as stalactites and flowstone. Hidden Wonders explores a separate cavern with delicate formations, a sound-and-light presentation and a belt-assisted ride toward the surface. These are separate tour choices rather than one continuous visit."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://naturalbridgecaverns.com/tour/discovery-tour/",
+        "source_urls": [
+          "https://naturalbridgecaverns.com/tour/discovery-tour/",
+          "https://naturalbridgecaverns.com/tour/hidden-wonders/"
+        ],
+        "claims": "A guided underground attraction near San Antonio with two distinct cavern experiences. The Discovery Tour emphasizes large chambers and formations such as stalactites and flowstone. Hidden Wonders explores a separate cavern with delicate formations, a sound-and-light presentation and a belt-assisted ride toward the surface. These are separate tour choices rather than one continuous visit.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:wikidata:Q10856113",
+        "current_source_row_sha256": "6c82508dd9488ac5d138b012e88f648a37ace350672d17601d30b696aa05b2f2",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:wikidata:Q5200329",
+        "source": "catalog-pilot",
+        "name": "Cypress Gardens",
+        "coordinates": [
+          33.047777777,
+          -79.948888888
+        ]
+      },
+      "context": {
+        "summary": "A South Carolina garden built around a swamp landscape, with boat routes beneath bald cypress and tupelo trees. Visitors can look for wildlife from the water, then explore a butterfly greenhouse and the Swamparium’s fish, amphibian and reptile displays. The mix of outdoor water-level exploration and indoor exhibits gives the visit several distinct parts."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://cypressgardens.berkeleycountysc.gov/attractions-activities/",
+        "source_urls": [
+          "https://cypressgardens.berkeleycountysc.gov/attractions-activities/"
+        ],
+        "claims": "A South Carolina garden built around a swamp landscape, with boat routes beneath bald cypress and tupelo trees. Visitors can look for wildlife from the water, then explore a butterfly greenhouse and the Swamparium’s fish, amphibian and reptile displays. The mix of outdoor water-level exploration and indoor exhibits gives the visit several distinct parts.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:wikidata:Q5200329",
+        "current_source_row_sha256": "6b5013b862cd2c36a4cd42aeee8f7ae0c4a098957c9a24125069c31550da11ee",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:wikidata:Q14708625",
+        "source": "catalog-pilot",
+        "name": "Myriad Botanical Gardens",
+        "coordinates": [
+          35.465027,
+          -97.517932
+        ]
+      },
+      "context": {
+        "summary": "An urban garden in Oklahoma City combining outdoor grounds and a children’s garden with the separately ticketed Crystal Bridge Conservatory. Inside the conservatory, tropical plant collections surround a reflecting pool and waterfall, with terraces offering views across the interior. Visitors can choose an outdoor garden break or add the enclosed plant-focused experience."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://myriadgardens.org/visit-us/",
+        "source_urls": [
+          "https://myriadgardens.org/visit-us/",
+          "https://myriadgardens.org/crystalbridge/"
+        ],
+        "claims": "An urban garden in Oklahoma City combining outdoor grounds and a children’s garden with the separately ticketed Crystal Bridge Conservatory. Inside the conservatory, tropical plant collections surround a reflecting pool and waterfall, with terraces offering views across the interior. Visitors can choose an outdoor garden break or add the enclosed plant-focused experience.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:wikidata:Q14708625",
+        "current_source_row_sha256": "352c5543666a98d53b2821ecc0668aa2ce8b91c96552618d246ac115caacc337",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:wikidata:Q5302612",
+        "source": "catalog-pilot",
+        "name": "Dow Gardens",
+        "coordinates": [
+          43.6234,
+          -84.2496
+        ]
+      },
+      "context": {
+        "summary": "A garden destination in Midland that includes Whiting Forest and an elevated canopy walk above the ground. The forest adds woodland, ponds, an orchard and meadow to the visit, with pedestrian bridges connecting areas. The combination offers changing perspectives on planted landscapes and forest habitat, including views from among the trees."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://dowgardens.org/forest/",
+        "source_urls": [
+          "https://dowgardens.org/forest/"
+        ],
+        "claims": "A garden destination in Midland that includes Whiting Forest and an elevated canopy walk above the ground. The forest adds woodland, ponds, an orchard and meadow to the visit, with pedestrian bridges connecting areas. The combination offers changing perspectives on planted landscapes and forest habitat, including views from among the trees.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:wikidata:Q5302612",
+        "current_source_row_sha256": "6eadd41ef8792d8b77d4ba7d227754e38b7666d634e936c64492db80f36bca2d",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "overture:57193dd5-6aa9-4857-98bc-60e2097c3af0",
+        "source": "overture",
+        "name": "Waikiki Aquarium",
+        "coordinates": [
+          21.26582513,
+          -157.82149954
+        ]
+      },
+      "context": {
+        "summary": "An aquarium in Honolulu that gives close-up views of Hawaiian and Pacific marine habitats. Displays move from wave-washed shores to sheltered bays and deeper reefs, pairing fish with the corals and other life around them. The Living Reef gallery adds soft and stony corals, making reef ecology a central part of the experience."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.waikikiaquarium.org/experience/exhibits/hawaiian-marine-communities/",
+        "source_urls": [
+          "https://www.waikikiaquarium.org/experience/exhibits/hawaiian-marine-communities/",
+          "https://www.waikikiaquarium.org/experience/exhibits/the-living-reef/"
+        ],
+        "claims": "An aquarium in Honolulu that gives close-up views of Hawaiian and Pacific marine habitats. Displays move from wave-washed shores to sheltered bays and deeper reefs, pairing fish with the corals and other life around them. The Living Reef gallery adds soft and stony corals, making reef ecology a central part of the experience.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "57193dd5-6aa9-4857-98bc-60e2097c3af0",
+        "current_source_row_sha256": "d43a1a41b64caf8d8905fa8b725350037f8fd5d16559f4c10a6621fc40c7e10d",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:wikidata:Q1155919",
+        "source": "catalog-pilot",
+        "name": "Georgia Aquarium",
+        "coordinates": [
+          33.76343,
+          -84.395075
+        ]
+      },
+      "context": {
+        "summary": "An aquarium in Atlanta with an Ocean Voyager gallery that surrounds visitors with marine life through an underwater viewing tunnel and a broad window into the habitat. Sharks, rays and other fish are prominent features, with several viewing angles for watching animals move through the large ocean exhibit."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.georgiaaquarium.org/gallery/ocean-voyager/",
+        "source_urls": [
+          "https://www.georgiaaquarium.org/gallery/ocean-voyager/"
+        ],
+        "claims": "An aquarium in Atlanta with an Ocean Voyager gallery that surrounds visitors with marine life through an underwater viewing tunnel and a broad window into the habitat. Sharks, rays and other fish are prominent features, with several viewing angles for watching animals move through the large ocean exhibit.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:wikidata:Q1155919",
+        "current_source_row_sha256": "41e42d250b46d6a33deca0251e18da055459695f82e77469e4eb5ea21372462d",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "overture:05672cd0-77c3-41db-97c1-929f3c0ebe9d",
+        "source": "overture",
+        "name": "Armenian Museum of America",
+        "coordinates": [
+          42.36641168,
+          -71.18568955
+        ]
+      },
+      "context": {
+        "summary": "Explore Armenian history and art in Watertown through objects linking ancient culture with Armenian life in the United States. The galleries pair an introduction to that long cultural story with an exhibition about the Armenian Genocide and portraits by photographer Yousuf Karsh, offering both historical interpretation and close looking at visual art."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.armenianmuseum.org/",
+        "source_urls": [
+          "https://www.armenianmuseum.org/"
+        ],
+        "claims": "Explore Armenian history and art in Watertown through objects linking ancient culture with Armenian life in the United States. The galleries pair an introduction to that long cultural story with an exhibition about the Armenian Genocide and portraits by photographer Yousuf Karsh, offering both historical interpretation and close looking at visual art.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "05672cd0-77c3-41db-97c1-929f3c0ebe9d",
+        "current_source_row_sha256": "75fbabd464539cf5039b93142748eafe44ffaed324097cc648d9dbe1fd609695",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "overture:2abb1511-8b94-4503-8c49-46c17ddae309",
+        "source": "overture",
+        "name": "Connections Museum",
+        "coordinates": [
+          47.540846055746044,
+          -122.32320968704548
+        ]
+      },
+      "context": {
+        "summary": "See how telephone networks worked before digital communications took over at this Seattle museum. Working electromechanical switching systems sit alongside antique telephones, switchboards, telegraphs and equipment used on telephone lines. Volunteers offer guided explanations of the collection, making the visit an encounter with actual communications machinery rather than only photographs of obsolete technology."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.telcomhistory.org/ConnectionsSeattle.html",
+        "source_urls": [
+          "https://www.telcomhistory.org/ConnectionsSeattle.html"
+        ],
+        "claims": "See how telephone networks worked before digital communications took over at this Seattle museum. Working electromechanical switching systems sit alongside antique telephones, switchboards, telegraphs and equipment used on telephone lines. Volunteers offer guided explanations of the collection, making the visit an encounter with actual communications machinery rather than only photographs of obsolete technology.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "2abb1511-8b94-4503-8c49-46c17ddae309",
+        "current_source_row_sha256": "350d3f02114b3bd741896a11b91e8eff841375227a9eed70994d40fdd283d001",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "overture:69bc4e96-e908-43cc-af03-8aa4c9d5880f",
+        "source": "overture",
+        "name": "Seattle Pinball Museum",
+        "coordinates": [
+          47.59806249,
+          -122.3248855
+        ]
+      },
+      "context": {
+        "summary": "Play your way through pinball history at this interactive museum in Seattle’s Chinatown-International District. Machines range from vintage games to modern designs. Visitors move between playable machines and experience their different themes and game designs firsthand, making hands-on play the central activity of the visit."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://seattlepinballmuseum.com/home",
+        "source_urls": [
+          "https://seattlepinballmuseum.com/home"
+        ],
+        "claims": "Play your way through pinball history at this interactive museum in Seattle’s Chinatown-International District. Machines range from vintage games to modern designs. Visitors move between playable machines and experience their different themes and game designs firsthand, making hands-on play the central activity of the visit.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "69bc4e96-e908-43cc-af03-8aa4c9d5880f",
+        "current_source_row_sha256": "98818402a37226322c61e0603d1f0ae2c2900ff2598b21c34e7d290d7c8ed16f",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "overture:c630ba4d-42aa-40af-87d7-57e2256b5f1b",
+        "source": "overture",
+        "name": "Martin Auto Museum",
+        "coordinates": [
+          33.6120255,
+          -112.15253723
+        ]
+      },
+      "context": {
+        "summary": "Walk among collector vehicles spanning early motoring, prewar luxury, postwar styling, muscle cars and modern customs. This Thunderbird Road museum offers a self-guided look at changing automobile design, with examples ranging from a Benz Motorwagen replica to later performance cars. A game room and carousel add activities beyond browsing the vehicle collection."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.martinautomuseum.org/collection",
+        "source_urls": [
+          "https://www.martinautomuseum.org/collection",
+          "https://www.martinautomuseum.org/tickets",
+          "https://www.martinautomuseum.org/visit"
+        ],
+        "claims": "Walk among collector vehicles spanning early motoring, prewar luxury, postwar styling, muscle cars and modern customs. This Thunderbird Road museum offers a self-guided look at changing automobile design, with examples ranging from a Benz Motorwagen replica to later performance cars. A game room and carousel add activities beyond browsing the vehicle collection.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "c630ba4d-42aa-40af-87d7-57e2256b5f1b",
+        "current_source_row_sha256": "8d9a8fbe92d592fd7b9d88cbcfe77e957a8821aa2d1e2d96ae987528ff037264",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:wikidata:Q1184855",
+        "source": "catalog-pilot",
+        "name": "Delta Blues Museum",
+        "coordinates": [
+          34.200108,
+          -90.573581
+        ]
+      },
+      "context": {
+        "summary": "Explore the musicians and material history of Delta blues in Clarksdale through guitars, photographs, costumes and other memorabilia. A central exhibit preserves part of Muddy Waters’ former home, with interpretation of his life and music. Displays also feature instruments associated with John Lee Hooker, B.B. King and other performers, connecting familiar names with tangible objects."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://www.deltabluesmuseum.org/collection.aspx",
+        "source_urls": [
+          "https://www.deltabluesmuseum.org/collection.aspx",
+          "https://www.deltabluesmuseum.org/"
+        ],
+        "claims": "Explore the musicians and material history of Delta blues in Clarksdale through guitars, photographs, costumes and other memorabilia. A central exhibit preserves part of Muddy Waters’ former home, with interpretation of his life and music. Displays also feature instruments associated with John Lee Hooker, B.B. King and other performers, connecting familiar names with tangible objects.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:wikidata:Q1184855",
+        "current_source_row_sha256": "bc3e48ac54f0daf24485974dd0f3379799dcc9934031aa2c4ef87a78fcacd436",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:wikidata:Q122945",
+        "source": "catalog-pilot",
+        "name": "Yale Peabody Museum",
+        "coordinates": [
+          41.315752777,
+          -72.921175
+        ]
+      },
+      "context": {
+        "summary": "Walk among dinosaur fossils, including Brontosaurus, then explore ancient marine life, minerals and habitat dioramas at Yale’s New Haven museum. Other galleries examine human cultures and the history of science. The Living Lab adds hands-on exploration with living organisms and collection objects, giving the visit a mix of large specimens, detailed displays and interactive discovery."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://peabody.yale.edu/explore/exhibitions",
+        "source_urls": [
+          "https://peabody.yale.edu/explore/exhibitions"
+        ],
+        "claims": "Walk among dinosaur fossils, including Brontosaurus, then explore ancient marine life, minerals and habitat dioramas at Yale’s New Haven museum. Other galleries examine human cultures and the history of science. The Living Lab adds hands-on exploration with living organisms and collection objects, giving the visit a mix of large specimens, detailed displays and interactive discovery.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:wikidata:Q122945",
+        "current_source_row_sha256": "a1f0b4dc8a297546fd28381a59efa1b1f0afe32088577418364838bef2f46904",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "catalog-pilot:entertainment-reno",
+        "source": "catalog-pilot",
+        "name": "National Automobile Museum",
+        "coordinates": [
+          39.525861,
+          -119.8087918
+        ]
+      },
+      "context": {
+        "summary": "Stroll through recreated historic streets lined with automobiles at this Reno museum. Period storefronts, artifacts and sounds place the cars in their eras, while galleries and theatre presentations add their stories. Visitors can also try an antique horn or pose in the photo car with period clothing, combining automotive history with a few hands-on moments."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://automuseum.org/visit/",
+        "source_urls": [
+          "https://automuseum.org/visit/",
+          "https://automuseum.org/"
+        ],
+        "claims": "Stroll through recreated historic streets lined with automobiles at this Reno museum. Period storefronts, artifacts and sounds place the cars in their eras, while galleries and theatre presentations add their stories. Visitors can also try an antique horn or pose in the photo car with period clothing, combining automotive history with a few hands-on moments.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "catalog-pilot:entertainment-reno",
+        "current_source_row_sha256": "bad642fb0e71f146c323ccd19b9bbfe946baa59ee609319eb78db84406bf2582",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    },
+    {
+      "identity": {
+        "provider_id": "overture:a83224d1-0e20-459e-94bf-7163444a2821",
+        "source": "overture",
+        "name": "Alaska Aviation Museum",
+        "coordinates": [
+          61.17939588,
+          -149.97191488
+        ]
+      },
+      "context": {
+        "summary": "Explore Alaska’s aviation history through vintage aircraft and exhibits spread across four hangars beside Lake Hood. The restoration hangar offers a chance to observe volunteers working on a World War II Curtiss P-40. At Seybert Tower, visitors can watch seaplanes from the flight deck and listen to the live aviation radio feed."
+      },
+      "review": {
+        "reviewed_on": "2026-11-07",
+        "source_url": "https://alaskaairmuseum.org/",
+        "source_urls": [
+          "https://alaskaairmuseum.org/"
+        ],
+        "claims": "Explore Alaska’s aviation history through vintage aircraft and exhibits spread across four hangars beside Lake Hood. The restoration hangar offers a chance to observe volunteers working on a World War II Curtiss P-40. At Seybert Tower, visitors can watch seaplanes from the flight deck and listen to the live aviation radio feed.",
+        "scope": "display only; not hours, admission, bookability, visit duration, numerical ratings or access verification",
+        "batch": "semantic-context-24-20261106",
+        "reconciliation_record": "a83224d1-0e20-459e-94bf-7163444a2821",
+        "current_source_row_sha256": "9d8e13c0994ac939853fe91e4cec926298b512ef9500e000afb5b48eae41abf3",
+        "identity_observed_at": "2026-11-07T03:41:23.291Z",
+        "identity_generation": "5186c0bc2dc667dcdc36d1594e1640be46c42a86e3ae9ce3546b0e8d474c9660"
+      }
+    }
+  ],
+  "source_receipts": [
+    {
+      "url": "https://bouldercolorado.gov/trailhead/halfway-house",
+      "final_url": "https://bouldercolorado.gov/trailhead/halfway-house",
+      "http_status": 200,
+      "sha256": "0c115a23fd66be548337846626153589933dec5fc372e608774fe3e7862143e2",
+      "bytes": 61429,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://bouldercolorado.gov/trailhead/realization-point",
+      "final_url": "https://bouldercolorado.gov/trailhead/realization-point",
+      "http_status": 200,
+      "sha256": "b539d5547a936c59c7ba60a4e69c7e55d5121a5bdd5bb68c7ee36fc159c5c9b2",
+      "bytes": 61351,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://bouldercolorado.gov/trailhead/chautauqua",
+      "final_url": "https://bouldercolorado.gov/trailhead/chautauqua",
+      "http_status": 200,
+      "sha256": "1b40dae740474a209751bec5310420a3406f0346e74a771588615d6608d7c2a3",
+      "bytes": 65116,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.nps.gov/bica/planyourvisit/bighorn-canyon-visitor-center.htm",
+      "final_url": "https://www.nps.gov/bica/planyourvisit/bighorn-canyon-visitor-center.htm",
+      "http_status": 200,
+      "sha256": "9091b7ddcb8263dfede095d6e5c1b3f58b52e1588d91671b7ec5419def6b2d72",
+      "bytes": 36758,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.fs.usda.gov/r05/tahoe/recreation/trails/boca-historic-townsite-interpretive-trail",
+      "capture_error": "HTTPError",
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed via web browser; raw HTTP capture unavailable"
+    },
+    {
+      "url": "https://explore.pcta.org/trailheads/donner-summit-pct-trailhead",
+      "final_url": "https://explore.pcta.org/trailheads/donner-summit-pct-trailhead",
+      "http_status": 200,
+      "sha256": "b6965454ccfd61fa13087e39ae36839bbdfeb2fc2a10352e2b76b23f51b8573b",
+      "bytes": 833986,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.nps.gov/lecl/planyourvisit/lecl_headquarters.htm",
+      "final_url": "https://www.nps.gov/lecl/planyourvisit/lecl_headquarters.htm",
+      "http_status": 200,
+      "sha256": "a4c76bc5ab3f7a01f17b2d374c5d19aea911894ef33157889c2c881b529f772a",
+      "bytes": 59489,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/index.php?oldid=1295058964&title=File:Chautauqua_Trail_in_Boulder_Mountain_Park_looking_west_at_6th_Street_Connector.jpeg",
+      "final_url": "https://commons.wikimedia.org/w/index.php?oldid=1295058964&title=File:Chautauqua_Trail_in_Boulder_Mountain_Park_looking_west_at_6th_Street_Connector.jpeg",
+      "http_status": 200,
+      "sha256": "4264a7b0799fca2c591701b34c4b9d905362413aefe8afc79bd8c287514c9e88",
+      "bytes": 117544,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "final_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "http_status": 200,
+      "sha256": "b462fb0a649a8ec875bba7590abad7dc1e72c0456ddec070cf3a28183689dceb",
+      "bytes": 35530,
+      "reviewed_on": "2026-11-07",
+      "evidence_kind": "primary-page-reviewed; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.wingluke.org/explore",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://wonderlab.org/featured-exhibits/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://wonderlab.org/my-visit-to-wonderlab/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.confusionhill.com/attractions",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.nps.gov/crmo/planyourvisit/visitor-center.htm",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.nps.gov/crmo/index.htm",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.nps.gov/cave/planyourvisit/visitor-center.htm",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.nps.gov/pefo/planyourvisit/visitorcenters.htm",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.japanesefriendshipgarden.org/about",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://ncbg.unc.edu/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.prehistoricgardens.com/the-dinosaurs",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.prehistoricgardens.com/the-rainforest-1",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.alapark.com/parks/cathedral-caverns-state-park",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://naturalbridgecaverns.com/tour/discovery-tour/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://naturalbridgecaverns.com/tour/hidden-wonders/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://cypressgardens.berkeleycountysc.gov/attractions-activities/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://myriadgardens.org/visit-us/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://myriadgardens.org/crystalbridge/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://dowgardens.org/forest/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.waikikiaquarium.org/experience/exhibits/hawaiian-marine-communities/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.waikikiaquarium.org/experience/exhibits/the-living-reef/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.georgiaaquarium.org/gallery/ocean-voyager/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.armenianmuseum.org/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.telcomhistory.org/ConnectionsSeattle.html",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://seattlepinballmuseum.com/home",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.martinautomuseum.org/collection",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.martinautomuseum.org/tickets",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.martinautomuseum.org/visit",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.deltabluesmuseum.org/collection.aspx",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://www.deltabluesmuseum.org/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://peabody.yale.edu/explore/exhibitions",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://automuseum.org/visit/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://automuseum.org/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    },
+    {
+      "url": "https://alaskaairmuseum.org/",
+      "reviewed_on": "2026-11-07",
+      "review_status": "independently_readable_primary_page",
+      "evidence_kind": "primary-page-reviewed via independent web reader; original factual paraphrase; no page content redistributed"
+    }
+  ]
+}

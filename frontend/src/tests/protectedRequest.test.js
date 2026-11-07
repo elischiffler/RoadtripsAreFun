@@ -171,18 +171,51 @@ describe('protected dispatch and bounded replay', () => {
   });
 });
 
-it('replays bounded read-only route exploration only on the exact initial verifier rejection', async () => {
-  axios.post.mockRejectedValueOnce(rejection()).mockResolvedValueOnce({ data: { places: [] } });
-  cognitoClient.send.mockResolvedValueOnce(renewed());
-  await expect(
-    client.post(base + 'route-alternatives', { points: [[40, -105]], exclude_ids: [] })
-  ).resolves.toMatchObject({ data: { places: [] } });
-  expect(axios.post).toHaveBeenCalledTimes(2);
-  axios.post
-    .mockReset()
-    .mockRejectedValue({ response: { status: 401, data: { detail: 'Catalog unavailable' } } });
-  await expect(
-    client.post(base + 'route-alternatives', { points: [[40, -105]] })
-  ).rejects.toMatchObject({ response: { status: 401 } });
-  expect(axios.post).toHaveBeenCalledTimes(1);
-});
+it.each(['route-alternatives', 'route-edit'])(
+  'replays %s preview only on the exact initial verifier rejection',
+  async (endpoint) => {
+    axios.post.mockRejectedValueOnce(rejection()).mockResolvedValueOnce({ data: { places: [] } });
+    cognitoClient.send.mockResolvedValueOnce(renewed());
+    await expect(
+      client.post(base + endpoint, { points: [[40, -105]], exclude_ids: [] })
+    ).resolves.toMatchObject({ data: { places: [] } });
+    expect(axios.post).toHaveBeenCalledTimes(2);
+    axios.post
+      .mockReset()
+      .mockRejectedValue({ response: { status: 401, data: { detail: 'Catalog unavailable' } } });
+    await expect(client.post(base + endpoint, { points: [[40, -105]] })).rejects.toMatchObject({
+      response: { status: 401 },
+    });
+    expect(axios.post).toHaveBeenCalledTimes(1);
+  }
+);
+
+it.each([
+  ['get', 'shared-trips'],
+  ['get', 'shared-trips/12345678-1234-4234-8234-123456789abc'],
+  ['get', 'chats/7/sharing'],
+  ['post', 'chats/7/sharing/link'],
+  ['post', 'trip-sharing/connect'],
+  ['delete', 'chats/7/sharing/link?share_id=12345678-1234-4234-8234-123456789abc'],
+  ['delete', 'chats/7/sharing?share_id=12345678-1234-4234-8234-123456789abc'],
+  [
+    'delete',
+    'chats/7/sharing/members/12345678-1234-4234-8234-123456789abc?share_id=12345678-1234-4234-8234-123456789abc',
+  ],
+  ['delete', 'shared-trips/12345678-1234-4234-8234-123456789abc/membership'],
+])(
+  'only replays sharing %s %s on an exact pre-dispatch verifier rejection',
+  async (method, path) => {
+    axios[method].mockRejectedValueOnce(rejection()).mockResolvedValueOnce({ data: {} });
+    cognitoClient.send.mockResolvedValueOnce(renewed());
+    await expect(client[method](base + path, {})).resolves.toMatchObject({ data: {} });
+    expect(axios[method]).toHaveBeenCalledTimes(2);
+    axios[method].mockReset().mockRejectedValue({
+      response: { status: 503, data: { detail: 'Trip sharing is temporarily unavailable' } },
+    });
+    await expect(client[method](base + path, {})).rejects.toMatchObject({
+      response: { status: 503 },
+    });
+    expect(axios[method]).toHaveBeenCalledTimes(1);
+  }
+);
