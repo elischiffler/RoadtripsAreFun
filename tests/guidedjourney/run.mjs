@@ -99,6 +99,40 @@ const chromium =
   ["/usr/bin/google-chrome", "/usr/bin/chromium"].find(existsSync);
 if (!chromium)
   throw Error("Chromium is required for the trip-creation release gate");
+// Cheap observer integrity preflight, before starting any journey fixture.
+// Use the already revision-verified Python image with no network or app startup.
+invoke(
+  [
+    "run",
+    "--rm",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges:true",
+    "--memory",
+    "256m",
+    "--pids-limit",
+    "64",
+    "--tmpfs",
+    "/tmp:size=8m",
+    "--mount",
+    `type=bind,src=${join(root, "tests/guidedjourney")},dst=/journey,readonly`,
+    testImage.Id,
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/journey",
+    "-p",
+    "test_preparation_observer.py",
+    "-q",
+  ],
+  { stdio: "inherit", timeout: 30000 },
+);
 try {
   // The diagnostic API intentionally blocks business routes. Replace only that
   // local preview process; leave the already-built real frontend running.
