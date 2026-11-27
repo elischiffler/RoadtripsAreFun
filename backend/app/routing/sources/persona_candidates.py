@@ -558,8 +558,7 @@ async def attraction_candidates(
                 proposal = by_name.get(_name_key(place.name))
                 if proposal:
                     by_id[place.provider_id] = {
-                        "attribute_ratings": proposal.attribute_ratings.model_dump(),
-                        "provider": validation.get("provider", "unknown"),
+                        "attribute_ratings": proposal.attribute_ratings.model_dump()
                     }
                     fresh.append((place, proposal.attribute_ratings.model_dump()))
             if trait_store and fresh:
