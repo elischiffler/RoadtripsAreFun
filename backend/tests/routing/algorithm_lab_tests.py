@@ -396,11 +396,12 @@ def test_studio_archives_no_apple_road_metrics_after_initial_route(monkeypatch, 
         assert params[3].adapted == {
             "observed_route": {},
             "latency_ms": {"total": 52},
+            "trip_evaluation": {"stop_fulfillment": {"delivered": 1}},
         }
         archived = params[5].adapted
         assert archived["direct_route"] is None
         assert archived["directions_provider"] == "apple"
-        assert archived["explanation"] == {"road_checks": [{"state": "measured"}]}
+        assert archived["explanation"] == {}
         assert archived["route"] == (
             None
             if failed
@@ -434,5 +435,13 @@ def test_studio_archives_no_apple_road_metrics_after_initial_route(monkeypatch, 
             },
             "error": {"code": "failed"} if failed else None,
         },
-        {"observed_route": {"duration_seconds": 550}, "latency_ms": {"total": 52}},
+        {
+            "observed_route": {"duration_seconds": 550},
+            "latency_ms": {"total": 52},
+            "trip_evaluation": {
+                "driving": {"direct_distance_meters": 1000},
+                "driving_gaps": {"attraction_gaps_seconds": [700]},
+                "stop_fulfillment": {"delivered": 1},
+            },
+        },
     )
