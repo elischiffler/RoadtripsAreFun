@@ -1,3 +1,4 @@
+import LegacyDirectionsCredit from './LegacyDirectionsCredit';
 import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { appleMapsConfigured, loadAppleMaps } from '../services/appleMaps';
@@ -146,16 +147,7 @@ export default function AppleRouteViewer({
   return (
     <>
       <div className="map-container apple-route-viewer" ref={host} aria-label="Apple Maps route" />
-      {state?.map && !apple && (
-        <a
-          className="map-route-credit"
-          href="https://www.mapbox.com/about/maps/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Directions © Mapbox
-        </a>
-      )}
+      {state?.map && !apple && <LegacyDirectionsCredit />}
       {(!active || state?.failed) && (
         <div className="map-unavailable">
           <p role="status">

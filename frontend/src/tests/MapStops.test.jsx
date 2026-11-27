@@ -80,7 +80,7 @@ it('uses Apple as the basemap for legacy geometry, retaining the original direct
   expect(screen.getByText('Directions © Mapbox')).toBeVisible();
   expect(screen.queryByRole('button', { name: 'Stop 2: Missing coordinates' })).toBeNull();
   expect(screen.getByRole('button', { name: /Stop 3: <img/ })).toBeVisible();
-  expect(document.querySelector('img')).toBeNull();
+  expect(document.querySelector('img[src="x"]')).toBeNull();
   await userEvent.click(screen.getByRole('button', { name: 'Nearby idea: Gallery' }));
   expect(select).toHaveBeenCalledWith(idea);
   expect(request.post).not.toHaveBeenCalled();

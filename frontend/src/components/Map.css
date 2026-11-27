@@ -146,6 +146,9 @@
 }
 
 a.map-route-credit {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
   position: absolute;
   z-index: 1;
   top: 0.4rem;

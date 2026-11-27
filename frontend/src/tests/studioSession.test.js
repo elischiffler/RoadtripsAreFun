@@ -32,6 +32,7 @@ it('sends both current Cognito credentials with Studio unlock and retains the vi
   expect(axios.get.mock.calls[0][1].headers).toEqual({
     ...backendAuthConfig().headers,
     'X-Studio-Session': 'new-visitor',
+    'X-Roadtrips-Directions': 'apple',
   });
 });
 
@@ -76,6 +77,7 @@ it('renews Cognito credentials before dispatch without replacing the Studio visi
     Authorization: `Bearer ${renewedAccess}`,
     'X-Cognito-Id-Token': renewedIdentity,
     'X-Studio-Session': 'original-visitor',
+    'X-Roadtrips-Directions': 'apple',
   });
   expect(getStudioSession().token).toBe('original-visitor');
 });

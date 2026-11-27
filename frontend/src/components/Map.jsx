@@ -1,3 +1,4 @@
+import LegacyDirectionsCredit from './LegacyDirectionsCredit';
 import { useMemo, useRef, useState } from 'react';
 import AppleRouteViewer from './AppleRouteViewer';
 import { isAppleRoute } from '../services/directionsCapability';
@@ -120,16 +121,7 @@ const LegacyRouteMap = ({
           ? 'Local fixture · route schematic'
           : 'Saved route schematic'}
       </p>
-      {import.meta.env.VITE_LOCAL_JOURNEY !== 'true' && (
-        <a
-          className="map-route-credit"
-          href="https://www.mapbox.com/about/maps/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Directions © Mapbox
-        </a>
-      )}
+      {import.meta.env.VITE_LOCAL_JOURNEY !== 'true' && <LegacyDirectionsCredit />}
       <svg
         role="group"
         aria-label={`Local route map from ${UserChatData.startConfirmed?.address || 'start'} to ${UserChatData.endConfirmed?.address || 'destination'}`}
