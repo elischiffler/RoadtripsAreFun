@@ -63,6 +63,7 @@ it('streams split Unicode frames and heartbeats before preserving the final run 
     'Content-Type': 'application/json',
     ...backendAuthConfig().headers,
     'X-Studio-Session': 'visitor',
+    'X-Roadtrips-Directions': 'apple',
   });
   expect(JSON.parse(fetch.mock.calls[0][1].body)).toEqual(request);
 });

@@ -133,18 +133,16 @@ def test_nightly_target_feasibility_does_not_claim_total_budget_constraint():
 
 
 async def test_provider_attempt_is_counted_even_when_request_fails(monkeypatch):
-    from app.routing.sources import mapbox
-
-    monkeypatch.setattr(mapbox.config, "MAPBOX_API", "fixture-key")
+    from app.routing.sources import apple
 
     async def fail(*args, **kwargs):
         raise ValueError("offline")
 
-    monkeypatch.setattr(mapbox, "http_get", fail)
+    monkeypatch.setattr(apple, "http_get", fail)
     with measuring() as data:
         with pytest.raises(ValueError):
-            await mapbox.call_route(37, -122, 36, -121)
-    assert data["calls"] == {"mapbox": 1}
+            await apple._apple_request("directions", "fixture-token")
+    assert data["calls"] == {"apple_directions": 1}
 
 
 def test_lab_storage_respects_database_write_gate(monkeypatch):

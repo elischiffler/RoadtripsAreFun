@@ -24,6 +24,7 @@ describe('provider route access token', () => {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
         'X-Cognito-Id-Token': sessionStorage.getItem('idToken'),
+        'X-Roadtrips-Directions': 'apple',
       },
     });
   });
@@ -44,6 +45,7 @@ describe('provider route access token', () => {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
           'X-Cognito-Id-Token': sessionStorage.getItem('idToken'),
+          'X-Roadtrips-Directions': 'apple',
         },
       }
     );

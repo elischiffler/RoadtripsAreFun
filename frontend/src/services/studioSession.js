@@ -1,3 +1,4 @@
+import { directionsCapability } from './directionsCapability';
 import axios, { isAuthRejection } from './protectedRequest';
 import { backendAuthConfig } from './backendAuth';
 import { clearStudioWorkspace } from './studioWorkspace';
@@ -42,6 +43,7 @@ export async function studioRequest(method, path, payload, signal, params) {
   const config = { ...studioConfig(signal), params };
   try {
     const url = `${import.meta.env.VITE_BACKEND_SERVER}studio/${path}`;
+    config.headers = { ...config.headers, ...directionsCapability(url) };
     if (method === 'post') return await axios.post(url, payload, config);
     if (method === 'delete') return await axios.delete(url, config);
     return await axios.get(url, config);

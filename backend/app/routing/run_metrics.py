@@ -672,6 +672,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
             key: telemetry["calls"].get(key, 0)
             for key in (
                 "catalog",
+                "apple_directions",
                 "mapbox",
                 "language_model",
                 "gateway_auth",

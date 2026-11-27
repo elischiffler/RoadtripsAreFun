@@ -437,6 +437,7 @@ describe('Trip Planning Studio experiments', () => {
     expect(config.headers).toEqual({
       ...backendAuthConfig().headers,
       'X-Studio-Session': 'studio-test',
+      'X-Roadtrips-Directions': 'apple',
     });
     expect(screen.queryByText('Replay · frozen candidate fixture')).not.toBeInTheDocument();
     expect(request).not.toHaveProperty('snapshot_id');

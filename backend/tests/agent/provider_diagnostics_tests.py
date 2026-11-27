@@ -126,11 +126,11 @@ def test_local_planning_status_is_not_mislabeled_as_provider_http():
 
 
 @pytest.mark.asyncio
-async def test_mapbox_retries_http_faults_and_keeps_real_status(monkeypatch):
+async def test_apple_retries_http_faults_and_keeps_real_status(monkeypatch):
     import httpx
 
     from app.routing.run_metrics import measuring
-    from app.routing.sources import mapbox
+    from app.routing.sources import apple
 
     calls = []
 
@@ -140,12 +140,12 @@ async def test_mapbox_retries_http_faults_and_keeps_real_status(monkeypatch):
             503, request=httpx.Request("GET", "https://example.test?access_token=private-token")
         )
 
-    monkeypatch.setattr(mapbox, "http_get", fail)
+    monkeypatch.setattr(apple, "http_get", fail)
     with diagnostics.collecting_attempts() as attempts, measuring() as measurements:
         with pytest.raises(httpx.HTTPStatusError):
-            await mapbox.call_route(37, -122, 36, -121)
+            await apple._apple_request("directions", "private-token")
     assert len(calls) == 3
-    assert measurements["calls"]["mapbox"] == 3
+    assert measurements["calls"]["apple_directions"] == 3
     assert attempts[-1]["http_status"] == 503
     assert "private-token" not in str(attempts)
 

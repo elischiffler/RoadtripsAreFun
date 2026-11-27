@@ -27,7 +27,7 @@ from app.routing.evaluation.runner import atomic, campaign, execute
 from app.routing.evaluation.scenarios import Scenario, core_scenarios
 from app.routing.explanation import capture_explanation
 from app.routing.run_metrics import trip_evaluation
-from app.routing.sources.mapbox import require_route_capacity
+from app.routing.sources.apple import require_route_capacity
 from tests.routing.conftest import build_route
 
 

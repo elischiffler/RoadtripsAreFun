@@ -15,3 +15,21 @@ Only the API is deployed. Existing Compose project identities, external database
 volumes, frontends, and other applications are preserved. Database migrations
 remain a separate reviewed operation. See the shared deployment and recovery
 [runbook](https://github.com/elischiffler/hosting-ops/blob/main/docs/ec2-deployments.md).
+
+## Apple Maps directions release
+
+Set `APPLE_MAPS_TEAM_ID`, `APPLE_MAPS_KEY_ID` and `APPLE_MAPS_PRIVATE_KEY` in
+the backend runtime secret file on EC2 before releasing. Use an Apple Maps
+Server-enabled signing key. Set `APPLE_MAPS_PRIVATE_KEY_FILE` instead of the
+inline key when using a protected in-container PEM mount. In a single-line
+dotenv value, separate PEM lines with literal `\n` sequences. The browser uses a
+separate, origin-restricted MapKit JS token.
+
+Publish and verify the compatible production website map viewer before merging
+the API release. Production API endpoints that return new directions require
+`X-Roadtrips-Directions: apple` so previously loaded clients refresh before
+receiving Apple road geometry. New saved routes retain waypoints, stops and
+itinerary. The viewer fetches fresh Apple directions on reopen. Older saved
+trips retain their original geometry and provider presentation.
+
+[Apple Maps Server authentication](https://developer.apple.com/documentation/applemapsserverapi/creating-and-using-tokens-with-maps-server-api)

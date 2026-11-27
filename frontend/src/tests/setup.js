@@ -18,31 +18,6 @@ afterEach(() => {
 
 // ── Browser API stubs ────────────────────────────────────────────────────────
 
-// mapbox-gl is not runnable in jsdom — stub the whole module
-vi.mock('mapbox-gl', () => ({
-  default: {
-    Map: vi.fn(() => ({
-      on: vi.fn(),
-      remove: vi.fn(),
-      addControl: vi.fn(),
-      getSource: vi.fn(),
-      addSource: vi.fn(),
-      addLayer: vi.fn(),
-      setStyle: vi.fn(),
-      fitBounds: vi.fn(),
-      resize: vi.fn(),
-    })),
-    NavigationControl: vi.fn(),
-    Marker: vi.fn(() => ({ setLngLat: vi.fn().mockReturnThis(), addTo: vi.fn().mockReturnThis() })),
-    Popup: vi.fn(() => ({
-      setLngLat: vi.fn().mockReturnThis(),
-      setHTML: vi.fn().mockReturnThis(),
-      addTo: vi.fn().mockReturnThis(),
-    })),
-    supported: vi.fn(() => true),
-  },
-}));
-
 // Stub navigator.geolocation for LocationInput tests
 Object.defineProperty(globalThis.navigator, 'geolocation', {
   writable: true,

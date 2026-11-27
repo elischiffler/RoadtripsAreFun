@@ -2,13 +2,29 @@
 
 import hashlib
 import json
-from datetime import date
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import pytest
 
-from app.catalog import usfs, usfs_current
+from app.catalog import roadside, usfs, usfs_current
 from app.routing.visit_calendar import source_calendar
+
+
+def pin_fixture_evidence_clock(monkeypatch):
+    class EvidenceClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            reviewed = datetime(2026, 10, 20, 18, tzinfo=UTC)
+            return reviewed.astimezone(tz) if tz else reviewed.replace(tzinfo=None)
+
+    monkeypatch.setattr(roadside, "datetime", EvidenceClock)
+    monkeypatch.setattr(usfs_current, "datetime", EvidenceClock)
+
+
+@pytest.fixture(autouse=True)
+def synthetic_evidence_clock(monkeypatch):
+    pin_fixture_evidence_clock(monkeypatch)
 
 
 @pytest.mark.parametrize(

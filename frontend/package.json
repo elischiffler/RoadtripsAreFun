@@ -15,6 +15,7 @@
     "test:coverage": "vitest --run --coverage"
   },
   "dependencies": {
+    "@apple/mapkit-loader": "1.0.0",
     "@aws-sdk/client-cognito-identity-provider": "3.1146.0",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
@@ -24,7 +25,6 @@
     "@react-login-page/page11": "^1.0.4",
     "axios": "^1.7.4",
     "bootstrap": "^5.3.3",
-    "mapbox-gl": "^3.5.2",
     "prop-types": "15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
