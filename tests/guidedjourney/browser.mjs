@@ -333,7 +333,7 @@ try {
     report.catalog > 0 &&
       report.ratings > 0 &&
       report.durations > 0 &&
-      report.gateway_auth > 0,
+      report.openai_calls === report.ratings + report.durations,
   );
   assert.equal(
     report.solver,

@@ -308,7 +308,11 @@ async def _propose(
     except Exception as exc:
         raise CandidateProviderError("AI candidate provider unavailable") from exc
     if diagnostics is not None:
-        diagnostics["provider"] = getattr(response, "provider", "unknown")
+        provider = getattr(response, "provider", None) or "unknown"
+        model = getattr(response, "model", None)
+        diagnostics["provider"] = (
+            f"{provider}:{model}" if provider == "openai" and model else provider
+        )
     return _parse_proposals(response.content, limit, diagnostics=diagnostics)
 
 
@@ -554,7 +558,8 @@ async def attraction_candidates(
                 proposal = by_name.get(_name_key(place.name))
                 if proposal:
                     by_id[place.provider_id] = {
-                        "attribute_ratings": proposal.attribute_ratings.model_dump()
+                        "attribute_ratings": proposal.attribute_ratings.model_dump(),
+                        "provider": validation.get("provider", "unknown"),
                     }
                     fresh.append((place, proposal.attribute_ratings.model_dump()))
             if trait_store and fresh:

@@ -3,8 +3,8 @@ import pytest
 
 from app.agent import provider_diagnostics as diagnostics
 from app.agent.progress import reporting, stage
-from app.agent.providers import FallbackChain, MentroGatewayProvider, ProviderError
-from app.agent.schemas import LLMResponse
+from app.agent.providers import FallbackChain, OpenAIProvider, ProviderError
+from app.agent.schemas import LLMMessage, LLMResponse
 
 
 @pytest.fixture(autouse=True)
@@ -18,22 +18,18 @@ def no_backoff(monkeypatch):
 
 
 @pytest.mark.parametrize("status,expected", [(429, 3), (503, 3), (401, 1), (403, 1), (400, 1)])
-def test_gateway_bounded_attempts_and_preserved_chain_cause(status, expected):
-    class Auth:
-        def configured(self):
-            return True
-
-        def get_token(self):
-            return "not-a-real-token"
-
-    provider = MentroGatewayProvider("https://example.test", Auth())
+def test_openai_bounded_attempts_and_preserved_chain_cause(monkeypatch, status, expected):
+    provider = OpenAIProvider(api_key="synthetic-test-key")
     calls = []
 
-    def fail(*args):
-        calls.append(1)
-        raise ProviderError("Upstream failed", status_code=status, provider="mentro")
+    def fail(request):
+        calls.append(request)
+        return httpx.Response(status, json={"error": {"message": "private body"}})
 
-    provider._stream = fail
+    monkeypatch.setattr(
+        "app.routing.runtime.sync_http_client",
+        lambda: httpx.Client(transport=httpx.MockTransport(fail)),
+    )
     events = []
     with (
         diagnostics.collecting_attempts() as attempts,
@@ -41,7 +37,9 @@ def test_gateway_bounded_attempts_and_preserved_chain_cause(status, expected):
         stage("attractions.ratings"),
     ):
         with pytest.raises(Exception) as caught:
-            FallbackChain([provider]).complete([], [])
+            FallbackChain([provider]).complete(
+                [LLMMessage(role="user", content="Return JSON.")], []
+            )
     assert len(calls) == expected
     assert len(attempts) == expected
     assert attempts[-1]["outcome"] == "failed"
@@ -102,10 +100,10 @@ async def test_cancellation_does_not_retry():
 def test_diagnostic_redacts_credentials_and_keeps_provider_code(monkeypatch):
     from app.core.config import settings
 
-    monkeypatch.setattr(settings, "MENTRO_SERVICE_PASSWORD", "private-pass")
+    monkeypatch.setattr(settings, "ROADTRIPS_OPENAI_API_KEY", "private-pass")
     error = ProviderError(
-        'Gateway token="abc" password=private-pass Bearer xyz https://example.test?secret=abc',
-        provider="mentro",
+        'Provider token="abc" password=private-pass Bearer xyz https://example.test?secret=abc',
+        provider="openai",
         provider_code="CONTENT_FILTERED",
     )
     saved = diagnostics.diagnostic(error)

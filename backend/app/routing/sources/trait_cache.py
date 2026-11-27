@@ -36,8 +36,10 @@ def context(place):
 
 
 def key(place):
-    # Gateway deployment identity is hashed, never persisted as a credential-bearing URL.
-    payload = {"version": VERSION, "place": context(place), "gateway": settings.MENTRO_GATEWAY_URL}
+    # Preserve the original fingerprint for validated reusable ratings across
+    # the provider migration. This historical namespace is never contacted.
+    namespace = os.getenv("MENTRO_GATEWAY_URL") or "https://api.mentro.elischiffler.dev"
+    payload = {"version": VERSION, "place": context(place), "gateway": namespace}
     return hashlib.sha256(json.dumps(payload, sort_keys=True, allow_nan=False).encode()).hexdigest()
 
 

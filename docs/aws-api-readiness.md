@@ -55,7 +55,7 @@ readiness, CORS, authenticated trip, persistence, and recovery checks pass.
 `compose.yaml` remains a disposable local preview with fixtures.
 
 That Compose project uses a separate egress network for Cognito, routing APIs,
-and optional Mentro/Supabase calls, plus the external `roadtrips_database`
+and direct OpenAI Responses requests, plus the external `roadtrips_database`
 network for the future same-host PostgreSQL. That network and the database are
 owned by `hosting-ops`; they are not created by this template and do not yet
 exist on the shared host. Do not start the production template until the
@@ -109,7 +109,7 @@ authoring this template.
 **Public release gate:** obtain a restorable Neon recovery point and verify
 the restore procedure (none was reported at handoff); verify schema and
 migration compatibility; test actual isolated Cognito with two users and real
-routing/Mentro providers; then authorize a controlled write journey against
+routing and OpenAI providers; then authorize a controlled write journey against
 the intended Neon target. Confirm ownership, persistence, reload, and
 recovery, followed by proxy HTTPS/CORS and frontend variable cutover. Keep
 the prior backend image and frontend target. With Neon unchanged, rolling back
@@ -133,7 +133,7 @@ be copied from a developer machine. The relevant environment names are:
 | `COGNITO_USER_POOL_ID`, `COGNITO_APP_CLIENT_ID`                                                              | Trusted access-token issuer and client.                                                                                                                                          |
 | `MAPBOX_API`, `OPENCAGE_KEY`                                                                                 | Routing and geocoding provider credentials. The catalog branch no longer requires Tripadvisor credentials; apply and validate its additive catalog schema/import before release. |
 | `CAR_DATA_API`, `GOOGLE_PLACES_API`                                                                          | Provider credentials where the corresponding routes are enabled.                                                                                                                 |
-| `MENTRO_GATEWAY_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `MENTRO_SERVICE_EMAIL`, `MENTRO_SERVICE_PASSWORD` | Optional agent gateway and dedicated service account; leave service credentials unset when the agent is disabled.                                                                |
+| `ROADTRIPS_OPENAI_API_KEY`, `ROADTRIPS_OPENAI_MODEL` | Server-only OpenAI project key and optional model snapshot override for trip-detail extraction, place ratings, and visit-duration estimates. |
 
 Both templates fix `LOCAL_PREVIEW=false`, `ROUTING_REMOTE_URL=''`, and the
 production browser origins including `https://roadtrips.elischiffler.dev`.

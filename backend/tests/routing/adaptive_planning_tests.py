@@ -13,7 +13,6 @@ import pytest
 from app.agent.persona import ATTRIBUTE_KEYS, default_weights
 from app.agent.progress import reporting
 from app.agent.provider_diagnostics import collecting_attempts, retry_async
-from app.agent.providers import SupabaseServiceAuth
 from app.agent.schemas import LLMResponse
 from app.routing.base import PlanningError, PlanOptions
 from app.routing.cp_sat_scheduler import schedule_cp_sat_route
@@ -457,28 +456,6 @@ async def test_retry_after_releases_http_capacity_during_backoff(monkeypatch):
             assert await retry_async(lambda: limited("nearby", request)) == 1
     assert waits == [2, 2] and len(calls) == 3
     assert attempts[-1]["outcome"] == "recovered"
-
-
-def test_concurrent_authentication_and_refresh_are_single_flight(monkeypatch):
-    auth = SupabaseServiceAuth("https://auth.test", "key", "user", "pass")
-    grants = []
-
-    def grant(kind, body):
-        grants.append(kind)
-        time.sleep(0.03)
-        auth._access_token = "token"
-        auth._refresh_token = "refresh"
-        auth._expires_at = time.monotonic() + 3600
-        return "token"
-
-    monkeypatch.setattr(auth, "_grant", grant)
-    with ThreadPoolExecutor(8) as pool:
-        assert list(pool.map(lambda _: auth.get_token(), range(8))) == ["token"] * 8
-    assert grants == ["password"]
-    auth._expires_at = 0
-    with ThreadPoolExecutor(8) as pool:
-        list(pool.map(lambda _: auth.get_token(), range(8)))
-    assert grants == ["password", "refresh_token"]
 
 
 def test_progress_sequences_stay_ordered_across_threads():

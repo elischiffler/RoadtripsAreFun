@@ -33,3 +33,19 @@ itinerary. The viewer fetches fresh Apple directions on reopen. Older saved
 trips retain their original geometry and provider presentation.
 
 [Apple Maps Server authentication](https://developer.apple.com/documentation/applemapsserverapi/creating-and-using-tokens-with-maps-server-api)
+
+## OpenAI for trip planning
+
+Provision the Roadtrips OpenAI project key as `ROADTRIPS_OPENAI_API_KEY` in the
+protected server runtime environment before releasing this backend. The default
+model is `gpt-5.4-mini-2026-03-17`. The optional `ROADTRIPS_OPENAI_MODEL`
+setting can select a compatible Responses API model that supports JSON output.
+The application sends `store: false` with structured requests and validates
+trip details, place ratings, and visit durations before using them. Keep the
+credential server-side. Existing validated cached ratings retain their original
+provider provenance.
+
+The signed guided-journey release gate uses an isolated HTTP provider fixture
+and needs no live key. Check live provider access using an explicitly authorized
+request with synthetic text.
+[OpenAI Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create).

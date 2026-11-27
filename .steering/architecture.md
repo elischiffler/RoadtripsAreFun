@@ -33,8 +33,8 @@ retired; see [removal details](../docs/journeygenie-removal.md).
 
 `utils/location_resolution.py` provides validated provider candidates. Planning
 APIs own validated endpoints, occupancy, budgets and local scheduling policy.
-The Mentro gateway's provider protocol is shared infrastructure, independent of
-the removed conversational HTTP endpoints.
+The shared model adapter calls the OpenAI Responses API directly. The app
+validates each structured result before its planning or persistence code uses it.
 
 ## Route planning and provider boundaries
 
