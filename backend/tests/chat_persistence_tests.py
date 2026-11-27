@@ -271,3 +271,45 @@ def test_mismatched_path_data_or_log_ids_are_rejected_before_storage(
     assert response.json() == {"detail": "Trip IDs must match the request path"}
     storage.cursor.execute.assert_not_called()
     assert storage.rows == {}
+
+
+def test_apple_save_and_reopen_preserve_intent_without_provider_roads(client, storage):
+    fresh = _body()
+    fresh["ChatData"].update(
+        tripProfile={"apple_route_intent": True},
+        route={
+            "coordinates": [[33.7, -118], [35.2, -120.7]],
+            "geometry": {"type": "LineString", "coordinates": [[-118, 33.7], [-120.7, 35.2]]},
+            "duration": 1234,
+            "distance": 1000,
+            "cost": 0,
+            "steps": [],
+            "stops": [
+                {"name": "Arrival", "type": "end", "coordinates": [35.2, -120.7], "duration": 1234}
+            ],
+        },
+        itinerary=[
+            {
+                "date": "Saturday",
+                "stops": [{"name": "Arrival", "arrival_time": "10:15", "distance": 1000}],
+            }
+        ],
+    )
+    assert client.post("/chats/create/1", json=fresh).status_code == 200
+    row = storage.rows["verified-alice", "1"]["chat_data"]
+    assert row["route"]["geometry"]["coordinates"] == []
+    assert row["route"]["duration"] == 0
+    assert row["tripProfile"]["apple_route_intent"] is True
+    assert "duration" not in row["route"]["stops"][0]
+    assert "distance" not in row["itinerary"][0]["stops"][0]
+    checked = client.get("/chats", headers={"Authorization": "Bearer fixture-token-alice"}).json()[
+        0
+    ][0]
+    assert checked["route"]["directions_provider"] == "apple"
+    assert "geometry" not in checked["route"]
+    assert checked["route"]["coordinates"] == [[33.7, -118], [35.2, -120.7]]
+    assert checked["itinerary"][0]["stops"][0]["arrival_time"] == "10:15"
+    fresh["ExpectedRevision"] = "0" * 64
+    assert client.put("/chats/update/1", json=fresh).status_code == 409
+    fresh["ExpectedRevision"] = checked["savedRevision"]
+    assert client.put("/chats/update/1", json=fresh).status_code == 200

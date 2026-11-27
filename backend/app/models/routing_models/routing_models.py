@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -28,6 +28,7 @@ class Route(BaseModel):
     steps: list[Route_Step]
     stops: list[dict[str, Any]] | None = None  # TODO use or remove this
     geometry: Mapbox_geo
+    directions_provider: Literal["apple"] | None = None
     cost: float
     warnings: list[str] | None = None
     # None identifies legacy saved routes, which retain their original 09:00 restart.
@@ -98,6 +99,7 @@ class MapBox(BaseModel):
             distance: float
             summary: str
 
+        directions_provider: Literal["apple"] | None = None
         weight_name: str
         weight: float
         duration: float  # Total length in seconds

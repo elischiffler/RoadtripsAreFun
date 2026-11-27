@@ -19,7 +19,7 @@ from app.routing.explanation import record_explanation, record_stage
 from app.routing.registry import register_planner
 from app.routing.runtime import in_run, joined, threaded
 from app.routing.services import RoutingServices
-from app.routing.sources.mapbox import UnusableRoadRoute
+from app.routing.sources.apple import UnusableRoadRoute
 from app.routing.trip_calendar import TripCalendar
 from app.routing.visit_calendar import VisitCalendarConflict
 
@@ -199,7 +199,11 @@ class CPSatPlanner(RoutePlanner):
                 "detour_seconds": max(0.0, extra),
                 "detour_raw_seconds": extra,
                 "detour_provenance": {
-                    "source": "live_mapbox_origin_via_candidate_to_destination",
+                    "source": (
+                        "live_apple_origin_via_candidate_to_destination"
+                        if getattr(measured, "directions_provider", None) == "apple"
+                        else "live_mapbox_origin_via_candidate_to_destination"
+                    ),
                     "solo_duration_seconds": measured.duration,
                     "baseline_seconds": route.duration,
                 },

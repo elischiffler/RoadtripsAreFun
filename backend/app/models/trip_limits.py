@@ -8,7 +8,9 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 MIN_STOPS = 1
 HARD_MAX_STOPS = 30
-MAPBOX_MAX_COORDINATES = 25
+ROAD_MAX_COORDINATES = 25
+# Legacy evaluation report naming.
+MAPBOX_MAX_COORDINATES = ROAD_MAX_COORDINATES
 
 
 def attraction_limit(value: str) -> int:

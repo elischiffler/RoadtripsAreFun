@@ -6,6 +6,7 @@ from psycopg2.extras import Json, RealDictCursor
 
 from app.core.config import settings
 from app.crud.chat_crud import _get_conn, _put_conn
+from app.schemas.chat_schemas import without_road_data
 
 
 def _query(sql, args, *, write=False):
@@ -47,6 +48,13 @@ def begin(user_id, payload, run_id=None):
 
 
 def finish(user_id, run_id, envelope, metrics):
+    if (envelope.get("route") or {}).get("directions_provider") == "apple":
+        envelope = {
+            **envelope,
+            "route": without_road_data(envelope["route"]),
+            "itinerary": without_road_data(envelope.get("itinerary")),
+            "direct_route": None,
+        }
     rows = _query(
         "UPDATE algorithm_lab_runs SET status=%s, finished_at=now(), input=%s, metrics=%s, "
         "error_code=%s, result=%s WHERE id=%s AND user_id=%s AND status='running' RETURNING id",

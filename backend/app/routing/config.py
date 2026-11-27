@@ -15,8 +15,7 @@ from geopy.geocoders import OpenCage
 # app/routing/config.py -> parents[3] == the repo root, where .env lives (matches
 # app/core/config.py and the routers). parents[2] would be backend/, which has no .env.
 # Use the default non-overriding behavior so real deployment environment variables
-# (e.g. MAPBOX_API set in the runtime) take precedence over any .env file
-# that happens to be present; dotenv only fills in values that aren't already set.
+# take precedence over any .env file; dotenv fills in missing values.
 load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 # Explicit (connect, read) timeouts in seconds for all outbound sourcing calls.
@@ -26,7 +25,10 @@ load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 HTTP_TIMEOUT = (5, 20)
 
 # API tokens
-MAPBOX_API = os.getenv("MAPBOX_API")
+APPLE_MAPS_TEAM_ID = os.getenv("APPLE_MAPS_TEAM_ID")
+APPLE_MAPS_KEY_ID = os.getenv("APPLE_MAPS_KEY_ID")
+APPLE_MAPS_PRIVATE_KEY = os.getenv("APPLE_MAPS_PRIVATE_KEY")
+APPLE_MAPS_PRIVATE_KEY_FILE = os.getenv("APPLE_MAPS_PRIVATE_KEY_FILE")
 GOOGLE_PLACES_API = os.getenv("GOOGLE_PLACES_API")
 OPENCAGE_KEY = os.getenv("OPENCAGE_KEY")
 

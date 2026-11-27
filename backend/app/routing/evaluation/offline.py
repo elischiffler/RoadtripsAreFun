@@ -23,7 +23,7 @@ from app.routing.pricing import get_price_range
 from app.routing.profiles import crossmatch
 from app.routing.run_metrics import fingerprint
 from app.routing.services import RoutingServices
-from app.routing.sources.mapbox import require_route_capacity
+from app.routing.sources.apple import require_route_capacity
 from app.routing.sources.persona_candidates import (
     CalendarFilteredPlaces,
     LivePlaceProvider,

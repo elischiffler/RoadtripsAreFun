@@ -103,6 +103,42 @@ async def isolate_incomplete_preview(request, call_next):
     return await call_next(request)
 
 
+_DIRECTION_REQUESTS = {
+    ("GET", "/get-initial-route"),
+    ("POST", "/generate-final-route"),
+    ("POST", "/generate-final-route/stream"),
+    ("POST", "/route-directions"),
+    ("POST", "/algorithm-lab/run"),
+    ("POST", "/studio/run"),
+    ("POST", "/studio/run/stream"),
+    ("POST", "/studio/route-directions"),
+    ("POST", "/studio/jobs"),
+}
+
+
+@app.middleware("http")
+async def protect_transient_directions(request, call_next):
+    path = request.url.path.rstrip("/")
+    carries_directions = (request.method, path) in _DIRECTION_REQUESTS or (
+        request.method == "GET" and path.startswith("/studio/jobs/")
+    )
+    if (
+        carries_directions
+        and settings.REQUIRE_APPLE_DIRECTIONS_VIEWER
+        and request.headers.get("x-roadtrips-directions") != "apple"
+    ):
+        return JSONResponse(
+            status_code=426,
+            content={"detail": "Refresh RoadtripsAreFun to use Apple Maps directions."},
+            headers={"Cache-Control": "no-store", "Vary": "X-Roadtrips-Directions"},
+        )
+    response = await call_next(request)
+    if carries_directions:
+        response.headers["Cache-Control"] = "no-store"
+        response.headers.add_vary_header("X-Roadtrips-Directions")
+    return response
+
+
 # Enables support of the front end on a different domain/port
 app.add_middleware(
     CORSMiddleware,

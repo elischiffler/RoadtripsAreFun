@@ -13,6 +13,11 @@ from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 from app.agent.progress_stream import stream_turn
 from app.routers import algorithm_lab as lab
+from app.routers.routing_api import (
+    RouteDirectionsRequest,
+    RouteDirectionsResponse,
+    route_directions,
+)
 from app.routing.studio_jobs import jobs
 
 # A stable deployment secret shares sessions across workers. Local sessions expire
@@ -66,6 +71,15 @@ def require_studio_session(x_studio_session: str | None = Header(default=None)) 
         return subject
     except (jwt.InvalidTokenError, ValueError, TypeError, AttributeError) as exc:
         raise HTTPException(401, "Enter the Studio password to continue.") from exc
+
+
+@router.post(
+    "/route-directions",
+    response_model=RouteDirectionsResponse,
+    dependencies=[Depends(require_studio_session)],
+)
+async def studio_route_directions(payload: RouteDirectionsRequest):
+    return await route_directions(payload)
 
 
 @router.get("/presets")
