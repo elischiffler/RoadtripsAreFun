@@ -308,7 +308,11 @@ async def _propose(
     except Exception as exc:
         raise CandidateProviderError("AI candidate provider unavailable") from exc
     if diagnostics is not None:
-        diagnostics["provider"] = getattr(response, "provider", "unknown")
+        provider = getattr(response, "provider", None) or "unknown"
+        model = getattr(response, "model", None)
+        diagnostics["provider"] = (
+            f"{provider}:{model}" if provider == "openai" and model else provider
+        )
     return _parse_proposals(response.content, limit, diagnostics=diagnostics)
 
 

@@ -32,6 +32,7 @@ def measuring():
         "durations": {},
         "events": {},
         "providers": {},
+        "language_models": {},
         "lock": Lock(),
     }
     token = _active.set(data)
@@ -45,6 +46,18 @@ def increment(name, bucket="calls"):
     if data := _active.get():
         with data["lock"]:
             data[bucket][name] = data[bucket].get(name, 0) + 1
+
+
+def record_model_usage(provider, model, usage):
+    if data := _active.get():
+        with data["lock"]:
+            record = data["language_models"].setdefault(
+                f"{provider}:{model}", {"responses": 0, "input_tokens": 0, "output_tokens": 0}
+            )
+            record["responses"] += 1
+            if usage is not None:
+                record["input_tokens"] += usage.promptTokens or 0
+                record["output_tokens"] += usage.completionTokens or 0
 
 
 def duration(name, milliseconds):
@@ -604,6 +617,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
         "eligibility_policy": eligibility,
         "provider_measurements": telemetry.get("providers", {}),
         "distinct_requests": telemetry.get("requests", {}),
+        "language_models": telemetry.get("language_models", {}),
         "discovery_requests": len((explanation.get("discovery") or {}).get("queries", [])),
         "selection_measurements": {
             key: solver.get(key)
@@ -680,7 +694,7 @@ def compile_metrics(envelope, telemetry, elapsed_ms):
                 "opencage",
             )
         },
-        "call_scope": "backend request attempts; excludes gateway-internal retries and redirects",
+        "call_scope": "backend request attempts; excludes provider-internal retries and redirects",
         "provider_events": {
             "llm_empty_retries": 0,
             "llm_empty_attempt_caps": 0,

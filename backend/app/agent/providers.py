@@ -1,55 +1,39 @@
-"""Shared LLM provider interface, authenticated Mentro gateway and fallback chain.
-
-Mentro is a separate service that streams completions over SSE. Planning uses
-this provider for place ratings; preference extraction and visit-duration
-estimates use the same contract. ``/api/chat/stream-full`` is the gateway's
-upstream protocol, retained independently of the retired application chat API.
-
-``SupabaseServiceAuth`` owns the server-side service-account token exchange.
-``MentroGatewayProvider`` consumes the stream and returns one ``LLMResponse``.
-``FallbackChain`` skips unconfigured providers and advances on provider errors.
-"""
+"""Shared structured-model contract and direct OpenAI Responses transport."""
 
 from __future__ import annotations
 
-import json
 import logging
 import re
-import time
-from threading import RLock
 from typing import Protocol, runtime_checkable
 
 import httpx
 
-from app.agent.provider_diagnostics import retry_sync, safe_message
+from app.agent.provider_diagnostics import MAX_ATTEMPTS, retry_sync, safe_message
 from app.agent.schemas import AgentUsage, LLMMessage, LLMResponse, ToolSpec
 from app.core.config import settings
-from app.routing.run_metrics import increment
+from app.routing.run_metrics import increment, record_model_usage
 
 logger = logging.getLogger(__name__)
-
-# (connect, read) timeouts. The gateway auto-stops when idle on Fly.io, so the
-# first call after a cold start can take a few seconds — the read timeout is
-# generous to absorb that.
-_CONNECT_TIMEOUT = 10.0
-_READ_TIMEOUT = 90.0
+RESPONSES_URL = "https://api.openai.com/v1/responses"
+_TIMEOUT = httpx.Timeout(90.0, connect=10.0)
+_MAX_OUTPUT_TOKENS = 8192
+_SAFE_PROVIDER_CODES = {
+    "insufficient_quota",
+    "model_not_found",
+    "rate_limit_exceeded",
+    "server_error",
+    "invalid_api_key",
+}
 
 
 class ProviderError(Exception):
-    """A recoverable provider failure (network, 5xx, 429, timeout, auth).
-
-    Raising this signals :class:`FallbackChain` to move on to the next provider.
-    """
+    """A normalized provider failure with sanitized diagnostics."""
 
     def __init__(
         self, message, *, status_code=None, retryable=False, provider=None, provider_code=None
     ):
-        super().__init__(message)
-        auth_status = re.search(r"^Supabase auth returned (\d{3})", message)
-        if auth_status:
-            status_code = int(auth_status[1])
-            message = f"Supabase authentication returned HTTP {status_code}"
         self.public_message = safe_message(message)
+        super().__init__(self.public_message)
         self.status_code = status_code
         self.retryable = retryable
         self.provider = provider
@@ -57,388 +41,148 @@ class ProviderError(Exception):
 
 
 class ProviderNotConfigured(ProviderError):
-    """The provider is missing the config it needs to be attempted.
-
-    Subclasses :class:`ProviderError` so the chain skips/advances past it rather
-    than crashing — an unconfigured agent simply yields ``ProvidersExhausted``,
-    which the router maps to a clean 503.
-    """
+    """The provider is missing required server configuration."""
 
 
 class ProvidersExhausted(Exception):
-    """Every provider was unconfigured or failed — no response could be served."""
+    """No provider successfully served the request."""
 
 
 @runtime_checkable
 class LLMProvider(Protocol):
-    """Provider interface: a name plus a normalized ``complete`` call."""
-
     name: str
 
     def complete(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
-        """Return an :class:`LLMResponse`, or raise :class:`ProviderError`."""
+        """Return one normalized structured response or raise ProviderError."""
         ...
 
 
-# --------------------------------------------------------------------------- #
-# Auth seam — obtaining a Supabase access token for the gateway.
-# --------------------------------------------------------------------------- #
+class OpenAIProvider:
+    """Stateless OpenAI calls for ratings, trip details and duration estimates."""
 
+    name = "openai"
 
-class SupabaseServiceAuth:
-    """Mints and caches a Supabase access token for a service account.
-
-    Uses Supabase's password grant (``/auth/v1/token?grant_type=password``) with
-    a dedicated service-account email/password, then refreshes with the returned
-    refresh token before expiry. Keeping this behind its own object means the
-    provider doesn't care whether the token comes from a service account, a
-    static long-lived token, or (later) a per-user session — only that
-    :meth:`get_token` returns a bearer string.
-    """
-
-    # Refresh this many seconds before the token's stated expiry to avoid using
-    # a token that lapses mid-flight.
-    _EXPIRY_SKEW = 60.0
-
-    def __init__(
-        self,
-        supabase_url: str | None = None,
-        anon_key: str | None = None,
-        email: str | None = None,
-        password: str | None = None,
-    ):
-        self._url = (supabase_url if supabase_url is not None else settings.SUPABASE_URL) or ""
-        self._anon_key = (anon_key if anon_key is not None else settings.SUPABASE_ANON_KEY) or ""
-        self._email = (email if email is not None else settings.MENTRO_SERVICE_EMAIL) or ""
-        self._password = (
-            password if password is not None else settings.MENTRO_SERVICE_PASSWORD
-        ) or ""
-        self._access_token: str | None = None
-        self._refresh_token: str | None = None
-        self._expires_at: float = 0.0
-        self._lock = RLock()
+    def __init__(self, api_key: str | None = None):
+        self._key = (api_key if api_key is not None else settings.ROADTRIPS_OPENAI_API_KEY) or ""
 
     def configured(self) -> bool:
-        """True when all Supabase service-account credentials are present."""
-        return bool(self._url and self._anon_key and self._email and self._password)
-
-    def get_token(self) -> str:
-        with self._lock:
-            return self._get_token()
-
-    def _get_token(self) -> str:
-        """Return a valid access token, refreshing/logging in as needed.
-
-        Raises:
-            ProviderNotConfigured: If Supabase creds are missing.
-            ProviderError: If the auth request to Supabase fails.
-        """
-        if not self.configured():
-            raise ProviderNotConfigured(
-                "Mentro gateway auth is not configured: set SUPABASE_URL, "
-                "SUPABASE_ANON_KEY, MENTRO_SERVICE_EMAIL, MENTRO_SERVICE_PASSWORD."
-            )
-        now = time.monotonic()
-        if self._access_token and now < self._expires_at - self._EXPIRY_SKEW:
-            return self._access_token
-        # Prefer a refresh when we have a refresh token; otherwise password login.
-        if self._refresh_token:
-            try:
-                return self._grant("refresh_token", {"refresh_token": self._refresh_token})
-            except ProviderError:
-                # Refresh token may be stale — fall back to a fresh password login.
-                logger.info("Supabase refresh failed; re-authenticating with password grant.")
-        return self._grant("password", {"email": self._email, "password": self._password})
-
-    def _grant(self, grant_type: str, body: dict) -> str:
-        token_url = f"{self._url.rstrip('/')}/auth/v1/token"
-        try:
-            increment("gateway_auth")
-            resp = httpx.post(
-                token_url,
-                params={"grant_type": grant_type},
-                headers={"apikey": self._anon_key, "Content-Type": "application/json"},
-                json=body,
-                timeout=(_CONNECT_TIMEOUT, _READ_TIMEOUT),
-            )
-        except httpx.HTTPError as exc:
-            raise ProviderError(f"Supabase auth request failed: {exc}") from exc
-        if resp.status_code != httpx.codes.OK:
-            error = ProviderError(f"Supabase auth returned {resp.status_code}: {resp.text[:200]}")
-            error.retry_after = resp.headers.get("Retry-After")
-            raise error
-        try:
-            data = resp.json()
-        except ValueError as exc:
-            # A 200 with a non-JSON body (proxy/HTML error page, empty body). Treat
-            # as a recoverable provider failure, not an uncaught 500.
-            raise ProviderError(
-                f"Supabase auth returned a non-JSON body: {resp.text[:200]}"
-            ) from exc
-        access = data.get("access_token")
-        if not access:
-            raise ProviderError("Supabase auth response had no access_token.")
-        self._access_token = access
-        self._refresh_token = data.get("refresh_token") or self._refresh_token
-        # expires_in is seconds from now; default to a conservative 1h if absent.
-        expires_in = float(data.get("expires_in") or 3600)
-        self._expires_at = time.monotonic() + expires_in
-        return access
-
-
-# --------------------------------------------------------------------------- #
-# The Mentro gateway provider.
-# --------------------------------------------------------------------------- #
-
-
-def _messages_to_gateway_payload(messages: list[LLMMessage]) -> list[dict]:
-    """Flatten our LLMMessages into the gateway's {role, content} contract.
-
-    The gateway only accepts roles ``user`` / ``assistant`` / ``system`` and a
-    non-empty string ``content``. Our loop can produce ``tool`` messages and
-    assistant turns carrying ``tool_calls``; since the gateway itself has no
-    native tool-calling, we render those into plain text so the model still sees
-    them as context. Empty-content messages are dropped (the gateway rejects
-    them).
-    """
-    out: list[dict] = []
-    for m in messages:
-        role = m.role
-        content = m.content or ""
-        if role == "tool":
-            # Represent a tool result as an assistant-visible system note.
-            role = "system"
-            content = f"[tool result] {content}" if content else ""
-        elif role == "assistant" and m.tool_calls and not content:
-            # An assistant turn that only requested tools — summarize it as text.
-            names = ", ".join(tc.name for tc in m.tool_calls)
-            content = f"[requested tools: {names}]"
-        if role not in ("user", "assistant", "system"):
-            role = "user"
-        if content.strip():
-            out.append({"role": role, "content": content})
-    return out
-
-
-class MentroGatewayProvider:
-    """Calls the self-hosted Mentro SSE gateway and returns its final reply.
-
-    Consumes the whole SSE stream server-side and returns the aggregated ``end``
-    payload (assembled ``content`` + ``usage`` + which upstream tier served it)
-    as an :class:`LLMResponse`. Failures — missing config, Supabase auth errors,
-    non-2xx from the gateway, an SSE ``error`` event, or a network fault — are
-    raised as :class:`ProviderError` so :class:`FallbackChain` can advance.
-
-    Tool specs are accepted for interface compatibility but not forwarded: the
-    gateway has no native function-calling. Tool *use* is driven by our own loop
-    via the system prompt + the assembled message history.
-    """
-
-    name = "mentro"
-
-    # The gateway's upstream tiers intermittently return an empty completion
-    # (empty content, no usage). Retry a bounded number of times before giving
-    # up, since a retry frequently lands on a tier that produces real text.
-    _MAX_ATTEMPTS = 3
-
-    def __init__(self, gateway_url: str | None = None, auth: SupabaseServiceAuth | None = None):
-        self._url = (gateway_url if gateway_url is not None else settings.MENTRO_GATEWAY_URL) or ""
-        self._auth = auth if auth is not None else SupabaseServiceAuth()
-
-    def configured(self) -> bool:
-        """True when we have a gateway URL and the auth seam is configured."""
-        return bool(self._url) and self._auth.configured()
-
-    def complete_once(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
-        return self._complete(messages, tools, retry=False)
+        return bool(self._key.strip())
 
     def complete(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
-        return self._complete(messages, tools, retry=True)
-
-    def _complete(self, messages, tools, *, retry):
-        if not self._url:
-            raise ProviderNotConfigured("MENTRO_GATEWAY_URL is not set.")
-        payload = {"messages": _messages_to_gateway_payload(messages)}
-        endpoint = f"{self._url.rstrip('/')}/api/chat/stream-full"
-
         attempts = 0
 
         def request():
             nonlocal attempts
             attempts += 1
-            token = self._auth.get_token()
             try:
-                response = self._stream(endpoint, token, payload)
-            except httpx.HTTPError as exc:
-                raise ProviderError(
-                    "Mentro gateway network request failed", provider=self.name
-                ) from exc
-            if response.content.strip():
-                return response
-            if retry:
-                if attempts < self._MAX_ATTEMPTS:
-                    increment("llm_empty_retries", "events")
-                else:
-                    increment("llm_empty_attempt_caps", "events")
+                return self.complete_once(messages, tools)
+            except ProviderError as exc:
+                if exc.provider_code == "EMPTY_COMPLETION":
+                    increment(
+                        "llm_empty_retries"
+                        if attempts < MAX_ATTEMPTS
+                        else "llm_empty_attempt_caps",
+                        "events",
+                    )
+                raise
+
+        return retry_sync(request)
+
+    def complete_once(self, messages: list[LLMMessage], tools: list[ToolSpec]) -> LLMResponse:
+        if not self.configured():
+            raise ProviderNotConfigured("ROADTRIPS_OPENAI_API_KEY is not set.", provider=self.name)
+        # Current callers ask for JSON. Keep trusted instructions and user content
+        # separately typed and keep the app's own validators authoritative.
+        payload = {
+            "model": settings.ROADTRIPS_OPENAI_MODEL,
+            "input": [
+                {"role": m.role, "content": m.content}
+                for m in messages
+                if m.role in {"system", "user", "assistant"} and m.content.strip()
+            ],
+            "text": {"format": {"type": "json_object"}},
+            "max_output_tokens": _MAX_OUTPUT_TOKENS,
+            "store": False,
+        }
+        if not payload["input"] or tools:
+            raise ProviderError("OpenAI requires a structured text request.", provider=self.name)
+        from app.routing.runtime import sync_http_client
+
+        try:
+            with sync_http_client() as client:
+                increment("language_model")
+                response = client.post(
+                    RESPONSES_URL,
+                    headers={"Authorization": f"Bearer {self._key.strip()}"},
+                    json=payload,
+                    timeout=_TIMEOUT,
+                    follow_redirects=False,
+                )
+        except httpx.HTTPError as exc:
+            raise ProviderError("OpenAI network request failed.", provider=self.name) from exc
+        if response.status_code != 200:
+            raise self._failed_request(response)
+        return self._decode(response)
+
+    def _failed_request(self, response):
+        code = None
+        try:
+            value = response.json()["error"]["code"]
+            if isinstance(value, str) and value in _SAFE_PROVIDER_CODES:
+                code = value
+        except (ValueError, KeyError, TypeError):
+            pass
+        error = ProviderError(
+            f"OpenAI returned HTTP {response.status_code}.",
+            status_code=response.status_code,
+            provider=self.name,
+            provider_code=code,
+        )
+        retry_after = response.headers.get("Retry-After", "")
+        if re.fullmatch(r"\d{1,3}(?:\.\d+)?", retry_after):
+            error.retry_after = str(min(15.0, float(retry_after)))
+        return error
+
+    def _decode(self, response):
+        try:
+            body = response.json()
+            if not isinstance(body, dict):
+                raise ValueError
+            if body.get("status") != "completed":
+                raise ProviderError("OpenAI did not finish the response.", provider=self.name)
+            parts = [
+                part
+                for item in body["output"]
+                if item.get("type") == "message" and item.get("role") == "assistant"
+                for part in item["content"]
+            ]
+            if any(part.get("type") == "refusal" for part in parts):
+                raise ProviderError("OpenAI declined the structured request.", provider=self.name)
+            text = "".join(part["text"] for part in parts if part.get("type") == "output_text")
+            usage = body.get("usage")
+            model = body["model"]
+            if not isinstance(model, str) or not re.fullmatch(
+                r"[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,127}", model
+            ):
+                raise ValueError
+            if usage is not None:
+                usage = AgentUsage(
+                    promptTokens=usage.get("input_tokens"),
+                    completionTokens=usage.get("output_tokens"),
+                )
+        except (KeyError, AttributeError, TypeError, ValueError):
             raise ProviderError(
-                f"Mentro gateway returned an empty completion (attempt {attempts})."
-                if retry
-                else "Mentro gateway returned an empty completion.",
+                "OpenAI returned an invalid response.", provider=self.name
+            ) from None
+        if not text.strip():
+            raise ProviderError(
+                "OpenAI returned an empty completion.",
                 retryable=True,
                 provider=self.name,
                 provider_code="EMPTY_COMPLETION",
             )
-
-        return retry_sync(request) if retry else request()
-
-    def _stream(self, endpoint: str, token: str, payload: dict) -> LLMResponse:
-        """POST to the gateway and reduce the SSE stream to the final response."""
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "Accept": "text/event-stream",
-        }
-        from app.routing.runtime import sync_http_client
-
-        with sync_http_client() as client:
-            increment("language_model")
-            with client.stream(
-                "POST",
-                endpoint,
-                headers=headers,
-                json=payload,
-                timeout=(_CONNECT_TIMEOUT, _READ_TIMEOUT),
-            ) as resp:
-                # Pre-stream failures (validation/auth/rate-limit) come back as a
-                # plain-JSON body with a non-2xx status, NOT as SSE.
-                if resp.status_code != httpx.codes.OK:
-                    raw = resp.read()
-                    try:
-                        body = json.loads(raw)
-                    except ValueError:
-                        body = {}
-                    if not isinstance(body, dict):
-                        body = {}
-                    error = body.get("error", body)
-                    if isinstance(error, dict):
-                        code = error.get("code")
-                        message = error.get("message")
-                    else:
-                        code = body.get("code")
-                        message = error
-                    detail = f": {safe_message(message)}" if isinstance(message, str) else ""
-                    error = ProviderError(
-                        f"Mentro gateway returned HTTP {resp.status_code}{detail}",
-                        status_code=resp.status_code,
-                        provider=self.name,
-                        provider_code=code if isinstance(code, str) else None,
-                    )
-                    error.retry_after = getattr(resp, "headers", {}).get("Retry-After")
-                    raise error
-                return self._reduce_sse(resp.iter_lines())
-
-    def _reduce_sse(self, lines) -> LLMResponse:
-        """Parse an SSE line iterator into the final :class:`LLMResponse`.
-
-        We only need the ``end`` event's aggregated payload; ``chunk`` events are
-        ignored (no live streaming to the caller in v1). An ``error`` event —
-        which can arrive *after* a 200 OK once streaming has begun — is turned
-        into a :class:`ProviderError`.
-        """
-        event_name = "message"
-        data_parts: list[str] = []
-
-        def flush() -> LLMResponse | None:
-            nonlocal event_name, data_parts
-            if not data_parts:
-                event_name = "message"
-                return None
-            raw = "".join(data_parts)
-            event, data_parts = event_name, []
-            event_name = "message"
-            if not raw.strip():
-                return None
-            try:
-                payload = json.loads(raw)
-            except json.JSONDecodeError:
-                return None
-            if event == "end":
-                return self._response_from_end(payload)
-            if event == "error":
-                code = payload.get("code", "STREAM_FAILURE")
-                message = payload.get("message", "unknown gateway error")
-                raise ProviderError(
-                    f"Mentro gateway error [{code}]: {safe_message(message)}",
-                    provider=self.name,
-                    provider_code=code,
-                    retryable=code
-                    in (
-                        "UPSTREAM_ERROR",
-                        "STREAM_FAILURE",
-                        "RATE_LIMITED",
-                        "RATE_LIMIT_EXCEEDED",
-                        "PROVIDER_ERROR",
-                        "TIMEOUT",
-                    ),
-                )
-            return None  # a "chunk" or unknown event — ignored
-
-        for raw_line in lines:
-            line = raw_line.rstrip("\n").rstrip("\r")
-            if line == "":
-                result = flush()
-                if result is not None:
-                    return result
-                continue
-            if line.startswith("event:"):
-                event_name = line[len("event:") :].strip()
-            elif line.startswith("data:"):
-                data_parts.append(line[len("data:") :].strip())
-        # Stream closed — flush any trailing buffered event.
-        result = flush()
-        if result is not None:
-            return result
-        raise ProviderError(
-            "Mentro gateway stream closed without an 'end' event.",
-            retryable=True,
-            provider=self.name,
-        )
-
-    def _response_from_end(self, payload: dict) -> LLMResponse:
-        """Map the gateway's aggregated ``end`` payload into an LLMResponse.
-
-        The gateway already falls back to reasoning-channel text when the model's
-        ``content`` channel is empty (reasoning models like ``gpt-oss`` stream
-        their output on the analysis channel). We still prefer ``content`` and
-        fall back to the separate ``reasoning`` field defensively, so a valid
-        reply is never dropped even if the gateway's own fallback changes.
-        """
-        usage_raw = payload.get("usage") or None
-        usage = None
-        if isinstance(usage_raw, dict):
-            usage = AgentUsage(
-                promptTokens=usage_raw.get("prompt_tokens"),
-                completionTokens=usage_raw.get("completion_tokens"),
-            )
-        # Record the upstream tier the gateway actually used (e.g. "Cerebras"),
-        # namespaced so it's clear it came via our gateway.
-        upstream = payload.get("provider")
-        provider = f"mentro:{upstream}" if upstream else self.name
-        content = (payload.get("content") or "").strip()
-        if not content:
-            # Defensive fallback: use the analysis-channel text if content is blank.
-            content = (payload.get("reasoning") or "").strip()
-        return LLMResponse(
-            content=content,
-            tool_calls=[],  # gateway has no native tool-calling
-            provider=provider,
-            usage=usage,
-        )
-
-
-# --------------------------------------------------------------------------- #
-# Fallback chain.
-# --------------------------------------------------------------------------- #
+        record_model_usage(self.name, model, usage)
+        return LLMResponse(content=text.strip(), provider=self.name, model=model, usage=usage)
 
 
 class FallbackChain:
@@ -449,8 +193,7 @@ class FallbackChain:
     fails, :class:`ProvidersExhausted` is raised. The served provider's name is
     echoed in :attr:`LLMResponse.provider`.
 
-    The chain currently holds a single provider (the gateway), but it stays as a
-    seam so a second provider can be slotted in without touching the loop.
+    Production supplies Direct OpenAI as the sole provider.
     """
 
     name = "fallback"
@@ -485,7 +228,7 @@ class FallbackChain:
                 )(messages, tools)
             except ProviderError as exc:
                 last_error = exc
-                errors.append(f"{provider.name}: {exc}")
+                errors.append(f"{provider.name}: {exc.public_message}")
                 continue
             except Exception as exc:  # noqa: BLE001
                 # Defensive: a provider should raise only ProviderError, but any
@@ -494,7 +237,7 @@ class FallbackChain:
                 # provider hiccup degrades to a clean ProvidersExhausted -> 503.
                 last_error = exc
                 logger.error("provider %s raised %s", provider.name, type(exc).__name__)
-                errors.append(f"{provider.name}: unexpected {type(exc).__name__}: {exc}")
+                errors.append(f"{provider.name}: unexpected {type(exc).__name__}")
                 continue
             # Record who actually served the request.
             if not response.provider:
@@ -506,5 +249,5 @@ class FallbackChain:
 
 
 def build_default_chain() -> FallbackChain:
-    """Factory: the default provider chain — just the Mentro gateway for now."""
-    return FallbackChain([MentroGatewayProvider()])
+    """Use only the configured direct OpenAI project; failures remain explicit."""
+    return FallbackChain([OpenAIProvider()])

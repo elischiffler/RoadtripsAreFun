@@ -11,7 +11,7 @@ configuration. `backend/app/core/config.py` owns backend settings and
 `frontend/vite.config.js` configures the browser build; never copy runtime secrets
 into images or `VITE_*` variables. Vite values are public and embedded at build
 time. Configure browser/backend Cognito pool/client consistently; AI-backed planning also
-needs the Mentro gateway service credentials. Isolated tests use controlled
+uses the backend-only OpenAI project key. Isolated tests use controlled
 providers instead of a deployed routing proxy.
 
 Visitor Studio is separate from Cognito: `backend/app/routers/studio.py` uses

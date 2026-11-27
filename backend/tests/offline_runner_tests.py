@@ -35,7 +35,7 @@ def main(args):
         "args": args,
         "blocked": blocked,
         "ambient_removed": all(name not in os.environ for name in (
-            "MENTRO_SERVICE_PASSWORD", "OPENAI_API_KEY", "DATABASE_URL", "PGPASSWORD"
+            "MENTRO_SERVICE_PASSWORD", "OPENAI_API_KEY", "ROADTRIPS_OPENAI_API_KEY", "DATABASE_URL", "PGPASSWORD"
         )),
         "dotenv_disabled": os.environ.get("PYTHON_DOTENV_DISABLED"),
         "dotenv_result": dotenv_result,
@@ -62,6 +62,7 @@ def invoke(script, cwd, *arguments, catalog_database="postgresql://fixture@local
     env = {
         **os.environ,
         "MENTRO_SERVICE_PASSWORD": "fixture-not-a-secret",
+        "ROADTRIPS_OPENAI_API_KEY": "fixture-not-a-secret",
         "OPENAI_API_KEY": "fixture-not-a-secret",
         "DATABASE_URL": "postgresql://fixture@external.invalid/production",
         "PGPASSWORD": "fixture-not-a-secret",

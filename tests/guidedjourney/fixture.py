@@ -37,11 +37,8 @@ os.environ["COGNITO_USER_POOL_ID"] = "us-west-1_fixture"
 os.environ["COGNITO_APP_CLIENT_ID"] = "localfixture"
 os.environ["STUDIO_RESEARCH_DATABASE"] = "false"
 os.environ["PLACE_TRAITS_CACHE_ENABLED"] = "false"
-os.environ["SUPABASE_URL"] = "http://127.0.0.1:9009"
-os.environ["SUPABASE_ANON_KEY"] = "synthetic-anon-key"
-os.environ["MENTRO_GATEWAY_URL"] = "http://127.0.0.1:9009"
-os.environ["MENTRO_SERVICE_EMAIL"] = "fixture@example.test"
-os.environ["MENTRO_SERVICE_PASSWORD"] = "fixture-only"
+os.environ["ROADTRIPS_OPENAI_API_KEY"] = "fixture-openai-only"
+os.environ["ROADTRIPS_OPENAI_MODEL"] = "fixture-openai-model"
 os.environ.pop("LOCAL_PREVIEW", None)
 os.environ.pop("ROADTRIPS_DATABASE_TARGET", None)
 os.environ.pop("ROUTING_REMOTE_URL", None)
@@ -102,7 +99,7 @@ import uvicorn
 from cryptography.hazmat.primitives.asymmetric import rsa
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse
 
 with (
     psycopg2.connect(
@@ -122,6 +119,7 @@ jwt.PyJWKClient.fetch_data = lambda self: {"keys": [jwk]}
 # Preserve production entry-point initialization before injecting source seams.
 app = importlib.import_module("app.main").app
 
+from app.agent import providers as ai_provider
 from app.agent.persona import ATTRIBUTE_KEYS
 from app.catalog import repository
 from app.models.routing_models.routing_models import MapBox
@@ -134,7 +132,7 @@ counts = {
     "catalog": 0,
     "ratings": 0,
     "durations": 0,
-    "gateway_auth": 0,
+    "openai_calls": 0,
     "solver": 0,
     "requests": [],
     "stream_events": [],
@@ -219,6 +217,7 @@ def counted_select(*args, **kwargs):
     return original_select(*args, **kwargs)
 
 
+ai_provider.RESPONSES_URL = "http://127.0.0.1:9009/v1/responses"
 cp_sat.select_attractions = counted_select
 location_api.get_location = location
 routing_api.get_location = location
@@ -340,26 +339,20 @@ async def authenticate(request: Request):
 providers = FastAPI()
 
 
-@providers.post("/auth/v1/token")
-async def service_auth(request: Request):
-    assert request.query_params.get("grant_type") == "password"
-    assert request.headers.get("apikey") == "synthetic-anon-key"
-    assert await request.json() == {
-        "email": "fixture@example.test",
-        "password": "fixture-only",
-    }
-    counts["gateway_auth"] += 1
-    return {"access_token": "fixture-gateway-token", "expires_in": 3600}
-
-
-@providers.post("/api/chat/stream-full")
-async def gateway(request: Request):
-    assert request.headers.get("authorization") == "Bearer fixture-gateway-token"
+@providers.post("/v1/responses")
+async def openai_fixture(request: Request):
+    assert request.headers.get("authorization") == "Bearer fixture-openai-only"
+    assert request.headers.get("apikey") is None
     raw = await request.body()
     assert len(raw) <= 256 * 1024
     body = json.loads(raw)
-    assert set(body) == {"messages"}
-    messages = body["messages"]
+    assert set(body) == {"input", "model", "text", "max_output_tokens", "store"}
+    assert body["model"] == "fixture-openai-model"
+    assert body["text"] == {"format": {"type": "json_object"}}
+    assert body["store"] is False
+    assert 1 <= body["max_output_tokens"] <= 8192
+    counts["openai_calls"] += 1
+    messages = body["input"]
     assert 1 <= len(messages) <= 50
     assert all(
         set(message) == {"role", "content"}
@@ -396,15 +389,19 @@ async def gateway(request: Request):
         raise AssertionError(
             "Unexpected provider prompt; this fixture never contacts live AI"
         )
-    event = {
-        "content": json.dumps(content),
-        "provider": "synthetic-gateway",
-        "tier": "fixture",
+    return {
+        "object": "response",
+        "status": "completed",
+        "model": "fixture-openai-model",
+        "usage": {"input_tokens": 88, "output_tokens": 30},
+        "output": [
+            {
+                "type": "message",
+                "role": "assistant",
+                "content": [{"type": "output_text", "text": json.dumps(content)}],
+            }
+        ],
     }
-    return Response(
-        "event: end\ndata: " + json.dumps(event) + "\n\n",
-        media_type="text/event-stream",
-    )
 
 
 async def main():

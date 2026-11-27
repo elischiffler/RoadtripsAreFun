@@ -13,9 +13,6 @@ services:
       DATABASE_SSLMODE: disable
       COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID:-}
       COGNITO_APP_CLIENT_ID: ${COGNITO_APP_CLIENT_ID:-}
-      MENTRO_GATEWAY_URL: http://mentro-server:3001
-      SUPABASE_URL: http://fixture:3004
-      SUPABASE_ANON_KEY: local-fixture-anon-key
       CORS_ORIGINS: http://127.0.0.1:8082
     ports: ["127.0.0.1:8002:8000"]
     networks: [isolated, preview]
