@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { isIPv4 } from "node:net";
 import { join } from "node:path";
 
 const root = join(import.meta.dirname, "../..");
@@ -48,6 +49,28 @@ const compose = [
   "-p",
   project,
 ];
+const localSubnet = process.env.GUIDED_JOURNEY_LOCAL_SUBNET;
+const networkOverride = join(artifacts, project + "-networks.json");
+if (localSubnet !== undefined) {
+  const address = localSubnet.replace(/\/24$/, "");
+  if (
+    !isIPv4(address) ||
+    !address.startsWith("10.") ||
+    !address.endsWith(".0") ||
+    localSubnet !== address + "/24"
+  )
+    throw Error("GUIDED_JOURNEY_LOCAL_SUBNET must be an unused 10.x.y.0/24");
+  const subnet = (offset) => ({
+    ipam: { config: [{ subnet: address.slice(0, -1) + offset + "/28" }] },
+  });
+  writeFileSync(
+    networkOverride,
+    JSON.stringify({ networks: { isolated: subnet(0), access: subnet(16) } }),
+    { flag: "wx" },
+  );
+  compose.push("-f", networkOverride);
+  process.once("exit", () => rmSync(networkOverride, { force: true }));
+}
 const preview = [
   "compose",
   "--env-file",
