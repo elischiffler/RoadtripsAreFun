@@ -371,6 +371,7 @@ async def execute_run(payload, user_id, departure):
             )
             with stage("studio.initial_route"):
                 initial = await call_route(*start["coordinates"], *destination["coordinates"])
+            envelope["directions_provider"] = initial.directions_provider
             envelope["direct_route"] = {"distance": initial.distance, "duration": initial.duration}
             record_stage("initial_route", "complete", "Apple Maps base driving route received.")
             route = await plan_final_route(

@@ -47,14 +47,51 @@ def begin(user_id, payload, run_id=None):
     return run_id
 
 
-def finish(user_id, run_id, envelope, metrics):
-    if (envelope.get("route") or {}).get("directions_provider") == "apple":
-        envelope = {
-            **envelope,
-            "route": without_road_data(envelope["route"]),
-            "itinerary": without_road_data(envelope.get("itinerary")),
-            "direct_route": None,
+_ROAD_METRICS = {
+    "baseline_gaps_seconds",
+    "baseline_seconds",
+    "detour_provenance",
+    "detour_raw_seconds",
+    "detour_seconds",
+    "direct_route",
+    "distance_meters",
+    "duration_seconds",
+    "estimated_detour_seconds",
+    "extra_distance_meters",
+    "extra_duration_seconds",
+    "maximum_baseline_gap_seconds",
+    "maximum_stretch_seconds",
+    "route_progress_seconds",
+    "solo_duration_seconds",
+}
+
+
+def _remove_provider_metrics(value):
+    if isinstance(value, dict):
+        return {
+            key: _remove_provider_metrics(item)
+            for key, item in value.items()
+            if key not in _ROAD_METRICS
         }
+    if isinstance(value, list):
+        return [_remove_provider_metrics(item) for item in value]
+    return value
+
+
+def durable_result(envelope):
+    provider = envelope.get("directions_provider") or (envelope.get("route") or {}).get(
+        "directions_provider"
+    )
+    if provider != "apple":
+        return envelope
+    return _remove_provider_metrics(without_road_data(envelope))
+
+
+def finish(user_id, run_id, envelope, metrics):
+    durable = durable_result(envelope)
+    if durable is not envelope:
+        envelope = durable
+        metrics = _remove_provider_metrics(without_road_data(metrics))
     rows = _query(
         "UPDATE algorithm_lab_runs SET status=%s, finished_at=now(), input=%s, metrics=%s, "
         "error_code=%s, result=%s WHERE id=%s AND user_id=%s AND status='running' RETURNING id",
@@ -74,6 +111,7 @@ def finish(user_id, run_id, envelope, metrics):
                         "attempts",
                         "explanation",
                         "direct_route",
+                        "directions_provider",
                         "input_snapshot",
                     )
                 }

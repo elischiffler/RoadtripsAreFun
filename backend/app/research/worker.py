@@ -9,6 +9,7 @@ from uuid import UUID, uuid5
 
 from fastapi import HTTPException, Response
 
+from app.crud.lab_runs import durable_result
 from app.research import store
 from app.research.design import TRIPS
 from app.research.metrics import observation
@@ -84,7 +85,10 @@ async def live_trial(case, study):
         envelope = await asyncio.wait_for(
             lab.recorded_run(request, Response(), study["owner"], job_id=run_id), timeout=1200
         )
-    atomic(store.directory() / study["id"] / f"{run_id}.json", json_text(envelope))
+    atomic(
+        store.directory() / study["id"] / f"{run_id}.json",
+        json_text(durable_result(envelope)),
+    )
     elapsed = (
         ((envelope.get("run_record") or {}).get("metrics") or {}).get("latency_ms", {}).get("total")
     )
