@@ -26,6 +26,8 @@ def install(*, loopback=False):
             "SUPABASE_URL",
             "SUPABASE_KEY",
             "MAPBOX_API",
+            "ROADTRIPS_OPENAI_API_KEY",
+            "ROADTRIPS_OPENAI_MODEL",
             "OPENCAGE_KEY",
             "CAR_DATA_API",
             "ROUTING_REMOTE_URL",

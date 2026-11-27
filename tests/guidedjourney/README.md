@@ -2,8 +2,8 @@
 
 Run this gate before every production push/release. It is part of the existing
 required **Local containers** workflow, so the EC2 deployment's four-workflow
-gate cannot pass if current guided trip creation fails. Live Mentro calls need
-separate explicit approval; this test never makes one.
+gate cannot pass if current guided trip creation fails. The gate makes no
+live model requests.
 
 The browser signs in through the real current login form and Cognito SDK using
 a local protocol fixture. The API uses its actual RS256 signature/issuer/client
@@ -19,10 +19,10 @@ An expired departure must expose an actionable error and
 must not save another trip or falsely complete planning.
 
 Only external boundaries are synthetic: Cognito login/JWK delivery, catalog rows,
-geocoding, road responses and a local Supabase/Mentro HTTP/SSE service. The real
+geocoding, road responses and a local OpenAI-compatible Responses HTTP service. The real
 gateway adapter, source parser, solver, timing, verifier and CRUD stay active.
 The gateway fixture validates message/body limits and returns deterministic
-ratings and durations. It is not the actual Mentro server or model, and does not
+ratings and durations. Its provider uses synthetic responses and does not
 prove live provider behavior, current Cognito accounts, production data/schema,
 or network availability.
 

@@ -12,21 +12,21 @@ def local_env():
     return {
         "LOCAL_PREVIEW": "true",
         "DATABASE_URL": "postgresql://test:test@postgres/test",
-        "MENTRO_GATEWAY_URL": "http://mentro-server:3001",
-        "SUPABASE_URL": "http://fixture:3004",
     }
 
 
-@pytest.mark.parametrize("name", ["DATABASE_URL", "MENTRO_GATEWAY_URL", "SUPABASE_URL"])
 @pytest.mark.parametrize("value", ["", "https://hosted.example"])
-def test_local_preview_rejects_missing_or_hosted_destinations(name, value):
+def test_local_preview_rejects_missing_or_hosted_database(value):
+    name = "DATABASE_URL"
     env = local_env()
     env[name] = value
     with pytest.raises(ValueError, match=name):
         validate_local_environment(env)
 
 
-@pytest.mark.parametrize("name", ["ROUTING_REMOTE_URL", "MAPBOX_API", "OPENCAGE_KEY"])
+@pytest.mark.parametrize(
+    "name", ["ROUTING_REMOTE_URL", "MAPBOX_API", "OPENCAGE_KEY", "ROADTRIPS_OPENAI_API_KEY"]
+)
 def test_local_preview_rejects_live_provider_configuration(name):
     env = local_env()
     env[name] = "not-a-real-secret"

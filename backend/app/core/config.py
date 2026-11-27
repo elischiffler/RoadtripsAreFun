@@ -15,8 +15,6 @@ def validate_local_environment(env) -> None:
         return
     allowed = {
         "DATABASE_URL": {"postgres", "restore", "127.0.0.1", "localhost"},
-        "MENTRO_GATEWAY_URL": {"mentro-server", "127.0.0.1", "localhost"},
-        "SUPABASE_URL": {"fixture", "127.0.0.1", "localhost"},
     }
     for name, hosts in allowed.items():
         value = env.get(name, "")
@@ -28,6 +26,7 @@ def validate_local_environment(env) -> None:
         "MAPBOX_API",
         "APPLE_MAPS_PRIVATE_KEY",
         "APPLE_MAPS_PRIVATE_KEY_FILE",
+        "ROADTRIPS_OPENAI_API_KEY",
         "GOOGLE_PLACES_API",
         "OPENCAGE_KEY",
         "CAR_DATA_API",
@@ -93,11 +92,8 @@ class Settings:
     DATABASE_SSLMODE = _database_sslmode()
 
     # Shared AI provider for place ratings, preference extraction and duration estimates.
-    MENTRO_GATEWAY_URL = os.getenv("MENTRO_GATEWAY_URL", "https://api.mentro.elischiffler.dev")
-    SUPABASE_URL = os.getenv("SUPABASE_URL")
-    SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
-    MENTRO_SERVICE_EMAIL = os.getenv("MENTRO_SERVICE_EMAIL")
-    MENTRO_SERVICE_PASSWORD = os.getenv("MENTRO_SERVICE_PASSWORD")
+    ROADTRIPS_OPENAI_API_KEY = os.getenv("ROADTRIPS_OPENAI_API_KEY")
+    ROADTRIPS_OPENAI_MODEL = os.getenv("ROADTRIPS_OPENAI_MODEL") or "gpt-5.4-mini-2026-03-17"
 
 
 settings = Settings()

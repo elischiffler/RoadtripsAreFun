@@ -28,10 +28,9 @@ def safe_message(value):
         secret = getattr(config, key, None)
         if secret:
             text = text.replace(str(secret), "[redacted]")
-    for key in ("SUPABASE_ANON_KEY", "MENTRO_SERVICE_PASSWORD", "MENTRO_SERVICE_EMAIL"):
-        secret = getattr(settings, key, None)
-        if secret:
-            text = text.replace(str(secret), "[redacted]")
+    key = (settings.ROADTRIPS_OPENAI_API_KEY or "").strip()
+    if key:
+        text = text.replace(key, "[redacted]")
     text = re.sub(r"https?://\S+", "[provider URL]", text)
     text = re.sub(r"(?i)bearer\s+\S+", "Bearer [redacted]", text)
     text = re.sub(r"eyJ[\w-]+\.[\w-]+\.[\w-]+", "[redacted token]", text)
@@ -78,6 +77,11 @@ def retryable(exc):
         if isinstance(exc, httpx.HTTPStatusError):
             status = exc.response.status_code
         if isinstance(status, int):
+            if (
+                getattr(exc, "provider", None) == "openai"
+                and getattr(exc, "provider_code", None) == "insufficient_quota"
+            ):
+                return False
             return status in (408, 429) or 500 <= status <= 599
         if isinstance(
             exc,
