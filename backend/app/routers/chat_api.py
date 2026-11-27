@@ -7,6 +7,8 @@ from pydantic import ValidationError
 
 from app.crud.chat_crud import (
     ChatIdentityConflict,
+    ChatRevisionConflict,
+    chat_data_revision,
     create_chat,
     delete_chat,
     get_all_chats,
@@ -14,7 +16,12 @@ from app.crud.chat_crud import (
     restore_legs,
     update_chat_component,
 )
-from app.schemas.chat_schemas import ChatSchema
+from app.schemas.chat_schemas import (
+    ChatSchema,
+    apple_route_intent,
+    has_apple_route_intent,
+    stored_chat_data,
+)
 from app.utils.auth import bearer_token, get_user_id_from_token
 
 router = APIRouter()
@@ -39,8 +46,15 @@ async def initialize_chats(authorization: str | None = Header(default=None)):
         if items and len(items) > 0:
             # Iterate through all the items returned
             for item in items:
-                sorted_segments = None
-                if item["ChatData"]["initial"]:
+                data = item["ChatData"]
+                data["savedRevision"] = chat_data_revision(data)
+                route = data.get("route")
+                apple = has_apple_route_intent(route, data.get("tripProfile"))
+                if apple:
+                    data["initial"] = None
+                    data["route"] = apple_route_intent(route)
+                initial = data.get("initial")
+                if initial and isinstance(initial.get("geometry"), str):
                     sorted_segments = get_segments(
                         user_id=user_id,
                         chat_id=item["ChatId"],
@@ -53,8 +67,7 @@ async def initialize_chats(authorization: str | None = Header(default=None)):
                         chat_id=item["ChatId"],
                         legs=item["ChatData"]["initial"]["legs"],
                     )
-                route = item["ChatData"]["route"]
-                if route:
+                if route and not apple:
                     stored_coordinates = route["geometry"]["coordinates"]
                     if isinstance(stored_coordinates, str):
                         route["geometry"]["coordinates"] = get_segments(
@@ -90,7 +103,7 @@ async def chat_add(chat_id: str, request: ChatSchema):
     try:
         # Create a new item in the database for the given chat data and log
         response = create_chat(
-            user_id, chat_id, chat_data.model_dump(mode="json"), chat_log.model_dump(mode="json")
+            user_id, chat_id, stored_chat_data(chat_data), chat_log.model_dump(mode="json")
         )
         if response is None:
             raise ChatIdentityConflict("Trip ID belongs to a different planning request")
@@ -132,7 +145,13 @@ async def chat_update(chat_id: int, request: ChatSchema):
             raise ValueError("Chat data or logs data is required")
         # Check if chat data was sent to be updated in the database
         if chat_data:
-            result = update_chat_component(user_id, str(chat_id), chat_data, "ChatData")
+            result = update_chat_component(
+                user_id,
+                str(chat_id),
+                chat_data,
+                "ChatData",
+                expected_revision=request.ExpectedRevision,
+            )
             if result is None:
                 raise HTTPException(status_code=404, detail="Chat not found")
             else:
@@ -146,7 +165,11 @@ async def chat_update(chat_id: int, request: ChatSchema):
             else:
                 logger.info("UPDATE chat_log success chat_id=%s", chat_id)
             responses.append(result)
+        if request.ExpectedRevision is not None:
+            return {"savedRevision": chat_data_revision(responses[0][0]["chat_data"])}
         return responses
+    except ChatRevisionConflict:
+        raise HTTPException(409, "This trip changed. Reopen it before saving.") from None
     except HTTPException:
         raise
     except psycopg2.Error:

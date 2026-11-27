@@ -5,6 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.models.routing_models.routing_models import MapBox
 
 client = TestClient(app)
 pytestmark = pytest.mark.usefixtures("allow_provider_auth")
@@ -75,11 +76,10 @@ def _mapbox_response(start_lon=-117.93, start_lat=33.72, end_lon=-74.16, end_lat
     }
 
 
-def _mock_requests_get(url, **kwargs):
-    resp = MagicMock()
-    resp.status_code = 200
-    resp.json.return_value = _mapbox_response()
-    return resp
+def _mock_apple_route(*args, **kwargs):
+    return MapBox.MapBox_Route.model_validate(
+        {**_mapbox_response()["routes"][0], "directions_provider": "apple"}
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -136,7 +136,7 @@ def _mock_requests_get(url, **kwargs):
 )
 def test_get_initial_route(params):
     """Returns 200 with a valid route shape for any origin/destination pair."""
-    with patch("app.routing.sources.mapbox.http_get", side_effect=_mock_requests_get):
+    with patch("app.routers.routing_api._call_route", side_effect=_mock_apple_route):
         response = client.get("/get-initial-route", params=params)
     assert response.status_code == 200
     data = response.json()
@@ -154,7 +154,7 @@ def test_get_initial_route_returns_steps():
         "end_lat": 40.647306,
         "end_lon": -74.157289,
     }
-    with patch("app.routing.sources.mapbox.http_get", side_effect=_mock_requests_get):
+    with patch("app.routers.routing_api._call_route", side_effect=_mock_apple_route):
         response = client.get("/get-initial-route", params=params)
     assert response.status_code == 200
     assert len(response.json()["legs"][0]["steps"]) > 0
@@ -225,15 +225,13 @@ def test_generate_final_route_unknown_algorithm_returns_400():
     short_trip_mapbox = _mapbox_response()
     short_trip_mapbox["routes"][0]["duration"] = 7200.0
     short_trip_mapbox["routes"][0]["legs"][0]["duration"] = 7200.0
-    mock_resp = MagicMock()
-    mock_resp.status_code = 200
-    mock_resp.json.return_value = short_trip_mapbox
+    mock_resp = MapBox.MapBox_Route.model_validate(short_trip_mapbox["routes"][0])
     mock_location = MagicMock()
     mock_location.address = "Somewhere, USA"
     mock_location.raw = {"annotations": {"timezone": {"name": "America/Los_Angeles"}}}
 
     with (
-        patch("app.routing.sources.mapbox.http_get", return_value=mock_resp),
+        patch("app.routers.routing_api._call_route", return_value=mock_resp),
         patch("app.routers.routing_api.get_location", return_value=mock_location),
         patch("app.routers.routing_api.owner_routing_claims", return_value={"sub": "fixture-user"}),
     ):
@@ -289,3 +287,21 @@ def test_benchmark_enabled_returns_table():
 
 if __name__ == "__main__":
     pytest.main()
+
+
+def test_hosted_apple_geometry_requires_an_apple_viewer(monkeypatch):
+    from app.core.config import settings
+
+    monkeypatch.setattr(settings, "REQUIRE_APPLE_DIRECTIONS_VIEWER", True)
+    params = {"start_lat": 33.7, "start_lon": -118, "end_lat": 35.2, "end_lon": -120.7}
+    with patch("app.routers.routing_api._call_route", side_effect=_mock_apple_route) as road:
+        blocked = client.get("/get-initial-route", params=params)
+        assert blocked.status_code == 426
+        assert blocked.headers["cache-control"] == "no-store"
+        road.assert_not_called()
+        result = client.get(
+            "/get-initial-route", params=params, headers={"X-Roadtrips-Directions": "apple"}
+        )
+    assert result.status_code == 200
+    assert result.json()["directions_provider"] == "apple"
+    assert result.headers["cache-control"] == "no-store"

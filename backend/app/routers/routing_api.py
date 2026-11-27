@@ -5,7 +5,7 @@ route-planning *algorithm* lives behind the pluggable planner layer in
 ``app.routing`` (selected by name), and all external-API candidate sourcing lives
 in ``app.routing.sources``. This module's job is to:
 
-1. call Mapbox for the initial / final route,
+1. call Apple Maps for the initial and final roads,
 2. build a :class:`RoutingServices` bundle,
 3. pick a planner and run it,
 4. shape the result into the :class:`Route` response.
@@ -20,6 +20,7 @@ whatever those names resolve to at call time (including test patches).
 import logging
 import math
 import os
+from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import requests  # noqa: F401  (re-exported: tests patch app.routers.routing_api.requests.get)
@@ -27,7 +28,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import StreamingResponse
 from fastapi.routing import APIRoute
-from pydantic import ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from requests.exceptions import RequestException
 from starlette.concurrency import run_in_threadpool
 
@@ -39,9 +40,15 @@ from app.agent.provider_diagnostics import retry_async
 from app.agent.trip_dates import timezone_from_location
 from app.core.departure_errors import DepartureNotUpcomingHTTPError
 from app.crud.memory_crud import load_account_persona
-from app.models.guided_planning import RouteAlternativesRequest, RouteAlternativesResponse
-from app.models.routing_models.routing_models import MapBox, Route, Route_Payload
+from app.models.guided_planning import (
+    Latitude,
+    Longitude,
+    RouteAlternativesRequest,
+    RouteAlternativesResponse,
+)
+from app.models.routing_models.routing_models import MapBox, Mapbox_geo, Route, Route_Payload
 from app.models.scheduling_policy import local_time
+from app.models.trip_limits import ROAD_MAX_COORDINATES
 from app.routers.routing_fns.webscraping_fns import find_google_hotels  # noqa: F401
 from app.routing import PlanningError, PlanOptions, RoutingServices, get_planner
 from app.routing.alternatives import browse_alternatives
@@ -55,12 +62,12 @@ from app.routing.pricing import get_price_range as _get_price_range  # noqa: F40
 from app.routing.registry import DEFAULT_ALGORITHM
 from app.routing.runtime import in_run, singleflight, threaded
 from app.routing.selection import owner_routing_claims, select_algorithm
+from app.routing.sources.apple import call_route as _call_route
 from app.routing.sources.attractions import find_stop as _find_stop  # noqa: F401
 from app.routing.sources.attractions import gather_candidates as _gather_candidates
 from app.routing.sources.evenings import enrich_evenings, evening_interests
 from app.routing.sources.hotels import find_hotel as _find_hotel  # noqa: F401
 from app.routing.sources.hotels import get_nearby_city as _get_nearby_city  # noqa: F401
-from app.routing.sources.mapbox import call_route as _call_route
 from app.routing.sources.persona_candidates import (
     CandidateRatingError,
     attraction_candidates,
@@ -149,7 +156,7 @@ def _build_services() -> RoutingServices:
 async def get_initial_route(
     start_lat: float, start_lon: float, end_lat: float, end_lon: float
 ) -> MapBox_route:
-    """Return the baseline Mapbox route between the supplied endpoint coordinates.
+    """Return the baseline Apple Maps route between the supplied endpoint coordinates.
 
     Provider and response validation failures are translated to HTTP errors.
     """
@@ -157,14 +164,55 @@ async def get_initial_route(
         # Construct initial route without stops
         initial_route = await _call_route(start_lat, start_lon, end_lat, end_lon)
         return initial_route
+    except PlanningError as exception:
+        raise HTTPException(exception.status_code, exception.detail) from None
     except RequestException as exception:
-        raise HTTPException(status_code=500, detail=f"Mapbox request failed: {str(exception)}")
+        raise HTTPException(status_code=500, detail=f"Directions request failed: {str(exception)}")
     except ValidationError as exception:
-        raise HTTPException(status_code=502, detail=f"Improper Mapbox response: {str(exception)}")
+        raise HTTPException(
+            status_code=502, detail=f"Improper directions response: {str(exception)}"
+        )
     except (KeyError, ValueError) as exception:
         raise HTTPException(
             status_code=500, detail=f"Error processing Mapbox response: {str(exception)}"
         )
+
+
+class RouteDirectionsRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    coordinates: list[tuple[Latitude, Longitude]] = Field(
+        min_length=2, max_length=ROAD_MAX_COORDINATES
+    )
+
+
+class RouteDirectionsResponse(BaseModel):
+    directions_provider: Literal["apple"]
+    geometry: Mapbox_geo
+    distance: float
+    duration: float
+
+
+@guided_router.post(
+    "/route-directions",
+    response_model=RouteDirectionsResponse,
+    dependencies=[Depends(require_authenticated_user)],
+)
+async def route_directions(payload: RouteDirectionsRequest):
+    """Refresh road directions for ordered saved waypoints without changing the trip."""
+    start, *intermediate, end = payload.coordinates
+    waypoints = ";".join(f"{lon},{lat}" for lat, lon in intermediate)
+    try:
+        road = await _call_route(*start, *end, waypoints)
+    except PlanningError as exception:
+        raise HTTPException(exception.status_code, exception.detail) from None
+    if road.directions_provider != "apple" or road.geometry is None:
+        raise HTTPException(502, "Apple Maps did not return a usable road route.")
+    return RouteDirectionsResponse(
+        directions_provider="apple",
+        geometry=road.geometry,
+        distance=road.distance,
+        duration=road.duration,
+    )
 
 
 @router.post(
@@ -177,7 +225,7 @@ async def get_final_route(
     x_cognito_id_token: str | None = Header(default=None),
 ) -> Route:
     """
-    Retrieves a route from Mapbox API, adds intermediate stops via the selected
+    Retrieves a route from Apple Maps, adds intermediate stops via the selected
     planner, and returns the detailed route information.
 
     Parameters:
@@ -188,7 +236,7 @@ async def get_final_route(
         - Route: Detailed route information including coordinates, distance, duration, and stops.
 
     Raises:
-        - HTTPException: For errors related to Mapbox requests, planning, or response processing.
+        - HTTPException: For errors related to directions requests, planning, or response processing.
     """
 
     try:
@@ -307,8 +355,12 @@ async def plan_final_route(
     except ValueError as exc:
         raise PlanningError(str(exc), 422) from exc
     initial_route = payload.initial_route
-    start_lon, start_lat = initial_route.geometry.coordinates[0]
-    end_lon, end_lat = initial_route.geometry.coordinates[-1]
+    if initial_route.directions_provider == "apple" and len(initial_route.waypoints or []) == 2:
+        start_lon, start_lat = initial_route.waypoints[0].location
+        end_lon, end_lat = initial_route.waypoints[-1].location
+    else:
+        start_lon, start_lat = initial_route.geometry.coordinates[0]
+        end_lon, end_lat = initial_route.geometry.coordinates[-1]
     num_stops = payload.num_stops
     start = payload.start
     budget = payload.budget
@@ -364,7 +416,7 @@ async def plan_final_route(
 
             coordinates = [stop["coordinates"] for stop in stopping_points]
 
-            # Final road route: stop records use [lat, lon], Mapbox waypoints use lon,lat.
+            # Stop records use [lat, lon]. The road exchange accepts lon,lat waypoints.
             waypoints = ";".join([f"{lon},{lat}" for lat, lon in coordinates])
             with stage("route.final_reroute", waypoints=len(coordinates)):
                 route = await _call_route(start_lat, start_lon, end_lat, end_lon, waypoints)
@@ -374,7 +426,9 @@ async def plan_final_route(
                     or not math.isfinite(route.duration)
                     or route.duration < 0
                 ):
-                    raise PlanningError("Mapbox returned an incomplete final route", 502)
+                    raise PlanningError(
+                        "The directions provider returned an incomplete final route", 502
+                    )
             distance, duration = route.distance, route.duration
             geometry = route.geometry
             steps = []
@@ -425,9 +479,7 @@ async def plan_final_route(
                         for stop in stopping_points:
                             stop["timezone"] = await services.timezone_at(stop["coordinates"])
                     apply_timing(stopping_points, start, payload.scheduling_policy, start_timezone)
-                record_stage(
-                    "reroute", "complete", "Mapbox actual legs passed local timing checks."
-                )
+                record_stage("reroute", "complete", "Road legs passed local timing checks.")
                 await enrich_evenings(
                     stopping_points, evening_interests(payload.evening_interests, weights)
                 )
@@ -440,6 +492,7 @@ async def plan_final_route(
                 steps=steps,
                 stops=stopping_points,
                 geometry=geometry,
+                directions_provider=route.directions_provider,
                 cost=total_cost,
                 scheduling_policy=payload.scheduling_policy,
                 start_timezone=start_timezone,

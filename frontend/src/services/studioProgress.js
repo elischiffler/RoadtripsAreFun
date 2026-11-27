@@ -1,3 +1,4 @@
+import { appleDirectionsHeader } from './directionsCapability';
 import { clearStudioSession, getStudioSession, studioConfig } from './studioSession';
 import { ensureSession, isCurrentSession } from './session';
 import { isAuthRejection } from './protectedRequest';
@@ -34,7 +35,7 @@ export async function streamStudioRun(request, signal, onProgress) {
     resetIdle();
     const response = await fetch(`${import.meta.env.VITE_BACKEND_SERVER}studio/run/stream`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...config.headers },
+      headers: { 'Content-Type': 'application/json', ...appleDirectionsHeader, ...config.headers },
       body: JSON.stringify(request),
       signal: controller.signal,
     });

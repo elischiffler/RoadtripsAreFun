@@ -48,7 +48,7 @@ from app.routing.occupancy import (
 from app.routing.run_metrics import aggregate_runs, compile_metrics, measuring
 from app.routing.runtime import in_run, joined, threaded
 from app.routing.selection import owner_routing_claims
-from app.routing.sources.mapbox import call_route
+from app.routing.sources.apple import call_route
 from app.routing.sources.persona_candidates import CandidateProviderError
 from app.utils.auth import require_authenticated_user
 from app.utils.geolocation_helpers import get_location
@@ -371,8 +371,9 @@ async def execute_run(payload, user_id, departure):
             )
             with stage("studio.initial_route"):
                 initial = await call_route(*start["coordinates"], *destination["coordinates"])
+            envelope["directions_provider"] = initial.directions_provider
             envelope["direct_route"] = {"distance": initial.distance, "duration": initial.duration}
-            record_stage("initial_route", "complete", "Mapbox base driving route received.")
+            record_stage("initial_route", "complete", "Apple Maps base driving route received.")
             route = await plan_final_route(
                 Route_Payload(
                     initial_route=initial,

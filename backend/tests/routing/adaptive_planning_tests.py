@@ -25,7 +25,7 @@ from app.routing.occupancy import HotelRoom
 from app.routing.planners.cp_sat import CPSatPlanner
 from app.routing.run_metrics import measuring
 from app.routing.runtime import joined, limited, run_context, singleflight, threaded
-from app.routing.sources.mapbox import UnusableRoadRoute
+from app.routing.sources.apple import UnusableRoadRoute
 from app.routing.sources.persona_candidates import attraction_candidates
 from tests.routing.conftest import build_route
 

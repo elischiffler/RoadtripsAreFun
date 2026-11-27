@@ -20,7 +20,8 @@ const browser = await chromium.launch({
 });
 const errors = [],
   blocked = [],
-  http = [];
+  http = [],
+  planningRequests = [];
 let activePage;
 
 async function session() {
@@ -39,6 +40,20 @@ async function session() {
   const page = await context.newPage();
   activePage = page;
   page.on("pageerror", (error) => errors.push(error.message));
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (
+      url.origin === backend &&
+      /^\/(get-initial-route|generate-final-route\/stream)$/.test(
+        url.pathname,
+      ) &&
+      request.method() !== "OPTIONS"
+    )
+      planningRequests.push({
+        path: url.pathname,
+        apple: request.headers()["x-roadtrips-directions"] === "apple",
+      });
+  });
   page.on("response", (response) => {
     const url = new URL(response.url());
     if (url.origin !== backend) return;
@@ -220,12 +235,66 @@ try {
   await page
     .getByRole("button", { name: "Mark visited: " + visitedName, exact: true })
     .waitFor();
+  const appleReopen = await page.evaluate(async (api) => {
+    // Read own fixture trips and refresh only the ordered directions. The
+    // application remains signed in; no auth value or raw road data leaves this context.
+    const headers = {
+      Authorization: "Bearer " + sessionStorage.getItem("accessToken"),
+      "X-Cognito-Id-Token": sessionStorage.getItem("idToken"),
+      "X-Roadtrips-Directions": "apple",
+      "Content-Type": "application/json",
+    };
+    const first = await fetch(api + "/chats", { headers });
+    if (!first.ok) throw new Error("Could not reopen the saved Apple fixture");
+    const [[trip]] = await first.json();
+    const { route, savedRevision } = trip;
+    const drive = await fetch(api + "/route-directions", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ coordinates: route.coordinates }),
+    });
+    const directions = await drive.json();
+    const second = await fetch(api + "/chats", { headers });
+    const [[reread]] = await second.json();
+    return {
+      provider: route.directions_provider,
+      transientProvider: directions.directions_provider,
+      storedRoadFields: ["geometry", "distance", "duration", "steps"].filter(
+        (key) => key in route,
+      ),
+      waypointCount: route.coordinates.length,
+      storedStops: route.stops.length,
+      geometryCount: directions.geometry?.coordinates.length,
+      noStore: drive.headers.get("Cache-Control") === "no-store",
+      sameRevision: reread.savedRevision === savedRevision,
+      sameStops:
+        JSON.stringify(reread.route.stops) === JSON.stringify(route.stops),
+    };
+  }, backend);
+  assert.equal(appleReopen.provider, "apple");
+  assert.equal(appleReopen.transientProvider, "apple");
+  assert.deepEqual(appleReopen.storedRoadFields, []);
+  assert.ok(appleReopen.waypointCount >= 2 && appleReopen.storedStops >= 1);
+  assert.ok(appleReopen.geometryCount >= 2);
+  assert.equal(appleReopen.noStore, true);
+  assert.equal(appleReopen.sameRevision, true);
+  assert.equal(appleReopen.sameStops, true);
+  assert.ok(
+    planningRequests.some(
+      ({ path }) => path === "/generate-final-route/stream",
+    ),
+  );
+  assert.ok(planningRequests.every(({ apple }) => apple));
   const happyReport = await (await fetch(backend + "/fixture/report")).json();
   assert.equal(happyReport.stored_trips, 1);
   assert.equal(happyReport.solver, 1);
   await writeFile(
     join(output, "happy-result.json"),
-    JSON.stringify({ passed: true, report: happyReport }, null, 2) + "\n",
+    JSON.stringify(
+      { passed: true, report: happyReport, appleReopen },
+      null,
+      2,
+    ) + "\n",
   );
   console.log(
     "PASS: future trip created through actual HTTP/API/CP-SAT and persisted/reloaded/visited/undone in disposable PostgreSQL.",

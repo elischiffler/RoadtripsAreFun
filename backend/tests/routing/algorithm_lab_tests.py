@@ -385,3 +385,63 @@ def test_planning_failure_logs_code_locations_without_provider_secrets(headers, 
     assert any(name == "unavailable" for name, line in logged[0][3])
     assert "secret provider credentials" not in str(logged)
     assert "secret provider credentials" not in str(result)
+
+
+@pytest.mark.parametrize("failed", [True, False])
+def test_studio_archives_no_apple_road_metrics_after_initial_route(monkeypatch, failed):
+    from app.crud import lab_runs
+
+    def write(sql, params, **options):
+        assert options["write"]
+        assert params[3].adapted == {
+            "observed_route": {},
+            "latency_ms": {"total": 52},
+            "trip_evaluation": {"stop_fulfillment": {"delivered": 1}},
+        }
+        archived = params[5].adapted
+        assert archived["direct_route"] is None
+        assert archived["directions_provider"] == "apple"
+        assert archived["explanation"] == {}
+        assert archived["route"] == (
+            None
+            if failed
+            else {"directions_provider": "apple", "coordinates": [[33, -118], [35, -120]]}
+        )
+        return [("found",)]
+
+    monkeypatch.setattr(lab_runs, "_query", write)
+    lab_runs.finish(
+        "fixture-user",
+        "fixture-run",
+        {
+            "directions_provider": "apple",
+            "direct_route": {"distance": 1000, "duration": 500},
+            "route": None
+            if failed
+            else {
+                "directions_provider": "apple",
+                "coordinates": [[33, -118], [35, -120]],
+                "geometry": {"type": "LineString", "coordinates": []},
+                "duration": 550,
+            },
+            "input_snapshot": {},
+            "explanation": {
+                "road_checks": [
+                    {
+                        "state": "measured",
+                        "detour_provenance": {"baseline_seconds": 500},
+                    }
+                ]
+            },
+            "error": {"code": "failed"} if failed else None,
+        },
+        {
+            "observed_route": {"duration_seconds": 550},
+            "latency_ms": {"total": 52},
+            "trip_evaluation": {
+                "driving": {"direct_distance_meters": 1000},
+                "driving_gaps": {"attraction_gaps_seconds": [700]},
+                "stop_fulfillment": {"delivered": 1},
+            },
+        },
+    )

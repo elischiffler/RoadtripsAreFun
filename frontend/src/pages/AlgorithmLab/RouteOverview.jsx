@@ -1,18 +1,22 @@
 import PlaceTiming from '../../components/PlaceTiming.jsx';
 import PropTypes from 'prop-types';
 import Map from '../../components/Map';
+import { isAppleRoute } from '../../services/directionsCapability';
 
 export default function RouteOverview({ route }) {
   const geometry = route?.geometry?.coordinates;
+  const endpoints =
+    geometry?.length > 1 ? geometry : route.coordinates?.map(([lat, lon]) => [lon, lat]);
   return (
     <div className="lab-route-overview">
-      {geometry?.length > 1 ? (
+      {(geometry?.length > 1 || isAppleRoute(route)) && endpoints?.length > 1 ? (
         <div className="lab-map" aria-label="Route map">
           <Map
+            studio
             UserChatData={{
               route,
-              startConfirmed: { longitude: geometry[0][0], latitude: geometry[0][1] },
-              endConfirmed: { longitude: geometry.at(-1)[0], latitude: geometry.at(-1)[1] },
+              startConfirmed: { longitude: endpoints[0][0], latitude: endpoints[0][1] },
+              endConfirmed: { longitude: endpoints.at(-1)[0], latitude: endpoints.at(-1)[1] },
             }}
           />
         </div>

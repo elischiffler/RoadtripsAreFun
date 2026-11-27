@@ -1,3 +1,4 @@
+import { appleDirectionsHeader } from './directionsCapability';
 import {
   ensureSession,
   getSession,
@@ -43,7 +44,11 @@ export async function streamTripRoute(payload, signal, onProgress) {
       check();
       alive();
       const { config } = sessionRequest(session, null, {
-        headers: { 'Content-Type': 'application/json', Accept: 'application/x-ndjson' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...appleDirectionsHeader,
+          Accept: 'application/x-ndjson',
+        },
       });
       response = await fetch(`${import.meta.env.VITE_BACKEND_SERVER}generate-final-route/stream`, {
         method: 'POST',

@@ -5,17 +5,16 @@ import math
 from datetime import UTC, datetime
 from typing import Literal
 
-import httpx
 from geopy.distance import geodesic
 from pydantic import BaseModel, ConfigDict, model_validator
 
 from app.agent.progress import emit
 from app.catalog import admission, repository
 from app.models.scheduling_policy import advance, seconds_until
-from app.routing import config
 from app.routing.catalog_calendars import explicit_calendar_ineligible
 from app.routing.run_metrics import increment
 from app.routing.runtime import threaded
+from app.routing.sources.apple import call_route
 from app.routing.sources.persona_candidates import VerifiedPlace
 
 # New pilot records are withheld here until this optional path can verify the
@@ -86,21 +85,12 @@ class LiveEveningProvider:
         return records
 
     async def travel(self, hotel, venue):
-        """One bounded round-trip directions request, no route-waypoint mutation."""
-        if not config.MAPBOX_API:
-            raise ValueError("Optional travel directions are unavailable")
-        points = ";".join(f"{lon},{lat}" for lat, lon in (hotel, venue, hotel))
-        async with httpx.AsyncClient(timeout=3) as client:
-            increment("mapbox")
-            response = await client.get(
-                f"https://api.mapbox.com/directions/v5/mapbox/driving/{points}",
-                params={"access_token": config.MAPBOX_API, "overview": "false", "steps": "false"},
-            )
-        response.raise_for_status()
-        legs = response.json()["routes"][0]["legs"]
-        if len(legs) != 2:
-            raise ValueError("Incomplete optional round-trip directions")
-        return [leg["duration"] for leg in legs]
+        """Measure each direction independently on Apple's road network."""
+        outgoing, returning = await asyncio.gather(
+            call_route(*hotel, *venue),
+            call_route(*venue, *hotel),
+        )
+        return [outgoing.duration, returning.duration]
 
 
 def evening_interests(explicit, weights):

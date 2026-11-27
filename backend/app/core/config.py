@@ -26,6 +26,8 @@ def validate_local_environment(env) -> None:
         raise ValueError("ROUTING_REMOTE_URL must be unset for an isolated preview")
     for name in (
         "MAPBOX_API",
+        "APPLE_MAPS_PRIVATE_KEY",
+        "APPLE_MAPS_PRIVATE_KEY_FILE",
         "GOOGLE_PLACES_API",
         "OPENCAGE_KEY",
         "CAR_DATA_API",
@@ -73,6 +75,7 @@ def _database_sslmode() -> str:
 
 class Settings:
     LOCAL_PREVIEW = os.getenv("LOCAL_PREVIEW") == "true"
+    REQUIRE_APPLE_DIRECTIONS_VIEWER = os.getenv("ROADTRIPS_DATABASE_TARGET") == "neon"
     NEON_READ_ONLY = (
         os.getenv("ROADTRIPS_DATABASE_TARGET") == "neon"
         and os.getenv("ROADTRIPS_NEON_WRITES_ENABLED") != "true"

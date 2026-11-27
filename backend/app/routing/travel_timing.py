@@ -21,7 +21,7 @@ def apply_timing(
     for stop in stops:
         duration = stop["duration"]
         if not math.isfinite(duration) or duration < 0:
-            raise PlanningError("Mapbox returned an invalid leg duration", 502)
+            raise PlanningError("The road provider returned an invalid leg duration", 502)
         if stop["type"] == "stop" and requires_calendar(stop) and not stop.get("timezone"):
             raise VisitCalendarConflict(
                 stop.get("provider_id", "unknown"), "arrival IANA timezone is unknown"

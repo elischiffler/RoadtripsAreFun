@@ -12,7 +12,7 @@ from app.agent.persona import ATTRIBUTE_KEYS
 from app.catalog import personas, usfs_current
 from app.routing.sources.persona_candidates import LocationProfile
 from tests.catalog_extraction_tests import load_script
-from tests.catalog_usfs_current_tests import bundle
+from tests.catalog_usfs_current_tests import bundle, pin_fixture_evidence_clock
 
 campaign = load_script("catalog_expansion_campaign")
 capture = load_script("catalog_test_routes")
@@ -27,6 +27,7 @@ def no_network(monkeypatch):
 
 
 def setup(tmp_path, monkeypatch):
+    pin_fixture_evidence_clock(monkeypatch)
     source = tmp_path / "source"
     source.mkdir()
     _, path, write = bundle(source)
