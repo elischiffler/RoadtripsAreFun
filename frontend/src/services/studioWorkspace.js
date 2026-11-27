@@ -1,3 +1,4 @@
+import { safeAppleSnapshot } from './directionsCapability';
 // One private workspace per browser tab and Studio session. Never a planning authority.
 export const STUDIO_WORKSPACE_KEY = 'roadtrips.studio.workspace.v1';
 const object = (value) => value != null && typeof value === 'object' && !Array.isArray(value);
@@ -79,6 +80,7 @@ export function saveStudioWorkspace(session, workspace) {
     session: session.token,
     backend: import.meta.env.VITE_BACKEND_SERVER,
     ...workspace,
+    result: safeAppleSnapshot(workspace.result),
   };
   try {
     sessionStorage.setItem(STUDIO_WORKSPACE_KEY, JSON.stringify(data));

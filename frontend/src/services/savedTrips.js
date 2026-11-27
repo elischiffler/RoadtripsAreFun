@@ -1,3 +1,4 @@
+import { safeAppleSnapshot } from './directionsCapability';
 import axios from './protectedRequest';
 import { getSession, isCurrentSession, SessionError, tokenOwner } from './session';
 import { Data, ChatLogs, ChatData } from '../states/UserDataContext';
@@ -131,7 +132,7 @@ export const createChat = async (auth_token, UserChatData, ChatLog, options = {}
         PartitionKey: auth_token,
         // Snapshot IDs per dispatch; a later safe retry must not mutate a
         // previously dispatched request or its diagnostic/mock representation.
-        ChatData: { ...UserChatData },
+        ChatData: { ...safeAppleSnapshot(UserChatData) },
         ChatLog: sanitizedLog,
       };
       console.debug('[DB] createChat chatId=%s', UserChatData.chatId);
@@ -192,7 +193,7 @@ export const initializeUserData = async (auth_token) => {
     const chatdata = [];
     for (const entry of user_data) {
       chats.push(entry[1]);
-      const chat_d = entry[0];
+      const chat_d = safeAppleSnapshot(entry[0]);
       const restored = new ChatData(
         chat_d['chatId'],
         chat_d['action'],
@@ -270,7 +271,7 @@ export const updateUserData = async (access_token, UserChatData, chats, owner) =
   );
   const data = {
     PartitionKey: access_token,
-    ChatData: UserChatData,
+    ChatData: safeAppleSnapshot(UserChatData),
     ChatLog: sanitizedChat,
   };
   try {

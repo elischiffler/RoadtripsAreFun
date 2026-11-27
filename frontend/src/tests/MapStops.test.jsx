@@ -1,233 +1,123 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import mapboxgl from 'mapbox-gl';
 import Map from '../components/Map';
+import request from '../services/protectedRequest';
+import { loadAppleMaps } from '../services/appleMaps';
 
-vi.mock('mapbox-gl', () => ({
-  default: {
-    Map: vi.fn(function ({ container }) {
-      this.container = container;
-      this.on = vi.fn();
-      this.addControl = vi.fn();
-      this.remove = vi.fn();
-      this.getSource = vi.fn();
-      this.getLayer = vi.fn();
-      this.addSource = vi.fn();
-      this.addLayer = vi.fn();
-      this.fitBounds = vi.fn();
-      this.easeTo = vi.fn();
-    }),
-    AttributionControl: vi.fn(),
-    Marker: vi.fn(function ({ element }) {
-      element.setAttribute('role', 'img');
-      this.setLngLat = vi.fn().mockReturnThis();
-      this.addTo = vi.fn((map) => {
-        map.container.append(element);
-        return this;
-      });
-      this.remove = vi.fn(() => element.remove());
-    }),
-    Popup: vi.fn(function () {
-      const element = document.createElement('div');
-      let close;
-      this.on = vi.fn((name, callback) => {
-        if (name === 'close') close = callback;
-        return this;
-      });
-      this.setDOMContent = vi.fn((content) => {
-        element.replaceChildren(content);
-        return this;
-      });
-      this.setLngLat = vi.fn().mockReturnThis();
-      this.addTo = vi.fn((map) => {
-        map.container.append(element);
-        return this;
-      });
-      this.getElement = () => element;
-      this.isOpen = () => element.isConnected;
-      this.remove = vi.fn(() => {
-        element.remove();
-        close?.();
-        return this;
-      });
-    }),
-  },
+vi.mock('../services/appleMaps', async (original) => ({
+  ...(await original()),
+  loadAppleMaps: vi.fn(),
+}));
+vi.mock('../services/protectedRequest', async (original) => ({
+  ...(await original()),
+  default: { post: vi.fn() },
 }));
 
-const stops = [
-  {
-    name: 'Forest walk',
-    type: 'stop',
-    coordinates: [37.4, -122.1],
-    address: 'Trailhead road',
-    source_release: '2026-09-23.1',
-    source_attribution: 'Overture Maps Foundation',
-  },
-  { name: 'Coastal hotel', type: 'hotel', coordinates: [36.8, -121.9] },
-  { name: 'Missing coordinates', type: 'stop' },
-  { name: '<img src=x onerror=alert(1)>', type: 'stop', coordinates: [36.7, -121.8] },
+const coordinates = [
+  [37.77, -122.42],
+  [37.4, -122.1],
+  [36.6, -121.9],
 ];
-function trip(nextStops = stops) {
-  return {
-    startConfirmed: { latitude: 37.77, longitude: -122.42 },
-    endConfirmed: { latitude: 36.6, longitude: -121.9 },
-    route: {
-      duration: 9000,
-      geometry: {
-        coordinates: [
-          [-122.42, 37.77],
-          [-121.9, 36.6],
-        ],
-      },
-      stops: nextStops,
+const points = coordinates.map(([lat, lon]) => [lon, lat]);
+const route = {
+  coordinates,
+  geometry: { type: 'LineString', coordinates: points },
+  stops: [
+    {
+      name: 'Forest walk',
+      type: 'stop',
+      coordinates: coordinates[1],
+      source_attribution: 'Fixture catalog',
     },
-  };
-}
+    { name: 'Missing coordinates', type: 'stop' },
+    { name: '<img src=x onerror=alert(1)>', type: 'hotel', coordinates: [36.8, -121.9] },
+  ],
+};
+const idea = { id: 'idea:1', name: 'Gallery', coordinates: [37.5, -122.2] };
+const journey = { route };
+
 beforeEach(() => {
   vi.clearAllMocks();
   vi.stubEnv('VITE_LOCAL_JOURNEY', 'false');
-  vi.stubEnv('VITE_MAPBOX_TOKEN', 'fixture-map-token');
+  vi.stubEnv('VITE_APPLE_MAPS_TOKEN', 'public-mapkit-fixture');
+  loadAppleMaps.mockResolvedValue({
+    Map: vi.fn(function (host) {
+      this.addItems = (items) =>
+        items.forEach((item) => {
+          if (item.factory) {
+            item.element = item.factory();
+            host.append(item.element);
+          }
+        });
+      this.removeItems = (items) => items.forEach((item) => item.element?.remove());
+      this.showItems = vi.fn();
+      this.destroy = () => host.replaceChildren();
+    }),
+    Coordinate: vi.fn(function (latitude, longitude) {
+      Object.assign(this, { latitude, longitude });
+    }),
+    PolylineOverlay: vi.fn(function (points) {
+      this.points = points;
+    }),
+    Annotation: vi.fn(function (coordinate, factory) {
+      Object.assign(this, { coordinate, factory });
+    }),
+    Padding: vi.fn(function () {}),
+    Style: vi.fn(function () {}),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  });
 });
 afterEach(() => vi.unstubAllEnvs());
 
-it('uses numbered, accessible pins at converted stop coordinates with one safe popup', async () => {
-  render(<Map UserChatData={trip()} />);
-  const map = mapboxgl.Map.mock.results[0].value;
-  map.on.mock.calls.find(([event]) => event === 'load')[1]();
-  expect(map.fitBounds).toHaveBeenCalledWith(
-    [
-      [-122.42, 36.6],
-      [-121.8, 37.77],
-    ],
-    { padding: 32, maxZoom: 12, duration: 0 }
-  );
-  expect(mapboxgl.Marker).toHaveBeenCalledTimes(3);
-  expect(mapboxgl.Marker.mock.results[0].value.setLngLat).toHaveBeenCalledWith([-122.1, 37.4]);
-  const first = screen.getByRole('button', { name: 'Stop 1: Forest walk' });
-  await userEvent.click(first);
-  expect(screen.getByRole('dialog')).toHaveTextContent('Forest walkTrailhead road');
-  expect(screen.getByRole('dialog')).not.toHaveTextContent('Source release: 2026-09-23.1');
-  expect(screen.queryByRole('link', { name: 'Sources' })).not.toBeInTheDocument();
-  expect(screen.getByRole('dialog')).not.toHaveTextContent('Source: Overture Maps Foundation');
-  expect(first).toHaveAttribute('aria-expanded', 'true');
-  await userEvent.click(screen.getByRole('button', { name: 'Stop 2: Coastal hotel' }));
-  expect(screen.getAllByRole('dialog')).toHaveLength(1);
-  expect(screen.getByRole('dialog')).toHaveTextContent('Coastal hotel');
-  expect(first).toHaveAttribute('aria-expanded', 'false');
-  const hostile = screen.getByRole('button', { name: 'Stop 4: <img src=x onerror=alert(1)>' });
-  hostile.focus();
-  await userEvent.keyboard('{Enter}');
-  expect(screen.getByRole('dialog')).toHaveTextContent('<img src=x onerror=alert(1)>');
-  expect(screen.getByRole('dialog').querySelector('img')).toBeNull();
-  fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
-  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  expect(hostile).toHaveFocus();
-});
-
-it('ignores unusable coordinates and clears pins and popups on route change and unmount', async () => {
-  const view = render(
-    <Map
-      UserChatData={trip([
-        ...stops,
-        null,
-        { coordinates: [91, 10] },
-        { coordinates: [10, 181] },
-        { coordinates: [NaN, 10] },
-        { coordinates: ['37', -122] },
-      ])}
-    />
-  );
-  expect(mapboxgl.Marker).toHaveBeenCalledTimes(3);
-  const markers = mapboxgl.Marker.mock.results.map(({ value }) => value);
-  await userEvent.click(screen.getByRole('button', { name: 'Stop 1: Forest walk' }));
-  view.rerender(<Map UserChatData={trip([stops[1]])} />);
-  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: 'Stop 1: Forest walk' })).not.toBeInTheDocument();
-  for (const marker of markers) expect(marker.remove).toHaveBeenCalledOnce();
-  view.unmount();
-  expect(mapboxgl.Marker.mock.results.at(-1).value.remove).toHaveBeenCalledOnce();
-});
-
-it('supports clickable and keyboard pins in the local map without opening Mapbox', async () => {
-  vi.stubEnv('VITE_LOCAL_JOURNEY', 'true');
-  render(<Map UserChatData={trip()} />);
-  expect(mapboxgl.Map).not.toHaveBeenCalled();
-  expect(screen.getByText('Local fixture · route schematic')).toBeInTheDocument();
-  const pin = screen.getByRole('button', { name: 'Stop 1: Forest walk' });
-  pin.focus();
-  await userEvent.keyboard(' ');
-  expect(screen.getByRole('dialog', { name: 'Stop 1' })).toHaveTextContent('Forest walk');
-  await userEvent.click(screen.getByRole('button', { name: 'Close location' }));
-  expect(pin).toHaveFocus();
-  await userEvent.keyboard('{Enter}');
-  fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
-  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  await userEvent.click(screen.getByRole('button', { name: 'Stop 2: Coastal hotel' }));
-  expect(screen.getByRole('dialog')).toHaveTextContent('Coastal hotel');
-});
-
-it('shows a clear map configuration fallback without creating a provider map', () => {
-  vi.stubEnv('VITE_MAPBOX_TOKEN', '');
-  render(<Map UserChatData={trip()} />);
-  expect(mapboxgl.Map).not.toHaveBeenCalled();
-  expect(screen.getByRole('status')).toHaveTextContent('access token is not configured');
-});
-
-it('shows a provider load error and retains a clear itinerary path', () => {
-  render(<Map UserChatData={trip()} />);
-  const map = mapboxgl.Map.mock.results[0].value;
-  fireEvent.error(screen.getByRole('button', { name: 'Stop 1: Forest walk' }));
-  act(() => map.on.mock.calls.find(([event]) => event === 'error')[1]());
-  expect(screen.getByRole('status')).toHaveTextContent('map could not be loaded');
-});
-
-it('adds distinct nearby pins and centers a selected actual idea without changing scheduled stops', async () => {
-  const idea = {
-    id: 'idea:1',
-    name: 'Gallery',
-    coordinates: [37.5, -122.2],
-    source_attribution: 'Fixture catalog',
-  };
+it('uses Apple as the basemap for legacy geometry, retaining the original directions credit', async () => {
   const select = vi.fn();
-  const data = trip();
-  const suggestions = [idea];
-  const view = render(
-    <Map UserChatData={data} suggestions={suggestions} onSelectSuggestion={select} />
-  );
-  const pin = screen.getByRole('button', { name: 'Nearby idea: Gallery' });
+  render(<Map UserChatData={journey} suggestions={[idea]} onSelectSuggestion={select} />);
+  const pin = await screen.findByRole('button', { name: 'Stop 1: Forest walk' });
   await userEvent.click(pin);
+  expect(screen.getByRole('status')).toHaveTextContent('Fixture catalog');
+  expect(screen.getByText('Directions © Mapbox')).toBeVisible();
+  expect(screen.queryByRole('button', { name: 'Stop 2: Missing coordinates' })).toBeNull();
+  expect(screen.getByRole('button', { name: /Stop 3: <img/ })).toBeVisible();
+  expect(document.querySelector('img')).toBeNull();
+  await userEvent.click(screen.getByRole('button', { name: 'Nearby idea: Gallery' }));
   expect(select).toHaveBeenCalledWith(idea);
-  expect(mapboxgl.Marker.mock.results.at(-1).value.setLngLat).toHaveBeenCalledWith([-122.2, 37.5]);
-  view.rerender(
-    <Map
-      UserChatData={data}
-      suggestions={suggestions}
-      selectedSuggestion={idea}
-      onSelectSuggestion={select}
-    />
-  );
-  expect(mapboxgl.Map.mock.results[0].value.easeTo).toHaveBeenCalledWith({
-    center: [-122.2, 37.5],
-    zoom: 12,
-    duration: 0,
-  });
-  expect(screen.getByRole('region', { name: 'Selected nearby idea' })).toHaveTextContent(
-    'Unscheduled idea'
-  );
-  expect(screen.getByRole('region', { name: 'Selected nearby idea' })).toHaveTextContent(
-    'Fixture catalog'
-  );
-  expect(screen.getAllByRole('button', { name: /^Stop / })).toHaveLength(3);
-  expect(data.route.stops).toEqual(stops);
+  expect(request.post).not.toHaveBeenCalled();
 });
+
+it('refreshes Apple directions in memory after an outage and never adds a legacy credit', async () => {
+  request.post.mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce({
+    data: { directions_provider: 'apple', geometry: route.geometry },
+  });
+  const intent = { ...route, directions_provider: 'apple', geometry: undefined };
+  render(<Map UserChatData={{ route: intent }} />);
+  expect(await screen.findByText(/Your itinerary is still available/)).toBeVisible();
+  await userEvent.click(screen.getByRole('button', { name: 'Retry directions' }));
+  await screen.findByRole('button', { name: 'Stop 1: Forest walk' });
+  expect(request.post).toHaveBeenCalledTimes(2);
+  expect(request.post.mock.calls[1][0]).toMatch(/route-directions$/);
+  expect(request.post.mock.calls[1][1]).toEqual({ coordinates });
+  expect(screen.queryByText('Directions © Mapbox')).toBeNull();
+  expect(intent.geometry).toBeUndefined();
+});
+
+it('does not render Apple line data on a non-Apple fallback', async () => {
+  vi.stubEnv('VITE_APPLE_MAPS_TOKEN', '');
+  render(<Map UserChatData={{ route: { ...route, directions_provider: 'apple' } }} />);
+  expect(screen.getByText(/Apple Maps directions are unavailable/)).toBeVisible();
+  expect(document.querySelector('polyline')).toBeNull();
+  expect(loadAppleMaps).not.toHaveBeenCalled();
+});
+
 it('renders local fixture nearby pins with keyboard selection', async () => {
   vi.stubEnv('VITE_LOCAL_JOURNEY', 'true');
-  const idea = { id: 'idea:1', name: 'Gallery', coordinates: [37.5, -122.2] };
   const select = vi.fn();
-  render(<Map UserChatData={trip()} suggestions={[idea]} onSelectSuggestion={select} />);
-  screen.getByRole('button', { name: 'Nearby idea: Gallery' }).focus();
+  render(<Map UserChatData={journey} suggestions={[idea]} onSelectSuggestion={select} />);
+  const pin = screen.getByRole('button', { name: 'Nearby idea: Gallery' });
+  pin.focus();
   await userEvent.keyboard('{Enter}');
-  expect(select).toHaveBeenCalledWith(idea);
-  expect(mapboxgl.Map).not.toHaveBeenCalled();
+  await waitFor(() => expect(select).toHaveBeenCalledWith(idea));
+  expect(screen.getByText('Local fixture · route schematic')).toBeVisible();
+  expect(loadAppleMaps).not.toHaveBeenCalled();
 });

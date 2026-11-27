@@ -165,6 +165,7 @@ async def roads(start_lat, start_lon, end_lat, end_lon, waypoints=None):
     lengths = [math.dist(a, b) for a, b in itertools.pairwise(points)]
     durations = [length / math.hypot(1, 0.4) * 7200 for length in lengths]
     return MapBox.MapBox_Route(
+        directions_provider="apple",
         geometry={"type": "LineString", "coordinates": points},
         duration=sum(durations),
         distance=sum(lengths) * 100000,

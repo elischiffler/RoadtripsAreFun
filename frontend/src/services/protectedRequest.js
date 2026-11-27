@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { directionsCapability } from './directionsCapability';
 import {
   ensureSession,
   getSession,
@@ -32,7 +33,7 @@ function replayable(url, method) {
   const path = url.slice(base.length).split('?')[0];
   return {
     get: /^(chats|routing-settings|get-initial-route|get-car-details|get-gas-price|get-location|algorithm-lab\/presets)$/,
-    post: /^(chats\/create\/[^/]+|generate-final-route|generate-itinerary|route-alternatives|algorithm-lab\/run)$/,
+    post: /^(chats\/create\/[^/]+|generate-final-route|generate-itinerary|route-directions|route-alternatives|algorithm-lab\/run)$/,
     put: /^chats\/update\/[^/]+$/,
     delete: /^chats\/delete\/[^/]+$/,
   }[method]?.test(path);
@@ -50,7 +51,10 @@ async function request(method, url, data, config) {
   if (!isCurrentSession(started)) throw new SessionError('session-changed');
   for (let attempt = 0; attempt < 2; attempt += 1) {
     if (!isCurrentSession(started)) throw new SessionError('session-changed');
-    const fresh = sessionRequest(session, data, config);
+    const fresh = sessionRequest(session, data, {
+      ...config,
+      headers: { ...config?.headers, ...directionsCapability(url) },
+    });
     try {
       const response = await (method === 'get' || method === 'delete'
         ? axios[method](url, fresh.config)
